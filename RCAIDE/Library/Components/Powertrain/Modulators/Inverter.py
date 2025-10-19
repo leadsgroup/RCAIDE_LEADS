@@ -75,5 +75,5 @@ class Inverter(Component):
     
     def compute_performance(self,state):
 
-        P_mech,P_elec, P_hydr, P_therm, m_dot_fuel, stored_results_flag,stored_modulator_tag =  compute_inverter_performance(self,state)
-        return P_mech,P_elec, P_hydr, P_therm, m_dot_fuel, stored_results_flag,stored_modulator_tag
+        Power, stored_results_flag,stored_modulator_tag =  compute_inverter_performance(self,state)
+        return Power, stored_results_flag,stored_modulator_tag

@@ -46,7 +46,7 @@ def plot_powertrain_power(results,
         for p_i, propulsor in enumerate(network.propulsors):
             for i in range(len(results.segments)):  
                 time  = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min      
-                power = results.segments[i].conditions.energy.propulsors[propulsor.tag].power[:,0]
+                power = results.segments[i].conditions.energy.propulsors[propulsor.tag].power.propulsive[:,0]
                 if i == 0:
                     ax_prop.plot(time, power, color=line_colors[i], marker=ps.markers[p_i],
                                  markersize=ps.marker_size, linewidth=ps.line_width, label=propulsor.tag)
@@ -74,7 +74,7 @@ def plot_powertrain_power(results,
         for m_i, modulator in enumerate(network.modulators):
             for i in range(len(results.segments)):  
                 time  = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min      
-                power = results.segments[i].conditions.energy.modulators[modulator.tag].inputs.ac_real_power[:,0]
+                power = results.segments[i].conditions.energy.modulators[modulator.tag].power.electrical[:,0]
                 if i == 0:
                     ax_mod.plot(time, power, color=line_colors[i], marker=ps.markers[m_i],
                                 markersize=ps.marker_size, linewidth=ps.line_width, label=modulator.tag)
@@ -102,7 +102,7 @@ def plot_powertrain_power(results,
         for c_i, converter_tag in enumerate(network.non_propulsive_converters):
             for i in range(len(results.segments)):  
                 time  = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min      
-                power = results.segments[i].conditions.energy.converters[converter_tag].outputs.power[:,0]
+                power = results.segments[i].conditions.energy.converters[converter_tag].power.electrical[:,0]
                 if i == 0:
                     ax_conv.plot(time, power, color=line_colors[i], marker=ps.markers[c_i],
                                  markersize=ps.marker_size, linewidth=ps.line_width, label=converter_tag)
@@ -131,9 +131,9 @@ def plot_powertrain_power(results,
             for i in range(len(results.segments)):  
                 time  = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min      
                 if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
-                    power = (source.pressure * results.segments[i].conditions.energy.sources[source.tag].mass_flow_rate[:,0]) / source.fuel.density
+                    power = results.segments[i].conditions.energy.sources[source.tag].power.chemical[:,0]
                 else:
-                    power = results.segments[i].conditions.energy.sources[source.tag].power[:,0]
+                    power = results.segments[i].conditions.energy.sources[source.tag].power.electrical[:,0]
                 if i == 0:
                     ax_src.plot(time, power, color=line_colors[i], marker=ps.markers[s_i],
                                 markersize=ps.marker_size, linewidth=ps.line_width, label=source.tag)
@@ -161,7 +161,7 @@ def plot_powertrain_power(results,
         for y_i, system in enumerate(network.systems):
             for i in range(len(results.segments)):  
                 time  = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min      
-                power = results.segments[i].conditions.energy.systems[system.tag].electrical_power[:,0]
+                power = results.segments[i].conditions.energy.systems[system.tag].power.electrical[:,0]
                 if i == 0:
                     ax_sys.plot(time, power, color=line_colors[i], marker=ps.markers[y_i],
                                 markersize=ps.marker_size, linewidth=ps.line_width, label=system.tag)

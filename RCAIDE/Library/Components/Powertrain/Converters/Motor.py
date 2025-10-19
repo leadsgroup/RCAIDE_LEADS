@@ -9,9 +9,8 @@
 # RCAIDE imports
 from .Converter import Converter
 from RCAIDE.Framework.Core import Data
-from RCAIDE.Library.Methods.Powertrain.Converters.Motor.append_motor_conditions import (
-    append_motor_conditions,
-)
+from RCAIDE.Library.Methods.Powertrain.Converters.Motor.append_motor_conditions import append_motor_conditions
+from RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance import compute_motor_performance
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -209,6 +208,11 @@ class Motor(Converter):
         """Attach motor operating conditions to the segment's energy conditions."""
         append_motor_conditions(self, segment)
         return
+    
+    def compute_performance(self,state):
+
+        Power,stored_results_flag,stored_converter_tag =  compute_motor_performance(self,state)
+        return Power,stored_results_flag,stored_converter_tag
 
 
     

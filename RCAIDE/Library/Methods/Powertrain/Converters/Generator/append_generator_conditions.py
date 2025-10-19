@@ -68,6 +68,15 @@ def append_generator_conditions(generator, segment):
     segment.state.conditions.energy.converters[generator.tag].outputs         = Conditions()
     segment.state.conditions.energy.converters[generator.tag].outputs.current = 0. * ones_row(1) 
     segment.state.conditions.energy.converters[generator.tag].outputs.voltage = 0. * ones_row(1) 
-    
+
+    segment.state.conditions.energy.converters[generator.tag].power             = Conditions()
+    segment.state.conditions.energy.converters[generator.tag].power.propulsive  = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[generator.tag].power.mechanical  = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[generator.tag].power.electrical  = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[generator.tag].power.chemical    = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[generator.tag].power.pneumatic   = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[generator.tag].power.hydraulic   = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[generator.tag].power.thermal     = 0 * ones_row(1)
+
     return 
 

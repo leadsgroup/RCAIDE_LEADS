@@ -55,25 +55,10 @@ class DC_to_DC_Converter(Component):
         self.thermal_efficiency    = 1.0
 
     def append_operating_conditions(self,segment): 
-        """
-        Append DC_to_DC_Converter operating conditions for a flight segment
-        
-        Parameters
-        ----------
-        segment : Segment
-            Flight segment containing state conditions
-        propulsor : Component
-            Propulsor component associated with this DC_to_DC_Converter
-            
-        Notes
-        -----
-        Updates the segment conditions with DC_to_DC_Converter-specific parameters including
-        power throughput and losses.
-        """ 
         append_dcdc_conditions(self,segment)
         return 
     
     def compute_performance(self,state):
 
-        P_mech,P_elec, P_hydr, P_therm, stored_results_flag,stored_modulator_tag =  compute_dcdc_performance(self,state)
-        return P_mech,P_elec, P_hydr, P_therm, stored_results_flag,stored_modulator_tag
+        Power, stored_results_flag,stored_modulator_tag =  compute_dcdc_performance(self,state)
+        return Power, stored_results_flag,stored_modulator_tag

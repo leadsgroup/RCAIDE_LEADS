@@ -9,6 +9,7 @@
 ## RCAIDE imports
 from RCAIDE.Framework.Core                  import Data 
 from .Turboelectric_Generator               import Turboelectric_Generator
+from RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator import compute_turboelectric_generator_performance, append_turboelectric_generator_conditions 
  
 # ----------------------------------------------------------------------
 #  Auxiliary_Power_Unit
@@ -57,6 +58,10 @@ class Auxiliary_Power_Unit(Turboelectric_Generator):
         """
         Appends operating conditions of the combustor.
         """ 
-        append_apu_conditions(self,segment)
+        append_turboelectric_generator_conditions(self,segment)
         return
+    
+    def compute_performance(self, state):
+        Power = compute_turboelectric_generator_performance(self,state)
+        return Power
 

@@ -325,15 +325,19 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     noise_conditions.core_nozzle   = core_nozzle_res  
     
     # Pack results    
-    stored_results_flag    = True
-    stored_propulsor_tag   = turboprop.tag
 
-    power_mech = power
-    power_elec = power_elec
-    power_hydr = 0*state.ones_row(1)
-    power_therm = 0*state.ones_row(1)
+    stored_results_flag            = True
+    stored_propulsor_tag           = turboprop.tag  
 
-    return thrust_vector,moment,power_mech,power_elec,power_hydr,power_therm,stored_results_flag,stored_propulsor_tag 
+    turboprop_conditions.power.propulsive               = power
+    turboprop_conditions.power.mechanical               = 0.0 * state.ones_row(1)
+    turboprop_conditions.power.electrical               = power_elec
+    turboprop_conditions.power.chemical                 = - mdot_fuel * combustor.fuel_data.lower_heating_value # negative because it is consumed power
+    turboprop_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
+    turboprop_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
+    turboprop_conditions.power.thermal                  = 0.0 * state.ones_row(1)
+
+    return turboprop_conditions.thrust ,turboprop_conditions.moment, turboprop_conditions.power, stored_results_flag,stored_propulsor_tag 
 
 def reuse_stored_turboprop_data(turboprop,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one turboprop for identical propulsors

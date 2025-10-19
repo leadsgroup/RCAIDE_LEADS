@@ -28,4 +28,12 @@ def append_dcdc_conditions(dcdc_converter,segment):
     segment.state.conditions.energy.modulators[dcdc_converter.tag].outputs.power      = 0. * ones_row(1) 
     segment.state.conditions.energy.modulators[dcdc_converter.tag].inputs.current     = 0. * ones_row(1) 
     segment.state.conditions.energy.modulators[dcdc_converter.tag].outputs.resistance = 0. * ones_row(1) 
+    segment.state.conditions.energy.modulators[dcdc_converter.tag].power              = Conditions() 
+    segment.state.conditions.energy.modulators[dcdc_converter.tag].power.propulsive   = 0 * ones_row(1)
+    segment.state.conditions.energy.modulators[dcdc_converter.tag].power.mechanical   = 0 * ones_row(1)
+    segment.state.conditions.energy.modulators[dcdc_converter.tag].power.electrical   = 0 * ones_row(1)
+    segment.state.conditions.energy.modulators[dcdc_converter.tag].power.chemical     = 0 * ones_row(1)
+    segment.state.conditions.energy.modulators[dcdc_converter.tag].power.pneumatic    = 0 * ones_row(1)
+    segment.state.conditions.energy.modulators[dcdc_converter.tag].power.hydraulic    = 0 * ones_row(1)
+    segment.state.conditions.energy.modulators[dcdc_converter.tag].power.thermal      = 0 * ones_row(1)
     return 

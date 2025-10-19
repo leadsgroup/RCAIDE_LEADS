@@ -92,7 +92,7 @@ def compute_throttle_from_power(engine,conditions):
     engine_conditions = conditions.energy.converters[engine.tag] 
     PSLS              = engine.sea_level_power
     h_flat            = engine.flat_rate_altitude
-    P                 = engine_conditions.power*1.0
+    P                 = engine_conditions.power.propulsive*1.0
     PSFC              = engine.power_specific_fuel_consumption
     
     altitude_virtual = altitude - h_flat        

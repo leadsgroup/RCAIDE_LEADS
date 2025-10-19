@@ -104,7 +104,7 @@ def BEMT_performance(ducted_fan,conditions):
     pts      = (mach,tip_mach,altitude) 
     
     thrust         = ducted_fan.performance_surrogates.thrust(pts)            
-    power          = ducted_fan.performance_surrogates.power(pts)                 
+    power          = ducted_fan.performance_surrogates.power.propulsive(pts)                 
     efficiency     = ducted_fan.performance_surrogates.efficiency(pts)            
     torque         = ducted_fan.performance_surrogates.torque(pts)                
     Ct             = ducted_fan.performance_surrogates.thrust_coefficient(pts)    

@@ -35,5 +35,13 @@ def append_inverter_conditions(inverter,segment):
     segment.state.conditions.energy.modulators[inverter.tag].outputs.m_target           = 0 * ones_row(1)
     segment.state.conditions.energy.modulators[inverter.tag].outputs.modulation_limited = 0 * ones_row(1)
     segment.state.conditions.energy.modulators[inverter.tag].outputs.f_out              = 0 * ones_row(1)
+    segment.state.conditions.energy.modulators[inverter.tag].power                      = Conditions() 
+    segment.state.conditions.energy.modulators[inverter.tag].power.propulsive           = 0 * ones_row(1)
+    segment.state.conditions.energy.modulators[inverter.tag].power.mechanical           = 0 * ones_row(1)
+    segment.state.conditions.energy.modulators[inverter.tag].power.electrical           = 0 * ones_row(1)
+    segment.state.conditions.energy.modulators[inverter.tag].power.chemical             = 0 * ones_row(1)
+    segment.state.conditions.energy.modulators[inverter.tag].power.pneumatic            = 0 * ones_row(1)
+    segment.state.conditions.energy.modulators[inverter.tag].power.hydraulic            = 0 * ones_row(1)
+    segment.state.conditions.energy.modulators[inverter.tag].power.thermal              = 0 * ones_row(1)
 
     return 

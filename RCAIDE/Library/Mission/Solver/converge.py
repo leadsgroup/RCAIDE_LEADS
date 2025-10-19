@@ -356,11 +356,11 @@ def iterate_optimizer(nexus):
   
 def segment_post_process(nexus):
     # unpack
-    power      = nexus.segment.state.conditions.energy.power
+    power      = nexus.segment.state.conditions.energy.power.propulsive
     I          = nexus.segment.state.numerics.time.integrate
     
     # compute max power of segment 
-    max_power  = np.max(nexus.segment.state.conditions.energy.power)
+    max_power  = np.max(nexus.segment.state.conditions.energy.power.propulsive)
     
     # compute total energy consumed 
     if (type(nexus.segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude) or\

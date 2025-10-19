@@ -80,7 +80,14 @@ def append_battery_conditions(source,segment):
     segment.state.conditions.energy.sources[source.tag].voltage_under_load         = 0 * ones_row(1)
     segment.state.conditions.energy.sources[source.tag].cell.voltage_under_load    = 0 * ones_row(1)
      
-    segment.state.conditions.energy.sources[source.tag].power                      = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[source.tag].power                      = Conditions()
+    segment.state.conditions.energy.sources[source.tag].power.propulsive           = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[source.tag].power.mechanical           = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[source.tag].power.electrical           = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[source.tag].power.chemical             = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[source.tag].power.pneumatic            = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[source.tag].power.hydraulic            = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[source.tag].power.thermal              = 0 * ones_row(1) 
     segment.state.conditions.energy.sources[source.tag].cell.power                 = 0 * ones_row(1)   
               
     segment.state.conditions.energy.sources[source.tag].power_draw                 = 0 * ones_row(1)    

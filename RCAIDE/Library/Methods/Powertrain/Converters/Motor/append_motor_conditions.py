@@ -54,5 +54,14 @@ def append_motor_conditions(motor,segment):
     segment.state.conditions.energy.converters[motor.tag].outputs.power           = 0. * ones_row(1)
     segment.state.conditions.energy.converters[motor.tag].outputs.torque          = 0. * ones_row(1)  
     segment.state.conditions.energy.converters[motor.tag].outputs.omega           = 0. * ones_row(1)
+
+    segment.state.conditions.energy.converters[motor.tag].power                   = Conditions()
+    segment.state.conditions.energy.converters[motor.tag].power.propulsive        = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[motor.tag].power.mechanical        = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[motor.tag].power.electrical        = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[motor.tag].power.chemical          = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[motor.tag].power.pneumatic         = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[motor.tag].power.hydraulic         = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[motor.tag].power.thermal           = 0 * ones_row(1)
     return 
 

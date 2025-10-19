@@ -112,3 +112,17 @@ class Coolant_Line(Component):
                     for battery in item:
                         self.battery_modules[battery.tag] = Container()
 
+    def compute_performance(self, state):
+
+        Power = {}
+
+        Power.propulsive  = state.conditions.energy.distributors[self.tag].net_propulsive
+        Power.mechanical  = state.conditions.energy.distributors[self.tag].net_mechanical
+        Power.electrical  = state.conditions.energy.distributors[self.tag].net_electrical
+        Power.chemical    = state.conditions.energy.distributors[self.tag].net_chemical  
+        Power.pneumatic   = state.conditions.energy.distributors[self.tag].net_pneumatic 
+        Power.hydraulic   = state.conditions.energy.distributors[self.tag].net_hydraulic 
+        Power.thermal     = state.conditions.energy.distributors[self.tag].net_thermal   
+
+        return Power
+

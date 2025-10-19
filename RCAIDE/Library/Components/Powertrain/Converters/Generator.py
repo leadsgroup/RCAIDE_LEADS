@@ -11,7 +11,6 @@ from .Converter  import Converter
 from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Methods.Powertrain.Converters.Generator.append_generator_conditions import  append_generator_conditions
 from RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance import compute_generator_performance
-
 # ----------------------------------------------------------------------------------------------------------------------
 #  Generator  
 # ----------------------------------------------------------------------------------------------------------------------           
@@ -122,8 +121,8 @@ class Generator(Converter):
     
     def compute_performance(self,state):
 
-        P_mech,P_elec,P_hydr,P_therm,m_dot_fuel,stored_results_flag,stored_converter_tag =  compute_generator_performance(self,state)
-        return P_mech,P_elec,P_hydr,P_therm,m_dot_fuel,stored_results_flag,stored_converter_tag
+        Power,stored_results_flag,stored_converter_tag =  compute_generator_performance(self,state)
+        return Power,stored_results_flag,stored_converter_tag
     
     def reuse_stored_data(generator,state,network,stored_converter_tag = None,center_of_gravity = [[0, 0, 0]]):
         """

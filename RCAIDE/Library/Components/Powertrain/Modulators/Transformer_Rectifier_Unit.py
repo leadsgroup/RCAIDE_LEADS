@@ -81,5 +81,5 @@ class Transformer_Rectifier_Unit(Component):
     
     def compute_performance(self, network, state):
 
-        P_mech,P_elec, P_hydr, P_therm, stored_results_flag,stored_modulator_tag =  compute_tru_performance(self, network, state)
-        return P_mech,P_elec, P_hydr, P_therm, stored_results_flag,stored_modulator_tag
+        Power, stored_results_flag,stored_modulator_tag =  compute_tru_performance(self, network, state)
+        return Power, stored_results_flag,stored_modulator_tag

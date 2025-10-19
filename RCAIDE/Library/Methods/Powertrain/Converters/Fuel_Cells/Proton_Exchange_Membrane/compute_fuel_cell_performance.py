@@ -162,12 +162,15 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, bus, coolant_lines, t_
     stored_results_flag            = True
     stored_fuel_cell_stack_tag     = fuel_cell_stack.tag  
 
-    P_mech   = 0.0 * state.ones_row(1)
-    P_elec   = P_fuel_cell * fuel_cell_stack.electrical_efficiency * n_total
-    P_hydr   = 0.0 * state.ones_row(1)
-    P_therm  = 0.0 * state.ones_row(1)
+    fuel_cell_stack_conditions.power.propulsive               = 0.0 * state.ones_row(1)
+    fuel_cell_stack_conditions.power.mechanical               = 0.0 * state.ones_row(1)
+    fuel_cell_stack_conditions.power.electrical               = P_fuel_cell * fuel_cell_stack.electrical_efficiency * n_total
+    fuel_cell_stack_conditions.power.chemical                 = 0.0 * state.ones_row(1)
+    fuel_cell_stack_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
+    fuel_cell_stack_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
+    fuel_cell_stack_conditions.power.thermal                  = 0.0 * state.ones_row(1)
 
-    return  P_mech, P_elec, P_hydr, P_therm, stored_results_flag, stored_fuel_cell_stack_tag
+    return  fuel_cell_stack_conditions.power, stored_results_flag, stored_fuel_cell_stack_tag
 
 def evaluate_PEM(fuel_cell_stack,fuel_cell_conditions,t_idx):
     """

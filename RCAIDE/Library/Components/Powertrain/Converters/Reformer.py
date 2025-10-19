@@ -9,6 +9,8 @@
 # RCAIDE imports
 import RCAIDE
 from RCAIDE.Framework.Core              import Data
+from RCAIDE.Library.Methods.Powertrain.Converters.Reformer.append_reformer_conditions import append_reformer_conditions
+from RCAIDE.Library.Methods.Powertrain.Converters.Reformer.compute_reformer_performance import compute_reformer_performance
 from .Converter  import Converter
 import numpy as np
 import scipy as sp
@@ -109,3 +111,7 @@ class Reformer(Converter):
         """Attach motor operating conditions to the segment's energy conditions."""
         append_reformer_conditions(self, segment)
         return
+    
+    def compute_performance(self,state):
+        Power,stored_results_flag,stored_converter_tag =  compute_reformer_performance(self,state)
+        return Power,stored_results_flag,stored_converter_tag

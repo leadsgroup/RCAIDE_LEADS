@@ -16,7 +16,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_omega_and_Q_from_Cp_and_V
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_motor_performance(motor,conditions):
+def compute_motor_performance(motor,state):
     """
     Computes motor performance characteristics including electrical, mechanical and thermal parameters.
 
@@ -223,4 +223,15 @@ def compute_motor_performance(motor,conditions):
             motor_conditions.inputs.current  = i 
             motor_conditions.efficiency      = etam 
                    
-    return
+    stored_results_flag            = True
+    stored_converter_tag           = motor.tag  
+
+    motor_conditions.power.propulsive               = 0.0 * state.ones_row(1)
+    motor_conditions.power.mechanical               = motor_conditions.outputs.power
+    motor_conditions.power.electrical               = motor_conditions.inputs.power 
+    motor_conditions.power.chemical                 = 0.0 * state.ones_row(1)
+    motor_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
+    motor_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
+    motor_conditions.power.thermal                  = 0.0 * state.ones_row(1)
+
+    return  motor_conditions.power, stored_results_flag, stored_converter_tag

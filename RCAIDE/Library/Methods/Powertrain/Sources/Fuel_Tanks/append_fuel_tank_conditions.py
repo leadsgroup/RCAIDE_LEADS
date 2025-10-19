@@ -57,5 +57,14 @@ def append_fuel_tank_conditions(tank, segment):
     segment.state.conditions.energy.sources[tank.tag].boil_off_flow_rate        = 0 * ones_row(1)  
     segment.state.conditions.energy.sources[tank.tag].ullage                    = 0 * ones_row(1)
     segment.state.conditions.energy.sources[tank.tag].secondary_mass_flow_rate  = tank.secondary_mass_flow_rate * ones_row(1) 
+     
+    segment.state.conditions.energy.sources[tank.tag].power                     = Conditions()
+    segment.state.conditions.energy.sources[tank.tag].power.propulsive          = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[tank.tag].power.mechanical          = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[tank.tag].power.electrical          = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[tank.tag].power.chemical            = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[tank.tag].power.pneumatic           = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[tank.tag].power.hydraulic           = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[tank.tag].power.thermal             = 0 * ones_row(1) 
          
     return 

@@ -46,7 +46,14 @@ def append_fuel_cell_conditions(fuel_cell_stack,segment):
     bus_conditions                                                                                 = segment.state.conditions.energy.busses[bus.tag]
     bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag]                                           = Conditions()
 
-    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].power                                     = 0 * ones_row(1)
+    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].power                                     = Conditions()
+    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].power.propulsive                          = 0 * ones_row(1)
+    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].power.mechanical                          = 0 * ones_row(1)
+    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].power.electrical                          = 0 * ones_row(1)
+    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].power.chemical                            = 0 * ones_row(1)
+    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].power.pneumatic                           = 0 * ones_row(1)
+    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].power.hydraulic                           = 0 * ones_row(1)
+    bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].power.thermal                             = 0 * ones_row(1)
     bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].current                                   = 0 * ones_row(1)      
     bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].voltage_open_circuit                      = 0 * ones_row(1) 
     bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag].voltage_under_load                        = 0 * ones_row(1) 

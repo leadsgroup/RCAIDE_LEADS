@@ -114,16 +114,18 @@ def compute_turboelectric_generator_performance(turboelectric_generator, state, 
         P_mech,stored_results_flag,stored_propulsor_tag = compute_turboshaft_performance(turboshaft,state,turboelectric_generator,fuel_line) 
         turboelectric_generator_conditions.fuel_mass_flow_rate =  turboshaft_conditions.fuel_mass_flow_rate   
     
-    P_elec                      = generator_conditions.outputs.power       
-    
-    # Pack results      
-    stored_results_flag    = True
-    stored_propulsor_tag   = turboelectric_generator.tag
+    stored_results_flag            = True
+    stored_converter_tag           = turboelectric_generator.tag  
 
-    P_hydr                    = 0.0 * 0*state.ones_row(1)
-    P_therm                   = 0.0 * 0*state.ones_row(1)
-    
-    return P_mech,P_elec,P_hydr,P_therm,stored_results_flag,stored_propulsor_tag
+    turboelectric_generator_conditions.power.propulsive               = 0.0 * state.ones_row(1)
+    turboelectric_generator_conditions.power.mechanical               = 0.0 * state.ones_row(1)
+    turboelectric_generator_conditions.power.electrical               = generator_conditions.outputs.power       
+    turboelectric_generator_conditions.power.chemical                 = 0.0 * state.ones_row(1)
+    turboelectric_generator_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
+    turboelectric_generator_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
+    turboelectric_generator_conditions.power.thermal                  = 0.0 * state.ones_row(1)
+
+    return  turboelectric_generator_conditions.power, stored_results_flag, stored_converter_tag
 
 def reuse_stored_turboelectric_generator_data(turboelectric_generator, state, network,stored_converter_tag,fuel_line=None, bus=None):
     '''Reuses results from one turboelectric_generator for identical propulsors

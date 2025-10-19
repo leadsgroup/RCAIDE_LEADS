@@ -8,7 +8,9 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_inverter_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_inverter_performance(inverter):
+def compute_inverter_performance(inverter, state):
+
+    inverter_conditions = state.segment.conditions.energy.modulators[inverter.tag]
 
     Vdc        = float(inverter.inputs.dc_voltage)         # [V]
     eta_inv    = float(inverter.inputs.efficiency)         # [-] 0<eta<=1
@@ -53,26 +55,29 @@ def compute_inverter_performance(inverter):
     Idc  = P_in / Vdc                            # [A]
 
     # ---- Output ----
-    inverter.outputs.Vph_rms               = Vph_rms
-    inverter.outputs.Vll_rms               = Vll_rms
-    inverter.outputs.Iph_rms               = Iph_rms
-    inverter.outputs.P_out                 = P_out
-    inverter.outputs.Q_out                 = Q_out
-    inverter.outputs.S_out                 = S_out
-    inverter.outputs.pf                    = pf
-    inverter.outputs.P_in                  = P_in
-    inverter.outputs.Idc                   = Idc
-    inverter.outputs.m                     = m
-    inverter.outputs.m_target              = m_target
-    inverter.outputs.modulation_limited    = modulation_limited
-    inverter.outputs.f_out                 = f_out
+    inverter_conditions.outputs.Vph_rms               = Vph_rms
+    inverter_conditions.outputs.Vll_rms               = Vll_rms
+    inverter_conditions.outputs.Iph_rms               = Iph_rms
+    inverter_conditions.outputs.P_out                 = P_out
+    inverter_conditions.outputs.Q_out                 = Q_out
+    inverter_conditions.outputs.S_out                 = S_out
+    inverter_conditions.outputs.pf                    = pf
+    inverter_conditions.outputs.P_in                  = P_in
+    inverter_conditions.outputs.Idc                   = Idc
+    inverter_conditions.outputs.m                     = m
+    inverter_conditions.outputs.m_target              = m_target
+    inverter_conditions.outputs.modulation_limited    = modulation_limited
+    inverter_conditions.outputs.f_out                 = f_out
 
-    P_mech = 0.0 * inverter.state.ones_row(1)
-    P_elec = P_out
-    P_hydr = 0.0 * inverter.state.ones_row(1)
-    P_therm = 0.0 * inverter.state.ones_row(1)
-    m_dot_fuel = 0.0 * inverter.state.ones_row(1)
-    stored_results_flag = True
-    stored_modulator_tag = inverter.tag
+    stored_results_flag            = True
+    stored_modulator_tag           = inverter.tag  
 
-    return P_mech,P_elec, P_hydr, P_therm, m_dot_fuel, stored_results_flag,stored_modulator_tag
+    inverter_conditions.power.propulsive               = 0.0 * state.ones_row(1)
+    inverter_conditions.power.mechanical               = 0.0 * state.ones_row(1)
+    inverter_conditions.power.electrical               = P_out
+    inverter_conditions.power.chemical                 = 0.0 * state.ones_row(1)
+    inverter_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
+    inverter_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
+    inverter_conditions.power.thermal                  = 0.0 * state.ones_row(1)
+
+    return  inverter_conditions.power, stored_results_flag, stored_modulator_tag

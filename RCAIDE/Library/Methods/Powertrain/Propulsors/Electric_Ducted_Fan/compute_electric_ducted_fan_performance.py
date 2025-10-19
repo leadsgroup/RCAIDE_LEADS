@@ -146,13 +146,19 @@ def compute_electric_ducted_fan_performance(propulsor, state, center_of_gravity=
     # compute total forces and moments from propulsor (future work would be to add moments from motors)
     EDF_conditions.thrust      = conditions.energy.converters[ducted_fan.tag].thrust  
     EDF_conditions.moment      = moment
-    EDF_conditions.power       = conditions.energy.converters[ducted_fan.tag].power  
-    power_mech                 = conditions.energy.converters[ducted_fan.tag].power
-    power_elec                 = conditions.energy.modulators[esc.tag].inputs.power
-    power_hydr                 = 0.0 * state.ones_row(1)
-    power_therm                = 0.0 * state.ones_row(1)
 
-    return EDF_conditions.thrust,EDF_conditions.moment,power_mech,power_elec,power_hydr,power_therm, stored_results_flag,stored_propulsor_tag 
+    stored_results_flag            = True
+    stored_propulsor_tag           = propulsor.tag  
+
+    EDF_conditions.power.propulsive               = conditions.energy.converters[ducted_fan.tag].power  
+    EDF_conditions.power.mechanical               = 0.0 * state.ones_row(1)
+    EDF_conditions.power.electrical               = 0.0 * state.ones_row(1)
+    EDF_conditions.power.chemical                 = 0.0 * state.ones_row(1)
+    EDF_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
+    EDF_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
+    EDF_conditions.power.thermal                  = 0.0 * state.ones_row(1)
+
+    return EDF_conditions.thrust ,EDF_conditions.moment, EDF_conditions.power, stored_results_flag,stored_propulsor_tag 
                 
 def reuse_stored_electric_ducted_fan_data(propulsor,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one propulsor for identical propulsors

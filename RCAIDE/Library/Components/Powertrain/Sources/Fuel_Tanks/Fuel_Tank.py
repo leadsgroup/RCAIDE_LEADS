@@ -90,5 +90,5 @@ class Fuel_Tank(Component):
         return
     
     def compute_performance(self,state,fuel_line):
-        P_mech, P_elec, P_hydr, P_therm = compute_fuel_tank_properties(self,state,fuel_line)
-        return P_mech, P_elec, P_hydr, P_therm 
+        Power = compute_fuel_tank_properties(self,state,fuel_line)
+        return Power

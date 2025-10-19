@@ -122,7 +122,7 @@ def read_results(dfdc_analysis):
     results.geometry.stator_solidity_distribution       = np.zeros(Nr)  
     results.performance                                 = Data() 
     results.performance.thrust                          = np.zeros((len_m,len_tm,len_a))  
-    results.performance.power                           = np.zeros((len_m,len_tm,len_a))  
+    results.performance.power.propulsive                = np.zeros((len_m,len_tm,len_a))  
     results.performance.efficiency                      = np.zeros((len_m,len_tm,len_a)) 
     results.performance.torque                          = np.zeros((len_m,len_tm,len_a)) 
     results.performance.thrust_coefficient              = np.zeros((len_m,len_tm,len_a))  
@@ -179,7 +179,7 @@ def read_results(dfdc_analysis):
                     with open(results_filename,'r') as case_results_file: 
                         case_lines                       = case_results_file.readlines() 
                         results.performance.thrust[i,j,k]              = float(case_lines[8][13:26].strip())
-                        results.performance.power[i,j,k]               = float(case_lines[8][39:52].strip())
+                        results.performance.power.propulsive[i,j,k]    = float(case_lines[8][39:52].strip())
                         results.performance.efficiency[i,j,k]          = float(case_lines[8][65:76].strip()) 
                         results.performance.torque[i,j,k]              = float(case_lines[10][39:52].strip())        
                         results.performance.thrust_coefficient[i,j,k]  = float(case_lines[13][7:20].strip())        
@@ -190,7 +190,7 @@ def read_results(dfdc_analysis):
                 except:
                     results.performance.converged_solution[i,j,k]  = False
                     results.performance.thrust[i,j,k]              = np.nan
-                    results.performance.power[i,j,k]               = np.nan
+                    results.performance.power.propulsive[i,j,k]    = np.nan
                     results.performance.efficiency[i,j,k]          = np.nan
                     results.performance.torque[i,j,k]              = np.nan       
                     results.performance.thrust_coefficient[i,j,k]  = np.nan      

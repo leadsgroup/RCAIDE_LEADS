@@ -78,11 +78,16 @@ def compute_tru_performance(tru, network, state):
     # Return powers to the network evaluator
     # (source on DC side → negative sign for P_elec)
     # -------------------------------------------------
-    P_mech = 0.0 * state.ones_row(1)
-    P_elec = - P_out
-    P_hydr = 0.0 * state.ones_row(1)
-    P_therm= 0.0 * state.ones_row(1)
-    stored_results_flag  = True
-    stored_modulator_tag = tru.tag
 
-    return P_mech, P_elec, P_hydr, P_therm, stored_results_flag, stored_modulator_tag
+    stored_results_flag            = True
+    stored_modulator_tag           = tru.tag  
+
+    tru_conditions.power.propulsive               = 0.0 * state.ones_row(1)
+    tru_conditions.power.mechanical               = 0.0 * state.ones_row(1)
+    tru_conditions.power.electrical               = - P_out
+    tru_conditions.power.chemical                 = 0.0 * state.ones_row(1)
+    tru_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
+    tru_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
+    tru_conditions.power.thermal                  = 0.0 * state.ones_row(1)
+
+    return  tru_conditions.power, stored_results_flag, stored_modulator_tag

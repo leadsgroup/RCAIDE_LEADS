@@ -166,12 +166,17 @@ class Electrical_Bus(Component):
     
     def compute_performance(self, state):
 
-        P_mech = state.conditions.energy.distributors[self.tag].net_mechanical_power
-        P_elec = state.conditions.energy.distributors[self.tag].net_electrical_power
-        P_hydr = state.conditions.energy.distributors[self.tag].net_hydraulic_power
-        P_therm = state.conditions.energy.distributors[self.tag].net_thermal_power
-        
-        return P_mech, P_elec, P_hydr, P_therm
+        distributor_conditions = state.conditions.energy.distributors[self.tag].power
+
+        distributor_conditions.propulsive  = state.conditions.energy.distributors[self.tag].net_propulsive_power
+        distributor_conditions.mechanical  = state.conditions.energy.distributors[self.tag].net_mechanical_power
+        distributor_conditions.electrical  = state.conditions.energy.distributors[self.tag].net_electrical_power
+        distributor_conditions.chemical    = state.conditions.energy.distributors[self.tag].net_chemical_power 
+        distributor_conditions.pneumatic   = state.conditions.energy.distributors[self.tag].net_pneumatic_power 
+        distributor_conditions.hydraulic   = state.conditions.energy.distributors[self.tag].net_hydraulic_power 
+        distributor_conditions.thermal     = state.conditions.energy.distributors[self.tag].net_thermal_power   
+
+        return distributor_conditions
     
 class Electrical_Line(Component):
     def __defaults__(self):

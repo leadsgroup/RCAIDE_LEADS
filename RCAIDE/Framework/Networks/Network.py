@@ -86,27 +86,32 @@ class Network(Component):
         """ Computes the performance of the network.
         
             This routine evaluates propulsors, converters, modulators, distributors, sources, and systems,
-            and assembles forces, moments, mass flow, and electrical/mechanical power balances.
+            and assembles forces, moments, and power balances.
         
             Energetic domains (Effort–Flow pairs) used in the model follow the power-conjugate convention:
         
-            +---------------------+-----------------+--------------------+----------------+----------------+
-            | Domain              | Effort          | Flow               | Power relation | Units          |
-            +=====================+=================+====================+================+================+
-            | Mechanical (trans.) | Force (F)       | Velocity (v)       | P = F · v      | N, m/s → W     |
-            +---------------------+-----------------+--------------------+----------------+----------------+
-            | Mechanical (rot.)   | Torque (τ)      | Angular speed (ω)  | P = τ · ω      | N·m, rad/s → W |
-            +---------------------+-----------------+--------------------+----------------+----------------+
-            | Electrical          | Voltage (V)     | Current (I)        | P = V · I      | V, A → W       |
-            +---------------------+-----------------+--------------------+----------------+----------------+
-            | Fluid               | Pressure (p)    | Vol. flow rate (Ṽ) | P = p · Ṽ      | Pa, m³/s → W   |
-            +---------------------+-----------------+--------------------+----------------+----------------+
-            | Thermal             | Temperature (T) | Entropy flow (Ṡ)   | P = T · Ṡ      | K, W/K → W     |
-            +---------------------+-----------------+--------------------+----------------+----------------+
-        
+            +------------+--------------------------+--------------------+----------------+----------------+
+            | Domain     | Effort                   | Flow               | Power Relation | Units          |
+            +============+==========================+====================+================+================+
+            | Propulsive | Force (F)                | Velocity (v)       | P = F · v      | N, m/s → W     |
+            +------------+--------------------------+--------------------+----------------+----------------+
+            | Mechanical | Torque (τ)               | Angular speed (ω)  | P = τ · ω      | N·m, rad/s → W |
+            +------------+--------------------------+--------------------+----------------+----------------+
+            | Electrical | Voltage (V)              | Current (I)        | P = V · I      | V, A → W       |
+            +------------+--------------------------+--------------------+----------------+----------------+
+            | Chemical   | Lower Heating Value (LHV)| Mass flow (ṁ)      | P = ṁ·LHV      | J/kg, kg/s → W |
+            +------------+--------------------------+--------------------+----------------+----------------+
+            | Pneumatic  | Pressure (p)             | Vol. flow rate (Ṽ) | P = p · Ṽ      | Pa, m³/s → W   |
+            +------------+--------------------------+--------------------+----------------+----------------+
+            | Hydraulic  | Pressure (p)             | Vol. flow rate (Ṽ) | P = p · Ṽ      | Pa, m³/s → W   |
+            +------------+--------------------------+--------------------+----------------+----------------+
+            | Thermal    | Temperature (T)          | Entropy flow (Ṡ)   | P = T · Ṡ      | K, W/K → W     |
+            +------------+--------------------------+--------------------+----------------+----------------+
+
             Notes
             -----
-            * Electrical bus power balance uses the sign convention: negative = leaving the distributor, positive = feeding the distributor.
+            * Electrical bus power balance uses the sign convention: 
+            negative = leaving the distributor, positive = feeding the distributor.
         """ 
 
         # unpack   
@@ -121,7 +126,7 @@ class Network(Component):
         total_thrust            = 0. * state.ones_row(3) 
         total_moment            = 0. * state.ones_row(3)  
         total_mdot              = 0. * state.ones_row(1) 
-        total_power             = 0. * state.ones_row(1)
+        total_propulsive_power  = 0. * state.ones_row(1)
 
         # ----------------------------------------------------------       
         # Propulsors
@@ -133,19 +138,19 @@ class Network(Component):
 
             if propulsor.active:   
                 if propulsor.identical_propulsors == False or stored_results_flag == False:
-                    Thrust, Moment, P_mech, P_elec, P_hydr, P_therm, stored_results_flag, stored_propulsor_tag = propulsor.compute_performance(state, network, center_of_gravity= center_of_gravity)
+                    Thrust, Moment, Power, stored_results_flag, stored_propulsor_tag = propulsor.compute_performance(state, network, center_of_gravity= center_of_gravity)
                 else:             
-                    Thrust, Moment, P_mech, P_elec, P_hydr, P_therm = propulsor.reuse_stored_data(state,network,stored_propulsor_tag=stored_propulsor_tag,center_of_gravity= center_of_gravity)
+                    Thrust, Moment, Power = propulsor.reuse_stored_data(state,network,stored_propulsor_tag=stored_propulsor_tag,center_of_gravity= center_of_gravity)
 
                 if propulsor.reverse_thrust  ==  True:
                     total_thrust =  total_thrust * -1    
                     total_moment =  total_moment * -1 
 
-                total_thrust      += Thrust   
-                total_moment      += Moment   
-                total_power       += P_mech 
+                total_thrust             += Thrust   
+                total_moment             += Moment  
+                total_propulsive_power   += Power.propulsive 
 
-                Network.update_distributor_net_power(propulsor, network, conditions, P_mech, P_elec, P_hydr, P_therm)
+                Network.update_distributor_net_power(propulsor, network, conditions, Power)
 
         # ----------------------------------------------------------
         # Systems
@@ -153,9 +158,9 @@ class Network(Component):
 
         for system in systems:
 
-            P_mech, P_elec, P_hydr, P_therm = system.compute_performance(state)
+            Power = system.compute_performance(state)
             
-            Network.update_distributor_net_power(system, network, conditions, P_mech, P_elec, P_hydr, P_therm)
+            Network.update_distributor_net_power(system, network, conditions, Power)
 
         # ------------------------------------------------------------------------------------------------------------------- 
         # Converters
@@ -172,9 +177,9 @@ class Network(Component):
                 converter.inverse_calculation = True 
 
             if converter.active:   
-                P_mech, P_elec, P_hydr, P_therm, stored_results_flag, stored_converter_tag = converter.compute_performance(state)
+                Power, stored_results_flag, stored_converter_tag = converter.compute_performance(state)
 
-                Network.update_distributor_net_power(converter, network, conditions, P_mech, P_elec, P_hydr, P_therm)  
+                Network.update_distributor_net_power(converter, network, conditions, Power)  
 
         # ------------------------------------------------------------------------------------------------------------------- 
         # Modulators
@@ -182,9 +187,9 @@ class Network(Component):
 
         for modulator in modulators:
                 
-            P_mech, P_elec, P_hydr, P_therm, stored_results_flag, stored_modulator_tag = modulator.compute_performance(network, state)
+            Power, stored_results_flag, stored_modulator_tag = modulator.compute_performance(network, state)
             
-            Network.update_distributor_net_power(modulator, network, conditions, P_mech, P_elec, P_hydr, P_therm)  
+            Network.update_distributor_net_power(modulator, network, conditions, Power)  
        
         # -------------------------------------------------------------------------------------------------------------------
         # Other Distributors 
@@ -193,9 +198,9 @@ class Network(Component):
         for distributor in network.distributors:
             for distributor_tag in distributor.assigned_distributors:
                 
-                P_mech, P_elec, P_hydr, P_therm = network.distributors[distributor_tag[0]].compute_performance(state)
+                Power = network.distributors[distributor_tag[0]].compute_performance(state)
 
-                Network.update_distributor_net_power(network.distributors[distributor_tag[0]], network, conditions, P_mech, P_elec, P_hydr, P_therm)  
+                Network.update_distributor_net_power(network.distributors[distributor_tag[0]], network, conditions, Power)  
 
         # ----------------------------------------------------------        
         # Sources
@@ -213,20 +218,20 @@ class Network(Component):
 
                 if issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):    
                     
-                    P_mech, P_elec, P_hydr, P_therm = source.compute_performance(state,distributor)   
+                    Power = source.compute_performance(state,distributor)   
                     
                     total_mdot  += conditions.energy.distributors[distributor.tag].fuel_mass_flow_rate
                 
                 elif issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module):   
                     for t_idx in range(state.numerics.number_of_control_points):   
                         if distributor.identical_battery_modules == False or stored_results_flag == False: 
-                            P_mech, P_elec, P_hydr, P_therm, stored_results_flag, stored_battery_cell_tag =  source.compute_performance(state,distributor,network, t_idx, delta_t)
+                            Power, stored_results_flag, stored_battery_cell_tag =  source.compute_performance(state,distributor,network, t_idx, delta_t)
                         else:             
-                            P_mech, P_elec, P_hydr, P_therm = source.reuse_stored_data(state, stored_battery_cell_tag)        
+                            Power = source.reuse_stored_data(state, stored_battery_cell_tag)        
                         
                         distributor.compute_distributor_conditions(source, state, t_idx,delta_t)
                 
-                Network.update_distributor_net_power(source, network, conditions, P_mech, P_elec, P_hydr, P_therm)  
+                Network.update_distributor_net_power(source, network, conditions, Power)  
                     
         # # ----------------------------------------------------------
         # # Regenerative Power 
@@ -256,14 +261,14 @@ class Network(Component):
         #                     reservoir.compute_reservior_coolant_temperature(state,distributor,delta_t[t_idx],t_idx)
                                                         
         conditions.energy.thrust_force_vector  = total_thrust
-        conditions.energy.power_mechanical     = total_power 
         conditions.energy.thrust_moment_vector = total_moment 
+        conditions.energy.net_power            = total_propulsive_power
         conditions.weights.vehicle_mass_rate   = total_mdot  
     
         return
     
     @staticmethod
-    def update_distributor_net_power(component, network, conditions, P_mech, P_elec, P_hydr, P_therm):
+    def update_distributor_net_power(component, network, conditions, Power):
 
         """
         Accumulate a component's multi-domain power into the residuals of its assigned distributors.
@@ -281,17 +286,17 @@ class Network(Component):
             if isinstance(network.distributors[dist_tag], RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
                 if isinstance(component, RCAIDE.Library.Components.Powertrain.Modulators.Transformer_Rectifier_Unit):
                     if network.distributors[dist_tag].bus_type == 'AC':
-                        conditions.energy.distributors[dist_tag].net_electrical_power  += P_elec * dist.power_split_ratio / dist.electrical_efficiency
+                        conditions.energy.distributors[dist_tag].net_electrical_power  += Power.electrical * dist.power_split_ratio / dist.electrical_efficiency
                     else:
-                        conditions.energy.distributors[dist_tag].net_electrical_power  += - P_elec * component.electrical_efficiency * dist.power_split_ratio / dist.electrical_efficiency
+                        conditions.energy.distributors[dist_tag].net_electrical_power  += - Power.electrical * component.electrical_efficiency * dist.power_split_ratio / dist.electrical_efficiency
                 else:    
-                    conditions.energy.distributors[dist_tag].net_electrical_power  += P_elec * dist.power_split_ratio / dist.electrical_efficiency
+                    conditions.energy.distributors[dist_tag].net_electrical_power  += Power.electrical * dist.power_split_ratio / dist.electrical_efficiency
             
             # elif isinstance(network.distributors[dist_tag], RCAIDE.Library.Components.Powertrain.Distributors.Mechanical_Line):
             #     conditions.energy.distributors[dist_tag].net_mechanical_power  += P_mech * dist.power_split_ratio / dist.mechanical_efficiency
             
             elif isinstance(network.distributors[dist_tag], RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
-                conditions.energy.distributors[dist_tag].net_hydraulic_power   += P_hydr * dist.power_split_ratio / dist.hydraulic_efficiency
+                conditions.energy.distributors[dist_tag].net_hydraulic_power   += Power.chemical * dist.power_split_ratio / dist.hydraulic_efficiency
                 if isinstance(component, RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor):
                     m_dot_fuel = conditions.energy.propulsors[component.tag].fuel_mass_flow_rate
                 elif isinstance(component, RCAIDE.Library.Components.Powertrain.Converters.Converter):
@@ -304,7 +309,7 @@ class Network(Component):
                 conditions.energy.distributors[dist_tag].fuel_mass_flow_rate += m_dot_fuel
             
             elif isinstance(network.distributors[dist_tag], RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line):
-                conditions.energy.distributors[dist_tag].net_thermal_power     += P_therm * dist.power_split_ratio / dist.thermal_efficiency
+                conditions.energy.distributors[dist_tag].net_thermal_power     += Power.thermal * dist.power_split_ratio / dist.thermal_efficiency
         
         return
     
@@ -436,7 +441,7 @@ class Network(Component):
         segment.process.iterate.residuals.network           = self.residuals   
         
         return segment
- 
+
 # ----------------------------------------------------------------------
 #  Component Container
 # ---------------------------------------------------------------------- 

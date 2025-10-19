@@ -36,11 +36,15 @@ def append_systems_conditions(system, segment):
     See Also
     -------- 
     """
-    ones_row                                                              = segment.state.ones_row
-    segment.state.conditions.energy.systems[system.tag]                   = Conditions()
-    segment.state.conditions.energy.systems[system.tag].mechanical_power  = 0 * ones_row(1)
-    segment.state.conditions.energy.systems[system.tag].electrical_power  = 0 * ones_row(1)
-    segment.state.conditions.energy.systems[system.tag].hydraulic_power   = 0 * ones_row(1)
-    segment.state.conditions.energy.systems[system.tag].thermal_power     = 0 * ones_row(1)
+    ones_row                                                                    = segment.state.ones_row
+    segment.state.conditions.energy.systems[system.tag]                         = Conditions()
+    segment.state.conditions.energy.systems[system.tag].power                   = Conditions()
+    segment.state.conditions.energy.systems[system.tag].power.propulsive        = 0 * ones_row(1)
+    segment.state.conditions.energy.systems[system.tag].power.mechanical        = 0 * ones_row(1)
+    segment.state.conditions.energy.systems[system.tag].power.electrical        = 0 * ones_row(1)
+    segment.state.conditions.energy.systems[system.tag].power.chemical          = 0 * ones_row(1)
+    segment.state.conditions.energy.systems[system.tag].power.pneumatic         = 0 * ones_row(1)
+    segment.state.conditions.energy.systems[system.tag].power.hydraulic         = 0 * ones_row(1)
+    segment.state.conditions.energy.systems[system.tag].power.thermal           = 0 * ones_row(1) 
     
     return 

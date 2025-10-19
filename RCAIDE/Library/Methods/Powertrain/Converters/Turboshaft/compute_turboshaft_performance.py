@@ -242,15 +242,19 @@ def compute_turboshaft_performance(turboshaft,state,fuel_line=None,bus=None):
     compressor_conditions.omega   = compressor.design_angular_velocity * turboshaft_conditions.throttle   
     
     # Pack results    
-    P_mech                  = turboshaft_conditions.power   
-    stored_results_flag    = True
-    stored_converter_tag   = turboshaft.tag
 
-    P_elec                  = 0*state.ones_row(1)
-    P_hydr                  = 0*state.ones_row(1)
-    P_therm                 = 0*state.ones_row(1)
+    stored_results_flag            = True
+    stored_converter_tag           = turboshaft.tag  
 
-    return P_mech, P_elec, P_hydr, P_therm, stored_results_flag, stored_converter_tag
+    turboshaft_conditions.power.propulsive               = 0.0 * state.ones_row(1)
+    turboshaft_conditions.power.mechanical               = turboshaft_conditions.power   
+    turboshaft_conditions.power.electrical               = 0.0 * state.ones_row(1)     
+    turboshaft_conditions.power.chemical                 = 0.0 * state.ones_row(1)
+    turboshaft_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
+    turboshaft_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
+    turboshaft_conditions.power.thermal                  = 0.0 * state.ones_row(1)
+
+    return  turboshaft_conditions.power, stored_results_flag, stored_converter_tag
 
 def reuse_stored_turboshaft_data(turboshaft,state,network,fuel_line,bus,stored_converter_tag):
     '''Reuses results from one turboshaft for identical propulsors

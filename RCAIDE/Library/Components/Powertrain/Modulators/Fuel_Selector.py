@@ -54,3 +54,12 @@ class Fuel_Selector(Component):
         self.mechanical_efficiency = 1.0
         self.hydraulic_efficiency  = 1.0
         self.thermal_efficiency    = 1.0
+
+    def append_operating_conditions(self,segment): 
+        append_fuel_selector_conditions(self,segment)
+        return 
+
+    def compute_performance(self,state):
+
+        Power, stored_results_flag,stored_modulator_tag =  compute_fuel_selector_performance(self,state)
+        return Power, stored_results_flag,stored_modulator_tag

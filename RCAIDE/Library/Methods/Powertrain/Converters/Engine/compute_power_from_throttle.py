@@ -117,7 +117,7 @@ def compute_power_from_throttle(engine,conditions):
     m_dot_fuel  = np.fmax(m_dot,np.zeros_like(altitude)) 
     
     # Store results 
-    engine_conditions.power                           = P
+    engine_conditions.power.propulsive                = P
     engine_conditions.power_specific_fuel_consumption = PSFC
     engine_conditions.fuel_mass_flow_rate             = m_dot_fuel
     engine_conditions.torque                          = torque

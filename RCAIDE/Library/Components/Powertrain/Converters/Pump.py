@@ -6,6 +6,8 @@
 #  Imports
 # ----------------------------------------------------------------------
 from RCAIDE.Framework.Core import Data
+from RCAIDE.Library.Methods.Powertrain.Converters.Pump.append_pump_conditions import append_pump_conditions
+from RCAIDE.Library.Methods.Powertrain.Converters.Pump.compute_pump_performance import compute_pump_performance
 
 # ----------------------------------------------------------------------
 #  Pump
@@ -27,3 +29,8 @@ class Pump(Data):
         """Attach motor operating conditions to the segment's energy conditions."""
         append_pump_conditions(self, segment)
         return
+    
+    def compute_performance(self,state):
+
+        Power,stored_results_flag,stored_converter_tag =  compute_pump_performance(self,state)
+        return Power,stored_results_flag,stored_converter_tag

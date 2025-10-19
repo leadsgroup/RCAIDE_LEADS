@@ -105,12 +105,12 @@ class Internal_Combustion_Engine(Propulsor):
         """
         Computes propulsor performance including thrust, moment, and power.
         """
-        thrust,moment,power_mech,power_elec,power_hydr,power_therm,stored_results_flag,stored_propulsor_tag =  compute_internal_combustion_engine_performance(self,state,center_of_gravity)
-        return thrust,moment,power_mech,power_elec,power_hydr,power_therm,stored_results_flag,stored_propulsor_tag
+        thrust,moment,Power,stored_results_flag,stored_propulsor_tag =  compute_internal_combustion_engine_performance(self,state,center_of_gravity)
+        return thrust,moment,Power,stored_results_flag,stored_propulsor_tag
     
     def reuse_stored_data(ICE_prop, state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
         """
         Reuses stored propulsor data for performance calculations.
         """
-        thrust,moment,power_mech,power_elec = reuse_stored_internal_combustion_engine_data(ICE_prop,state,network,stored_propulsor_tag,center_of_gravity)
-        return thrust,moment,power_mech,power_elec
+        thrust,moment,Power = reuse_stored_internal_combustion_engine_data(ICE_prop,state,network,stored_propulsor_tag,center_of_gravity)
+        return thrust,moment,Power

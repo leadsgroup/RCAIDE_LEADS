@@ -41,10 +41,19 @@ def compute_systems_power_draw(system, state):
     --------
     RCAIDE.Library.Methods.Powertrain.Systems.append_system_conditions
     """
-    system_conditions                         = state.conditions.energy.systems[system.tag]    
-    system_conditions.electrical_power[:,0]        = - system.power_draw  # Negative sign indicates power consumption
-    system_conditions.mechanical_power[:,0]        = 0
-    system_conditions.hydraulic_power[:,0]         = 0
-    system_conditions.thermal_power[:,0]           = 0
+    system_conditions              = state.conditions.energy.systems[system.tag]    
 
-    return system_conditions.mechanical_power, system_conditions.electrical_power, system_conditions.hydraulic_power, system_conditions.thermal_power
+    stored_results_flag            = True
+    stored_system_tag              = system.tag  
+
+    Power = system_conditions.power
+
+    Power.propulsive               = 0.0 * state.ones_row(1)
+    Power.mechanical               = 0.0 * state.ones_row(1)
+    Power.electrical               = - system.power_draw * state.ones_row(1) # Negative sign indicates power consumption
+    Power.chemical                 = 0.0 * state.ones_row(1)
+    Power.pneumatic                = 0.0 * state.ones_row(1)
+    Power.hydraulic                = 0.0 * state.ones_row(1)
+    Power.thermal                  = 0.0 * state.ones_row(1)
+
+    return Power

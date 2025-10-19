@@ -129,14 +129,19 @@ def compute_constant_speed_internal_combustion_engine_performance(propulsor, sta
     # compute total forces and moments from propulsor (future work would be to add moments from motors)
     ice_cs_conditions.thrust      = conditions.energy.converters[propeller.tag].thrust 
     ice_cs_conditions.moment      = moment
-    ice_cs_conditions.power       = conditions.energy.converters[propeller.tag].power  
 
-    P_mech = ice_cs_conditions.power
-    P_elec =  0*state.ones_row(1)
-    P_hydr =  0*state.ones_row(1)
-    P_therm = 0*state.ones_row(1)
-    
-    return ice_cs_conditions.thrust ,ice_cs_conditions.moment,P_mech,P_elec, P_hydr, P_therm, stored_results_flag,stored_propulsor_tag 
+    stored_results_flag            = True
+    stored_propulsor_tag           = propulsor.tag  
+
+    ice_cs_conditions.power.propulsive               = conditions.energy.converters[propulsor.tag].power  
+    ice_cs_conditions.power.mechanical               = 0.0 * state.ones_row(1)
+    ice_cs_conditions.power.electrical               = 0.0 * state.ones_row(1)
+    ice_cs_conditions.power.chemical                 = 0.0 * state.ones_row(1)
+    ice_cs_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
+    ice_cs_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
+    ice_cs_conditions.power.thermal                  = 0.0 * state.ones_row(1)
+
+    return ice_cs_conditions.thrust ,ice_cs_conditions.moment, ice_cs_conditions.power, stored_results_flag,stored_propulsor_tag 
     
 def reuse_stored_constant_speed_internal_combustion_engine_data(propulsor,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one propulsor for identical propulsors

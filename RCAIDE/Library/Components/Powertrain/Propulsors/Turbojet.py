@@ -185,9 +185,9 @@ class Turbojet(Propulsor):
         return
     
     def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):
-        thrust,moment,power_mech,power_elec,power_hydr,power_therm,stored_results_flag,stored_propulsor_tag =  compute_turbojet_performance(self,state,center_of_gravity)
-        return thrust,moment,power_mech,power_elec,power_hydr,power_therm, stored_results_flag,stored_propulsor_tag
+        thrust,moment,Power,stored_results_flag,stored_propulsor_tag =  compute_turbojet_performance(self,state,center_of_gravity)
+        return thrust,moment,Power, stored_results_flag,stored_propulsor_tag
     
     def reuse_stored_data(turbojet,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
-        thrust,moment,power_mech,power_elec  = reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,center_of_gravity)
-        return thrust,moment,power_mech,power_elec
+        thrust,moment,Power  = reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,center_of_gravity)
+        return thrust,moment,Power

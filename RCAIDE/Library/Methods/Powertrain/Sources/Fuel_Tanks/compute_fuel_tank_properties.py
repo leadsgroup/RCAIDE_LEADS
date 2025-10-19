@@ -58,9 +58,15 @@ def compute_fuel_tank_properties(tank,state,distributor):
     if len(mass_flow_rate) > 1: 
         tank_conditions.fuel_mass[:,0]  = m_0_fuel +  np.dot(I, -mass_flow_rate).flatten()  
 
-    P_mech = 0*state.ones_row(1)
-    P_ele  = 0*state.ones_row(1)
-    P_hydr = Press_tank * mass_flow_rate / tank.fuel.density        
-    P_therm = 0*state.ones_row(1)
+    stored_results_flag            = True
+    stored_source_tag              = tank.tag  
 
-    return P_mech, P_ele, P_hydr, P_therm
+    tank_conditions.power.propulsive               = 0.0 * state.ones_row(1)
+    tank_conditions.power.mechanical               = 0.0 * state.ones_row(1)
+    tank_conditions.power.electrical               = 0.0 * state.ones_row(1)
+    tank_conditions.power.chemical                 = mass_flow_rate * tank.fuel.lower_heating_value
+    tank_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
+    tank_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
+    tank_conditions.power.thermal                  = 0.0 * state.ones_row(1)
+
+    return tank_conditions.power

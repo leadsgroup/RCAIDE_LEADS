@@ -11,7 +11,7 @@ from RCAIDE.Framework.Core import Units
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_reformer_performance
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_reformer_performance(reformer,reformer_conditions):
+def compute_reformer_performance(reformer,reformer_conditions, state):
     """
     Computes performance characteristics of an autothermal reformer converting jet fuel to hydrogen-rich reformate.
 
@@ -101,4 +101,15 @@ def compute_reformer_performance(reformer,reformer_conditions):
     reformer_conditions.oxygen_to_carbon_feed_ratio    = O_C
     reformer_conditions.fuel_to_air_ratio              = phi
 
-    return
+    stored_results_flag            = True
+    stored_converter_tag           = reformer.tag  
+
+    reformer_conditions.power.propulsive               = 0.0 * state.ones_row(1)
+    reformer_conditions.power.mechanical               = 0.0 * state.ones_row(1)
+    reformer_conditions.power.electrical               = 0.0 * state.ones_row(1)
+    reformer_conditions.power.chemical                 = 0.0 * state.ones_row(1)
+    reformer_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
+    reformer_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
+    reformer_conditions.power.thermal                  = 0.0 * state.ones_row(1)
+
+    return  reformer_conditions.power, stored_results_flag, stored_converter_tag

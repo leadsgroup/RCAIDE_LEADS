@@ -55,6 +55,15 @@ def append_turboshaft_conditions(turboshaft, segment):
     segment.state.conditions.energy.converters[turboshaft.tag].fuel_mass_flow_rate           = 0. * ones_row(1)
     segment.state.conditions.energy.converters[turboshaft.tag].inputs                        = Conditions()
     segment.state.conditions.energy.converters[turboshaft.tag].outputs                       = Conditions()
+    
+    segment.state.conditions.energy.converters[turboshaft.tag].power                   = Conditions()
+    segment.state.conditions.energy.converters[turboshaft.tag].power.propulsive        = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboshaft.tag].power.mechanical        = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboshaft.tag].power.electrical        = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboshaft.tag].power.chemical          = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboshaft.tag].power.pneumatic         = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboshaft.tag].power.hydraulic         = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboshaft.tag].power.thermal           = 0 * ones_row(1)
  
     for tag, item in  turboshaft.items(): 
         if issubclass(type(item), RCAIDE.Library.Components.Component):

@@ -89,9 +89,9 @@ class Electric_Ducted_Fan(Propulsor):
         return 
     
     def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):
-        thrust,moment,power_mech,power_elec,power_hydr,power_therm,stored_results_flag,stored_propulsor_tag =  compute_electric_ducted_fan_performance(self,state,center_of_gravity)
-        return thrust,moment,power_mech,power_elec,power_hydr,power_therm, stored_results_flag,stored_propulsor_tag
+        thrust,moment,Power,stored_results_flag,stored_propulsor_tag =  compute_electric_ducted_fan_performance(self,state,center_of_gravity)
+        return thrust,moment,Power, stored_results_flag,stored_propulsor_tag
     
     def reuse_stored_data(EDF,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
-        thrust,moment,power_mech,power_elec,power_hydr,power_therm = reuse_stored_electric_ducted_fan_data(EDF,state,network,stored_propulsor_tag,center_of_gravity)
-        return thrust,moment,power_mech,power_elec,power_hydr,power_therm
+        thrust,moment,Power = reuse_stored_electric_ducted_fan_data(EDF,state,network,stored_propulsor_tag,center_of_gravity)
+        return thrust,moment,Power

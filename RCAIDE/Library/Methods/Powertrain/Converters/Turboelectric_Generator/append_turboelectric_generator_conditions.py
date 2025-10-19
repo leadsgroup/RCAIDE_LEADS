@@ -38,6 +38,15 @@ def append_turboelectric_generator_conditions(turboelectric_generator,segment):
     segment.state.conditions.energy.converters[turboelectric_generator.tag].fuel_mass_flow_rate                        = 0. * ones_row(1)
     segment.state.conditions.energy.converters[turboelectric_generator.tag].inputs                                     = Conditions()
     segment.state.conditions.energy.converters[turboelectric_generator.tag].outputs                                    = Conditions() 
+
+    segment.state.conditions.energy.converters[turboelectric_generator.tag].power                   = Conditions()
+    segment.state.conditions.energy.converters[turboelectric_generator.tag].power.propulsive        = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboelectric_generator.tag].power.mechanical        = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboelectric_generator.tag].power.electrical        = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboelectric_generator.tag].power.chemical          = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboelectric_generator.tag].power.pneumatic         = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboelectric_generator.tag].power.hydraulic         = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboelectric_generator.tag].power.thermal           = 0 * ones_row(1)
   
     turboshaft = turboelectric_generator.turboshaft
     generator  = turboelectric_generator.generator

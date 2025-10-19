@@ -393,15 +393,20 @@ def compute_turbojet_performance(turbojet, state, center_of_gravity=[[0.0, 0.0, 
     noise_conditions.fan_nozzle             = None 
     noise_conditions.core_nozzle            = core_nozzle_res
     noise_conditions.fan                    = lpc_res   
-    stored_results_flag                     = True
-    stored_propulsor_tag                    = turbojet.tag
     
-    power_mech = power
-    power_elec = 0*state.ones_row(1)
-    power_hydr = 0*state.ones_row(1)
-    power_therm = 0*state.ones_row(1)
+    stored_results_flag            = True
+    stored_propulsor_tag           = turbojet.tag  
+
+    turbojet_conditions.power.propulsive               = power
+    turbojet_conditions.power.mechanical               = 0.0 * state.ones_row(1)
+    turbojet_conditions.power.electrical               = power_elec
+    turbojet_conditions.power.chemical                 = - mdot_fuel * combustor.fuel_data.lower_heating_value # negative because it is consumed power
+    turbojet_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
+    turbojet_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
+    turbojet_conditions.power.thermal                  = 0.0 * state.ones_row(1)
+
+    return turbojet_conditions.thrust ,turbojet_conditions.moment, turbojet_conditions.power, stored_results_flag,stored_propulsor_tag 
     
-    return thrust_vector,moment,power_mech,power_elec,power_hydr,power_therm, stored_results_flag,stored_propulsor_tag 
 
 def reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one turbojet for identical propulsors

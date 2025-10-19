@@ -135,11 +135,15 @@ def compute_generator_performance(generator,state):
         generator_conditions.inputs.torque      = Q
         generator_conditions.inputs.omega       = omega
         
-        stored_results_flag    = True
-        stored_converter_tag   = generator.tag
+        stored_results_flag            = True
+        stored_converter_tag           = generator.tag  
 
-        P_hydr  = 0 * state.ones_row(1)
-        P_therm = 0 * state.ones_row(1)
-        m_dot_fuel = 0 * state.ones_row(1)
-   
-    return P_mech,P_elec,P_hydr,P_therm, m_dot_fuel, stored_results_flag,stored_converter_tag
+        generator_conditions.power.propulsive               = 0.0 * state.ones_row(1)
+        generator_conditions.power.mechanical               = P_mech
+        generator_conditions.power.electrical               = P_elec
+        generator_conditions.power.chemical                 = 0.0 * state.ones_row(1)
+        generator_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
+        generator_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
+        generator_conditions.power.thermal                  = 0.0 * state.ones_row(1)
+
+    return  generator_conditions.power, stored_results_flag, stored_converter_tag

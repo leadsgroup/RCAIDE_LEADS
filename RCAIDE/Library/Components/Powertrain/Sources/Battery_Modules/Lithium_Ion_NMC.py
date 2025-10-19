@@ -221,13 +221,13 @@ class Lithium_Ion_NMC(Generic_Battery_Module):
         - Thermal distribution with cooling effects
         - State of charge tracking
         """        
-        P_mech, P_ele, P_hydr, P_therm, stored_results_flag, stored_battery_tag = compute_nmc_cell_performance(self,state,bus,network, t_idx,delta_t) 
+        Power, stored_results_flag, stored_battery_tag = compute_nmc_cell_performance(self,state,bus,network, t_idx,delta_t) 
         
-        return P_mech, P_ele, P_hydr, P_therm, stored_results_flag, stored_battery_tag
+        return Power, stored_results_flag, stored_battery_tag
     
     def reuse_stored_data(self,state,stored_battery_tag):
-        P_mech, P_elec, P_hydr, P_therm = reuse_stored_nmc_cell_data(self,state,stored_battery_tag)
-        return P_mech, P_elec, P_hydr, P_therm 
+        Power = reuse_stored_nmc_cell_data(self,state,stored_battery_tag)
+        return Power
     
     def update_battery_age(self,segment,battery_conditions,increment_battery_age_by_one_day = False):  
         """

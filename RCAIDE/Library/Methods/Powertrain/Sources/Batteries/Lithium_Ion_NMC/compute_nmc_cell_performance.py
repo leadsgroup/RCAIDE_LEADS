@@ -182,7 +182,7 @@ def compute_nmc_cell_performance(battery_module, state, bus, network, t_idx, del
     V_oc_module        = battery_module_conditions.voltage_open_circuit
     V_oc_cell          = battery_module_conditions.cell.voltage_open_circuit   
   
-    P_module           = battery_module_conditions.power
+    P_module           = battery_module_conditions.power.electrical
     P_cell             = battery_module_conditions.cell.power
     
     R_0_module         = battery_module_conditions.internal_resistance
@@ -298,15 +298,18 @@ def compute_nmc_cell_performance(battery_module, state, bus, network, t_idx, del
         # Determine new charge throughput (the amount of charge gone through the battery_module)
         Q_cell[t_idx+1]    = Q_cell[t_idx] + abs(I_cell[t_idx])*delta_t[t_idx]/Units.hr
         
-    stored_results_flag     = True
-    stored_battery_module_tag     = battery_module.tag  
+    stored_results_flag            = True
+    stored_source_tag              = battery_module.tag  
 
-    P_mech                = 0*state.ones_row(1) 
-    P_elec                = P_module
-    P_hydr                = 0*state.ones_row(1)
-    P_therm               = Q_heat_module
-        
-    return P_mech, P_elec, P_hydr, P_therm, stored_results_flag, stored_battery_module_tag
+    battery_module_conditions.power.propulsive               = 0.0 * state.ones_row(1)
+    battery_module_conditions.power.mechanical               = 0.0 * state.ones_row(1)
+    battery_module_conditions.power.electrical               = P_module
+    battery_module_conditions.power.chemical                 = 0.0 * state.ones_row(1)
+    battery_module_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
+    battery_module_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
+    battery_module_conditions.power.thermal                  = 0.0 * state.ones_row(1)
+
+    return battery_module_conditions.power, stored_results_flag, stored_source_tag 
 
 def reuse_stored_nmc_cell_data(battery_module,state,stored_battery_module_tag):
     '''Reuses results from one propulsor for identical batteries
@@ -327,13 +330,17 @@ def reuse_stored_nmc_cell_data(battery_module,state,stored_battery_module_tag):
     '''
     
     state.conditions.energy.sources[battery_module.tag] = deepcopy(state.conditions.energy.sources[stored_battery_module_tag])
-    
-    P_mech = 0*state.ones_row(1)
-    P_elec = state.conditions.energy.sources[stored_battery_module_tag].power
-    P_hydr = 0*state.ones_row(1)
-    P_therm = 0*state.ones_row(1)
+
+    Power = state.conditions.energy.sources[battery_module.tag].power
+    Power.propulsive               =  0.0 * state.ones_row(1)
+    Power.mechanical               =  0.0 * state.ones_row(1)
+    Power.electrical               = state.conditions.energy.sources[stored_battery_module_tag].power.electrical
+    Power.chemical                 = 0.0 * state.ones_row(1)
+    Power.pneumatic                = 0.0 * state.ones_row(1)
+    Power.hydraulic                = 0.0 * state.ones_row(1)
+    Power.thermal                  = 0.0 * state.ones_row(1)
         
-    return P_mech, P_elec, P_hydr, P_therm 
+    return Power 
  
 def compute_nmc_cell_state(battery_module_data, SOC, T, I):
     """

@@ -51,5 +51,13 @@ def append_tru_conditions(tru,segment):
     segment.state.conditions.energy.modulators[tru.tag].inputs.voltage            = 0 * ones_row(1)  
     segment.state.conditions.energy.modulators[tru.tag].inputs.Vll_rms_primary    = 1 * ones_row(1)   # [V_rms] line-line AC primary voltage
     segment.state.conditions.energy.modulators[tru.tag].inputs.Idc_set            = 0 * ones_row(1)   # [A] desired DC current (use either R_load or Idc_set) 
+    segment.state.conditions.energy.modulators[tru.tag].power                      = Conditions() 
+    segment.state.conditions.energy.modulators[tru.tag].power.propulsive           = 0 * ones_row(1)
+    segment.state.conditions.energy.modulators[tru.tag].power.mechanical           = 0 * ones_row(1)
+    segment.state.conditions.energy.modulators[tru.tag].power.electrical           = 0 * ones_row(1)
+    segment.state.conditions.energy.modulators[tru.tag].power.chemical             = 0 * ones_row(1)
+    segment.state.conditions.energy.modulators[tru.tag].power.pneumatic            = 0 * ones_row(1)
+    segment.state.conditions.energy.modulators[tru.tag].power.hydraulic            = 0 * ones_row(1)
+    segment.state.conditions.energy.modulators[tru.tag].power.thermal              = 0 * ones_row(1)
     
     return 

@@ -104,10 +104,15 @@ class Fuel_Line(Component):
 
     def compute_performance(self, state):
 
-        P_mech = state.conditions.energy.distributors[self.tag].net_mechanical_power
-        P_elec = state.conditions.energy.distributors[self.tag].net_electrical_power
-        P_hydr = state.conditions.energy.distributors[self.tag].net_hydraulic_power
-        P_therm = state.conditions.energy.distributors[self.tag].net_thermal_power
-        
-        return P_mech, P_elec, P_hydr, P_therm
+        Power = {}
+
+        Power.propulsive  = state.conditions.energy.distributors[self.tag].net_propulsive
+        Power.mechanical  = state.conditions.energy.distributors[self.tag].net_mechanical
+        Power.electrical  = state.conditions.energy.distributors[self.tag].net_electrical
+        Power.chemical    = state.conditions.energy.distributors[self.tag].net_chemical  
+        Power.pneumatic   = state.conditions.energy.distributors[self.tag].net_pneumatic 
+        Power.hydraulic   = state.conditions.energy.distributors[self.tag].net_hydraulic 
+        Power.thermal     = state.conditions.energy.distributors[self.tag].net_thermal   
+
+        return Power
         

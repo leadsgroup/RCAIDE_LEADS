@@ -111,14 +111,24 @@ def append_bus_segment_conditions(bus,segment):
     RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_conditions
     RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_conditions
     """    
-    bus_conditions                                                                            = segment.state.conditions.energy.distributors[bus.tag]
-    ones_row                                                                                  = segment.state.ones_row
-    bus_conditions.power                                                                      = 0 * ones_row(1) 
-    segment.state.conditions.energy.distributors[bus.tag].net_power                           = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[bus.tag].net_electrical_power                = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[bus.tag].net_mechanical_power                = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[bus.tag].net_hydraulic_power                 = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[bus.tag].net_thermal_power                   = 0 * ones_row(1)
+    bus_conditions                                                                = segment.state.conditions.energy.distributors[bus.tag]
+    ones_row                                                                      = segment.state.ones_row
+    segment.state.conditions.energy.distributors[bus.tag].power                   = Conditions()
+    segment.state.conditions.energy.distributors[bus.tag].power.propulsive        = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].power.mechanical        = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].power.electrical        = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].power.chemical          = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].power.pneumatic         = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].power.hydraulic         = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].power.thermal           = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].net_propulsive_power    = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].net_mechanical_power    = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].net_electrical_power    = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].net_chemical_power      = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].net_pneumatic_power     = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].net_hydraulic_power     = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].net_thermal_power       = 0 * ones_row(1)
+
     
     # Thermal power draw
     if segment.state.initials:
@@ -129,10 +139,10 @@ def append_bus_segment_conditions(bus,segment):
                         if tag == 'battery_modules':
                             for battery in item:
                                 for btms in  battery:
-                                    bus_conditions.net_electrical_power[0,0]   +=  segment.state.initials.conditions.energy.distributors[distributor.tag][btms.tag].net_electrical_power[-1] 
+                                    bus_conditions.power.electrical[0,0]   +=  segment.state.initials.conditions.energy.distributors[distributor.tag][btms.tag].power.electrical[-1] 
                         if tag == 'heat_exchangers':
                             for heat_exchanger in  item:                    
-                                bus_conditions.net_electrical_power[0,0]   +=  segment.state.initials.conditions.energy.distributors[distributor.tag][heat_exchanger.tag].net_electrical_power[-1] 
+                                bus_conditions.power.electrical[0,0]   +=  segment.state.initials.conditions.energy.distributors[distributor.tag][heat_exchanger.tag].power.electrical[-1] 
         # Bus Properties 
         bus_initials            = segment.state.initials.conditions.energy.distributors[bus.tag]
         if type(segment) ==  RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge:             

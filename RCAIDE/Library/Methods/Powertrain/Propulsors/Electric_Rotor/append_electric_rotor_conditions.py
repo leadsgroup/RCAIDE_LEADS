@@ -70,8 +70,15 @@ def append_electric_rotor_conditions(propulsor, segment):
     segment.state.conditions.energy.propulsors[propulsor.tag].throttle                      = 0. * ones_row(1)      
     segment.state.conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle = 0. * ones_row(1)   
     segment.state.conditions.energy.propulsors[propulsor.tag].thrust                        = 0. * ones_row(3) 
-    segment.state.conditions.energy.propulsors[propulsor.tag].power                         = 0. * ones_row(1) 
     segment.state.conditions.energy.propulsors[propulsor.tag].moment                        = 0. * ones_row(3)  
+    segment.state.conditions.energy.propulsors[propulsor.tag].power                         = Conditions()  
+    segment.state.conditions.energy.propulsors[propulsor.tag].power.propulsive              = 0 * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].power.mechanical              = 0 * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].power.electrical              = 0 * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].power.chemical                = 0 * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].power.pneumatic               = 0 * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].power.hydraulic               = 0 * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].power.thermal                 = 0 * ones_row(1) 
     segment.state.conditions.noise.propulsors[propulsor.tag]                                = Conditions() 
        
     return

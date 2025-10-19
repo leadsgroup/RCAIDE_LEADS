@@ -122,13 +122,25 @@ def compute_internal_combustion_engine_performance(propulsor, state, center_of_g
     # compute total forces and moments from propulsor (future work would be to add moments from motors)
     ice_conditions.thrust      = conditions.energy.converters[propeller.tag].thrust 
     ice_conditions.moment      = moment
-    ice_conditions.power       = conditions.energy.converters[propeller.tag].power  
     
     # currently, no hybridization
     power_mech = ice_conditions.power
     power_elec = 0*state.ones_row(1)
     power_hydr = 0*state.ones_row(1)
     power_therm = 0*state.ones_row(1)
+
+    stored_results_flag            = True
+    stored_propulsor_tag           = propulsor.tag  
+
+    ice_conditions.power.propulsive               = conditions.energy.converters[propeller.tag].power  
+    ice_conditions.power.mechanical               = 0.0 * state.ones_row(1)
+    ice_conditions.power.electrical               = 0.0 * state.ones_row(1)
+    ice_conditions.power.chemical                 = 0.0 * state.ones_row(1)
+    ice_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
+    ice_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
+    ice_conditions.power.thermal                  = 0.0 * state.ones_row(1)
+
+    return ice_conditions.thrust ,ice_conditions.moment, ice_conditions.power, stored_results_flag,stored_propulsor_tag 
     
     return ice_conditions.thrust,ice_conditions.moment,power_mech,power_elec,power_hydr,power_therm,stored_results_flag,stored_propulsor_tag  
     

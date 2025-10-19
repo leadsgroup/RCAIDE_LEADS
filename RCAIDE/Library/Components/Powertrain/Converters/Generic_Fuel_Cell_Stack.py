@@ -114,9 +114,9 @@ class Generic_Fuel_Cell_Stack(Component):
             None
         """                  
         
-        P_mech, P_elec, P_hydr, P_therm, stored_results_flag, stored_battery_tag = compute_fuel_cell_performance(self,state,bus,network, t_idx,delta_t) 
+        Power, stored_results_flag, stored_battery_tag = compute_fuel_cell_performance(self,state,bus,network, t_idx,delta_t) 
         
-        return P_mech, P_elec, P_hydr, P_therm, stored_results_flag, stored_battery_tag 
+        return Power, stored_results_flag, stored_battery_tag 
 
     def append_operating_conditions(self,segment):  
         append_fuel_cell_conditions(self,segment)  
