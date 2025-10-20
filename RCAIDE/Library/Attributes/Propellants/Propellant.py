@@ -150,7 +150,7 @@ class Propellant(Component):
         self.global_warming_potential_100.Soot      = 0  
         self.global_warming_potential_100.Contrails = 0 
     
-    def append_operating_conditions(self,segment):
+    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
         """
         Appends operating conditions of the combustor.
         """  

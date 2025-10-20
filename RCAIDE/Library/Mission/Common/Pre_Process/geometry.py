@@ -10,7 +10,7 @@ import RCAIDE
 from RCAIDE.Library.Methods.Geometry.LOPA      import  compute_layout_of_passenger_accommodations
 from RCAIDE.Library.Methods.Geometry.Planform  import  fuselage_planform, wing_planform, bwb_wing_planform , compute_fuel_volume 
 # python imports
-
+from copy import deepcopy
 import  numpy as  np 
 # ----------------------------------------------------------------------------------------------------------------------
 #  geometry
@@ -55,8 +55,18 @@ def geometry(mission):
         # --------------------------------------------------------------------------------------------------------------------
         if segment.analyses.geometry is None: 
             raise AssertionError('Geometry Analyses not defined') 
-        geometry_preprocess_routine(segment.analyses.geometry)
-        
+        if i == 0 or segment.analyses.geometry.settings.unique_geometry:  # If it is the first segment or if the segment has a unique geometry
+            geometry_preprocess_routine(segment.analyses.geometry)
+            
+        else:
+            vehicle_0 = deepcopy(segment.analyses.geometry.vehicle)
+            segment.analyses.geometry.vehicle = deepcopy(mission.segments[i-1].analyses.geometry.vehicle)
+            for wing in segment.analyses.geometry.vehicle.wings:
+                for control_surface in wing.control_surfaces:
+                    control_surface.deflection = vehicle_0.wings[wing.tag].control_surfaces[control_surface.tag].deflection
+            for landing_gear in segment.analyses.geometry.vehicle.landing_gears:
+                landing_gear.gear_extended = vehicle_0.landing_gears[landing_gear.tag].gear_extended
+                                  
     return 
         
 def geometry_preprocess_routine(geometry_analysis): 
@@ -109,11 +119,10 @@ def geometry_preprocess_routine(geometry_analysis):
         # --------------------------------------------------------------------------------------------------------------------
         #  Blended Wing Body
         # --------------------------------------------------------------------------------------------------------------------
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body): 
-            compute_layout_of_passenger_accommodations(wing)
-            
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):            
             # compute planform properties 
             bwb_wing_planform(wing)
+            compute_layout_of_passenger_accommodations(wing)
             
             # update reference properties 
             if settings.overwrite_reference:

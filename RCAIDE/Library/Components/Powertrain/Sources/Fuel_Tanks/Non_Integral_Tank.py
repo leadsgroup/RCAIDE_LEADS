@@ -175,14 +175,18 @@ class Non_Integral_Tank(Fuel_Tank):
         --------
         RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_non_integral_tank_volume
         """
-        if self.geometry_type == 'prismatic':
-            compute_prismatic_fuel_tank_volume(self)
-        elif self.geometry_type == 'cylindrical':
-            if self.wing_tag != None:
-                wing = wings[self.wing_tag]  
-                compute_wing_non_integral_tank_volume(self,wing)
-            else:
-                if self.bwb_aft_tank == True:
-                    wing = wings[self.wing_root_tag]  
-                    compute_bwb_aft_tank_volume(self,wing)
+        if self.wing_tag is not None:
+            if self.geometry_type == 'prismatic':
+                compute_prismatic_fuel_tank_volume(self)
+            elif self.geometry_type == 'cylindrical':
+                if self.wing_tag != None:
+                    wing = wings[self.wing_tag]  
+                    compute_wing_non_integral_tank_volume(self,wing)
+                else:
+                    if self.bwb_aft_tank == True:
+                        wing = wings[self.wing_root_tag]  
+                        compute_bwb_aft_tank_volume(self,wing)
+        elif self.fuselage_tag is not None: 
+            fuselage = fuselages[self.fuselage_tag]  
+            compute_fuselage_tank_volume(self,fuselage)
         return

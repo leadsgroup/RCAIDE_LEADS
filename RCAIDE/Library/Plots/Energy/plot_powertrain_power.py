@@ -17,188 +17,174 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 
 def plot_powertrain_power(results,
-                          save_figure = False,
-                          show_legend = True,
-                          save_filename_prefix = "Distributor_Power",
-                          file_type = ".png",
-                          width = 14, height = 9):
-    
+                          save_figure=False,
+                          show_legend=True,
+                          save_filename_prefix="Distributor_Power",
+                          file_type=".png",
+                          width=10, height=8):
+    # optional ASCII diagram
     create_network_diagram(results.segments[0].analyses.energy.vehicle)
 
-    # get plotting style 
-    ps = plot_style()  
+    # plotting style
+    ps = plot_style()
+    plt.rcParams.update({'axes.labelsize': ps.axis_font_size,
+                         'xtick.labelsize': ps.axis_font_size,
+                         'ytick.labelsize': ps.axis_font_size,
+                         'axes.titlesize': ps.title_font_size})
 
-    parameters = {'axes.labelsize': ps.axis_font_size,
-                  'xtick.labelsize': ps.axis_font_size,
-                  'ytick.labelsize': ps.axis_font_size,
-                  'axes.titlesize': ps.title_font_size}
-    plt.rcParams.update(parameters) 
-    
-    # color map across segments (color by segment)
-    line_colors = cm.inferno(np.linspace(0,0.9,len(results.segments)))     
+    # colors vary by segment
+    line_colors = cm.inferno(np.linspace(0, 0.9, len(results.segments)))
+
+    # distinct markers per item (net + each component)
+    unique_markers = ['o', 'D', '^', 's', 'v', '>', '<', 'p', '*', 'X', 'h']
 
     figs = {}
 
-    for network in results.segments[0].analyses.energy.vehicle.networks:  
+    # simple helper: does component use this distributor?
+    def has_dist(component, tag):
+        for entry in getattr(component, 'assigned_distributors', []):
+            if isinstance(entry, (list, tuple, set)):
+                if tag in entry:
+                    return True
+            else:
+                if tag == entry:
+                    return True
+        return False
+
+    for network in results.segments[0].analyses.energy.vehicle.networks:
         for distributor in network.distributors:
 
-            # choose domain by distributor type
             is_elec = isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus)
             is_fuel = isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line)
             if not (is_elec or is_fuel):
-                continue  # only plot for electrical buses and fuel lines
+                continue
 
-            # figure and axis for this distributor
+            # figure
             fig = plt.figure(f"{save_filename_prefix}_{distributor.tag}")
-            fig.set_size_inches(width, height)   
-            ax  = plt.subplot(1,1,1)
+            fig.set_size_inches(width, height)
+            ax = plt.subplot(1, 1, 1)
 
-            # plot distributor net power (one curve per segment, same marker)
-            for i in range(len(results.segments)):  
-                time = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min
-                dcon = results.segments[i].conditions.energy.distributors[distributor.tag]
-                if is_elec:
-                    net = dcon.net_electrical_power[:,0]
-                    ylab = 'Electrical Power (W)'
-                    title = f'{distributor.tag} – Electrical'
-                else:
-                    net = dcon.net_chemical_power[:,0]
-                    ylab = 'Chemical Power (W)'
-                    title = f'{distributor.tag} – Chemical'
+            # title: Capitalized words, no underscores
+            title = distributor.tag.replace("_", " ").title()
 
-                if i == 0:
-                    ax.plot(time, net, color=line_colors[i], marker='o',
-                            markersize=ps.marker_size, linewidth=ps.line_width,
-                            label=f'{distributor.tag} (net)')
-                else:
-                    ax.plot(time, net, color=line_colors[i], marker='o',
-                            markersize=ps.marker_size, linewidth=ps.line_width)
-
-            # helper to flatten assigned_distributors lists (simple, inline)
-            def _has_dist(component, tag):
-                for entry in getattr(component, 'assigned_distributors', []):
-                    if isinstance(entry, (list, tuple, set)):
-                        if tag in entry:
-                            return True
-                    else:
-                        if tag == entry:
-                            return True
-                return False
-
-            # plot components connected to this distributor (different markers per component)
             mark_idx = 0
 
-            # Propulsors
+            # --- Distributor NET curve (MW) with its own marker
+            net_marker = unique_markers[mark_idx % len(unique_markers)]
+            mark_idx += 1
+            for i in range(len(results.segments)):
+                time = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min
+                dcon = results.segments[i].conditions.energy.distributors[distributor.tag]
+                if is_elec:
+                    y = dcon.net_electrical_power[:, 0] / 1e6
+                    ylab = "Power (MW)"
+                else:
+                    y = dcon.net_chemical_power[:, 0] / 1e6
+                    ylab = "Power (MW)"
+                if i == 0:
+                    ax.plot(time, y, color=line_colors[i], marker=net_marker,
+                            markersize=ps.marker_size, linewidth=ps.line_width,
+                            label=f"{title} (Net)")
+                else:
+                    ax.plot(time, y, color=line_colors[i], marker=net_marker,
+                            markersize=ps.marker_size, linewidth=ps.line_width)
+
+            # --- Propulsors
             for comp in network.propulsors:
-                if _has_dist(comp, distributor.tag):
+                if has_dist(comp, distributor.tag):
+                    m = unique_markers[mark_idx % len(unique_markers)]; mark_idx += 1
                     for i in range(len(results.segments)):
-                        time = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min
-                        ccon = results.segments[i].conditions.energy.propulsors[comp.tag].power
-                        if is_elec and hasattr(ccon, 'electrical'):
-                            y = ccon.electrical[:,0]
-                        elif is_fuel and hasattr(ccon, 'chemical'):
-                            y = ccon.chemical[:,0]
+                        time = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min
+                        pwr = results.segments[i].conditions.energy.propulsors[comp.tag].power
+                        if is_elec and hasattr(pwr, 'electrical'):
+                            y = pwr.electrical[:, 0] / 1e6
+                        elif is_fuel and hasattr(pwr, 'chemical'):
+                            y = pwr.chemical[:, 0] / 1e6
                         else:
                             continue
-                        if i == 0:
-                            ax.plot(time, y, color=line_colors[i], marker=ps.markers[mark_idx % len(ps.markers)],
-                                    markersize=ps.marker_size, linewidth=ps.line_width, label=comp.tag)
-                        else:
-                            ax.plot(time, y, color=line_colors[i], marker=ps.markers[mark_idx % len(ps.markers)],
-                                    markersize=ps.marker_size, linewidth=ps.line_width)
-                    mark_idx += 1
+                        label = comp.tag.replace("_", " ").title() if i == 0 else None
+                        ax.plot(time, y, color=line_colors[i], marker=m,
+                                markersize=ps.marker_size, linewidth=ps.line_width, label=label)
 
-            # Converters
+            # --- Converters (non-propulsive list)
             for tag in getattr(network, 'non_propulsive_converters', []):
                 comp = network.converters[tag]
-                if _has_dist(comp, distributor.tag):
+                if has_dist(comp, distributor.tag):
+                    m = unique_markers[mark_idx % len(unique_markers)]; mark_idx += 1
                     for i in range(len(results.segments)):
-                        time = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min
-                        ccon = results.segments[i].conditions.energy.converters[tag].power
-                        if is_elec and hasattr(ccon, 'electrical'):
-                            y = ccon.electrical[:,0]
-                        elif is_fuel and hasattr(ccon, 'chemical'):
-                            y = ccon.chemical[:,0]
+                        time = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min
+                        pwr = results.segments[i].conditions.energy.converters[tag].power
+                        if is_elec and hasattr(pwr, 'electrical'):
+                            y = pwr.electrical[:, 0] / 1e6
+                        elif is_fuel and hasattr(pwr, 'chemical'):
+                            y = pwr.chemical[:, 0] / 1e6
                         else:
                             continue
-                        if i == 0:
-                            ax.plot(time, y, color=line_colors[i], marker=ps.markers[mark_idx % len(ps.markers)],
-                                    markersize=ps.marker_size, linewidth=ps.line_width, label=tag)
-                        else:
-                            ax.plot(time, y, color=line_colors[i], marker=ps.markers[mark_idx % len(ps.markers)],
-                                    markersize=ps.marker_size, linewidth=ps.line_width)
-                    mark_idx += 1
+                        label = tag.replace("_", " ").title() if i == 0 else None
+                        ax.plot(time, y, color=line_colors[i], marker=m,
+                                markersize=ps.marker_size, linewidth=ps.line_width, label=label)
 
-            # Modulators
+            # --- Modulators
             for comp in network.modulators:
-                if _has_dist(comp, distributor.tag):
+                if has_dist(comp, distributor.tag):
+                    m = unique_markers[mark_idx % len(unique_markers)]; mark_idx += 1
                     for i in range(len(results.segments)):
-                        time = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min
-                        ccon = results.segments[i].conditions.energy.modulators[comp.tag].power
-                        if is_elec and hasattr(ccon, 'electrical'):
-                            y = ccon.electrical[:,0]
-                        elif is_fuel and hasattr(ccon, 'chemical'):
-                            y = ccon.chemical[:,0]
+                        time = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min
+                        pwr = results.segments[i].conditions.energy.modulators[comp.tag].power
+                        if is_elec and hasattr(pwr, 'electrical'):
+                            y = pwr.electrical[:, 0] / 1e6
+                        elif is_fuel and hasattr(pwr, 'chemical'):
+                            y = pwr.chemical[:, 0] / 1e6
                         else:
                             continue
-                        if i == 0:
-                            ax.plot(time, y, color=line_colors[i], marker=ps.markers[mark_idx % len(ps.markers)],
-                                    markersize=ps.marker_size, linewidth=ps.line_width, label=comp.tag)
-                        else:
-                            ax.plot(time, y, color=line_colors[i], marker=ps.markers[mark_idx % len(ps.markers)],
-                                    markersize=ps.marker_size, linewidth=ps.line_width)
-                    mark_idx += 1
+                        label = comp.tag.replace("_", " ").title() if i == 0 else None
+                        ax.plot(time, y, color=line_colors[i], marker=m,
+                                markersize=ps.marker_size, linewidth=ps.line_width, label=label)
 
-            # Systems
+            # --- Systems
             for comp in network.systems:
-                if _has_dist(comp, distributor.tag):
+                if has_dist(comp, distributor.tag):
+                    m = unique_markers[mark_idx % len(unique_markers)]; mark_idx += 1
                     for i in range(len(results.segments)):
-                        time = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min
-                        ccon = results.segments[i].conditions.energy.systems[comp.tag].power
-                        if is_elec and hasattr(ccon, 'electrical'):
-                            y = ccon.electrical[:,0]
-                        elif is_fuel and hasattr(ccon, 'chemical'):
-                            y = ccon.chemical[:,0]
+                        time = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min
+                        pwr = results.segments[i].conditions.energy.systems[comp.tag].power
+                        if is_elec and hasattr(pwr, 'electrical'):
+                            y = pwr.electrical[:, 0] / 1e6
+                        elif is_fuel and hasattr(pwr, 'chemical'):
+                            y = pwr.chemical[:, 0] / 1e6
                         else:
                             continue
-                        if i == 0:
-                            ax.plot(time, y, color=line_colors[i], marker=ps.markers[mark_idx % len(ps.markers)],
-                                    markersize=ps.marker_size, linewidth=ps.line_width, label=comp.tag)
-                        else:
-                            ax.plot(time, y, color=line_colors[i], marker=ps.markers[mark_idx % len(ps.markers)],
-                                    markersize=ps.marker_size, linewidth=ps.line_width)
-                    mark_idx += 1
+                        label = comp.tag.replace("_", " ").title() if i == 0 else None
+                        ax.plot(time, y, color=line_colors[i], marker=m,
+                                markersize=ps.marker_size, linewidth=ps.line_width, label=label)
 
-            # Sources
+            # --- Sources
             for comp in network.sources:
-                if _has_dist(comp, distributor.tag):
+                if has_dist(comp, distributor.tag):
+                    m = unique_markers[mark_idx % len(unique_markers)]; mark_idx += 1
                     for i in range(len(results.segments)):
-                        time = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min
-                        ccon = results.segments[i].conditions.energy.sources[comp.tag].power
-                        if is_elec and hasattr(ccon, 'electrical'):
-                            y = ccon.electrical[:,0]
-                        elif is_fuel and hasattr(ccon, 'chemical'):
-                            y = ccon.chemical[:,0]
+                        time = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min
+                        pwr = results.segments[i].conditions.energy.sources[comp.tag].power
+                        if is_elec and hasattr(pwr, 'electrical'):
+                            y = pwr.electrical[:, 0] / 1e6
+                        elif is_fuel and hasattr(pwr, 'chemical'):
+                            y = pwr.chemical[:, 0] / 1e6
                         else:
                             continue
-                        if i == 0:
-                            ax.plot(time, y, color=line_colors[i], marker=ps.markers[mark_idx % len(ps.markers)],
-                                    markersize=ps.marker_size, linewidth=ps.line_width, label=comp.tag)
-                        else:
-                            ax.plot(time, y, color=line_colors[i], marker=ps.markers[mark_idx % len(ps.markers)],
-                                    markersize=ps.marker_size, linewidth=ps.line_width)
-                    mark_idx += 1
+                        label = comp.tag.replace("_", " ").title() if i == 0 else None
+                        ax.plot(time, y, color=line_colors[i], marker=m,
+                                markersize=ps.marker_size, linewidth=ps.line_width, label=label)
 
-            ax.set_xlabel('Time (mins)')
+            ax.set_xlabel('Time (min)')
             ax.set_ylabel(ylab)
             set_axes(ax)
+            fig.suptitle(title)
 
             if show_legend:
                 fig.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol=4)
 
             fig.tight_layout()
-            fig.subplots_adjust(top=0.85)
-            fig.suptitle(title)
+            fig.subplots_adjust(top=0.88)
 
             if save_figure:
                 plt.savefig(f"{save_filename_prefix}_{distributor.tag}" + file_type)

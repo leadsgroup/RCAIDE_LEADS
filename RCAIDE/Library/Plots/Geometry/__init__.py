@@ -21,6 +21,7 @@ from .Common                                  import *
 from .plot_3d_vehicle                         import plot_3d_vehicle 
 from .plot_3d_rotor                           import *
 from .generate_3d_nacelle_points              import * 
+from .generate_3d_lopa_points                 import *
 from .generate_3d_fuel_tank_points            import * 
 from .generate_3d_wing_points                 import *
 from .generate_3d_fuselage_points             import *

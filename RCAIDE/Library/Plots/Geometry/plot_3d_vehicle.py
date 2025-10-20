@@ -13,6 +13,7 @@ from RCAIDE.Library.Plots.Geometry.generate_3d_fuselage_points  import *
 from RCAIDE.Library.Plots.Geometry.generate_3d_fuel_tank_points import *
 from RCAIDE.Library.Plots.Geometry.plot_3d_rotor                import generate_3d_blade_points
 from RCAIDE.Library.Plots.Geometry.generate_3d_nacelle_points   import *
+from RCAIDE.Library.Plots.Geometry.generate_3d_lopa_points      import generate_3d_lopa_points
 from RCAIDE.Library.Methods.Geometry.Planform                   import  fuselage_planform, wing_planform, bwb_wing_planform , compute_fuel_volume  
 from RCAIDE.Library.Methods.Geometry.LOPA                       import  compute_layout_of_passenger_accommodations  
 
@@ -43,6 +44,7 @@ def plot_3d_vehicle(vehicle,
                     boom_opacity                = 1.0,
                     nacelle_opacity             = 1.0,
                     fuel_tank_opacity           = 0.5,
+                    lopa_opacity                = 1.0,
                     rotor_opacity               = 0.6, 
                     number_of_airfoil_points    = 101,
                     tessellation                = 96,  
@@ -148,13 +150,14 @@ def plot_3d_vehicle(vehicle,
         if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
             if overwrite_geometry: 
                 bwb_wing_planform(wing) 
+                compute_layout_of_passenger_accommodations(wing)
         else:
             if overwrite_geometry:
                 wing_planform(wing)  
                      
     compute_fuel_volume(geometry, update_fuel_volume=True) 
     
-    for fuselage in  geometry.fuselages:               
+    for fuselage in  geometry.fuselages:    
         compute_layout_of_passenger_accommodations(fuselage)
         fuselage_planform(fuselage) 
     
@@ -167,6 +170,8 @@ def plot_3d_vehicle(vehicle,
     # Plot wings
     # -------------------------------------------------------------------------  
     for wing in geometry.wings:
+        if isinstance(wing,RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+            wing_opacity /= 1.25 # For clearer visualzation of lopa
         n_segments = len(wing.segments)
         dim        = n_segments if n_segments > 0 else 2
         GEOM       = generate_3d_wing_points(wing, number_of_airfoil_points, dim)
@@ -180,6 +185,9 @@ def plot_3d_vehicle(vehicle,
         if wing.xy_plane_symmetric: 
             GEOM.PTS[:, :, 2] = -GEOM.PTS[:, :, 2]
             make_object(renderer, GEOM,wing_rgb_color,wing_opacity)
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+            lopa_geom = generate_3d_lopa_points(wing)
+            add_lopa_seats(renderer, lopa_geom, lopa_opacity)
 
     # -------------------------------------------------------------------------  
     # Plot fuselage
@@ -187,6 +195,8 @@ def plot_3d_vehicle(vehicle,
     for fuselage in geometry.fuselages:
         GEOM = generate_3d_fuselage_points(fuselage, tessellation)
         make_object(renderer, GEOM, fuselage_rgb_color,fuselage_opacity)
+        # lopa_geom = generate_3d_lopa_points(fuselage)
+        # add_lopa_seats(renderer, lopa_geom, lopa_opacity)
         
     # -------------------------------------------------------------------------  
     # Plot boom
@@ -237,25 +247,26 @@ def plot_3d_vehicle(vehicle,
                     for i in range(num_B):
                         GEOM = generate_3d_blade_points(prop,number_of_airfoil_points,dim,i) 
                         make_object(renderer, GEOM, rotor_rgb_color,rotor_opacity) 
-        
-        for fuel_tank in network.sources:
-            if isinstance(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank) or \
-                issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank) or \
-                issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank) or \
-                type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank:    
 
-                if network.sources[fuel_tank.tag].wing_tag != None:
-                    wing = geometry.wings[network.sources[fuel_tank.tag].wing_tag]
-                    
+           
+        for fuel_tank in network.sources:   
+            if isinstance(fuel_tank, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                if fuel_tank.wing_tag != None:
+                    wing = geometry.wings[fuel_tank.wing_tag]
                     if issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
-                        GEOM  = generate_non_integral_fuel_tank_points(network.sources[fuel_tank.tag],tessellation ) 
+                        GEOM  = generate_non_integral_fuel_tank_points(fuel_tank,tessellation ) 
                         make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity) 
-    
+
                         if wing.xz_plane_symmetric: 
                             GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1] 
                             make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity)
+                elif fuel_tank.fuselage_tag != None:
+                    fuselage = geometry.fuselages[fuel_tank.fuselage_tag]
+                    if issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
+                        GEOM  = generate_non_integral_fuel_tank_points(fuel_tank,tessellation ) 
+                        make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity) 
                         
-                    if type(network.sources[fuel_tank.tag]) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank: 
+                    if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank: 
                         segment_list = [] 
                         segment_tags = list(wing.segments.keys())     
                         for i in range(len(wing.segments) - 1):
@@ -281,24 +292,24 @@ def plot_3d_vehicle(vehicle,
                                 GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1] 
                                 make_object(renderer, GEOM,fuel_tank_rgb_color, fuel_tank_opacity) 
 
-                elif network.sources[fuel_tank.tag].fuselage_tag != None:
-                    fuselage = geometry.fuselages[network.sources[fuel_tank.tag].fuselage_tag]
-                    if type(network.sources[fuel_tank.tag]) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank:  
-                        segment_list = [] 
-                        segment_tags = list(fuselage.segments.keys())     
-                        for i in range(len(fuselage.segments) - 1):
-                            seg =  fuselage.segments[segment_tags[i]]
-                            next_seg =  fuselage.segments[segment_tags[i+1]]
-                            if seg.has_fuel_tank: 
-                                segment_list.append(seg.tag)
-                                if next_seg.tag not in segment_list:
-                                    segment_list.append(next_seg.tag)  
+                    elif fuel_tank.fuselage_tag != None:
+                        fuselage = geometry.fuselages[fuel_tank.fuselage_tag]
+                        if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank:  
+                            segment_list = [] 
+                            segment_tags = list(fuselage.segments.keys())     
+                            for i in range(len(fuselage.segments) - 1):
+                                seg =  fuselage.segments[segment_tags[i]]
+                                next_seg =  fuselage.segments[segment_tags[i+1]]
+                                if seg.has_fuel_tank: 
+                                    segment_list.append(seg.tag)
+                                    if next_seg.tag not in segment_list:
+                                        segment_list.append(next_seg.tag)  
 
-                        GEOM  = generate_integral_fuel_tank_points(fuselage,network.sources[fuel_tank.tag], segment_list,tessellation )
-                        make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity) 
+                            GEOM  = generate_integral_fuel_tank_points(fuselage,fuel_tank, segment_list,tessellation )
+                            make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity) 
 
-                elif issubclass(type(network.sources[fuel_tank.tag]), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
-                    GEOM  = generate_non_integral_fuel_tank_points(network.sources[fuel_tank.tag],tessellation ) 
+                elif issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
+                    GEOM  = generate_non_integral_fuel_tank_points(fuel_tank,tessellation ) 
                     make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity) 
 
                     if wing.xz_plane_symmetric: 
@@ -365,6 +376,51 @@ def make_object(renderer, GEOM,  rgb_color, opacity):
     renderer.AddActor(actor)
     
     return
+
+
+def add_lopa_seats(renderer, lopa_geometry, opacity):
+    seats = getattr(lopa_geometry, "_lopa_seats", [])
+    if not seats:
+        return
+
+    # Simple color map (no external constants)
+    def _rgb(name):
+        return mcolors.to_rgb(name)
+
+    color_map = {
+        "first":      _rgb("indianred"),
+        "business":   _rgb("seagreen"),
+        "economy":    _rgb("steelblue"),
+        "galley_lav": _rgb("sandybrown"),
+        "other":      _rgb("gray"),
+    }
+
+    for seat in seats:
+        poly = seat.get("polydata", None)
+        if poly is None:
+            continue
+
+        mapper = vtk.vtkPolyDataMapper()
+        mapper.SetInputData(poly)
+
+        actor = vtk.vtkActor()
+        actor.SetMapper(mapper)
+
+        seat_class = seat.get("class", "economy")
+        rgb = color_map.get(seat_class, color_map["economy"])
+
+        actor.GetProperty().SetColor(*rgb)
+        actor.GetProperty().SetDiffuse(1.0)
+        actor.GetProperty().SetSpecular(0.0)
+        actor.GetProperty().SetOpacity(float(opacity))
+
+        # Optional: outline emergency row seats subtly (no new constants; reuse color)
+        if seat.get("emergency_row", False):
+            actor.GetProperty().EdgeVisibilityOn()
+            actor.GetProperty().SetEdgeColor(*rgb)  # same hue; outline for emphasis
+            actor.GetProperty().SetLineWidth(1.0)
+
+        renderer.AddActor(actor)
 
 def make_actuator_disc(renderer, inner_radius, outer_radius, origin, rot_x,rot_y,rot_z, rgb_color, opacity): 
     
