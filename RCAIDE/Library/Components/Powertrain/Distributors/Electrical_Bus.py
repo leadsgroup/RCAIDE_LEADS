@@ -93,6 +93,8 @@ class Electrical_Bus(Component):
         self.tag                                    = 'electrical_line' 
         self.bus_type                               = 'DC'
         self.electrical_line                        = Electrical_Line()
+        self.battery_modules                        = Container()
+        self.fuel_cell_stacks                       = Container()
         self.assigned_distributors                  = [] 
         self.systems                                = RCAIDE.Library.Components.Powertrain.Systems.Systems()
         self.identical_battery_modules              = True      

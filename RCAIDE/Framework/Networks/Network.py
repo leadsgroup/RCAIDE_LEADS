@@ -148,144 +148,231 @@ class Network(Component):
 
                 total_thrust             += Thrust   
                 total_moment             += Moment  
-                total_propulsive_power   += Power.propulsive 
-
-                Network.update_distributor_net_power(propulsor, network, conditions, Power)
-
-        # ----------------------------------------------------------
-        # Systems
-        # ----------------------------------------------------------
+                total_propulsive_power   += Power.propulsive
+                
+                if isinstance(propulsor,RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or \
+                    isinstance(propulsor,RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet) or \
+                    isinstance(propulsor,RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop) or \
+                    isinstance(propulsor,RCAIDE.Library.Components.Powertrain.Propulsors.Internal_Combustion_Engine) or \
+                    isinstance(propulsor,RCAIDE.Library.Components.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine):
+                    total_mdot               += - Power.chemical/network.sources.fuel_tank.fuel.lower_heating_value
 
         for system in systems:
 
             Power = system.compute_performance(state)
             
-            Network.update_distributor_net_power(system, network, conditions, Power)
-
-        # ------------------------------------------------------------------------------------------------------------------- 
-        # Converters
-        # -------------------------------------------------------------------------------------------------------------------
-
-        for converter_tag in network.non_propulsive_converters: 
-
-            converter = converters[converter_tag]
-
-            stored_results_flag = False
-
-            if type(converter) == RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator or \
-                    type(converter) == RCAIDE.Library.Components.Powertrain.Converters.Turboshaft: 
-                converter.inverse_calculation = True 
-
-            if converter.active:   
-                Power, stored_results_flag, stored_converter_tag = converter.compute_performance(state)
-
-                Network.update_distributor_net_power(converter, network, conditions, Power)  
-
-        # ------------------------------------------------------------------------------------------------------------------- 
-        # Modulators
-        # -------------------------------------------------------------------------------------------------------------------
-
-        for modulator in modulators:
-                
-            Power, stored_results_flag, stored_modulator_tag = modulator.compute_performance(network, state)
-            
-            Network.update_distributor_net_power(modulator, network, conditions, Power)  
-       
-        # -------------------------------------------------------------------------------------------------------------------
-        # Other Distributors 
-        # -------------------------------------------------------------------------------------------------------------------
-
-        for distributor in network.distributors:
-            for distributor_tag in distributor.assigned_distributors:
-                
-                Power = network.distributors[distributor_tag[0]].compute_performance(state)
-
-                Network.update_distributor_net_power(network.distributors[distributor_tag[0]], network, conditions, Power)  
-
-        # ----------------------------------------------------------        
-        # Sources
         # ----------------------------------------------------------
+        # Solve distributor power balances (simple, explicit version)
+        # ----------------------------------------------------------
+        # Sign convention (link seen from TARGET distributor):
+        #   +P  = component supplies distributor (source on distributor)
+        #   -P  = component draws from distributor (load to distributor)
+        #
+        # Per distributor i and domain d:  sum_over_links_into_(i,d) P_link = 0
 
-        time               = state.conditions.frames.inertial.time[:,0] 
-        delta_t            = np.diff(time)
-                
-        stored_results_flag       = False
-        stored_battery_cell_tag   = None
+        # 0) collect ordered lists and tags (keep it visibly simple)
 
-        for source in sources: 
-            for distributor_tag in source.assigned_distributors:
-                distributor = distributors[distributor_tag[0]]
+        print(
+            f"# dist:{len(network.distributors)} "
+            f"# prop:{len(network.propulsors)} "
+            f"# conv:{len(network.non_propulsive_converters)} "
+            f"# mod:{len(network.modulators)} "
+            f"# sys:{len(network.systems)} "
+            f"# src:{len(network.sources)}"
+        )
 
-                if issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):    
-                    
-                    Power = source.compute_performance(state,distributor)   
-                    
-                    total_mdot  += conditions.energy.distributors[distributor.tag].fuel_mass_flow_rate
-                
-                elif issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module):   
-                    electric_power = 0. * state.ones_row(1)
-                    for t_idx in range(state.numerics.number_of_control_points):  
-                         
-                        if distributor.identical_battery_modules == True: 
-                            Power, stored_results_flag, stored_battery_cell_tag =  source.compute_performance(state,distributor,network, t_idx, delta_t)
-                            electric_power[t_idx, 0] = Power.electrical[t_idx, 0]  
-                        
-                        distributor.compute_distributor_conditions(source, state, t_idx,delta_t)
-                Power.electrical = electric_power
-                
-                Network.update_distributor_net_power(source, network, conditions, Power)  
-                                                        
+        # 1) distributor->domain map (what domain to use when a link targets this distributor)
+        domain = {}
+        for distributor in network.distributors:
+            if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
+                domain[distributor.tag] = 'electrical'
+            elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
+                domain[distributor.tag] = 'chemical'
+            elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line):
+                domain[distributor.tag] = 'thermal'
+            else:
+                domain[distributor.tag] = None
+        print(f"domain (by distributor): {domain}")
+
+        # 2) build a flat list of LINKS: (group, comp_tag, dist_tag, domain)
+        links = []
+
+        print("[PBAL] building links from components → distributors")
+        for group_name in ['propulsors', 'converters', 'modulators', 'systems', 'sources']:
+            group = getattr(network, group_name)
+            for comp in group:
+                ads = getattr(comp, 'assigned_distributors', [])
+                # flatten up to two nesting levels without helpers
+                for ad in ads:
+                    lvl1 = ad if isinstance(ad, (list, tuple, set)) else [ad]
+                    for tag1 in lvl1:
+                        lvl2 = tag1 if isinstance(tag1, (list, tuple, set)) else [tag1]
+                        for dist_tag in lvl2:
+                            if isinstance(dist_tag, str):
+                                if dist_tag in domain and domain[dist_tag] is not None:
+                                    dom = domain[dist_tag]
+                                    links.append((group_name, comp.tag, dist_tag, dom))
+                                    print(f"  + link: ({group_name}, {comp.tag}, {dist_tag}, {dom})")
+                                else:
+                                    print(f"  - skip: tag '{dist_tag}' not in domain or domain is None")
+                            else:
+                                # this is the case that caused "unhashable type: 'list'"
+                                print(f"  - skip non-string tag under {comp.tag}: {dist_tag} (type {type(dist_tag)})")
+
+        print("[PBAL] building links from distributors → distributors")
+        for src_d in network.distributors:
+            ads = getattr(src_d, 'assigned_distributors', [])
+            for ad in ads:
+                lvl1 = ad if isinstance(ad, (list, tuple, set)) else [ad]
+                for tag1 in lvl1:
+                    lvl2 = tag1 if isinstance(tag1, (list, tuple, set)) else [tag1]
+                    for dist_tag in lvl2:
+                        if isinstance(dist_tag, str):
+                            if dist_tag in domain and domain[dist_tag] is not None:
+                                dom = domain[dist_tag]
+                                links.append(('distributors', src_d.tag, dist_tag, dom))
+                                print(f"  + link: (distributors, {src_d.tag}, {dist_tag}, {dom})")
+                            else:
+                                print(f"  - skip: tag '{dist_tag}' not in domain or domain is None")
+                        else:
+                            print(f"  - skip non-string dist_tag under distributor {src_d.tag}: {dist_tag} (type {type(dist_tag)})")
+
+        print(f"[PBAL] total links found: {len(links)}")
+        
+        # 3) solve A x = b at each control point
+        for t_idx in range(state.numerics.number_of_control_points):
+
+            # 3a) decide which links are KNOWN (non-zero) vs UNKNOWN (zero) at this t_idx
+            unknown_cols = {}
+            col_count = 0
+
+            for grp, comp_tag, dist_tag, dom in links:
+                if grp == 'propulsors':
+                    rec = conditions.energy.propulsors[comp_tag]
+                elif grp == 'converters':
+                    rec = conditions.energy.converters[comp_tag]
+                elif grp == 'modulators':
+                    rec = conditions.energy.modulators[comp_tag]
+                elif grp == 'systems':
+                    rec = conditions.energy.systems[comp_tag]
+                elif grp == 'sources':
+                    rec = conditions.energy.sources[comp_tag]
+                else:
+                    rec = conditions.energy.distributors[comp_tag]
+
+                arr = getattr(rec.power, dom)  # (ncp,1)
+                val = float(arr[t_idx, 0])
+
+                if abs(val) < 1e-12:
+                    key = (grp, comp_tag, dist_tag, dom)
+                    if key not in unknown_cols:
+                        unknown_cols[key] = col_count
+                        col_count += 1
+
+            n_row = len(distributors)
+            n_col = col_count
+
+            print(f"t={t_idx}] unknowns: {n_col}  (rows={n_row})")
+
+            A = np.zeros((n_row, n_col))
+            b = np.zeros((n_row, 1))
+
+            # 3b) fill A and b : each link contributes to the ROW of its TARGET distributor
+
+            dist_index = {d.tag: i for i, d in enumerate(network.distributors)}
+            dist_list  = [d for d in network.distributors]
+
+            for grp, comp_tag, dist_tag, dom in links:
+                row = dist_index[dist_tag]
+
+                if grp == 'propulsors':
+                    pow = conditions.energy.propulsors[comp_tag].power[dom][t_idx, 0]
+                elif grp == 'converters':
+                    pow = conditions.energy.converters[comp_tag].power[dom][t_idx, 0]
+                elif grp == 'modulators':
+                    pow = conditions.energy.modulators[comp_tag].power[dom][t_idx, 0]
+                elif grp == 'systems':
+                    pow = conditions.energy.systems[comp_tag].power[dom][t_idx, 0]
+                elif grp == 'sources':
+                    pow = conditions.energy.sources[comp_tag].power[dom][t_idx, 0]
+                else:
+                    pow = conditions.energy.distributors[comp_tag].power[dom][t_idx, 0]
+
+                if abs(pow) >= 1e-12:
+                    # known → move to RHS:  sum(P_links)=0  ⇒  b[row] -= known
+                    b[row, 0] -= pow
+                else:
+                    col = unknown_cols[(grp, comp_tag, dist_tag, dom)]
+                    A[row, col] += 1.0
+
+            # 3c) solve with least-squares (handles square / over / under)
+            print(A)
+            print(b)
+            x, residuals, rank, s = np.linalg.lstsq(A, b, rcond=None)
+            print(f"t={t_idx}] rank={rank}  ||res||^2={residuals.sum() if residuals.size else 0.0}")
+
+            # 3d) write solved unknowns back to the proper arrays
+            for key, col in unknown_cols.items():
+                grp, comp_tag, dist_tag, dom = key
+                if grp == 'propulsors':
+                    conditions.energy.propulsors[comp_tag].power[dom][t_idx, 0] = float(x[col, 0])
+                elif grp == 'converters':
+                    conditions.energy.converters[comp_tag].power[dom][t_idx, 0] = float(x[col, 0])
+                elif grp == 'modulators':
+                    conditions.energy.modulators[comp_tag].power[dom][t_idx, 0] = float(x[col, 0])
+                elif grp == 'systems':
+                    conditions.energy.systems[comp_tag].power[dom][t_idx, 0] = float(x[col, 0])
+                elif grp == 'sources':
+                    conditions.energy.sources[comp_tag].power[dom][t_idx, 0] = float(x[col, 0])
+                else:
+                    conditions.energy.distributors[comp_tag].power[dom][t_idx, 0] = float(x[col, 0])
+
+            for d in network.distributors:
+                if hasattr(conditions.energy.distributors[d.tag].power, 'electrical'):
+                    conditions.energy.distributors[d.tag].power.electrical[t_idx, 0] = 0.0
+                if hasattr(conditions.energy.distributors[d.tag].power, 'chemical'):
+                    conditions.energy.distributors[d.tag].power.chemical[t_idx, 0]   = 0.0
+                if hasattr(conditions.energy.distributors[d.tag].power, 'thermal'):
+                    conditions.energy.distributors[d.tag].power.thermal[t_idx, 0]    = 0.0
+
+            # ----------------------------------------------------------
+            #  accumulate net power per distributor (once, after solving)
+            # ----------------------------------------------------------
+            for dist in network.distributors:
+                tag = dist.tag
+                pe = pc = pt = 0.0
+                for (grp, comp_tag, dist_tag, dom) in links:
+                    if dist_tag != tag:
+                        continue
+                    # get power value from correct component group
+                    rec_group = getattr(conditions.energy, grp)
+                    val = float(getattr(rec_group[comp_tag].power, dom)[t_idx, 0])
+                    if dom == "electrical": pe += val
+                    elif dom == "chemical": pc += val
+                    elif dom == "thermal":  pt += val
+                # store the net sums
+                p = conditions.energy.distributors[tag].power
+                if hasattr(p, "electrical"): p.electrical[t_idx, 0] = pe
+                if hasattr(p, "chemical"):   p.chemical[t_idx, 0]   = pc
+                if hasattr(p, "thermal"):    p.thermal[t_idx, 0]    = pt
+                # warn if nonzero
+                if abs(pe) > 1e-6: print(f"[warn t={t_idx}] {tag}: net elec {pe:+.3f} W (should be ~0)")
+                if abs(pc) > 1e-6: print(f"[warn t={t_idx}] {tag}: net chem {pc:+.3f} W (should be ~0)")
+                if abs(pt) > 1e-6: print(f"[warn t={t_idx}] {tag}: net therm {pt:+.3f} W (should be ~0)")
+
+            # print a tiny summary line
+            if t_idx < 3:  # don't spam too much
+                for dtag in dist_tags:
+                    de = float(conditions.energy.distributors[dtag].power.electrical[t_idx, 0])
+                    dc = float(conditions.energy.distributors[dtag].power.chemical[t_idx, 0])
+                    dt = float(conditions.energy.distributors[dtag].power.thermal[t_idx, 0])
+                    print(f"[PBAL t={t_idx}] net at {dtag}: elec={de:.3f} W, chem={dc:.3f} W, therm={dt:.3f} W")   
+
         conditions.energy.thrust_force_vector  = total_thrust
         conditions.energy.thrust_moment_vector = total_moment 
         conditions.energy.net_power            = total_propulsive_power
         conditions.weights.vehicle_mass_rate   = total_mdot  
-    
-        return
-    
-    @staticmethod
-    def update_distributor_net_power(component, network, conditions, Power):
 
-        """
-        Accumulate a component's multi-domain power into the residuals of its assigned distributors.
-
-        Sign convention
-        ---------------
-        Positive values mean *loads/draws* on the distributor; negative values mean *supplies/sources*
-        (e.g., regeneration). Units are Watts for all domains.
-
-        """
-
-        for dist_tag in component.assigned_distributors[0]:
-            dist = network.distributors[dist_tag] 
-
-            if isinstance(network.distributors[dist_tag], RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
-                if isinstance(component, RCAIDE.Library.Components.Powertrain.Modulators.Transformer_Rectifier_Unit):
-                    if network.distributors[dist_tag].bus_type == 'AC':
-                        conditions.energy.distributors[dist_tag].power.electrical  += Power.electrical * dist.power_split_ratio / dist.electrical_efficiency
-                    else:
-                        conditions.energy.distributors[dist_tag].power.electrical  += - Power.electrical * component.electrical_efficiency * dist.power_split_ratio / dist.electrical_efficiency
-                else:    
-                    conditions.energy.distributors[dist_tag].power.electrical  += Power.electrical * dist.power_split_ratio / dist.electrical_efficiency
-            
-            # elif isinstance(network.distributors[dist_tag], RCAIDE.Library.Components.Powertrain.Distributors.Mechanical_Line):
-            #     conditions.energy.distributors[dist_tag].net_mechanical_power  += P_mech * dist.power_split_ratio / dist.mechanical_efficiency
-            
-            elif isinstance(network.distributors[dist_tag], RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
-                conditions.energy.distributors[dist_tag].power.chemical += Power.chemical * dist.power_split_ratio / dist.chemical_efficiency
-                if isinstance(component, RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor):
-                    m_dot_fuel = conditions.energy.propulsors[component.tag].fuel_mass_flow_rate
-                elif isinstance(component, RCAIDE.Library.Components.Powertrain.Converters.Converter):
-                    m_dot_fuel = conditions.energy.converters[component.tag].fuel_mass_flow_rate
-                elif isinstance(component, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank) or \
-                    isinstance(component, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank) or \
-                    isinstance(component, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank) or \
-                    isinstance(component, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank):
-                    m_dot_fuel = conditions.energy.sources[component.tag].mass_flow_rate
-                conditions.energy.distributors[dist_tag].fuel_mass_flow_rate += m_dot_fuel
-            
-            elif isinstance(network.distributors[dist_tag], RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line):
-                conditions.energy.distributors[dist_tag].power.thermal     += Power.thermal * dist.power_split_ratio / dist.thermal_efficiency
-        
         return
     
     def unpack_unknowns(self,segment):

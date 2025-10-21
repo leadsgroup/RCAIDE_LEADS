@@ -246,7 +246,7 @@ def reuse_stored_lfp_cell_data(battery_module,state,bus,stored_results_flag, sto
     P_hydr = 0.0*state.ones_row(1)
     P_therm = 0.0*state.ones_row(1)
 
-    return P_prop, P_mech, P_elec, P_chem, P_pneum, P_hydr, P_therm
+    return P_mech, P_elec, P_hydr, P_therm
 
 
 def compute_lfp_cell_state(battery_module, battery_module_data, SOC, T, I):

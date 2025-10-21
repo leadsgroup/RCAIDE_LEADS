@@ -169,8 +169,8 @@ def compute_nmc_cell_performance(battery_module, state, bus, network, t_idx, del
     bus_config                  = bus.battery_module_electric_configuration
     psi                         = state.conditions.energy.battery_fuel_cell_power_split_ratio
     E_bus                       = bus_conditions.energy
-    P_bus                       = bus_conditions.power.electrical*psi
-    I_bus                       = bus_conditions.power.electrical/bus.voltage 
+    P_bus                       = -bus_conditions.power.electrical*psi
+    I_bus                       = bus_conditions.current_draw*psi 
     
     # ---------------------------------------------------------------------------------
     # Compute battery_module Conditions
@@ -182,7 +182,7 @@ def compute_nmc_cell_performance(battery_module, state, bus, network, t_idx, del
     V_oc_module        = battery_module_conditions.voltage_open_circuit
     V_oc_cell          = battery_module_conditions.cell.voltage_open_circuit   
   
-    P_module           = battery_module_conditions.power.electrical
+    P_module           = battery_module_conditions.power
     P_cell             = battery_module_conditions.cell.power
     
     R_0_module         = battery_module_conditions.internal_resistance
@@ -214,7 +214,7 @@ def compute_nmc_cell_performance(battery_module, state, bus, network, t_idx, del
     n_series          = battery_module.electrical_configuration.series
     n_parallel        = battery_module.electrical_configuration.parallel 
     n_total           = n_series*n_parallel 
-    no_modules        = 1 #len(battery_module)
+    no_modules        = len(bus.battery_modules)
     
     # ---------------------------------------------------------------------------------
     # Examine Thermal Management System
@@ -262,13 +262,13 @@ def compute_nmc_cell_performance(battery_module, state, bus, network, t_idx, del
     V_oc_cell[t_idx]      = V_ul_cell[t_idx] + (abs(I_cell[t_idx]) * R_0_cell[t_idx])              
 
     # Effective Power flowing through battery_module 
-    P_module[t_idx]       = P_bus[t_idx] /no_modules  + np.abs(Q_heat_module[t_idx]) 
+    P_module.electrical[t_idx]       = P_bus[t_idx] /no_modules  + np.abs(Q_heat_module[t_idx]) 
 
     # store remaining variables 
     V_oc_module[t_idx]     = V_oc_cell[t_idx]*n_series 
     V_ul_module[t_idx]     = V_ul_cell[t_idx]*n_series  
     T_module[t_idx]        = T_cell[t_idx]   # Assume the cell temperature is the temperature of the module
-    P_cell[t_idx]          = P_module[t_idx]/n_total 
+    P_cell[t_idx]          = P_module.electrical[t_idx]/n_total 
     E_module[t_idx]        = E_bus[t_idx]/no_modules 
     E_cell[t_idx]          = E_module[t_idx]/n_total  
 
@@ -286,7 +286,7 @@ def compute_nmc_cell_performance(battery_module, state, bus, network, t_idx, del
             T_cell[t_idx+1]    =  T_cell[t_idx] + dT_dt*delta_t[t_idx]
             
         # Compute state of charge and depth of discarge of the battery_module
-        E_module[t_idx+1]                                     = (E_module[t_idx]) -P_module[t_idx]*delta_t[t_idx]
+        E_module[t_idx+1]                                     = (E_module[t_idx]) -P_module.electrical[t_idx]*delta_t[t_idx]
         E_module[t_idx+1][E_module[t_idx+1] > E_module_max]   = np.float32(E_module_max)
         SOC_cell[t_idx+1]                                     = E_module[t_idx+1]/E_module_max 
         SOC_cell[t_idx+1][SOC_cell[t_idx+1]>1]                = 1.
@@ -298,18 +298,18 @@ def compute_nmc_cell_performance(battery_module, state, bus, network, t_idx, del
         # Determine new charge throughput (the amount of charge gone through the battery_module)
         Q_cell[t_idx+1]    = Q_cell[t_idx] + abs(I_cell[t_idx])*delta_t[t_idx]/Units.hr
         
-    stored_results_flag            = True
-    stored_source_tag              = battery_module.tag  
+    stored_results_flag     = True
+    stored_battery_module_tag     = battery_module.tag  
 
     battery_module_conditions.power.propulsive               = 0.0 * state.ones_row(1)
     battery_module_conditions.power.mechanical               = 0.0 * state.ones_row(1)
-    battery_module_conditions.power.electrical               = P_module
+    battery_module_conditions.power.electrical               = P_module.electrical
     battery_module_conditions.power.chemical                 = 0.0 * state.ones_row(1)
     battery_module_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
     battery_module_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
     battery_module_conditions.power.thermal                  = 0.0 * state.ones_row(1)
 
-    return battery_module_conditions.power, stored_results_flag, stored_source_tag 
+    return battery_module_conditions.power, stored_results_flag, stored_battery_module_tag 
 
 def reuse_stored_nmc_cell_data(battery_module,state,stored_battery_module_tag):
     '''Reuses results from one propulsor for identical batteries
@@ -331,14 +331,14 @@ def reuse_stored_nmc_cell_data(battery_module,state,stored_battery_module_tag):
     
     state.conditions.energy.sources[battery_module.tag] = deepcopy(state.conditions.energy.sources[stored_battery_module_tag])
 
-    Power = state.conditions.energy.sources[battery_module.tag].power
-    Power.propulsive               =  0.0 * state.ones_row(1)
-    Power.mechanical               =  0.0 * state.ones_row(1)
-    Power.electrical               = state.conditions.energy.sources[stored_battery_module_tag].power.electrical
-    Power.chemical                 = 0.0 * state.ones_row(1)
-    Power.pneumatic                = 0.0 * state.ones_row(1)
-    Power.hydraulic                = 0.0 * state.ones_row(1)
-    Power.thermal                  = 0.0 * state.ones_row(1)
+    # Power = state.conditions.energy.sources[battery_module.tag].power
+    # Power.propulsive               =  0.0 * state.ones_row(1)
+    # Power.mechanical               =  0.0 * state.ones_row(1)
+    # Power.electrical               = state.conditions.energy.sources[stored_battery_module_tag].power.electrical
+    # Power.chemical                 = 0.0 * state.ones_row(1)
+    # Power.pneumatic                = 0.0 * state.ones_row(1)
+    # Power.hydraulic                = 0.0 * state.ones_row(1)
+    # Power.thermal                  = 0.0 * state.ones_row(1)
         
     return Power 
  
