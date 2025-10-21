@@ -223,42 +223,19 @@ class Network(Component):
                     total_mdot  += conditions.energy.distributors[distributor.tag].fuel_mass_flow_rate
                 
                 elif issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module):   
+                    electric_power = 0. * state.ones_row(1)
                     for t_idx in range(state.numerics.number_of_control_points):   
                         if distributor.identical_battery_modules == False or stored_results_flag == False: 
                             Power, stored_results_flag, stored_battery_cell_tag =  source.compute_performance(state,distributor,network, t_idx, delta_t)
+                            electric_power[t_idx, 0] = Power.electrical[t_idx, 0]
                         else:             
-                            Power = source.reuse_stored_data(state, stored_battery_cell_tag)        
+                            Power = source.reuse_stored_data(state, stored_battery_cell_tag) 
+                            electric_power[t_idx, 0] = Power.electrical[0, 0]     
                         
                         distributor.compute_distributor_conditions(source, state, t_idx,delta_t)
+                Power.electrical = electric_power
                 
                 Network.update_distributor_net_power(source, network, conditions, Power)  
-                    
-        # # ----------------------------------------------------------
-        # # Regenerative Power 
-        # # ----------------------------------------------------------
-
-        # if isinstance(distributor,RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):   
-        #     total_elec_power        -= state.conditions.energy.distributors[distributor.tag].regenerative_power*bus_voltage* distributor.power_split_ratio  /distributor.efficiency   
-          
-
-    # # ----------------------------------------------------------
-    # # Finalize distributor residual 
-    # # ----------------------------------------------------------
-    # if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
-    #     conditions.energy.distributors[distributor.tag].power_draw   = total_elec_power
-    #     conditions.energy.distributors[distributor.tag].current_draw = total_elec_power / bus_voltage
-
-        # # ------------------------------------------------------------------------------------------------------------------- 
-        # # Thermal Management
-        # # -------------------------------------------------------------------------------------------------------------------        
-        # for t_idx in range(state.numerics.number_of_control_points):        
-        #     for distributor in network.distributors:
-        #         if isinstance(distributor,RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line):
-        #             if t_idx != state.numerics.number_of_control_points-1: 
-        #                 for heat_exchanger in distributor.heat_exchangers: 
-        #                     heat_exchanger.compute_heat_exchanger_performance(state,distributor,distributor,delta_t[t_idx],t_idx) 
-        #                 for reservoir in distributor.reservoirs:   
-        #                     reservoir.compute_reservior_coolant_temperature(state,distributor,delta_t[t_idx],t_idx)
                                                         
         conditions.energy.thrust_force_vector  = total_thrust
         conditions.energy.thrust_moment_vector = total_moment 
@@ -286,17 +263,17 @@ class Network(Component):
             if isinstance(network.distributors[dist_tag], RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
                 if isinstance(component, RCAIDE.Library.Components.Powertrain.Modulators.Transformer_Rectifier_Unit):
                     if network.distributors[dist_tag].bus_type == 'AC':
-                        conditions.energy.distributors[dist_tag].net_electrical_power  += Power.electrical * dist.power_split_ratio / dist.electrical_efficiency
+                        conditions.energy.distributors[dist_tag].power.electrical  += Power.electrical * dist.power_split_ratio / dist.electrical_efficiency
                     else:
-                        conditions.energy.distributors[dist_tag].net_electrical_power  += - Power.electrical * component.electrical_efficiency * dist.power_split_ratio / dist.electrical_efficiency
+                        conditions.energy.distributors[dist_tag].power.electrical  += - Power.electrical * component.electrical_efficiency * dist.power_split_ratio / dist.electrical_efficiency
                 else:    
-                    conditions.energy.distributors[dist_tag].net_electrical_power  += Power.electrical * dist.power_split_ratio / dist.electrical_efficiency
+                    conditions.energy.distributors[dist_tag].power.electrical  += Power.electrical * dist.power_split_ratio / dist.electrical_efficiency
             
             # elif isinstance(network.distributors[dist_tag], RCAIDE.Library.Components.Powertrain.Distributors.Mechanical_Line):
             #     conditions.energy.distributors[dist_tag].net_mechanical_power  += P_mech * dist.power_split_ratio / dist.mechanical_efficiency
             
             elif isinstance(network.distributors[dist_tag], RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
-                conditions.energy.distributors[dist_tag].net_hydraulic_power   += Power.chemical * dist.power_split_ratio / dist.hydraulic_efficiency
+                conditions.energy.distributors[dist_tag].power.chemical += Power.chemical * dist.power_split_ratio / dist.chemical_efficiency
                 if isinstance(component, RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor):
                     m_dot_fuel = conditions.energy.propulsors[component.tag].fuel_mass_flow_rate
                 elif isinstance(component, RCAIDE.Library.Components.Powertrain.Converters.Converter):
@@ -309,7 +286,7 @@ class Network(Component):
                 conditions.energy.distributors[dist_tag].fuel_mass_flow_rate += m_dot_fuel
             
             elif isinstance(network.distributors[dist_tag], RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line):
-                conditions.energy.distributors[dist_tag].net_thermal_power     += Power.thermal * dist.power_split_ratio / dist.thermal_efficiency
+                conditions.energy.distributors[dist_tag].power.thermal     += Power.thermal * dist.power_split_ratio / dist.thermal_efficiency
         
         return
     

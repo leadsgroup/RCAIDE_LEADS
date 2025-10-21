@@ -93,9 +93,9 @@ class Liquid_Hydrogen(Propellant):
         self.kinetic_mechanism             = '' # [-] Kinetic mechanism for fuel surrogate species
         self.oxidizer                      = ''       
 
-        self.materials_properties = self.liquid_hydrogen_properties()
+        self.materials_properties = self.propellant_properties()
 
-    def liquid_hydrogen_properties(self, T, prop_name):
+    def propellant_properties(self, T, prop_name):
         """
             Return interpolated liquid hydrogen property value at a given temperature.
 

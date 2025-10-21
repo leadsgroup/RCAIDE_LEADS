@@ -21,173 +21,167 @@ def plot_powertrain_power(results,
                           show_legend=True,
                           save_filename_prefix="Distributor_Power",
                           file_type=".png",
-                          width=10, height=8):
-    # optional ASCII diagram
+                          width=12, height=7):
+
     create_network_diagram(results.segments[0].analyses.energy.vehicle)
 
-    # plotting style
     ps = plot_style()
-    plt.rcParams.update({'axes.labelsize': ps.axis_font_size,
-                         'xtick.labelsize': ps.axis_font_size,
-                         'ytick.labelsize': ps.axis_font_size,
-                         'axes.titlesize': ps.title_font_size})
+    params = {'axes.labelsize': ps.axis_font_size,
+              'xtick.labelsize': ps.axis_font_size,
+              'ytick.labelsize': ps.axis_font_size,
+              'axes.titlesize': ps.title_font_size}
+    plt.rcParams.update(params)
 
-    # colors vary by segment
-    line_colors = cm.inferno(np.linspace(0, 0.9, len(results.segments)))
-
-    # distinct markers per item (net + each component)
+    line_colors    = cm.inferno(np.linspace(0, 0.9, len(results.segments)))
     unique_markers = ['o', 'D', '^', 's', 'v', '>', '<', 'p', '*', 'X', 'h']
 
     figs = {}
 
-    # simple helper: does component use this distributor?
-    def has_dist(component, tag):
-        for entry in getattr(component, 'assigned_distributors', []):
-            if isinstance(entry, (list, tuple, set)):
-                if tag in entry:
-                    return True
-            else:
-                if tag == entry:
-                    return True
-        return False
-
     for network in results.segments[0].analyses.energy.vehicle.networks:
+
+        dist_by_tag = {d.tag: d for d in network.distributors}
+
         for distributor in network.distributors:
 
             is_elec = isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus)
             is_fuel = isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line)
-            if not (is_elec or is_fuel):
+            is_cool = isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line)
+            if not (is_elec or is_fuel or is_cool):
                 continue
 
-            # figure
             fig = plt.figure(f"{save_filename_prefix}_{distributor.tag}")
             fig.set_size_inches(width, height)
-            ax = plt.subplot(1, 1, 1)
+            ax_supply = plt.subplot(1, 2, 1)
+            ax_draw   = plt.subplot(1, 2, 2)
 
-            # title: Capitalized words, no underscores
-            title = distributor.tag.replace("_", " ").title()
+            groups = [
+                ("propulsors", network.propulsors),
+                ("converters", network.converters),
+                ("modulators", network.modulators),
+                ("systems",    network.systems),
+                ("sources",    network.sources),
+                ("distributors", {d.tag: d for d in network.distributors if d.tag != distributor.tag}),
+            ]
 
-            mark_idx = 0
+            def component_has_this_dist(component, tag):
+                entries = getattr(component, 'assigned_distributors', [])
+                for entry in entries:
+                    if isinstance(entry, (list, tuple, set)):
+                        for e in entry:
+                            if isinstance(e, (list, tuple, set)):
+                                for ee in e:
+                                    if ee == tag: return True
+                            else:
+                                if e == tag: return True
+                    else:
+                        if entry == tag: return True
+                return False
 
-            # --- Distributor NET curve (MW) with its own marker
-            net_marker = unique_markers[mark_idx % len(unique_markers)]
-            mark_idx += 1
-            for i in range(len(results.segments)):
-                time = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min
-                dcon = results.segments[i].conditions.energy.distributors[distributor.tag]
-                if is_elec:
-                    y = dcon.net_electrical_power[:, 0] / 1e6
-                    ylab = "Power (MW)"
+            def get_power_for_this_bus(seg, comp_tag, source_name, dist_tag):
+                if source_name == "distributors":
+                    rec = seg.conditions.energy.distributors[comp_tag]
                 else:
-                    y = dcon.net_chemical_power[:, 0] / 1e6
-                    ylab = "Power (MW)"
-                if i == 0:
-                    ax.plot(time, y, color=line_colors[i], marker=net_marker,
-                            markersize=ps.marker_size, linewidth=ps.line_width,
-                            label=f"{title} (Net)")
+                    rec = getattr(seg.conditions.energy, source_name)[comp_tag]
+
+                pbd = getattr(rec, "power_by_distributor", None)
+                if isinstance(pbd, dict) and (dist_tag in pbd) and (pbd[dist_tag] is not None):
+                    return pbd[dist_tag][:, 0] / 1e6  # MW
+
+                pwr = getattr(rec, "power", None)
+                if pwr is None:
+                    return None
+
+                target_dist = dist_by_tag.get(dist_tag, None)
+
+                if isinstance(target_dist, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
+                    if hasattr(pwr, "chemical") and (pwr.chemical is not None):
+                        return pwr.chemical[:, 0] / 1e6
+                if isinstance(target_dist, RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line):
+                    if hasattr(pwr, "thermal") and (pwr.thermal is not None):
+                        return pwr.thermal[:, 0] / 1e6
+                if hasattr(pwr, "electrical") and (pwr.electrical is not None):
+                    return pwr.electrical[:, 0] / 1e6
+
+                return None
+
+            ymax_seen   = 0.0
+            mark_index  = 0
+            legend_dict = {}  
+            for source_name, comps in groups:
+
+                if isinstance(comps, dict):
+                    iterator = comps.items()
                 else:
-                    ax.plot(time, y, color=line_colors[i], marker=net_marker,
-                            markersize=ps.marker_size, linewidth=ps.line_width)
+                    iterator = [(c.tag, c) for c in comps]
 
-            # --- Propulsors
-            for comp in network.propulsors:
-                if has_dist(comp, distributor.tag):
-                    m = unique_markers[mark_idx % len(unique_markers)]; mark_idx += 1
+                for comp_tag, comp in iterator:
+                    if not component_has_this_dist(comp, distributor.tag):
+                        continue
+
+                    m = unique_markers[mark_index % len(unique_markers)]
+                    mark_index += 1
+
                     for i in range(len(results.segments)):
-                        time = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min
-                        pwr = results.segments[i].conditions.energy.propulsors[comp.tag].power
-                        if is_elec and hasattr(pwr, 'electrical'):
-                            y = pwr.electrical[:, 0] / 1e6
-                        elif is_fuel and hasattr(pwr, 'chemical'):
-                            y = pwr.chemical[:, 0] / 1e6
-                        else:
+                        seg  = results.segments[i]
+                        time = seg.conditions.frames.inertial.time[:, 0] / Units.min
+                        y    = get_power_for_this_bus(seg, comp_tag, source_name, distributor.tag)
+                        if y is None:
                             continue
-                        label = comp.tag.replace("_", " ").title() if i == 0 else None
-                        ax.plot(time, y, color=line_colors[i], marker=m,
-                                markersize=ps.marker_size, linewidth=ps.line_width, label=label)
 
-            # --- Converters (non-propulsive list)
-            for tag in getattr(network, 'non_propulsive_converters', []):
-                comp = network.converters[tag]
-                if has_dist(comp, distributor.tag):
-                    m = unique_markers[mark_idx % len(unique_markers)]; mark_idx += 1
-                    for i in range(len(results.segments)):
-                        time = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min
-                        pwr = results.segments[i].conditions.energy.converters[tag].power
-                        if is_elec and hasattr(pwr, 'electrical'):
-                            y = pwr.electrical[:, 0] / 1e6
-                        elif is_fuel and hasattr(pwr, 'chemical'):
-                            y = pwr.chemical[:, 0] / 1e6
-                        else:
-                            continue
-                        label = tag.replace("_", " ").title() if i == 0 else None
-                        ax.plot(time, y, color=line_colors[i], marker=m,
-                                markersize=ps.marker_size, linewidth=ps.line_width, label=label)
+                        # our convention in these plots:
+                        #   +y = SUPPLY to the bus (left panel)
+                        #   -y = DRAW   from the bus (right panel, plot magnitudes)
+                        mask_supply = y > 0.0
+                        if np.any(mask_supply):
+                            yy = y[mask_supply]
+                            ymax_seen = max(ymax_seen, float(np.max(yy)))
+                            label = comp_tag.replace('_', ' ').title() if comp_tag not in legend_dict else None
+                            h = ax_supply.plot(time[mask_supply], yy,
+                                               color=line_colors[i],
+                                               marker=m,
+                                               linewidth=ps.line_width,
+                                               markersize=ps.marker_size,
+                                               label=label)
+                            if comp_tag not in legend_dict and label is not None:
+                                legend_dict[comp_tag] = h[0]
 
-            # --- Modulators
-            for comp in network.modulators:
-                if has_dist(comp, distributor.tag):
-                    m = unique_markers[mark_idx % len(unique_markers)]; mark_idx += 1
-                    for i in range(len(results.segments)):
-                        time = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min
-                        pwr = results.segments[i].conditions.energy.modulators[comp.tag].power
-                        if is_elec and hasattr(pwr, 'electrical'):
-                            y = pwr.electrical[:, 0] / 1e6
-                        elif is_fuel and hasattr(pwr, 'chemical'):
-                            y = pwr.chemical[:, 0] / 1e6
-                        else:
-                            continue
-                        label = comp.tag.replace("_", " ").title() if i == 0 else None
-                        ax.plot(time, y, color=line_colors[i], marker=m,
-                                markersize=ps.marker_size, linewidth=ps.line_width, label=label)
+                        mask_draw = y < 0.0
+                        if np.any(mask_draw):
+                            yy = -y[mask_draw]
+                            ymax_seen = max(ymax_seen, float(np.max(yy)))
+                            label = comp_tag.replace('_', ' ').title() if comp_tag not in legend_dict else None
+                            h = ax_draw.plot(time[mask_draw], yy,
+                                             color=line_colors[i],
+                                             marker=m,
+                                             linewidth=ps.line_width,
+                                             markersize=ps.marker_size,
+                                             label=label)
+                            if comp_tag not in legend_dict and label is not None:
+                                legend_dict[comp_tag] = h[0]
 
-            # --- Systems
-            for comp in network.systems:
-                if has_dist(comp, distributor.tag):
-                    m = unique_markers[mark_idx % len(unique_markers)]; mark_idx += 1
-                    for i in range(len(results.segments)):
-                        time = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min
-                        pwr = results.segments[i].conditions.energy.systems[comp.tag].power
-                        if is_elec and hasattr(pwr, 'electrical'):
-                            y = pwr.electrical[:, 0] / 1e6
-                        elif is_fuel and hasattr(pwr, 'chemical'):
-                            y = pwr.chemical[:, 0] / 1e6
-                        else:
-                            continue
-                        label = comp.tag.replace("_", " ").title() if i == 0 else None
-                        ax.plot(time, y, color=line_colors[i], marker=m,
-                                markersize=ps.marker_size, linewidth=ps.line_width, label=label)
+            ax_supply.set_xlabel('Time (min)')
+            ax_draw.set_xlabel('Time (min)')
+            ax_supply.set_ylabel('Power Supply (MW)')
+            ax_draw.set_ylabel('Power Draw (MW)')
+            set_axes(ax_supply)
+            set_axes(ax_draw)
 
-            # --- Sources
-            for comp in network.sources:
-                if has_dist(comp, distributor.tag):
-                    m = unique_markers[mark_idx % len(unique_markers)]; mark_idx += 1
-                    for i in range(len(results.segments)):
-                        time = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min
-                        pwr = results.segments[i].conditions.energy.sources[comp.tag].power
-                        if is_elec and hasattr(pwr, 'electrical'):
-                            y = pwr.electrical[:, 0] / 1e6
-                        elif is_fuel and hasattr(pwr, 'chemical'):
-                            y = pwr.chemical[:, 0] / 1e6
-                        else:
-                            continue
-                        label = comp.tag.replace("_", " ").title() if i == 0 else None
-                        ax.plot(time, y, color=line_colors[i], marker=m,
-                                markersize=ps.marker_size, linewidth=ps.line_width, label=label)
+            ymax = 1.05 * (ymax_seen if ymax_seen > 0.0 else 1.0)
+            ax_supply.set_ylim(0.0, ymax)
+            ax_draw.set_ylim(0.0, ymax)
 
-            ax.set_xlabel('Time (min)')
-            ax.set_ylabel(ylab)
-            set_axes(ax)
-            fig.suptitle(title)
+            if show_legend and len(legend_dict) > 0:
+                fig.legend(list(legend_dict.values()),
+                           [h.get_label() for h in legend_dict.values()],
+                           bbox_to_anchor=(0.5, 0.98), loc='upper center', ncol=4)
 
-            if show_legend:
-                fig.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol=4)
-
+            title_text = f"{distributor.tag.replace('_', ' ').title()} Power Profile"
             fig.tight_layout()
-            fig.subplots_adjust(top=0.88)
+            fig.subplots_adjust(top=0.90)
+            fig.suptitle(title_text)
 
             if save_figure:
-                plt.savefig(f"{save_filename_prefix}_{distributor.tag}" + file_type)
+                plt.savefig(f"{save_filename_prefix}_{distributor.tag}{file_type}")
 
             figs[distributor.tag] = fig
 

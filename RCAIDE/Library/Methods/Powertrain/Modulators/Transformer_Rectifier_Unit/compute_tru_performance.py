@@ -23,7 +23,7 @@ def compute_tru_performance(tru, network, state):
     for distributor_tag in tru.assigned_distributors[0]:
         dist = network.distributors[distributor_tag]
         if dist.bus_type == 'AC':
-            P_in += conditions.energy.distributors[distributor_tag].net_electrical_power
+            P_in += conditions.energy.distributors[distributor_tag].power.electrical
             Vll   = dist.voltage_phase_to_phase
         elif dist.bus_type == 'DC':
             Vdc   = dist.voltage

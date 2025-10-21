@@ -59,7 +59,7 @@ def compute_structural_performance(fuel_tank):
     T_inlet         = fuel_tank.design_inlet_temperature
 
     # Saturation and design pressures
-    P_sat = fuel_tank.fuel.liquid_hydrogen_properties(T_inlet, "Pressure (MPa)") * Units.MPa
+    P_sat = fuel_tank.fuel.propellant_properties(T_inlet, "Pressure (MPa)") * Units.MPa
     P_internal = pressure_factor * P_sat
     P_external = fuel_tank.design_external_pressure
 

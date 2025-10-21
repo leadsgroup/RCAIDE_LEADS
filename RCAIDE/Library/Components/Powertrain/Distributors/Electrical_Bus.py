@@ -168,13 +168,13 @@ class Electrical_Bus(Component):
 
         distributor_conditions = state.conditions.energy.distributors[self.tag].power
 
-        distributor_conditions.propulsive  = state.conditions.energy.distributors[self.tag].net_propulsive_power
-        distributor_conditions.mechanical  = state.conditions.energy.distributors[self.tag].net_mechanical_power
-        distributor_conditions.electrical  = state.conditions.energy.distributors[self.tag].net_electrical_power
-        distributor_conditions.chemical    = state.conditions.energy.distributors[self.tag].net_chemical_power 
-        distributor_conditions.pneumatic   = state.conditions.energy.distributors[self.tag].net_pneumatic_power 
-        distributor_conditions.hydraulic   = state.conditions.energy.distributors[self.tag].net_hydraulic_power 
-        distributor_conditions.thermal     = state.conditions.energy.distributors[self.tag].net_thermal_power   
+        distributor_conditions.propulsive  = state.conditions.energy.distributors[self.tag].power.propulsive 
+        distributor_conditions.mechanical  = state.conditions.energy.distributors[self.tag].power.mechanical 
+        distributor_conditions.electrical  = state.conditions.energy.distributors[self.tag].power.electrical 
+        distributor_conditions.chemical    = state.conditions.energy.distributors[self.tag].power.chemical   
+        distributor_conditions.pneumatic   = state.conditions.energy.distributors[self.tag].power.pneumatic  
+        distributor_conditions.hydraulic   = state.conditions.energy.distributors[self.tag].power.hydraulic  
+        distributor_conditions.thermal     = state.conditions.energy.distributors[self.tag].power.thermal    
 
         return distributor_conditions
     
