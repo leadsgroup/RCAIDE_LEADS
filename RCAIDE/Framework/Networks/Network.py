@@ -224,13 +224,11 @@ class Network(Component):
                 
                 elif issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module):   
                     electric_power = 0. * state.ones_row(1)
-                    for t_idx in range(state.numerics.number_of_control_points):   
-                        if distributor.identical_battery_modules == False or stored_results_flag == False: 
+                    for t_idx in range(state.numerics.number_of_control_points):  
+                         
+                        if distributor.identical_battery_modules == True: 
                             Power, stored_results_flag, stored_battery_cell_tag =  source.compute_performance(state,distributor,network, t_idx, delta_t)
-                            electric_power[t_idx, 0] = Power.electrical[t_idx, 0]
-                        else:             
-                            Power = source.reuse_stored_data(state, stored_battery_cell_tag) 
-                            electric_power[t_idx, 0] = Power.electrical[0, 0]     
+                            electric_power[t_idx, 0] = Power.electrical[t_idx, 0]  
                         
                         distributor.compute_distributor_conditions(source, state, t_idx,delta_t)
                 Power.electrical = electric_power
