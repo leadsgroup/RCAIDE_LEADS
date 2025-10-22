@@ -78,31 +78,47 @@ def plot_powertrain_power(results,
                 return False
 
             def get_power_for_this_bus(seg, comp_tag, source_name, dist_tag):
+                # Always return a 1-D numpy array in MW, length = npts
+                npts = seg.conditions.frames.inertial.time.shape[0]
+                zeros = np.zeros(npts)
+
                 if source_name == "distributors":
                     rec = seg.conditions.energy.distributors[comp_tag]
                 else:
                     rec = getattr(seg.conditions.energy, source_name)[comp_tag]
 
+                # Prefer per-link storage if available
                 pbd = getattr(rec, "power_by_distributor", None)
                 if isinstance(pbd, dict) and (dist_tag in pbd) and (pbd[dist_tag] is not None):
-                    return pbd[dist_tag][:, 0] / 1e6  # MW
+                    arr = pbd[dist_tag]
+                    try:
+                        y = np.asarray(arr)[:, 0]
+                    except Exception:
+                        y = np.asarray(arr).reshape(-1)
+                    # convert to MW
+                    if y.size == npts:
+                        return y / 1e6
+                    # fallback if sizing isn’t as expected
+                    return zeros
 
+                # Fallback: use domain field from .power based on target distributor type
                 pwr = getattr(rec, "power", None)
                 if pwr is None:
-                    return None
+                    return zeros
 
                 target_dist = dist_by_tag.get(dist_tag, None)
-
                 if isinstance(target_dist, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
                     if hasattr(pwr, "chemical") and (pwr.chemical is not None):
-                        return pwr.chemical[:, 0] / 1e6
+                        return np.asarray(pwr.chemical)[:npts, 0] / 1e6
+                    return zeros
                 if isinstance(target_dist, RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line):
                     if hasattr(pwr, "thermal") and (pwr.thermal is not None):
-                        return pwr.thermal[:, 0] / 1e6
+                        return np.asarray(pwr.thermal)[:npts, 0] / 1e6
+                    return zeros
                 if hasattr(pwr, "electrical") and (pwr.electrical is not None):
-                    return pwr.electrical[:, 0] / 1e6
+                    return np.asarray(pwr.electrical)[:npts, 0] / 1e6
 
-                return None
+                return zeros
 
             ymax_seen   = 0.0
             mark_index  = 0
@@ -122,20 +138,29 @@ def plot_powertrain_power(results,
                     mark_index += 1
 
                     for i in range(len(results.segments)):
+                        
                         seg  = results.segments[i]
                         time = seg.conditions.frames.inertial.time[:, 0] / Units.min
                         y    = get_power_for_this_bus(seg, comp_tag, source_name, distributor.tag)
-                        if y is None:
-                            continue
+
+                        # Ensure y is a 1-D array
+                        y = np.asarray(y).reshape(-1)
 
                         # our convention in these plots:
                         #   +y = SUPPLY to the bus (left panel)
                         #   -y = DRAW   from the bus (right panel, plot magnitudes)
-                        mask_supply = y > 0.0
+                        eps = 1e-6  # MW
+                        mask_supply = y >  eps
+                        mask_draw   = y < -eps
+                        all_zero    = ~(mask_supply | mask_draw).any()
+
+                        # Select label once per component
+                        label = comp_tag.replace('_', ' ').title() if comp_tag not in legend_dict else None
+
+                        # Plot supply segments on the left
                         if np.any(mask_supply):
                             yy = y[mask_supply]
                             ymax_seen = max(ymax_seen, float(np.max(yy)))
-                            label = comp_tag.replace('_', ' ').title() if comp_tag not in legend_dict else None
                             h = ax_supply.plot(time[mask_supply], yy,
                                                color=line_colors[i],
                                                marker=m,
@@ -145,17 +170,27 @@ def plot_powertrain_power(results,
                             if comp_tag not in legend_dict and label is not None:
                                 legend_dict[comp_tag] = h[0]
 
-                        mask_draw = y < 0.0
+                        # Plot draw segments on the right (as magnitudes)
                         if np.any(mask_draw):
                             yy = -y[mask_draw]
                             ymax_seen = max(ymax_seen, float(np.max(yy)))
-                            label = comp_tag.replace('_', ' ').title() if comp_tag not in legend_dict else None
                             h = ax_draw.plot(time[mask_draw], yy,
                                              color=line_colors[i],
                                              marker=m,
                                              linewidth=ps.line_width,
                                              markersize=ps.marker_size,
                                              label=label)
+                            if comp_tag not in legend_dict and label is not None:
+                                legend_dict[comp_tag] = h[0]
+
+                        # If entirely zero, still show a flat line at 0 on the left panel
+                        if all_zero:
+                            h = ax_supply.plot(time, np.zeros_like(time),
+                                               color=line_colors[i],
+                                               marker=m,
+                                               linewidth=ps.line_width,
+                                               markersize=ps.marker_size,
+                                               label=label)
                             if comp_tag not in legend_dict and label is not None:
                                 legend_dict[comp_tag] = h[0]
 
@@ -196,15 +231,26 @@ def create_network_diagram(vehicle):
     BUS_LEFT_MARGIN = 4
 
     # -------------------- get network --------------------
-    network = vehicle.networks.network
+    # Be tolerant to different shapes (list vs single)
+    nets = getattr(vehicle, "energy_networks", None) or getattr(vehicle, "networks", None)
+    if nets is None:
+        print("No energy network on vehicle.")
+        return
+    network = getattr(nets, "network", None)
+    if network is None:
+        # maybe nets is already the network or a list of them
+        if isinstance(nets, (list, tuple)) and nets:
+            network = getattr(nets[-1], "network", nets[-1])
+        else:
+            network = nets
 
     # -------------------- collect by type --------------------
-    distributors = {getattr(d, "tag", f"bus_{i}"): d for i, d in enumerate(network.distributors)}
-    modulators   = {getattr(m, "tag", f"mod_{i}"): m for i, m in enumerate(network.modulators)}
-    converters   = {getattr(c, "tag", f"conv_{i}"): c for i, c in enumerate(network.converters)}
-    sources      = {getattr(s, "tag", f"src_{i}"):  s for i, s in enumerate(network.sources)}
-    systems      = {getattr(y, "tag", f"sys_{i}"):  y for i, y in enumerate(network.systems)}
-    propulsors   = {getattr(p, "tag", f"prop_{i}"): p for i, p in enumerate(network.propulsors)}
+    distributors = {str(getattr(d, "tag", f"bus_{i}")): d for i, d in enumerate(getattr(network, "distributors", []))}
+    modulators   = {str(getattr(m, "tag", f"mod_{i}")): m for i, m in enumerate(getattr(network, "modulators", []))}
+    converters   = {str(getattr(c, "tag", f"conv_{i}")): c for i, c in enumerate(getattr(network, "converters", []))}
+    sources      = {str(getattr(s, "tag", f"src_{i}")):  s for i, s in enumerate(getattr(network, "sources", []))}
+    systems      = {str(getattr(y, "tag", f"sys_{i}")):  y for i, y in enumerate(getattr(network, "systems", []))}
+    propulsors   = {str(getattr(p, "tag", f"prop_{i}")): p for i, p in enumerate(getattr(network, "propulsors", []))}
 
     # quick lookup by tag
     def get_obj_by_tag(tag):
@@ -216,17 +262,30 @@ def create_network_diagram(vehicle):
         if tag in propulsors:   return propulsors[tag]
         return None
 
-    # tiny flatten for assigned_distributors
+    # -------- NORMALIZATION HELPERS (critical fix) --------
+    # Turn any "bus reference" (tag string OR object) into a bus tag string
+    def to_bus_tag(ref):
+        if ref is None:
+            return None
+        if isinstance(ref, str):
+            return ref if ref in distributors else None
+        # Try object with .tag
+        tag = getattr(ref, "tag", None)
+        if isinstance(tag, str) and tag in distributors:
+            return tag
+        # Last resort: identity search (slow but safe for small graphs)
+        for t, obj in distributors.items():
+            if ref is obj:
+                return t
+        return None
+
+    # tiny flatten
     def flat(x):
         if x is None: return []
-        if isinstance(x, str): return [x]
         if isinstance(x, (list, tuple, set)):
             out = []
             for xi in x:
-                if isinstance(xi, (list, tuple, set)):
-                    out.extend(list(xi))
-                else:
-                    out.append(xi)
+                out.extend(flat(xi))
             return out
         return [x]
 
@@ -244,35 +303,24 @@ def create_network_diagram(vehicle):
     prop_to_bus = defaultdict(list)
     bus_to_bus  = defaultdict(list)  # if buses reference other buses
 
-    for tag, obj in modulators.items():
-        for dtag in flat(getattr(obj, "assigned_distributors", None)):
-            if dtag in distributors and dtag not in mod_to_bus[tag]:
-                mod_to_bus[tag].append(dtag)
+    # map helper: add only normalized tags
+    def map_component(comp_map, comp_tag, comp_obj):
+        for ref in flat(getattr(comp_obj, "assigned_distributors", None)):
+            btag = to_bus_tag(ref)
+            if btag and btag not in comp_map[comp_tag]:
+                comp_map[comp_tag].append(btag)
 
-    for tag, obj in converters.items():
-        for dtag in flat(getattr(obj, "assigned_distributors", None)):
-            if dtag in distributors and dtag not in conv_to_bus[tag]:
-                conv_to_bus[tag].append(dtag)
-
-    for tag, obj in sources.items():
-        for dtag in flat(getattr(obj, "assigned_distributors", None)):
-            if dtag in distributors and dtag not in src_to_bus[tag]:
-                src_to_bus[tag].append(dtag)
-
-    for tag, obj in systems.items():
-        for dtag in flat(getattr(obj, "assigned_distributors", None)):
-            if dtag in distributors and dtag not in sys_to_bus[tag]:
-                sys_to_bus[tag].append(dtag)
-
-    for tag, obj in propulsors.items():
-        for dtag in flat(getattr(obj, "assigned_distributors", None)):
-            if dtag in distributors and dtag not in prop_to_bus[tag]:
-                prop_to_bus[tag].append(dtag)
+    for tag, obj in modulators.items(): map_component(mod_to_bus,  tag, obj)
+    for tag, obj in converters.items(): map_component(conv_to_bus, tag, obj)
+    for tag, obj in sources.items():    map_component(src_to_bus,  tag, obj)
+    for tag, obj in systems.items():    map_component(sys_to_bus,  tag, obj)
+    for tag, obj in propulsors.items(): map_component(prop_to_bus, tag, obj)
 
     # optional bus->bus links (if present)
     for dtag, dobj in distributors.items():
-        for other in flat(getattr(dobj, "assigned_distributors", None)):
-            if other in distributors and other not in bus_to_bus[dtag]:
+        for ref in flat(getattr(dobj, "assigned_distributors", None)):
+            other = to_bus_tag(ref)
+            if other and other != dtag and other not in bus_to_bus[dtag]:
                 bus_to_bus[dtag].append(other)
 
     # -------------------- arrow direction rules --------------------
@@ -286,22 +334,22 @@ def create_network_diagram(vehicle):
         Returns:
           'from' -> component -> bus (arrow at bus side)
           'to'   -> bus -> component (arrow at component side)
-          'line' -> draw line only (for bus-to-bus link)
-          None   -> nothing
+          'line' -> draw line only
         """
         if component_tag is None:
-            return None
+            return "line"
         if component_tag == "__CAPS_LINE__":
             return "line"
+
         obj = get_obj_by_tag(component_tag)
         if obj is None:
-            return None
+            return "line"
 
-        # honor explicit connection hint
+        # explicit hint on the component
         conn = getattr(obj, "connection", None)
         if isinstance(conn, str):
             c = conn.strip().lower()
-            if c in ("from", "to"):
+            if c in ("from", "to"):  # honor if provided
                 return c
 
         # TRU convention: AC side 'to', DC side 'from'
@@ -318,7 +366,9 @@ def create_network_diagram(vehicle):
         if sup and con:
             name = (type(obj).__name__ + " " + str(getattr(obj, "tag", ""))).lower()
             return "from" if "generator" in name else "to"
-        return None
+
+        # Default: at least draw a line so the connection is visible
+        return "line"
 
     # -------------------- canvas --------------------
     num_buses  = len(distributors)
@@ -330,8 +380,6 @@ def create_network_diagram(vehicle):
 
     # draw helpers for connectors
     def draw_connector_top(top_y, bus_row, col, mode):
-        if mode is None:
-            return
         line_only = (mode == "line")
         for rr in range(top_y + BOX_H, bus_row):
             canvas[rr][col] = "|"
@@ -343,8 +391,6 @@ def create_network_diagram(vehicle):
                 canvas[bus_row - 1][col] = "v"
 
     def draw_connector_bottom(bus_row, bot_y, col, mode):
-        if mode is None:
-            return
         line_only = (mode == "line")
         for rr in range(bus_row + 1, bot_y):
             canvas[rr][col] = "|"
@@ -390,6 +436,7 @@ def create_network_diagram(vehicle):
         def as_item(tag_or_text):
             if isinstance(tag_or_text, str) and get_obj_by_tag(tag_or_text) is not None:
                 return (tag_or_text, tag_or_text)
+            # For cross-bus CAPS or unknowns, just show text and draw a line
             return (tag_or_text, None)
 
         attachments = [as_item(t) for t in upstream] \
@@ -397,11 +444,10 @@ def create_network_diagram(vehicle):
                     + linked_caps_items \
                     + [as_item(t) for t in loads]
 
-        # split onto top/bottom
+        # split onto top/bottom to avoid overlap
         tops, bottoms, flip = [], [], True
         for item in attachments:
-            if flip: tops.append(item)
-            else:    bottoms.append(item)
+            (tops if flip else bottoms).append(item)
             flip = not flip
 
         # bus row geometry

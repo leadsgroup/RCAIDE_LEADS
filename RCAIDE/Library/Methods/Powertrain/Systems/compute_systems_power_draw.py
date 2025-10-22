@@ -43,14 +43,11 @@ def compute_systems_power_draw(system, state):
     """
     system_conditions              = state.conditions.energy.systems[system.tag]    
 
-    stored_results_flag            = True
-    stored_system_tag              = system.tag  
-
     Power = system_conditions.power
 
     Power.propulsive               = 0.0 * state.ones_row(1)
     Power.mechanical               = 0.0 * state.ones_row(1)
-    Power.electrical               = - system.power_draw * state.ones_row(1) # Negative sign indicates power consumption
+    Power.electrical               = - system.power.electrical * state.ones_row(1) # Negative sign indicates power consumption
     Power.chemical                 = 0.0 * state.ones_row(1)
     Power.pneumatic                = 0.0 * state.ones_row(1)
     Power.hydraulic                = 0.0 * state.ones_row(1)

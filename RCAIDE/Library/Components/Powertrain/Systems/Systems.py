@@ -8,6 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------   
 # RCAIDE imports  
 from RCAIDE.Framework.Core import Data
+from RCAIDE.Library.Components.Component import Container
 from RCAIDE.Library.Components import Component
 from RCAIDE.Library.Methods.Powertrain.Systems.compute_systems_power_draw import compute_systems_power_draw
 from RCAIDE.Library.Methods.Powertrain.Systems.append_systems_conditions import append_systems_conditions
@@ -70,6 +71,7 @@ class Systems(Component):
         self.control               = None
         self.accessories           = None 
         self.assigned_distributors = []
+        self.power                 = Container()
         self.electrical_efficiency = 1.0
         self.mechanical_efficiency = 1.0
         self.hydraulic_efficiency  = 1.0
