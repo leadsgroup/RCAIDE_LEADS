@@ -7,52 +7,26 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 
 # RCAIDE imports  
-from RCAIDE.Library.Components import Component 
+from RCAIDE.Framework.Core           import Data
+from .Modulator                      import Modulator
 from RCAIDE.Library.Methods.Powertrain.Modulators.DC_to_DC_Converter.append_dcdc_conditions   import append_dcdc_conditions 
 from RCAIDE.Library.Methods.Powertrain.Modulators.DC_to_DC_Converter.compute_dcdc_performance import compute_dcdc_performance
  
 # ----------------------------------------------------------------------------------------------------------------------
 #  DC_to_DC_Converter Class
 # ---------------------------------------------------------------------------------------------------------------------- 
-class DC_to_DC_Converter(Component):
+class DC_to_DC_Converter(Modulator):
     """
-    Class for modeling DC_to_DC_Converters in electric propulsion systems
-    
-    Attributes
-    ----------
-    tag : str
-        Identifier for the DC_to_DC_Converter (default: 'DC_to_DC_Converter')
-        
-    efficiency : float
-        Power conversion efficiency of the DC_to_DC_Converter (default: 0.0)
-
-    Notes
-    -----
-    The DC_to_DC_Converter
-
-    See Also
-    --------
-    RCAIDE.Library.Components.Powertrain.Converters.Motor
-        Electric motor components controlled by the DC_to_DC_Converter
+   
     """
     
     def __defaults__(self):
         """
-        Sets default values for DC_to_DC_Converter attributes
-        
-        Notes
-        -----
-        Initializes the DC_to_DC_Converter with a default tag and zero efficiency. The efficiency
-        should be set to an appropriate value based on the specific DC_to_DC_Converter being modeled.
+       
         """         
 
-        self.tag                   = 'DC_to_DC_converter'  
+        self.tag                   = 'dc_to_dc_converter'  
         self.bus_voltage           = None
-        self.assigned_distributors = []
-        self.electrical_efficiency = 1.0
-        self.mechanical_efficiency = 1.0
-        self.hydraulic_efficiency  = 1.0
-        self.thermal_efficiency    = 1.0
 
     def append_operating_conditions(self,segment): 
         append_dcdc_conditions(self,segment)
@@ -60,5 +34,5 @@ class DC_to_DC_Converter(Component):
     
     def compute_performance(self,state):
 
-        Power, stored_results_flag,stored_modulator_tag =  compute_dcdc_performance(self,state)
-        return Power, stored_results_flag,stored_modulator_tag
+        inputs, outputs, stored_results_flag, stored_modulator_tag =  compute_dcdc_performance(self,state)
+        return inputs, outputs, stored_results_flag, stored_modulator_tag

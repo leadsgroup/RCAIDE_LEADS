@@ -9,7 +9,7 @@
 
  # RCAIDE imports 
 from RCAIDE.Framework.Core                              import Data , Units, Container
-from RCAIDE.Library.Components                          import Component  
+from .Converter                                         import Converter  
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.append_rotor_conditions import  append_rotor_conditions
 
 # package imports
@@ -17,9 +17,9 @@ import numpy as np
 import scipy as sp
 
 # ---------------------------------------------------------------------------------------------------------------------- 
-#  Generalized Rotor Class
+#  Rotor
 # ---------------------------------------------------------------------------------------------------------------------- 
-class Rotor(Component):
+class Rotor(Converter):
     """
     A generalized rotor component model serving as the base class for various rotary propulsion devices.
 

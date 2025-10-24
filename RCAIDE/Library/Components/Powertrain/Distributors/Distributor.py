@@ -1,6 +1,6 @@
-# RCAIDE/Library/Components/Powertrain/Converters/Converter.py 
+# RCAIDE/Library/Components/Powertrain/Distributors/Distributor.py 
 # 
-# Created:  Feb 2025, M. Clarke
+# Created:  Oct 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -10,11 +10,11 @@ from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Components                      import Component   
 
 # ---------------------------------------------------------------------------------------------------------------------- 
-#  Converter Component
+#  Distributor
 # ----------------------------------------------------------------------------------------------------------------------
-class Converter(Component):
+class Distributor(Component):
     """
-    A generatic converter class object used to build all converters. Inherits from the Component class.
+
     """
 
     def __defaults__(self):
@@ -27,7 +27,6 @@ class Converter(Component):
         self.tag                      = 'tag' 
         self.working_fluid            = Data()
         self.active                   = True
-        self.assigned_converters      = []
         self.assigned_distributors    = []
         self.efficiency               = Data()
         self.efficiency.electrical    = 1.0

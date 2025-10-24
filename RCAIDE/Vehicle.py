@@ -56,7 +56,7 @@ class Vehicle(Data):
         self.fuselages                                                     = Components.Fuselages.Fuselage.Container()
         self.wings                                                         = Components.Wings.Wing.Container()
         self.nacelles                                                      = Components.Nacelles.Nacelle.Container()
-        self.systems                                                       = Components.Powertrain.Systems.Systems()
+        self.systems                                                       = Components.Powertrain.Systems.System()
         self.booms                                                         = Components.Booms.Boom.Container()
         self.landing_gears                                                 = Components.Landing_Gear.Landing_Gear.Container()  
         self.cargo_bays                                                    = Components.Cargo_Bays.Cargo_Bay.Container() 
@@ -146,7 +146,7 @@ class Vehicle(Data):
         self._component_root_map = {
             Components.Fuselages.Fuselage              : self['fuselages']        ,
             Components.Wings.Wing                      : self['wings']            ,
-            Components.Powertrain.Systems.Systems      : self['systems']          , 
+            Components.Powertrain.Systems.System      : self['systems']          , 
             Components.Nacelles.Nacelle                : self['nacelles']         , 
             Components.Booms.Boom                      : self['booms']            ,
             Components.Landing_Gear.Landing_Gear       : self['landing_gears']    ,

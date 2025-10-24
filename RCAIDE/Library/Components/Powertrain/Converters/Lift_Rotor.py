@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Propulsors/Converters/Lift_Rotor.py
+# RCAIDE/Library/Components/Powertrain/Converters/Lift_Rotor.py
 # 
 # 
 # Created:  Mar 2024, M. Clarke 

@@ -15,7 +15,7 @@ from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.append_turboprop_con
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.compute_turboprop_performance  import compute_turboprop_performance, reuse_stored_turboprop_data
  
 # ---------------------------------------------------------------------------------------------------------------------- 
-#  Fan Component
+#  Turboprop
 # ---------------------------------------------------------------------------------------------------------------------- 
 class Turboprop(Propulsor):
     """
@@ -142,12 +142,12 @@ class Turboprop(Propulsor):
         """
         Computes turboprop performance including thrust, moment, and power.
         """
-        thrust,moment,Power,stored_results_flag,stored_propulsor_tag =  compute_turboprop_performance(self,state,center_of_gravity)
-        return thrust,moment,Power,stored_results_flag,stored_propulsor_tag
+        inputs, outputs, stored_results_flag, stored_propulsor_tag =  compute_turboprop_performance(self,state,center_of_gravity)
+        return inputs, outputs, stored_results_flag, stored_propulsor_tag
     
     def reuse_stored_data(turboprop,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
         """
         Reuses stored turboprop data for performance calculations.
         """
-        thrust,moment,Power  = reuse_stored_turboprop_data(turboprop,state,network,stored_propulsor_tag,center_of_gravity)
-        return thrust,moment,Power
+        inputs, outputs  = reuse_stored_turboprop_data(turboprop,state,network,stored_propulsor_tag,center_of_gravity)
+        return inputs, outputs

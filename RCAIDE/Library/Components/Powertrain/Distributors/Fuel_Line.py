@@ -10,14 +10,13 @@
 # RCAIDE imports  
 import RCAIDE
 from RCAIDE.Framework.Core                                    import Data
-from RCAIDE.Library.Components                                import Component
-from RCAIDE.Library.Components.Component                      import Container    
+from .Distributor                                           import Distributor   
 from RCAIDE.Library.Methods.Powertrain.Distributors.Fuel_Line import *
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Fuel Line
 # ---------------------------------------------------------------------------------------------------------------------- 
-class Fuel_Line(Component):
+class Fuel_Line(Distributor):
     """
     Class for managing fuel distribution between aircraft fuel system components
     
@@ -63,12 +62,11 @@ class Fuel_Line(Component):
         """          
         self.tag                           = 'fuel_line'  
         self.active                        = True 
+        self.domain                        = 'chemical'
         self.efficiency                    = 1.0
         self.inner_diameter                = 0.03
         self.outer_diameter                = 0.05
         self.length                        = 1 
-        self.assigned_distributors         = []
-        self.chemical_efficiency           = 1.0
         self.power_split_ratio             = 1.0
         self.pressure                      = 150000.0  # Pa
         
@@ -101,15 +99,21 @@ class Fuel_Line(Component):
 
     def compute_performance(self, state):
 
-        Power = {}
+        inputs = Data()
+        outputs = Data()
 
-        Power.propulsive  = state.conditions.energy.distributors[self.tag].net_propulsive
-        Power.mechanical  = state.conditions.energy.distributors[self.tag].net_mechanical
-        Power.electrical  = state.conditions.energy.distributors[self.tag].net_electrical
-        Power.chemical    = state.conditions.energy.distributors[self.tag].net_chemical  
-        Power.pneumatic   = state.conditions.energy.distributors[self.tag].net_pneumatic 
-        Power.hydraulic   = state.conditions.energy.distributors[self.tag].net_hydraulic 
-        Power.thermal     = state.conditions.energy.distributors[self.tag].net_thermal   
+        inputs.power.mechanical  = state.conditions.energy.distributors[self.tag].inputs.power.mechanical
+        inputs.power.electrical  = state.conditions.energy.distributors[self.tag].inputs.power.electrical
+        inputs.power.chemical    = state.conditions.energy.distributors[self.tag].inputs.power.chemical  
+        inputs.power.pneumatic   = state.conditions.energy.distributors[self.tag].inputs.power.pneumatic 
+        inputs.power.hydraulic   = state.conditions.energy.distributors[self.tag].inputs.power.hydraulic 
+        inputs.power.thermal     = state.conditions.energy.distributors[self.tag].inputs.power.thermal  
 
-        return Power
-        
+        outputs.power.mechanical = state.conditions.energy.distributors[self.tag].outputs.power.mechanical
+        outputs.power.electrical = state.conditions.energy.distributors[self.tag].outputs.power.electrical
+        outputs.power.chemical   = state.conditions.energy.distributors[self.tag].outputs.power.chemical  
+        outputs.power.pneumatic  = state.conditions.energy.distributors[self.tag].outputs.power.pneumatic 
+        outputs.power.hydraulic  = state.conditions.energy.distributors[self.tag].outputs.power.hydraulic 
+        outputs.power.thermal    = state.conditions.energy.distributors[self.tag].outputs.power.thermal  
+
+        return inputs, outputs

@@ -1,4 +1,4 @@
-# RCAIDE/Components/Propulsors/Converters/Reformer.py
+# RCAIDE/Components/Powertrain/Converters/Reformer.py
 # 
 # 
 # Created:  Jan 2025, M. Clarke, M. Guidotti
@@ -16,7 +16,7 @@ import numpy as np
 import scipy as sp
 
 # ---------------------------------------------------------------------------------------------------------------------- 
-#  Nacalle
+#  Reformer
 # ----------------------------------------------------------------------------------------------------------------------  
 class Reformer(Converter):
     """
@@ -105,7 +105,6 @@ class Reformer(Converter):
         self.LHV_H2       = 240.2    # [kJ/g-mol]        Lower heating value of Hydrogen
         self.LHV_CO       = 283.1    # [kJ/g-mol]        Lower heating value of Carbon Monoxide
         self.V_cat        = 9.653    # [cm**3]           Catalyst bed volume
-        self.eta          = 0.9
 
     def append_operating_conditions(self, segment):
         """Attach motor operating conditions to the segment's energy conditions."""
@@ -113,5 +112,5 @@ class Reformer(Converter):
         return
     
     def compute_performance(self,state):
-        Power,stored_results_flag,stored_converter_tag =  compute_reformer_performance(self,state)
-        return Power,stored_results_flag,stored_converter_tag
+        inputs, outputs, stored_results_flag,stored_converter_tag =  compute_reformer_performance(self,state)
+        return inputs, outputs, stored_results_flag,stored_converter_tag

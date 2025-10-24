@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Propulsors/Turbojet.py  
+# RCAIDE/Library/Components/Powertrain/Propulsors/Turbojet.py  
 #
 #
 # Created:  Mar 2024, M. Clarke
@@ -12,7 +12,6 @@ from .                          import Propulsor
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.design_turbojet                import design_turbojet
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.append_turbojet_conditions     import append_turbojet_conditions 
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.compute_turbojet_performance   import compute_turbojet_performance, reuse_stored_turbojet_data
- 
  
 # ----------------------------------------------------------------------
 #  Turbojet Propulsor
@@ -185,9 +184,9 @@ class Turbojet(Propulsor):
         return
     
     def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):
-        thrust,moment,Power,stored_results_flag,stored_propulsor_tag =  compute_turbojet_performance(self,state,center_of_gravity)
-        return thrust,moment,Power, stored_results_flag,stored_propulsor_tag
+        inputs, outputs, stored_results_flag, stored_propulsor_tag =  compute_turbojet_performance(self,state,center_of_gravity)
+        return inputs, outputs, stored_results_flag, stored_propulsor_tag
     
     def reuse_stored_data(turbojet,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
-        thrust,moment,Power  = reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,center_of_gravity)
-        return thrust,moment,Power
+        inputs, outputs = reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,center_of_gravity)
+        return inputs, outputs

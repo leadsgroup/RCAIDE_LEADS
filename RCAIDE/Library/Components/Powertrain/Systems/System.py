@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Powertrain/Systems/Systems.py
+# RCAIDE/Library/Components/Powertrain/Systems/System
 # 
 # Created:  Mar 2024, M. Clarke 
 # Modified: Sep 2025, M. Guidotti
@@ -16,7 +16,7 @@ from RCAIDE.Library.Methods.Powertrain.Systems.append_systems_conditions import 
 # ----------------------------------------------------------------------------------------------------------------------
 # System
 # ----------------------------------------------------------------------------------------------------------------------            
-class Systems(Component):
+class System(Component):
     """
     Base class for aircraft systems providing core functionality for modeling 
     onboard equipment and subsystems.
@@ -67,86 +67,16 @@ class Systems(Component):
         """
         Sets default values for the system attributes.
         """        
-        self.tag                   = 'System' 
-        self.control               = None
-        self.accessories           = None 
-        self.assigned_distributors = []
-        self.power                 = Container()
-        self.electrical_efficiency = 1.0
-        self.mechanical_efficiency = 1.0
-        self.hydraulic_efficiency  = 1.0
-        self.thermal_efficiency    = 1.0
-
-    def append_operating_conditions(self, segment): 
-        """
-        Adds operating conditions for the avionics system to a mission segment.
-
-        Parameters
-        ----------
-        segment : Data
-            Mission segment to which conditions are being added
-        bus : Data
-            Electrical bus supplying power to the avionics
-        """
-        append_systems_conditions(self, segment)
-        return
-    
-    def compute_performance(self, state):
-
-        Power = compute_systems_power_draw(self, state)
-
-        return Power
-
-class Hydraulic_System(Systems):
-    """
-    Subclass representing a hydraulic system.
-
-    Attributes
-    ----------
-    power_draw : float
-        Power consumption of the hydraulic system, defaults to 5.0
-    """
-    def __defaults__(self):
-        self.power_draw = 0.0
-        self.tag        = 'hydraulic_system'
-
-class Pneumatic_System(Systems):
-    """
-    Subclass representing a pneumatic system.
-
-    Attributes
-    ----------
-    power_draw : float
-        Power consumption of the pneumatic system, defaults to 3.0
-    """
-    def __defaults__(self):
-        self.power_draw = 0.0
-        self.tag        = 'pneumatic_system'
-
-class Avionics_System(Systems):
-    """
-    Subclass representing an avionic system.
-
-    Attributes
-    ----------
-    power_draw : float
-        Power consumption of the avionic system, defaults to 3.0
-    """
-    def __defaults__(self):
-        self.power_draw = 0.0
-        self.tag        = 'avionics_system'
-
-class Environmental_Control_System(Systems):
-    """
-    Subclass representing an avionic system.
-
-    Attributes
-    ----------
-    power_draw : float
-        Power consumption of the environmental control system, defaults to 3.0
-    """
-    def __defaults__(self):
-        self.power_draw = 0.0
-        self.tag        = 'environmental_control_system'
-
-        
+        self.tag                          = 'system' 
+        self.control                      = None
+        self.accessories                  = None
+        self.power_draw                   = 0.0
+        self.assigned_distributors        = []
+        self.efficiency                   = Data()
+        self.efficiency.propulsive        = 1.0
+        self.efficiency.electrical        = 1.0
+        self.efficiency.mechanical        = 1.0
+        self.efficiency.thermal           = 1.0
+        self.efficiency.chemical          = 1.0
+        self.efficiency.hydraulic         = 1.0
+        self.efficiency.pneumatic         = 1.0

@@ -7,14 +7,15 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 
 # RCAIDE imports  
-from RCAIDE.Library.Components import Component 
+from RCAIDE.Framework.Core import Data
+from .Modulator            import Modulator
 from RCAIDE.Library.Methods.Powertrain.Modulators.Inverter.append_inverter_conditions   import append_inverter_conditions 
 from RCAIDE.Library.Methods.Powertrain.Modulators.Inverter.compute_inverter_performance import compute_inverter_performance
  
 # ----------------------------------------------------------------------------------------------------------------------
 #  Inverter Class
 # ---------------------------------------------------------------------------------------------------------------------- 
-class Inverter(Component):
+class Inverter(Modulator):
     """
     Class for modeling inverters in electric propulsion systems
     
@@ -48,11 +49,6 @@ class Inverter(Component):
 
         self.tag                   = 'inverter'  
         self.bus_voltage           = None
-        self.assigned_distributors = []
-        self.electrical_efficiency = 1.0
-        self.mechanical_efficiency = 1.0
-        self.hydraulic_efficiency  = 1.0
-        self.thermal_efficiency    = 1.0
 
     def append_operating_conditions(self,segment): 
         """
@@ -75,5 +71,5 @@ class Inverter(Component):
     
     def compute_performance(self,state):
 
-        Power, stored_results_flag,stored_modulator_tag =  compute_inverter_performance(self,state)
-        return Power, stored_results_flag,stored_modulator_tag
+        inputs, outputs, stored_results_flag, stored_modulator_tag =  compute_inverter_performance(self,state)
+        return inputs, outputs, stored_results_flag, stored_modulator_tag

@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Propulsors/Ram_Air_Turbine.py
+# RCAIDE/Library/Components/Powertrain/Converters/Ram_Air_Turbine.py
 # 
 #  
 # Created:  Sep. 2025, M. Guidotti 
@@ -8,12 +8,12 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 ## RCAIDE imports
 from RCAIDE.Framework.Core                  import Data 
-from .Components                            import Component
+from .Converter                             import Converter
  
 # ----------------------------------------------------------------------
 #  Ram_Air_Turbine
 # ----------------------------------------------------------------------
-class Ram_Air_Turbine(Component):
+class Ram_Air_Turbine(Converter):
     """
     A Ram_Air_Turbine propulsion system model that simulates the performance of a Ram_Air_Turbine engine.
    

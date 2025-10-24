@@ -9,13 +9,13 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports
 from RCAIDE.Framework.Core        import Data
-from RCAIDE.Library.Components    import Component   
+from RCAIDE.Library.Components.Powertrain.Sources.Source    import Source   
 from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_conditions import append_battery_conditions, append_battery_segment_conditions
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Battery
 # ----------------------------------------------------------------------------------------------------------------------      
-class Generic_Battery_Module(Component):
+class Generic_Battery_Module(Source):
     """
     Base class for battery module implementations
     
@@ -138,12 +138,6 @@ class Generic_Battery_Module(Component):
         self.geometrtic_configuration.normal_spacing           = 0.02
         self.geometrtic_configuration.stacking_rows            = 3
         self.geometrtic_configuration.parallel_spacing         = 0.02   
-        
-        self.assigned_distributors                             = []             
-        self.electrical_efficiency                             = 1.0
-        self.mechanical_efficiency                             = 1.0
-        self.hydraulic_efficiency                              = 1.0
-        self.thermal_efficiency                                = 1.0
  
     def append_operating_conditions(self,segment):  
         """

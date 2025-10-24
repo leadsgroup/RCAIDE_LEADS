@@ -208,7 +208,7 @@ def plot_powertrain_power(results,
             if show_legend and len(legend_dict) > 0:
                 fig.legend(list(legend_dict.values()),
                            [h.get_label() for h in legend_dict.values()],
-                           bbox_to_anchor=(0.5, 0.98), loc='upper center', ncol=4)
+                           bbox_to_anchor=(0.5, 0.96), loc='upper center', ncol=8)
 
             title_text = f"{distributor.tag.replace('_', ' ').title()} Power Profile"
             fig.tight_layout()

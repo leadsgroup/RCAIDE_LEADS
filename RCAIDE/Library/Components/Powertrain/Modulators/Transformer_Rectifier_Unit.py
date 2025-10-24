@@ -6,15 +6,16 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
 
-# RCAIDE imports  
-from RCAIDE.Library.Components import Component 
+# RCAIDE imports
+from RCAIDE.Framework.Core import Data  
+from .Modulator            import Modulator
 from RCAIDE.Library.Methods.Powertrain.Modulators.Transformer_Rectifier_Unit.append_tru_conditions   import append_tru_conditions 
 from RCAIDE.Library.Methods.Powertrain.Modulators.Transformer_Rectifier_Unit.compute_tru_performance import compute_tru_performance
  
 # ----------------------------------------------------------------------------------------------------------------------
 #  Transformer_Rectifier_Unit Class
 # ---------------------------------------------------------------------------------------------------------------------- 
-class Transformer_Rectifier_Unit(Component):
+class Transformer_Rectifier_Unit(Modulator):
     """
     Class for modeling Transformer_Rectifier_Units in electric propulsion systems
     
@@ -53,12 +54,6 @@ class Transformer_Rectifier_Unit(Component):
         self.R_load                = 0.0
         self.Idc_set               = 50.0
         self.Pdc_max               = 5000.0
-        self.assigned_distributors = []
-        self.electrical_efficiency = 1.0
-        self.mechanical_efficiency = 1.0
-        self.hydraulic_efficiency  = 1.0
-        self.thermal_efficiency    = 1.0
-        self.power_split_ratio     = 1.0
 
     def append_operating_conditions(self,segment): 
         """
@@ -81,5 +76,5 @@ class Transformer_Rectifier_Unit(Component):
     
     def compute_performance(self, network, state):
 
-        Power, stored_results_flag,stored_modulator_tag =  compute_tru_performance(self, network, state)
-        return Power, stored_results_flag,stored_modulator_tag
+        inputs, outputs, stored_results_flag, stored_modulator_tag = compute_tru_performance(self, network, state)
+        return inputs, outputs, stored_results_flag, stored_modulator_tag

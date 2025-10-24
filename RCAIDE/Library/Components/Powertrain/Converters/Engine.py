@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Propulsors/Converters/Engine.py
+# RCAIDE/Library/Components/Powertrain/Converters/Engine.py
 # (c) Copyright 2023 Aerospace Research Community LLC
 # 
 # Created:  Mar 2024, M. Clarke
@@ -11,7 +11,7 @@ from .Converter  import Converter
 from RCAIDE.Library.Methods.Powertrain.Converters.Engine.append_engine_conditions import append_engine_conditions
 
 # ---------------------------------------------------------------------------------------------------------------------- 
-#  Engine Class
+#  Engine 
 # ----------------------------------------------------------------------------------------------------------------------  
 class Engine(Converter):
     """

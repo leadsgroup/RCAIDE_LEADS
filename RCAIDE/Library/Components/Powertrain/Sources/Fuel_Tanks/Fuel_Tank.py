@@ -3,19 +3,21 @@
 # 
 # Created:  Mar 2024, M. Clarke 
 # Modified: Aug 2025, S. Shekar
+# Modified: Oct 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE imports 
-from RCAIDE.Library.Components          import Component
+from RCAIDE.Framework.Core               import Data
+from RCAIDE.Library.Components.Powertrain.Sources.Source   import Source
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks  import * 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Fuel Tank
 # ---------------------------------------------------------------------------------------------------------------------     
-class Fuel_Tank(Component):
+class Fuel_Tank(Source):
     """
     Base class for aircraft fuel tank implementations
     
@@ -69,11 +71,6 @@ class Fuel_Tank(Component):
         self.outer_height                          = 0.0
         self.inner_diameter                        = 0.0
         self.outer_diameter                        = 0.0
-        self.assigned_distributors                 = []
-        self.electrical_efficiency                 = 1.0
-        self.mechanical_efficiency                 = 1.0
-        self.hydraulic_efficiency                  = 1.0
-        self.thermal_efficiency                    = 1.0
  
     def append_operating_conditions(self,segment):  
         """
@@ -90,5 +87,5 @@ class Fuel_Tank(Component):
         return
     
     def compute_performance(self,state,fuel_line):
-        Power = compute_fuel_tank_properties(self,state,fuel_line)
-        return Power
+        inputs, outputs = compute_fuel_tank_properties(self,state,fuel_line)
+        return inputs, outputs

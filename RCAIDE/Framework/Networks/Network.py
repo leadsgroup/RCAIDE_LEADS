@@ -85,32 +85,9 @@ class Network(Component):
     def evaluate(network,state,center_of_gravity):
         """ Computes the performance of the network.
         
-            This routine evaluates propulsors, converters, modulators, distributors, sources, and systems,
-            and assembles forces, moments, and power balances.
-        
-            Energetic domains (Effort–Flow pairs) used in the model follow the power-conjugate convention:
-        
-            +------------+--------------------------+--------------------+----------------+----------------+
-            | Domain     | Effort                   | Flow               | Power Relation | Units          |
-            +============+==========================+====================+================+================+
-            | Propulsive | Force (F)                | Velocity (v)       | P = F · v      | N, m/s → W     |
-            +------------+--------------------------+--------------------+----------------+----------------+
-            | Mechanical | Torque (τ)               | Angular speed (ω)  | P = τ · ω      | N·m, rad/s → W |
-            +------------+--------------------------+--------------------+----------------+----------------+
-            | Electrical | Voltage (V)              | Current (I)        | P = V · I      | V, A → W       |
-            +------------+--------------------------+--------------------+----------------+----------------+
-            | Chemical   | Lower Heating Value (LHV)| Mass flow (ṁ)      | P = ṁ·LHV      | J/kg, kg/s → W |
-            +------------+--------------------------+--------------------+----------------+----------------+
-            | Pneumatic  | Pressure (p)             | Vol. flow rate (Ṽ) | P = p · Ṽ      | Pa, m³/s → W   |
-            +------------+--------------------------+--------------------+----------------+----------------+
-            | Hydraulic  | Pressure (p)             | Vol. flow rate (Ṽ) | P = p · Ṽ      | Pa, m³/s → W   |
-            +------------+--------------------------+--------------------+----------------+----------------+
-            | Thermal    | Temperature (T)          | Entropy flow (Ṡ)   | P = T · Ṡ      | K, W/K → W     |
-            +------------+--------------------------+--------------------+----------------+----------------+
-
             Notes
             -----
-            * Electrical bus power balance uses the sign convention: 
+            * Power balance uses the sign convention: 
             negative = leaving the distributor, positive = feeding the distributor.
         """ 
 
@@ -127,10 +104,6 @@ class Network(Component):
         total_moment            = 0. * state.ones_row(3)  
         total_mdot              = 0. * state.ones_row(1) 
         total_propulsive_power  = 0. * state.ones_row(1)
-
-        # Accumulator for engine chemical power draw (negative when drawing from fuel line)
-        ncp = state.numerics.number_of_control_points
-        engine_chem_draw = np.zeros((ncp, 1))
 
         # ----------------------------------------------------------       
         # Propulsors
@@ -152,147 +125,37 @@ class Network(Component):
 
                 total_thrust             += Thrust   
                 total_moment             += Moment  
-                total_propulsive_power   += Power.propulsive
+                total_propulsive_power   += Power.outputs.propulsive
                 
                 if isinstance(propulsor,RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or \
                     isinstance(propulsor,RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet) or \
                     isinstance(propulsor,RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop) or \
                     isinstance(propulsor,RCAIDE.Library.Components.Powertrain.Propulsors.Internal_Combustion_Engine) or \
                     isinstance(propulsor,RCAIDE.Library.Components.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine):
-                    total_mdot               += - Power.chemical/network.sources.fuel_tank.fuel.lower_heating_value
+                    total_mdot               += Power.inputs.chemical/network.sources.fuel_tank.fuel.lower_heating_value
 
         for system in systems:
-            Power = system.compute_performance(state)
-
-        # --- Ensure the fuel tank supplies the *sum* of engine chemical draws to the fuel_line
-        try:
-            tank_rec = conditions.energy.sources['fuel_tank']
-        except Exception:
-            tank_rec = None
-
-        if tank_rec is not None:
-            # Ensure flat and per-link structures exist
-            if not hasattr(tank_rec, 'power'):
-                tank_rec.power = RCAIDE.Framework.Mission.Common.Conditions()
-            if getattr(tank_rec.power, 'chemical', None) is None:
-                tank_rec.power.chemical = np.zeros((ncp, 1))
-            if not hasattr(tank_rec, 'power_by_distributor'):
-                tank_rec.power_by_distributor = {}
-            if 'fuel_line' not in tank_rec.power_by_distributor:
-                tank_rec.power_by_distributor['fuel_line'] = np.zeros((ncp, 1))
-
-            # Tank supplies positive chemical power into the fuel_line equal to -engine_chem_draw
-            # engine_chem_draw is negative; we want a positive supply of the same magnitude
-            tank_supply = -engine_chem_draw[:, 0]
-            tank_rec.power_by_distributor['fuel_line'][:, 0] = tank_supply
-
-            # Optionally keep the flat chemical field consistent with the net tank output
-            tank_rec.power.chemical[:, 0] = tank_supply
+            _ = system.compute_performance(state)
 
         # ----------------------------------------------------------
-        # Solve distributor power balances (simple, explicit version)
+        # Solve distributor power balances 
         # ----------------------------------------------------------
-        # Sign convention (link seen from TARGET distributor):
-        #   +P  = component supplies distributor (source on distributor)
-        #   -P  = component draws from distributor (load to distributor)
-        #
-        # Per distributor i and domain d:  sum_over_links_into_(i,d) P_link = 0
-
-        # 0) collect ordered lists and tags (keep it visibly simple)
-
-        print(
-            f"# dist:{len(network.distributors)} "
-            f"# prop:{len(network.propulsors)} "
-            f"# conv:{len(network.non_propulsive_converters)} "
-            f"# mod:{len(network.modulators)} "
-            f"# sys:{len(network.systems)} "
-            f"# src:{len(network.sources)}"
-        )
-
-        # 1) distributor->domain map (what domain to use when a link targets this distributor)
-        domain = {}
-        for distributor in network.distributors:
-            if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
-                domain[distributor.tag] = 'electrical'
-            elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
-                domain[distributor.tag] = 'chemical'
-            elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line):
-                domain[distributor.tag] = 'thermal'
-            else:
-                domain[distributor.tag] = None
-        print(f"domain (by distributor): {domain}")
 
         # 2) build a flat list of LINKS: (group, comp_tag, dist_tag, domain)
         links = []
 
-        print("Building links from components → distributors")
-        for group_name in ['propulsors', 'converters', 'modulators', 'systems', 'sources']:
+        # Building links from components → distributors"
+        for group_name in ['propulsors', 'non_propulsive_converters', 'modulators', 'systems', 'sources', 'distributors']:
             group = getattr(network, group_name)
-            for comp in group:
-                ads = getattr(comp, 'assigned_distributors', [])
-                # flatten up to two nesting levels without helpers
-                for ad in ads:
-                    lvl1 = ad if isinstance(ad, (list, tuple, set)) else [ad]
-                    for tag1 in lvl1:
-                        lvl2 = tag1 if isinstance(tag1, (list, tuple, set)) else [tag1]
-                        for dist_tag in lvl2:
-                            if isinstance(dist_tag, str):
-                                if dist_tag in domain and domain[dist_tag] is not None:
-                                    dom = domain[dist_tag]
-                                    links.append((group_name, comp.tag, dist_tag, dom))
-                                    print(f"  + link: ({group_name}, {comp.tag}, {dist_tag}, {dom})")
-                                else:
-                                    print(f"  - skip: tag '{dist_tag}' not in domain or domain is None")
-                            else:
-                                # this is the case that caused "unhashable type: 'list'"
-                                print(f"  - skip non-string tag under {comp.tag}: {dist_tag} (type {type(dist_tag)})")
-
-        print("Building links from distributors → distributors")
-        for src_d in network.distributors:
-            ads = getattr(src_d, 'assigned_distributors', [])
-            for ad in ads:
-                lvl1 = ad if isinstance(ad, (list, tuple, set)) else [ad]
-                for tag1 in lvl1:
-                    lvl2 = tag1 if isinstance(tag1, (list, tuple, set)) else [tag1]
-                    for dist_tag in lvl2:
-                        if isinstance(dist_tag, str):
-                            if dist_tag in domain and domain[dist_tag] is not None:
-                                dom = domain[dist_tag]
-                                links.append(('distributors', src_d.tag, dist_tag, dom))
-                                print(f"  + link: (distributors, {src_d.tag}, {dist_tag}, {dom})")
-                            else:
-                                print(f"  - skip: tag '{dist_tag}' not in domain or domain is None")
-                        else:
-                            print(f"  - skip non-string dist_tag under distributor {src_d.tag}: {dist_tag} (type {type(dist_tag)})")
-
-        print(f"Total links found: {len(links)}")
-
-        # ensure a per-link storage exists (power as seen by each target distributor)
-        ncp = state.numerics.number_of_control_points
-        def ensure_pbd(rec, dist_tag):
-            if not hasattr(rec, "power_by_distributor"):
-                rec.power_by_distributor = {}
-            if dist_tag not in rec.power_by_distributor:
-                rec.power_by_distributor[dist_tag] = np.zeros((ncp, 1))
-
-        for grp, comp_tag, dist_tag, dom in links:
-            if grp == 'propulsors':
-                rec = conditions.energy.propulsors[comp_tag]
-            elif grp == 'converters':
-                rec = conditions.energy.converters[comp_tag]
-            elif grp == 'modulators':
-                rec = conditions.energy.modulators[comp_tag]
-            elif grp == 'systems':
-                rec = conditions.energy.systems[comp_tag]
-            elif grp == 'sources':
-                rec = conditions.energy.sources[comp_tag]
-            else:
-                rec = conditions.energy.distributors[comp_tag]
-            ensure_pbd(rec, dist_tag)
-                
+            for component in group:
+                if len(component.assigned_distributors) > 0:
+                    for assigned_distributor_tag in component.assigned_distributors[0]:
+                        links.append((group_name, component.tag, assigned_distributor_tag, network.distributors[assigned_distributor_tag].domain))
+    
         # 3) solve A x = b at each control point
         for t_idx in range(state.numerics.number_of_control_points):
-            tiny = 1e-12
+            
+            epsilon = 1e-12
 
             # 3a) decide which links are KNOWN (non-zero) vs UNKNOWN (zero) at this t_idx
             unknown_cols = {}
@@ -300,41 +163,6 @@ class Network(Component):
 
             # First pass: detect which TRUs need a shared unknown (if ANY of their links is unknown)
             tru_needs_unknown = set()
-
-            for grp, comp_tag, dist_tag, dom in links:
-                if grp == 'propulsors':
-                    rec = conditions.energy.propulsors[comp_tag]
-                elif grp == 'converters':
-                    rec = conditions.energy.converters[comp_tag]
-                elif grp == 'modulators':
-                    rec = conditions.energy.modulators[comp_tag]
-                elif grp == 'systems':
-                    rec = conditions.energy.systems[comp_tag]
-                elif grp == 'sources':
-                    rec = conditions.energy.sources[comp_tag]
-                else:
-                    rec = conditions.energy.distributors[comp_tag]
-
-                # Prefer per-link value for this distributor if present and non-zero; otherwise fall back to flat field
-                vflat = float(getattr(rec.power, dom)[t_idx, 0]) if hasattr(rec, 'power') and getattr(rec.power, dom, None) is not None else 0.0
-                vlink = 0.0
-                pbd   = getattr(rec, 'power_by_distributor', None)
-                if isinstance(pbd, dict) and (dist_tag in pbd) and (pbd[dist_tag] is not None):
-                    try:
-                        vlink = float(pbd[dist_tag][t_idx, 0])
-                    except Exception:
-                        vlink = 0.0
-                val = vlink if abs(vlink) >= tiny else vflat
-
-                if grp == 'modulators':
-                    # Is this component a TRU?
-                    is_tru = False
-                    for m in network.modulators:
-                        if m.tag == comp_tag:
-                            is_tru = isinstance(m, RCAIDE.Library.Components.Powertrain.Modulators.Transformer_Rectifier_Unit)
-                            break
-                    if is_tru and abs(val) < 1e-12:
-                        tru_needs_unknown.add(comp_tag)
 
             # Second pass: add unknowns
             for grp, comp_tag, dist_tag, dom in links:
@@ -353,13 +181,13 @@ class Network(Component):
 
                 vflat = float(getattr(rec.power, dom)[t_idx, 0]) if hasattr(rec, 'power') and getattr(rec.power, dom, None) is not None else 0.0
                 vlink = 0.0
-                pbd   = getattr(rec, 'power_by_distributor', None)
+                pbd   = rec.power_by_distributor
                 if isinstance(pbd, dict) and (dist_tag in pbd) and (pbd[dist_tag] is not None):
                     try:
-                        vlink = float(pbd[dist_tag][t_idx, 0])
+                        vlink = pbd[dist_tag][t_idx, 0]
                     except Exception:
                         vlink = 0.0
-                val = vlink if abs(vlink) >= tiny else vflat
+                val = vlink if abs(vlink) >= epsilon else vflat
 
                 is_tru = False
                 if grp == 'modulators':
@@ -454,7 +282,7 @@ class Network(Component):
                         if not hasattr(rec, "power_by_distributor"):
                             rec.power_by_distributor = {}
                         if dist_tag not in rec.power_by_distributor:
-                            rec.power_by_distributor[dist_tag] = np.zeros((ncp, 1))
+                            rec.power_by_distributor[dist_tag] = np.zeros((state.numerics.number_of_control_points, 1))
                         rec.power_by_distributor[dist_tag][t_idx, 0] = pow
                     else:
                         col = unknown_cols[(grp, comp_tag, dist_tag, dom)]
@@ -478,7 +306,7 @@ class Network(Component):
                     if not hasattr(conditions.energy.modulators[comp_tag], "power_by_distributor"):
                         conditions.energy.modulators[comp_tag].power_by_distributor = {}
                     if dist_tag not in conditions.energy.modulators[comp_tag].power_by_distributor:
-                        conditions.energy.modulators[comp_tag].power_by_distributor[dist_tag] = np.zeros((ncp, 1))
+                        conditions.energy.modulators[comp_tag].power_by_distributor[dist_tag] = np.zeros((state.numerics.number_of_control_points, 1))
                     conditions.energy.modulators[comp_tag].power_by_distributor[dist_tag][t_idx, 0] = pow
                 else:
                     # Determine which side this row is: AC or DC bus

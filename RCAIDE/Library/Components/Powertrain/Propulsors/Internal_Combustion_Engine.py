@@ -1,13 +1,15 @@
-# RCAIDE/Library/Components/Propulsors/ICE_Propeller.py
+# RCAIDE/Library/Components/Powertrain/Propulsors/ICE_Propeller.py
 # 
 #  
 # Created:  Mar 2024, M. Clarke
+# Modified: Oct 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
  # RCAIDE imports
 import  RCAIDE
+from RCAIDE.Framework.Core                    import Data
 from .                import Propulsor  
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Internal_Combustion_Engine.unpack_internal_combustion_engine_unknowns   import unpack_internal_combustion_engine_unknowns
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Internal_Combustion_Engine.pack_internal_combustion_engine_residuals    import pack_internal_combustion_engine_residuals
@@ -105,12 +107,12 @@ class Internal_Combustion_Engine(Propulsor):
         """
         Computes propulsor performance including thrust, moment, and power.
         """
-        thrust,moment,Power,stored_results_flag,stored_propulsor_tag =  compute_internal_combustion_engine_performance(self,state,center_of_gravity)
-        return thrust,moment,Power,stored_results_flag,stored_propulsor_tag
+        inputs, outputs, stored_results_flag, stored_propulsor_tag =  compute_internal_combustion_engine_performance(self,state,center_of_gravity)
+        return inputs, outputs, stored_results_flag, stored_propulsor_tag
     
     def reuse_stored_data(ICE_prop, state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
         """
         Reuses stored propulsor data for performance calculations.
         """
-        thrust,moment,Power = reuse_stored_internal_combustion_engine_data(ICE_prop,state,network,stored_propulsor_tag,center_of_gravity)
-        return thrust,moment,Power
+        inputs, outputs = reuse_stored_internal_combustion_engine_data(ICE_prop,state,network,stored_propulsor_tag,center_of_gravity)
+        return inputs, outputs

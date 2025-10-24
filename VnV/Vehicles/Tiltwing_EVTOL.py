@@ -208,7 +208,7 @@ def vehicle_setup(new_regression=True):
     # add to vehicle
     vehicle.append_component(fuselage)    
    
-    sys                            = RCAIDE.Library.Components.Powertrain.Systems.Systems()
+    sys                            = RCAIDE.Library.Components.Powertrain.Systems.System()
     sys.mass_properties.mass       = 5 # kg   
     vehicle.append_component(sys)    
 

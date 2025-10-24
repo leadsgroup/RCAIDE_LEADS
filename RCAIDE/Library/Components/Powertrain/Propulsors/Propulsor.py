@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Propulsors/Propuslor.py
+# RCAIDE/Library/Components/Powertrain/Propulsors/Propuslor.py
 #  
 # 
 # Created:  Mar 2024, M. Clarke 
@@ -12,7 +12,6 @@ import RCAIDE
 from RCAIDE.Framework.Core               import Data
 from RCAIDE.Library.Components           import Component 
 from RCAIDE.Framework.Mission.Common     import Conditions
-
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Propusor
@@ -92,7 +91,11 @@ class Propulsor(Component):
         self.assigned_converters          = []
         self.assigned_distributors        = []
         self.nacelle                      = []
-        self.electrical_efficiency        = 1.0
-        self.mechanical_efficiency        = 1.0
-        self.hydraulic_efficiency         = 1.0
-        self.thermal_efficiency           = 1.0
+        self.efficiency                   = Data()
+        self.efficiency.propulsive        = 1.0
+        self.efficiency.electrical        = 1.0
+        self.efficiency.mechanical        = 1.0
+        self.efficiency.thermal           = 1.0
+        self.efficiency.chemical          = 1.0
+        self.efficiency.hydraulic         = 1.0
+        self.efficiency.pneumatic         = 1.0

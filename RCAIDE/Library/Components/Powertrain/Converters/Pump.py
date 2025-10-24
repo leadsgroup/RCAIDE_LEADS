@@ -6,13 +6,14 @@
 #  Imports
 # ----------------------------------------------------------------------
 from RCAIDE.Framework.Core import Data
+from RCAIDE.Library.Components.Powertrain.Converters import Converter
 from RCAIDE.Library.Methods.Powertrain.Converters.Pump.append_pump_conditions import append_pump_conditions
 from RCAIDE.Library.Methods.Powertrain.Converters.Pump.compute_pump_performance import compute_pump_performance
 
 # ----------------------------------------------------------------------
 #  Pump
 # ----------------------------------------------------------------------
-class Pump(Data):
+class Pump(Converter):
     """
     """
 
@@ -21,8 +22,8 @@ class Pump(Data):
         
         """
         self.tag        = 'Pump'
-        self.efficiency = 1.0
         self.delta_p    = 0.0
+
         return
     
     def append_operating_conditions(self, segment):
@@ -32,5 +33,5 @@ class Pump(Data):
     
     def compute_performance(self,state):
 
-        Power,stored_results_flag,stored_converter_tag =  compute_pump_performance(self,state)
-        return Power,stored_results_flag,stored_converter_tag
+        inputs, outputs, stored_results_flag, stored_converter_tag =  compute_pump_performance(self,state)
+        return inputs, outputs, stored_results_flag, stored_converter_tag

@@ -1,15 +1,16 @@
-# RCAIDE/Library/Components/Converters/Turboshaft.py
+# RCAIDE/Library/Components/Powertrain/Converters/Turboshaft.py
 # 
 #  
 # Created:  Mar 2024, M. Clarke
-# Modified: Jun 2024, M. Guidotti  
+# Modified: Oct 2025, M. Guidotti  
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
-## RCAIDE imports
+# RCAIDE imports
 import RCAIDE
-from .Converter                             import Converter
+from RCAIDE.Framework.Core                    import Data
+from .Converter                               import Converter
 from RCAIDE.Library.Methods.Powertrain.Converters.Turboshaft.append_turboshaft_conditions     import append_turboshaft_conditions 
 from RCAIDE.Library.Methods.Powertrain.Converters.Turboshaft.compute_turboshaft_performance   import compute_turboshaft_performance, reuse_stored_turboshaft_data
  
@@ -140,13 +141,13 @@ class Turboshaft(Converter):
     def append_propulsor_unknowns_and_residuals(self,segment): 
         return
     
-    def compute_performance(self,state,converter = None,fuel_line = None,bus = None):
+    def compute_performance(self,state,fuel_line = None,bus = None):
         """
         Computes turboshaft performance including thrust, moment, and power.
         """
-        Power,stored_results_flag,stored_converter_tag =  compute_turboshaft_performance(self,state,fuel_line=fuel_line,bus=bus)
-        return  Power, stored_results_flag,stored_converter_tag
+        inputs, outputs, stored_results_flag, stored_converter_tag =  compute_turboshaft_performance(self,state,fuel_line=fuel_line,bus=bus)
+        return inputs, outputs, stored_results_flag, stored_converter_tag
     
     def reuse_stored_data(turboshaft,state,network,stored_propulsor_tag = None):
-        power  = reuse_stored_turboshaft_data(turboshaft,state,network,stored_propulsor_tag)
-        return power 
+        inputs, outputs  = reuse_stored_turboshaft_data(turboshaft,state,network,stored_propulsor_tag)
+        return inputs, outputs 

@@ -1,6 +1,6 @@
-# RCAIDE/Library/Components/Powertrain/Converters/Converter.py 
+# RCAIDE/Library/Components/Powertrain/Modulators/Modulator.py 
 # 
-# Created:  Feb 2025, M. Clarke
+# Created:  Oct 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -12,9 +12,9 @@ from RCAIDE.Library.Components                      import Component
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Converter Component
 # ----------------------------------------------------------------------------------------------------------------------
-class Converter(Component):
+class Modulator(Component):
     """
-    A generatic converter class object used to build all converters. Inherits from the Component class.
+    A generatic modulator class object used to build all modulators. Inherits from the Component class.
     """
 
     def __defaults__(self):
@@ -27,7 +27,6 @@ class Converter(Component):
         self.tag                      = 'tag' 
         self.working_fluid            = Data()
         self.active                   = True
-        self.assigned_converters      = []
         self.assigned_distributors    = []
         self.efficiency               = Data()
         self.efficiency.electrical    = 1.0

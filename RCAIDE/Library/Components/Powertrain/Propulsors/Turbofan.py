@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Propulsors/Turbofan.py 
+# RCAIDE/Library/Components/Powertrain/Propulsors/Turbofan.py 
 #
 #
 # Created:  Mar 2024, M. Clarke
@@ -15,7 +15,7 @@ from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.append_turbofan_condi
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_turbofan_performance   import compute_turbofan_performance, reuse_stored_turbofan_data
  
 # ---------------------------------------------------------------------------------------------------------------------- 
-#  Fan Component
+#  Turbofan
 # ---------------------------------------------------------------------------------------------------------------------- 
 class Turbofan(Propulsor):
     """
@@ -169,9 +169,6 @@ class Turbofan(Propulsor):
         self.reference_pressure                         = 1.01325*10**5 
         self.design_thrust                              = 0.0
         self.mass_flow_rate_design                      = 0.0
-        self.power_mech                                 = 0.0
-        self.power_hydr                                 = 0.0
-        self.power_therm                                = 0.0
         self.assigned_converters                        = Data() 
 
         self.emission_indices                           = Data()  
@@ -211,12 +208,12 @@ class Turbofan(Propulsor):
         """
         Computes turbofan performance including thrust, moment, and power.
         """
-        thrust,moment,Power,stored_results_flag,stored_propulsor_tag =  compute_turbofan_performance(self,state, network, center_of_gravity)
-        return thrust,moment,Power,stored_results_flag,stored_propulsor_tag
+        inputs, outputs, stored_results_flag, stored_propulsor_tag =  compute_turbofan_performance(self,state, network, center_of_gravity)
+        return inputs, outputs, stored_results_flag, stored_propulsor_tag
     
     def reuse_stored_data(turbofan,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
         """
         Reuses stored turbofan data for performance calculations.
         """
-        thrust,moment,Power  = reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,center_of_gravity)
-        return thrust,moment,Power
+        inputs, outputs  = reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,center_of_gravity)
+        return inputs, outputs

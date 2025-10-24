@@ -1,13 +1,15 @@
-# RCAIDE/Library/Components/Propulsors/Electric_Ducted_Fan.py
+# RCAIDE/Library/Components/Powertrain/Propulsors/Electric_Ducted_Fan.py
 # 
 # 
 # Created:  Oct 2024, M. Clarke
+# Modified: Oct 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
  # RCAIDE imports
 import  RCAIDE
+from RCAIDE.Framework.Core                    import Data
 from .   import Propulsor  
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan.append_electric_ducted_fan_conditions           import append_electric_ducted_fan_conditions
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan.unpack_electric_ducted_fan_unknowns             import unpack_electric_ducted_fan_unknowns
@@ -89,9 +91,9 @@ class Electric_Ducted_Fan(Propulsor):
         return 
     
     def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):
-        thrust,moment,Power,stored_results_flag,stored_propulsor_tag =  compute_electric_ducted_fan_performance(self,state,center_of_gravity)
-        return thrust,moment,Power, stored_results_flag,stored_propulsor_tag
+        inputs, outputs, stored_results_flag, stored_propulsor_tag =  compute_electric_ducted_fan_performance(self,state,center_of_gravity)
+        return inputs, outputs, stored_results_flag, stored_propulsor_tag
     
     def reuse_stored_data(EDF,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
-        thrust,moment,Power = reuse_stored_electric_ducted_fan_data(EDF,state,network,stored_propulsor_tag,center_of_gravity)
-        return thrust,moment,Power
+        inputs, outputs = reuse_stored_electric_ducted_fan_data(EDF,state,network,stored_propulsor_tag,center_of_gravity)
+        return inputs, outputs

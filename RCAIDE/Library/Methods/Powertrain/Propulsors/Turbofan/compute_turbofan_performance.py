@@ -404,14 +404,14 @@ def compute_turbofan_performance(turbofan, state, network, center_of_gravity=[[0
             compressor_motor_conditions.outputs.power   = power * conditions.energy.hybrid_power_split_ratio   
             compressor_motor_conditions.outputs.omega   = lpc_conditions.omega
             compressor_motor_conditions.outputs.torque  = compressor_motor_conditions.outputs.power / compressor_motor_conditions.outputs.omega   
-            turbofan_conditions.power.electrical =  - compressor_motor_conditions.outputs.power     # negative because it is consumed power
+            turbofan_conditions.inputs.power.electrical = compressor_motor_conditions.outputs.power     # negative because it is consumed power
         
         elif isinstance(network.converters[converter[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Generator) and len(state.numerics.time.differentiate) > 0: 
             compressor_generator_conditions                = conditions.energy.converters[converter[0][0]] 
             compressor_generator_conditions.inputs.power   = power * conditions.energy.hybrid_power_split_ratio #+ systems_power_draw
             compressor_generator_conditions.inputs.omega   = lpc_conditions.omega
             compressor_generator_conditions.inputs.torque  = compressor_generator_conditions.inputs.power / compressor_generator_conditions.inputs.omega  
-            turbofan_conditions.power.electrical =  + compressor_generator_conditions.inputs.power   # positive because it is supplied power
+            turbofan_conditions.outputs.power.electrical   = compressor_generator_conditions.inputs.power   # positive because it is supplied power
   
     # store data
     core_nozzle_res = Data(
@@ -438,11 +438,11 @@ def compute_turbofan_performance(turbofan, state, network, center_of_gravity=[[0
     noise_conditions.core_nozzle            = core_nozzle_res  
     noise_conditions.low_pressure_spool     = lpc_res
     
-    stored_results_flag            = True
-    stored_propulsor_tag           = turbofan.tag  
+    stored_results_flag                          = True
+    stored_propulsor_tag                         = turbofan.tag  
 
-    turbofan_conditions.power.propulsive               = power
-    turbofan_conditions.power.chemical                 = - mdot_fuel * combustor.fuel_data.lower_heating_value # negative because it is consumed power
+    turbofan_conditions.outputs.power.propulsive = power
+    turbofan_conditions.inputs.power.chemical    = mdot_fuel * combustor.fuel_data.lower_heating_value # negative because it is consumed power
 
     return turbofan_conditions.thrust ,turbofan_conditions.moment, turbofan_conditions.power, stored_results_flag,stored_propulsor_tag 
     
@@ -529,7 +529,7 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
         conditions.energy.converters[low_pressure_compressor.generator.tag]  = deepcopy(conditions.energy.converters[low_pressure_compressor_0.generator.tag]) 
         power_elec =  conditions.energy.converters[low_pressure_compressor.generator.tag].inputs.power
 
-    power_hydr  = 0*state.ones_row(1)
-    power_therm = 0*state.ones_row(1)
+    power.electrical = power_elec
+    power.propulsive = conditions.energy.propulsors[turbofan.tag].power.propulsive
         
-    return thrust_vector,moment,power, power_elec, power_hydr, power_therm
+    return thrust_vector,moment,power

@@ -1,20 +1,21 @@
 # RCAIDE/Library/Components/Powertrain/Modulators/Electronic_Speed_Controller.py
 #  
 # Created:  Mar 2024, M. Clarke 
+# Modified: Oct 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
 
 # RCAIDE imports  
-from RCAIDE.Library.Components import Component 
+from .Modulator                             import Modulator
 from RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.append_esc_conditions   import append_esc_conditions 
 from RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller.compute_esc_performance import compute_esc_performance
  
 # ----------------------------------------------------------------------------------------------------------------------
 #  Electronic Speed Controller Class
 # ---------------------------------------------------------------------------------------------------------------------- 
-class Electronic_Speed_Controller(Component):
+class Electronic_Speed_Controller(Modulator):
     """
     Class for modeling electronic speed controllers in electric propulsion systems
     
@@ -50,11 +51,6 @@ class Electronic_Speed_Controller(Component):
  
         self.tag                   = 'electronic_speed_controller'  
         self.bus_voltage           = None
-        self.assigned_distributors = []
-        self.electrical_efficiency = 1.0
-        self.mechanical_efficiency = 1.0
-        self.hydraulic_efficiency  = 1.0
-        self.thermal_efficiency    = 1.0
 
     def append_operating_conditions(self,segment): 
         append_esc_conditions(self,segment)
@@ -62,5 +58,5 @@ class Electronic_Speed_Controller(Component):
     
     def compute_performance(self,state):
 
-        Power, stored_results_flag,stored_modulator_tag =  compute_esc_performance(self,state)
-        return Power, stored_results_flag,stored_modulator_tag
+        inputs, outputs, stored_results_flag, stored_modulator_tag = compute_esc_performance(self,state)
+        return inputs, outputs, stored_results_flag, stored_modulator_tag

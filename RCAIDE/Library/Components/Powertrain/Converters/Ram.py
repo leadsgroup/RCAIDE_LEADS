@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Propulsors/Converters/Ram.py
+# RCAIDE/Library/Components/Powertrain/Converters/Ram.py
 # (c) Copyright 2023 Aerospace Research Community LLC
 # 
 # Created:  Feb 2024, M. Clarke
@@ -8,7 +8,7 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
  # RCAIDE imports
 from RCAIDE.Framework.Core import Data
-from .Converter  import Converter
+from .Converter            import Converter
 from RCAIDE.Library.Methods.Powertrain.Converters.Ram.append_ram_conditions import append_ram_conditions
 
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -84,7 +84,6 @@ class Ram(Converter):
         #set the deafult values
         self.tag                      = 'Ram' 
         self.working_fluid            = Data()
-
 
     def append_operating_conditions(self,segment):
         append_ram_conditions(self,segment)

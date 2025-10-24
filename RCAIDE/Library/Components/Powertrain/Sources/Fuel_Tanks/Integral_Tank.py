@@ -14,7 +14,7 @@ from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_condi
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Integral_Tank.compute_integral_tank_volume import *
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  Fuel Tank
+#  Integral_Tank
 # ---------------------------------------------------------------------------------------------------------------------    
 class Integral_Tank(Fuel_Tank):
     """Fuel tank compoment.
@@ -65,11 +65,6 @@ class Integral_Tank(Fuel_Tank):
         Sets default values for wing fuel tank attributes
         """          
         self.tag                         = 'integral_tank' 
-        self.assigned_distributors       = []
-        self.electrical_efficiency       = 1.0
-        self.mechanical_efficiency       = 1.0
-        self.hydraulic_efficiency        = 1.0
-        self.thermal_efficiency          = 1.0
         self.pressure                    = 101325.0  
 
     def __init__ (self, compoment=None):

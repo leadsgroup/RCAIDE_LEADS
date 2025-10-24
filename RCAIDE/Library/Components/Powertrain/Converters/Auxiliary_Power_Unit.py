@@ -16,39 +16,11 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator import
 # ----------------------------------------------------------------------
 class Auxiliary_Power_Unit(Turboelectric_Generator):
     """
-    A Auxiliary_Power_Unit propulsion system model that simulates the performance of a Auxiliary_Power_Unit engine.
+    A Auxiliary_Power_Unit propulsion system model that simulates the performance of a Auxiliary_Power_Unit.
    
-
-    Attributes
-    ----------
-    tag : str
-        Identifier for the shaft engine. Default is 'turboshaft'. 
-        
-    turboshaft : Component
-        Turboshaft component. Default is the Turboshaft Class.
-        
-    generator : Component
-        Generator component. Default is DC_Generator Class.
-        
-    gearbox : Component
-        Gearbox data structure. Default is None. 
-        
-    inverse_calculation : Component
-        Flag that determines the how calculations are performed. Default is False    
-
-    Notes
-    -----
-    The Auxiliary_Power_Unit class inherits from the Turboshaft class and implements
-    methods for computing Auxiliary_Power_Unit engine performance. Unlike other gas turbine
-    engines that produce thrust, a Auxiliary_Power_Unit engine's primary output is
-    power. 
-
-    See Also
-    --------
-    RCAIDE.Library.Components.Powertrain.Propulsors.Turboshaft 
     """ 
     def __defaults__(self):
-        # setting the default values
+
         self.tag                       = 'Auxiliary_Power_Unit'
         self.gearbox                   = Data()
         self.gearbox.gear_ratio        = None  
@@ -62,6 +34,6 @@ class Auxiliary_Power_Unit(Turboelectric_Generator):
         return
     
     def compute_performance(self, state):
-        Power = compute_turboelectric_generator_performance(self,state)
-        return Power
+        inputs, outputs = compute_turboelectric_generator_performance(self,state)
+        return inputs, outputs
 

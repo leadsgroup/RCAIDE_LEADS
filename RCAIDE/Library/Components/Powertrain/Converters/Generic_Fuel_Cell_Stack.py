@@ -1,7 +1,8 @@
-# RCAIDE/Library/Components/Powertrain/Sources/Fuel_Cells/Generic_Fuel_Cell.py
+# RCAIDE/Library/Components/Powertrain/Converters/Generic_Fuel_Cell.py
 # 
 # 
 # Created:  Jan 2025, M. Clarke
+# Modified: Oct 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -9,7 +10,7 @@
 # RCAIDE imports
 import RCAIDE
 from RCAIDE.Framework.Core                                     import Units, Data
-from RCAIDE.Library.Components                                 import Component    
+from .Converter                                                import Converter
 from RCAIDE.Library.Attributes.Gases                           import Air  
 from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_fuel_cell_performance import *
 from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.append_fuel_cell_conditions   import *
@@ -17,7 +18,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.appe
 # ----------------------------------------------------------------------------------------------------------------------
 #  Generic_Fuel_Cell
 # ----------------------------------------------------------------------------------------------------------------------    
-class Generic_Fuel_Cell_Stack(Component):
+class Generic_Fuel_Cell_Stack(Converter):
     """This is a fuel cell component.
     
     Assumptions:
@@ -80,8 +81,8 @@ class Generic_Fuel_Cell_Stack(Component):
         self.fuel_cell.n                                = 8E-3                                 # constant in mass-transfer overvoltage equation
         self.fuel_cell.ideal_voltage                    = 1.48
         self.fuel_cell.wall_thickness                   = .0022224                             # thickness of cell wall in meters  
-        self.fuel_cell.cell_density                     =1988.                                 # cell density in kg/m^3
-        self.fuel_cell.porosity_coefficient             =.6                                    # porosity coefficient  
+        self.fuel_cell.cell_density                     = 1988.                                 # cell density in kg/m^3
+        self.fuel_cell.porosity_coefficient             = .6                                    # porosity coefficient  
 
         self.electrical_configuration                   = Data()
         self.electrical_configuration.series            = 1
@@ -92,8 +93,7 @@ class Generic_Fuel_Cell_Stack(Component):
         self.geometrtic_configuration.parallel_count    = 1
         self.geometrtic_configuration.normal_spacing    = 0.02
         self.geometrtic_configuration.stacking_rows     = 3
-        self.geometrtic_configuration.parallel_spacing  = 0.02
-        
+        self.geometrtic_configuration.parallel_spacing  = 0.02     
          
     def compute_performance(self,state,bus,network, t_idx, delta_t): 
         """Computes the state of the NMC battery cell.
@@ -114,9 +114,9 @@ class Generic_Fuel_Cell_Stack(Component):
             None
         """                  
         
-        Power, stored_results_flag, stored_battery_tag = compute_fuel_cell_performance(self,state,bus,network, t_idx,delta_t) 
+        inputs, outputs, stored_results_flag, stored_battery_tag = compute_fuel_cell_performance(self,state,bus,network, t_idx,delta_t) 
         
-        return Power, stored_results_flag, stored_battery_tag 
+        return inputs, outputs, stored_results_flag, stored_battery_tag 
 
     def append_operating_conditions(self,segment):  
         append_fuel_cell_conditions(self,segment)  
@@ -127,6 +127,6 @@ class Generic_Fuel_Cell_Stack(Component):
         return 
 
     def reuse_stored_data(self,state,bus,stored_results_flag, stored_fuel_cell_tag):
-        reuse_stored_fuel_cell_data(self,state,bus,stored_results_flag, stored_fuel_cell_tag)
-        return     
+        inputs, outputs = reuse_stored_fuel_cell_data(self,state,bus,stored_results_flag, stored_fuel_cell_tag)
+        return inputs, outputs
     

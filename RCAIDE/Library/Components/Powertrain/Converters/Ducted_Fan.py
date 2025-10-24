@@ -1,4 +1,4 @@
-# RCAIDE/Components/Propulsors/Converters/Ducted_Fan.py
+# RCAIDE/Components/Powertrain/Converters/Ducted_Fan.py
 # 
 # 
 # Created:  Mar 2024, M. Clarke 
@@ -15,7 +15,7 @@ import numpy as np
 import scipy as sp
  
 # ---------------------------------------------------------------------------------------------------------------------- 
-#  Nacalle
+#  Ducted_Fan
 # ----------------------------------------------------------------------------------------------------------------------  
 class Ducted_Fan(Converter):
     """
@@ -127,7 +127,6 @@ class Ducted_Fan(Converter):
         self.cruise.design_freestream_mach         = None  
         self.duct_airfoil                          = None
         self.hub_airfoil                           = None
-      
     
     def append_duct_airfoil(self, airfoil):
         """

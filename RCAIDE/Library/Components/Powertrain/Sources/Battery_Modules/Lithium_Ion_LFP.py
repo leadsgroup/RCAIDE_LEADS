@@ -169,9 +169,9 @@ class Lithium_Ion_LFP(Generic_Battery_Module):
         stored_battery_tag : str
             Identifier for stored results
         """      
-        P_prop, P_mech, P_elec, P_chem, P_pneum, P_hydr, P_therm, stored_results_flag, stored_battery_tag =  compute_lfp_cell_performance(self,state,bus,network, t_idx,delta_t) 
+        inputs, outputs, stored_results_flag, stored_source_tag =  compute_lfp_cell_performance(self,state,bus,network, t_idx,delta_t) 
                         
-        return P_prop, P_mech, P_elec, P_chem, P_pneum, P_hydr, P_therm, stored_results_flag, stored_battery_tag
+        return inputs, outputs, stored_results_flag, stored_source_tag
     
     def reuse_stored_data(self,state,bus,stored_results_flag, stored_battery_tag):
         """
@@ -194,8 +194,8 @@ class Lithium_Ion_LFP(Generic_Battery_Module):
         stored_battery_tag : str
             Identifier for stored results
         """
-        P_prop, P_mech, P_elec, P_chem, P_pneum, P_hydr, P_therm = reuse_stored_lfp_cell_data(self,state,bus,stored_results_flag, stored_battery_tag)
-        return P_prop, P_mech, P_elec, P_chem, P_pneum, P_hydr, P_therm
+        inputs, outputs = reuse_stored_lfp_cell_data(self,state,bus,stored_results_flag, stored_battery_tag)
+        return inputs, outputs
       
     def update_battery_age(self,segment, battery_conditions,increment_battery_age_by_one_day): 
         """

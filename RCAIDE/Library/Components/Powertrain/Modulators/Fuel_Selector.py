@@ -1,18 +1,20 @@
 # RCAIDE/Library/Components/Powertrain/Modulators/Fuel_Selector.py
 #  
 # Created:  Mar 2024, M. Clarke 
+# Modified: Oct 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
 
 # RCAIDE imports  
-from RCAIDE.Library.Components import Component
+from RCAIDE.Framework.Core import Data
+from .Modulator            import Modulator
  
 # ----------------------------------------------------------------------------------------------------------------------
 #  Fuel_Selector
 # ----------------------------------------------------------------------------------------------------------------------  
-class Fuel_Selector(Component):
+class Fuel_Selector(Modulator):
     """
     Class for managing fuel flow control between tanks and engines
     
@@ -49,17 +51,12 @@ class Fuel_Selector(Component):
 
         self.tag                   = 'fuel_selector'  
         self.efficiency            = 0.0       
-        self.assigned_distributors = []
-        self.electrical_efficiency = 1.0
-        self.mechanical_efficiency = 1.0
-        self.hydraulic_efficiency  = 1.0
-        self.thermal_efficiency    = 1.0
-
+        
     def append_operating_conditions(self,segment): 
         append_fuel_selector_conditions(self,segment)
         return 
 
     def compute_performance(self,state):
 
-        Power, stored_results_flag,stored_modulator_tag =  compute_fuel_selector_performance(self,state)
-        return Power, stored_results_flag,stored_modulator_tag
+        inputs, outputs, stored_results_flag, stored_modulator_tag =  compute_fuel_selector_performance(self,state)
+        return inputs, outputs, stored_results_flag, stored_modulator_tag

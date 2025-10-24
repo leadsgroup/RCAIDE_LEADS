@@ -1,12 +1,13 @@
-# RCAIDE/Library/Components/Propulsors/Turboelectric_Generator.py
+# RCAIDE/Library/Components/Powertrain/Converters/Turboelectric_Generator.py
 # 
 #  
 # Created:  Jan 2025, M. Clarke 
+# Modified: Oct. 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
-## RCAIDE imports
+# RCAIDE imports
 from RCAIDE.Framework.Core                  import Data 
 from .Converter                             import Converter
 from RCAIDE.Library.Components.Powertrain.Converters.Turboshaft    import Turboshaft 
@@ -70,9 +71,9 @@ class Turboelectric_Generator(Converter):
         """
         Computes Turboelectric_Generator performance including power.
         """
-        Power,stored_results_flag,stored_propulsor_tag =  compute_turboelectric_generator_performance(self,state,fuel_line, bus)
-        return Power,stored_results_flag,stored_propulsor_tag
+        inputs, outputs, stored_results_flag, stored_converter_tag = compute_turboelectric_generator_performance(self,state,fuel_line, bus)
+        return inputs, outputs, stored_results_flag, stored_converter_tag
     
     def reuse_stored_data(self,state, network,stored_conveter_tag,fuel_line, bus):
-        P_mech,P_elec  = reuse_stored_turboelectric_generator_data(self,state,network,stored_conveter_tag,fuel_line, bus)
-        return  P_mech,P_elec 
+        inputs, outputs  = reuse_stored_turboelectric_generator_data(self,state,network,stored_conveter_tag,fuel_line, bus)
+        return inputs, outputs

@@ -43,7 +43,7 @@ def vehicle_setup(current,C_rat,cell_chemistry,electrical_config):
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Systems
     #------------------------------------------------------------------------------------------------------------------------------------  
-    systems                     = RCAIDE.Library.Components.Powertrain.Systems.Systems()
+    systems                     = RCAIDE.Library.Components.Powertrain.Systems.System()
     systems.power_draw          = current * bus.voltage  
     bus.systems                 = systems 
       

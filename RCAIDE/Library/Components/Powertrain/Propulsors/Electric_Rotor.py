@@ -1,13 +1,15 @@
-# RCAIDE/Library/Components/Propulsors/Electric_Rotor.py
+# RCAIDE/Library/Components/Powertrain/Propulsors/Electric_Rotor.py
 #  
 # 
 # Created:  Mar 2024, M. Clarke
+# Modified: Oct 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
  # RCAIDE imports 
 import  RCAIDE
+from RCAIDE.Framework.Core                    import Data
 from .   import Propulsor
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.design_electric_rotor                      import design_electric_rotor
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.unpack_electric_rotor_unknowns             import unpack_electric_rotor_unknowns
@@ -79,8 +81,7 @@ class Electric_Rotor(Propulsor):
         self.motor                         = None
         self.rotor                         = None 
         self.electronic_speed_controller   = None  
-        self.active_crypgenic_tanks_tanks  = None
-                                 
+        self.active_crypgenic_tanks_tanks  = None                                 
 
     def intialize_propulsor_design(self,network):
         """
@@ -124,12 +125,12 @@ class Electric_Rotor(Propulsor):
         """
         Computes propulsor performance including thrust, moment, and power. 
         """
-        thrust,moment,Power, stored_results_flag,stored_propulsor_tag =  compute_electric_rotor_performance(self,state,center_of_gravity)
-        return thrust,moment,Power, stored_results_flag,stored_propulsor_tag
+        inputs, outputs, stored_results_flag, stored_propulsor_tag = compute_electric_rotor_performance(self,state,center_of_gravity)
+        return inputs, outputs, stored_results_flag, stored_propulsor_tag
     
     def reuse_stored_data(electric_rotor,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
         """
         Reuses stored propulsor data for performance calculations.
         """
-        thrust,moment,Power = reuse_stored_electric_rotor_data(electric_rotor,state,network,stored_propulsor_tag,center_of_gravity)
-        return thrust,moment,Power
+        inputs, outputs = reuse_stored_electric_rotor_data(electric_rotor,state,network,stored_propulsor_tag,center_of_gravity)
+        return inputs, outputs

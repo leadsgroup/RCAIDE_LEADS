@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Propulsors/Converters/Combustor.py
+# RCAIDE/Library/Components/Powertrain/Converters/Combustor.py
 # (c) Copyright 2023 Aerospace Research Community LLC
 # 
 # Created:  Feb 2024, M. Clarke

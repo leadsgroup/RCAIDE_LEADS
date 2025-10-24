@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Powertrain/Sources/Fuel_Cell/Fuel_Cell.py
+# RCAIDE/Library/Components/Powertrain/Converters/Fuel_Cell
 # 
 # 
 # Created:  Dec 2024, M. Guidotti and M. Clarke 
@@ -161,9 +161,9 @@ class Fuel_Cell(Generic_Fuel_Cell_Stack):
         if not (self.fuel_cell.type == "LT") or  (self.fuel_cell.type == "HT"): 
             raise ValueError('PEM type not supported, currently supported types are "LT" and "HT"')         
         
-        Power, stored_results_flag, stored_battery_tag = compute_fuel_cell_performance(self,state,bus,network, t_idx,delta_t) 
+        inputs, outputs, stored_results_flag, stored_battery_tag = compute_fuel_cell_performance(self,state,bus,network, t_idx,delta_t) 
         
-        return Power, stored_results_flag, stored_battery_tag
+        return inputs, outputs, stored_results_flag, stored_battery_tag
     
     def append_operating_conditions(self,segment):  
         append_fuel_cell_conditions(self,segment)  
@@ -174,5 +174,5 @@ class Fuel_Cell(Generic_Fuel_Cell_Stack):
         return 
 
     def reuse_stored_data(self,state,bus,stored_results_flag, stored_fuel_cell_tag):
-        reuse_stored_fuel_cell_data(self,state,bus,stored_results_flag, stored_fuel_cell_tag)
-        return       
+        inputs, outputs = reuse_stored_fuel_cell_data(self,state,bus,stored_results_flag, stored_fuel_cell_tag)
+        return inputs, outputs   

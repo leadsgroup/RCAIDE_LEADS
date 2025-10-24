@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Propulsors/Converters/Expansion_Nozzle.py
+# RCAIDE/Library/Components/Powertrain/Converters/Expansion_Nozzle.py
 # (c) Copyright 2023 Aerospace Research Community LLC
 # 
 # Created:  Feb 2024, M. Clarke

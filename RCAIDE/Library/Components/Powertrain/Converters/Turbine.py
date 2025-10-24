@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Propulsors/Converters/Turbine.py
+# RCAIDE/Library/Components/Powertrain/Converters/Turbine.py
 # (c) Copyright 2023 Aerospace Research Community LLC
 # 
 # Created:  Mar 2024, M. Clarke

@@ -45,12 +45,14 @@ def compute_systems_power_draw(system, state):
 
     Power = system_conditions.power
 
-    Power.propulsive               = 0.0 * state.ones_row(1)
-    Power.mechanical               = 0.0 * state.ones_row(1)
-    Power.electrical               = - system.power.electrical * state.ones_row(1) # Negative sign indicates power consumption
-    Power.chemical                 = 0.0 * state.ones_row(1)
-    Power.pneumatic                = 0.0 * state.ones_row(1)
-    Power.hydraulic                = 0.0 * state.ones_row(1)
-    Power.thermal                  = 0.0 * state.ones_row(1)
+    Power.inputs                   = state.Conditions()
+
+    Power.inputs.propulsive        = 0.0 * state.ones_row(1)
+    Power.inputs.mechanical        = 0.0 * state.ones_row(1)
+    Power.inputs.electrical        = system.power.electrical * state.ones_row(1) 
+    Power.inputs.chemical          = 0.0 * state.ones_row(1)
+    Power.inputs.pneumatic         = 0.0 * state.ones_row(1)
+    Power.inputs.hydraulic         = 0.0 * state.ones_row(1)
+    Power.inputs.thermal           = 0.0 * state.ones_row(1)
 
     return Power

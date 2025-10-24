@@ -11,15 +11,15 @@
 # RCAIDE imports  
 import RCAIDE 
 from RCAIDE.Framework.Core                                         import Data
-from RCAIDE.Library.Components                                   import Component
+from .Distributor                                                  import Distributor
 from RCAIDE.Library.Components.Component                           import Container
 from RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus import *
 from RCAIDE.Library.Attributes.Materials                           import Copper, Polyimide
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  Electrical_Line
+#  Electrical_Bus
 # ---------------------------------------------------------------------------------------------------------------------- 
-class Electrical_Bus(Component):
+class Electrical_Bus(Distributor):
     """
     Class for managing power distribution between aircraft electrical components
     
@@ -91,19 +91,15 @@ class Electrical_Bus(Component):
             None
         """                
         self.tag                                    = 'electrical_line' 
+        self.domain                                 = 'electrical'
         self.bus_type                               = 'DC'
         self.electrical_line                        = Electrical_Line()
         self.battery_modules                        = Container()
         self.fuel_cell_stacks                       = Container()
-        self.assigned_distributors                  = [] 
-        self.systems                                = RCAIDE.Library.Components.Powertrain.Systems.Systems()
+        self.systems                                = RCAIDE.Library.Components.Powertrain.Systems.System()
         self.identical_battery_modules              = True      
         self.identical_fuel_cell_stacks             = True  
         self.active                                 = True
-        self.electrical_efficiency                  = 1.0
-        self.mechanical_efficiency                  = 1.0
-        self.hydraulic_efficiency                   = 1.0
-        self.thermal_efficiency                     = 1.0
         self.voltage                                = 0.0 
         self.voltage_phase_to_neutral               = 115.0 
         self.voltage_phase_to_phase                 = 200.0
@@ -168,19 +164,25 @@ class Electrical_Bus(Component):
     
     def compute_performance(self, state):
 
-        distributor_conditions = state.conditions.energy.distributors[self.tag].power
+        inputs = Data()
+        outputs = Data()
 
-        distributor_conditions.propulsive  = state.conditions.energy.distributors[self.tag].power.propulsive 
-        distributor_conditions.mechanical  = state.conditions.energy.distributors[self.tag].power.mechanical 
-        distributor_conditions.electrical  = state.conditions.energy.distributors[self.tag].power.electrical 
-        distributor_conditions.chemical    = state.conditions.energy.distributors[self.tag].power.chemical   
-        distributor_conditions.pneumatic   = state.conditions.energy.distributors[self.tag].power.pneumatic  
-        distributor_conditions.hydraulic   = state.conditions.energy.distributors[self.tag].power.hydraulic  
-        distributor_conditions.thermal     = state.conditions.energy.distributors[self.tag].power.thermal    
+        inputs.power.mechanical  = state.conditions.energy.distributors[self.tag].inputs.power.mechanical
+        inputs.power.electrical  = state.conditions.energy.distributors[self.tag].inputs.power.electrical
+        inputs.power.chemical    = state.conditions.energy.distributors[self.tag].inputs.power.chemical  
+        inputs.power.pneumatic   = state.conditions.energy.distributors[self.tag].inputs.power.pneumatic 
+        inputs.power.hydraulic   = state.conditions.energy.distributors[self.tag].inputs.power.hydraulic 
+        inputs.power.thermal     = state.conditions.energy.distributors[self.tag].inputs.power.thermal  
 
-        return distributor_conditions
-    
-class Electrical_Line(Component):
+        outputs.power.mechanical = state.conditions.energy.distributors[self.tag].outputs.power.mechanical
+        outputs.power.electrical = state.conditions.energy.distributors[self.tag].outputs.power.electrical
+        outputs.power.chemical   = state.conditions.energy.distributors[self.tag].outputs.power.chemical  
+        outputs.power.pneumatic  = state.conditions.energy.distributors[self.tag].outputs.power.pneumatic 
+        outputs.power.hydraulic  = state.conditions.energy.distributors[self.tag].outputs.power.hydraulic 
+        outputs.power.thermal    = state.conditions.energy.distributors[self.tag].outputs.power.thermal  
+
+        return inputs, outputs
+class Electrical_Line(Distributor):
     def __defaults__(self):
         self.tag                               = 'electrical_line'
         self.to                                = None
