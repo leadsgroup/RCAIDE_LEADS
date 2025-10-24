@@ -397,17 +397,14 @@ def compute_turbojet_performance(turbojet, state, center_of_gravity=[[0.0, 0.0, 
     stored_results_flag            = True
     stored_propulsor_tag           = turbojet.tag  
 
-    turbojet_conditions.power.propulsive               = power
-    turbojet_conditions.power.mechanical               = 0.0 * state.ones_row(1)
-    turbojet_conditions.power.electrical               = power_elec
-    turbojet_conditions.power.chemical                 = - mdot_fuel * combustor.fuel_data.lower_heating_value # negative because it is consumed power
-    turbojet_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
-    turbojet_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
-    turbojet_conditions.power.thermal                  = 0.0 * state.ones_row(1)
+    turbojet_conditions.outputs.thrust                 = thrust_vector
+    turbojet_conditions.outputs.moment                 = moment
+    turbojet_conditions.outputs.power.propulsive       = power
+    turbojet_conditions.outputs.power.electrical       = power_elec
+    turbojet_conditions.inputs.power.chemical          = mdot_fuel * combustor.fuel_data.lower_heating_value # negative because it is consumed power
 
-    return turbojet_conditions.thrust ,turbojet_conditions.moment, turbojet_conditions.power, stored_results_flag,stored_propulsor_tag 
+    return turbojet_conditions.inputs ,turbojet_conditions.outputs, stored_results_flag, stored_propulsor_tag 
     
-
 def reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one turbojet for identical propulsors
     
@@ -482,6 +479,11 @@ def reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,cente
     if low_pressure_compressor.generator != None and len(state.numerics.time.differentiate) > 0:  
         conditions.energy.converters[low_pressure_compressor.generator.tag]  = deepcopy(conditions.energy.converters[low_pressure_compressor_0.generator.tag]) 
         power_elec =  conditions.energy.converters[low_pressure_compressor.generator.tag].inputs.power
+
+    conditions.energy.propulsors[turbojet.tag].outputs.thrust           = thrust_vector
+    conditions.energy.propulsors[turbojet.tag].outputs.moment           = moment
+    conditions.energy.propulsors[turbojet.tag].outputs.power.propulsive = power
+    conditions.energy.propulsors[turbojet.tag].outputs.power.electrical = power_elec
         
-    return thrust_vector,moment,power, power_elec
+    return conditions.energy.propulsors[turbojet.tag].inputs, conditions.energy.propulsors[turbojet.tag].outputs
  

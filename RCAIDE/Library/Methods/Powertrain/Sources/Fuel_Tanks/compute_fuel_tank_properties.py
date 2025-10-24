@@ -61,12 +61,6 @@ def compute_fuel_tank_properties(tank,state,distributor):
     stored_results_flag            = True
     stored_source_tag              = tank.tag  
 
-    tank_conditions.power.propulsive               = 0.0 * state.ones_row(1)
-    tank_conditions.power.mechanical               = 0.0 * state.ones_row(1)
-    tank_conditions.power.electrical               = 0.0 * state.ones_row(1)
-    tank_conditions.power.chemical                 = mass_flow_rate * tank.fuel.lower_heating_value
-    tank_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
-    tank_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
-    tank_conditions.power.thermal                  = 0.0 * state.ones_row(1)
+    tank_conditions.outputs.power.chemical = mass_flow_rate * tank.fuel.lower_heating_value
 
-    return tank_conditions.power
+    return tank_conditions.inputs, tank_conditions.outputs, stored_results_flag, stored_source_tag

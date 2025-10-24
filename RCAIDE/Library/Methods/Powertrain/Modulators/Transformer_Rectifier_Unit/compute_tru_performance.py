@@ -23,7 +23,7 @@ def compute_tru_performance(tru, network, state):
     for distributor_tag in tru.assigned_distributors[0]:
         dist = network.distributors[distributor_tag]
         if dist.bus_type == 'AC':
-            P_in += conditions.energy.distributors[distributor_tag].power.electrical
+            P_in += conditions.energy.distributors[distributor_tag].inputs.power.electrical
             Vll   = dist.voltage_phase_to_phase
         elif dist.bus_type == 'DC':
             Vdc   = dist.voltage
@@ -68,11 +68,11 @@ def compute_tru_performance(tru, network, state):
     # Record I/O
     # -------------------------------------------------
     tru_conditions.inputs.Vll_rms_primary       = Vll
+    tru_conditions.inputs.power.electrical      = P_in
     tru_conditions.outputs.ac_voltage_secondary = Vll_sec
     tru_conditions.outputs.dc_voltage_average   = Vdc_use
     tru_conditions.outputs.dc_current           = Idc
-    tru_conditions.outputs.dc_real_power        = P_out
-    tru_conditions.inputs.ac_real_power         = P_in
+    tru_conditions.outputs.power.electrical     = P_out
 
     # -------------------------------------------------
     # Return powers to the network evaluator
@@ -82,12 +82,4 @@ def compute_tru_performance(tru, network, state):
     stored_results_flag            = True
     stored_modulator_tag           = tru.tag  
 
-    tru_conditions.power.propulsive               = 0.0 * state.ones_row(1)
-    tru_conditions.power.mechanical               = 0.0 * state.ones_row(1)
-    tru_conditions.power.electrical               = - P_out
-    tru_conditions.power.chemical                 = 0.0 * state.ones_row(1)
-    tru_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
-    tru_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
-    tru_conditions.power.thermal                  = 0.0 * state.ones_row(1)
-
-    return  tru_conditions.power, stored_results_flag, stored_modulator_tag
+    return  tru_conditions.inputs, tru_conditions.outputs, stored_results_flag, stored_modulator_tag

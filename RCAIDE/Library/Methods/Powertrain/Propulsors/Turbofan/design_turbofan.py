@@ -339,8 +339,8 @@ def design_turbofan(turbofan, network):
     V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
     operating_state       = setup_operating_conditions(turbofan, network, velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
     operating_state.conditions.energy.propulsors[turbofan.tag].throttle[:,0] = 1.0  
-    sls_T,_,sls_P,_,_                      = turbofan.compute_performance(operating_state, network) 
-    turbofan.sealevel_static_thrust              = sls_T[0][0]
-    turbofan.sealevel_static_power               = sls_P.propulsive[0][0]
+    _,sls_outputs,_                      = turbofan.compute_performance(operating_state, network) 
+    turbofan.sealevel_static_thrust       = sls_outputs.thrust[0][0]
+    turbofan.sealevel_static_power        = sls_outputs.power.propulsive[0][0]
      
     return 

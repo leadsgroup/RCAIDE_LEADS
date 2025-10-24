@@ -260,9 +260,9 @@ def design_turboprop(turboprop,network):
     V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
     operating_state       = setup_operating_conditions(turboprop,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
     operating_state.conditions.energy.propulsors[turboprop.tag].throttle[:,0] = 1.0  
-    sls_T,_,sls_P,_,_,_,_,_                       = turboprop.compute_performance(operating_state) 
-    turboprop.sealevel_static_thrust              = sls_T[0][0]
-    turboprop.sealevel_static_power               = sls_P[0][0]
+    _,sls_outputs,_,_                                 = turboprop.compute_performance(operating_state) 
+    turboprop.sealevel_static_thrust                  = sls_outputs.thrust[0][0]
+    turboprop.sealevel_static_power                   = sls_outputs.power.propulsive[0][0]
     
     turboprop.design_thrust_specific_fuel_consumption = turboprop_conditions.thrust_specific_fuel_consumption  
     turboprop.design_non_dimensional_thrust           = turboprop_conditions.non_dimensional_thrust            
@@ -277,7 +277,10 @@ def design_turboprop(turboprop,network):
         V                     = turboprop.design_freestream_velocity
         operating_state       = setup_operating_conditions(turboprop,velocity_range=np.array([V]), altitude = turboprop.design_altitude, angle_of_attack=0, temperature_deviation=0)  
         operating_state.conditions.energy.propulsors[turboprop.tag].throttle[:,0] = 1.0  
-        T,_,P,_,_,_,_,_           = turboprop.compute_performance(operating_state)
+        _,outputs,_,_           = turboprop.compute_performance(operating_state)
+
+        T = outputs.thrust
+        P = outputs.power.propulsive
         
         motor                         = compressor.motor 
         motor.design_torque           = P[0][0] /compressor.design_angular_velocity   

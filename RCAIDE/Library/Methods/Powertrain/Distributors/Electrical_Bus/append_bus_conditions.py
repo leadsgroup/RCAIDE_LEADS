@@ -68,7 +68,22 @@ def append_bus_conditions(bus,segment):
     segment.state.conditions.energy.distributors[bus.tag].temperature                         = 0 * ones_row(1)
     segment.state.conditions.energy.distributors[bus.tag].energy                              = 0 * ones_row(1)
     segment.state.conditions.energy.distributors[bus.tag].regenerative_power                  = 0 * ones_row(1) 
-    segment.state.conditions.energy.distributors[bus.tag].fuel_mass_flow_rate                 = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[bus.tag].fuel_mass_flow_rate                 = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].power                               = Conditions()
+    segment.state.conditions.energy.distributors[bus.tag].power.propulsive                    = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].power.mechanical                    = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].power.electrical                    = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].power.chemical                      = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].power.pneumatic                     = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].power.hydraulic                     = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].power.thermal                       = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].net_propulsive_power                = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].net_mechanical_power                = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].net_electrical_power                = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].net_chemical_power                  = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].net_pneumatic_power                 = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].net_hydraulic_power                 = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].net_thermal_power                   = 0 * ones_row(1) 
 
     return
 
