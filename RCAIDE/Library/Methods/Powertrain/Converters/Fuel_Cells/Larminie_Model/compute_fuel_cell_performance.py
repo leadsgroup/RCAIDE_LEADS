@@ -131,17 +131,10 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, bus, coolant_lines, t_
     fuel_cell_stack_conditions.fuel_cell.inlet_H2_mass_flow_rate[t_idx]    = mdot_cell  
     fuel_cell_stack_conditions.H2_mass_flow_rate[t_idx]                    = mdot_cell * n_total # add fuel Line tag
 
-    stored_results_flag            = True
-    stored_fuel_cell_stack_tag     = fuel_cell_stack.tag  
+    stored_results_flag                                               = True
+    stored_converter_tag                                              = fuel_cell_stack.tag  
+    fuel_cell_stack_conditions.outputs.power.electrical               = P_stack * state.ones_row(1)
 
-    fuel_cell_stack_conditions.power.propulsive               = 0.0 * 0*state.ones_row(1)
-    fuel_cell_stack_conditions.power.mechanical               = 0.0 * 0*state.ones_row(1)
-    fuel_cell_stack_conditions.power.electrical               = P_stack * 0*state.ones_row(1)
-    fuel_cell_stack_conditions.power.chemical                 = 0.0 * 0*state.ones_row(1)
-    fuel_cell_stack_conditions.power.pneumatic                = 0.0 * 0*state.ones_row(1)
-    fuel_cell_stack_conditions.power.hydraulic                = 0.0 * 0*state.ones_row(1)
-    fuel_cell_stack_conditions.power.thermal                  = 0.0 * 0*state.ones_row(1)
-
-    return  fuel_cell_stack_conditions.power, stored_results_flag, stored_fuel_cell_stack_tag
+    return  fuel_cell_stack_conditions.inputs, fuel_cell_stack_conditions.outputs, stored_results_flag, stored_converter_tag
 
 

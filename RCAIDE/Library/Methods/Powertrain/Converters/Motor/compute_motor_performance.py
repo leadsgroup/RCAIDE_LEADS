@@ -226,12 +226,4 @@ def compute_motor_performance(motor,state):
     stored_results_flag            = True
     stored_converter_tag           = motor.tag  
 
-    motor_conditions.power.propulsive               = 0.0 * state.ones_row(1)
-    motor_conditions.power.mechanical               = motor_conditions.outputs.power
-    motor_conditions.power.electrical               = motor_conditions.inputs.power 
-    motor_conditions.power.chemical                 = 0.0 * state.ones_row(1)
-    motor_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
-    motor_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
-    motor_conditions.power.thermal                  = 0.0 * state.ones_row(1)
-
-    return  motor_conditions.power, stored_results_flag, stored_converter_tag
+    return  motor_conditions.inputs, motor_conditions.outputs, stored_results_flag, stored_converter_tag
