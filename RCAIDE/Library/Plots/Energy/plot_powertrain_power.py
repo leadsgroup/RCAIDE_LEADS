@@ -65,64 +65,112 @@ def plot_powertrain_power(results,
 
             def component_has_this_dist(component, tag):
                 entries = getattr(component, 'assigned_distributors', [])
+                dist_obj = dist_by_tag.get(tag, None)
                 for entry in entries:
                     if isinstance(entry, (list, tuple, set)):
                         for e in entry:
                             if isinstance(e, (list, tuple, set)):
                                 for ee in e:
-                                    if ee == tag: return True
+                                    if ee == tag or ee is dist_obj or getattr(ee, 'tag', None) == tag:
+                                        return True
                             else:
-                                if e == tag: return True
+                                if e == tag or e is dist_obj or getattr(e, 'tag', None) == tag:
+                                    return True
                     else:
-                        if entry == tag: return True
+                        if entry == tag or entry is dist_obj or getattr(entry, 'tag', None) == tag:
+                            return True
                 return False
 
             def get_power_for_this_bus(seg, comp_tag, source_name, dist_tag):
-                # Always return a 1-D numpy array in MW, length = npts
-                npts = seg.conditions.frames.inertial.time.shape[0]
-                zeros = np.zeros(npts)
+                # returns MW as 1-D numpy array, length = npts
+                npts   = seg.conditions.frames.inertial.time.shape[0]
+                zeros  = np.zeros(npts)
 
+                # map distributor tag -> actual distributor object (build this once outside and reuse)
+                dist   = dist_by_tag[dist_tag]
+
+                # classify distributor domain by its class
+                is_fuel   = isinstance(dist, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line)
+                is_cool   = isinstance(dist, RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line)
+                is_elec   = (not is_fuel) and (not is_cool)
+
+                # ---- distributors: net power is stored at top-level .power.<domain>
                 if source_name == "distributors":
-                    rec = seg.conditions.energy.distributors[comp_tag]
-                else:
-                    rec = getattr(seg.conditions.energy, source_name)[comp_tag]
+                    drec = seg.conditions.energy.distributors[comp_tag]
+                    if is_fuel:
+                        return drec.power.chemical[:npts, 0] / 1e6
+                    if is_cool:
+                        return drec.power.thermal [:npts, 0] / 1e6
+                    return drec.power.electrical[:npts, 0] / 1e6
 
-                # Prefer per-link storage if available
-                pbd = getattr(rec, "power_by_distributor", None)
-                if isinstance(pbd, dict) and (dist_tag in pbd) and (pbd[dist_tag] is not None):
-                    arr = pbd[dist_tag]
-                    try:
-                        y = np.asarray(arr)[:, 0]
-                    except Exception:
-                        y = np.asarray(arr).reshape(-1)
-                    # convert to MW
-                    if y.size == npts:
-                        return y / 1e6
-                    # fallback if sizing isn’t as expected
-                    return zeros
+                # ---- components: use inputs/outputs.<domain>
+                if source_name == "propulsors":
+                    crec = seg.conditions.energy.propulsors[comp_tag]
+                elif source_name in ("non_propulsive_converters", "converters"):
+                    crec = seg.conditions.energy.converters[comp_tag]
+                elif source_name == "modulators":
+                    crec = seg.conditions.energy.modulators[comp_tag]
+                elif source_name == "systems":
+                    crec = seg.conditions.energy.systems[comp_tag]
+                else:  # "sources"
+                    crec = seg.conditions.energy.sources[comp_tag]
 
-                # Fallback: use domain field from .power based on target distributor type
-                pwr = getattr(rec, "power", None)
-                if pwr is None:
-                    return zeros
+                if is_fuel:
+                    # chemical bus: components draw chemical power from fuel line
+                    # bus sign convention: draw from bus => negative
+                    pin  = crec.inputs .power.chemical [:npts, 0]
+                    pout = crec.outputs.power.chemical [:npts, 0]
+                    y    = (+pout) - (+pin)           # supply minus draw
+                    return y / 1e6
 
-                target_dist = dist_by_tag.get(dist_tag, None)
-                if isinstance(target_dist, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
-                    if hasattr(pwr, "chemical") and (pwr.chemical is not None):
-                        return np.asarray(pwr.chemical)[:npts, 0] / 1e6
-                    return zeros
-                if isinstance(target_dist, RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line):
-                    if hasattr(pwr, "thermal") and (pwr.thermal is not None):
-                        return np.asarray(pwr.thermal)[:npts, 0] / 1e6
-                    return zeros
-                if hasattr(pwr, "electrical") and (pwr.electrical is not None):
-                    return np.asarray(pwr.electrical)[:npts, 0] / 1e6
+                if is_cool:
+                    # thermal/coolant bus: usually loads draw thermal; same sign rule
+                    pin  = crec.inputs .power.thermal [:npts, 0]
+                    pout = crec.outputs.power.thermal [:npts, 0]
+                    y    = (+pout) - (+pin)
+                    return y / 1e6
 
-                return zeros
+                # electrical buses (AC/DC). Our solve wrote both sides:
+                #   supply to bus  => outputs.power.electrical > 0  (shown +)
+                #   draw from bus  => inputs .power.electrical > 0  (shown -)
+                pin_e   = crec.inputs .power.electrical [:npts, 0]
+                pout_e  = crec.outputs.power.electrical[:npts, 0]
+                y       = (+pout_e) - (+pin_e)
+                return y / 1e6
 
             ymax_seen   = 0.0
             mark_index  = 0
-            legend_dict = {}  
+            legend_dict = {}
+
+            # --- plot this distributor's own net power so the panels visually balance ---
+            for i in range(len(results.segments)):
+                seg   = results.segments[i]
+                time  = seg.conditions.frames.inertial.time[:, 0] / Units.min
+                drec  = seg.conditions.energy.distributors[distributor.tag]
+                if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
+                    y = drec.power.chemical[:, 0] / 1e6
+                elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line):
+                    y = drec.power.thermal[:, 0] / 1e6
+                else:
+                    y = drec.power.electrical[:, 0] / 1e6
+                y = np.asarray(y).reshape(-1)
+                eps = 1e-6
+                mask_supply = y >  eps
+                mask_draw   = y < -eps
+                if np.any(mask_supply):
+                    yy = y[mask_supply]
+                    ymax_seen = max(ymax_seen, float(np.max(yy)))
+                    ax_supply.plot(time[mask_supply], yy,
+                                   color=line_colors[i], marker='o',
+                                   linewidth=ps.line_width, markersize=ps.marker_size,
+                                   label=None)
+                if np.any(mask_draw):
+                    yy = -y[mask_draw]
+                    ymax_seen = max(ymax_seen, float(np.max(yy)))
+                    ax_draw.plot(time[mask_draw], yy,
+                                 color=line_colors[i], marker='o',
+                                 linewidth=ps.line_width, markersize=ps.marker_size,
+                                 label=None)
             for source_name, comps in groups:
 
                 if isinstance(comps, dict):

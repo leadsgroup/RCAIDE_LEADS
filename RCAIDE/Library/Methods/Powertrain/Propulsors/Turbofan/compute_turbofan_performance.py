@@ -374,7 +374,7 @@ def compute_turbofan_performance(turbofan, state, network, center_of_gravity=[[0
     moment_vector[:,2]         =  turbofan.origin[0][2]  -  center_of_gravity[0][2]
     M                          =  np.cross(moment_vector, thrust_vector)   
     moment                     = M 
-    power                      = turbofan_conditions.power.propulsive 
+    power                      = turbofan_conditions.outputs.power.propulsive 
     turbofan_conditions.moment = moment 
         
     # compute efficiencies 
@@ -446,7 +446,7 @@ def compute_turbofan_performance(turbofan, state, network, center_of_gravity=[[0
     turbofan_conditions.outputs.power.propulsive = power
     turbofan_conditions.inputs.power.chemical    = mdot_fuel * combustor.fuel_data.lower_heating_value # negative because it is consumed power
 
-    return turbofan_conditions.inputs ,turbofan_conditions.outputs, stored_results_flag,stored_propulsor_tag 
+    return turbofan_conditions.inputs ,turbofan_conditions.outputs, stored_results_flag, stored_propulsor_tag 
     
 def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one turbofan for identical turbofans

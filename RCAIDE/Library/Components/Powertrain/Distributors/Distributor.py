@@ -25,6 +25,7 @@ class Distributor(Component):
         """
         # set the deafult values
         self.tag                      = 'tag' 
+        self.type                     = 'distributor'
         self.working_fluid            = Data()
         self.active                   = True
         self.assigned_distributors    = []

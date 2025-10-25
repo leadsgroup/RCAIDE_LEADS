@@ -92,7 +92,7 @@ class Electrical_Bus(Distributor):
         """                
         self.tag                                    = 'electrical_line' 
         self.domain                                 = 'electrical'
-        self.bus_type                               = 'DC'
+        self.type                                   = 'DC'
         self.electrical_line                        = Electrical_Line()
         self.battery_modules                        = Container()
         self.fuel_cell_stacks                       = Container()
