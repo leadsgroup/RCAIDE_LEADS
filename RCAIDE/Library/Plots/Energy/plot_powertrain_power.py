@@ -33,13 +33,16 @@ def plot_powertrain_power(results,
     plt.rcParams.update(params)
 
     line_colors    = cm.inferno(np.linspace(0, 0.9, len(results.segments)))
-    unique_markers = ['o', 'D', '^', 's', 'v', '>', '<', 'p', '*', 'X', 'h']
+    unique_markers = ['v', 'D', '^', 's', 'o', '>', '<', 'p', '*', 'X', 'h']
 
     figs = {}
 
     for network in results.segments[0].analyses.energy.vehicle.networks:
 
-        dist_by_tag = {d.tag: d for d in network.distributors}
+        # explicit tag -> distributor
+        dist_by_tag = {}
+        for d in network.distributors:
+            dist_by_tag[d.tag] = d
 
         for distributor in network.distributors:
 
@@ -49,198 +52,257 @@ def plot_powertrain_power(results,
             if not (is_elec or is_fuel or is_cool):
                 continue
 
+            # domain for this distributor (also used for links)
+            if is_fuel:
+                fld = "chemical"
+            elif is_cool:
+                fld = "thermal"
+            else:
+                fld = "electrical"
+
             fig = plt.figure(f"{save_filename_prefix}_{distributor.tag}")
             fig.set_size_inches(width, height)
             ax_supply = plt.subplot(1, 2, 1)
             ax_draw   = plt.subplot(1, 2, 2)
 
-            groups = [
-                ("propulsors", network.propulsors),
-                ("converters", network.converters),
-                ("modulators", network.modulators),
-                ("systems",    network.systems),
-                ("sources",    network.sources),
-                ("distributors", {d.tag: d for d in network.distributors if d.tag != distributor.tag}),
-            ]
-
-            def component_has_this_dist(component, tag):
-                entries = getattr(component, 'assigned_distributors', [])
-                dist_obj = dist_by_tag.get(tag, None)
-                for entry in entries:
-                    if isinstance(entry, (list, tuple, set)):
-                        for e in entry:
-                            if isinstance(e, (list, tuple, set)):
-                                for ee in e:
-                                    if ee == tag or ee is dist_obj or getattr(ee, 'tag', None) == tag:
-                                        return True
-                            else:
-                                if e == tag or e is dist_obj or getattr(e, 'tag', None) == tag:
-                                    return True
-                    else:
-                        if entry == tag or entry is dist_obj or getattr(entry, 'tag', None) == tag:
-                            return True
-                return False
-
-            def get_power_for_this_bus(seg, comp_tag, source_name, dist_tag):
-                # returns MW as 1-D numpy array, length = npts
-                npts   = seg.conditions.frames.inertial.time.shape[0]
-                zeros  = np.zeros(npts)
-
-                # map distributor tag -> actual distributor object (build this once outside and reuse)
-                dist   = dist_by_tag[dist_tag]
-
-                # classify distributor domain by its class
-                is_fuel   = isinstance(dist, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line)
-                is_cool   = isinstance(dist, RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line)
-                is_elec   = (not is_fuel) and (not is_cool)
-
-                # ---- distributors: net power is stored at top-level .power.<domain>
-                if source_name == "distributors":
-                    drec = seg.conditions.energy.distributors[comp_tag]
-                    if is_fuel:
-                        return drec.power.chemical[:npts, 0] / 1e6
-                    if is_cool:
-                        return drec.power.thermal [:npts, 0] / 1e6
-                    return drec.power.electrical[:npts, 0] / 1e6
-
-                # ---- components: use inputs/outputs.<domain>
-                if source_name == "propulsors":
-                    crec = seg.conditions.energy.propulsors[comp_tag]
-                elif source_name in ("non_propulsive_converters", "converters"):
-                    crec = seg.conditions.energy.converters[comp_tag]
-                elif source_name == "modulators":
-                    crec = seg.conditions.energy.modulators[comp_tag]
-                elif source_name == "systems":
-                    crec = seg.conditions.energy.systems[comp_tag]
-                else:  # "sources"
-                    crec = seg.conditions.energy.sources[comp_tag]
-
-                if is_fuel:
-                    # chemical bus: components draw chemical power from fuel line
-                    # bus sign convention: draw from bus => negative
-                    pin  = crec.inputs .power.chemical [:npts, 0]
-                    pout = crec.outputs.power.chemical [:npts, 0]
-                    y    = (+pout) - (+pin)           # supply minus draw
-                    return y / 1e6
-
-                if is_cool:
-                    # thermal/coolant bus: usually loads draw thermal; same sign rule
-                    pin  = crec.inputs .power.thermal [:npts, 0]
-                    pout = crec.outputs.power.thermal [:npts, 0]
-                    y    = (+pout) - (+pin)
-                    return y / 1e6
-
-                # electrical buses (AC/DC). Our solve wrote both sides:
-                #   supply to bus  => outputs.power.electrical > 0  (shown +)
-                #   draw from bus  => inputs .power.electrical > 0  (shown -)
-                pin_e   = crec.inputs .power.electrical [:npts, 0]
-                pout_e  = crec.outputs.power.electrical[:npts, 0]
-                y       = (+pout_e) - (+pin_e)
-                return y / 1e6
-
-            ymax_seen   = 0.0
-            mark_index  = 0
             legend_dict = {}
+            mark_index  = 0
+            ymax_seen   = 0.0
 
-            # --- plot this distributor's own net power so the panels visually balance ---
-            for i in range(len(results.segments)):
-                seg   = results.segments[i]
-                time  = seg.conditions.frames.inertial.time[:, 0] / Units.min
-                drec  = seg.conditions.energy.distributors[distributor.tag]
-                if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
-                    y = drec.power.chemical[:, 0] / 1e6
-                elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line):
-                    y = drec.power.thermal[:, 0] / 1e6
-                else:
-                    y = drec.power.electrical[:, 0] / 1e6
-                y = np.asarray(y).reshape(-1)
-                eps = 1e-6
-                mask_supply = y >  eps
-                mask_draw   = y < -eps
-                if np.any(mask_supply):
-                    yy = y[mask_supply]
-                    ymax_seen = max(ymax_seen, float(np.max(yy)))
-                    ax_supply.plot(time[mask_supply], yy,
-                                   color=line_colors[i], marker='o',
-                                   linewidth=ps.line_width, markersize=ps.marker_size,
-                                   label=None)
-                if np.any(mask_draw):
-                    yy = -y[mask_draw]
-                    ymax_seen = max(ymax_seen, float(np.max(yy)))
-                    ax_draw.plot(time[mask_draw], yy,
-                                 color=line_colors[i], marker='o',
-                                 linewidth=ps.line_width, markersize=ps.marker_size,
-                                 label=None)
-            for source_name, comps in groups:
+            # -------------------------------
+            # Components (non-distributors)
+            # -------------------------------
+            groups_names = ["propulsors", "converters", "modulators", "sources", "systems"]
+            groups_iters = [network.propulsors, network.converters, network.modulators, network.sources, network.systems]
 
+            for gi in range(len(groups_names)):
+                group_name = groups_names[gi]
+                comps      = groups_iters[gi]
+
+                # iterator (tag, obj)
                 if isinstance(comps, dict):
-                    iterator = comps.items()
+                    iterator = []
+                    for k, v in comps.items():
+                        iterator.append((k, v))
                 else:
-                    iterator = [(c.tag, c) for c in comps]
+                    iterator = []
+                    for c in comps:
+                        iterator.append((c.tag, c))
 
                 for comp_tag, comp in iterator:
-                    if not component_has_this_dist(comp, distributor.tag):
+
+                    # membership: distributor.tag present in assigned_distributors (by tag)
+                    assigned_tags = []
+                    entries = getattr(comp, 'assigned_distributors', [])
+                    for entry in entries:
+                        if isinstance(entry, (list, tuple, set)):
+                            for e in entry:
+                                if isinstance(e, (list, tuple, set)):
+                                    for ee in e:
+                                        if isinstance(ee, str):
+                                            assigned_tags.append(ee)
+                                        else:
+                                            t = getattr(ee, 'tag', None)
+                                            if isinstance(t, str):
+                                                assigned_tags.append(t)
+                                else:
+                                    if isinstance(e, str):
+                                        assigned_tags.append(e)
+                                    else:
+                                        t = getattr(e, 'tag', None)
+                                        if isinstance(t, str):
+                                            assigned_tags.append(t)
+                        else:
+                            if isinstance(entry, str):
+                                assigned_tags.append(entry)
+                            else:
+                                t = getattr(entry, 'tag', None)
+                                if isinstance(t, str):
+                                    assigned_tags.append(t)
+
+                    if distributor.tag not in assigned_tags:
                         continue
 
                     m = unique_markers[mark_index % len(unique_markers)]
                     mark_index += 1
 
-                    for i in range(len(results.segments)):
-                        
-                        seg  = results.segments[i]
+                    for si in range(len(results.segments)):
+                        seg  = results.segments[si]
                         time = seg.conditions.frames.inertial.time[:, 0] / Units.min
-                        y    = get_power_for_this_bus(seg, comp_tag, source_name, distributor.tag)
+                        npts = seg.conditions.frames.inertial.time.shape[0]
 
-                        # Ensure y is a 1-D array
-                        y = np.asarray(y).reshape(-1)
+                        # pick component energy record
+                        if group_name == "propulsors":
+                            crec = seg.conditions.energy.propulsors[comp_tag]
+                        elif group_name == "converters":
+                            crec = seg.conditions.energy.converters[comp_tag]
+                        elif group_name == "modulators":
+                            crec = seg.conditions.energy.modulators[comp_tag]
+                        elif group_name == "systems":
+                            crec = seg.conditions.energy.systems[comp_tag]
+                        else:  # sources
+                            crec = seg.conditions.energy.sources[comp_tag]
 
-                        # our convention in these plots:
-                        #   +y = SUPPLY to the bus (left panel)
-                        #   -y = DRAW   from the bus (right panel, plot magnitudes)
-                        eps = 1e-6  # MW
-                        mask_supply = y >  eps
-                        mask_draw   = y < -eps
-                        all_zero    = ~(mask_supply | mask_draw).any()
+                        # read matching domain as separate supply/draw series (MW)
+                        if fld == "chemical":
+                            y_sup  = crec.outputs.power.chemical [:npts, 0] / 1e6  # supply to bus
+                            y_draw = crec.inputs .power.chemical [:npts, 0] / 1e6  # draw   from bus
+                        elif fld == "thermal":
+                            y_sup  = crec.outputs.power.thermal  [:npts, 0] / 1e6
+                            y_draw = crec.inputs .power.thermal  [:npts, 0] / 1e6
+                        else:
+                            y_sup  = crec.outputs.power.electrical[:npts, 0] / 1e6
+                            y_draw = crec.inputs .power.electrical [:npts, 0] / 1e6
 
-                        # Select label once per component
-                        label = comp_tag.replace('_', ' ').title() if comp_tag not in legend_dict else None
+                        y_sup  = np.asarray(y_sup).reshape(-1)
+                        y_draw = np.asarray(y_draw).reshape(-1)
 
-                        # Plot supply segments on the left
+                        # read matching domain as separate supply/draw series (MW)
+                        if fld == "chemical":
+                            y_sup  = crec.outputs.power.chemical [:npts, 0] / 1e6
+                            y_draw = crec.inputs .power.chemical [:npts, 0] / 1e6
+                        elif fld == "thermal":
+                            y_sup  = crec.outputs.power.thermal  [:npts, 0] / 1e6
+                            y_draw = crec.inputs .power.thermal  [:npts, 0] / 1e6
+                        else:
+                            y_sup  = crec.outputs.power.electrical[:npts, 0] / 1e6
+                            y_draw = crec.inputs .power.electrical [:npts, 0] / 1e6
+
+                        # --- TRU special case: AC side = draw only, DC side = supply only ---
+                        if group_name == "modulators":
+                            if isinstance(comp, RCAIDE.Library.Components.Powertrain.Modulators.Transformer_Rectifier_Unit):
+                                if distributor.type == 'AC':
+                                    y_draw = crec.inputs.power.electrical[:npts, 0] / 1e6
+                                    y_sup  = np.zeros_like(y_draw)
+                                elif distributor.type == 'DC':
+                                    y_sup  = crec.outputs.power.electrical[:npts, 0] / 1e6
+                                    y_draw = np.zeros_like(y_sup)
+
+                        eps = 1e-6
+                        mask_supply = y_sup  > eps
+                        mask_draw   = y_draw > eps
+                        if not (np.any(mask_supply) or np.any(mask_draw)):
+                            continue
+
+                        if comp_tag in legend_dict:
+                            label = None
+                        else:
+                            label = comp_tag.replace('_', ' ').title()
+
+                        line_for_legend = None
+
                         if np.any(mask_supply):
-                            yy = y[mask_supply]
+                            yy = y_sup[mask_supply]
                             ymax_seen = max(ymax_seen, float(np.max(yy)))
-                            h = ax_supply.plot(time[mask_supply], yy,
-                                               color=line_colors[i],
-                                               marker=m,
-                                               linewidth=ps.line_width,
-                                               markersize=ps.marker_size,
-                                               label=label)
-                            if comp_tag not in legend_dict and label is not None:
-                                legend_dict[comp_tag] = h[0]
+                            line_supply = ax_supply.plot(time[mask_supply], yy,
+                                                         color=line_colors[si],
+                                                         marker=m,
+                                                         linewidth=ps.line_width,
+                                                         markersize=ps.marker_size,
+                                                         label=label)[0]
+                            if line_for_legend is None:
+                                line_for_legend = line_supply
 
-                        # Plot draw segments on the right (as magnitudes)
                         if np.any(mask_draw):
-                            yy = -y[mask_draw]
+                            yy = y_draw[mask_draw]
                             ymax_seen = max(ymax_seen, float(np.max(yy)))
-                            h = ax_draw.plot(time[mask_draw], yy,
-                                             color=line_colors[i],
-                                             marker=m,
-                                             linewidth=ps.line_width,
-                                             markersize=ps.marker_size,
-                                             label=label)
-                            if comp_tag not in legend_dict and label is not None:
-                                legend_dict[comp_tag] = h[0]
+                            line_draw = ax_draw.plot(time[mask_draw], yy,
+                                                     color=line_colors[si],
+                                                     marker=m,
+                                                     linewidth=ps.line_width,
+                                                     markersize=ps.marker_size,
+                                                     label=label)[0]
+                            if line_for_legend is None:
+                                line_for_legend = line_draw
 
-                        # If entirely zero, still show a flat line at 0 on the left panel
-                        if all_zero:
-                            h = ax_supply.plot(time, np.zeros_like(time),
-                                               color=line_colors[i],
-                                               marker=m,
-                                               linewidth=ps.line_width,
-                                               markersize=ps.marker_size,
-                                               label=label)
-                            if comp_tag not in legend_dict and label is not None:
-                                legend_dict[comp_tag] = h[0]
+                        if (comp_tag not in legend_dict) and (label is not None) and (line_for_legend is not None):
+                            legend_dict[comp_tag] = line_for_legend
+
+            # -------------------------------
+            # Distributor links (signed)
+            # -------------------------------
+            # Only plot links stored at distributors[this].links[other].power[fld]
+            m = unique_markers[mark_index % len(unique_markers)]
+            for si in range(len(results.segments)):
+                seg  = results.segments[si]
+                time = seg.conditions.frames.inertial.time[:, 0] / Units.min
+                npts = seg.conditions.frames.inertial.time.shape[0]
+
+                dred = seg.conditions.energy.distributors[distributor.tag]
+
+                # the distributor object itself carries assigned_distributors; gather their tags
+                assigned_bus_tags = []
+                entries = getattr(distributor, 'assigned_distributors', [])
+                for entry in entries:
+                    if isinstance(entry, (list, tuple, set)):
+                        for e in entry:
+                            if isinstance(e, (list, tuple, set)):
+                                for ee in e:
+                                    if isinstance(ee, str):
+                                        assigned_bus_tags.append(ee)
+                                    else:
+                                        t = getattr(ee, 'tag', None)
+                                        if isinstance(t, str):
+                                            assigned_bus_tags.append(t)
+                            else:
+                                if isinstance(e, str):
+                                    assigned_bus_tags.append(e)
+                                else:
+                                    t = getattr(e, 'tag', None)
+                                    if isinstance(t, str):
+                                        assigned_bus_tags.append(t)
+                    else:
+                        if isinstance(entry, str):
+                            assigned_bus_tags.append(entry)
+                        else:
+                            t = getattr(entry, 'tag', None)
+                            if isinstance(t, str):
+                                assigned_bus_tags.append(t)
+
+                # iterate those assigned buses and plot if a link value exists
+                for other_tag in assigned_bus_tags:
+                    if other_tag not in dred.links:
+                        continue
+                    y = dred.links[other_tag].power[fld][:npts, 0] / 1e6  # signed: + supply, - draw
+                    y = np.asarray(y).reshape(-1)
+
+                    eps = 1e-6
+                    mask_supply = y >  eps
+                    mask_draw   = y < -eps
+                    if not (np.any(mask_supply) or np.any(mask_draw)):
+                        continue
+
+                    label_key = f"Link: {other_tag.replace('_',' ').title()}"
+                    label = None if label_key in legend_dict else label_key
+
+                    line_for_legend = None
+
+                    if np.any(mask_supply):
+                        yy = y[mask_supply]
+                        ymax_seen = max(ymax_seen, float(np.max(yy)))
+                        line_supply = ax_supply.plot(time[mask_supply], yy,
+                                                     color=line_colors[si],
+                                                     marker=m,
+                                                     linewidth=ps.line_width,
+                                                     markersize=ps.marker_size,
+                                                     label=label)[0]
+                        if line_for_legend is None:
+                            line_for_legend = line_supply
+
+                    if np.any(mask_draw):
+                        yy = -y[mask_draw]
+                        ymax_seen = max(ymax_seen, float(np.max(yy)))
+                        line_draw = ax_draw.plot(time[mask_draw], yy,
+                                                 color=line_colors[si],
+                                                 marker=m,
+                                                 linewidth=ps.line_width,
+                                                 markersize=ps.marker_size,
+                                                 label=label)[0]
+                        if line_for_legend is None:
+                            line_for_legend = line_draw
+
+                    if (label_key not in legend_dict) and (label is not None) and (line_for_legend is not None):
+                        legend_dict[label_key] = line_for_legend
 
             ax_supply.set_xlabel('Time (min)')
             ax_draw.set_xlabel('Time (min)')
@@ -249,14 +311,21 @@ def plot_powertrain_power(results,
             set_axes(ax_supply)
             set_axes(ax_draw)
 
-            ymax = 1.05 * (ymax_seen if ymax_seen > 0.0 else 1.0)
+            if ymax_seen <= 0.0:
+                ymax = 1.05
+            else:
+                ymax = 1.05 * ymax_seen
             ax_supply.set_ylim(0.0, ymax)
             ax_draw.set_ylim(0.0, ymax)
 
             if show_legend and len(legend_dict) > 0:
-                fig.legend(list(legend_dict.values()),
-                           [h.get_label() for h in legend_dict.values()],
-                           bbox_to_anchor=(0.5, 0.96), loc='upper center', ncol=8)
+                handles = []
+                labels  = []
+                for _, h in legend_dict.items():
+                    handles.append(h)
+                    labels.append(h.get_label())
+                fig.legend(handles, labels, bbox_to_anchor=(0.5, 0.96),
+                           loc='upper center', ncol=8)
 
             title_text = f"{distributor.tag.replace('_', ' ').title()} Power Profile"
             fig.tight_layout()

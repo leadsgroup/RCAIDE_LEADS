@@ -7,7 +7,7 @@
 # ---------------------------------------------------------------------------------------------------------------------
 # RCAIDE Imports
 import  RCAIDE 
-from RCAIDE.Framework.Mission.Common                      import Residuals 
+from RCAIDE.Framework.Mission.Common     import Residuals, Conditions
 from RCAIDE.Library.Mission.Common.Unpack_Unknowns.energy import unknowns
 from RCAIDE.Library.Methods.Powertrain.Systems.compute_systems_power_draw                 import compute_systems_power_draw
 from RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance         import *
@@ -104,6 +104,42 @@ class Network(Component):
         total_mdot              = 0. * state.ones_row(1)
         total_propulsive_power  = 0. * state.ones_row(1)
 
+        for propulsor in propulsors:
+            conditions.energy.propulsors[propulsor.tag].inputs.power.electrical = 0*state.ones_row(1)
+            conditions.energy.propulsors[propulsor.tag].inputs.power.chemical = 0*state.ones_row(1)
+            conditions.energy.propulsors[propulsor.tag].inputs.power.thermal = 0*state.ones_row(1)
+            conditions.energy.propulsors[propulsor.tag].outputs.power.electrical = 0*state.ones_row(1)
+            conditions.energy.propulsors[propulsor.tag].outputs.power.chemical = 0*state.ones_row(1)
+            conditions.energy.propulsors[propulsor.tag].outputs.power.thermal = 0*state.ones_row(1)
+        for converter in network.non_propulsive_converters:
+            conditions.energy.converters[converter.tag].inputs.power.electrical = 0*state.ones_row(1)
+            conditions.energy.converters[converter.tag].inputs.power.chemical = 0*state.ones_row(1)
+            conditions.energy.converters[converter.tag].inputs.power.thermal = 0*state.ones_row(1)
+            conditions.energy.converters[converter.tag].outputs.power.electrical = 0*state.ones_row(1)
+            conditions.energy.converters[converter.tag].outputs.power.chemical = 0*state.ones_row(1)
+            conditions.energy.converters[converter.tag].outputs.power.thermal = 0*state.ones_row(1)
+        for modulator in modulators:
+            conditions.energy.modulators[modulator.tag].inputs.power.electrical = 0*state.ones_row(1)
+            conditions.energy.modulators[modulator.tag].inputs.power.chemical = 0*state.ones_row(1)
+            conditions.energy.modulators[modulator.tag].inputs.power.thermal = 0*state.ones_row(1)
+            conditions.energy.modulators[modulator.tag].outputs.power.electrical = 0*state.ones_row(1)
+            conditions.energy.modulators[modulator.tag].outputs.power.chemical = 0*state.ones_row(1)
+            conditions.energy.modulators[modulator.tag].outputs.power.thermal = 0*state.ones_row(1)
+        for source in sources:
+            conditions.energy.sources[source.tag].inputs.power.electrical = 0*state.ones_row(1)
+            conditions.energy.sources[source.tag].inputs.power.chemical = 0*state.ones_row(1)
+            conditions.energy.sources[source.tag].inputs.power.thermal = 0*state.ones_row(1)
+            conditions.energy.sources[source.tag].outputs.power.electrical = 0*state.ones_row(1)
+            conditions.energy.sources[source.tag].outputs.power.chemical = 0*state.ones_row(1)
+            conditions.energy.sources[source.tag].outputs.power.thermal = 0*state.ones_row(1)
+        for system in systems:
+            conditions.energy.systems[system.tag].inputs.power.electrical = 0*state.ones_row(1)
+            conditions.energy.systems[system.tag].inputs.power.chemical = 0*state.ones_row(1)
+            conditions.energy.systems[system.tag].inputs.power.thermal = 0*state.ones_row(1)
+            conditions.energy.systems[system.tag].outputs.power.electrical = 0*state.ones_row(1)
+            conditions.energy.systems[system.tag].outputs.power.chemical = 0*state.ones_row(1)
+            conditions.energy.systems[system.tag].outputs.power.thermal = 0*state.ones_row(1)
+
         # ----------------------------------------------------------
         # Propulsors
         # ----------------------------------------------------------
@@ -136,19 +172,24 @@ class Network(Component):
         for system in systems:
             _, _ = system.compute_performance(state)
 
+        # ----------------------------------------------------------
+        # Build Power Balance System
+        # ----------------------------------------------------------
+
         n_rows     = len(distributors)
 
         distributor_tags = []
         for dist in distributors:
             distributor_tags.append(dist.tag)
 
-        for t_idx in range(len(state.conditions.energy.propulsors[next(iter(propulsors)).tag].outputs.power.electrical)):
+        for t_idx in range(state.numerics.number_of_control_points):
 
             b_vector = np.zeros((n_rows,1))
-            unknown_rows  = []
-            unknown_signs = []
 
-            # propulsors → known/unknown per distributor, sign: outputs +, inputs −
+            unknown_cols = {}   # maps a key -> column index
+            triplets = []       # (row, col, coeff) to populate A
+
+            # propulsors
             for propulsor in propulsors:
                 for distributors_tag in propulsor.assigned_distributors:
                     for distributor_tag in distributors_tag:
@@ -161,19 +202,23 @@ class Network(Component):
                             if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
                                 val = conditions.energy.propulsors[propulsor.tag].outputs.power.electrical[t_idx,0]
                                 if val == 0.0:
-                                    unknown_rows.append(row_index)
-                                    unknown_signs.append(+1.0)
+                                    key = ("propulsor", propulsor.tag, distributor_tag, "elec_out")
+                                    if key not in unknown_cols:
+                                        unknown_cols[key] = len(unknown_cols)
+                                    triplets.append((row_index, unknown_cols[key], +1.0))
                                 else:
                                     b_vector[row_index,0] += val
                             elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
                                 val = conditions.energy.propulsors[propulsor.tag].inputs.power.chemical[t_idx,0]
                                 if val == 0.0:
-                                    unknown_rows.append(row_index)
-                                    unknown_signs.append(-1.0)
+                                    key = ("propulsor", propulsor.tag, distributor_tag, "chem_in")
+                                    if key not in unknown_cols:
+                                        unknown_cols[key] = len(unknown_cols)
+                                    triplets.append((row_index, unknown_cols[key], -1.0))
                                 else:
                                     b_vector[row_index,0] -= val
 
-            # converters (non-propulsive) → electrical outputs feed (+), chemical inputs draw (−)
+            # converters (non-propulsive) 
             for converter in network.non_propulsive_converters:
                 for distributors_tag in converter.assigned_distributors:
                     for distributor_tag in distributors_tag:
@@ -182,22 +227,24 @@ class Network(Component):
                             if distributor_tags[i] == distributor_tag:
                                 row_index = i
                         distributor = distributors[distributor_tag]
+                        key = ("converter", converter.tag, "P")
+                        if key not in unknown_cols:
+                            unknown_cols[key] = len(unknown_cols)
+                        col = unknown_cols[key]
                         if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
                             val = conditions.energy.converters[converter.tag].outputs.power.electrical[t_idx,0]
                             if val == 0.0:
-                                unknown_rows.append(row_index)
-                                unknown_signs.append(+1.0)
+                                triplets.append((row_index, col, +1.0))
                             else:
                                 b_vector[row_index,0] += val
                         elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
                             val = conditions.energy.converters[converter.tag].inputs.power.chemical[t_idx,0]
                             if val == 0.0:
-                                unknown_rows.append(row_index)
-                                unknown_signs.append(-1.0)
+                                triplets.append((row_index, col, -1.0))
                             else:
                                 b_vector[row_index,0] -= val
 
-            # modulators → TRU rule: AC side uses input (draw −), DC side uses output (feed +)
+            # modulators
             for modulator in modulators:
                 for distributors_tag in modulator.assigned_distributors:
                     for distributor_tag in distributors_tag:
@@ -207,22 +254,35 @@ class Network(Component):
                                 row_index = i
                         distributor = distributors[distributor_tag]
                         if isinstance(modulator, RCAIDE.Library.Components.Powertrain.Modulators.Transformer_Rectifier_Unit):
+                            eff = modulator.efficiency.electrical
+                            vin  = conditions.energy.modulators[modulator.tag].inputs.power.electrical[t_idx,0]
+                            vout = conditions.energy.modulators[modulator.tag].outputs.power.electrical[t_idx,0]
+                            if vin != 0.0 and vout == 0.0:
+                                conditions.energy.modulators[modulator.tag].outputs.power.electrical[t_idx,0] = vin * eff
+                                vout = conditions.energy.modulators[modulator.tag].outputs.power.electrical[t_idx,0]
+                            elif vout != 0.0 and vin == 0.0:
+                                conditions.energy.modulators[modulator.tag].inputs.power.electrical[t_idx,0]  = vout / eff
+                                vin  = conditions.energy.modulators[modulator.tag].inputs.power.electrical[t_idx,0]
+                            elif vin != 0.0 and vout != 0.0:
+                                conditions.energy.modulators[modulator.tag].outputs.power.electrical[t_idx,0] = vin * eff
+                                vout = conditions.energy.modulators[modulator.tag].outputs.power.electrical[t_idx,0]
+                            key = ("modulator_tru", modulator.tag, "P")
+                            if key not in unknown_cols:
+                                unknown_cols[key] = len(unknown_cols)
+                            col = unknown_cols[key]
                             if distributor.type == 'AC':
-                                val_in = conditions.energy.modulators[modulator.tag].inputs.power.electrical[t_idx,0]
-                                if val_in == 0.0:
-                                    unknown_rows.append(row_index)
-                                    unknown_signs.append(-1.0)
+                                if vin == 0.0:
+                                    triplets.append((row_index, col, -1.0))
                                 else:
-                                    b_vector[row_index,0] -= val_in
+                                    b_vector[row_index,0] -= vin
                             elif distributor.type == 'DC':
-                                val_out = conditions.energy.modulators[modulator.tag].outputs.power.electrical[t_idx,0]
-                                if val_out == 0.0:
-                                    unknown_rows.append(row_index)
-                                    unknown_signs.append(+1.0)
+                                # Mirror link behavior: always add +eff to DC row when the DC side is unknown
+                                if vout == 0.0:
+                                    triplets.append((row_index, col, +eff))
                                 else:
-                                    b_vector[row_index,0] += val_out
+                                    b_vector[row_index,0] += vout
 
-            # sources → electrical outputs feed (+), chemical outputs feed (+)
+            # sources 
             for source in sources:
                 for distributors_tag in source.assigned_distributors:
                     for distributor_tag in distributors_tag:
@@ -234,19 +294,23 @@ class Network(Component):
                         if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
                             val = conditions.energy.sources[source.tag].outputs.power.electrical[t_idx,0]
                             if val == 0.0:
-                                unknown_rows.append(row_index)
-                                unknown_signs.append(+1.0)
+                                key = ("source", source.tag, distributor_tag, "elec_out")
+                                if key not in unknown_cols:
+                                    unknown_cols[key] = len(unknown_cols)
+                                triplets.append((row_index, unknown_cols[key], +1.0))
                             else:
                                 b_vector[row_index,0] += val
                         elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
                             val = conditions.energy.sources[source.tag].outputs.power.chemical[t_idx,0]
                             if val == 0.0:
-                                unknown_rows.append(row_index)
-                                unknown_signs.append(+1.0)
+                                key = ("source", source.tag, distributor_tag, "chem_out")
+                                if key not in unknown_cols:
+                                    unknown_cols[key] = len(unknown_cols)
+                                triplets.append((row_index, unknown_cols[key], +1.0))
                             else:
                                 b_vector[row_index,0] += val
 
-            # systems → electrical inputs draw (−)
+            # systems 
             for system in systems:
                 for distributors_tag in system.assigned_distributors:
                     for distributor_tag in distributors_tag:
@@ -256,21 +320,37 @@ class Network(Component):
                                 row_index = i
                         val = conditions.energy.systems[system.tag].inputs.power.electrical[t_idx,0]
                         if val == 0.0:
-                            unknown_rows.append(row_index)
-                            unknown_signs.append(-1.0)
+                            key = ("system", system.tag, distributor_tag, "elec_in")
+                            if key not in unknown_cols:
+                                unknown_cols[key] = len(unknown_cols)
+                            triplets.append((row_index, unknown_cols[key], -1.0))
                         else:
                             b_vector[row_index,0] -= val
 
-            # distributor ↔ distributor links → create two unknowns (one per row), keep A as 0/1
+            # distributor ↔ distributor links 
             for dist_a in distributors:
                 for distributors_tag in dist_a.assigned_distributors:
                     for distributor_tag in distributors_tag:
                         name_a = dist_a.tag
                         name_b = distributor_tag
-                        add_link = False
+
+                        # A -> B
+                        if name_b not in state.conditions.energy.distributors[name_a].links:
+                            linkAB                  = Conditions()
+                            linkAB.power            = Conditions()
+                            linkAB.power.electrical = 0 * state.ones_row(1)
+                            linkAB.power.chemical   = 0 * state.ones_row(1)
+                            state.conditions.energy.distributors[name_a].links[name_b] = linkAB
+
+                        # B -> A
+                        if name_a not in state.conditions.energy.distributors[name_b].links:
+                            linkBA                  = Conditions()
+                            linkBA.power            = Conditions()
+                            linkBA.power.electrical = 0 * state.ones_row(1)
+                            linkBA.power.chemical   = 0 * state.ones_row(1)
+                            state.conditions.energy.distributors[name_b].links[name_a] = linkBA
+
                         if name_a < name_b:
-                            add_link = True
-                        if add_link:
                             row_a = 0
                             row_b = 0
                             for i in range(n_rows):
@@ -278,47 +358,147 @@ class Network(Component):
                                     row_a = i
                                 if distributor_tags[i] == name_b:
                                     row_b = i
-                            unknown_rows.append(row_a)
-                            unknown_signs.append(-1.0)
-                            unknown_rows.append(row_b)
-                            unknown_signs.append(+1.0)
+                            key = ("link", name_a, name_b)
+                            if key not in unknown_cols:
+                                unknown_cols[key] = len(unknown_cols)
+                            col = unknown_cols[key]
+                            triplets.append((row_a, col, -1.0))
+                            triplets.append((row_b, col, +1.0))
 
-            n_unknowns = len(unknown_rows)
-
+            n_unknowns = len(unknown_cols)
             A_matrix = np.zeros((n_rows, n_unknowns))
-            for j in range(n_unknowns):
-                r = unknown_rows[j]
-                A_matrix[r, j] = 1.0
+            for r, c, coeff in triplets:
+                A_matrix[r, c] += coeff
 
-            x_mag, _, _, _ = np.linalg.lstsq(A_matrix, b_vector, rcond=None)
+            # ----------------------------------------------------------
+            # Solve Power Balance System
+            # ----------------------------------------------------------
 
-            x_signed = np.zeros((n_unknowns,1))
-            for j in range(n_unknowns):
-                x_signed[j,0] = unknown_signs[j] * x_mag[j,0]
+            x_solution, _, _, _ = np.linalg.lstsq(A_matrix, b_vector, rcond=None)
+ 
+            # ----------------------------------------------------------
+            # Save solved unknowns back into conditions.energy
+            # ----------------------------------------------------------
+            for key, col in unknown_cols.items():
+                val = float(x_solution[col,0])
 
-            # optional debug prints
-            for i in range(n_rows):
-                print("[A·x=b] row", i, "tag", distributor_tags[i], " b=", float(b_vector[i,0]))
-            for j in range(n_unknowns):
-                sgn = "+"
-                if unknown_signs[j] < 0.0:
-                    sgn = "-"
-                print("[x]", j, sgn, "row", unknown_rows[j], "=", float(abs(x_signed[j,0])))
-                debug = 0
-                
-        # save the computed unknown powers back to the state.conditions.energy.distributor[distributor.tag].power[domain] 
-        # and on each corresponding component inputs/outputs.power 
+                if key[0] == "propulsor":
+                    prop_tag        = key[1]
+                    distributor_tag = key[2]
+                    side            = key[3]
+                    if side == "elec_out":
+                        if val < 0.0:
+                            if conditions.energy.propulsors[prop_tag].outputs.power.electrical[t_idx,0] == 0.0:
+                                conditions.energy.propulsors[prop_tag].outputs.power.electrical[t_idx,0] = -val
+                        elif val > 0.0:
+                            if conditions.energy.propulsors[prop_tag].inputs.power.electrical[t_idx,0] == 0.0:
+                                conditions.energy.propulsors[prop_tag].inputs.power.electrical[t_idx,0] = val
+                    elif side == "chem_in":
+                        if val < 0.0:
+                            if conditions.energy.propulsors[prop_tag].outputs.power.chemical[t_idx,0] == 0.0:
+                                conditions.energy.propulsors[prop_tag].outputs.power.chemical[t_idx,0] = -val
+                        elif val > 0.0:
+                            if conditions.energy.propulsors[prop_tag].inputs.power.chemical[t_idx,0] == 0.0:
+                                conditions.energy.propulsors[prop_tag].inputs.power.chemical[t_idx,0] = val
 
-        # print the power balance for each row distirbutpr (so independent distributprs and connected ones) for debugging purposes  
+                elif key[0] == "converter":
+                    conv_tag = key[1]
+                    for distributors_tag in network.non_propulsive_converters[conv_tag].assigned_distributors:
+                        for distributor_tag in distributors_tag:
+                            distributor = distributors[distributor_tag]
+                            if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
+                                if val < 0.0:
+                                    if conditions.energy.converters[conv_tag].outputs.power.electrical[t_idx,0] == 0.0:
+                                        conditions.energy.converters[conv_tag].outputs.power.electrical[t_idx,0] = -val
+                                elif val > 0.0:
+                                    if conditions.energy.converters[conv_tag].inputs.power.electrical[t_idx,0] == 0.0:
+                                        conditions.energy.converters[conv_tag].inputs.power.electrical[t_idx,0] = val
+                            elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
+                                if val > 0.0:
+                                    if conditions.energy.converters[conv_tag].inputs.power.chemical[t_idx,0] == 0.0:
+                                        conditions.energy.converters[conv_tag].inputs.power.chemical[t_idx,0] = val
+                                elif val < 0.0:
+                                    if conditions.energy.converters[conv_tag].outputs.power.chemical[t_idx,0] == 0.0:
+                                        conditions.energy.converters[conv_tag].outputs.power.chemical[t_idx,0] = -val
 
-        # print the value of each unknown power for debugging purposes     
-            
+                elif key[0] == "modulator_tru":
+                    tru_tag = key[1]
+                    eff = modulators[tru_tag].efficiency.electrical
+                    if val < 0.0:
+                        if conditions.energy.modulators[tru_tag].inputs.power.electrical[t_idx,0] == 0.0:
+                            conditions.energy.modulators[tru_tag].inputs.power.electrical[t_idx,0] = -val
+                        if conditions.energy.modulators[tru_tag].outputs.power.electrical[t_idx,0] == 0.0:
+                            conditions.energy.modulators[tru_tag].outputs.power.electrical[t_idx,0] = (-val) * eff
+                    elif val > 0.0:
+                        if conditions.energy.modulators[tru_tag].inputs.power.electrical[t_idx,0] == 0.0:
+                            conditions.energy.modulators[tru_tag].inputs.power.electrical[t_idx,0] =  val
+                        if conditions.energy.modulators[tru_tag].outputs.power.electrical[t_idx,0] == 0.0:
+                            conditions.energy.modulators[tru_tag].outputs.power.electrical[t_idx,0] =  val * eff
+
+                elif key[0] == "source":
+                    src_tag        = key[1]
+                    distributor_tag= key[2]
+                    side           = key[3]
+                    if side == "elec_out":
+                        if val < 0.0:
+                            if conditions.energy.sources[src_tag].outputs.power.electrical[t_idx,0] == 0.0:
+                                conditions.energy.sources[src_tag].outputs.power.electrical[t_idx,0] = -val
+                        elif val > 0.0:
+                            if conditions.energy.sources[src_tag].inputs.power.electrical[t_idx,0] == 0.0:
+                                conditions.energy.sources[src_tag].inputs.power.electrical[t_idx,0] = val
+                    elif side == "chem_out":
+                        if val < 0.0:
+                            if conditions.energy.sources[src_tag].outputs.power.chemical[t_idx,0] == 0.0:
+                                conditions.energy.sources[src_tag].outputs.power.chemical[t_idx,0] = -val
+                        elif val > 0.0:
+                            if conditions.energy.sources[src_tag].inputs.power.chemical[t_idx,0] == 0.0:
+                                conditions.energy.sources[src_tag].inputs.power.chemical[t_idx,0] = val
+
+                elif key[0] == "system":
+                    sys_tag        = key[1]
+                    distributor_tag= key[2]
+                    if val > 0.0:
+                        if conditions.energy.systems[sys_tag].inputs.power.electrical[t_idx,0] == 0.0:
+                            conditions.energy.systems[sys_tag].inputs.power.electrical[t_idx,0] = val
+                    elif val < 0.0:
+                        if conditions.energy.systems[sys_tag].outputs.power.electrical[t_idx,0] == 0.0:
+                            conditions.energy.systems[sys_tag].outputs.power.electrical[t_idx,0] = -val
+
+                # distributors links
+                for key, col in unknown_cols.items():
+                    if key[0] == "link":
+
+                        name_a = key[1]
+                        name_b = key[2]
+                        val    = float(x_solution[col,0])
+
+                        dist_a = distributors[name_a]
+                        dist_b = distributors[name_b]
+
+                        # domain selection (same rule you already use everywhere else)
+                        if isinstance(dist_a, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
+                            fld = "chemical"
+                        else:
+                            fld = "electrical"
+
+                        # ----------------------------------------------------------
+                        # A side (row had -1): flow leaves A → negative
+                        # ----------------------------------------------------------
+                        if conditions.energy.distributors[name_a].links[name_b].power[fld][t_idx,0] == 0.0:
+                            conditions.energy.distributors[name_a].links[name_b].power[fld][t_idx,0] = -val
+
+                        # ----------------------------------------------------------
+                        # B side (row had +1): flow enters B → positive
+                        # ----------------------------------------------------------
+                        if conditions.energy.distributors[name_b].links[name_a].power[fld][t_idx,0] == 0.0:
+                            conditions.energy.distributors[name_b].links[name_a].power[fld][t_idx,0] = +val
 
         # Final aggregation
         conditions.energy.thrust_force_vector  = total_thrust
         conditions.energy.thrust_moment_vector = total_moment
         conditions.energy.net_power            = total_propulsive_power
         conditions.weights.vehicle_mass_rate   = total_mdot
+
         return
     
     def unpack_unknowns(self,segment):
