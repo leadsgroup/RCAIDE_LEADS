@@ -485,13 +485,13 @@ class Network(Component):
                         # A side (row had -1): flow leaves A → negative
                         # ----------------------------------------------------------
                         if conditions.energy.distributors[name_a].links[name_b].power[fld][t_idx,0] == 0.0:
-                            conditions.energy.distributors[name_a].links[name_b].power[fld][t_idx,0] = -val
+                            conditions.energy.distributors[name_a].links[name_b].power[fld][t_idx,0] = +val
 
                         # ----------------------------------------------------------
                         # B side (row had +1): flow enters B → positive
                         # ----------------------------------------------------------
                         if conditions.energy.distributors[name_b].links[name_a].power[fld][t_idx,0] == 0.0:
-                            conditions.energy.distributors[name_b].links[name_a].power[fld][t_idx,0] = +val
+                            conditions.energy.distributors[name_b].links[name_a].power[fld][t_idx,0] = -val
 
         # Final aggregation
         conditions.energy.thrust_force_vector  = total_thrust
