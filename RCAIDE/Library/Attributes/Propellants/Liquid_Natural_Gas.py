@@ -108,6 +108,7 @@ class Liquid_Natural_Gas(Propellant):
         self.fuel_surrogate_S1             = {} # [-] Mole fractions of fuel surrogate species
         self.kinetic_mechanism             = '' # [-] Kinetic mechanism for fuel surrogate species
         self.oxidizer                      = ''
+        self.lower_heating_value           = 50e6
         
         self.global_warming_potential_100.CO2       = 1     # CO2e/kg  
         self.global_warming_potential_100.H2O       = 0.06  # CO2e/kg 
