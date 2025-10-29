@@ -109,9 +109,9 @@ def compute_systems_weight(vehicle):
     FNEW = 0
     FNEF = 0
     FNAC = 0
-    NPF  = vehicle.first_class_passengers      
-    NPB  = vehicle.business_class_passengers   
-    NPT  = vehicle.economy_class_passengers  
+    NPF  = vehicle.number_of_first_class_seats  
+    NPB  = vehicle.number_of_business_class_seats
+    NPT  = vehicle.number_of_economy_class_seats
     for network in  vehicle.networks:
         for propulsor in network.propulsors:
             NENG += 1
@@ -146,9 +146,9 @@ def compute_systems_weight(vehicle):
             XL  = fuselage.lengths.total / Units.ft
             WF  = fuselage.width / Units.ft
     FPAREA      = XL * WF
-    NPASS       = vehicle.passengers
+    NPASS       = vehicle.number_of_passengers
     WAPU        = 54 * FPAREA ** 0.3 + 5.4 * NPASS ** 0.9  # apu weight
-    if vehicle.passengers >= 150:
+    if vehicle.number_of_passengers >= 150:
         NFLCR = 3  # number of flight crew
     else:
         NFLCR = 2
