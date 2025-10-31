@@ -26,7 +26,7 @@ import numpy                                                                as n
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Design Turboshaft
 # ----------------------------------------------------------------------------------------------------------------------
-def design_turboshaft(turboshaft):  
+def design_turboshaft(turboshaft, network):  
     """
     Designs and sizes a turboshaft engine based on design point conditions and performance requirements.
 
@@ -158,14 +158,18 @@ def design_turboshaft(turboshaft):
     segment.state.conditions = conditions
     turboshaft.append_operating_conditions(segment)  
             
-    ram                     = turboshaft.ram
-    inlet_nozzle            = turboshaft.inlet_nozzle
-    compressor              = turboshaft.compressor
-    combustor               = turboshaft.combustor
-    high_pressure_turbine   = turboshaft.high_pressure_turbine
-    low_pressure_turbine    = turboshaft.low_pressure_turbine
-    core_nozzle             = turboshaft.core_nozzle
+    ram                     = network.converters[turboshaft.assigned_converters.ram_tag[0][0]]
+    inlet_nozzle            = network.converters[turboshaft.assigned_converters.inlet_nozzle_tag[0][0]]
+    compressor              = network.converters[turboshaft.assigned_converters.compressor_tag[0][0]]
+    combustor               = network.converters[turboshaft.assigned_converters.combustor_tag[0][0]]
+    high_pressure_turbine   = network.converters[turboshaft.assigned_converters.high_pressure_turbine_tag[0][0]]
+    low_pressure_turbine    = network.converters[turboshaft.assigned_converters.low_pressure_turbine_tag[0][0]]
+    core_nozzle             = network.converters[turboshaft.assigned_converters.core_nozzle_tag[0][0]]
     
+    for _, item in turboshaft.assigned_converters.items():
+        converter = network.converters[item[0][0]] 
+        converter.append_operating_conditions(segment)
+
     turboshaft_conditions   = conditions.energy.converters[turboshaft.tag]
     ram_conditions          = conditions.energy.converters[ram.tag]     
     inlet_nozzle_conditions = conditions.energy.converters[inlet_nozzle.tag]
@@ -294,6 +298,7 @@ def design_turboshaft(turboshaft):
     V                                   = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
     segment.state.conditions            = setup_operating_conditions(turboshaft,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
     orientations(segment) 
-    sls_P,_,_,_,_,_                     = turboshaft.compute_performance(segment.state)  
-    turboshaft.sealevel_static_power    = sls_P[0][0]     
+    _,sls_outputs,_ ,_                  = turboshaft.compute_performance(segment.state)  
+    turboshaft.sealevel_static_power    = sls_outputs.power.propulsive[0][0]
+
     return      

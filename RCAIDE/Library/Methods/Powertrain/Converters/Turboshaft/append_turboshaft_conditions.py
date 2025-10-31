@@ -54,21 +54,22 @@ def append_turboshaft_conditions(turboshaft, segment):
     segment.state.conditions.energy.converters[turboshaft.tag].power                         = 0. * ones_row(1)
     segment.state.conditions.energy.converters[turboshaft.tag].fuel_mass_flow_rate           = 0. * ones_row(1)
     segment.state.conditions.energy.converters[turboshaft.tag].inputs                        = Conditions()
-    segment.state.conditions.energy.converters[turboshaft.tag].outputs                       = Conditions()
-    
-    segment.state.conditions.energy.converters[turboshaft.tag].power                   = Conditions()
-    segment.state.conditions.energy.converters[turboshaft.tag].power.propulsive        = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[turboshaft.tag].power.mechanical        = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[turboshaft.tag].power.electrical        = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[turboshaft.tag].power.chemical          = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[turboshaft.tag].power.pneumatic         = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[turboshaft.tag].power.hydraulic         = 0 * ones_row(1)
-    segment.state.conditions.energy.converters[turboshaft.tag].power.thermal           = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboshaft.tag].outputs                       = Conditions() 
+    segment.state.conditions.energy.converters[turboshaft.tag].inputs.power                  = Conditions()
+    segment.state.conditions.energy.converters[turboshaft.tag].outputs.power                 = Conditions() 
+    segment.state.conditions.energy.converters[turboshaft.tag].inputs.power.propulsive       = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboshaft.tag].inputs.power.mechanical       = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboshaft.tag].inputs.power.electrical       = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboshaft.tag].inputs.power.chemical         = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboshaft.tag].inputs.power.pneumatic        = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboshaft.tag].inputs.power.hydraulic        = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboshaft.tag].inputs.power.thermal          = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboshaft.tag].outputs.power.propulsive      = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboshaft.tag].outputs.power.mechanical      = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboshaft.tag].outputs.power.electrical      = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboshaft.tag].outputs.power.chemical        = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboshaft.tag].outputs.power.pneumatic       = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboshaft.tag].outputs.power.hydraulic       = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[turboshaft.tag].outputs.power.thermal         = 0 * ones_row(1)  
  
-    for tag, item in  turboshaft.items(): 
-        if issubclass(type(item), RCAIDE.Library.Components.Component):
-            item.append_operating_conditions(segment) 
-            for sub_tag, sub_item in  item.items(): 
-                if issubclass(type(sub_item), RCAIDE.Library.Components.Component):
-                    sub_item.append_operating_conditions(segment) 
     return 

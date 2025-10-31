@@ -103,18 +103,19 @@ class Turboshaft(Converter):
         # setting the default values
         self.tag                                              = 'turboshaft'
         self.fuel_type                                        = RCAIDE.Library.Attributes.Propellants.Jet_A1() 
-        self.ram                                              = None 
-        self.inlet_nozzle                                     = None 
-        self.compressor                                       = None 
-        self.low_pressure_turbine                             = None 
-        self.high_pressure_turbine                            = None 
-        self.combustor                                        = None 
-        self.core_nozzle                                      = None
+        self.ram_tag                                          = []
+        self.inlet_nozzle_tag                                 = []
+        self.compressor_tag                                   = []
+        self.combustor_tag                                    = []
+        self.low_pressure_turbine_tag                         = []
+        self.high_pressure_turbine_tag                        = []
+        self.core_nozzle_tag                                  = [] 
         self.active                                           = True
         self.length                                           = 0.0
         self.diamter                                          = 0.0
         self.design_isa_deviation                             = 0.0
         self.design_altitude                                  = 0.0
+        self.design_mach_number                               = 0.0
         self.specific_fuel_consumption_reduction_factor       = -3.875 
         self.reference_temperature                            = 288.15
         self.reference_pressure                               = 1.01325*10**5 
@@ -124,6 +125,7 @@ class Turboshaft(Converter):
         self.compressor_nondimensional_massflow               = 0.0
         self.design_angular_velocity                          = 0.0
         self.inverse_calculation                              = False
+        self.assigned_converters                              = Data() 
 
     def append_operating_conditions(self,segment): 
         """

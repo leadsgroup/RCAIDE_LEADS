@@ -59,6 +59,9 @@ class Turboelectric_Generator(Converter):
         self.gearbox                   = Data()
         self.gearbox.gear_ratio        = None  
         self.inverse_calculation       = False
+        self.generator_tag             = []
+        self.turboshaft_tag            = []
+        self.assigned_converters       = Data() 
 
     def append_operating_conditions(self,segment): 
         """
