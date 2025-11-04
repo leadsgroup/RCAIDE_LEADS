@@ -92,19 +92,19 @@ class Electric_Rotor(Propulsor):
         design_electric_rotor(self,network)
         return
     
-    def append_operating_conditions(self,segment):
+    def append_operating_conditions(self,segment, network):
         """
         Appends operating conditions of the segment.
         """            
-        append_electric_rotor_conditions(self,segment)
+        append_electric_rotor_conditions(self,segment, network)
         return
     
-    def append_propulsor_unknowns_and_residuals(self,segment):
+    def append_propulsor_unknowns_and_residuals(self,segment, network):
         """
         Appends propulsor unknowns and residuals to the segment.
         """ 
         if type(segment) != RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion:        
-            append_electric_rotor_residual_and_unknown(self,segment)
+            append_electric_rotor_residual_and_unknown(self,segment, network)
         return
 
     def unpack_propulsor_unknowns(self,segment):  
@@ -123,11 +123,11 @@ class Electric_Rotor(Propulsor):
             pack_electric_rotor_residuals(self,segment)
         return    
     
-    def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):
+    def compute_performance(self, network, state,center_of_gravity = [[0, 0, 0]]):
         """
         Computes propulsor performance including thrust, moment, and power. 
         """
-        inputs, outputs, stored_results_flag, stored_propulsor_tag = compute_electric_rotor_performance(self,state,center_of_gravity)
+        inputs, outputs, stored_results_flag, stored_propulsor_tag = compute_electric_rotor_performance(self, network, state,center_of_gravity)
         return inputs, outputs, stored_results_flag, stored_propulsor_tag
     
     def reuse_stored_data(electric_rotor,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):

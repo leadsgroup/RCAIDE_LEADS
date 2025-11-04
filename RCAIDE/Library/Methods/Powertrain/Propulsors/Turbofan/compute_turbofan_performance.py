@@ -444,7 +444,7 @@ def compute_turbofan_performance(turbofan, state, network, center_of_gravity=[[0
     turbofan_conditions.outputs.thrust           = thrust_vector
     turbofan_conditions.outputs.moment           = moment
     turbofan_conditions.outputs.power.propulsive = power
-    turbofan_conditions.inputs.power.chemical    = mdot_fuel * combustor.fuel_data.lower_heating_value # negative because it is consumed power
+    turbofan_conditions.inputs.power.chemical    = mdot_fuel * combustor.fuel_data.lower_heating_value 
 
     return turbofan_conditions.inputs ,turbofan_conditions.outputs, stored_results_flag, stored_propulsor_tag 
     

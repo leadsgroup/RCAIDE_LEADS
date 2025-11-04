@@ -146,7 +146,7 @@ def design_electric_rotor(electric_rotor, network):
     operating_state.conditions.energy.propulsors[electric_rotor.tag].throttle[:,0] = 1.0
     operating_state.conditions.energy.converters[motor.tag].inputs.current[:,0] =  motor.design_current
 
-    _,sls_outputs,_ ,_                           = electric_rotor.compute_performance(operating_state) 
+    _,sls_outputs,_ ,_                           = electric_rotor.compute_performance(network, operating_state) 
     electric_rotor.sealevel_static_thrust       = sls_outputs.thrust[0][0]
     electric_rotor.sealevel_static_power        = sls_outputs.power.propulsive[0][0]
      

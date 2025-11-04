@@ -13,7 +13,7 @@ from RCAIDE.Framework.Mission.Common                      import Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append electric rotor network conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_electric_rotor_conditions(propulsor, segment):
+def append_electric_rotor_conditions(propulsor, segment, network):
     """
     Appends data structures arrays for storing electric rotor conditions.
     
