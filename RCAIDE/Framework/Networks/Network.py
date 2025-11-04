@@ -578,7 +578,7 @@ class Network(Component):
         for network in segment.analyses.energy.vehicle.networks:
             
             for propulsor in network.propulsors: 
-                propulsor.append_operating_conditions(segment, network)  
+                propulsor.append_operating_conditions(segment)  
                 propulsor.append_propulsor_unknowns_and_residuals(segment)   
     
             for converter in network.converters: 

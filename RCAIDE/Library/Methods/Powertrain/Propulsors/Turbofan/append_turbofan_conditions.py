@@ -12,7 +12,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_propulsor_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_turbofan_conditions(propulsor, segment, network):
+def append_turbofan_conditions(propulsor, segment):
     """
     Initializes turbofan operating conditions for a mission segment.
     

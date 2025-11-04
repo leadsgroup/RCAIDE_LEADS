@@ -18,9 +18,9 @@ def design_turboelectric_generator(turboelectric_generator, network):
     design a turboshaft and optimally sizes a generator 
     """
     # call the turboshaft script 
-    design_turboshaft(turboelectric_generator.assigned_converters.turboshaft_tag, network) 
+    design_turboshaft(network.converters[turboelectric_generator.assigned_converters.turboshaft_tag[0][0]], network) 
 
     # call the generator design script 
-    design_optimal_generator(turboelectric_generator.assigned_converters.generator_tag)    
+    design_optimal_generator(network.converters[turboelectric_generator.assigned_converters.generator_tag[0][0]])    
 
     return
