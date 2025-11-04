@@ -18,7 +18,7 @@ from copy import deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_electric_rotor_performance
 # ----------------------------------------------------------------------------------------------------------------------  
-def compute_electric_rotor_performance(propulsor, state, center_of_gravity=[[0.0, 0.0, 0.0]]):
+def compute_electric_rotor_performance(propulsor, state, network, center_of_gravity=[[0.0, 0.0, 0.0]]):
     """
     Computes the performance of an electric rotor propulsion system.
     
@@ -103,9 +103,13 @@ def compute_electric_rotor_performance(propulsor, state, center_of_gravity=[[0.0
     RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller
     """
      
-    conditions                 = state.conditions    
-    motor                      = propulsor.motor 
-    rotor                      = propulsor.rotor 
+    conditions                 = state.conditions
+    for assigned_converter_tag in propulsor.assigned_converters:
+        if isinstance(network.converters[assigned_converter_tag[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Rotor):
+             rotor = network.converters[assigned_converter_tag[0][0]]
+        elif isinstance(network.converters[assigned_converter_tag[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Motor):
+             motor = network.converters[assigned_converter_tag[0][0]]
+
     esc                        = propulsor.electronic_speed_controller   
     electric_rotor_conditions  = conditions.energy.propulsors[propulsor.tag]
     eta                        = electric_rotor_conditions.throttle
