@@ -238,7 +238,7 @@ def compute_turboshaft_performance(turboshaft, state, network, fuel_line=None,bu
     turboshaft_conditions.flow_through_fan                         =  0.0 #scaled constant to turn on fan thrust computation     
 
     # Compute the power
-    compute_power(turboshaft,conditions)
+    compute_power(turboshaft,conditions, network)
  
     compressor_conditions.omega   = compressor.design_angular_velocity * turboshaft_conditions.throttle   
     

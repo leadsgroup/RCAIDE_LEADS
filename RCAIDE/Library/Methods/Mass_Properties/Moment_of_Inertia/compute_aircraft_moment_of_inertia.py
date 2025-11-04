@@ -101,7 +101,9 @@ def compute_aircraft_moment_of_inertia(vehicle, CG_location, update_moment_of_in
     for network in vehicle.networks:
         for propulsor in network.propulsors:
             if isinstance(propulsor,C.Powertrain.Propulsors.Electric_Rotor):
-                motor   = propulsor.motor 
+                for assigned_converter_tag in propulsor.assigned_converters:
+                    if isinstance(network.converters[assigned_converter_tag[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Motor):
+                        motor = network.converters[assigned_converter_tag[0][0]]
                 I, mass = compute_cylinder_moment_of_inertia(motor.origin,motor.mass_properties.mass, 0, 0, 0,0, CG_location)
                 I_network += I
                 MOI_mass  += mass
