@@ -156,7 +156,7 @@ def compute_motor_performance(motor,state):
             motor_conditions.Loss_cooling             = Loss_cooling                           
             motor_conditions.outputs.torque           = TQ_gearbox 
             motor_conditions.outputs.omega            = omega_gearbox 
-            motor_conditions.outputs.power            = P
+            motor_conditions.outputs.power.mechanical = P
         else:
             io              = motor.no_load_current
             G               = motor.gearbox.gear_ratio 
@@ -176,7 +176,7 @@ def compute_motor_performance(motor,state):
             v               = omega/Kv   + ((Q*Kv) + io) * Res  
             etam            = (1-io/i)*(1-i*Res/v)     
 
-            motor_conditions.inputs.power    = v * i   
+            motor_conditions.inputs.power.electrical    = v * i   
             motor_conditions.inputs.voltage  = v    
             motor_conditions.inputs.current  = i 
             motor_conditions.efficiency      = etam             
@@ -199,7 +199,7 @@ def compute_motor_performance(motor,state):
                 
             motor_conditions.outputs.torque = Q_gearbox
             motor_conditions.outputs.omega  = omega_gearbox 
-            motor_conditions.outputs.power  = omega_gearbox*Q_gearbox 
+            motor_conditions.outputs.power.mechanical  = omega_gearbox*Q_gearbox 
             motor_conditions.efficiency     = etam
             
         else: 
@@ -218,7 +218,7 @@ def compute_motor_performance(motor,state):
             P              = i * v 
             etam           = (1-io/i)*(1-i*Res/v)
 
-            motor_conditions.inputs.power    = v * i   
+            motor_conditions.inputs.power.electrical = v * i   
             motor_conditions.inputs.voltage  = v    
             motor_conditions.inputs.current  = i 
             motor_conditions.efficiency      = etam 

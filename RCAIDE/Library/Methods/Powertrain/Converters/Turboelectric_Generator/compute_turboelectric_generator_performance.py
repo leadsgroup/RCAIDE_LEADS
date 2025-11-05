@@ -86,11 +86,11 @@ def compute_turboelectric_generator_performance(turboelectric_generator, state, 
         
         # connect properties of the turboshaft to generator 
         turboelectric_generator_conditions.power = generator_conditions.outputs.power
-        generator_conditions.inputs.power  = P_mech     
+        generator_conditions.inputs.power.mechanical  = P_mech     
         generator_conditions.inputs.omega  = compressor_conditions.omega         
         
         # assign voltage across bus 
-        generator_conditions.outputs.voltage = bus.voltage*np.ones_like(generator_conditions.inputs.power)
+        generator_conditions.outputs.voltage = bus.voltage*np.ones_like(generator_conditions.inputs.power.mechanical)
         
          # run the generator 
         compute_generator_performance(generator,conditions)   

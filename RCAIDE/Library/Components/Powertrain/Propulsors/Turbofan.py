@@ -197,7 +197,7 @@ class Turbofan(Propulsor):
     def unpack_propulsor_unknowns(self,segment, network):   
         return 
 
-    def pack_propulsor_residuals(self,segment): 
+    def pack_propulsor_residuals(self,segment, network): 
         return
 
     def append_propulsor_unknowns_and_residuals(self,segment, network): 

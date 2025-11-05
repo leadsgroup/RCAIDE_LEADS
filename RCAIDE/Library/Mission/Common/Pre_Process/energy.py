@@ -12,7 +12,8 @@ import RCAIDE
 # ----------------------------------------------------------------------------------------------------------------------  
 def energy(mission):
     """ Pre-processes energy network by appending all unknowns and residuals             
-    """       
+    """ 
+    idx = 0      
     for segment in mission.segments: 
         for network in segment.analyses.energy.vehicle.networks:
 
@@ -29,9 +30,16 @@ def energy(mission):
                     propulsive_converters.append(item[0][0])
 
             # update bus voltage on each electrical component
+            convertive_converters = []
             for converter in network.converters:
-                if converter.tag not in propulsive_converters:
-                    network.non_propulsive_converters.append(converter.tag)
+                if converter.assigned_converters != []:
+                    for tag, item in converter.assigned_converters.items():
+                        convertive_converters.append(item[0][0])
+
+            for converter in network.converters:
+                if converter.tag not in propulsive_converters and converter.tag not in convertive_converters:
+                    if idx == 0:
+                        network.non_propulsive_converters.append(converter)
                     for distributor_tag in converter.assigned_distributors:
                         if isinstance(network.distributors[distributor_tag[0]], RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
                             converter.bus_voltage = network.distributors[distributor_tag[0]].voltage
@@ -53,4 +61,7 @@ def energy(mission):
             segment.state.conditions.energy.hybrid_power_split_ratio            = segment.hybrid_power_split_ratio * segment.state.ones_row(1)  
             segment.state.conditions.energy.battery_fuel_cell_power_split_ratio = segment.battery_fuel_cell_power_split_ratio * segment.state.ones_row(1)                    
             network.add_unknowns_and_residuals_to_segment(segment) 
+
+        idx += 1
+
     return 

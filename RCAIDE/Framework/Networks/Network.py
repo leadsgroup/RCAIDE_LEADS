@@ -74,7 +74,7 @@ class Network(Component):
         self.tag                          = 'network'
         self.propulsors                   = Container() 
         self.converters                   = Container()
-        self.non_propulsive_converters    = []
+        self.non_propulsive_converters    = Container()
         self.nacelles                     = Container()
         self.modulators                   = Container()
         self.distributors                 = Container()
@@ -366,6 +366,12 @@ class Network(Component):
                             triplets.append((row_b, col, +1.0))
 
             n_unknowns = len(unknown_cols)
+
+            # if n_unknowns > n_rows:
+            #     raise Exception("Power Balance System is under-constrained: {} equations, {} unknowns".format(n_rows, n_unknowns))
+            # elif n_unknowns < n_rows:
+            #     raise Exception("Power Balance System is over-constrained: {} equations, {} unknowns".format(n_rows, n_unknowns))
+            # else:
             A_matrix = np.zeros((n_rows, n_unknowns))
             for r, c, coeff in triplets:
                 A_matrix[r, c] += coeff
@@ -375,7 +381,7 @@ class Network(Component):
             # ----------------------------------------------------------
 
             x_solution, _, _, _ = np.linalg.lstsq(A_matrix, b_vector, rcond=None)
- 
+
             # ----------------------------------------------------------
             # Save solved unknowns back into conditions.energy
             # ----------------------------------------------------------
@@ -550,7 +556,7 @@ class Network(Component):
             for propulsor_i, propulsor in enumerate(network.propulsors):    
                 if propulsor.active:
                     propulsor =  network.propulsors[propulsor.tag]
-                    propulsor.pack_propulsor_residuals(segment) 
+                    propulsor.pack_propulsor_residuals(segment, network) 
         return      
     
     def add_unknowns_and_residuals_to_segment(self, segment):
