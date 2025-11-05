@@ -68,9 +68,9 @@ def compute_motor_performance(motor,state):
     RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor
     """           
     # Unpack
-    motor_conditions = conditions.energy.converters[motor.tag]
+    motor_conditions = state.energy.converters[motor.tag]
     
-    if (type(motor) == RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor): 
+    if (motor.type == RCAIDE.Library.Components.Powertrain.Converters.Motor): 
         if motor.inverse_calculation == False:
             Res            = motor.resistance
             G              = motor.gearbox.gear_ratio

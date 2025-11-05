@@ -110,7 +110,10 @@ def compute_electric_rotor_performance(propulsor, state, network, center_of_grav
         elif isinstance(network.converters[assigned_converter_tag[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Motor):
              motor = network.converters[assigned_converter_tag[0][0]]
 
-    esc                        = propulsor.electronic_speed_controller   
+    for assigned_modulator_tag in propulsor.assigned_modulators:
+        if isinstance(network.modulators[assigned_modulator_tag[0][0]], RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller):
+            esc = network.modulators[assigned_modulator_tag[0][0]]
+
     electric_rotor_conditions  = conditions.energy.propulsors[propulsor.tag]
     eta                        = electric_rotor_conditions.throttle
      
@@ -142,21 +145,15 @@ def compute_electric_rotor_performance(propulsor, state, network, center_of_grav
     stored_propulsor_tag    = propulsor.tag 
     
     # compute total forces and moments from propulsor (future work would be to add moments from motors)
-    electric_rotor_conditions.thrust      = conditions.energy.converters[rotor.tag].thrust 
-    electric_rotor_conditions.moment      = moment
+    electric_rotor_conditions.outputs.thrust      = conditions.energy.converters[rotor.tag].thrust 
+    electric_rotor_conditions.outputs.moment      = moment
     
     stored_results_flag            = True
     stored_propulsor_tag           = propulsor.tag  
 
-    electric_rotor_conditions.power.propulsive               = conditions.energy.converters[rotor.tag].power  
-    electric_rotor_conditions.power.mechanical               = 0.0 * state.ones_row(1)
-    electric_rotor_conditions.power.electrical               = 0.0 * state.ones_row(1)
-    electric_rotor_conditions.power.chemical                 = 0.0 * state.ones_row(1)
-    electric_rotor_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
-    electric_rotor_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
-    electric_rotor_conditions.power.thermal                  = 0.0 * state.ones_row(1)
+    electric_rotor_conditions.outputs.power.propulsive               = conditions.energy.converters[rotor.tag].power  
 
-    return electric_rotor_conditions.thrust ,electric_rotor_conditions.moment, electric_rotor_conditions.power, stored_results_flag,stored_propulsor_tag 
+    return electric_rotor_conditions.inputs ,electric_rotor_conditions.outputs, stored_results_flag,stored_propulsor_tag 
                 
 def reuse_stored_electric_rotor_data(propulsor,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one propulsor for identical propulsors

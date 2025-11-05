@@ -522,7 +522,7 @@ class Network(Component):
         unknowns(segment)  
         for network in segment.analyses.energy.vehicle.networks:
             for propulsor in network.propulsors:
-                propulsor.unpack_propulsor_unknowns(segment) 
+                propulsor.unpack_propulsor_unknowns(segment, network) 
         return    
      
     def residuals(self,segment):
@@ -579,7 +579,7 @@ class Network(Component):
             
             for propulsor in network.propulsors: 
                 propulsor.append_operating_conditions(segment)  
-                propulsor.append_propulsor_unknowns_and_residuals(segment)   
+                propulsor.append_propulsor_unknowns_and_residuals(segment, network)   
     
             for converter in network.converters: 
                 converter.append_operating_conditions(segment)  

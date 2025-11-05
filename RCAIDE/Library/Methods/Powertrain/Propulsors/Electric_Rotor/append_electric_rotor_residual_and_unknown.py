@@ -1,13 +1,14 @@
 # RCAIDE/Library/Methods/Powertrain/Propulsors/Electric_Rotor_Propulsor/append_electric_rotor_residual_and_unknown.py
 # 
 # Created:  Jun 2024, M. Clarke  
- 
+
+import RCAIDE 
 import  numpy as np
  
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_electric_rotor_residual_and_unknown
 # ----------------------------------------------------------------------------------------------------------------------  
-def append_electric_rotor_residual_and_unknown(propulsor, segment):
+def append_electric_rotor_residual_and_unknown(propulsor, segment, network):
     """
     Appends the torque matching residual and unknown for an electric rotor propulsor.
     
@@ -59,7 +60,10 @@ def append_electric_rotor_residual_and_unknown(propulsor, segment):
     RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.compute_electric_rotor_performance
     """
     ones_row    = segment.state.ones_row  
-    motor       = propulsor.motor  
+    for assigned_converter_tag in propulsor.assigned_converters:
+        if isinstance(network.converters[assigned_converter_tag[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Motor):
+            motor = network.converters[assigned_converter_tag[0][0]]
+
     segment.state.unknowns[propulsor.tag + '_motor_current']                     = motor.design_current * ones_row(1) 
     segment.state.residuals.network[propulsor.tag +'_rotor_motor_torque']        = 0. * ones_row(1) 
     segment.state.numerics.solver.upper_bounds[propulsor.tag + '_motor_current'] =   np.inf* ones_row(1) 

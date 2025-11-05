@@ -194,13 +194,13 @@ class Turbofan(Propulsor):
         append_turbofan_conditions(self, segment)
         return
 
-    def unpack_propulsor_unknowns(self,segment):   
+    def unpack_propulsor_unknowns(self,segment, network):   
         return 
 
     def pack_propulsor_residuals(self,segment): 
         return
 
-    def append_propulsor_unknowns_and_residuals(self,segment): 
+    def append_propulsor_unknowns_and_residuals(self,segment, network): 
         return
     
     def compute_performance(self,state, network, center_of_gravity = [[0, 0, 0]]):
