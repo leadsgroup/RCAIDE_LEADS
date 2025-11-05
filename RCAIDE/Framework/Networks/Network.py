@@ -217,6 +217,27 @@ class Network(Component):
                                     triplets.append((row_index, unknown_cols[key], -1.0))
                                 else:
                                     b_vector[row_index,0] -= val
+                        elif isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor):
+                            if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
+                                val = conditions.energy.propulsors[propulsor.tag].inputs.power.electrical[t_idx,0]
+                                if val == 0.0:
+                                    key = ("propulsor", propulsor.tag, distributor_tag, "elec_in")
+                                    if key not in unknown_cols:
+                                        unknown_cols[key] = len(unknown_cols)
+                                    triplets.append((row_index, unknown_cols[key], -1.0))
+                                else:
+                                    b_vector[row_index,0] -= val
+            
+            for converter in network.non_propulsive_converters:
+                electrical_connections = 0
+                chemical_connections   = 0
+                for distributors_tag in converter.assigned_distributors:
+                    for distributor_tag in distributors_tag:
+                        distributor = distributors[distributor_tag]
+                        if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
+                            electrical_connections += 1
+                        elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
+                            chemical_connections   += 1
 
             # converters (non-propulsive) 
             for converter in network.non_propulsive_converters:
@@ -230,17 +251,16 @@ class Network(Component):
                         key = ("converter", converter.tag, "P")
                         if key not in unknown_cols:
                             unknown_cols[key] = len(unknown_cols)
-                        col = unknown_cols[key]
                         if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
                             val = conditions.energy.converters[converter.tag].outputs.power.electrical[t_idx,0]
                             if val == 0.0:
-                                triplets.append((row_index, col, +1.0))
+                                triplets.append((row_index, unknown_cols[key], +1.0/electrical_connections))
                             else:
                                 b_vector[row_index,0] += val
                         elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
                             val = conditions.energy.converters[converter.tag].inputs.power.chemical[t_idx,0]
                             if val == 0.0:
-                                triplets.append((row_index, col, -1.0))
+                                triplets.append((row_index, unknown_cols[key], -1.0/chemical_connections))
                             else:
                                 b_vector[row_index,0] -= val
 
@@ -367,11 +387,6 @@ class Network(Component):
 
             n_unknowns = len(unknown_cols)
 
-            # if n_unknowns > n_rows:
-            #     raise Exception("Power Balance System is under-constrained: {} equations, {} unknowns".format(n_rows, n_unknowns))
-            # elif n_unknowns < n_rows:
-            #     raise Exception("Power Balance System is over-constrained: {} equations, {} unknowns".format(n_rows, n_unknowns))
-            # else:
             A_matrix = np.zeros((n_rows, n_unknowns))
             for r, c, coeff in triplets:
                 A_matrix[r, c] += coeff
@@ -406,6 +421,13 @@ class Network(Component):
                         elif val > 0.0:
                             if conditions.energy.propulsors[prop_tag].inputs.power.chemical[t_idx,0] == 0.0:
                                 conditions.energy.propulsors[prop_tag].inputs.power.chemical[t_idx,0] = val
+                    elif side == "elec_in":
+                        if val < 0.0:
+                            if conditions.energy.propulsors[prop_tag].outputs.power.electrical[t_idx,0] == 0.0:
+                                conditions.energy.propulsors[prop_tag].outputs.power.electrical[t_idx,0] = -val
+                        elif val > 0.0:
+                            if conditions.energy.propulsors[prop_tag].inputs.power.electrical[t_idx,0] == 0.0:
+                                conditions.energy.propulsors[prop_tag].inputs.power.electrical[t_idx,0] = val
 
                 elif key[0] == "converter":
                     conv_tag = key[1]
@@ -421,11 +443,11 @@ class Network(Component):
                                         conditions.energy.converters[conv_tag].inputs.power.electrical[t_idx,0] = val
                             elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
                                 if val > 0.0:
-                                    if conditions.energy.converters[conv_tag].inputs.power.chemical[t_idx,0] == 0.0:
-                                        conditions.energy.converters[conv_tag].inputs.power.chemical[t_idx,0] = val
-                                elif val < 0.0:
                                     if conditions.energy.converters[conv_tag].outputs.power.chemical[t_idx,0] == 0.0:
-                                        conditions.energy.converters[conv_tag].outputs.power.chemical[t_idx,0] = -val
+                                        conditions.energy.converters[conv_tag].outputs.power.chemical[t_idx,0] = val
+                                elif val < 0.0:
+                                    if conditions.energy.converters[conv_tag].inputs.power.chemical[t_idx,0] == 0.0:
+                                        conditions.energy.converters[conv_tag].inputs.power.chemical[t_idx,0] = -val
 
                 elif key[0] == "modulator_tru":
                     tru_tag = key[1]

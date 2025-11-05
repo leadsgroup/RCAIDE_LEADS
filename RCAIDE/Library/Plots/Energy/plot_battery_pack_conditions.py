@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
-
+import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Plots.Common import set_axes, plot_style
 import matplotlib.pyplot as plt
@@ -103,8 +103,13 @@ def plot_battery_pack_conditions(results,
     axis_5 = plt.subplot(3,2,5) 
     axis_6 = plt.subplot(3,2,6)
      
+    busses = []
     for network in results.segments[0].analyses.energy.vehicle.networks: 
-        busses  = network.busses 
+        for distributor in network.distributors:
+            if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus) and distributor.type == 'DC':
+                if distributor.battery_modules != {}:
+                    busses.append(distributor)
+
         for  b_i , bus in  enumerate(busses): 
             for i in range(len(results.segments)): 
                 no_modules         = len(bus.battery_modules) 
@@ -112,7 +117,7 @@ def plot_battery_pack_conditions(results,
                 battery_module_tag = list(bus.battery_modules.keys())[0]
                 
                 time                = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min    
-                battery_conditions  = results.segments[i].conditions.energy.busses[bus.tag].battery_modules[battery_module_tag]
+                battery_conditions  = results.segments[i].conditions.energy.distributors[bus.tag].battery_modules[battery_module_tag]
              
                 if bus_config == 'Series':
                     pack_current        = battery_conditions.current[:,0] 

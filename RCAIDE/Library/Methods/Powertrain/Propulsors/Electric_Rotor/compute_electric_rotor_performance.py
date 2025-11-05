@@ -151,7 +151,8 @@ def compute_electric_rotor_performance(propulsor, state, network, center_of_grav
     stored_results_flag            = True
     stored_propulsor_tag           = propulsor.tag  
 
-    electric_rotor_conditions.outputs.power.propulsive               = conditions.energy.converters[rotor.tag].power  
+    electric_rotor_conditions.inputs.power.electrical   = conditions.energy.modulators[esc.tag].inputs.power.electrical
+    electric_rotor_conditions.outputs.power.propulsive  = conditions.energy.converters[rotor.tag].power  
 
     return electric_rotor_conditions.inputs ,electric_rotor_conditions.outputs, stored_results_flag,stored_propulsor_tag 
                 
@@ -207,7 +208,7 @@ def reuse_stored_electric_rotor_data(propulsor,state,network,stored_propulsor_ta
   
     thrust_vector           = conditions.energy.converters[rotor.tag].thrust 
     P_mech                  = conditions.energy.converters[rotor.tag].power 
-    P_elec                  = conditions.energy.modulators[esc.tag].inputs.power    
+    P_elec                  = conditions.energy.modulators[esc.tag].inputs.power.electrical    
     
     moment_vector           = 0*state.ones_row(3) 
     moment_vector[:,0]      = rotor.origin[0][0]  -  center_of_gravity[0][0] 
