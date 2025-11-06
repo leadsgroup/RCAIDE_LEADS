@@ -13,7 +13,7 @@ from RCAIDE.Framework.Mission.Common                      import Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append electric rotor network conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_electric_rotor_conditions(propulsor, segment, network):
+def append_electric_rotor_conditions(propulsor, segment):
     """
     Appends data structures arrays for storing electric rotor conditions.
     
@@ -68,13 +68,12 @@ def append_electric_rotor_conditions(propulsor, segment, network):
     # add propulsor conditions              
     segment.state.conditions.energy.propulsors[propulsor.tag]                               = Conditions()  
     segment.state.conditions.energy.propulsors[propulsor.tag].throttle                      = 0. * ones_row(1)      
-    segment.state.conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle = 0. * ones_row(1)   
-    segment.state.conditions.energy.propulsors[propulsor.tag].thrust                        = 0. * ones_row(3) 
-    segment.state.conditions.energy.propulsors[propulsor.tag].moment                        = 0. * ones_row(3)  
+    segment.state.conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle = 0. * ones_row(1) 
     segment.state.conditions.energy.propulsors[propulsor.tag].inputs                        = Conditions()    
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs                       = Conditions()  
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power                  = Conditions()    
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power                 = Conditions()  
+    segment.state.conditions.energy.propulsors[propulsor.tag].outputs                       = Conditions()    
+    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.thrust                = 0. * ones_row(3) 
+    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.moment                = 0. * ones_row(3)  
+    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power                  = Conditions()  
     segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.propulsive       = 0 * ones_row(1)
     segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.mechanical       = 0 * ones_row(1)
     segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.electrical       = 0 * ones_row(1)
@@ -82,6 +81,7 @@ def append_electric_rotor_conditions(propulsor, segment, network):
     segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.pneumatic        = 0 * ones_row(1)
     segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.hydraulic        = 0 * ones_row(1)
     segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.thermal          = 0 * ones_row(1) 
+    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power                 = Conditions()  
     segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.propulsive      = 0 * ones_row(1)
     segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.mechanical      = 0 * ones_row(1)
     segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.electrical      = 0 * ones_row(1)

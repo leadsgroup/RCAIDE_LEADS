@@ -104,19 +104,22 @@ def design_electric_rotor(electric_rotor, network):
     RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common.compute_motor_weight
     RCAIDE.Library.Methods.Powertrain.setup_operating_conditions
     """
-    for modulator_tag in electric_rotor.assigned_modulators:
-        if modulator_tag == None:
+    for assigned_modulator_tag in electric_rotor.assigned_modulators:
+        if assigned_modulator_tag[0][0] not in network.modulators.keys(): 
             raise AssertionError("Electric Speed Controller not defined on propulsor")
-        if isinstance(network.modulators[modulator_tag[0][0]], RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller):
-            esc = network.modulators[modulator_tag[0][0]]
     
-    for converter_tag in electric_rotor.assigned_converters:
-        if converter_tag == None:
-            raise AssertionError("Electric Motor or Rotor not defined on propulsor")
-        if isinstance(network.converters[converter_tag[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Rotor):
-            rotor = network.converters[converter_tag[0][0]]
-        elif isinstance(network.converters[converter_tag[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Motor):
-            motor = network.converters[converter_tag[0][0]]
+    for assigned_converter_tag in electric_rotor.assigned_converters:
+        if isinstance(network.converters[assigned_converter_tag[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Rotor):
+            if assigned_converter_tag[0][0] not in network.converters.keys():
+                raise AssertionError("Rotor not defined on propulsor")
+            else: 
+                rotor = network.converters[assigned_converter_tag[0][0]] 
+
+        elif isinstance(network.converters[assigned_converter_tag[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Motor):
+            if assigned_converter_tag[0][0] not in network.converters.keys():
+                raise AssertionError("Motor not defined on propulsor")
+            else: 
+                motor = network.converters[assigned_converter_tag[0][0]]
     
     if type(rotor) == RCAIDE.Library.Components.Powertrain.Converters.Propeller: 
         design_propeller(rotor)
@@ -145,9 +148,8 @@ def design_electric_rotor(electric_rotor, network):
     operating_state       = setup_operating_conditions(electric_rotor, network, velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
     operating_state.conditions.energy.propulsors[electric_rotor.tag].throttle[:,0] = 1.0
     operating_state.conditions.energy.converters[motor.tag].inputs.current[:,0] =  motor.design_current
-
-    _,sls_outputs,_ ,_                           = electric_rotor.compute_performance(network, operating_state) 
-    electric_rotor.sealevel_static_thrust       = sls_outputs.thrust[0][0]
-    electric_rotor.sealevel_static_power        = sls_outputs.power.propulsive[0][0]
+    sls_inputs,sls_outputs,_,_                      = electric_rotor.compute_performance(operating_state, network) 
+    electric_rotor.sealevel_static_thrust        = sls_outputs.thrust[0][0]
+    electric_rotor.sealevel_static_power         = sls_outputs.power.propulsive[0][0]
      
     return 

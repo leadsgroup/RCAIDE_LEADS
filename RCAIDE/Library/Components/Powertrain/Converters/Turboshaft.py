@@ -126,8 +126,6 @@ class Turboshaft(Converter):
         self.design_angular_velocity                          = 0.0
         self.inverse_calculation                              = False
         self.assigned_converters                              = Data() 
-        self.assigned_modulators                              = Data()
-        self.assigned_distributors                            = Data()
 
     def append_operating_conditions(self,segment): 
         """
@@ -145,11 +143,11 @@ class Turboshaft(Converter):
     def append_propulsor_unknowns_and_residuals(self,segment): 
         return
     
-    def compute_performance(self,state,network,fuel_line = None,bus = None):
+    def compute_performance(self,state, network, fuel_line = None,bus = None):
         """
         Computes turboshaft performance including thrust, moment, and power.
         """
-        inputs, outputs, stored_results_flag, stored_converter_tag =  compute_turboshaft_performance(self,state,network,fuel_line=fuel_line,bus=bus)
+        inputs, outputs, stored_results_flag, stored_converter_tag =  compute_turboshaft_performance(self,state, network, fuel_line=fuel_line,bus=bus)
         return inputs, outputs, stored_results_flag, stored_converter_tag
     
     def reuse_stored_data(turboshaft,state,network,stored_propulsor_tag = None):

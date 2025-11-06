@@ -98,7 +98,7 @@ def compute_current_in_from_throttle(esc,conditions):
     
     # Pack 
     esc_conditions.inputs.current   = currentin
-    esc_conditions.inputs.power     = esc_conditions.inputs.voltage *currentin
+    esc_conditions.inputs.power.electrical     = esc_conditions.inputs.voltage *currentin
     
     return
 
@@ -123,19 +123,13 @@ def compute_esc_performance(esc,state):
     esc_conditions.throttle         = eta 
     # Pack 
     esc_conditions.inputs.current   = currentin
-    esc_conditions.inputs.power     = esc_conditions.inputs.voltage *currentin
+    esc_conditions.inputs.power.electrical     = esc_conditions.inputs.voltage *currentin
     
     stored_results_flag            = True
     stored_modulator_tag           = esc.tag  
 
-    esc_conditions.power.propulsive               = 0.0 * state.ones_row(1)
-    esc_conditions.power.mechanical               = 0.0 * state.ones_row(1)
-    esc_conditions.power.electrical               = esc_conditions.outputs.voltage * currentout
-    esc_conditions.power.chemical                 = 0.0 * state.ones_row(1)
-    esc_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
-    esc_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
-    esc_conditions.power.thermal                  = 0.0 * state.ones_row(1)
+    esc_conditions.outputs.power.electrical               = esc_conditions.outputs.voltage * currentout
 
-    return  esc_conditions.power, stored_results_flag, stored_modulator_tag
+    return  esc_conditions.inputs, esc_conditions.outputs, stored_results_flag, stored_modulator_tag
 
     

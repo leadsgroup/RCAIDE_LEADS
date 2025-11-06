@@ -126,9 +126,9 @@ def size_core(turboshaft, conditions, network):
 
     #pack outputs
     turboshaft.mass_flow_rate                      = mdot_air
-
-    for assigned_converter in turboshaft.assigned_converters:
-        if isinstance(network.converters[assigned_converter[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Compressor): 
-            network.converters[assigned_converter[0][0]].mass_flow_rate = mdot_compressor
+    
+    for assigned_converter_tag in turboshaft.assigned_converters:
+        if isinstance(network.converters[assigned_converter_tag[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Compressor):                   
+            network.converters[assigned_converter_tag[0][0]].mass_flow_rate = mdot_compressor
 
     return    

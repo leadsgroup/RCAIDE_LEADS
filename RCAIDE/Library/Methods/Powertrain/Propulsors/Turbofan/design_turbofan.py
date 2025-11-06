@@ -168,7 +168,7 @@ def design_turbofan(turbofan, network):
      
     segment                  = RCAIDE.Framework.Mission.Segments.Segment()  
     segment.state.conditions = conditions 
-    turbofan.append_operating_conditions(segment, network)
+    turbofan.append_operating_conditions(segment)
 
     # extract compoment from network    
     ram                       = network.converters[turbofan.assigned_converters.ram_tag[0][0]]

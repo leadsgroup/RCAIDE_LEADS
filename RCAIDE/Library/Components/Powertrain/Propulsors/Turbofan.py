@@ -169,7 +169,6 @@ class Turbofan(Propulsor):
         self.reference_pressure                         = 1.01325*10**5 
         self.design_thrust                              = 0.0
         self.mass_flow_rate_design                      = 0.0
-        self.assigned_converters                        = Data() 
 
         self.emission_indices                           = Data()  
         self.emission_indices.NOx                       = None
@@ -188,20 +187,20 @@ class Turbofan(Propulsor):
         design_turbofan(self,network)
         return 
         
-    def append_operating_conditions(self, segment, network):
+    def append_operating_conditions(self, segment):
         """
         Appends operating conditions to the segment.
         """
-        append_turbofan_conditions(self, segment, network)
+        append_turbofan_conditions(self, segment)
         return
 
-    def unpack_propulsor_unknowns(self,segment):   
+    def unpack_propulsor_unknowns(self,segment, network):   
         return 
 
-    def pack_propulsor_residuals(self,segment): 
+    def pack_propulsor_residuals(self,segment, network): 
         return
 
-    def append_propulsor_unknowns_and_residuals(self,segment): 
+    def append_propulsor_unknowns_and_residuals(self,segment, network): 
         return
     
     def compute_performance(self,state, network, center_of_gravity = [[0, 0, 0]]):

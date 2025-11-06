@@ -202,8 +202,8 @@ def reuse_stored_electric_ducted_fan_data(propulsor,state,network,stored_propuls
   
     # compute moment 
     thrust_vector           = conditions.energy.converters[ducted_fan.tag].thrust  
-    P_mech                  = conditions.energy.converters[ducted_fan.tag].power 
-    P_elec                  = conditions.energy.modulators[esc.tag].inputs.power   
+    P_mech                  = conditions.energy.converters[ducted_fan.tag].power.mechanical 
+    P_elec                  = conditions.energy.modulators[esc.tag].inputs.power.electrical   
     moment_vector           = 0*state.ones_row(3) 
     moment_vector[:,0]      = ducted_fan.origin[0][0]  -  center_of_gravity[0][0] 
     moment_vector[:,1]      = ducted_fan.origin[0][1]  -  center_of_gravity[0][1] 

@@ -151,9 +151,12 @@ def design_turboshaft(turboshaft, network):
         conditions.freestream.speed_of_sound              = np.atleast_1d(a)
         conditions.freestream.velocity                    = np.atleast_1d(a*turboshaft.design_mach_number)
          
+          
+    fuel_line                = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()    # may not need
+    
     segment                  = RCAIDE.Framework.Mission.Segments.Segment()  
     segment.state.conditions = conditions
-    turboshaft.append_operating_conditions(segment, network)  
+    turboshaft.append_operating_conditions(segment)  
             
     ram                     = network.converters[turboshaft.assigned_converters.ram_tag[0][0]]
     inlet_nozzle            = network.converters[turboshaft.assigned_converters.inlet_nozzle_tag[0][0]]
@@ -293,8 +296,7 @@ def design_turboshaft(turboshaft, network):
     # Step 26: Static Sea Level Thrust   
     atmo_data_sea_level                 = atmosphere.compute_values(0.0,0.0)   
     V                                   = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
-    operating_state                     = setup_operating_conditions(turboshaft, network, velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
-    # orientations(segment) 
+    segment.state                       = setup_operating_conditions(turboshaft, network, velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
     _,sls_outputs,_ ,_                  = turboshaft.compute_performance(segment.state, network)  
     turboshaft.sealevel_static_power    = sls_outputs.power.propulsive[0][0]
 

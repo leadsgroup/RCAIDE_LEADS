@@ -33,20 +33,12 @@ def compute_dcdc_performance(dc_to_dc_converter, state):
  
     dc_to_dc_converter_conditions.outputs.voltage    = Vout 
     dc_to_dc_converter_conditions.outputs.current    = Iout
-    dc_to_dc_converter_conditions.inputs.power       = P_in  
-    dc_to_dc_converter_conditions.outputs.power      = P_out
+    dc_to_dc_converter_conditions.inputs.power.electrical       = P_in  
+    dc_to_dc_converter_conditions.outputs.power.electrical      = P_out
     dc_to_dc_converter_conditions.inputs.current     = Iin
     dc_to_dc_converter_conditions.outputs.resistance = R_equiv
 
     stored_results_flag            = True
     stored_modulator_tag           = dc_to_dc_converter.tag  
 
-    dc_to_dc_converter_conditions.power.propulsive               = 0.0 * state.ones_row(1)
-    dc_to_dc_converter_conditions.power.mechanical               = 0.0 * state.ones_row(1)
-    dc_to_dc_converter_conditions.power.electrical               = P_out
-    dc_to_dc_converter_conditions.power.chemical                 = 0.0 * state.ones_row(1)
-    dc_to_dc_converter_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
-    dc_to_dc_converter_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
-    dc_to_dc_converter_conditions.power.thermal                  = 0.0 * state.ones_row(1)
-
-    return  dc_to_dc_converter_conditions.power, stored_results_flag, stored_modulator_tag
+    return  dc_to_dc_converter_conditions.inputs, dc_to_dc_converter_conditions.outputs, stored_results_flag, stored_modulator_tag

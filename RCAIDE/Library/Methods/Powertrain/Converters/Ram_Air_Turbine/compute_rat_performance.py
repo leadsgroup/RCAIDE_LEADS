@@ -31,7 +31,7 @@ def compute_rat_performance(ram_air_turbine, state, bus=None):
         
     # connect properties of the turboshaft to generator 
     rat_conditions.power               = rotor_conditions.power
-    generator_conditions.inputs.power  = rotor_conditions.P_mech     
+    generator_conditions.inputs.power.mechanical  = rotor_conditions.P_mech     
     generator_conditions.inputs.omega  = rotor_conditions.omega         
     
     # assign voltage across bus 
@@ -43,15 +43,9 @@ def compute_rat_performance(ram_air_turbine, state, bus=None):
     stored_results_flag            = True
     stored_converter_tag           = ram_air_turbine.tag  
 
-    generator_conditions.power.propulsive               = 0.0 * state.ones_row(1)
-    generator_conditions.power.mechanical               = 0.0 * state.ones_row(1)
-    generator_conditions.power.electrical               = generator_conditions.outputs.power
-    generator_conditions.power.chemical                 = 0.0 * state.ones_row(1)
-    generator_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
-    generator_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
-    generator_conditions.power.thermal                  = 0.0 * state.ones_row(1)
+    generator_conditions.outputs.power.electrical               = generator_conditions.outputs.power
 
-    return  generator_conditions.power, stored_results_flag, stored_converter_tag
+    return  generator_conditions.inputs, generator_conditions.outputs, stored_results_flag, stored_converter_tag
 
 def reuse_stored_turboelectric_generator_data(turboelectric_generator,state,fuel_line,bus,stored_converter_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one turboelectric_generator for identical propulsors

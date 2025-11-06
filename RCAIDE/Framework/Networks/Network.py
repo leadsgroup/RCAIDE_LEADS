@@ -74,7 +74,7 @@ class Network(Component):
         self.tag                          = 'network'
         self.propulsors                   = Container() 
         self.converters                   = Container()
-        self.non_propulsive_converters    = []
+        self.non_propulsive_converters    = Container()
         self.nacelles                     = Container()
         self.modulators                   = Container()
         self.distributors                 = Container()
@@ -217,6 +217,27 @@ class Network(Component):
                                     triplets.append((row_index, unknown_cols[key], -1.0))
                                 else:
                                     b_vector[row_index,0] -= val
+                        elif isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor):
+                            if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
+                                val = conditions.energy.propulsors[propulsor.tag].inputs.power.electrical[t_idx,0]
+                                if val == 0.0:
+                                    key = ("propulsor", propulsor.tag, distributor_tag, "elec_in")
+                                    if key not in unknown_cols:
+                                        unknown_cols[key] = len(unknown_cols)
+                                    triplets.append((row_index, unknown_cols[key], -1.0))
+                                else:
+                                    b_vector[row_index,0] -= val
+            
+            for converter in network.non_propulsive_converters:
+                electrical_connections = 0
+                chemical_connections   = 0
+                for distributors_tag in converter.assigned_distributors:
+                    for distributor_tag in distributors_tag:
+                        distributor = distributors[distributor_tag]
+                        if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
+                            electrical_connections += 1
+                        elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
+                            chemical_connections   += 1
 
             # converters (non-propulsive) 
             for converter in network.non_propulsive_converters:
@@ -230,17 +251,16 @@ class Network(Component):
                         key = ("converter", converter.tag, "P")
                         if key not in unknown_cols:
                             unknown_cols[key] = len(unknown_cols)
-                        col = unknown_cols[key]
                         if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
                             val = conditions.energy.converters[converter.tag].outputs.power.electrical[t_idx,0]
                             if val == 0.0:
-                                triplets.append((row_index, col, +1.0))
+                                triplets.append((row_index, unknown_cols[key], +1.0/electrical_connections))
                             else:
                                 b_vector[row_index,0] += val
                         elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
                             val = conditions.energy.converters[converter.tag].inputs.power.chemical[t_idx,0]
                             if val == 0.0:
-                                triplets.append((row_index, col, -1.0))
+                                triplets.append((row_index, unknown_cols[key], -1.0/chemical_connections))
                             else:
                                 b_vector[row_index,0] -= val
 
@@ -366,6 +386,7 @@ class Network(Component):
                             triplets.append((row_b, col, +1.0))
 
             n_unknowns = len(unknown_cols)
+
             A_matrix = np.zeros((n_rows, n_unknowns))
             for r, c, coeff in triplets:
                 A_matrix[r, c] += coeff
@@ -375,7 +396,7 @@ class Network(Component):
             # ----------------------------------------------------------
 
             x_solution, _, _, _ = np.linalg.lstsq(A_matrix, b_vector, rcond=None)
- 
+
             # ----------------------------------------------------------
             # Save solved unknowns back into conditions.energy
             # ----------------------------------------------------------
@@ -400,6 +421,13 @@ class Network(Component):
                         elif val > 0.0:
                             if conditions.energy.propulsors[prop_tag].inputs.power.chemical[t_idx,0] == 0.0:
                                 conditions.energy.propulsors[prop_tag].inputs.power.chemical[t_idx,0] = val
+                    elif side == "elec_in":
+                        if val < 0.0:
+                            if conditions.energy.propulsors[prop_tag].outputs.power.electrical[t_idx,0] == 0.0:
+                                conditions.energy.propulsors[prop_tag].outputs.power.electrical[t_idx,0] = -val
+                        elif val > 0.0:
+                            if conditions.energy.propulsors[prop_tag].inputs.power.electrical[t_idx,0] == 0.0:
+                                conditions.energy.propulsors[prop_tag].inputs.power.electrical[t_idx,0] = val
 
                 elif key[0] == "converter":
                     conv_tag = key[1]
@@ -415,11 +443,11 @@ class Network(Component):
                                         conditions.energy.converters[conv_tag].inputs.power.electrical[t_idx,0] = val
                             elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
                                 if val > 0.0:
-                                    if conditions.energy.converters[conv_tag].inputs.power.chemical[t_idx,0] == 0.0:
-                                        conditions.energy.converters[conv_tag].inputs.power.chemical[t_idx,0] = val
-                                elif val < 0.0:
                                     if conditions.energy.converters[conv_tag].outputs.power.chemical[t_idx,0] == 0.0:
-                                        conditions.energy.converters[conv_tag].outputs.power.chemical[t_idx,0] = -val
+                                        conditions.energy.converters[conv_tag].outputs.power.chemical[t_idx,0] = val
+                                elif val < 0.0:
+                                    if conditions.energy.converters[conv_tag].inputs.power.chemical[t_idx,0] == 0.0:
+                                        conditions.energy.converters[conv_tag].inputs.power.chemical[t_idx,0] = -val
 
                 elif key[0] == "modulator_tru":
                     tru_tag = key[1]
@@ -522,7 +550,7 @@ class Network(Component):
         unknowns(segment)  
         for network in segment.analyses.energy.vehicle.networks:
             for propulsor in network.propulsors:
-                propulsor.unpack_propulsor_unknowns(segment) 
+                propulsor.unpack_propulsor_unknowns(segment, network) 
         return    
      
     def residuals(self,segment):
@@ -550,7 +578,7 @@ class Network(Component):
             for propulsor_i, propulsor in enumerate(network.propulsors):    
                 if propulsor.active:
                     propulsor =  network.propulsors[propulsor.tag]
-                    propulsor.pack_propulsor_residuals(segment) 
+                    propulsor.pack_propulsor_residuals(segment, network) 
         return      
     
     def add_unknowns_and_residuals_to_segment(self, segment):
@@ -578,7 +606,7 @@ class Network(Component):
         for network in segment.analyses.energy.vehicle.networks:
             
             for propulsor in network.propulsors: 
-                propulsor.append_operating_conditions(segment, network)  
+                propulsor.append_operating_conditions(segment)  
                 propulsor.append_propulsor_unknowns_and_residuals(segment, network)   
     
             for converter in network.converters: 

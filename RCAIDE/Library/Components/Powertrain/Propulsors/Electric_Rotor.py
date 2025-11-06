@@ -78,12 +78,7 @@ class Electric_Rotor(Propulsor):
     def __defaults__(self):    
         # setting the default values
         self.tag                           = 'electric_rotor'    
-        self.motor                         = None
-        self.rotor                         = None 
-        self.electronic_speed_controller   = None  
-        self.active_crypgenic_tanks_tanks  = None  
-        self.assigned_converters           = Data()  
-        self.assigned_modulators           = Data()                             
+        self.active_crypgenic_tanks_tanks  = None                                 
 
     def intialize_propulsor_design(self,network):
         """
@@ -92,11 +87,11 @@ class Electric_Rotor(Propulsor):
         design_electric_rotor(self,network)
         return
     
-    def append_operating_conditions(self,segment, network):
+    def append_operating_conditions(self,segment):
         """
         Appends operating conditions of the segment.
         """            
-        append_electric_rotor_conditions(self,segment, network)
+        append_electric_rotor_conditions(self,segment)
         return
     
     def append_propulsor_unknowns_and_residuals(self,segment, network):
@@ -107,27 +102,27 @@ class Electric_Rotor(Propulsor):
             append_electric_rotor_residual_and_unknown(self,segment, network)
         return
 
-    def unpack_propulsor_unknowns(self,segment):  
+    def unpack_propulsor_unknowns(self,segment, network):  
         """
         Unpacks propulsor unknowns from the segment.
         """ 
         if type(segment) != RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion:        
-            unpack_electric_rotor_unknowns(self,segment)
+            unpack_electric_rotor_unknowns(self,segment, network)
         return 
 
-    def pack_propulsor_residuals(self,segment): 
+    def pack_propulsor_residuals(self,segment, network): 
         """
         Packs propulsor residuals into the segment.
         """
         if type(segment) != RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion:  
-            pack_electric_rotor_residuals(self,segment)
+            pack_electric_rotor_residuals(self,segment, network)
         return    
     
-    def compute_performance(self, network, state,center_of_gravity = [[0, 0, 0]]):
+    def compute_performance(self,state,network,center_of_gravity = [[0, 0, 0]]):
         """
         Computes propulsor performance including thrust, moment, and power. 
         """
-        inputs, outputs, stored_results_flag, stored_propulsor_tag = compute_electric_rotor_performance(self, network, state,center_of_gravity)
+        inputs, outputs, stored_results_flag, stored_propulsor_tag = compute_electric_rotor_performance(self,state,network,center_of_gravity)
         return inputs, outputs, stored_results_flag, stored_propulsor_tag
     
     def reuse_stored_data(electric_rotor,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
