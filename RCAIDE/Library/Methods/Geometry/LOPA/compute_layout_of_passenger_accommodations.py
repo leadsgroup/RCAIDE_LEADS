@@ -25,6 +25,9 @@ def compute_layout_of_passenger_accommodations(fuselage):
     #  [ x, y, z , length, width, first-cl flag, business-cl flag, economy-cl flag, seat, emergency-row flag, galley/lav flag, type-A exit flag]    
     LOPA = np.empty(( 0, 14)) 
     side_cabin_offset = 0
+    origin_x = 0
+    origin_y = 0
+    origin_z = 0
 
     for cabin in fuselage.cabins: 
         cabin_number_of_seats = 0
@@ -33,8 +36,12 @@ def compute_layout_of_passenger_accommodations(fuselage):
             seat_data ,cabin_class_origin,cabin_number_of_seats  = create_class_seating_map_layout(cabin, cabin_class,cabin_class_origin, side_cabin_offset,cabin_number_of_seats)
             side_cabin_offset = cabin.width / 2
             LOPA = np.vstack((LOPA,seat_data))  
-        cabin.number_of_seats = cabin_number_of_seats
-            
+            cabin.number_of_seats = cabin_number_of_seats 
+        if not isinstance(cabin,RCAIDE.Library.Components.Fuselages.Cabins.Side_Cabin):
+            origin_x = cabin.origin[0][0]
+            origin_y = cabin.origin[0][1]
+            origin_z = cabin.origin[0][2]
+        
     for cabin in fuselage.cabins: 
         for cabin_class in cabin.classes: 
             cabin_class.percentage = cabin_class.length/cabin.length
@@ -44,6 +51,7 @@ def compute_layout_of_passenger_accommodations(fuselage):
     fuselage.layout_of_passenger_accommodations                     = Data()
     fuselage.layout_of_passenger_accommodations.object_coordinates  = LOPA  
     fuselage.number_of_seats                                        = np.sum(LOPA[:,10])    
+    fuselage.layout_of_passenger_accommodations.origin              = [[origin_x,origin_y,origin_z]]
     
     if LOPA.size > 0 :
         # Step 1: plot cabin bounds  
@@ -95,8 +103,8 @@ def compute_layout_of_passenger_accommodations(fuselage):
         starboard_y_points = np.delete(y_border_pts, port_idxs)
         
         fuselage.layout_of_passenger_accommodations.cabin_area_coordinates = np.vstack((starboard_x_points[None,:],starboard_y_points[None, :])).T 
-        fuselage.layout_of_passenger_accommodations.cabin_length = max(starboard_x_points)
-        fuselage.layout_of_passenger_accommodations.cabin_width = 2*max(starboard_y_points)    
+        fuselage.layout_of_passenger_accommodations.cabin_length           = max(starboard_x_points)
+        fuselage.layout_of_passenger_accommodations.cabin_width            = 2*max(starboard_y_points)    
 
         if fuselage.width == 0:
             fuselage.width = fuselage.layout_of_passenger_accommodations.cabin_width

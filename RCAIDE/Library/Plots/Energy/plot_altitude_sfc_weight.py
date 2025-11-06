@@ -83,6 +83,8 @@ def plot_altitude_sfc_weight(results,
      
     # get line colors for plots 
     line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))      
+         
+
      
     fig   = plt.figure(save_filename)
     fig.set_size_inches(width,height) 
@@ -93,15 +95,26 @@ def plot_altitude_sfc_weight(results,
     
     for i in range(len(results.segments)): 
         time      = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min 
-        Weight    = (results.segments[i].conditions.weights.total_mass[:, 0] * 9.81)  / Units.lbf
-        mdot      = results.segments[i].conditions.weights.vehicle_mass_rate[:, 0]/ Units.lb
-        thrust    = abs(results.segments[i].conditions.frames.body.thrust_force_vector[:, 0])/ Units.lbf
-        fuel_mass = results.segments[i].conditions.energy.cumulative_fuel_consumption[:, 0]/ Units.lb
-        
-        axis_1.set_ylabel(r'Weight (lbf)')  
-        axis_2.set_ylabel(r'Fuel Consumption (lb)')
-        axis_3.set_ylabel(r'SFC (lb/lbf-hr)')
-        axis_4.set_ylabel(r'Fuel Rate (lb/s)')  
+        Weight    = (results.segments[i].conditions.weights.total_mass[:, 0] ) # / Units.lbf
+        mdot      = results.segments[i].conditions.weights.vehicle_mass_rate[:, 0]#/ Units.lb
+        thrust    = abs(results.segments[i].conditions.frames.body.thrust_force_vector[:, 0])#/ Units.lbf
+        fuel_mass = results.segments[i].conditions.energy.cumulative_fuel_consumption[:, 0]#/ Units.lb
+        for network in results.segments[i].analyses.energy.vehicle.networks: 
+            fuel_lines  = network.fuel_lines 
+            for _, fuel_line in enumerate(fuel_lines):
+                for fuel_tank_i, fuel_tank in enumerate(fuel_line.fuel_tanks):
+                    line_color     = cm.Dark2(np.linspace(0,0.9,len(fuel_line.fuel_tanks)))
+                    tank_mass = results.segments[i].conditions.energy.fuel_lines.fuel_line.fuel_tanks[fuel_tank.tag].fuel_mass[:, 0]#/ Units.lb
+                    if fuel_tank_i == 0 and i ==0:                    
+                        axis_2.plot(time, tank_mass, color = line_color[fuel_tank_i], marker = ps.markers[fuel_tank_i], linewidth = ps.line_width, label = fuel_tank.tag)
+                    else:
+                        axis_2.plot(time, tank_mass, color = line_color[fuel_tank_i], marker = ps.markers[fuel_tank_i], linewidth = ps.line_width)
+
+                 
+        axis_1.set_ylabel(r'Weight (N)')  
+        axis_2.set_ylabel(r'Fuel Consumption (kg)')
+        axis_3.set_ylabel(r'SFC (N/N-hr)')
+        axis_4.set_ylabel(r'Fuel Rate (kg/s)')  
         
         sfc       = (mdot ) / (thrust ) * Units.hr 
 

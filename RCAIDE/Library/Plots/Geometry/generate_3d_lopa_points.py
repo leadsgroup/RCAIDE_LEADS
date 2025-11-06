@@ -34,9 +34,9 @@ def generate_3d_lopa_points(structure):
 
     for row in coords:
         # Parse row variables
-        x = row[2] + layout.cabin_x_offset
-        y = row[3]
-        z = row[4] if row.shape[0] > 4 else 0.0
+        x = row[2] + layout.origin[0][0]  
+        y = row[3] + layout.origin[0][1]  
+        z = row[4] + layout.origin[0][2]  if row.shape[0] > 4 else 0.0
         length = abs(row[5])
         width  = abs(row[6])
 
