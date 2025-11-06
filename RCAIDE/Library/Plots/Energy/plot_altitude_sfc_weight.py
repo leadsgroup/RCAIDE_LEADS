@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
+import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Plots.Common import set_axes, plot_style 
 import matplotlib.pyplot as plt
@@ -93,6 +94,7 @@ def plot_altitude_sfc_weight(results,
     axis_3 = plt.subplot(2,2,3)
     axis_4 = plt.subplot(2,2,4)
     
+    fuel_tanks = []
     for i in range(len(results.segments)): 
         time      = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min 
         Weight    = (results.segments[i].conditions.weights.total_mass[:, 0] ) # / Units.lbf
@@ -100,15 +102,17 @@ def plot_altitude_sfc_weight(results,
         thrust    = abs(results.segments[i].conditions.frames.body.thrust_force_vector[:, 0])#/ Units.lbf
         fuel_mass = results.segments[i].conditions.energy.cumulative_fuel_consumption[:, 0]#/ Units.lb
         for network in results.segments[i].analyses.energy.vehicle.networks: 
-            fuel_lines  = network.fuel_lines 
-            for _, fuel_line in enumerate(fuel_lines):
-                for fuel_tank_i, fuel_tank in enumerate(fuel_line.fuel_tanks):
-                    line_color     = cm.Dark2(np.linspace(0,0.9,len(fuel_line.fuel_tanks)))
-                    tank_mass = results.segments[i].conditions.energy.fuel_lines.fuel_line.fuel_tanks[fuel_tank.tag].fuel_mass[:, 0]#/ Units.lb
-                    if fuel_tank_i == 0 and i ==0:                    
-                        axis_2.plot(time, tank_mass, color = line_color[fuel_tank_i], marker = ps.markers[fuel_tank_i], linewidth = ps.line_width, label = fuel_tank.tag)
-                    else:
-                        axis_2.plot(time, tank_mass, color = line_color[fuel_tank_i], marker = ps.markers[fuel_tank_i], linewidth = ps.line_width)
+            for source in network.sources:
+                if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                    fuel_tanks.append(source)
+
+        for fuel_tank_i, fuel_tank in enumerate(fuel_tanks):
+            line_color     = cm.Dark2(np.linspace(0,0.9,len(fuel_tanks)))
+            tank_mass = results.segments[i].conditions.energy.sources[fuel_tank.tag].fuel_mass[:, 0]#/ Units.lb
+            if fuel_tank_i == 0 and i ==0:                    
+                axis_2.plot(time, tank_mass, color = line_color[fuel_tank_i], marker = ps.markers[fuel_tank_i], linewidth = ps.line_width, label = fuel_tank.tag)
+            else:
+                axis_2.plot(time, tank_mass, color = line_color[fuel_tank_i], marker = ps.markers[fuel_tank_i], linewidth = ps.line_width)
 
                  
         axis_1.set_ylabel(r'Weight (N)')  

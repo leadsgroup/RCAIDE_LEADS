@@ -81,7 +81,7 @@ class Liquid_Hydrogen(Propellant):
         self.reactant                      = 'O2' 
         
         self.density                       = 70.85                            # [kg/m^3]
-        self.specific_energy               = 141.86e6                         # [J/kg] 
+        self.specific_energy               = 119.9e6                          # [J/kg] 
         self.energy_density                = 8491.0e6                         # [J/m^3] 
         self.gravimetric_efficiency        = .3
         self.stoichiometric_fuel_to_air    = 0.029411 
