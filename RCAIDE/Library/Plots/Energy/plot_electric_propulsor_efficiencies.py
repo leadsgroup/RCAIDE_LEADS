@@ -99,7 +99,7 @@ def plot_electric_propulsor_efficiencies(results,
 
     for network in results.segments[0].analyses.energy.vehicle.networks:  
         for p_i, propulsor in enumerate(network.propulsors):
-            if (p_i == 0) or (network.propulsors.identical_propulsors == False): 
+            if (p_i == 0) or (network.identical_propulsors == False): 
                 for i in range(len(results.segments)):  
                     if 'rotor' in propulsor: 
                         thrustor =  propulsor.rotor

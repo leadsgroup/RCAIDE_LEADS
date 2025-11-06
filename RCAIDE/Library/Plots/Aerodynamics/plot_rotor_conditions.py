@@ -110,7 +110,7 @@ def plot_rotor_conditions(results,
  
     for network in results.segments[0].analyses.energy.vehicle.networks: 
         for p_i, propulsor in enumerate(network.propulsors): 
-            if (p_i == 0) or (network.propulsors.identical_propulsors == False):            
+            if (p_i == 0) or (network.identical_propulsors == False):            
                 plot_propulsor_data(results,propulsor, axis_1_1, axis_1_2, axis_1_3, axis_1_4, axis_2_1, axis_2_2, axis_2_3, axis_2_4,line_colors,ps,p_i)                  
               
     if show_legend:                

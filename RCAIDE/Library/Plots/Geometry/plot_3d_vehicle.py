@@ -195,8 +195,8 @@ def plot_3d_vehicle(vehicle,
     for fuselage in geometry.fuselages:
         GEOM = generate_3d_fuselage_points(fuselage, tessellation)
         make_object(renderer, GEOM, fuselage_rgb_color,fuselage_opacity)
-        # lopa_geom = generate_3d_lopa_points(fuselage)
-        # add_lopa_seats(renderer, lopa_geom, lopa_opacity)
+        lopa_geom = generate_3d_lopa_points(fuselage)
+        add_lopa_seats(renderer, lopa_geom, lopa_opacity)
         
     # -------------------------------------------------------------------------  
     # Plot boom
@@ -248,23 +248,18 @@ def plot_3d_vehicle(vehicle,
                         GEOM = generate_3d_blade_points(prop,number_of_airfoil_points,dim,i) 
                         make_object(renderer, GEOM, rotor_rgb_color,rotor_opacity) 
 
-           
-        for fuel_tank in network.sources:   
-            if isinstance(fuel_tank, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+        for fuel_line in network.fuel_lines:        
+            for fuel_tank in fuel_line.fuel_tanks:   
                 if fuel_tank.wing_tag != None:
                     wing = geometry.wings[fuel_tank.wing_tag]
+                    
                     if issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
                         GEOM  = generate_non_integral_fuel_tank_points(fuel_tank,tessellation ) 
                         make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity) 
-
+    
                         if wing.xz_plane_symmetric: 
                             GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1] 
                             make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity)
-                elif fuel_tank.fuselage_tag != None:
-                    fuselage = geometry.fuselages[fuel_tank.fuselage_tag]
-                    if issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
-                        GEOM  = generate_non_integral_fuel_tank_points(fuel_tank,tessellation ) 
-                        make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity) 
                         
                     if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank: 
                         segment_list = [] 
@@ -292,21 +287,21 @@ def plot_3d_vehicle(vehicle,
                                 GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1] 
                                 make_object(renderer, GEOM,fuel_tank_rgb_color, fuel_tank_opacity) 
 
-                    elif fuel_tank.fuselage_tag != None:
-                        fuselage = geometry.fuselages[fuel_tank.fuselage_tag]
-                        if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank:  
-                            segment_list = [] 
-                            segment_tags = list(fuselage.segments.keys())     
-                            for i in range(len(fuselage.segments) - 1):
-                                seg =  fuselage.segments[segment_tags[i]]
-                                next_seg =  fuselage.segments[segment_tags[i+1]]
-                                if seg.has_fuel_tank: 
-                                    segment_list.append(seg.tag)
-                                    if next_seg.tag not in segment_list:
-                                        segment_list.append(next_seg.tag)  
+                elif fuel_tank.fuselage_tag != None:
+                    fuselage = geometry.fuselages[fuel_tank.fuselage_tag]
+                    if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank:  
+                        segment_list = [] 
+                        segment_tags = list(fuselage.segments.keys())     
+                        for i in range(len(fuselage.segments) - 1):
+                            seg =  fuselage.segments[segment_tags[i]]
+                            next_seg =  fuselage.segments[segment_tags[i+1]]
+                            if seg.has_fuel_tank: 
+                                segment_list.append(seg.tag)
+                                if next_seg.tag not in segment_list:
+                                    segment_list.append(next_seg.tag)  
 
-                            GEOM  = generate_integral_fuel_tank_points(fuselage,fuel_tank, segment_list,tessellation )
-                            make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity) 
+                        GEOM  = generate_integral_fuel_tank_points(fuselage,fuel_tank, segment_list,tessellation )
+                        make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity) 
 
                 elif issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
                     GEOM  = generate_non_integral_fuel_tank_points(fuel_tank,tessellation ) 
