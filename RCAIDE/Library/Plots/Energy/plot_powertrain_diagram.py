@@ -1,4 +1,4 @@
-# RCAIDE/Library/Plots/Energy/plot_powertrain_power.py
+# RCAIDE/Library/Plots/Energy/plot_powertrain_diagram.py
 #
 # Created:  Oct 2025, M. Guidotti
 
@@ -16,7 +16,7 @@ import numpy as np
 #  PLOTS
 # ----------------------------------------------------------------------------------------------------------------------
 
-def plot_powertrain_power(results,
+def plot_powertrain_diagram(results,
                           save_figure=False,
                           show_legend=True,
                           save_filename_prefix="Distributor_Power",
@@ -145,28 +145,28 @@ def plot_powertrain_power(results,
 
                         # read matching domain as separate supply/draw series (MW)
                         if fld == "chemical":
-                            y_sup  = crec.outputs.power.chemical [:npts, 0] / 1e6  # supply to bus
-                            y_draw = crec.inputs .power.chemical [:npts, 0] / 1e6  # draw   from bus
+                            y_sup  = crec.outputs.power.chemical[:npts, 0] / 1e6  # supply to bus
+                            y_draw = crec.inputs .power.chemical[:npts, 0] / 1e6  # draw   from bus
                         elif fld == "thermal":
-                            y_sup  = crec.outputs.power.thermal  [:npts, 0] / 1e6
-                            y_draw = crec.inputs .power.thermal  [:npts, 0] / 1e6
+                            y_sup  = crec.outputs.power.thermal[:npts, 0] / 1e6
+                            y_draw = crec.inputs .power.thermal[:npts, 0] / 1e6
                         else:
                             y_sup  = crec.outputs.power.electrical[:npts, 0] / 1e6
-                            y_draw = crec.inputs .power.electrical [:npts, 0] / 1e6
+                            y_draw = crec.inputs .power.electrical[:npts, 0] / 1e6
 
                         y_sup  = np.asarray(y_sup).reshape(-1)
                         y_draw = np.asarray(y_draw).reshape(-1)
 
                         # read matching domain as separate supply/draw series (MW)
                         if fld == "chemical":
-                            y_sup  = crec.outputs.power.chemical [:npts, 0] / 1e6
-                            y_draw = crec.inputs .power.chemical [:npts, 0] / 1e6
+                            y_sup  = crec.outputs.power.chemical[:npts, 0] / 1e6
+                            y_draw = crec.inputs .power.chemical[:npts, 0] / 1e6
                         elif fld == "thermal":
-                            y_sup  = crec.outputs.power.thermal  [:npts, 0] / 1e6
-                            y_draw = crec.inputs .power.thermal  [:npts, 0] / 1e6
+                            y_sup  = crec.outputs.power.thermal[:npts, 0] / 1e6
+                            y_draw = crec.inputs .power.thermal[:npts, 0] / 1e6
                         else:
                             y_sup  = crec.outputs.power.electrical[:npts, 0] / 1e6
-                            y_draw = crec.inputs .power.electrical [:npts, 0] / 1e6
+                            y_draw = crec.inputs .power.electrical[:npts, 0] / 1e6
 
                         # --- TRU special case: AC side = draw only, DC side = supply only ---
                         if group_name == "modulators":

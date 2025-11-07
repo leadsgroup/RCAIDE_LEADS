@@ -83,7 +83,8 @@ def compute_fuel_volume(vehicle, overwrite_fuel_volume = False):
                     total_fuel_volume += fuel_tank.fuel.volume_properties.net_volume 
                     total_fuel_mass   += fuel_tank.fuel.mass_properties.mass 
                     
-    # Assign Total Fuel Volume and Mass to Vehicle 
-    vehicle.volume_properties.fuel = total_fuel_volume
-    vehicle.mass_properties.fuel   = total_fuel_mass
+    # Assign Total Fuel Volume and Mass to Vehicle
+    if overwrite_fuel_volume:
+        vehicle.volume_properties.fuel = total_fuel_volume
+        vehicle.mass_properties.fuel   = total_fuel_mass
     return 

@@ -19,7 +19,7 @@ import numpy as np
 #------------------------------------------------------------------------------
 # compute_load_and_trim_diagram
 #------------------------------------------------------------------------------  
-def compute_load_and_trim_diagram(vehicle, number_of_points = 5, aerodynamic_analysis = None, stability_analysis = None,  weights_analysis = None, altitude = None, airspeed = None):
+def compute_load_and_trim_diagram(mission, cruise_segment_tag = "cruise",number_of_points = 5):
     """
     Computes the loading dragram of an aircraft 
  
@@ -67,54 +67,38 @@ def compute_load_and_trim_diagram(vehicle, number_of_points = 5, aerodynamic_ana
     RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method
     RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976
     """
-    vehicle.mass_properties.takeoff  = None
-    #------------------------------------------------------------------------  
-    # Check Input Args
-    #------------------------------------------------------------------------
-    if altitude == None:
-        raise AttributeError('Altitude not set') 
     
-    if airspeed  == None:
-        raise AttributeError('Airspeed not set')
+    for segment in  mission.segments:
     
-    if aerodynamic_analysis == None:
-        raise AttributeError('Aerodynamic analysis not set') 
+        if segment.analyses.aerodynamics == None:
+            raise AttributeError('Aerodynamic analysis not set') 
+        
+        if segment.analyses.weights  == None:
+            raise AttributeError('Weights analysis not set')
+        
+        if segment.analyses.stability  == None:
+            raise AttributeError('Stability analysis not set')
+        
+        vehicle = segment.analyses.vehicle 
+        vehicle.mass_properties.takeoff  = None 
     
-    if weights_analysis  == None:
-        raise AttributeError('Weights analysis not set')
-    
-    if stability_analysis  == None:
-        raise AttributeError('Stability analysis not set') 
-
-    # check that cabins are defined with at least one class
-    cabin_class_check = False
-    
-    for fuselage in  vehicle.fuselages: 
-        for cabin in fuselage.cabins:
-            for _ in cabin.classes:
-                cabin_class_check = True
-    for wing in vehicle.wings: 
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
-            for cabin in wing.cabins:    
+        # check that cabins are defined with at least one class
+        cabin_class_check = False
+        
+        for fuselage in  vehicle.fuselages: 
+            for cabin in fuselage.cabins:
                 for _ in cabin.classes:
                     cabin_class_check = True
+        for wing in vehicle.wings: 
+            if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+                for cabin in wing.cabins:    
+                    for _ in cabin.classes:
+                        cabin_class_check = True
                     
     if cabin_class_check == False:
         raise AttributeError('At least one cabin class must be defined to create Aircraft mass-C.G. envelope ') 
-
-    # Set up vehicle configs
-    configs  = configs_setup(vehicle)
-
-    # create analyses
-    analyses = analyses_setup(configs, aerodynamic_analysis,  stability_analysis, weights_analysis)
-
-    # mission analyses 
-    mission = mission_setup(analyses, altitude, airspeed)
-    
-    # create mission instances (for multiple types of missions)
-    missions = missions_setup(mission)
-    
-    results  = missions.base_mission.evaluate() 
+  
+    results  = mission.evaluate() 
          
     #------------------------------------------------------------------------  
     # Compute Loading Points 
@@ -132,10 +116,10 @@ def compute_load_and_trim_diagram(vehicle, number_of_points = 5, aerodynamic_ana
     loading_LEMAC_location           = np.zeros((len(percent_cargo),len(percent_fuel)))
     
     # compute mass properties of aircraft to get weight distribution
-    vehicle_0         = mission.segments[0].analyses.vehicle
-    x_cg_0            = mission.segments[0].analyses.vehicle.mass_properties.center_of_gravity
-    weight_breakdown  = mission.segments[0].analyses.vehicle.mass_properties.weight_breakdown 
-    neutral_point_0   = mission.segments[0].analyses.vehicle.neutral_point
+    vehicle_0         = segment.analyses.vehicle
+    x_cg_0            = segment.analyses.vehicle.mass_properties.center_of_gravity
+    weight_breakdown  = segment.analyses.vehicle.mass_properties.weight_breakdown 
+    neutral_point_0   = segment.analyses.vehicle.neutral_point
                         
      
     CARGO =  weight_breakdown.payload.cargo 
@@ -143,7 +127,11 @@ def compute_load_and_trim_diagram(vehicle, number_of_points = 5, aerodynamic_ana
     PAX   =  weight_breakdown.payload.passengers 
     MTOW  =  vehicle_0.mass_properties.max_takeoff
     OEW   =  weight_breakdown.empty.total
-    MLW   =  estimate_maximum_landing_weight(MTOW)   
+    
+    if vehicle_0.mass_properties.max_landing ==0: 
+        MLW  =  estimate_maximum_landing_weight(MTOW)
+    else:
+        MLW  =  vehicle_0.mass_properties.max_landing
 
     # -------------------------------------------------------------------------
     # Load Diagram Data 
@@ -156,9 +144,8 @@ def compute_load_and_trim_diagram(vehicle, number_of_points = 5, aerodynamic_ana
             # Aircraft-Level Properties  
             vehicle.mass_properties.takeoff  = None # this ensures that the takeoff weight is computed
             vehicle.mass_properties.payload  = (BAG + PAX) * percent_pax[i] +  percent_cargo[i] *CARGO 
-            vehicle.mass_properties.cargo    = percent_cargo[i] * CARGO
-            pax                              = int(vehicle_0.number_of_passengers * percent_pax[i])
-            vehicle.number_of_passengers     = np.maximum(1,pax)
+            vehicle.mass_properties.cargo    = percent_cargo[i] * CARGO 
+            vehicle.number_of_passengers     = np.maximum(1,int(vehicle_0.number_of_passengers * percent_pax[i]))
  
             # Update Passengers           
             for fuselage in  vehicle.fuselages: 
@@ -171,23 +158,21 @@ def compute_load_and_trim_diagram(vehicle, number_of_points = 5, aerodynamic_ana
              
             # Update Fuel            
             for network in  vehicle.networks:
-                for fuel_line in  network.fuel_lines: 
-                    for fuel_tank in fuel_line.fuel_tanks:
-                        fuel_tank.fuel.mass_properties.mass = percent_fuel[j] * vehicle_0.networks[network.tag].fuel_lines[fuel_line.tag].fuel_tanks[fuel_tank.tag].fuel.mass_properties.mass
+                for source  in  network.sources:
+                    if isinstance(source,RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
+                        source.fuel.mass_properties.mass = percent_fuel[j] * vehicle_0.networks[network.tag].sources[source.tag].fuel.mass_properties.mass
         
-            #  run mission
-            configs  = configs_setup(vehicle) 
-            analyses = analyses_setup(configs, aerodynamic_analysis, stability_analysis,  weights_analysis, overwrite_fuel_volume = False) 
-            mission  = mission_setup(analyses, altitude, airspeed) 
-            missions = missions_setup(mission)
+            #  run mission   
+            mission = update_analyses(mission, overwrite_fuel_volume = False)
             
-            geometry(missions.base_mission)
-            mass_properties(missions.base_mission) 
+            geometry(mission)
+            mass_properties(mission) 
             
             # store results 
-            loading_CG_location[i,j]         = mission.segments[0].analyses.vehicle.mass_properties.center_of_gravity[0][0] 
-            loading_mass[i,j]                = mission.segments[0].analyses.vehicle.mass_properties.takeoff 
-            loading_LEMAC_location[i,j]      = 100 * (loading_CG_location[i,j] - mission.segments[0].analyses.vehicle.LEMAC) / mission.segments[0].analyses.vehicle.reference_chord
+            segment  = mission.segments[cruise_segment_tag]
+            loading_CG_location[i,j]         = segment.analyses.vehicle.mass_properties.center_of_gravity[0][0] 
+            loading_mass[i,j]                = segment.analyses.vehicle.mass_properties.takeoff 
+            loading_LEMAC_location[i,j]      = 100 * (loading_CG_location[i,j] - segment.analyses.vehicle.LEMAC) / segment.analyses.vehicle.reference_chord
             
             print('***************************************')
             print('Loading Diagram Data: ' + str(counter+1) + ' of ' +  str(total_sims))
@@ -217,68 +202,54 @@ def compute_load_and_trim_diagram(vehicle, number_of_points = 5, aerodynamic_ana
 
     total_sims = len(percent_mass) * len(percent_cg_shift)
     counter    = 0        
-    for k in range(len(percent_mass)):
-        for l in range(len(percent_cg_shift)):
+    #for k in range(len(percent_mass)):
+        #for l in range(len(percent_cg_shift)):
     
-            # Aircraft-Level Properties  
-            vehicle.mass_properties.takeoff                 = None # this ensures that the takeoff weight is computed 
-            vehicle.mass_properties.payload                 = (BAG + PAX) * percent_mass[k] +  percent_mass[k] *CARGO 
-            vehicle.mass_properties.cargo                   = percent_mass[k] * CARGO
-            vehicle.mass_properties.center_of_gravity[0][0] = x_cg_0[0][0] * percent_cg_shift[l] 
-            
-            pax = int(vehicle_0.number_of_passengers *  percent_mass[k])
-            vehicle.number_of_passengers     = np.maximum(1,pax)
+            ## Aircraft-Level Properties  
+            #vehicle.mass_properties.takeoff                 = None # this ensures that the takeoff weight is computed 
+            #vehicle.mass_properties.payload                 = (BAG + PAX) * percent_mass[k] +  percent_mass[k] *CARGO 
+            #vehicle.mass_properties.cargo                   = percent_mass[k] * CARGO
+            #vehicle.mass_properties.center_of_gravity[0][0] = x_cg_0[0][0] * percent_cg_shift[l]  
+            #vehicle.number_of_passengers                    = np.maximum(1,int(vehicle_0.number_of_passengers *  percent_mass[k]))
     
-            # Update Passengers           
-            for fuselage in  vehicle.fuselages: 
-                for cabin in fuselage.cabins:
-                    cabin.filled_seats_arrangement  = fill_order[i]
-                    for cabin_class in cabin.classes:
-                        pax =  1 if i == 0 else int( percent_mass[k] * vehicle_0.fuselages[fuselage.tag].cabins[cabin.tag].classes[cabin_class.tag].number_of_passengers) 
-                        cabin_class.number_of_passengers =  np.maximum(1,pax)
-            for wing in vehicle.wings: 
-                if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
-                    for cabin in wing.cabins:    
-                        cabin.filled_seats_arrangement  = fill_order[i]
-                        for cabin_class in cabin.classes: 
-                            pax =  1 if i == 0 else int(percent_mass[k] *  vehicle_0.fuselages[fuselage.tag].cabins[cabin.tag].classes[cabin_class.tag].number_of_passengers)                             
-                            cabin_class.number_of_passengers  = np.maximum(1,pax)
-             
-            # Update Fuel            
-            for network in  vehicle.networks:
-                for fuel_line in  network.fuel_lines: 
-                    for fuel_tank in fuel_line.fuel_tanks:
-                        fuel_tank.fuel.mass_properties.mass = percent_mass[k] * vehicle_0.networks[network.tag].fuel_lines[fuel_line.tag].fuel_tanks[fuel_tank.tag].fuel.mass_properties.mass
+            ## Update Passengers           
+            #for fuselage in  vehicle.fuselages: 
+                #for cabin in fuselage.cabins:
+                    #cabin.filled_seats_arrangement  = fill_order[i] 
+            #for wing in vehicle.wings: 
+                #if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+                    #for cabin in wing.cabins:    
+                        #cabin.filled_seats_arrangement  = fill_order[i]  
+            ## Update Fuel            
+            #for network in  vehicle.networks: 
+                #for source  in  network.sources:
+                    #if isinstance(source,RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
+                        #source.fuel.mass_properties.mass = percent_mass[k] * vehicle_0.networks[network.tag].sources[source.tag].fuel.mass_properties.mass
             
-            #  run mission
-            configs  = configs_setup(vehicle) 
-            analyses = analyses_setup(configs, aerodynamic_analysis, stability_analysis, weights_analysis, overwrite_fuel_volume = False, update_center_of_gravity = False,neutral_point= neutral_point_0) 
-            mission  = mission_setup(analyses, altitude, airspeed) 
-            missions = missions_setup(mission) 
-            results  = missions.base_mission.evaluate()
+            ##  run mission  
+            #mission  = update_analyses(mission,overwrite_fuel_volume = False, update_center_of_gravity = False,neutral_point= neutral_point_0)  
+            #results  = mission.evaluate() 
+            #segment  = results.segments[cruise_segment_tag]
             
-            # store results
-            segment = results.segments['cruise']
+            ## store results 
+            #aerodynamic_lift_coefficient[k,l]    = segment.state.conditions.aerodynamics.coefficients.lift.total[0][0]  
+            #aerodynamic_drag_coefficient[k,l]    = segment.state.conditions.aerodynamics.coefficients.drag.total[0][0]  
+            #aerodynamic_moment_coefficient[k,l]  = segment.state.conditions.static_stability.coefficients.M[0][0]         
+            #aerodynamic_moment[k,l]              = segment.state.conditions.frames.inertial.total_moment_vector[0][1]
+            #aerodynamic_neutral_point[k,l]       = segment.state.conditions.static_stability.neutral_point[0][0]  
+            #aerodynamic_static_margin[k,l]       = segment.state.conditions.static_stability.static_margin[0][0]    
+            #aerodynamic_mass[k,l]                = segment.analyses.vehicle.mass_properties.takeoff 
+            #aerodynamic_LEMAC_location[k,l]      = 100 * (vehicle.mass_properties.center_of_gravity[0][0] - segment.analyses.vehicle.LEMAC) / segment.analyses.vehicle.reference_chord
             
-            # store results 
-            aerodynamic_lift_coefficient[k,l]    = segment.state.conditions.aerodynamics.coefficients.lift.total[0][0]  
-            aerodynamic_drag_coefficient[k,l]    = segment.state.conditions.aerodynamics.coefficients.drag.total[0][0]  
-            aerodynamic_moment_coefficient[k,l]  = segment.state.conditions.static_stability.coefficients.M[0][0]         
-            aerodynamic_moment[k,l]              = segment.state.conditions.frames.inertial.total_moment_vector[0][1]
-            aerodynamic_neutral_point[k,l]       = segment.state.conditions.static_stability.neutral_point[0][0]  
-            aerodynamic_static_margin[k,l]       = segment.state.conditions.static_stability.static_margin[0][0]    
-            aerodynamic_mass[k,l]                = mission.segments[0].analyses.vehicle.mass_properties.takeoff 
-            aerodynamic_LEMAC_location[k,l]      = 100 * (vehicle.mass_properties.center_of_gravity[0][0] - mission.segments[0].analyses.vehicle.LEMAC) / mission.segments[0].analyses.vehicle.reference_chord
-            
-            counter += 1
-            print('***************************************')
-            print('Trim Diagram Data: ' + str(counter) + ' of ' +  str(total_sims))
-            print('Center of Gravity : ',vehicle.mass_properties.center_of_gravity[0][0])
-            print('Neutral Point     : ',aerodynamic_neutral_point[k,l])
-            print('Static Margin     : ',aerodynamic_static_margin[k,l])
-            print('Percent Mass      : ',percent_mass[k]*100 ) 
-            print('Mass              : ', aerodynamic_mass[k,l] ) 
-            print('***************************************')
+            #counter += 1
+            #print('***************************************')
+            #print('Trim Diagram Data: ' + str(counter) + ' of ' +  str(total_sims))
+            #print('Center of Gravity : ',vehicle.mass_properties.center_of_gravity[0][0])
+            #print('Neutral Point     : ',aerodynamic_neutral_point[k,l])
+            #print('Static Margin     : ',aerodynamic_static_margin[k,l])
+            #print('Percent Mass      : ',percent_mass[k]*100 ) 
+            #print('Mass              : ', aerodynamic_mass[k,l] ) 
+            #print('***************************************')
  
   
     RES = Data(
@@ -300,110 +271,15 @@ def compute_load_and_trim_diagram(vehicle, number_of_points = 5, aerodynamic_ana
                )
     
     return RES  
- 
- 
-def configs_setup(vehicle): 
-    configs     = RCAIDE.Library.Components.Configs.Config.Container() 
-    base_config = RCAIDE.Library.Components.Configs.Config(vehicle)
-    base_config.tag = 'base'  
-    configs.append(base_config) 
-    return configs
   
-def analyses_setup(configs, aerodynamics,stability, weights,overwrite_fuel_volume=True, update_center_of_gravity=True, neutral_point = None,):
-
-    analyses = RCAIDE.Framework.Analyses.Analysis.Container()
-
-    # build a base analysis for each config
-    for tag,config in configs.items():
-        analysis = base_analysis(config, aerodynamics,stability, weights, overwrite_fuel_volume, update_center_of_gravity,neutral_point)
-        analyses[tag] = analysis
-
-    return analyses
- 
-def base_analysis(vehicle, aerodynamics,stability, weights,overwrite_fuel_volume, update_center_of_gravity,neutral_point):
-    # ------------------------------------------------------------------
-    #   Initialize the Analyses
-    # ------------------------------------------------------------------     
-    analyses = RCAIDE.Framework.Analyses.Vehicle()
-    vehicle.neutral_point = neutral_point   
-    analyses.vehicle = vehicle 
+def update_analyses(mission,overwrite_fuel_volume=True, update_center_of_gravity=True, neutral_point = None):
     
-    #  Geometry
-    analyses.geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
-    analyses.geometry.settings.overwrite_fuel_volume = overwrite_fuel_volume      
- 
-    #  Weights
-    analyses.weights = weights 
-    analyses.weights.settings.FLOPS.fidelity              = 'Complex' 
-    analyses.weights.settings.update_moment_of_inertia    = update_center_of_gravity 
-    analyses.weights.settings.update_center_of_gravity    = update_center_of_gravity
-    analyses.weights.print_weight_analysis_report         = False 
- 
-    #  Aerodynamics   
-    analyses.aerodynamics = aerodynamics
-
-    # ------------------------------------------------------------------
-    # Stability
-    analyses.stability = stability
-    analyses.stability.settings.update_center_of_gravity  = update_center_of_gravity 
-
-    # ------------------------------------------------------------------
-    #  Energy
-    analyses.energy          = RCAIDE.Framework.Analyses.Energy.Energy()  
-
-    # ------------------------------------------------------------------
-    #  Planet Analysis
-    analyses.planet = RCAIDE.Framework.Analyses.Planets.Earth() 
-
-    # ------------------------------------------------------------------
-    #  Atmosphere Analysis
-    analyses.atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    analyses.atmosphere.features.planet = analyses.planet.features 
- 
-    return analyses    
-
-def mission_setup(analyses, altitude, airspeed): 
-    
-    # ------------------------------------------------------------------
-    #   Initialize the Mission
-    # ------------------------------------------------------------------
-
-    mission = RCAIDE.Framework.Mission.Sequential_Segments()
-    mission.tag = 'mission'
-  
-    Segments = RCAIDE.Framework.Mission.Segments 
-    base_segment = Segments.Segment()
-    base_segment.state.numerics.solver.type = 'root_finder'
-
-    # ------------------------------------------------------------------    
-    #   Cruise Segment 
-    # ------------------------------------------------------------------    
-
-    segment = Segments.Single_Point.Set_Speed_Set_Altitude(base_segment)
-    segment.tag = "cruise" 
-    segment.analyses.extend( analyses.base )  
-    segment.altitude  =  35000 *  Units.ft
-    segment.air_speed =  450 * Units['knots'] 
-    
-    # define flight dynamics to model 
-    segment.flight_dynamics.force_x                      = True  
-    segment.flight_dynamics.force_z                      = True     
-    
-    # define flight controls 
-    segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]   
-    segment.assigned_control_variables.body_angle.active             = True                
-    
-    mission.append_segment(segment) 
- 
-
+    for segment in  mission.segments:
+        segment.analyses.vehicle.neutral_point                        = neutral_point 
+        segment.analyses.geometry.settings.overwrite_fuel_volume      = overwrite_fuel_volume 
+        segment.analyses.weights.settings.update_moment_of_inertia    = update_center_of_gravity 
+        segment.analyses.weights.settings.update_center_of_gravity    = update_center_of_gravity
+        segment.analyses.weights.print_weight_analysis_report         = False  
+        #segment.analyses.stability.settings.update_center_of_gravity  = update_center_of_gravity
     return mission
-
-def missions_setup(mission): 
- 
-    missions     = RCAIDE.Framework.Mission.Missions() 
-    mission.tag  = 'base_mission'
-    missions.append(mission)
- 
-    return missions   
  

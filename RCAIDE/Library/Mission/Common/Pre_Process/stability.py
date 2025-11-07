@@ -78,6 +78,6 @@ def stability(mission):
                     segment.analyses.vehicle.neutral_point                      = mission.segments[last_tag].analyses.vehicle.neutral_point
                 else: 
                     segment.analyses.stability.surrogates   = segment.analyses.aerodynamics.surrogates  
-                    segment.analyses.stability.initialize() 
+                    segment.analyses.stability.initialize(segment.analyses.vehicle) 
                     last_tag = tag 
     return 

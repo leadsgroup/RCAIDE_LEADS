@@ -24,5 +24,5 @@ from .plot_battery_ragone_diagram               import plot_battery_ragone_diagr
 from .plot_electric_propulsor_efficiencies      import plot_electric_propulsor_efficiencies 
 from .plot_altitude_sfc_weight                  import plot_altitude_sfc_weight
 from .plot_propulsor_throttles                  import plot_propulsor_throttles
-from .plot_powertrain_power                     import plot_powertrain_power
+from .plot_powertrain_diagram                   import plot_powertrain_diagram
 from .plot_liquid_hydrogen_tank_properties      import plot_liquid_hydrogen_tank_properties   

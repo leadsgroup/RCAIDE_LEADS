@@ -105,12 +105,12 @@ class Network(Component):
         total_propulsive_power  = 0. * state.ones_row(1)
 
         for propulsor in propulsors:
-            conditions.energy.propulsors[propulsor.tag].inputs.power.electrical = 0*state.ones_row(1)
-            conditions.energy.propulsors[propulsor.tag].inputs.power.chemical = 0*state.ones_row(1)
-            conditions.energy.propulsors[propulsor.tag].inputs.power.thermal = 0*state.ones_row(1)
+            conditions.energy.propulsors[propulsor.tag].inputs.power.electrical  = 0*state.ones_row(1)
+            conditions.energy.propulsors[propulsor.tag].inputs.power.chemical    = 0*state.ones_row(1)
+            conditions.energy.propulsors[propulsor.tag].inputs.power.thermal     = 0*state.ones_row(1)
             conditions.energy.propulsors[propulsor.tag].outputs.power.electrical = 0*state.ones_row(1)
-            conditions.energy.propulsors[propulsor.tag].outputs.power.chemical = 0*state.ones_row(1)
-            conditions.energy.propulsors[propulsor.tag].outputs.power.thermal = 0*state.ones_row(1)
+            conditions.energy.propulsors[propulsor.tag].outputs.power.chemical   = 0*state.ones_row(1)
+            conditions.energy.propulsors[propulsor.tag].outputs.power.thermal    = 0*state.ones_row(1)
         for converter in network.non_propulsive_converters:
             conditions.energy.converters[converter.tag].inputs.power.electrical = 0*state.ones_row(1)
             conditions.energy.converters[converter.tag].inputs.power.chemical = 0*state.ones_row(1)
@@ -126,19 +126,19 @@ class Network(Component):
             conditions.energy.modulators[modulator.tag].outputs.power.chemical = 0*state.ones_row(1)
             conditions.energy.modulators[modulator.tag].outputs.power.thermal = 0*state.ones_row(1)
         for source in sources:
-            conditions.energy.sources[source.tag].inputs.power.electrical = 0*state.ones_row(1)
-            conditions.energy.sources[source.tag].inputs.power.chemical = 0*state.ones_row(1)
-            conditions.energy.sources[source.tag].inputs.power.thermal = 0*state.ones_row(1)
+            conditions.energy.sources[source.tag].inputs.power.electrical  = 0*state.ones_row(1)
+            conditions.energy.sources[source.tag].inputs.power.chemical    = 0*state.ones_row(1)
+            conditions.energy.sources[source.tag].inputs.power.thermal     = 0*state.ones_row(1)
             conditions.energy.sources[source.tag].outputs.power.electrical = 0*state.ones_row(1)
-            conditions.energy.sources[source.tag].outputs.power.chemical = 0*state.ones_row(1)
-            conditions.energy.sources[source.tag].outputs.power.thermal = 0*state.ones_row(1)
+            conditions.energy.sources[source.tag].outputs.power.chemical   = 0*state.ones_row(1)
+            conditions.energy.sources[source.tag].outputs.power.thermal    = 0*state.ones_row(1)
         for system in systems:
-            conditions.energy.systems[system.tag].inputs.power.electrical = 0*state.ones_row(1)
-            conditions.energy.systems[system.tag].inputs.power.chemical = 0*state.ones_row(1)
-            conditions.energy.systems[system.tag].inputs.power.thermal = 0*state.ones_row(1)
+            conditions.energy.systems[system.tag].inputs.power.electrical  = 0*state.ones_row(1)
+            conditions.energy.systems[system.tag].inputs.power.chemical    = 0*state.ones_row(1)
+            conditions.energy.systems[system.tag].inputs.power.thermal     = 0*state.ones_row(1)
             conditions.energy.systems[system.tag].outputs.power.electrical = 0*state.ones_row(1)
-            conditions.energy.systems[system.tag].outputs.power.chemical = 0*state.ones_row(1)
-            conditions.energy.systems[system.tag].outputs.power.thermal = 0*state.ones_row(1)
+            conditions.energy.systems[system.tag].outputs.power.chemical   = 0*state.ones_row(1)
+            conditions.energy.systems[system.tag].outputs.power.thermal    = 0*state.ones_row(1)
 
         # ----------------------------------------------------------
         # Propulsors
@@ -164,7 +164,7 @@ class Network(Component):
                    isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop) or \
                    isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Internal_Combustion_Engine) or \
                    isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine):
-                    total_mdot += inputs.power.chemical / network.sources.fuel_tank.fuel.lower_heating_value
+                    total_mdot += inputs.mdot_fuel
 
         # ----------------------------------------------------------
         # Systems
