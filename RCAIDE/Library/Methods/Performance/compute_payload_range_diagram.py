@@ -21,7 +21,7 @@ import os,sys
 # ----------------------------------------------------------------------
 #  Calculate vehicle Payload Range Diagram
 # ----------------------------------------------------------------------  
-def compute_payload_range_diagram(mission = None, type = 'coventional' , cruise_segment_tag = "cruise", fuel_reserve_percentage=0.05, plot_diagram = True, fuel_name=None, delete_training_data=True):  
+def compute_payload_range_diagram(mission = None, type = 'conventional' , cruise_segment_tag = "cruise", fuel_reserve_percentage=0.05, plot_diagram = True, fuel_name=None, delete_training_data=True):  
     """
     Calculate and plot the payload range diagram for an aircraft by modifying the cruise segment and weights.
     
@@ -110,9 +110,9 @@ def compute_payload_range_diagram(mission = None, type = 'coventional' , cruise_
   
     vehicle = mission.segments[initial_segment].analyses.vehicle
     [setattr(seg.analyses.aerodynamics.settings, "store_training_data", True) for seg in mission.segments] 
-    if type == 'conventional' :  
+    if type == 'conventional':  
         payload_range  =  conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_reserve_percentage,plot_diagram,fuel_name) 
-    else:
+    elif type == 'electric':  
         payload_range  =  electric_payload_range_diagram(vehicle,mission,cruise_segment_tag,plot_diagram)
     
     if delete_training_data:
