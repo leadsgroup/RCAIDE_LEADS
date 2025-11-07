@@ -9,7 +9,7 @@
 
  # RCAIDE imports 
 from RCAIDE.Framework.Core                              import Data , Units, Container
-from .Converter                                         import Converter  
+from RCAIDE.Library.Components                          import Component  
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.append_rotor_conditions import  append_rotor_conditions
 
 # package imports
@@ -17,9 +17,9 @@ import numpy as np
 import scipy as sp
 
 # ---------------------------------------------------------------------------------------------------------------------- 
-#  Rotor
+#  Generalized Rotor Class
 # ---------------------------------------------------------------------------------------------------------------------- 
-class Rotor(Converter):
+class Rotor(Component):
     """
     A generalized rotor component model serving as the base class for various rotary propulsion devices.
 
@@ -170,7 +170,6 @@ class Rotor(Converter):
         
         # geometry properties 
         self.number_of_blades                  = 0.0
-        self.number_of_stations                = 20
         self.tip_radius                        = 0.0
         self.hub_radius                        = 0.0
         self.twist_distribution                = 0.0
@@ -226,24 +225,20 @@ class Rotor(Converter):
         self.electric_propulsion_fraction      = 1.0
  
         # blade optimization parameters     
-        self.design_optimization                                    = Data() 
-        self.design_optimization.solver                             ='SLSQP'
-        self.design_optimization.iterations                         = 200
-        self.design_optimization.solver_sense_step                  = 1E-6
-        self.design_optimization.solver_tolerance                   = 1E-5
-        self.design_optimization.print_iterations                   = False   
-        self.design_optimization.tip_mach_range                     = [0.3,0.7] 
-        self.design_optimization.multiobjective_aeroacoustic_weight = 1.0
-        self.design_optimization.multiobjective_performance_weight  = 1.0
-        self.design_optimization.multiobjective_acoustic_weight     = 1.0
-        self.design_optimization.noise_evaluation_angle             = 135 * Units.degrees 
-        self.design_optimization.tolerance                          = 1E-4
-        self.design_optimization.ideal_SPL_dBA                      = 30
-        self.design_optimization.ideal_efficiency                   = 1.0     
-        self.design_optimization.ideal_figure_of_merit              = 1.0
-        
-    def append_operating_conditions(rotor,segment): 
-        append_rotor_conditions(rotor,segment)
+        self.optimization_parameters                                    = Data() 
+        self.optimization_parameters.tip_mach_range                     = [0.1,0.6] 
+        self.optimization_parameters.multiobjective_aeroacoustic_weight = 1.0
+        self.optimization_parameters.multiobjective_performance_weight  = 1.0
+        self.optimization_parameters.multiobjective_acoustic_weight     = 1.0
+        self.optimization_parameters.noise_evaluation_angle             = 135 * Units.degrees
+        self.optimization_parameters.noise_evaluation_distance          = 20
+        self.optimization_parameters.tolerance                          = 1E-4
+        self.optimization_parameters.ideal_SPL_dBA                      = 30
+        self.optimization_parameters.ideal_efficiency                   = 1.0     
+        self.optimization_parameters.ideal_figure_of_merit              = 1.0
+
+    def append_operating_conditions(rotor,segment,energy_conditions,noise_conditions=None): 
+        append_rotor_conditions(rotor,segment,energy_conditions,noise_conditions)
         return        
          
     def append_airfoil(self,airfoil):
@@ -384,7 +379,7 @@ class Rotor(Converter):
         cpts       = len(np.atleast_1d(commanded_thrust_vector))
         rots       = np.array(self.orientation_euler_angles) * 1.
         rots       = np.repeat(rots[None,:], cpts, axis=0) 
-        rots[:,1] += commanded_thrust_vector[:,0] 
+        rots[:,1] += commanded_thrust_vector[:,0]
         
         vehicle_2_prop_vec = sp.spatial.transform.Rotation.from_rotvec(rots).as_matrix()
 

@@ -192,12 +192,7 @@ def generate_3d_blade_points(rotor, n_points, dim, i, aircraftRefFrame = True):
     MCA          = rotor.mid_chord_alignment
     t            = rotor.max_thickness_distribution
     a_loc        = rotor.airfoil_polar_stations
-    origin       = rotor.origin
-
-    if rotor.clockwise_rotation:
-        # negative chord and twist to give opposite rotation direction
-        b    = -b    
-        beta = -beta
+    origin       = rotor.origin 
 
     theta  = np.linspace(0,2*np.pi,num_B+1)[:-1] 
     flip_2 =  (np.pi/2)
@@ -233,6 +228,9 @@ def generate_3d_blade_points(rotor, n_points, dim, i, aircraftRefFrame = True):
     xp      = (- MCA_2d + xpts*b_2d - airfoil_le_offset)     # x-coord of airfoil
     yp      = r_2d*np.ones_like(xp)                          # radial location
     zp      = zpts*(t_2d/max_t2d)                            # former airfoil y coord
+    
+    if rotor.clockwise_rotation:
+        zp *= -1
      
     commanded_thrust_vector      = np.zeros((1,1))
     rotor_vel_to_body,orientaion = rotor.prop_vel_to_body(commanded_thrust_vector)

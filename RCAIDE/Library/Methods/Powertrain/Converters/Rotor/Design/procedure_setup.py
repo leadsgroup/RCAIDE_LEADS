@@ -262,7 +262,7 @@ def run_rotor_hover(nexus):
     # microphone locations             
     ctrl_pts                                         = 1 
     theta                                            = rotor.optimization_parameters.noise_evaluation_angle 
-    S_hover                                          = np.maximum(altitude[0],20*Units.feet)  
+    S_hover                                          = np.maximum(altitude[0],rotor.optimization_parameters.noise_evaluation_distance)  
     mic_positions_hover                              = np.array([[0.0 , S_hover*np.sin(theta)  ,S_hover*np.cos(theta)]])      
     
  
@@ -379,7 +379,7 @@ def run_rotor_cruise(nexus):
         # microphone locations            
         ctrl_pts                                         = 1 
         theta                                            = rotor.optimization_parameters.noise_evaluation_angle 
-        S_cruise                                         = np.maximum(altitude[0],20*Units.feet)  
+        S_cruise                                         = np.maximum(altitude[0],rotor.optimization_parameters.noise_evaluation_distance)  
         mic_positions_cruise                             = np.array([[0.0 ,S_cruise*np.sin(theta)  ,S_cruise*np.cos(theta)]])      
         
         # Run noise model  
@@ -506,6 +506,7 @@ def post_process(nexus):
         if nexus.prop_rotor_flag:    
             print("Cruise RPM                   : " + str(nexus.results.cruise.omega/Units.rpm))    
             print("Cruise Collective (deg)      : " + str(rotor_cru.cruise.design_blade_pitch_command/Units.degrees)) 
+            print("Cruise Average SPL           : " + str(nexus.results.cruise.mean_SPL))    
             if rotor_cru.cruise.design_thrust == None:  
                 print("Cruise Power Actual          : " + str(nexus.results.cruise.power)) 
                 print("Cruise Power Design          : " + str(rotor.cruise.design_power)) 

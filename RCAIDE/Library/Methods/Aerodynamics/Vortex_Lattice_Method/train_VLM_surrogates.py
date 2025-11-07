@@ -44,7 +44,7 @@ def train_VLM_surrogates(aerodynamics, vehicle):
     # only build supersonic surrogates if necessary
     if len(sup_Mach) > 2: 
         training.supersonic  =  train_model(aerodynamics, vehicle, sup_Mach)
-        training.transonic   =  train_trasonic_model(aerodynamics, training.subsonic,training.supersonic,sub_Mach, sup_Mach)
+        training.transonic   =  train_trasonic_model(aerodynamics, vehicle, training.subsonic,training.supersonic,sub_Mach, sup_Mach)
     else:
         training.supersonic  = None
         training.transonic   = None
@@ -437,7 +437,7 @@ def train_model(aerodynamics, vehicle, Mach):
     settings.vortex_distribution = VD_0
     return training 
 
-def train_trasonic_model(aerodynamics, vehicle_0, training_subsonic,training_supersonic,sub_Mach, sup_Mach): 
+def train_trasonic_model(aerodynamics, vehicle, training_subsonic,training_supersonic,sub_Mach, sup_Mach): 
     """Sub function that call methods to run VLM for sample point evaluation. 
     
     Assumptions:
@@ -452,8 +452,7 @@ def train_trasonic_model(aerodynamics, vehicle_0, training_subsonic,training_sup
     Returns: 
         None    
     """    
-
-    vehicle        = deepcopy(vehicle_0)
+ 
     AoA            = aerodynamics.training.angle_of_attack                  
     Beta           = aerodynamics.training.sideslip_angle
     training       = Data() 

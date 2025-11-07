@@ -7,8 +7,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-# RCAIDE imports
-import RCAIDE
+# RCAIDE imports 
 from RCAIDE.Framework.Core                import Units , Data  
 from .angle_of_attack_effect              import angle_of_attack_effect
 from .external_plug_effect                import external_plug_effect
@@ -27,7 +26,7 @@ from copy import deepcopy
 # ----------------------------------------------------------------------------------------------------------------------     
 #  turbofan engine noise 
 # ----------------------------------------------------------------------------------------------------------------------         
-def turbofan_engine_noise(microphone_locations, turbofan, aeroacoustic_data, segment, settings):
+def turbofan_engine_noise(microphone_locations,network,turbofan, aeroacoustic_data, state, settings):
     """
     This method predicts the free-field 1/3 Octave Band SPL of coaxial subsonic jets for turbofan engines under various conditions.
 
@@ -107,23 +106,26 @@ def turbofan_engine_noise(microphone_locations, turbofan, aeroacoustic_data, seg
     RCAIDE.Library.Methods.Noise.Common.SPL_arithmetic
     """
     # unpack   
-    Velocity_primary        = turbofan.core_nozzle.exit_velocity * np.ones_like(aeroacoustic_data.core_nozzle.exit_velocity)  # aeroacoustic_data.core_nozzle.exit_velocity or use mass flow rate 
-    Velocity_secondary      = turbofan.fan_nozzle.exit_velocity * np.ones_like(aeroacoustic_data.core_nozzle.exit_velocity)  # aeroacoustic_data.fan_nozzle.exit_velocity or use mass flow rate 
-    N1                      = aeroacoustic_data.low_pressure_spool.angular_velocity / Units.rpm
+    fan                     = network.converters[turbofan.assigned_converters.fan_tag[0][0]]
+    core_nozzle             = network.converters[turbofan.assigned_converters.core_nozzle_tag[0][0]]
+    fan_nozzle              = network.converters[turbofan.assigned_converters.fan_nozzle_tag[0][0]] 
+    Velocity_primary        = core_nozzle.noise_speed * np.ones_like(aeroacoustic_data.core_nozzle.exit_velocity)  # aeroacoustic_data.core_nozzle.exit_velocity or use mass flow rate 
+    Diameter_primary        = core_nozzle.diameter
+    Velocity_secondary      = fan_nozzle.noise_speed * np.ones_like(aeroacoustic_data.core_nozzle.exit_velocity)  # aeroacoustic_data.fan_nozzle.exit_velocity or use mass flow rate 
+    Diameter_secondary      = fan_nozzle.diameter
+    N1                      = fan.angular_velocity* np.ones_like(aeroacoustic_data.core_nozzle.exit_velocity)  / Units.rpm
 
     Temperature_secondary  = aeroacoustic_data.fan_nozzle.exit_stagnation_temperature[:,0] 
     Pressure_secondary     = aeroacoustic_data.fan_nozzle.exit_stagnation_pressure[:,0] 
     Temperature_primary    = aeroacoustic_data.core_nozzle.exit_stagnation_temperature[:,0] 
     Pressure_primary       = aeroacoustic_data.core_nozzle.exit_stagnation_pressure[:,0]      
-    Velocity_aircraft      = segment.conditions.freestream.velocity[:,0]
-    Mach_aircraft          = segment.conditions.freestream.mach_number 
-    AOA                    = segment.conditions.aerodynamics.angles.alpha / Units.deg 
-    noise_time             = segment.conditions.frames.inertial.time[:,0]  
+    Velocity_aircraft      = state.conditions.freestream.velocity[:,0]
+    Mach_aircraft          = state.conditions.freestream.mach_number 
+    AOA                    = state.conditions.aerodynamics.angles.alpha / Units.deg 
+    noise_time             = state.conditions.frames.inertial.time[:,0]  
     distance_microphone    = np.linalg.norm(microphone_locations,axis = 1)    
-    Diameter_primary       = turbofan.core_nozzle.diameter
-    Diameter_secondary     = turbofan.fan_nozzle.diameter
-    engine_height          = turbofan.height
-    EXA                    = turbofan.length /  turbofan.diameter 
+    engine_height          = turbofan.origin[0][2]
+    EXA                    = turbofan.engine_length /  turbofan.engine_diameter 
     Plug_diameter          = turbofan.plug_diameter 
     Xe                     = turbofan.geometry_xe
     Ye                     = turbofan.geometry_ye
@@ -137,29 +139,29 @@ def turbofan_engine_noise(microphone_locations, turbofan, aeroacoustic_data, seg
     # ==============================================
     # Computing atmospheric conditions
     # ==============================================  
-    sound_ambient       = segment.conditions.freestream.speed_of_sound[:,0]
-    density_ambient     = segment.conditions.freestream.density[:,0]  
-    pressure_amb        = segment.conditions.freestream.pressure[:,0] 
-    pressure_isa        = 101325 # [Pa]
-    R_gas               = 287.1  # [J/kg K]
-    gamma_primary       = 1.37  # Corretion for the primary jet
-    gamma               = 1.4
+    sound_ambient          = state.conditions.freestream.speed_of_sound[:,0]
+    density_ambient        = state.conditions.freestream.density[:,0]  
+    pressure_amb           = state.conditions.freestream.pressure[:,0] 
+    pressure_isa           = 101325 # [Pa]
+    R_gas                  = 287.1  # [J/kg K]
+    gamma_primary          = 1.37  # Corretion for the primary jet
+    gamma                  = 1.4
 
     # Calculation of nozzle areas
-    Area_primary   =  np.pi*(Diameter_primary/2)**2 
-    Area_secondary =  np.pi*(Diameter_secondary/2)**2   
+    Area_primary           =  np.pi*(Diameter_primary/2)**2 
+    Area_secondary         =  np.pi*(Diameter_secondary/2)**2   
 
     # Defining each array before the main loop 
-    theta     =  np.zeros(n_mic)
-    bool_1    = (microphone_locations[:,1] > 0) &  (microphone_locations[:,0] > 0)
-    bool_2    = (microphone_locations[:,1] > 0) &  (microphone_locations[:,0] < 0)
-    bool_3    = (microphone_locations[:,1] < 0) &  (microphone_locations[:,0] < 0)
-    bool_4    = (microphone_locations[:,1] < 0) &  (microphone_locations[:,0] > 0)
-    
-    theta[bool_1] =  np.pi - np.arctan(microphone_locations[:,1]/microphone_locations[:,0])[bool_1]
-    theta[bool_2] =  np.arctan(microphone_locations[:,1]/ abs(microphone_locations[:,0]))[bool_2]
-    theta[bool_3] =  np.arctan(abs(microphone_locations[:,1])/ abs(microphone_locations[:,0]))[bool_3]
-    theta[bool_4] =  np.pi - np.arctan(abs(microphone_locations[:,1])/ microphone_locations[:,0])[bool_4] 
+    theta                  =  np.zeros(n_mic)
+    bool_1                 = (microphone_locations[:,1] > 0) &  (microphone_locations[:,0] > 0)
+    bool_2                 = (microphone_locations[:,1] > 0) &  (microphone_locations[:,0] < 0)
+    bool_3                 = (microphone_locations[:,1] < 0) &  (microphone_locations[:,0] < 0)
+    bool_4                 = (microphone_locations[:,1] < 0) &  (microphone_locations[:,0] > 0)
+             
+    theta[bool_1]          =  np.pi - np.arctan(microphone_locations[:,1]/microphone_locations[:,0])[bool_1]
+    theta[bool_2]          =  np.arctan(microphone_locations[:,1]/ abs(microphone_locations[:,0]))[bool_2]
+    theta[bool_3]          =  np.arctan(abs(microphone_locations[:,1])/ abs(microphone_locations[:,0]))[bool_3]
+    theta[bool_4]          =  np.pi - np.arctan(abs(microphone_locations[:,1])/ microphone_locations[:,0])[bool_4] 
 
     theta_P                = np.tile(theta[None,:],(n_cpts,1))  
     theta_S                = deepcopy(theta_P)

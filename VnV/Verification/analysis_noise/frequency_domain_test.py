@@ -49,10 +49,15 @@ def Harmonic_Noise_Validation(PP):
     
     F8745_D4_verification_values_60deg = [156.92733365790193,100.86943888034477,109.60611659108622 ]
     F8745_D4_verification_values_90deg = [159.07711862067382,107.37402397630274,117.14527113998096 ]
-    fidelities                         = ['point_source', 'line_source', 'plane_source']  
+    fidelities                         = ['point_source', 'line_source', 'plane_source']
+
+    F8745_D4_verification_values_60deg = [100.86943888034477,109.60611659108622 ]
+    F8745_D4_verification_values_90deg = [107.37402397630274,117.14527113998096 ]
+    fidelities                         = ['line_source', 'plane_source']
+    
     rotor                              = F8745_D4_Propeller()  
     
-    plot_rotor(rotor, save_figure=False, show_figure=False)
+    plot_rotor_geometry(rotor, save_figure=False, show_figure=False)
     
     # Operating Conditions                                             
     a                       = 343.376
@@ -60,7 +65,7 @@ def Harmonic_Noise_Validation(PP):
     density                 = 1.2250	
     dynamic_viscosity       = 1.81E-5  
     theta                   = np.array([1,10,20,30.1,40,50,59.9,70,80,89.9,100,110,120.1,130,140,150.1,160,170,179])  
-    S                       = 4.
+    S                       = 20 # 4.
     test_omega              = np.array([2390,2710,2630]) * Units.rpm    
     ctrl_pts                = len(test_omega)
     AoA                     = np.zeros(ctrl_pts)

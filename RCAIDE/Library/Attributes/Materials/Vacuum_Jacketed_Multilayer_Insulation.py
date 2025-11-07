@@ -9,11 +9,11 @@ from RCAIDE.Framework.Core import Units
 from .Solid import Solid 
 
 #-------------------------------------------------------------------------------
-# Vacuum Gap Multilayer Insulation (VGMLI)
+# Vacuum Jacketed Multilayer Insulation (VJMLI)
 #------------------------------------------------------------------------------- 
-class Vacuum_Gap_Multilayer_Insulation(Solid): 
+class Vacuum_Jacketed_Multilayer_Insulation(Solid): 
     """ 
-    A class representing Vacuum Gap Multilayer Insulation (VGMLI) material 
+    A class representing Vacuum Jacketed Multilayer Insulation (VGMLI) material 
     properties. VGMLI is an advanced cryogenic insulation technology that 
     combines vacuum gaps with multilayer reflective barriers to minimize 
     conductive and radiative heat transfer.  
@@ -31,7 +31,7 @@ class Vacuum_Gap_Multilayer_Insulation(Solid):
 
     Notes
     -----
-    Vacuum Gap Multilayer Insulation (VGMLI) is widely used in aerospace for 
+    Vacuum Jacketed Multilayer Insulation (VGMLI) is widely used in aerospace for 
     liquid hydrogen storage, cryogenic tanks, and space vehicle insulation.  
     By integrating vacuum layers with multilayer insulation, VGMLI achieves 
     extremely low thermal conductivity, making it one of the most effective 
@@ -42,7 +42,7 @@ class Vacuum_Gap_Multilayer_Insulation(Solid):
 
     **Definitions**
 
-    'Vacuum Gap Multilayer Insulation (VGMLI)'
+    'Vacuum Jacketed Multilayer Insulation (VGMLI)'
         A thermal insulation system that integrates vacuum gaps with 
         multilayer reflective insulation to reduce conductive and 
         radiative heat transfer.  

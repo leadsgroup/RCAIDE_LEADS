@@ -65,7 +65,7 @@ class Correlation_Buildup(Noise):
         
         return
             
-    def evaluate_noise(self,segment,state):
+    def evaluate_noise(self,state,vehicle):
         """ Process vehicle to setup geometry, condititon and configuration
     
         Assumptions:
@@ -85,11 +85,10 @@ class Correlation_Buildup(Noise):
         """         
     
         # unpack  
-        settings      = self.settings     
-        conditions    = segment.state.conditions  
-        dim_cf        = len(settings.center_frequencies ) 
-        ctrl_pts      = int(segment.state.numerics.number_of_control_points) 
-         
+        settings             = self.settings     
+        conditions           = state.conditions  
+        dim_cf               = len(settings.center_frequencies ) 
+        ctrl_pts             = int(state.numerics.number_of_control_points)  
         microphone_locations = generate_hemisphere_microphone_locations(settings)      
         N_hemisphere_mics    = len(microphone_locations)
         
@@ -97,15 +96,15 @@ class Correlation_Buildup(Noise):
         total_SPL_dBA        = np.ones((ctrl_pts,N_hemisphere_mics))*1E-16 
         total_SPL_spectra    = np.ones((ctrl_pts,N_hemisphere_mics,dim_cf))*1E-16
           
-        airframe_noise_res        = airframe_noise(microphone_locations,segment,config,settings) 
+        airframe_noise_res        = airframe_noise(microphone_locations,state,vehicle,settings) 
         total_SPL_dBA             = SPL_arithmetic(np.concatenate((total_SPL_dBA[:,None,:],airframe_noise_res.SPL_dBA[:,None,:]),axis =1),sum_axis=1)
         total_SPL_spectra[:,:,5:] = SPL_arithmetic(np.concatenate((total_SPL_spectra[:,None,:,5:],airframe_noise_res.SPL_1_3_spectrum[:,None,:,:]),axis =1),sum_axis=1) 
               
           # iterate through sources  
-        for network in config.networks:  
+        for network in vehicle.networks:  
             for propulsor in network.propulsors:
                 if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan:
-                    engine_noise              = turbofan_engine_noise(microphone_locations,propulsor,conditions.noise.propulsors[propulsor.tag],segment,settings)      
+                    engine_noise              = turbofan_engine_noise(microphone_locations,network,propulsor,conditions.noise.propulsors[propulsor.tag],segment,settings)      
                     total_SPL_dBA             = SPL_arithmetic(np.concatenate((total_SPL_dBA[:,None,:],engine_noise.SPL_dBA[:,None,:]),axis =1),sum_axis=1)
                     total_SPL_spectra[:,:,5:] = SPL_arithmetic(np.concatenate((total_SPL_spectra[:,None,:,5:],engine_noise.SPL_1_3_spectrum[:,None,:,:]),axis =1),sum_axis=1) 
                          

@@ -29,6 +29,7 @@ class Cabin(Component):
         self.type_A_door_length        = 36 *  Units.inches
         self.galley_lavatory_length    = 32 *  Units.inches  
         self.emergency_exit_seat_pitch = 36 *  Units.inches 
+        self.offset_x                  = 0
         self.length                    = 0
         self.width                     = 0
         self.height                    = 0

@@ -41,8 +41,9 @@ def main():
         wing.control_surfaces  = Container()
         
     #  Weights Analysis
-    weights = RCAIDE.Framework.Analyses.Weights.Conventional() 
-    weights.settings.FLOPS.fidelity = 'Complex'  
+    weights = RCAIDE.Framework.Analyses.Weights.Conventional_Transport() 
+    weights.settings.FLOPS.fidelity = 'Complex' 
+    weights.vehicle = vehicle
  
     #  Aerodynamics Analysis 
     aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()

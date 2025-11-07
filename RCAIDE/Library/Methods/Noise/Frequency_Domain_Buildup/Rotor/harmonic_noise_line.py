@@ -249,7 +249,7 @@ def harmonic_noise_line(harmonics_blade,harmonics_load,conditions,coordinates,ro
     # SOUND PRESSURE LEVELS
     P_Lm_abs       = np.abs(P_Lm)
     P_Vm_abs       = np.abs(P_Vm)
-    Noise.SPL_prop_harmonic_bpf_spectrum     = 20*np.log10((abs(P_Lm_abs + P_Vm_abs))/p_ref)  
+    Noise.SPL_prop_harmonic_bpf_spectrum     = 20*np.log10((abs(P_Lm_abs + P_Vm_abs))/p_ref) + settings.wing_wake_interactional_dB_adjustment
     Noise.SPL_prop_harmonic_1_3_spectrum     = convert_to_third_octave_band(Noise.SPL_prop_harmonic_bpf_spectrum,Noise.f,settings)          
     Noise.SPL_prop_harmonic_1_3_spectrum[np.isinf(Noise.SPL_prop_harmonic_1_3_spectrum)]         = 0     
     

@@ -114,9 +114,9 @@ def stopped_rotor_transition_test(update_regression_values):
             print(val)
     
     # Truth values 
-    hover_throttle_truth  = 0.6211932586773058
-    lst_throttle_truth    = 0.607625951962474 
-    hsct_throttle_truth   = 0.5041297941502668
+    hover_throttle_truth  = 0.6113063676052419
+    lst_throttle_truth    = 0.596221733428434
+    hsct_throttle_truth   = 0.49177786771719284
     
     # Store errors 
     error = Data() 
@@ -165,6 +165,7 @@ def TW_base_analysis(vehicle):
 
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.settings.unique_geometry = True
     geometry.vehicle = vehicle
     analyses.append(geometry)
     
@@ -211,6 +212,7 @@ def SR_base_analysis(vehicle):
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
     geometry.vehicle = vehicle 
+    geometry.settings.unique_geometry = True
     analyses.append(geometry)
     
     # ------------------------------------------------------------------
@@ -405,7 +407,7 @@ def SR_mission_setup(analyses,vehicle):
     segment.acceleration                                  = 0.25  * Units['m/s/s'] 
     segment.pitch_initial                                 = 2.    * Units.degrees 
     segment.pitch_final                                   = 7.    * Units.degrees   
-    segment.state.numerics.solver.type                              = "root_finder"
+
 
     # define flight dynamics to model 
     segment.flight_dynamics.force_x                       = True  

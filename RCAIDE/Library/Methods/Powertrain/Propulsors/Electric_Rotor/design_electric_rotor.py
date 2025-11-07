@@ -21,7 +21,8 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Design Electric Rotor 
 # ---------------------------------------------------------------------------------------------------------------------- 
-def design_electric_rotor(electric_rotor, network):
+def design_electric_rotor(electric_rotor, number_of_stations=20, solver_name='SLSQP', iterations=200,
+                         solver_sense_step=1E-6, solver_tolerance=1E-5, print_iterations=False):
     """
     Computes performance properties of an electrically powered rotor.
     
@@ -104,33 +105,32 @@ def design_electric_rotor(electric_rotor, network):
     RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common.compute_motor_weight
     RCAIDE.Library.Methods.Powertrain.setup_operating_conditions
     """
-    for assigned_modulator_tag in electric_rotor.assigned_modulators:
-        if assigned_modulator_tag[0][0] not in network.modulators.keys(): 
-            raise AssertionError("Electric Speed Controller not defined on propulsor")
-    
-    for assigned_converter_tag in electric_rotor.assigned_converters:
-        if isinstance(network.converters[assigned_converter_tag[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Rotor):
-            if assigned_converter_tag[0][0] not in network.converters.keys():
-                raise AssertionError("Rotor not defined on propulsor")
-            else: 
-                rotor = network.converters[assigned_converter_tag[0][0]] 
 
-        elif isinstance(network.converters[assigned_converter_tag[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Motor):
-            if assigned_converter_tag[0][0] not in network.converters.keys():
-                raise AssertionError("Motor not defined on propulsor")
-            else: 
-                motor = network.converters[assigned_converter_tag[0][0]]
+    if electric_rotor.electronic_speed_controller == None: 
+        raise AssertionError("Electric Speed Controller not defined on propulsor")
+    
+    if electric_rotor.electronic_speed_controller.bus_voltage == None: 
+        raise AssertionError("Electric Speed Controller  bus voltage not specified on propulsor") 
+    
+    if electric_rotor.rotor == None:
+        raise AssertionError("Rotor not defined on propulsor")
+    rotor = electric_rotor.rotor
+
+    if electric_rotor.motor == None:
+        raise AssertionError("Motor not defined on propulsor")
+    
+    motor = electric_rotor.motor
     
     if type(rotor) == RCAIDE.Library.Components.Powertrain.Converters.Propeller: 
-        design_propeller(rotor)
+        design_propeller(rotor,number_of_stations)
         motor.design_torque            = rotor.cruise.design_torque 
         motor.design_angular_velocity  = rotor.cruise.design_angular_velocity 
     elif type(rotor) == RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor:
-        design_prop_rotor(rotor)
+        design_prop_rotor(rotor,number_of_stations ,solver_name,iterations,solver_sense_step,solver_tolerance,print_iterations)
         motor.design_torque            = rotor.hover.design_torque 
         motor.design_angular_velocity  = rotor.hover.design_angular_velocity 
     elif type(rotor) == RCAIDE.Library.Components.Powertrain.Converters.Lift_Rotor: 
-        design_lift_rotor(rotor)
+        design_lift_rotor(rotor,number_of_stations ,solver_name,iterations,solver_sense_step,solver_tolerance,print_iterations)
         motor.design_torque            = rotor.hover.design_torque 
         motor.design_angular_velocity  = rotor.hover.design_angular_velocity
     
@@ -145,11 +145,11 @@ def design_electric_rotor(electric_rotor, network):
     atmosphere            = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976() 
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
     V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
-    operating_state       = setup_operating_conditions(electric_rotor, network, velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
+    operating_state       = setup_operating_conditions(electric_rotor,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
     operating_state.conditions.energy.propulsors[electric_rotor.tag].throttle[:,0] = 1.0
     operating_state.conditions.energy.converters[motor.tag].inputs.current[:,0] =  motor.design_current
-    sls_inputs,sls_outputs,_,_                      = electric_rotor.compute_performance(operating_state, network) 
-    electric_rotor.sealevel_static_thrust        = sls_outputs.thrust[0][0]
-    electric_rotor.sealevel_static_power         = sls_outputs.power.propulsive[0][0]
+    sls_T,_,sls_P,_,_,_                          = electric_rotor.compute_performance(operating_state) 
+    electric_rotor.sealevel_static_thrust        = sls_T[0][0]
+    electric_rotor.sealevel_static_power         = sls_P[0][0]
      
     return 

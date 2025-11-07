@@ -9,11 +9,11 @@ from RCAIDE.Framework.Core import Units
 from .Solid import Solid 
 
 #-------------------------------------------------------------------------------
-# Vacuum Multilayer Insulation
+# Vacuum Cellular Multilayer Insulation (VCMLI)
 #------------------------------------------------------------------------------- 
-class Vacuum_Multilayer_Insulation(Solid): 
+class Vacuum_Cellular_Multilayer_Insulation(Solid): 
     """ 
-    A class representing Vacuum Multilayer Insulation (VCMLI) material 
+    A class representing Vacuum Cellular Multilayer Insulation (VCMLI) material 
     properties, used extensively in aerospace cryogenic and thermal 
     protection systems.  
 
@@ -29,9 +29,9 @@ class Vacuum_Multilayer_Insulation(Solid):
 
     Notes
     -----
-    Vacuum Multilayer Insulation (VCMLI) is a highly effective cryogenic 
+    Vacuum Cellular Multilayer Insulation (VCMLI) is a highly effective cryogenic 
     insulation material, consisting of alternating reflective and spacer layers 
-    maintained under vacuum. It provides extremely low thermal conductivity, 
+    maintained under Vacuum Cellular. It provides extremely low thermal conductivity, 
     making it the material of choice for liquid hydrogen storage tanks, space 
     vehicle insulation, and other cryogenic systems.  
 
@@ -43,7 +43,7 @@ class Vacuum_Multilayer_Insulation(Solid):
 
     'Multilayer Insulation (MLI)'
         A thermal insulation system consisting of multiple thin reflective layers 
-        separated by low-conductivity spacers and maintained under vacuum.  
+        separated by low-conductivity spacers and maintained under Vacuum Cellular.  
 
     'Thermal Conductivity'
         The property of a material to conduct heat, measured in watts per 
@@ -64,10 +64,11 @@ class Vacuum_Multilayer_Insulation(Solid):
 
         Notes
         -----
-        * Uses typical values for vacuum multilayer insulation in cryogenic 
+        * Uses typical values for Vacuum Cellular multilayer insulation in cryogenic 
           applications.  
         * Mechanical strength properties are not included because VCMLI is 
           not used as a structural material.  
         """
         self.density                    = 65 * Units['kg/(m**3)']        
         self.thermal_conductivity       = 0.005
+        self.specific_density           = 0.0

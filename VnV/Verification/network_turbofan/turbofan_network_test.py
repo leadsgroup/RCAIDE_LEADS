@@ -112,7 +112,7 @@ def main():
     cruise_6_CL_truth        = 0.33684987023602664
     cruise_7_CL_truth        = 0.3294826224626519
     cruise_8_CL_truth        = 0.322933704190869
-    descent_throttle_3_truth = 0.09536553687157563
+    descent_throttle_3_truth = 0.0953655368715294
     landing_thrust_truth     = 39880.99351455314
     
     # Store errors 

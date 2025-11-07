@@ -916,11 +916,12 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
     geometry.vehicle = vehicle
+    geometry.settings.unique_geometry = False
     analyses.append(geometry)
 
     # ------------------------------------------------------------------
     #  Weights
-    weights = RCAIDE.Framework.Analyses.Weights.Conventional()
+    weights = RCAIDE.Framework.Analyses.Weights.Conventional_Transport()
     weights.vehicle = vehicle 
     weights.settings.FLOPS.fidelity                                           = 'Complex'      
     weights.settings.advanced_composites                                      = True

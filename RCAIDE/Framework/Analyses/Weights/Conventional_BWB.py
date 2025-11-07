@@ -49,3 +49,4 @@ class Conventional_BWB(Conventional):
         N/A
         """ 
         self.aircraft_type                                 = 'BWB' 
+        self.settings.PRSEUS                               = True

@@ -63,7 +63,7 @@ def PNL_noise_metric(SPL_1_3_spectrum):
     # Defining the necessary arrays for the calculation
     n_cpts  = len(SPL_1_3_spectrum[:,0,0,0])
     n_mic_x = len(SPL_1_3_spectrum[0,:,0,0])
-    n_mic_y = len(SPL_1_3_spectrum[0,:,:,0])
+    n_mic_y = len(SPL_1_3_spectrum[0,0,:,0])
     n_f     = len(SPL_1_3_spectrum[0,0,0,:])
     SPL_noy = np.zeros((n_cpts,n_mic_x,n_mic_y,n_f))
     PNL     = np.zeros((n_cpts,n_mic_x,n_mic_y ))
@@ -72,7 +72,7 @@ def PNL_noise_metric(SPL_1_3_spectrum):
     # STEP 1 - Convert SPL to Perceived Noisiness
     #-------------------------------------------  
     for n_x in range(n_mic_x):
-        for n_y in range(n_mic_x):
+        for n_y in range(n_mic_y):
             for j in range(n_cpts):
                 for i in range(5,29):
                     if SPL_1_3_spectrum[j][n_x][n_y][i]>=noy[1][2]:

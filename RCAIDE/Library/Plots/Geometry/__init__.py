@@ -28,4 +28,4 @@ from .generate_3d_fuselage_points             import *
 from .plot_3d_vehicle_vlm_panelization        import plot_3d_vehicle_vlm_panelization
 from .plot_layout_of_passenger_accommodations import plot_layout_of_passenger_accommodations
 from .plot_airfoil                            import plot_airfoil
-from .plot_rotor                              import plot_rotor
+from .plot_rotor_geometry                     import plot_rotor_geometry

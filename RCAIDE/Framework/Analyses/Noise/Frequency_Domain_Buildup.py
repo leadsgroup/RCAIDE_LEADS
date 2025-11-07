@@ -60,10 +60,11 @@ class Frequency_Domain_Buildup(Noise):
         """
         
         # Initialize quantities 
-        self.tag                                   =  "Frequency_Domain_Buildup"        
-        self.settings.fidelity                     = 'line_source'
-        self.settings.use_plane_loading_surrogate =  True
-        
+        self.tag                                             =  "Frequency_Domain_Buildup"        
+        self.settings.fidelity                               = 'line_source'
+        self.settings.use_plane_loading_surrogate            =  True 
+        self.settings.wing_wake_interactional_dB_adjustment =  15 
+
     def evaluate_noise(self,segment,vehicle):
         """ Process vehicle to setup vehicle, condititon and configuration
     
@@ -88,7 +89,7 @@ class Frequency_Domain_Buildup(Noise):
         settings             = self.settings  
         conditions           = segment.state.conditions  
         dim_cf               = len(settings.center_frequencies ) 
-        ctrl_pts             = int(state.numerics.number_of_control_points) 
+        ctrl_pts             = int(segment.state.numerics.number_of_control_points) 
         microphone_locations = generate_hemisphere_microphone_locations(settings)     
         N_hemisphere_mics    = len(microphone_locations)
         
@@ -99,15 +100,15 @@ class Frequency_Domain_Buildup(Noise):
         # iterate through sources and iteratively add rotor noise
         rotor_tag = None
         i = 0
-        for network in config.networks:
+        for network in vehicle.networks:
             for propulsor in network.propulsors:
                 for sub_tag , sub_item in  propulsor.items():
                     if isinstance(sub_item, RCAIDE.Library.Components.Powertrain.Converters.Rotor): 
-                        rotor_tag         = compute_rotor_noise(microphone_locations,sub_item,segment,settings, rotor_index = i, previous_rotor_tag= rotor_tag, identical_propulsors=network.propulsors.identical_propulsors)   
+                        rotor_tag         = compute_rotor_noise(microphone_locations,sub_item,segment,settings, rotor_index = i, previous_rotor_tag= rotor_tag, identical_propulsors=network.identical_propulsors)   
                         total_SPL_dBA     = SPL_arithmetic(np.concatenate((total_SPL_dBA[:,None,:],conditions.noise.converters[sub_item.tag].SPL_dBA[:,None,:]),axis =1),sum_axis=1)
                         total_SPL_spectra = SPL_arithmetic(np.concatenate((total_SPL_spectra[:,None,:,:],conditions.noise.converters[sub_item.tag].SPL_1_3_spectrum[:,None,:,:]),axis =1),sum_axis=1) 
                         i += 1
                         
-        conditions.noise.hemisphere_SPL_dBA              = total_SPL_dBA *  (1 - settings.noise_reduction_factors.SPL_dbA)
-        conditions.noise.hemisphere_SPL_1_3_spectrum_dBA = total_SPL_spectra *  (1 - settings.noise_reduction_factors.SPL_dbA) 
+        conditions.noise.hemisphere_SPL_dBA              = (total_SPL_dBA) *  (1 - settings.noise_reduction_factors.SPL_dbA)
+        conditions.noise.hemisphere_SPL_1_3_spectrum_dBA = (total_SPL_spectra) * (1 - settings.noise_reduction_factors.SPL_dbA) 
         return

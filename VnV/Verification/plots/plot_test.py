@@ -28,7 +28,7 @@ from Concorde                       import vehicle_setup as Concorde_vehicle_set
 from Boeing_737                     import vehicle_setup as B737_vehicle_setup
 from Hydrogen_Fuel_Cell_Twin_Otter  import vehicle_setup as HTO_vehicle_setup
 from Navion                         import vehicle_setup as Navion_vehicle_setup
- 
+
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
@@ -213,48 +213,16 @@ def bwb_aircraft_geometry_test(show_figure):
     fuel_tank_1.tag                             = 'H2_Fuel_Tank_1' 
     fuel_tank_1.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()  
     fuel_tank_1.material                        = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
-    fuel_tank_1.insulation_material             = RCAIDE.Library.Attributes.Materials.Vacuum_Gap_Multilayer_Insulation()
+    fuel_tank_1.insulation_material             = RCAIDE.Library.Attributes.Materials.Vacuum_Jacketed_Multilayer_Insulation()
     fuel_tank_1.fuel.gravimetric_efficiency     = 0.5
     fuel_tank_1.wall_thickness                  = 2*Units.inches
     fuel_line.fuel_tanks.append(fuel_tank_1)
-     # fuel tank
-    fuel_tank_2                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank()
-    fuel_tank_2.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()  
-    fuel_tank_2.tag                             = 'H2_Fuel_Tank_2' 
-    fuel_tank_2.geometry_type                   = 'prismatic'
-    fuel_tank_2.outer_length                    = 1
-    fuel_tank_2.outer_width                     = 1
-    fuel_tank_2.outer_height                    = 1
-    fuel_tank_2.wall_thickness                  = 2*Units.inches
-    fuel_line.fuel_tanks.append(fuel_tank_2)
-
-    fuel_tank_2a                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank()
-    fuel_tank_2a.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()  
-    fuel_tank_2a.tag                             = 'H2_Fuel_Tank_2a' 
-    fuel_tank_2a.geometry_type                   = 'prismatic'
-    fuel_tank_2a.outer_length                    = 1
-    fuel_tank_2a.outer_width                     = 1
-    fuel_tank_2a.outer_height                    = 1
-    fuel_tank_2a.wall_thickness                  = 2*Units.inches
-    fuel_tank_2a.fuel.mass_properties.mass       = 0.1
-    fuel_line.fuel_tanks.append(fuel_tank_2a)
-
-
-    fuel_tank_3                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.wings.main_wing)
-    fuel_tank_3.tag                             = 'H2_Fuel_Tank_3' 
-    fuel_tank_3.fuel                            = RCAIDE.Library.Attributes.Propellants.Jet_A1()   
-    fuel_tank_3.material                        = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
-    fuel_tank_3.insulation_material             = RCAIDE.Library.Attributes.Materials.Vacuum_Gap_Multilayer_Insulation()
-    fuel_tank_3.fuel.gravimetric_efficiency     = 0.5
-    fuel_tank_3.wall_thickness                  = 2*Units.inches
-    fuel_line.fuel_tanks.append(fuel_tank_3)
-
 
     fuel_tank_4                               = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(())
     fuel_tank_4.tag                           = 'H2_Fuel_Tank_4' 
     fuel_tank_4.fuel                          = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()   
     fuel_tank_4.material                      = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
-    fuel_tank_4.insulation_material           = RCAIDE.Library.Attributes.Materials.Vacuum_Gap_Multilayer_Insulation()
+    fuel_tank_4.insulation_material           = RCAIDE.Library.Attributes.Materials.Vacuum_Jacketed_Multilayer_Insulation()
     fuel_tank_4.fuel.gravimetric_efficiency   = 0.5
     fuel_tank_4.xz_plane_symmetric            = False
     fuel_tank_4.orientation_euler_angles      = [0,0,np.pi/2]
@@ -266,51 +234,6 @@ def bwb_aircraft_geometry_test(show_figure):
     fuel_tank_4.radial_offset                 = 0.2
 
     fuel_line.fuel_tanks.append(fuel_tank_4)
-
-    fuel_tank_4a                               = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(())
-    fuel_tank_4a.tag                           = 'H2_Fuel_Tank_4a' 
-    fuel_tank_4a.fuel                          = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()   
-    fuel_tank_4a.material                      = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
-    fuel_tank_4a.insulation_material           = RCAIDE.Library.Attributes.Materials.Vacuum_Gap_Multilayer_Insulation()
-    fuel_tank_4a.fuel.gravimetric_efficiency   = 0.5
-    fuel_tank_4a.xz_plane_symmetric            = False
-    fuel_tank_4a.orientation_euler_angles      = [0,0,np.pi/2]
-    fuel_tank_4a.bwb_aft_tank                  = True
-    fuel_tank_4a.aft_tank_start_root_chord     = 0.6
-    fuel_tank_4a.aft_tank_end_rood_chord       = 0.8
-    fuel_tank_4a.aft_tank_end_segment_tag      = 'cabin_wall' 
-    fuel_tank_4a.wing_root_tag                 = 'main_wing' 
-    fuel_tank_4a.radial_offset                 = 0.2
-    fuel_line.fuel_tanks.append(fuel_tank_4a)
-
-    fuel_tank_5                               = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(())
-    fuel_tank_5.tag                           = 'H2_Fuel_Tank_5' 
-    fuel_tank_5.fuel                          = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()   
-    fuel_tank_5.material                      = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
-    fuel_tank_5.insulation_material           = RCAIDE.Library.Attributes.Materials.Vacuum_Gap_Multilayer_Insulation()
-    fuel_tank_5.fuel.gravimetric_efficiency   = 0.5
-    fuel_tank_5.xz_plane_symmetric            = False
-    fuel_tank_5.orientation_euler_angles      = [0,0,np.pi/2]
-    fuel_tank_5.bwb_aft_tank                  = True
-    fuel_tank_5.aft_tank_start_root_chord     = 0.4
-    fuel_tank_5.aft_tank_end_rood_chord       = 0.6
-    fuel_tank_5.aft_tank_end_segment_tag      = 'cabin_wall' 
-    fuel_tank_5.wing_root_tag                 = 'main_wing' 
-    fuel_tank_5.radial_offset                 = 0.5
-    fuel_tank_5.fuel.mass_properties.mass     = 0.1
-
-    fuel_line.fuel_tanks.append(fuel_tank_5)
-
-    # fuel tank
-    fuel_tank_6                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
-    fuel_tank_6.tag                             = 'H2_Fuel_Tank_6' 
-    fuel_tank_6.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()  
-    fuel_tank_6.material                        = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
-    fuel_tank_6.insulation_material             = RCAIDE.Library.Attributes.Materials.Vacuum_Gap_Multilayer_Insulation()
-    fuel_tank_6.fuel.gravimetric_efficiency     = 0.5
-    fuel_tank_6.wall_thickness                  = 2*Units.inches
-    fuel_tank_6.fuel.mass_properties.mass       = 0.1
-    fuel_line.fuel_tanks.append(fuel_tank_6)
    
     plot_3d_vehicle(vehicle, 
                     save_filename = "BWB_Additional_Tanks",  
