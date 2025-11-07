@@ -155,7 +155,7 @@ def plot_3d_vehicle(vehicle,
             if overwrite_geometry:
                 wing_planform(wing)  
                      
-    compute_fuel_volume(geometry, update_fuel_volume=True) 
+    compute_fuel_volume(geometry, overwrite_fuel_volume=True) 
     
     for fuselage in  geometry.fuselages:    
         compute_layout_of_passenger_accommodations(fuselage)

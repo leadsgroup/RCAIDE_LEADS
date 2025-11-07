@@ -183,7 +183,7 @@ def compute_load_and_trim_diagram(vehicle, number_of_points = 5, aerodynamic_ana
         
             #  run mission
             configs  = configs_setup(vehicle) 
-            analyses = analyses_setup(configs, aerodynamic_analysis, stability_analysis,  weights_analysis, update_fuel_volume = False) 
+            analyses = analyses_setup(configs, aerodynamic_analysis, stability_analysis,  weights_analysis, overwrite_fuel_volume = False) 
             mission  = mission_setup(analyses, altitude, airspeed) 
             missions = missions_setup(mission)
             
@@ -258,7 +258,7 @@ def compute_load_and_trim_diagram(vehicle, number_of_points = 5, aerodynamic_ana
             
             #  run mission
             configs  = configs_setup(vehicle) 
-            analyses = analyses_setup(configs, aerodynamic_analysis, stability_analysis, weights_analysis, update_fuel_volume = False, update_center_of_gravity = False,neutral_point= neutral_point_0) 
+            analyses = analyses_setup(configs, aerodynamic_analysis, stability_analysis, weights_analysis, overwrite_fuel_volume = False, update_center_of_gravity = False,neutral_point= neutral_point_0) 
             mission  = mission_setup(analyses, altitude, airspeed) 
             missions = missions_setup(mission) 
             results  = missions.base_mission.evaluate()
@@ -315,18 +315,18 @@ def configs_setup(vehicle):
     configs.append(base_config) 
     return configs
   
-def analyses_setup(configs, aerodynamics,stability, weights,update_fuel_volume=True, update_center_of_gravity=True, neutral_point = None,):
+def analyses_setup(configs, aerodynamics,stability, weights,overwrite_fuel_volume=True, update_center_of_gravity=True, neutral_point = None,):
 
     analyses = RCAIDE.Framework.Analyses.Analysis.Container()
 
     # build a base analysis for each config
     for tag,config in configs.items():
-        analysis = base_analysis(config, aerodynamics,stability, weights, update_fuel_volume, update_center_of_gravity,neutral_point)
+        analysis = base_analysis(config, aerodynamics,stability, weights, overwrite_fuel_volume, update_center_of_gravity,neutral_point)
         analyses[tag] = analysis
 
     return analyses
  
-def base_analysis(vehicle, aerodynamics,stability, weights,update_fuel_volume, update_center_of_gravity,neutral_point):
+def base_analysis(vehicle, aerodynamics,stability, weights,overwrite_fuel_volume, update_center_of_gravity,neutral_point):
     # ------------------------------------------------------------------
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
@@ -335,7 +335,7 @@ def base_analysis(vehicle, aerodynamics,stability, weights,update_fuel_volume, u
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
     geometry.vehicle = vehicle  
-    geometry.settings.update_fuel_volume = update_fuel_volume     
+    geometry.settings.overwrite_fuel_volume = overwrite_fuel_volume     
     analyses.append(geometry)
 
      # ------------------------------------------------------------------

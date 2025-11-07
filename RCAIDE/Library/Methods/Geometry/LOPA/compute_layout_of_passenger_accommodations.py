@@ -31,7 +31,7 @@ def compute_layout_of_passenger_accommodations(fuselage):
 
     for cabin in fuselage.cabins: 
         cabin_number_of_seats = 0
-        cabin_class_origin  = [0, 0, 0]
+        cabin_class_origin    = [0, 0, 0]
         for cabin_class in cabin.classes: 
             seat_data ,cabin_class_origin,cabin_number_of_seats  = create_class_seating_map_layout(cabin, cabin_class,cabin_class_origin, side_cabin_offset,cabin_number_of_seats)
             side_cabin_offset = cabin.width / 2

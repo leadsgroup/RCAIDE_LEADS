@@ -56,22 +56,23 @@ def geometry(mission):
         if segment.analyses.geometry is None: 
             raise AssertionError('Geometry Analyses not defined') 
         if i == 0 or segment.analyses.geometry.settings.unique_geometry:  # If it is the first segment or if the segment has a unique geometry
-            geometry_preprocess_routine(segment.analyses.geometry)
+            geometry_preprocess_routine(segment.analyses)
             
         else:
-            vehicle_0 = deepcopy(segment.analyses.geometry.vehicle)
-            segment.analyses.geometry.vehicle = deepcopy(mission.segments[i-1].analyses.geometry.vehicle)
-            for wing in segment.analyses.geometry.vehicle.wings:
+            vehicle_0 = deepcopy(segment.analyses.vehicle)
+            segment.analyses.vehicle = deepcopy(mission.segments[i-1].analyses.vehicle)
+            for wing in segment.analyses.vehicle.wings:
                 for control_surface in wing.control_surfaces:
                     control_surface.deflection = vehicle_0.wings[wing.tag].control_surfaces[control_surface.tag].deflection
-            for landing_gear in segment.analyses.geometry.vehicle.landing_gears:
+            for landing_gear in segment.analyses.vehicle.landing_gears:
                 landing_gear.gear_extended = vehicle_0.landing_gears[landing_gear.tag].gear_extended
                                   
     return 
         
-def geometry_preprocess_routine(geometry_analysis): 
-    vehicle        = geometry_analysis.vehicle
-    settings       = geometry_analysis.settings
+def geometry_preprocess_routine(analyses):
+    vehicle           = analyses.vehicle
+    geometry_analysis = analyses.geometry
+    settings          = geometry_analysis.settings
     
     # initalize variables 
     A_fuselage     = 0
@@ -98,10 +99,7 @@ def geometry_preprocess_routine(geometry_analysis):
                     NPB +=  cabin_class.number_of_seats 
                 elif type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.First:
                     NPF +=  cabin_class.number_of_seats  
-            total_seats += cabin.number_of_seats 
-        for cabin in fuselage.cabins:     
-            if cabin.number_of_passengers == 0: # if cabin class  passengers are not defined, use ratio of cabin to aircraft
-                cabin.number_of_passengers = int((cabin.number_of_seats / total_seats) *  vehicle.number_of_passengers)
+            total_seats += cabin.number_of_seats  
             
     # update landing gear properties 
     for landing_gear in  vehicle.landing_gears:
@@ -140,9 +138,6 @@ def geometry_preprocess_routine(geometry_analysis):
                     elif type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.First:
                         NPF +=  cabin_class.number_of_seats 
                 total_seats += cabin.number_of_seats 
-            for cabin in wing.cabins:     
-                if cabin.number_of_passengers == 0: # if cabin class  passengers are not defined, use ratio of cabin to aircraft
-                    cabin.number_of_passengers = int((cabin.number_of_seats / total_seats) *  vehicle.number_of_passengers)
                         
         # --------------------------------------------------------------------------------------------------------------------
         # All other wing surfaces
@@ -167,12 +162,15 @@ def geometry_preprocess_routine(geometry_analysis):
         vehicle.maximum_cross_sectional_area = np.maximum(vehicle.maximum_cross_sectional_area,A_wing_plus_fuselage) 
 
     # --------------------------------------------------------------------------------------------------------------------
-    # Update passenger imformation 
+    # Update passenger information 
     # --------------------------------------------------------------------------------------------------------------------
-  
-    if  vehicle.number_of_passengers == 0:
-        pass 
-    else:   
+    if settings.overwrite_passenger_capacity:
+        vehicle.number_of_passengers = total_seats
+        
+    if vehicle.number_of_passengers == 0:
+        pass
+    else:
+        # properties for weight estimation methods 
         if defined_cabins:
             vehicle.number_of_first_class_seats    = NPF
             vehicle.number_of_business_class_seats = NPB
@@ -185,6 +183,6 @@ def geometry_preprocess_routine(geometry_analysis):
     # --------------------------------------------------------------------------------------------------------------------
     # Compute fuel volume  
     # -------------------------------------------------------------------------------------------------------------------- 
-    compute_fuel_volume(vehicle,update_fuel_volume = settings.update_fuel_volume)
+    compute_fuel_volume(vehicle,overwrite_fuel_volume = settings.overwrite_fuel_volume)
                
     return 
