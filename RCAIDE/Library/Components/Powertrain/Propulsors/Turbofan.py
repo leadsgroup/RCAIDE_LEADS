@@ -152,7 +152,9 @@ class Turbofan(Propulsor):
         self.high_pressure_turbine_tag                  = []
         self.combustor_tag                              = []
         self.core_nozzle_tag                            = []
-        self.fan_nozzle_tag                             = []      
+        self.fan_nozzle_tag                             = []   
+        self.generator_tag                              = []   
+        self.motor_tag                                  = []      
         self.diameter                                   = 0.0      
         self.length                                     = 0.0
         self.height                                     = 0.0     # Engine centerline heigh above the ground plane 
