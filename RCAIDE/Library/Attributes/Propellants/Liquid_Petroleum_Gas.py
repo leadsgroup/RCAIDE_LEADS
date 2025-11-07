@@ -107,7 +107,7 @@ class Liquid_Petroleum_Gas(Propellant):
         self.tag             = 'Liquid_Petroleum_Gas'
         self.reactant        = 'O2'
         self.density         = 509.26                           # kg/m^3 
-        self.specific_energy = 43.1e6                           # J/kg
+        self.specific_energy = 48.0e6                           # J/kg
         self.energy_density  = 21949.1e6                        # J/m^3
         
         self.stoichiometric_fuel_air_ratio = 0         # [-] Stoichiometric Fuel to Air ratio
