@@ -28,7 +28,7 @@ def energy(segment):
        N/A 
     """  
     # loop throuh networks in vehicle 
-    for network in segment.analyses.energy.vehicle.networks:  
+    for network in segment.analyses.vehicle.networks:  
         for source in network.sources:
             if issubclass(type(source), RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module):
                 increment_day = segment.increment_battery_age_by_one_day

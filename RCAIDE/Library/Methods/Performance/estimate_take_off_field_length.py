@@ -188,7 +188,7 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
     mission.append_segment(segment) 
     segment.state.conditions  = conditions    
     
-    # initalize mission
+    # initialize mission
     energy(mission)      
 
     thrust =  np.array([[0.0, 0.0, 0.0]]) 

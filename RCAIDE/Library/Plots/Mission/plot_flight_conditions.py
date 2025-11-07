@@ -119,7 +119,7 @@ def plot_flight_conditions(results,
     plt.rcParams.update(parameters)
      
     # get line colors for plots 
-    line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))     
+    line_colors   = cm.viridis(np.linspace(0,0.9,len(results.segments)))     
      
     fig   = plt.figure(save_filename)
     fig.set_size_inches(width,height) 
@@ -137,7 +137,7 @@ def plot_flight_conditions(results,
     spoiler_flag   = False 
 
     # loop through wings to determine what control surfaces are present  
-    for wing in results.segments[0].analyses.aerodynamics.vehicle.wings: 
+    for wing in results.segments[0].analyses.vehicle.wings: 
         for control_surface in wing.control_surfaces:  
             if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron:
                 aileron_flag = True

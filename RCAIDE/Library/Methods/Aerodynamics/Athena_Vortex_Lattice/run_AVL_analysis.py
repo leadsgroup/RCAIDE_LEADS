@@ -28,7 +28,7 @@ from shutil import rmtree
 # ----------------------------------------------------------------------------------------------------------------------
 # run_analysis
 # ---------------------------------------------------------------------------------------------------------------------- 
-def run_AVL_analysis(aerodynamics,run_conditions):
+def run_AVL_analysis(aerodynamics,vehicle,run_conditions):
     """Process vehicle to setup avl geometry, condititons, and configurations.
 
     Assumptions:
@@ -73,9 +73,9 @@ def run_AVL_analysis(aerodynamics,run_conditions):
     print_output                     = aerodynamics.settings.print_output 
 
     # rename defaul avl aircraft tag
-    aerodynamics.tag                         = 'avl_analysis_of_{}'.format(aerodynamics.vehicle.tag) 
-    aerodynamics.settings.filenames.features = aerodynamics.vehicle.tag + '.avl'
-    aerodynamics.settings.filenames.mass_file= aerodynamics.vehicle.tag + '.mass'
+    aerodynamics.tag                         = 'avl_analysis_of_{}'.format(vehicle.tag) 
+    aerodynamics.settings.filenames.features = vehicle.tag + '.avl'
+    aerodynamics.settings.filenames.mass_file= vehicle.tag + '.mass'
     
     # update current status
     aerodynamics.current_status.batch_index += 1
@@ -89,7 +89,7 @@ def run_AVL_analysis(aerodynamics,run_conditions):
     cs_functions     = [] 
     control_surfaces = False
     
-    for wing in aerodynamics.vehicle.wings: # this parses through the wings to determine how many control surfaces does the vehicle have 
+    for wing in  vehicle.wings: # this parses through the wings to determine how many control surfaces does the vehicle have 
         if wing.control_surfaces:
             control_surfaces = True 
             wing = populate_control_sections(wing)     

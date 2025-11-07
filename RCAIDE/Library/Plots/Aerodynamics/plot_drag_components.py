@@ -71,7 +71,7 @@ def plot_drag_components(results,
         - Miscellaneous drag coefficient (CDm)
         - Total drag coefficient (CD)
 
-    Each mission segment uses a different color from the inferno colormap.
+    Each mission segment uses a different color from the viridis colormap.
     Components are distinguished by different markers.
 
     **Definitions**
@@ -103,7 +103,7 @@ def plot_drag_components(results,
     plt.rcParams.update(parameters)
      
     # get line colors for plots 
-    line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))     
+    line_colors   = cm.viridis(np.linspace(0,0.9,len(results.segments)))     
      
     fig   = plt.figure(save_filename)
     axis_1 = plt.subplot(1,1,1)

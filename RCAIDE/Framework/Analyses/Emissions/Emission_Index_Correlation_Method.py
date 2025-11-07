@@ -100,7 +100,7 @@ class Emission_Index_Correlation_Method(Emissions):
         return 
 
 
-    def evaluate(self,segment):
+    def evaluate(self,state,vehicle):
         """
         The default evaluate function.
 
@@ -120,8 +120,7 @@ class Emission_Index_Correlation_Method(Emissions):
         self.settings
         self.vehicle
         """          
-        settings = self.settings
-        vehicle  = self.vehicle   
-        results  = self.process.compute(segment,settings,vehicle)
+        settings = self.settings 
+        results  = self.process.compute(state,settings,vehicle)
 
         return results             

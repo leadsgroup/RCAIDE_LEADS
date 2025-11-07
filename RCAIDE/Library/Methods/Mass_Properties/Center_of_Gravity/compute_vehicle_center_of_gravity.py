@@ -123,20 +123,21 @@ def compute_vehicle_center_of_gravity(vehicle , update_center_of_gravity=True):
 
 def compute_cabin_center_of_gravity(cabin, comp,length_scale):  
     num_seats          = cabin.number_of_seats
-    num_pax            = cabin.number_of_passengers
+    num_pax_total      = comp.number_of_passengers 
+    num_pax_cabin      = int(np.floor((cabin.number_of_seats / comp.number_of_seats)*num_pax_total))
     cabin_mass         = cabin.mass_properties.mass
     arr                = cabin.filled_seats_arrangement
     if comp.layout_of_passenger_accommodations == None:
         cabin.mass_properties.center_of_gravity[0][0] = 0.51 * length_scale
     else: 
         LOPA       = comp.layout_of_passenger_accommodations.object_coordinates
-        point_mass = cabin_mass/num_pax 
+        point_mass = cabin_mass/num_pax_cabin 
         if arr == 'random':
-            idxs =  np.random.choice(range(0, num_seats), size=num_pax, replace=False)
+            idxs =  np.random.choice(range(0, num_seats), size=num_pax_cabin, replace=False)
         elif arr == 'ascending':
-            idxs = np.arange(0,num_pax) 
+            idxs = np.arange(0,num_pax_cabin) 
         elif  arr == 'descending':
-            idxs = np.arange(num_seats-num_pax, num_seats)  
+            idxs = np.arange(num_seats-num_pax_cabin, num_seats)  
         
         # Apply the mask to filter seats 
         seat_mask = LOPA[:, 10] == 1

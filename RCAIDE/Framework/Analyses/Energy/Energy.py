@@ -29,10 +29,9 @@ class Energy(Analysis):
         Source:
             None 
         """        
-        self.tag      = 'energy'
-        self.vehicle  = Data()
+        self.tag      = 'energy' 
         
-    def evaluate(self,state): 
+    def evaluate(self,state,vehicle): 
         """Evaluate the thrust produced by the energy network.
     
         Assumptions:
@@ -48,8 +47,8 @@ class Energy(Analysis):
             results : results of the thrust evaluation method. 
         """ 
             
-        networks = self.vehicle.networks
-        cg       = self.vehicle.mass_properties.center_of_gravity
+        networks = vehicle.networks
+        cg       = vehicle.mass_properties.center_of_gravity
         networks.evaluate(state,cg)
         return  
     

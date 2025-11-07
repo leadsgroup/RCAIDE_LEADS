@@ -16,7 +16,7 @@ from scipy.optimize import minimize
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_neutral_point
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_neutral_point(stability):
+def compute_neutral_point(stability, vehicle):
     """
     Computes the neutral point of an aircraft using Vortex Lattice Method optimization.
 
@@ -38,7 +38,7 @@ def compute_neutral_point(stability):
     Returns
     -------
     None
-        The neutral point is stored in stability.vehicle.neutral_point
+        The neutral point is stored in vehicle.neutral_point
 
     Notes
     -----
@@ -65,8 +65,7 @@ def compute_neutral_point(stability):
         Center of gravity location where the aircraft has neutral static stability (i.e. Cm_alpha = 0).
 
     """
-  
-    vehicle        = deepcopy(stability.vehicle)
+   
     settings       = stability.settings
     AoA            = stability.training.angle_of_attack 
     Mach           = stability.training.Mach   
@@ -91,7 +90,7 @@ def compute_neutral_point(stability):
     bnds   = [[0, 100]]
     sol = minimize(neutral_point_objective, [cg], args=(conditions,settings,clean_wing_vehicle_np,Mach,AoA) , method='SLSQP', bounds=bnds, tol=1e-4)
      
-    stability.vehicle.neutral_point  =  sol.x[0]  
+    vehicle.neutral_point  =  sol.x[0]  
    
     return 
 

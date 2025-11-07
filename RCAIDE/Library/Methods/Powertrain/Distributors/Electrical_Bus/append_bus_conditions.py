@@ -133,7 +133,7 @@ def append_bus_segment_conditions(bus,segment):
     
     # Thermal power draw
     if segment.state.initials:
-        for network in segment.analyses.energy.vehicle.networks:
+        for network in segment.analyses.vehicle.networks:
             for distributor in  network.distributors:
                 if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line):
                     for tag, item in distributor.items():

@@ -132,10 +132,10 @@ def compute_load_and_trim_diagram(vehicle, number_of_points = 5, aerodynamic_ana
     loading_LEMAC_location           = np.zeros((len(percent_cargo),len(percent_fuel)))
     
     # compute mass properties of aircraft to get weight distribution
-    vehicle_0         = mission.segments[0].analyses.weights.vehicle
-    x_cg_0            = mission.segments[0].analyses.weights.vehicle.mass_properties.center_of_gravity
-    weight_breakdown  = mission.segments[0].analyses.weights.vehicle.mass_properties.weight_breakdown 
-    neutral_point_0   = mission.segments[0].analyses.stability.vehicle.neutral_point
+    vehicle_0         = mission.segments[0].analyses.vehicle
+    x_cg_0            = mission.segments[0].analyses.vehicle.mass_properties.center_of_gravity
+    weight_breakdown  = mission.segments[0].analyses.vehicle.mass_properties.weight_breakdown 
+    neutral_point_0   = mission.segments[0].analyses.vehicle.neutral_point
                         
      
     CARGO =  weight_breakdown.payload.cargo 
@@ -163,17 +163,11 @@ def compute_load_and_trim_diagram(vehicle, number_of_points = 5, aerodynamic_ana
             # Update Passengers           
             for fuselage in  vehicle.fuselages: 
                 for cabin in fuselage.cabins:
-                    cabin.filled_seats_arrangement  = fill_order[i]
-                    for cabin_class in cabin.classes:
-                        pax =  1 if i == 0 else int(percent_pax[i] * vehicle_0.fuselages[fuselage.tag].cabins[cabin.tag].classes[cabin_class.tag].number_of_passengers) 
-                        cabin_class.number_of_passengers =  np.maximum(1,pax)
+                    cabin.filled_seats_arrangement  = fill_order[i] 
             for wing in vehicle.wings: 
                 if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
                     for cabin in wing.cabins:    
-                        cabin.filled_seats_arrangement  = fill_order[i]
-                        for cabin_class in cabin.classes: 
-                            pax =  1 if i == 0 else int(percent_pax[i] *  vehicle_0.fuselages[fuselage.tag].cabins[cabin.tag].classes[cabin_class.tag].number_of_passengers)                             
-                            cabin_class.number_of_passengers  = np.maximum(1,pax)
+                        cabin.filled_seats_arrangement  = fill_order[i] 
              
             # Update Fuel            
             for network in  vehicle.networks:
@@ -191,9 +185,9 @@ def compute_load_and_trim_diagram(vehicle, number_of_points = 5, aerodynamic_ana
             mass_properties(missions.base_mission) 
             
             # store results 
-            loading_CG_location[i,j]         = mission.segments[0].analyses.weights.vehicle.mass_properties.center_of_gravity[0][0] 
-            loading_mass[i,j]                = mission.segments[0].analyses.weights.vehicle.mass_properties.takeoff 
-            loading_LEMAC_location[i,j]      = 100 * (loading_CG_location[i,j] - mission.segments[0].analyses.weights.vehicle.LEMAC) / mission.segments[0].analyses.aerodynamics.vehicle.reference_chord
+            loading_CG_location[i,j]         = mission.segments[0].analyses.vehicle.mass_properties.center_of_gravity[0][0] 
+            loading_mass[i,j]                = mission.segments[0].analyses.vehicle.mass_properties.takeoff 
+            loading_LEMAC_location[i,j]      = 100 * (loading_CG_location[i,j] - mission.segments[0].analyses.vehicle.LEMAC) / mission.segments[0].analyses.vehicle.reference_chord
             
             print('***************************************')
             print('Loading Diagram Data: ' + str(counter+1) + ' of ' +  str(total_sims))
@@ -273,8 +267,8 @@ def compute_load_and_trim_diagram(vehicle, number_of_points = 5, aerodynamic_ana
             aerodynamic_moment[k,l]              = segment.state.conditions.frames.inertial.total_moment_vector[0][1]
             aerodynamic_neutral_point[k,l]       = segment.state.conditions.static_stability.neutral_point[0][0]  
             aerodynamic_static_margin[k,l]       = segment.state.conditions.static_stability.static_margin[0][0]    
-            aerodynamic_mass[k,l]                = mission.segments[0].analyses.weights.vehicle.mass_properties.takeoff 
-            aerodynamic_LEMAC_location[k,l]      = 100 * (vehicle.mass_properties.center_of_gravity[0][0] - mission.segments[0].analyses.weights.vehicle.LEMAC) / mission.segments[0].analyses.aerodynamics.vehicle.reference_chord
+            aerodynamic_mass[k,l]                = mission.segments[0].analyses.vehicle.mass_properties.takeoff 
+            aerodynamic_LEMAC_location[k,l]      = 100 * (vehicle.mass_properties.center_of_gravity[0][0] - mission.segments[0].analyses.vehicle.LEMAC) / mission.segments[0].analyses.vehicle.reference_chord
             
             counter += 1
             print('***************************************')
@@ -330,54 +324,42 @@ def base_analysis(vehicle, aerodynamics,stability, weights,overwrite_fuel_volume
     # ------------------------------------------------------------------
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
-    analyses = RCAIDE.Framework.Analyses.Vehicle() 
+    analyses = RCAIDE.Framework.Analyses.Vehicle()
+    vehicle.neutral_point = neutral_point   
+    analyses.vehicle = vehicle 
     
     #  Geometry
-    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.vehicle = vehicle  
-    geometry.settings.overwrite_fuel_volume = overwrite_fuel_volume     
-    analyses.append(geometry)
-
-     # ------------------------------------------------------------------
-    #  Weights 
-    weights.vehicle                              = vehicle 
-    weights.settings.FLOPS.fidelity              = 'Complex' 
-    weights.settings.update_moment_of_inertia    = update_center_of_gravity 
-    weights.settings.update_center_of_gravity    = update_center_of_gravity
-    weights.print_weight_analysis_report         = False
-    analyses.append(weights)
-
-    # ------------------------------------------------------------------
-    #  Aerodynamics Analysis  
-    aerodynamics.vehicle  = vehicle 
-    aerodynamics.vehicle.neutral_point = neutral_point     
-    analyses.append(aerodynamics)
+    analyses.geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
+    analyses.geometry.settings.overwrite_fuel_volume = overwrite_fuel_volume      
+ 
+    #  Weights
+    analyses.weights = weights 
+    analyses.weights.settings.FLOPS.fidelity              = 'Complex' 
+    analyses.weights.settings.update_moment_of_inertia    = update_center_of_gravity 
+    analyses.weights.settings.update_center_of_gravity    = update_center_of_gravity
+    analyses.weights.print_weight_analysis_report         = False 
+ 
+    #  Aerodynamics   
+    analyses.aerodynamics = aerodynamics
 
     # ------------------------------------------------------------------
-    #  Aerodynamics Analysis  
-    stability.vehicle                            = vehicle
-    stability.vehicle.neutral_point              = neutral_point
-    stability.settings.update_center_of_gravity  = update_center_of_gravity
-    analyses.append(stability)       
+    # Stability
+    analyses.stability = stability
+    analyses.stability.settings.update_center_of_gravity  = update_center_of_gravity 
 
     # ------------------------------------------------------------------
     #  Energy
-    energy          = RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle  = vehicle 
-    analyses.append(energy)
+    analyses.energy          = RCAIDE.Framework.Analyses.Energy.Energy()  
 
     # ------------------------------------------------------------------
     #  Planet Analysis
-    planet = RCAIDE.Framework.Analyses.Planets.Earth()
-    analyses.append(planet)
+    analyses.planet = RCAIDE.Framework.Analyses.Planets.Earth() 
 
     # ------------------------------------------------------------------
     #  Atmosphere Analysis
-    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
-    analyses.append(atmosphere)   
-
-    # done!
+    analyses.atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
+    analyses.atmosphere.features.planet = analyses.planet.features 
+ 
     return analyses    
 
 def mission_setup(analyses, altitude, airspeed): 

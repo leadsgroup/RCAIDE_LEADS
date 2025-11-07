@@ -65,7 +65,7 @@ def flight_dynamics(segment):
         - total_mass : array
             Vehicle mass [kg]
     
-    analyses.aerodynamics.vehicle.mass_properties:
+    analyses.vehicle.mass_properties:
         - moments_of_inertia.tensor : array
             Inertia tensor [kg⋅m²]
     
@@ -141,7 +141,7 @@ def flight_dynamics(segment):
 
     ang_acc_w = segment.state.conditions.frames.wind.angular_acceleration_vector   
     m         = segment.state.conditions.weights.total_mass
-    I         = segment.analyses.aerodynamics.vehicle.mass_properties.moments_of_inertia.tensor               
+    I         = segment.analyses.vehicle.mass_properties.moments_of_inertia.tensor               
             
     if ground_seg_flag:
         vf = segment.velocity_end

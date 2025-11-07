@@ -75,7 +75,7 @@ def stability(mission):
                 if last_tag!=  None and 'compute' in mission.segments[last_tag].analyses.stability.process.keys():  
                     segment.analyses.stability.surrogates                       = mission.segments[last_tag].analyses.aerodynamics.surrogates    
                     segment.analyses.stability.process.compute.static_stability = mission.segments[last_tag].analyses.stability.process.compute.static_stability
-                    segment.analyses.stability.vehicle.neutral_point            = mission.segments[last_tag].analyses.stability.vehicle.neutral_point
+                    segment.analyses.vehicle.neutral_point                      = mission.segments[last_tag].analyses.vehicle.neutral_point
                 else: 
                     segment.analyses.stability.surrogates   = segment.analyses.aerodynamics.surrogates  
                     segment.analyses.stability.initialize() 

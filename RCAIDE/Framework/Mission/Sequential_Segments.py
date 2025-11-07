@@ -49,8 +49,8 @@ class Sequential_Segments(Segments.Segment.Container):
         
         #   Initialize   
         self.process.initialize                                = Process()
-        self.process.initialize.geometry                       = geometry 
         self.process.initialize.energy                         = energy
+        self.process.initialize.geometry                       = geometry 
         self.process.initialize.mass_properties                = mass_properties 
         self.process.initialize.aero                           = aerodynamics
         self.process.initialize.stability                      = stability

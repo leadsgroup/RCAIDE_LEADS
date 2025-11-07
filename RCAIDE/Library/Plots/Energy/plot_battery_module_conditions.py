@@ -64,7 +64,7 @@ def plot_battery_module_conditions(results,
         5. Module voltage vs time
         6. Module temperature vs time
     
-    Each segment is plotted with a different color from the inferno colormap.
+    Each segment is plotted with a different color from the viridis colormap.
     Different battery modules are distinguished by different markers.
     
     **Major Assumptions**
@@ -96,7 +96,7 @@ def plot_battery_module_conditions(results,
     fig = plt.figure(save_filename)
     fig.set_size_inches(width,height)
     # get line colors for plots 
-    line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))      
+    line_colors   = cm.viridis(np.linspace(0,0.9,len(results.segments)))      
     axis_1 = plt.subplot(3,2,1)
     axis_2 = plt.subplot(3,2,2) 
     axis_3 = plt.subplot(3,2,3) 
@@ -104,7 +104,7 @@ def plot_battery_module_conditions(results,
     axis_5 = plt.subplot(3,2,5) 
     axis_6 = plt.subplot(3,2,6)
      
-    for network in results.segments[0].analyses.energy.vehicle.networks: 
+    for network in results.segments[0].analyses.vehicle.networks: 
         busses  = network.busses 
         for bus in busses:
             for b_i, battery in enumerate(bus.battery_modules):

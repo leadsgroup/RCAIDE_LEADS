@@ -61,7 +61,7 @@ def plot_electric_propulsor_efficiencies(results,
         2. Figure of Merit vs time
         3. Motor efficiency vs time
     
-    Each segment is plotted with a different color from the inferno colormap.
+    Each segment is plotted with a different color from the viridis colormap.
     Different propulsors are distinguished by different markers.
     
     **Major Assumptions**
@@ -89,7 +89,7 @@ def plot_electric_propulsor_efficiencies(results,
     plt.rcParams.update(parameters) 
     
     # get line colors for plots 
-    line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))     
+    line_colors   = cm.viridis(np.linspace(0,0.9,len(results.segments)))     
     
     fig = plt.figure(save_filename)
     fig.set_size_inches(width,height)   
@@ -97,7 +97,7 @@ def plot_electric_propulsor_efficiencies(results,
     axis_2 = plt.subplot(1,2,2)
 
 
-    for network in results.segments[0].analyses.energy.vehicle.networks:  
+    for network in results.segments[0].analyses.vehicle.networks:  
         for p_i, propulsor in enumerate(network.propulsors):
             if (p_i == 0) or (network.identical_propulsors == False): 
                 for i in range(len(results.segments)):  

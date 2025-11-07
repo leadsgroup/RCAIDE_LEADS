@@ -42,7 +42,7 @@ def initialize_conditions(segment):
     v0       = segment.velocity
     
 
-    vehicle = segment.analyses.energy.vehicle 
+    vehicle = segment.analyses.vehicle 
     for network in vehicle.networks:
         for bus in  network.busses:
             bus.append_operating_conditions(segment)
@@ -79,5 +79,5 @@ def initialize_conditions(segment):
     conditions.frames.inertial.velocity_vector[:,0] = v0  
     conditions.freestream.altitude[:,0]             = alt
     conditions.frames.inertial.position_vector[:,2] = -alt   
-    conditions.weights.total_mass[:,0]              = segment.analyses.weights.vehicle.mass_properties.takeoff
+    conditions.weights.total_mass[:,0]              = segment.analyses.vehicle.mass_properties.takeoff
     conditions.frames.inertial.position_vector[:,:] = conditions.frames.inertial.position_vector[0,:][None,:][:,:]

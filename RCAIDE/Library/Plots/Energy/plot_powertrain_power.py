@@ -23,7 +23,7 @@ def plot_powertrain_power(results,
                           file_type=".png",
                           width=12, height=7):
 
-    create_network_diagram(results.segments[0].analyses.energy.vehicle)
+    create_network_diagram(results.segments[0].analyses.vehicle)
 
     ps = plot_style()
     params = {'axes.labelsize': ps.axis_font_size,
@@ -32,12 +32,12 @@ def plot_powertrain_power(results,
               'axes.titlesize': ps.title_font_size}
     plt.rcParams.update(params)
 
-    line_colors    = cm.inferno(np.linspace(0, 0.9, len(results.segments)))
+    line_colors    = cm.viridis(np.linspace(0, 0.9, len(results.segments)))
     unique_markers = ['v', 'D', '^', 's', 'o', '>', '<', 'p', '*', 'X', 'h']
 
     figs = {}
 
-    for network in results.segments[0].analyses.energy.vehicle.networks:
+    for network in results.segments[0].analyses.vehicle.networks:
 
         # explicit tag -> distributor
         dist_by_tag = {}

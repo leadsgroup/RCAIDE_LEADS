@@ -204,7 +204,7 @@ def plot_quantity(ap, q, qaxis, qname, ylim_low, ylim_high, file_type, show_lege
     Creates a single figure showing the specified quantity distribution
     along the airfoil surface for all cases (combinations of AoA and Re).
     
-    Cases are plotted in different colors using the inferno colormap.
+    Cases are plotted in different colors using the viridis colormap.
     Legend entries show AoA in degrees and Re number for each case.
     
     The plot uses standardized RCAIDE styling and axis formatting.
@@ -233,7 +233,7 @@ def plot_quantity(ap, q, qaxis, qname, ylim_low, ylim_high, file_type, show_lege
     axis  = fig.add_subplot(1,1,1)   
     
     # get line colors for plots 
-    line_colors   = cm.inferno(np.linspace(0,0.9,n_cases))      
+    line_colors   = cm.viridis(np.linspace(0,0.9,n_cases))      
     
     for i in range(n_cpts):   
         for j in range(n_cases): 

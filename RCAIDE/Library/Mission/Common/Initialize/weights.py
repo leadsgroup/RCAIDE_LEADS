@@ -45,7 +45,7 @@ def weights(segment):
         - vehicle.mass_properties.takeoff : float
             Vehicle takeoff mass [kg]
     Or:
-    segment.analyses.energy.vehicle.networks:
+    segment.analyses.vehicle.networks:
         - mass_properties.mass : float
             Network mass properties [kg]
 
@@ -68,7 +68,7 @@ def weights(segment):
     if segment.state.initials:
         m_initial = segment.state.initials.conditions.weights.total_mass[-1,0] 
     else: 
-        m_initial = segment.analyses.weights.vehicle.mass_properties.takeoff
+        m_initial = segment.analyses.vehicle.mass_properties.takeoff
 
     m_current = segment.state.conditions.weights.total_mass
     

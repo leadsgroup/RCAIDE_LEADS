@@ -45,9 +45,7 @@ class Aerodynamics(Analysis):
         Properties Used:
         N/A
         """           
-        self.tag                                                         = 'aerodynamics'  
-        self.vehicle                                                     = Data()  
-        
+        self.tag                                                         = 'aerodynamics'   
         self.settings                                                    = Data() 
         self.settings.maximum_lift_coefficient                           = np.inf 
         self.settings.fuselage_lift_correction                           = 1.20
@@ -105,7 +103,7 @@ class Aerodynamics(Analysis):
         self.stability_derivatives.Clift_delta_f                         = None 
         
         
-    def evaluate(self,state):
+    def evaluate(self,state,vehicle):
         """The default evaluate function.
 
         Assumptions:

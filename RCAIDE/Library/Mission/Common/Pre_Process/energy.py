@@ -15,7 +15,7 @@ def energy(mission):
     """ 
     idx = 0      
     for segment in mission.segments: 
-        for network in segment.analyses.energy.vehicle.networks:
+        for network in segment.analyses.vehicle.networks:
 
             # determine bus properties
             for distributor in network.distributors:

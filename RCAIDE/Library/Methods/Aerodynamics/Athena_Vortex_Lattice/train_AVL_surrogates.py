@@ -17,7 +17,7 @@ from shutil import rmtree
 # ----------------------------------------------------------------------------------------------------------------------
 #  train_AVL_surrogates
 # ---------------------------------------------------------------------------------------------------------------------- 
-def train_AVL_surrogates(aerodynamics):
+def train_AVL_surrogates(aerodynamics, vehicle):
     """Call methods to run VLM for sample point evaluation. 
     
     Assumptions:
@@ -33,8 +33,7 @@ def train_AVL_surrogates(aerodynamics):
         None    
     """ 
  
-    run_folder             = os.path.abspath(aerodynamics.settings.filenames.run_folder)
-    vehicle                = aerodynamics.vehicle
+    run_folder             = os.path.abspath(aerodynamics.settings.filenames.run_folder) 
     training               = aerodynamics.training  
     AoA                    = training.angle_of_attack
     Mach                   = training.Mach

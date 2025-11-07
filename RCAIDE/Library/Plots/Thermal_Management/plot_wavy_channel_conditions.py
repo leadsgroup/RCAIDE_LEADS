@@ -108,7 +108,7 @@ def plot_wavy_channel_conditions(wavy_channel, results, coolant_line,
     plt.rcParams.update(parameters)
      
     # get line colors for plots 
-    line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))
+    line_colors   = cm.viridis(np.linspace(0,0.9,len(results.segments)))
     
     fig = plt.figure('Identical_'+ save_filename)
     fig.set_size_inches(width,height) 
@@ -116,7 +116,7 @@ def plot_wavy_channel_conditions(wavy_channel, results, coolant_line,
     axis_2 = plt.subplot(2,2,2) 
     axis_3 = plt.subplot(2,2,3)
 
-    for network in results.segments[0].analyses.energy.vehicle.networks: 
+    for network in results.segments[0].analyses.vehicle.networks: 
         busses  = network.busses 
         for bus in busses:
             for b_i, battery in enumerate(bus.battery_modules):

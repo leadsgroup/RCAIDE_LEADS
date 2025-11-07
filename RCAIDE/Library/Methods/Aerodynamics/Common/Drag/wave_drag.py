@@ -354,7 +354,7 @@ def supersonic_lift_wave_drag(conditions,configuration,geometry):
     ----------
     [1] Yoshida, K. "Supersonic drag reduction technology in the scaled supersonic experimental airplane project by JAXA."
     """
-    # Initalize cd arrays 
+    # initialize cd arrays 
     Mach         = conditions.freestream.mach_number
     cd_lift_wave = np.zeros_like(Mach)
     

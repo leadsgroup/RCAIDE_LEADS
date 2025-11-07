@@ -62,8 +62,9 @@ class Frequency_Domain_Buildup(Noise):
         # Initialize quantities 
         self.tag                                   =  "Frequency_Domain_Buildup"        
         self.settings.fidelity                     = 'line_source'
-        self.settings.use_plane_loading_surrogate =  True 
-    def evaluate_noise(self,segment):
+        self.settings.use_plane_loading_surrogate =  True
+        
+    def evaluate_noise(self,segment,vehicle):
         """ Process vehicle to setup vehicle, condititon and configuration
     
         Assumptions:
@@ -83,12 +84,11 @@ class Frequency_Domain_Buildup(Noise):
         self.vehicle
         """         
     
-        # unpack 
-        config               = segment.analyses.noise.vehicle 
+        # unpack  
         settings             = self.settings  
         conditions           = segment.state.conditions  
         dim_cf               = len(settings.center_frequencies ) 
-        ctrl_pts             = int(segment.state.numerics.number_of_control_points) 
+        ctrl_pts             = int(state.numerics.number_of_control_points) 
         microphone_locations = generate_hemisphere_microphone_locations(settings)     
         N_hemisphere_mics    = len(microphone_locations)
         

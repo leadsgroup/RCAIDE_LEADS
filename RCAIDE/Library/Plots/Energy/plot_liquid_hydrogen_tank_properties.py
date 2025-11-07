@@ -38,7 +38,7 @@ def plot_liquid_hydrogen_tank_properties(results,
     plt.rcParams.update(parameters)
      
     # get line colors for plots 
-    line_colors = cm.inferno(np.linspace(0,0.9,len(results.segments)))      
+    line_colors = cm.viridis(np.linspace(0,0.9,len(results.segments)))      
          
     fig = plt.figure(save_filename)
     fig.set_size_inches(width, height) 
@@ -53,7 +53,7 @@ def plot_liquid_hydrogen_tank_properties(results,
     for i, segment in enumerate(results.segments): 
         time = segment.conditions.frames.inertial.time[:, 0] / Units.min 
 
-        for network in segment.analyses.energy.vehicle.networks: 
+        for network in segment.analyses.vehicle.networks: 
             for fuel_line in network.fuel_lines:
                 for fuel_tank in fuel_line.fuel_tanks:
 

@@ -64,7 +64,7 @@ def plot_altitude_sfc_weight(results,
         3. Specific fuel consumption vs time
         4. Fuel consumption rate vs time
     
-    Each segment is plotted with a different color from the inferno colormap.
+    Each segment is plotted with a different color from the viridis colormap.
   
     **Definitions**
     
@@ -83,7 +83,7 @@ def plot_altitude_sfc_weight(results,
     plt.rcParams.update(parameters)
      
     # get line colors for plots 
-    line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))      
+    line_colors   = cm.viridis(np.linspace(0,0.9,len(results.segments)))      
          
 
      
@@ -99,27 +99,14 @@ def plot_altitude_sfc_weight(results,
         Weight    = (results.segments[i].conditions.weights.total_mass[:, 0] ) # / Units.lbf
         mdot      = results.segments[i].conditions.weights.vehicle_mass_rate[:, 0]#/ Units.lb
         thrust    = abs(results.segments[i].conditions.frames.body.thrust_force_vector[:, 0])#/ Units.lbf
-        fuel_mass = results.segments[i].conditions.energy.cumulative_fuel_consumption[:, 0]#/ Units.lb
-        
-        j = 0
-        for network in results.segments[i].analyses.energy.vehicle.networks: 
-            for source in network.sources:
-                if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):  
-                    line_color     = cm.Dark2(np.linspace(0,0.9,len(network.sources)))
-                    tank_mass = results.segments[i].conditions.energy.fuel_lines.fuel_line.fuel_tanks[source.tag].fuel_mass[:, 0]#/ Units.lb
-                    if j == 0 and i ==0:                    
-                        axis_2.plot(time, tank_mass, color = line_color[j], marker = ps.markers[i], linewidth = ps.line_width, label = source.tag)
-                    else:
-                        axis_2.plot(time, tank_mass, color = line_color[j], marker = ps.markers[i], linewidth = ps.line_width)
-
-                    j += 1
+        fuel_mass = results.segments[i].conditions.energy.cumulative_fuel_consumption[:, 0]#/ Units.lb 
+        sfc       = (mdot ) / (thrust ) * Units.hr 
                     
         axis_1.set_ylabel(r'Weight (N)')  
         axis_2.set_ylabel(r'Fuel Consumption (kg)')
         axis_3.set_ylabel(r'SFC (N/N-hr)')
         axis_4.set_ylabel(r'Fuel Rate (kg/s)')  
         
-        sfc       = (mdot ) / (thrust ) * Units.hr 
 
         segment_tag  =  results.segments[i].tag
         segment_name = segment_tag.replace('_', ' ')       

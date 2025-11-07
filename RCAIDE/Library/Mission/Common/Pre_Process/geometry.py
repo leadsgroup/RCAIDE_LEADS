@@ -58,7 +58,7 @@ def geometry(mission):
         if i == 0 or segment.analyses.geometry.settings.unique_geometry:  # If it is the first segment or if the segment has a unique geometry
             geometry_preprocess_routine(segment.analyses)
             
-        else:
+        else: # NEED TO REMOVE 
             vehicle_0 = deepcopy(segment.analyses.vehicle)
             segment.analyses.vehicle = deepcopy(mission.segments[i-1].analyses.vehicle)
             for wing in segment.analyses.vehicle.wings:
@@ -66,6 +66,19 @@ def geometry(mission):
                     control_surface.deflection = vehicle_0.wings[wing.tag].control_surfaces[control_surface.tag].deflection
             for landing_gear in segment.analyses.vehicle.landing_gears:
                 landing_gear.gear_extended = vehicle_0.landing_gears[landing_gear.tag].gear_extended
+                
+            for network in segment.analyses.vehicle.network: 
+                for propulsor in network.propulsor:
+                    if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan):
+                        propulsor_0 =  vehicle_0.networks[network.tag].propulsors[propulsor.tag]
+                        propulsor.fan.angular_velocity      = propulsor_0.fan.angular_velocity          
+                        propulsor.fan.rotation              = propulsor_0.fan.rotation           
+                        propulsor.fan_nozzle.noise_speed    = propulsor_0.fan_nozzle.noise_speed 
+                        propulsor.core_nozzle.noise_speed   = propulsor_0.core_nozzle.noise_speed
+                        
+                    if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor):
+                        propulsor.rotor.orientation_euler_angles =  propulsor_0.rotor.orientation_euler_angles 
+                        propulsor.rotor.blade_pitch_command      =  propulsor_0.rotor.blade_pitch_command                          
                                   
     return 
         
@@ -74,7 +87,7 @@ def geometry_preprocess_routine(analyses):
     geometry_analysis = analyses.geometry
     settings          = geometry_analysis.settings
     
-    # initalize variables 
+    # initialize variables 
     A_fuselage     = 0
     defined_cabins = False 
     NPF            = 0
@@ -99,7 +112,8 @@ def geometry_preprocess_routine(analyses):
                     NPB +=  cabin_class.number_of_seats 
                 elif type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.First:
                     NPF +=  cabin_class.number_of_seats  
-            total_seats += cabin.number_of_seats  
+            total_seats += cabin.number_of_seats 
+        fuselage.number_of_seats = total_seats    
             
     # update landing gear properties 
     for landing_gear in  vehicle.landing_gears:
@@ -129,15 +143,16 @@ def geometry_preprocess_routine(analyses):
      
             for cabin in wing.cabins: 
                 defined_cabins = True
-                for cabin_class in cabin.classes: 
-                    cabin.number_of_passengers += cabin_class.number_of_passengers
+                for cabin_class in cabin.classes:  
                     if type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy:
                         NPE +=  cabin_class.number_of_seats
                     elif type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business:
                         NPB +=  cabin_class.number_of_seats
                     elif type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.First:
                         NPF +=  cabin_class.number_of_seats 
-                total_seats += cabin.number_of_seats 
+                total_seats += cabin.number_of_seats
+            
+            wing.number_of_seats = total_seats                
                         
         # --------------------------------------------------------------------------------------------------------------------
         # All other wing surfaces
@@ -164,6 +179,7 @@ def geometry_preprocess_routine(analyses):
     # --------------------------------------------------------------------------------------------------------------------
     # Update passenger information 
     # --------------------------------------------------------------------------------------------------------------------
+    vehicle.number_of_seats = total_seats
     if settings.overwrite_passenger_capacity:
         vehicle.number_of_passengers = total_seats
         

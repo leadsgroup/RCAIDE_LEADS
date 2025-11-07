@@ -58,8 +58,7 @@ class Vortex_Lattice_Method(Aerodynamics):
         Properties Used:
         N/A
         """          
-        self.tag                                                    = 'Vortex_Lattice_Method'  
-        self.vehicle                                                = Data()
+        self.tag                                                    = 'Vortex_Lattice_Method'   
         self.process                                                = Process()
         self.process.initialize                                     = Process()  
                     
@@ -149,14 +148,14 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.process.compute                                        = compute
         
 
-    def initialize(self): 
+    def initialize(self, vehicle): 
         
         use_surrogate   = self.settings.use_surrogate   
         # If we are using the surrogate
         if use_surrogate == True: 
             #  training data
             if not os.path.exists(self.filename):
-                train_VLM_surrogates(self)
+                train_VLM_surrogates(self, vehicle)
     
                 if self.settings.store_training_data:
                     with open(self.filename, 'wb') as file:
@@ -167,7 +166,7 @@ class Vortex_Lattice_Method(Aerodynamics):
                 print(r""" 
                 [INFO] Aerodynamic training data loaded. Delete the file and rerun to regenerate. """)
             # build surrogate
-            build_VLM_surrogates(self)        
+            build_VLM_surrogates(self, vehicle)        
     
         # build the evaluation process
         compute   =  self.process.compute                  
@@ -178,7 +177,7 @@ class Vortex_Lattice_Method(Aerodynamics):
         return 
     
          
-    def evaluate(self,state):
+    def evaluate(self,state,vehicle):
         """The default evaluate function.
 
         Assumptions:
@@ -197,8 +196,7 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.settings
         self.vehicle
         """          
-        settings = self.settings
-        vehicle  = self.vehicle 
+        settings = self.settings 
         results  = self.process.compute(state,settings,vehicle)
         
         return results

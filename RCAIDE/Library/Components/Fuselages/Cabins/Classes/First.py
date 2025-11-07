@@ -20,8 +20,7 @@ class First(Component):
         """      
         
         self.tag                                 = 'first_class' 
-        self.number_of_seats_abrest              = 0
-        self.number_of_passengers                = 0 
+        self.number_of_seats_abrest              = 0 
         self.number_of_rows                      = 0 
         self.number_of_seats                     = 0 
         self.seat_width                          = 25 *  Units.inches

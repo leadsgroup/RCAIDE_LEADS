@@ -16,7 +16,7 @@ import numpy  as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Vortex_Lattice
 # ---------------------------------------------------------------------------------------------------------------------- 
-def train_VLM_surrogates(aerodynamics):
+def train_VLM_surrogates(aerodynamics, vehicle):
     """Call methods to run VLM for sample point evaluation. 
     
     Assumptions:
@@ -39,18 +39,18 @@ def train_VLM_surrogates(aerodynamics):
     sub_Mach      = Mach[:sub_len] 
     sup_Mach      = Mach[sub_len:] 
 
-    training.subsonic    =  train_model(aerodynamics, sub_Mach)
+    training.subsonic    =  train_model(aerodynamics, vehicle, sub_Mach)
     
     # only build supersonic surrogates if necessary
     if len(sup_Mach) > 2: 
-        training.supersonic  =  train_model(aerodynamics, sup_Mach)
+        training.supersonic  =  train_model(aerodynamics, vehicle, sup_Mach)
         training.transonic   =  train_trasonic_model(aerodynamics, training.subsonic,training.supersonic,sub_Mach, sup_Mach)
     else:
         training.supersonic  = None
         training.transonic   = None
     return 
     
-def train_model(aerodynamics, Mach): 
+def train_model(aerodynamics, vehicle, Mach): 
     """Sub function that call methods to run VLM for sample point evaluation. 
     
     Assumptions:
@@ -65,8 +65,7 @@ def train_model(aerodynamics, Mach):
     Returns: 
         None    
     """    
-    
-    vehicle        = deepcopy(aerodynamics.vehicle)
+     
     settings       = aerodynamics.settings
     AoA            = aerodynamics.training.angle_of_attack                  
     Beta           = aerodynamics.training.sideslip_angle 
@@ -438,7 +437,7 @@ def train_model(aerodynamics, Mach):
     settings.vortex_distribution = VD_0
     return training 
 
-def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub_Mach, sup_Mach): 
+def train_trasonic_model(aerodynamics, vehicle_0, training_subsonic,training_supersonic,sub_Mach, sup_Mach): 
     """Sub function that call methods to run VLM for sample point evaluation. 
     
     Assumptions:
@@ -454,7 +453,7 @@ def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub
         None    
     """    
 
-    vehicle        = deepcopy(aerodynamics.vehicle)
+    vehicle        = deepcopy(vehicle_0)
     AoA            = aerodynamics.training.angle_of_attack                  
     Beta           = aerodynamics.training.sideslip_angle
     training       = Data() 

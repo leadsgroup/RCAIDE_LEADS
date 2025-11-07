@@ -162,7 +162,7 @@ def plot_3d_vehicle(vehicle,
         fuselage_planform(fuselage) 
     
     # -------------------------------------------------------------------------  
-    # Initalize Renderer
+    # initialize Renderer
     # -------------------------------------------------------------------------      
     renderer = vtk.vtkRenderer()
         

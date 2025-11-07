@@ -270,7 +270,7 @@ class Additive_Solver():
                         opt_prob = pyOpt.Optimization('RCAIDE',self.evaluate_corrected_model, \
                                                       obj_surrogate=f_additive_surrogate,cons_surrogate=g_additive_surrogate)       
                     
-                        initalize_opt_vals(opt_prob,obj,inp,x_low_bound,x_up_bound,con_low_edge,con_up_edge,nam,con,x_eval)    
+                        initialize_opt_vals(opt_prob,obj,inp,x_low_bound,x_up_bound,con_low_edge,con_up_edge,nam,con,x_eval)    
                     
                         opt = pyOpt.pySNOPT.SNOPT()      
                     

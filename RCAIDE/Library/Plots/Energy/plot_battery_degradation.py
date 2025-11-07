@@ -88,7 +88,7 @@ def plot_battery_degradation(results,
     plt.rcParams.update(parameters)
     
 
-    for network in results.segments[0].analyses.energy.vehicle.networks: 
+    for network in results.segments[0].analyses.vehicle.networks: 
         busses  = network.busses
         for bus in busses:
             if bus.identical_battery_modules:

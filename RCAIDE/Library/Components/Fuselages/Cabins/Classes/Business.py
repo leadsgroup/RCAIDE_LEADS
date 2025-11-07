@@ -19,8 +19,7 @@ class Business(Component):
         Sets default values for business class portion of the cabin.
         """      
         
-        self.tag                                 = 'business_class' 
-        self.number_of_passengers                = 0 
+        self.tag                                 = 'business_class'  
         self.number_of_seats_abrest              = 0
         self.number_of_rows                      = 0 
         self.number_of_seats                     = 0 

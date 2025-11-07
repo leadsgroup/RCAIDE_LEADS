@@ -29,7 +29,7 @@ def plot_surface_pressures(results,
                 Aerodynamic data containing:
                     - coefficients.surface_pressure[ti]
                         Pressure coefficient at each control point
-            - segments[i].analyses.aerodynamics.vehicle
+            - segments[i].analyses.vehicle
                 Vehicle data containing:
                     - vortex_distribution
                         Distribution data with:
@@ -88,7 +88,7 @@ def plot_surface_pressures(results,
     RCAIDE.Library.Plots.Aerodynamics.plot_aerodynamic_coefficients : Overall coefficient plots
     """
     
-    vehicle    = results.segments[0].analyses.aerodynamics.vehicle
+    vehicle    = results.segments[0].analyses.vehicle
     VD         = results.segments[0].analyses.aerodynamics.settings.vortex_distribution
     n_cw       = VD.n_cw 
     n_sw       = VD.n_sw 

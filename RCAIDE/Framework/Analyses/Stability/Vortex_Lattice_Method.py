@@ -106,7 +106,7 @@ class Vortex_Lattice_Method(Stability):
         return 
     
          
-    def evaluate(self,state):
+    def evaluate(self,state, vehicle):
         """The default evaluate function.
 
         Assumptions:
@@ -125,8 +125,7 @@ class Vortex_Lattice_Method(Stability):
         self.settings
         self.vehicle
         """          
-        settings = self.settings
-        vehicle  = self.vehicle 
+        settings = self.settings 
         results  = self.process.compute(state,settings,vehicle)
         
         return results

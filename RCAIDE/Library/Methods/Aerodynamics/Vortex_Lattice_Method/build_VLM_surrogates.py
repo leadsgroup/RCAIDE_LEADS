@@ -14,7 +14,7 @@ from scipy import interpolate
 # ----------------------------------------------------------------------------------------------------------------------
 #  Vortex_Lattice
 # ----------------------------------------------------------------------------------------------------------------------   
-def build_VLM_surrogates(aerodynamics):
+def build_VLM_surrogates(aerodynamics, vehicle):
     """
     Build surrogate models for aerodynamic coefficients using VLM analysis results.
     
@@ -62,24 +62,23 @@ def build_VLM_surrogates(aerodynamics):
     sub_len    = int(sum(Mach<1.))  
     sup_Mach   = Mach[sub_len:]
     
-    surrogates.subsonic    =  build_surrogate(aerodynamics, training.subsonic)
+    surrogates.subsonic    =  build_surrogate(aerodynamics, vehicle, training.subsonic)
     
     # only build supersonic surrogates if necessary
     if len(sup_Mach) > 2: 
-        surrogates.supersonic  =  build_surrogate(aerodynamics, training.supersonic)
-        surrogates.transonic   =  build_surrogate(aerodynamics, training.transonic)
+        surrogates.supersonic  =  build_surrogate(aerodynamics, vehicle, training.supersonic)
+        surrogates.transonic   =  build_surrogate(aerodynamics, vehicle, training.transonic)
     else: 
         surrogates.supersonic  =  no_surrogate(aerodynamics, training.supersonic)
         surrogates.transonic   =  no_surrogate(aerodynamics, training.transonic)        
         
     return
 
-def build_surrogate(aerodynamics, training):
+def build_surrogate(aerodynamics, vehicle, training):
     
     # unpack data
     surrogates     = Data()
-    mach_data      = training.Mach
-    vehicle        = aerodynamics.vehicle
+    mach_data      = training.Mach 
     AoA_data       = aerodynamics.training.angle_of_attack     
     Beta_data      = aerodynamics.training.sideslip_angle     
     
@@ -165,12 +164,10 @@ def build_surrogate(aerodynamics, training):
     return surrogates
  
  
-def no_surrogate(aerodynamics, training):
+def no_surrogate(aerodynamics, vehicle, training):
     
     # unpack data
-    surrogates     = Data() 
-    vehicle        = aerodynamics.vehicle 
-    
+    surrogates     = Data()  
     surrogates.Clift_wing_alpha = Data()
     surrogates.Cdrag_induced_wing_alpha = Data() 
     for wing in  vehicle.wings: 

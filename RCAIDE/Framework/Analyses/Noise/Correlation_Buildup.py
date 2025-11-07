@@ -65,7 +65,7 @@ class Correlation_Buildup(Noise):
         
         return
             
-    def evaluate_noise(self,segment):
+    def evaluate_noise(self,segment,state):
         """ Process vehicle to setup geometry, condititon and configuration
     
         Assumptions:
@@ -84,8 +84,7 @@ class Correlation_Buildup(Noise):
         Properties Used: 
         """         
     
-        # unpack 
-        config        = segment.analyses.noise.vehicle 
+        # unpack  
         settings      = self.settings     
         conditions    = segment.state.conditions  
         dim_cf        = len(settings.center_frequencies ) 

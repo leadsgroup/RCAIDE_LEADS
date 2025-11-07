@@ -548,7 +548,7 @@ class Network(Component):
         """            
          
         unknowns(segment)  
-        for network in segment.analyses.energy.vehicle.networks:
+        for network in segment.analyses.vehicle.networks:
             for propulsor in network.propulsors:
                 propulsor.unpack_propulsor_unknowns(segment, network) 
         return    
@@ -574,7 +574,7 @@ class Network(Component):
            Properties Used: 
            N/A
        """         
-        for network in segment.analyses.energy.vehicle.networks:
+        for network in segment.analyses.vehicle.networks:
             for propulsor_i, propulsor in enumerate(network.propulsors):    
                 if propulsor.active:
                     propulsor =  network.propulsors[propulsor.tag]
@@ -603,7 +603,7 @@ class Network(Component):
         """                   
         segment.state.residuals.network = Residuals()
         
-        for network in segment.analyses.energy.vehicle.networks:
+        for network in segment.analyses.vehicle.networks:
             
             for propulsor in network.propulsors: 
                 propulsor.append_operating_conditions(segment)  

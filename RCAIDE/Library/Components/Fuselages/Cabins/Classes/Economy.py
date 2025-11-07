@@ -19,8 +19,7 @@ class Economy(Component):
         Sets default values for economy class portion of the cabin.
         """      
         
-        self.tag                                 = 'economy_class'
-        self.number_of_passengers                = 0 
+        self.tag                                 = 'economy_class' 
         self.number_of_seats_abrest              = 0
         self.number_of_rows                      = 0 
         self.number_of_seats                     = 0 

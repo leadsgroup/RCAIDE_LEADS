@@ -38,7 +38,7 @@ def energy(segment):
 
     **Required Segment Components**
 
-    segment.analyses.energy.vehicle.networks:
+    segment.analyses.vehicle.networks:
         Network configurations containing:
         - Electrical busses with battery modules
         - Cooling systems and heat exchangers
@@ -73,7 +73,7 @@ def energy(segment):
     """ 
 
     conditions = segment.state.conditions.energy
-    vehicle    = segment.analyses.energy.vehicle
+    vehicle    = segment.analyses.vehicle
 
     # loop through battery modules in networks
     for network in vehicle.networks:

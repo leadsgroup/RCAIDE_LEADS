@@ -74,7 +74,7 @@ def control_surfaces(segment):
     assigned_control_variables   = segment.assigned_control_variables
     control_surfaces             = segment.state.conditions.control_surfaces
     
-    for wing in segment.analyses.aerodynamics.vehicle.wings: 
+    for wing in segment.analyses.vehicle.wings: 
         for control_surface in wing.control_surfaces:
             # Elevator Control
             if type(control_surface) == RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator: 

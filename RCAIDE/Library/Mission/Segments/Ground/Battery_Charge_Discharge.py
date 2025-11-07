@@ -76,7 +76,7 @@ def initialize_conditions(segment):
     """    
     t_nondim   = segment.state.numerics.dimensionless.control_points
 
-    vehicle = segment.analyses.energy.vehicle
+    vehicle = segment.analyses.vehicle
 
     for network in vehicle.networks:
         for bus in  network.busses:

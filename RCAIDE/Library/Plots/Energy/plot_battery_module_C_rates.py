@@ -61,7 +61,7 @@ def plot_battery_module_C_rates(results,
         1. Instantaneous C-rate vs time
         2. Nominal C-rate vs time
     
-    Different segments are plotted with different colors using the inferno colormap.
+    Different segments are plotted with different colors using the viridis colormap.
     For multiple battery modules, only non-identical modules are plotted.
     
     **Major Assumptions**
@@ -93,11 +93,11 @@ def plot_battery_module_C_rates(results,
     fig = plt.figure(save_filename)
     fig.set_size_inches(width,height)
     # get line colors for plots 
-    line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))      
+    line_colors   = cm.viridis(np.linspace(0,0.9,len(results.segments)))      
     axis_1 = plt.subplot(1,2,1)
     axis_2 = plt.subplot(1,2,2)  
      
-    for network in results.segments[0].analyses.energy.vehicle.networks: 
+    for network in results.segments[0].analyses.vehicle.networks: 
         busses  = network.busses 
         for bus in busses:
             for b_i, battery in enumerate(bus.battery_modules):

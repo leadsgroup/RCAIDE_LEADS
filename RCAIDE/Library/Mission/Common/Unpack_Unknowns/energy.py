@@ -11,7 +11,7 @@ def unknowns(segment):
     ACV_TA     =  segment.assigned_control_variables.thrust_vector_angle
     ACV_RBPC   =  segment.assigned_control_variables.blade_pitch_command
     
-    for network in segment.analyses.energy.vehicle.networks: 
+    for network in segment.analyses.vehicle.networks: 
         if 'throttle' in segment: 
             for propulsor in network.propulsors: 
                 segment.state.conditions.energy.propulsors[propulsor.tag].throttle[:,0] = segment.throttle
