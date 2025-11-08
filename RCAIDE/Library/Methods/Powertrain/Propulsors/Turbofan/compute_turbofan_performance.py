@@ -195,7 +195,10 @@ def compute_turbofan_performance(turbofan, state, network, center_of_gravity=[[0
     T                         = conditions.freestream.temperature
     P                         = conditions.freestream.pressure
 
-    generator                 = network.converters[turbofan.assigned_converters.generator_tag[0][0]]
+    if turbofan.assigned_converters.generator_tag != []:
+        generator                 = network.converters[turbofan.assigned_converters.generator_tag[0][0]]
+    elif turbofan.assigned_converters.motor_tag != []:
+        motor                     = network.converters[turbofan.assigned_converters.motor_tag[0][0]]
     ram                       = network.converters[turbofan.assigned_converters.ram_tag[0][0]]
     inlet_nozzle              = network.converters[turbofan.assigned_converters.inlet_nozzle_tag[0][0]]
     fan                       = network.converters[turbofan.assigned_converters.fan_tag[0][0]]
@@ -210,7 +213,11 @@ def compute_turbofan_performance(turbofan, state, network, center_of_gravity=[[0
 
     # unpack component conditions 
     turbofan_conditions     = conditions.energy.propulsors[turbofan.tag]
-    generator_conditions    = conditions.energy.converters[generator.tag]
+    for converter in turbofan.assigned_converters:
+        if isinstance(network.converters[converter[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Generator):
+            generator_conditions    = conditions.energy.converters[generator.tag]
+        elif isinstance(network.converters[converter[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Motor):
+            motor_conditions        = conditions.energy.converters[motor.tag]
     ram_conditions          = conditions.energy.converters[ram.tag]    
     inlet_nozzle_conditions = conditions.energy.converters[inlet_nozzle.tag]
     fan_conditions          = conditions.energy.converters[fan.tag]    
@@ -396,22 +403,19 @@ def compute_turbofan_performance(turbofan, state, network, center_of_gravity=[[0
     hpc_conditions.omega        = high_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle
     
     # compute electrical power if generated/supplied  
-    power_elec = 0*state.ones_row(1)
     for converter in turbofan.assigned_converters:
 
         if isinstance(network.converters[converter[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Motor) and len(state.numerics.time.differentiate) > 0: 
-            compressor_motor_conditions                 = conditions.energy.converters[converter[0][0]] 
-            compressor_motor_conditions.outputs.power   = power * conditions.energy.hybrid_power_split_ratio   
-            compressor_motor_conditions.outputs.omega   = lpc_conditions.omega
-            compressor_motor_conditions.outputs.torque  = compressor_motor_conditions.outputs.power.electrical / compressor_motor_conditions.outputs.omega   
-            turbofan_conditions.inputs.power.electrical = compressor_motor_conditions.outputs.power.electrical     
+            motor_conditions.outputs.power                 = power * conditions.energy.hybrid_power_split_ratio   
+            motor_conditions.outputs.omega                 = lpc_conditions.omega
+            motor_conditions.outputs.torque                = motor_conditions.outputs.power.electrical / motor_conditions.outputs.omega   
+            turbofan_conditions.inputs.power.electrical    = motor_conditions.outputs.power.electrical     
         
         elif isinstance(network.converters[converter[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Generator) and len(state.numerics.time.differentiate) > 0: 
-            compressor_generator_conditions                = conditions.energy.converters[converter[0][0]] 
-            compressor_generator_conditions.inputs.power.electrical   = power * conditions.energy.hybrid_power_split_ratio
-            compressor_generator_conditions.inputs.omega   = lpc_conditions.omega
-            compressor_generator_conditions.inputs.torque  = compressor_generator_conditions.inputs.power.electrical / compressor_generator_conditions.inputs.omega  
-            turbofan_conditions.outputs.power.electrical   = compressor_generator_conditions.inputs.power.electrical  
+            generator_conditions.inputs.power.electrical   = power * conditions.energy.hybrid_power_split_ratio
+            generator_conditions.inputs.omega              = lpc_conditions.omega
+            generator_conditions.inputs.torque             = generator_conditions.inputs.power.electrical / generator_conditions.inputs.omega  
+            turbofan_conditions.outputs.power.electrical   = generator_conditions.inputs.power.electrical  
   
     # store data
     core_nozzle_res = Data(
