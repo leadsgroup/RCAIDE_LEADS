@@ -106,9 +106,9 @@ def compute_electric_rotor_performance(propulsor, state, network, center_of_grav
     conditions                 = state.conditions
     for assigned_converter_tag in propulsor.assigned_converters:
         if isinstance(network.converters[assigned_converter_tag[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Rotor):
-             rotor = network.converters[assigned_converter_tag[0][0]]
+            rotor = network.converters[assigned_converter_tag[0][0]]
         elif isinstance(network.converters[assigned_converter_tag[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Motor):
-             motor = network.converters[assigned_converter_tag[0][0]]
+            motor = network.converters[assigned_converter_tag[0][0]]
 
     for assigned_modulator_tag in propulsor.assigned_modulators:
         if isinstance(network.modulators[assigned_modulator_tag[0][0]], RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller):
