@@ -63,12 +63,9 @@ def compute_operating_items_weight(vehicle):
     NPB  = vehicle.number_of_business_class_seats   
     NPE  = vehicle.number_of_economy_class_seats   
     for network in  vehicle.networks:
-        for propulsor in network.propulsors:
-            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan)\
-               or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet)\
-               or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop):
-                ref_propulsor = propulsor  
-                NENG  += 1   
+        for propulsor in network.propulsors: 
+            ref_propulsor = propulsor  
+            NENG  += 1   
     
     THRUST          = ref_propulsor.sealevel_static_thrust * 1 / Units.lbf
     SW              = vehicle.reference_area / Units.ft ** 2

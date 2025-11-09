@@ -126,7 +126,7 @@ def mass_properties_preprocess_routine(i, analyses):
             analyses.vehicle.mass_properties.takeoff = analyses.vehicle.mass_properties.max_takeoff
         else:
             if analyses.vehicle.mass_properties.payload >analyses.vehicle.mass_properties.max_payload:
-                        raise AssertionError('Prescribed payload is greater than maxmimum payload')
+                raise AssertionError('Prescribed payload is greater than maxmimum payload')
 
             if analyses.vehicle.mass_properties.max_fuel == None or analyses.vehicle.mass_properties.max_zero_fuel == None:
                 # Before proceeding to the weight buildups, the buildups need either the max fuel capacity or the max zero fuel to compute OEW
@@ -142,7 +142,7 @@ def mass_properties_preprocess_routine(i, analyses):
                 # Convergence loop
                 while iteration < max_iterations:                               
                     # Run weights analysis ! 
-                    _ = weights_analysis.evaluate()
+                    _ = weights_analysis.evaluate(analyses.vehicle)
                     
                     # Compute OEW 
                     analyses.vehicle.mass_properties.operating_empty = analyses.vehicle.mass_properties.weight_breakdown.empty.total + \

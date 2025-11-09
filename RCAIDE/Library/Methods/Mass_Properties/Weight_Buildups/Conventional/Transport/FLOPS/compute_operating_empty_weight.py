@@ -199,24 +199,19 @@ def compute_operating_empty_weight(vehicle, settings=None):
         for propulsor in network.propulsors:
             propulsor.mass_properties.mass = W_energy_network_total / number_of_engines
         
-        # # Electric-Powered Propulsors  
-        # for distributor in network.distributors: 
-        #     if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
-        #         bus = distributor
-        #         # electrical payload 
-        #         W_systems.W_electrical  += bus.payload.mass_properties.mass * Units.kg
-        
-        #         # Avionics Weight 
-        #         W_systems.W_avionics  += bus.avionics.mass_properties.mass      
-        
-        #         for battery in bus.battery_modules: 
-        #             W_energy_network_total  += battery.mass_properties.mass * Units.kg
-        #             W_energy_network.W_battery = battery.mass_properties.mass * Units.kg
+        for system in network.systems:
+            if isinstance(system, RCAIDE.Library.Components.Powertrain.Systems.Avionics_System):
+                W_systems.W_avionics  += system.mass_properties.mass 
+             
+        for source in network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module):
+                W_energy_network_total    += source.mass_properties.mass * Units.kg
+                W_energy_network.W_battery = source.mass_properties.mass * Units.kg      
                 
-        for propulsor in network.propulsors:
-            if 'motor' in propulsor:                           
-                W_energy_network.W_motor +=  propulsor.motor.mass_properties.mass
-                W_energy_network_total  +=  propulsor.motor.mass_properties.mass
+        for converter in network.converters:
+            if isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Motor): 
+                W_energy_network.W_motor += converter.mass_properties.mass
+                W_energy_network_total  +=  converter.mass_properties.mass
                    
     W_energy_network_cumulative += W_energy_network_total
     

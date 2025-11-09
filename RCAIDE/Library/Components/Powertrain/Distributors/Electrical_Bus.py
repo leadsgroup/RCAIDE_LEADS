@@ -134,17 +134,7 @@ class Electrical_Bus(Distributor):
             Flight segment data
         """
         append_bus_segment_conditions(self,segment)
-        return    
-    
-    def initialize_bus_properties(self):
-        """
-        Initialize electrical bus properties
-        
-        Sets up initial values for bus voltage, capacity, and other electrical
-        properties based on connected components.
-        """
-        initialize_bus_properties(self)
-        return
+        return     
         
     def compute_distributor_conditions(self, source, state,t_idx, delta_t):
         """

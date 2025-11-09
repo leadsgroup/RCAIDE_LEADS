@@ -3,13 +3,15 @@
 # Created:  Sep 2024, S. Shekar
 # Modified: Jan 2025, M. Clarke
 #
+
+import RCAIDE
 from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common          import compute_module_properties 
-from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common             import compute_stack_properties
+from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common      import compute_stack_properties
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHODS
 # ---------------------------------------------------------------------------------------------------------------------- 
-def initialize_bus_properties(bus): 
+def initialize_bus_properties(network): 
     """
     Initializes the bus electrical properties based on what is appended onto the bus.
     
@@ -59,34 +61,31 @@ def initialize_bus_properties(bus):
     RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.compute_module_properties
     RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common.compute_stack_properties
     """
-    if len(bus.battery_modules) > 0: 
-        if bus.battery_module_electric_configuration == 'Series':
-            bus.nominal_capacity = 0
-            bus.maximum_energy   = 0
-            for battery_module in  bus.battery_modules: 
-                compute_module_properties(battery_module) 
+    # loops through the sources, if electrical, update the bus that it is on
+    cumulative_fuel_cell_stack = 0
+    for source in network.sources:
+        if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module):
+            battery_module =  source 
+            bus            = network.distributors[source.assigned_distributors[0][0]] 
+            if bus.battery_module_electric_configuration == 'Series':
+                compute_module_properties(source) 
                 bus.voltage         +=  battery_module.voltage
-                bus.maximum_energy  +=  battery_module.maximum_energy
-                bus.nominal_capacity =  max(battery_module.nominal_capacity, bus.nominal_capacity)  
-        elif bus.battery_module_electric_configuration == 'Parallel':
-            bus.voltage = 0
-            bus.maximum_energy   = 0
-            for battery_module in  bus.battery_modules: 
+                #bus.maximum_energy  +=  battery_module.maximum_energy
+                #bus.nominal_capacity =  max(battery_module.nominal_capacity, bus.nominal_capacity)  
+            elif bus.battery_module_electric_configuration == 'Parallel': 
                 compute_module_properties(battery_module)        
                 bus.voltage           =  max(battery_module.voltage, bus.voltage)
-                bus.nominal_capacity +=  battery_module.nominal_capacity        
-                bus.maximum_energy  +=  battery_module.initial_maximum_energy
-    
-    cumulative_fuel_cell_stack =  0
-    if len(bus.fuel_cell_stacks) > 0: 
-        if bus.fuel_cell_stack_electric_configuration == 'Series':
-            bus.maximum_energy   = 0
-            for fuel_cell_stack in  bus.fuel_cell_stacks: 
+                #bus.nominal_capacity +=  battery_module.nominal_capacity        
+                #bus.maximum_energy  +=  battery_module.initial_maximum_energy            
+            
+        elif isinstance(source, RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack): 
+            fuel_cell_stack =  source 
+            bus             = network.distributors[source.assigned_distributors[0][0]] 
+            if bus.fuel_cell_stack_electric_configuration == 'Series':  
                 compute_stack_properties(fuel_cell_stack)
                 cumulative_fuel_cell_stack += fuel_cell_stack.voltage 
-            bus.voltage  =  min(fuel_cell_stack.voltage, cumulative_fuel_cell_stack) 
-        elif bus.fuel_cell_stack_electric_configuration == 'Parallel': 
-            for fuel_cell_stack in  bus.fuel_cell_stacks: 
+                bus.voltage     =  min(fuel_cell_stack.voltage, cumulative_fuel_cell_stack) 
+            elif bus.fuel_cell_stack_electric_configuration == 'Parallel':  
                 compute_stack_properties(fuel_cell_stack)        
                 bus.voltage     =  max(fuel_cell_stack.voltage, bus.voltage)              
     return

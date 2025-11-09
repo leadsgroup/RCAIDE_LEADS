@@ -17,10 +17,8 @@ def energy(mission):
     for segment in mission.segments: 
         for network in segment.analyses.vehicle.networks:
 
-            # determine bus properties
-            for distributor in network.distributors:
-                if isinstance(network.distributors, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
-                    distributor.initialize_bus_properties()      
+            # determine bus properties 
+            network.initialize_bus_properties()      
 
             # design propulsor 
             propulsive_converters = []

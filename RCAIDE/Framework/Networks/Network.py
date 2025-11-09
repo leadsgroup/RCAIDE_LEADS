@@ -8,10 +8,10 @@
 # RCAIDE Imports
 import  RCAIDE 
 from RCAIDE.Framework.Mission.Common     import Residuals, Conditions
-from RCAIDE.Library.Mission.Common.Unpack_Unknowns.energy import unknowns
-from RCAIDE.Library.Methods.Powertrain.Systems.compute_systems_power_draw                 import compute_systems_power_draw
+from RCAIDE.Library.Mission.Common.Unpack_Unknowns.energy import unknowns 
 from RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance         import *
-from RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance import * 
+from RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance import *
+from RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.initialize_bus_properties import initialize_bus_properties
 from RCAIDE.Library.Components import Component
 
 # python imports 
@@ -79,7 +79,17 @@ class Network(Component):
         self.modulators                   = Container()
         self.distributors                 = Container()
         self.sources                      = Container()
-        self.systems                      = Container() 
+        self.systems                      = Container()
+        
+    def initialize_bus_properties(self):
+        """
+        Initialize electrical bus properties
+        
+        Sets up initial values for bus voltage, capacity, and other electrical
+        properties based on connected components.
+        """
+        initialize_bus_properties(self)
+        return 
 
     def evaluate(network,state,center_of_gravity):
         """ Computes the performance of the network.
