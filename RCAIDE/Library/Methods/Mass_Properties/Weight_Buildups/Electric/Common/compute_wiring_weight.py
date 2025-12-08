@@ -13,7 +13,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 # Compute wiring weight
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_wiring_weight(config):
+def compute_wiring_weight(vehicle):
     """ Calculates mass of wiring required for a wing, including DC power
         cables and communication cables, assuming power cables run an average of
         half the fuselage length and height in addition to reaching the motor
@@ -34,7 +34,7 @@ def compute_wiring_weight(config):
 
     """
     total_mass = 0.0
-    for network in config.networks:
+    for network in vehicle.networks:
 
         for battery_module in network.battery_modules:
             electrical_line        = network.Electrical_Line()
