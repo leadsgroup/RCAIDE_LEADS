@@ -83,10 +83,10 @@ def base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle()
+    analyses.vehicle =  vehicle
 
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.vehicle = vehicle
     geometry.settings.overwrite_reference        = False
     analyses.append(geometry)
  
@@ -95,20 +95,17 @@ def base_analysis(vehicle):
     weights          = RCAIDE.Framework.Analyses.Weights.Electric_General_Aviation() 
     weights.settings.update_mass_properties         = False
     weights.settings.update_center_of_gravity       = False
-    weights.settings.update_moment_of_inertia       = False 
-    weights.vehicle  = vehicle
+    weights.settings.update_moment_of_inertia       = False  
     analyses.append(weights)
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis  
-    aerodynamics                   = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.vehicle           = vehicle
+    aerodynamics                   = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
     analyses.append(aerodynamics)
 
     # ------------------------------------------------------------------
     #  Energy
-    energy          = RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle  = vehicle 
+    energy          = RCAIDE.Framework.Analyses.Energy.Energy() 
     analyses.append(energy)
     
     # ------------------------------------------------------------------
@@ -119,7 +116,6 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Atmosphere Analysis
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
     analyses.append(atmosphere)   
  
     return analyses
@@ -143,7 +139,7 @@ def mission_setup(analyses):
     base_segment.state.numerics.number_of_control_points  = 16
     
     # VSTALL Calculation  
-    vehicle        = analyses.base.aerodynamics.vehicle
+    vehicle        = analyses.base.vehicle
     vehicle_mass   = vehicle.mass_properties.max_takeoff
     reference_area = vehicle.reference_area 
     Vstall         = estimate_stall_speed(vehicle_mass,reference_area,altitude = 0.0,maximum_lift_coefficient = 1.2)

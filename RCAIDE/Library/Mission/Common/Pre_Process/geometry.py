@@ -55,10 +55,10 @@ def geometry(mission):
         # --------------------------------------------------------------------------------------------------------------------
         if segment.analyses.geometry is None: 
             raise AssertionError('Geometry Analyses not defined') 
-        if i == 0 or segment.analyses.geometry.settings.unique_geometry:  # If it is the first segment or if the segment has a unique geometry
-            geometry_preprocess_routine(segment.analyses)
+        if i == 0 or segment.analyses.geometry.settings.unique_geometry: 
+            geometry_preprocess_routine(segment.analyses.geometry.settings, segment.analyses.vehicle)
             
-        else: # NEED TO REMOVE 
+        else:
             vehicle_0 = deepcopy(segment.analyses.vehicle)
             segment.analyses.vehicle = deepcopy(mission.segments[i-1].analyses.vehicle)
             for wing in segment.analyses.vehicle.wings:
@@ -66,28 +66,37 @@ def geometry(mission):
                     control_surface.deflection = vehicle_0.wings[wing.tag].control_surfaces[control_surface.tag].deflection
             for landing_gear in segment.analyses.vehicle.landing_gears:
                 landing_gear.gear_extended = vehicle_0.landing_gears[landing_gear.tag].gear_extended
-                
-            for network in segment.analyses.vehicle.network: 
-                for propulsor in network.propulsor:
+            
+            for network in segment.analyses.vehicle.networks: 
+                for bus in network.busses:
+                    bus.active = vehicle_0.networks[network.tag].busses[bus.tag].active
+                for propulsor in network.propulsors:
                     if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan):
-                        propulsor_0 =  vehicle_0.networks[network.tag].propulsors[propulsor.tag]
-                        propulsor.fan.angular_velocity      = propulsor_0.fan.angular_velocity          
-                        propulsor.fan.rotation              = propulsor_0.fan.rotation           
-                        propulsor.fan_nozzle.noise_speed    = propulsor_0.fan_nozzle.noise_speed 
-                        propulsor.core_nozzle.noise_speed   = propulsor_0.core_nozzle.noise_speed
+                        propulsor_0    = vehicle_0.networks[network.tag].propulsors[propulsor.tag] 
+                        fan_0           = network.converters[propulsor_0.assigned_converters.fan_tag[0][0]] 
+                        core_nozzle_0   = network.converters[propulsor_0.assigned_converters.core_nozzle_tag[0][0]]
+                        core_nozzle     = network.converters[propulsor.assigned_converters.core_nozzle_tag[0][0]]
+                        fan_nozzle_0    = network.converters[propulsor_0.assigned_converters.fan_nozzle_tag[0][0]] 
+                        fan_nozzle      = network.converters[propulsor.assigned_converters.fan_nozzle_tag[0][0]]    
+                        fan_0           = network.converters[propulsor_0.assigned_converters.fan_tag[0][0]]     
+                        fan             = network.converters[propulsor.assigned_converters.fan_tag[0][0]]              
+             
+                        fan.angular_velocity        = fan_0.angular_velocity        
+                        fan_nozzle.exit_velocity    = fan_nozzle_0.exit_velocity 
+                        core_nozzle.exit_velocity   = core_nozzle_0.exit_velocity
                         
                     if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor):
-                        propulsor.rotor.orientation_euler_angles =  propulsor_0.rotor.orientation_euler_angles 
-                        propulsor.rotor.blade_pitch_command      =  propulsor_0.rotor.blade_pitch_command                          
+                        propulsor_0 =  vehicle_0.networks[network.tag].propulsors[propulsor.tag]  
+                        rotor_0   = network.converters[propulsor_0.assigned_converters.rotor_tag[0][0]]     
+                        rotor     = network.converters[propulsor.assigned_converters.rotor_tag[0][0]]     
+                        rotor.orientation_euler_angles  = rotor_0.orientation_euler_angles 
+                        rotor.blade_pitch_command       = rotor_0.blade_pitch_command                 
                                   
     return 
         
-def geometry_preprocess_routine(analyses):
-    vehicle           = analyses.vehicle
-    geometry_analysis = analyses.geometry
-    settings          = geometry_analysis.settings
+def geometry_preprocess_routine(settings, vehicle):   
     
-    # initialize variables 
+    # initalize variables 
     A_fuselage     = 0
     defined_cabins = False 
     NPF            = 0
@@ -113,7 +122,9 @@ def geometry_preprocess_routine(analyses):
                 elif type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.First:
                     NPF +=  cabin_class.number_of_seats  
             total_seats += cabin.number_of_seats 
-        fuselage.number_of_seats = total_seats    
+        for cabin in fuselage.cabins:     
+            if cabin.number_of_passengers == 0: # if cabin class  passengers are not defined, use ratio of cabin to aircraft
+                cabin.number_of_passengers = int((cabin.number_of_seats / total_seats) *  vehicle.number_of_passengers)
             
     # update landing gear properties 
     for landing_gear in  vehicle.landing_gears:
@@ -143,16 +154,18 @@ def geometry_preprocess_routine(analyses):
      
             for cabin in wing.cabins: 
                 defined_cabins = True
-                for cabin_class in cabin.classes:  
+                for cabin_class in cabin.classes: 
+                    cabin.number_of_passengers += cabin_class.number_of_passengers
                     if type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy:
                         NPE +=  cabin_class.number_of_seats
                     elif type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business:
                         NPB +=  cabin_class.number_of_seats
                     elif type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.First:
                         NPF +=  cabin_class.number_of_seats 
-                total_seats += cabin.number_of_seats
-            
-            wing.number_of_seats = total_seats                
+                total_seats += cabin.number_of_seats 
+            for cabin in wing.cabins:     
+                if cabin.number_of_passengers == 0: # if cabin class  passengers are not defined, use ratio of cabin to aircraft
+                    cabin.number_of_passengers = int((cabin.number_of_seats / total_seats) *  vehicle.number_of_passengers)
                         
         # --------------------------------------------------------------------------------------------------------------------
         # All other wing surfaces
@@ -177,28 +190,24 @@ def geometry_preprocess_routine(analyses):
         vehicle.maximum_cross_sectional_area = np.maximum(vehicle.maximum_cross_sectional_area,A_wing_plus_fuselage) 
 
     # --------------------------------------------------------------------------------------------------------------------
-    # Update passenger information 
+    # Update passenger imformation 
     # --------------------------------------------------------------------------------------------------------------------
-    vehicle.number_of_seats = total_seats
-    if settings.overwrite_passenger_capacity:
-        vehicle.number_of_passengers = total_seats
-        
-    if vehicle.number_of_passengers == 0:
-        pass
-    else:
-        # properties for weight estimation methods 
+  
+    if  vehicle.number_of_passengers == 0:
+        pass 
+    else:   
         if defined_cabins:
             vehicle.number_of_first_class_seats    = NPF
             vehicle.number_of_business_class_seats = NPB
             vehicle.number_of_economy_class_seats  = NPE
         else:  
-            vehicle.number_of_first_class_seats    = vehicle.number_of_passengers // 20
-            vehicle.number_of_business_class_seats = vehicle.number_of_passengers // 10
+            vehicle.number_of_first_class_seats    = vehicle.number_of_passengers / 20.
+            vehicle.number_of_business_class_seats = vehicle.number_of_passengers / 10.
             vehicle.number_of_economy_class_seats  = vehicle.number_of_passengers - NPF - NPB 
      
     # --------------------------------------------------------------------------------------------------------------------
     # Compute fuel volume  
     # -------------------------------------------------------------------------------------------------------------------- 
-    compute_fuel_volume(vehicle,overwrite_fuel_volume = settings.overwrite_fuel_volume)
+    compute_fuel_volume(vehicle,compute_fuel_volume = settings.compute_fuel_volume, update_max_fuel=settings.update_max_fuel)
                
     return 

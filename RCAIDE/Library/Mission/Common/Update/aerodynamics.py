@@ -32,15 +32,15 @@ def aerodynamics(segment):
     
     # unpack
     conditions         = segment.state.conditions
-    aerodynamics_model = segment.analyses.aerodynamics 
     q                  = segment.state.conditions.freestream.dynamic_pressure
     Sref               = segment.analyses.vehicle.reference_area
-    CLmax              = aerodynamics_model.settings.maximum_lift_coefficient 
     MAC                = segment.analyses.vehicle.wings.main_wing.chords.mean_aerodynamic
     span               = segment.analyses.vehicle.wings.main_wing.spans.projected 
+    aerodynamics_model = segment.analyses.aerodynamics
+    CLmax              = aerodynamics_model.settings.maximum_lift_coefficient 
     
     # call aerodynamics model
-    _ = aerodynamics_model(segment,segment.analyses.vehicle)     
+    _ = aerodynamics_model(segment, segment.analyses.vehicle)     
 
     # Forces 
     CL = conditions.aerodynamics.coefficients.lift.total

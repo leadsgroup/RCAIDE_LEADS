@@ -87,7 +87,7 @@ def compute_operating_items_weight(vehicle):
 
     W_cargo = 0
     for cargo_bay in vehicle.cargo_bays:
-        W_cargo = cargo_bay.cargo.mass_properties.mass      
+        W_cargo = cargo_bay.mass_properties.mass      
     WCON        = 175 * np.ceil(W_cargo/ Units.lbs * 1. / 950)  # cargo container weight
 
     if vehicle.number_of_passengers >= 150:

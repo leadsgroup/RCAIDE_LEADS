@@ -18,7 +18,9 @@ import sys
 # ---------------------------------------------------------------------------------------------------------------------- 
 def plot_layout_of_passenger_accommodations(fuselage, 
                                             save_figure    = False,
-                                            save_filename  = "Vehicle_Geometry", 
+                                            show_axes      = False,
+                                            fontsize       = 20, 
+                                            save_filename  = "Aircraft_LOPA", 
                                             show_figure    = True):
     '''
     Plot aircraft layout of passenger accommodations
@@ -219,7 +221,45 @@ def plot_layout_of_passenger_accommodations(fuselage,
                 ),
                 fillcolor=lavatory_color[0],
             )
-
+        
+    # Apply Times New Roman and black text/axes
+    if show_axes:
+        fig.update_layout( 
+            showlegend=False, 
+            xaxis_title= 'x',
+            yaxis_title= 'y', 
+            font=dict(family="Times New Roman", size=fontsize, color="black"),
+            xaxis=dict(
+                showline=True, linewidth=1, linecolor='black',
+                showticklabels=True, tickfont=dict(family="Times New Roman", color="black"),
+                ticks="outside", tickcolor='black'
+            ),
+            yaxis=dict(
+                showline=True, linewidth=1, linecolor='black',
+                showticklabels=True, tickfont=dict(family="Times New Roman", color="black"),
+                ticks="outside", tickcolor='black'
+            ),            
+        )
+    else:
+        
+        fig.update_layout( 
+            showlegend=False,  
+            font=dict(family="Times New Roman", size=fontsize, color="black"),
+            xaxis=dict(
+                showline=False, linewidth=1, linecolor='white',
+                showticklabels=False, tickfont=dict(family="Times New Roman", color="black"),
+                ticks="outside", tickcolor='white'
+            ),
+            yaxis=dict(
+                showline=False, linewidth=1, linecolor='white',
+                showticklabels=False, tickfont=dict(family="Times New Roman", color="white"),
+                ticks="outside", tickcolor='white'
+            ), 
+            plot_bgcolor="white",  
+            paper_bgcolor="white",           
+        )
+                      
+                    
     # Use the first path from sys.path
     save_filename = os.path.join(sys.path[0], save_filename)
     if save_figure:

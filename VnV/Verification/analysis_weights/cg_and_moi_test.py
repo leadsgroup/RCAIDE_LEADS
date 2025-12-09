@@ -42,29 +42,28 @@ def Transport_Aircraft_Test():
     #   Weight Breakdown 
     # ------------------------------------------------------------------  
     weight_analysis                               = RCAIDE.Framework.Analyses.Weights.Conventional()
-    weight_analysis.aircraft_type                 = "Transport"
-    weight_analysis.vehicle                       = vehicle
+    weight_analysis.aircraft_type                 = "Transport" 
     weight_analysis.method                        = 'Raymer'
     weight_analysis.settings.use_max_fuel_weight  = False  
     weight_analysis.settings.cargo_doors_number   = 2
     weight_analysis.settings.cargo_doors_clamshell= True
-    results                                       = weight_analysis.evaluate() 
+    results                                       = weight_analysis.evaluate(vehicle) 
 
     # ------------------------------------------------------------------
     #   CG Location
     # ------------------------------------------------------------------    
-    CG_location, _, _ = compute_vehicle_center_of_gravity( weight_analysis.vehicle)  
+    CG_location, _, _ = compute_vehicle_center_of_gravity(vehicle)  
 
     # ------------------------------------------------------------------
     #   Operating Aircraft MOI
     # ------------------------------------------------------------------    
-    MOI, total_mass = compute_aircraft_moment_of_inertia(weight_analysis.vehicle, CG_location) 
+    MOI, total_mass = compute_aircraft_moment_of_inertia(vehicle, CG_location) 
 
-    print(weight_analysis.vehicle.tag + ' Moment of Intertia')
+    print(vehicle.tag + ' Moment of Intertia')
     print(MOI) 
-    accepted  = np.array([[ 3.29634304e+07, 3.99803159e+06, 2.22870433e+06],
-                          [ 3.99803159e+06, 9.86677632e+07,-3.52133374e+03],
-                          [ 2.22870433e+06,-3.52133374e+03, 1.15776270e+08]])
+    accepted  = np.array([[ 3.30247632e+07,  3.74823194e+06,  2.52281128e+06],
+                          [ 3.74823194e+06,  9.59375092e+07, -3.52133374e+03],
+                          [ 2.52281128e+06, -3.52133374e+03,  1.13110842e+08]])
                           
     MOI_error     = (MOI - accepted) / accepted
 
@@ -90,24 +89,24 @@ def General_Aviation_Test():
     #   Weight Breakdown 
     # ------------------------------------------------------------------  
     weight_analysis               = RCAIDE.Framework.Analyses.Weights.Conventional_General_Aviation() 
-    weight_analysis.vehicle       = general_aviation_setup() 
-    for wing in weight_analysis.vehicle.wings: 
+    vehicle                       = general_aviation_setup() 
+    for wing in vehicle.wings: 
         wing_planform(wing) 
         if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
-            weight_analysis.vehicle.reference_area = wing.areas.reference 
-    results                       = weight_analysis.evaluate() 
+            vehicle.reference_area = wing.areas.reference 
+    results                       = weight_analysis.evaluate(vehicle) 
 
     # ------------------------------------------------------------------
     #   CG Location
     # ------------------------------------------------------------------    
-    CG_location, _ , _= compute_vehicle_center_of_gravity(weight_analysis.vehicle)  
+    CG_location, _ , _= compute_vehicle_center_of_gravity(vehicle)  
 
     # ------------------------------------------------------------------
     #   Operating Aircraft MOI
     # ------------------------------------------------------------------    
-    MOI, total_mass = compute_aircraft_moment_of_inertia(weight_analysis.vehicle, CG_location) 
+    MOI, total_mass = compute_aircraft_moment_of_inertia(vehicle, CG_location) 
 
-    print(weight_analysis.vehicle.tag + ' Moment of Intertia')
+    print(vehicle.tag + ' Moment of Intertia')
     print(MOI)
 
     accepted  = np.array([[3324.17527381, 459.36753169, -86.8899328 ], 
@@ -148,21 +147,20 @@ def EVTOL_Aircraft_Test(update_regression_values):
     weight_analysis.settings.miscelleneous_weight_factor = 1.1 
     weight_analysis.settings.disk_area_factor            = 1.15
     weight_analysis.settings.max_thrust_to_weight_ratio  = 1.1
-    weight_analysis.settings.max_g_load                  = 3.8
-    weight_analysis.vehicle                              = vehicle
-    results                                              = weight_analysis.evaluate() 
+    weight_analysis.settings.max_g_load                  = 3.8 
+    results                                              = weight_analysis.evaluate(vehicle) 
 
     # ------------------------------------------------------------------
     #   CG Location
     # ------------------------------------------------------------------    
-    CG_location, _ , _=  compute_vehicle_center_of_gravity( weight_analysis.vehicle)  
+    CG_location, _ , _=  compute_vehicle_center_of_gravity(vehicle)  
 
     # ------------------------------------------------------------------
     #   Operating Aircraft MOI
     # ------------------------------------------------------------------    
-    MOI, total_mass = compute_aircraft_moment_of_inertia(weight_analysis.vehicle, CG_location)
+    MOI, total_mass = compute_aircraft_moment_of_inertia(vehicle, CG_location)
 
-    print(weight_analysis.vehicle.tag + ' Moment of Inertia')
+    print(vehicle.tag + ' Moment of Inertia')
     print(MOI) 
     accepted  = np.array([[ 6471.17439456,   -565.1443644,  -959.96859584],
                           [ -565.1443644 ,  11907.5075887,  -111.06534981],

@@ -227,7 +227,7 @@ def cross_flow_hex_rating_model(HEX,state,bus,coolant_line, delta_t,t_idx):
         rho_h_m  = 2 / (1 / rho_h_i + 1 / rho_h_o)
         rho_c_m  = 2 / (1 / rho_c_i + 1 / rho_c_o)             
     
-        # Kc_c, Ke_c     = compute_heat_exhanger_factors(kc_vals,ke_vals,sigma_c, Re_c) SAI 
+        # Kc_c, Ke_c     = compute_heat_exhanger_factors(kc_vals,ke_vals,sigma_c, Re_c) 
         # Need to check if the values obtained from the function are close to what is obtained ere 
         k_c_c = 0.36
         k_c_h = 0.36

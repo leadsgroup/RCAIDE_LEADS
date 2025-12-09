@@ -58,7 +58,8 @@ class Vortex_Lattice_Method(Aerodynamics):
         Properties Used:
         N/A
         """          
-        self.tag                                                    = 'Vortex_Lattice_Method'   
+        self.tag                                                    = 'Vortex_Lattice_Method'  
+        self.vehicle                                                = Data()
         self.process                                                = Process()
         self.process.initialize                                     = Process()  
                     
@@ -177,7 +178,7 @@ class Vortex_Lattice_Method(Aerodynamics):
         return 
     
          
-    def evaluate(self,state,vehicle):
+    def evaluate(self,state, vehicle):
         """The default evaluate function.
 
         Assumptions:

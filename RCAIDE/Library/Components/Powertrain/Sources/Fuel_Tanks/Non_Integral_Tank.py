@@ -15,7 +15,7 @@ from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_condi
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_non_integral_tank_volume import *
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  Non_Integral_Tank
+#  Fuel Tank
 # ---------------------------------------------------------------------------------------------------------------------    
 class Non_Integral_Tank(Fuel_Tank):
     """
@@ -107,12 +107,10 @@ class Non_Integral_Tank(Fuel_Tank):
         self.orientation_euler_angles    = [0.,0.,0.]
         self.geometry_type               = 'cylindrical'   # ['prismatic', 'cylindrical']
         self.bwb_aft_tank                = False
-        self.aft_tank_start_root_chord   = None
-        self.aft_tank_end_rood_chord     = None
-        self.aft_tank_end_segment_tag    = None 
-        self.wing_root_tag               = None 
+        self.aft_tank_segment_bound      =  None # This only has one bound since it is more of a end bound and it will always start from the rootchord and grow symmetrically till bound
         self.radial_offset               = None
         self.aspect_ratio                = None # Defined as the ratio of total length of the tank to the diameter of the tank.
+
 
     def __init__ (self, compoment=None):
         """
@@ -124,7 +122,7 @@ class Non_Integral_Tank(Fuel_Tank):
             if isinstance(compoment, RCAIDE.Library.Components.Fuselages.Fuselage):  
                 self.fuselage_tag = compoment.tag        
        
-    def append_operating_conditions(self,segment):  
+    def append_operating_conditions(self,segment,fuel_line):  
         """
         Append fuel tank operating conditions for a flight segment
         
@@ -135,10 +133,10 @@ class Non_Integral_Tank(Fuel_Tank):
         fuel_line : Component
             Connected fuel line component
         """
-        append_fuel_tank_conditions(self,segment)  
+        append_fuel_tank_conditions(self,segment, fuel_line)  
         return                      
     
-    def compute_volume(self, wings, fuselages):
+    def compute_volume(self, wings, fuselages,fuel_tanks):
         """
         Compute the volume of the non-integral fuel tank based on its attachment location.
 
@@ -170,18 +168,15 @@ class Non_Integral_Tank(Fuel_Tank):
         --------
         RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_non_integral_tank_volume
         """
-        if self.wing_tag is not None:
+        if self.wing_tag is not None and self.bwb_aft_tank is False:
+            if self.geometry_type == 'cylindrical':
+                wing = wings[self.wing_tag]  
+                compute_wing_non_integral_tank_volume(self,wing,fuel_tanks) 
+        elif self.bwb_aft_tank is True:
+            if self.bwb_aft_tank == True:
+                wing = wings[self.wing_tag]  
+                compute_bwb_aft_tank_volume(self,wing)
+        else:
             if self.geometry_type == 'prismatic':
                 compute_prismatic_fuel_tank_volume(self)
-            elif self.geometry_type == 'cylindrical':
-                if self.wing_tag != None:
-                    wing = wings[self.wing_tag]  
-                    compute_wing_non_integral_tank_volume(self,wing)
-                else:
-                    if self.bwb_aft_tank == True:
-                        wing = wings[self.wing_root_tag]  
-                        compute_bwb_aft_tank_volume(self,wing)
-        elif self.fuselage_tag is not None: 
-            fuselage = fuselages[self.fuselage_tag]  
-            compute_fuselage_tank_volume(self,fuselage)
         return

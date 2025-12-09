@@ -39,18 +39,18 @@ def train_VLM_surrogates(aerodynamics, vehicle):
     sub_Mach      = Mach[:sub_len] 
     sup_Mach      = Mach[sub_len:] 
 
-    training.subsonic    =  train_model(aerodynamics, vehicle, sub_Mach)
+    training.subsonic    =  train_model(aerodynamics, sub_Mach, vehicle)
     
     # only build supersonic surrogates if necessary
     if len(sup_Mach) > 2: 
-        training.supersonic  =  train_model(aerodynamics, vehicle, sup_Mach)
-        training.transonic   =  train_trasonic_model(aerodynamics, vehicle, training.subsonic,training.supersonic,sub_Mach, sup_Mach)
+        training.supersonic  =  train_model(aerodynamics, sup_Mach, vehicle)
+        training.transonic   =  train_trasonic_model(aerodynamics, training.subsonic,training.supersonic,sub_Mach, sup_Mach, vehicle)
     else:
         training.supersonic  = None
         training.transonic   = None
     return 
     
-def train_model(aerodynamics, vehicle, Mach): 
+def train_model(aerodynamics,Mach, vehicle): 
     """Sub function that call methods to run VLM for sample point evaluation. 
     
     Assumptions:
@@ -64,8 +64,7 @@ def train_model(aerodynamics, vehicle, Mach):
         
     Returns: 
         None    
-    """    
-     
+    """     
     settings       = aerodynamics.settings
     AoA            = aerodynamics.training.angle_of_attack                  
     Beta           = aerodynamics.training.sideslip_angle 
@@ -437,7 +436,7 @@ def train_model(aerodynamics, vehicle, Mach):
     settings.vortex_distribution = VD_0
     return training 
 
-def train_trasonic_model(aerodynamics, vehicle, training_subsonic,training_supersonic,sub_Mach, sup_Mach): 
+def train_trasonic_model(aerodynamics, training_subsonic,training_supersonic,sub_Mach, sup_Mach, vehicle): 
     """Sub function that call methods to run VLM for sample point evaluation. 
     
     Assumptions:
@@ -451,8 +450,7 @@ def train_trasonic_model(aerodynamics, vehicle, training_subsonic,training_super
         
     Returns: 
         None    
-    """    
- 
+    """     
     AoA            = aerodynamics.training.angle_of_attack                  
     Beta           = aerodynamics.training.sideslip_angle
     training       = Data() 

@@ -89,30 +89,27 @@ def base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle()  
+    analyses.vehicle =  vehicle
 
     #  Geometry
-    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.vehicle = vehicle 
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
     analyses.append(geometry)
 
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
-    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.vehicle                                = vehicle
+    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
     aerodynamics.settings.number_of_spanwise_vortices   = 30 
     analyses.append(aerodynamics) 
 
     # ------------------------------------------------------------------
     #  Stability Analysis      
-    stability                                           = RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method()   
-    stability.vehicle                                   = vehicle
+    stability   = RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method()    
     analyses.append(stability)
 
     # ------------------------------------------------------------------
     #  Energy
-    energy= RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle  = vehicle 
+    energy= RCAIDE.Framework.Analyses.Energy.Energy() 
     analyses.append(energy)
 
     # ------------------------------------------------------------------
@@ -123,7 +120,6 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Atmosphere Analysis
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
     analyses.append(atmosphere)   
 
     # done!

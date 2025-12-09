@@ -60,7 +60,7 @@ class Athena_Vortex_Lattice(Stability):
                    
          
 
-    def initialize(self):
+    def initialize(self, vehicle):
         pass
         return 
     

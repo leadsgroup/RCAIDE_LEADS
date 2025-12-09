@@ -176,8 +176,8 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
  
 
     analysis                 = RCAIDE.Framework.Analyses.Vehicle() 
+    analysis.vehicle         = vehicle 
     energy_analysis          = RCAIDE.Framework.Analyses.Energy.Energy()
-    energy_analysis.vehicle  = vehicle 
     analysis.append(energy_analysis)
      
     mission = RCAIDE.Framework.Mission.Sequential_Segments() 

@@ -259,7 +259,7 @@ def evaluate_surrogate(state,settings,vehicle):
     
     return
 
-def evaluate_no_surrogate(state,settings,base_vehicle):
+def evaluate_no_surrogate(state,settings,vehicle):
     """Evaluates forces and moments directly using VLM.
     
     Assumptions:

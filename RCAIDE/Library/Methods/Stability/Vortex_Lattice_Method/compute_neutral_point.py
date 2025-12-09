@@ -64,8 +64,7 @@ def compute_neutral_point(stability, vehicle):
     'Neutral Point'
         Center of gravity location where the aircraft has neutral static stability (i.e. Cm_alpha = 0).
 
-    """
-   
+    """ 
     settings       = stability.settings
     AoA            = stability.training.angle_of_attack 
     Mach           = stability.training.Mach   

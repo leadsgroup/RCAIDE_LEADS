@@ -35,7 +35,7 @@ def main():
      first_class.seat_arm_rest_width                 = 3 *  Units.inches
      first_class.seat_length                         = 45 *  Units.inches
      first_class.seat_pitch                          = 50 *  Units.inches
-     first_class.aile_width                          = 18  *  Units.inches  
+     first_class.aisle_width                          = 18  *  Units.inches  
      first_class.galley_lavatory_percent_x_locations = [0, 1]       
      first_class.type_A_exit_percent_x_locations     = [0, 1]
      cabin.append_cabin_class(first_class) 
@@ -45,7 +45,7 @@ def main():
      business_class.number_of_rows                      = 4  
      business_class.seat_arm_rest_width                 = 4 *  Units.inches 
      business_class.seat_width                          = 17 *  Units.inches
-     business_class.aile_width                          = 18  *  Units.inches  
+     business_class.aisle_width                          = 18  *  Units.inches  
      cabin.append_cabin_class(business_class) 
      
      economy_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 

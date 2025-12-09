@@ -19,7 +19,12 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
 # ---------------------------------------------------------------------------------------------------------------------- 
-def plot_load_diagram(results):
+def plot_load_diagram(results,
+                      save_figure = False,
+                      show_legend = True,
+                      save_filename = "Aircraft_Loading_Trim_Dragram",
+                      file_type = ".png",
+                      width = 11, height = 7):
     """
     Creates a comprehensive aircraft loading diagram showing mass and center of gravity relationships.
 
@@ -86,39 +91,20 @@ def plot_load_diagram(results):
                   'ytick.labelsize': ps.axis_font_size,
                   'axes.titlesize': ps.title_font_size}
     plt.rcParams.update(parameters)
-
-    fig  = plt.figure('Aircraft Loading Dragram')
+ 
+    fig   = plt.figure(save_filename)
+    fig.set_size_inches(width,height)
     axis = fig.add_subplot(1,1,1)
     
     min_range = 0
-    max_range = 0 
+    max_range = 0
     
-    # ------------------------------------------------------------------------
-    # fuel loading line
-    # ------------------------------------------------------------------------
-    fuel_weight          = results.loading_mass[0, :]
-    fuel_moment_forward  = results.loading_LEMAC_location[0, :]
-    axis.plot( fuel_moment_forward, fuel_weight, 'go-', linewidth=3, label = "Fuel")
-    min_range =  np.minimum( min(fuel_moment_forward), min_range)
-    max_range =  np.maximum( max(fuel_moment_forward), max_range)
-
-    # ------------------------------------------------------------------------    
-    # payload loading line
-    # ------------------------------------------------------------------------
-    payload_moment_forward  = results.loading_LEMAC_location[:, 0]
-    payload_weight          = results.loading_mass[:, 0]
-    split                   =  int( len(payload_moment_forward) / 2)
-    axis.plot( payload_moment_forward[:split], payload_weight[:split], color = 'blue', marker = 'o', linestyle = '-', linewidth=3, label = "Payload Ascending") 
-    axis.plot( payload_moment_forward[split:], payload_weight[split:], color = 'cyan', marker = 'o', linestyle = '-', linewidth=3, label = "Payload Descending") 
-    min_range =  np.minimum( min(payload_moment_forward), min_range)
-    max_range =  np.maximum( max(payload_moment_forward), max_range)
-
     # ------------------------------------------------------------------------    
     # cumulative
     # ------------------------------------------------------------------------ 
     
-    # 1. Generate sample scattered data 
-    points =  np.hstack((   np.atleast_2d(results.loading_LEMAC_location.flatten()).T,  np.atleast_2d(results.loading_mass.flatten()).T ))
+    # 1. Generate sample scattered data
+    points =  np.hstack((   np.atleast_2d(results.loading_LEMAC_location.flatten()).T,  np.atleast_2d(results.loading_mass.flatten()).T )) 
     
     # 2. Compute the convex hull
     hull = ConvexHull(points)
@@ -139,7 +125,7 @@ def plot_load_diagram(results):
     # ------------------------------------------------------------------------    
     # Maximum Takeoff Weight line
     # ------------------------------------------------------------------------
-    x_pts_MTOW = np.linspace(min_range, max_range)
+    x_pts_MTOW = np.linspace(0, 100)
     y_pts_MTOW = np.ones_like(x_pts_MTOW)  * results.MTOW
     axis.plot(x_pts_MTOW, y_pts_MTOW, 'r-', label = 'MTOW') 
     
@@ -164,11 +150,14 @@ def plot_load_diagram(results):
     # ------------------------------------------------------------------------    
     # Axis Items
     # ------------------------------------------------------------------------     
-    axis.set_xlim(min_range, max_range)
+    axis.set_xlim(0, 100)
     axis.legend(loc='upper right')
     axis.set_xlabel(r'$X_{CG}$ (%MAC)')
     axis.set_ylabel('Mass (kg)')
     axis.grid(True)
-    fig.tight_layout()       
+    fig.tight_layout()
+     
+    if save_figure:
+        plt.savefig(save_filename + file_type)       
                                   
     return

@@ -15,7 +15,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  read_results
 # ----------------------------------------------------------------------------------------------------------------------  
-def read_results(avl_object):
+def read_results(avl_object, vehicle):
     """ This functions reads the results from the results text file created 
     at the end of an AVL function call
 
@@ -35,7 +35,6 @@ def read_results(avl_object):
         N/A
     """    
     # unpack
-    aircraft = avl_object.vehicle
     results  = Data() 
     for case in avl_object.current_status.cases:
         num_ctrl =  case.stability_and_control.number_of_control_surfaces
@@ -123,12 +122,12 @@ def read_results(avl_object):
         # get number of wings, spanwise discretization for surface and strip force result extraction
         n_sw    = avl_object.settings.number_of_spanwise_vortices
         n_wings = 0 
-        for wing in aircraft.wings:
+        for wing in vehicle.wings:
             n_wings += 1
             if wing.xz_plane_symmetric:
                 n_wings += 1   
         n_fus_sec = 0
-        for fuselage in aircraft.fuselages: 
+        for fuselage in vehicle.fuselages: 
             if avl_object.settings.model_fuselage:          
                 n_fus_sec += 2
         

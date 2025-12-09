@@ -49,7 +49,7 @@ class Emission_Index_CRN_Method(Emissions):
         
         return
     
-    def initialize(self):
+    def initialize(self, vehicle):
         
         """
         This function defines the analysis of the combustor emisisons with the CRN method.
@@ -71,7 +71,7 @@ class Emission_Index_CRN_Method(Emissions):
         # If we are using the surrogate
         if use_surrogate == True: 
             # sample training data
-            train_CRN_EI_surrogates(self)
+            train_CRN_EI_surrogates(self, vehicle)
 
             # build surrogate
             build_CRN_EI_surrogates(self)  
@@ -85,7 +85,7 @@ class Emission_Index_CRN_Method(Emissions):
         return 
 
 
-    def evaluate(self,state,vehicle):
+    def evaluate(self,segment, vehicle):
         """The default evaluate function.
 
         Assumptions:
@@ -105,6 +105,6 @@ class Emission_Index_CRN_Method(Emissions):
         self.vehicle
         """          
         settings = self.settings 
-        results  = self.process.compute(state,settings,vehicle)
+        results  = self.process.compute(segment,settings,vehicle)
 
         return results

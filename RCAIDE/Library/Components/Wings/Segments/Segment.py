@@ -114,13 +114,8 @@ class Segment(Component):
         self.structural.rib                            = False   
         self.structural.front_spar_percent_chord       = 0.1  
         self.structural.rear_spar_percent_chord        = 0.6  
-        self.structural.stringer_percent_chords        = [] 
-        self.fuel_tank                                 = Data() 
-        self.has_fuel_tank                             = False   
-        self.fuel_tank.percent_chord_start_location    = 0.1  
-        self.fuel_tank.percent_chord_end_location      = 0.6
-        self.fuel_tank.percent_span_location           = 0.0
         self.airfoil                                   = None
+        
         
     def append_airfoil(self, airfoil):
         """

@@ -43,9 +43,7 @@ class Noise(Analysis):
             Properties Used:
             N/A
             """                   
-        self.tag                                             = 'Noise'        
-                                         
-        self.vehicle                                         = Data()
+        self.tag                                             = 'Noise'      
         self.settings                                        = Data()
 
         self.settings                                        = self.settings
@@ -93,7 +91,7 @@ class Noise(Analysis):
     
         
         
-    def evaluate(self,state,vehicle):
+    def evaluate(self,state, vehicle):
         """The default evaluate function.
 
         Assumptions:

@@ -69,9 +69,9 @@ def tiltwing_transition_test(update_regression_values):
             print(val)
     
     # Truth values 
-    hover_throttle_truth              = 0.5994692986064557
-    vertical_climb_1_throttle_truth   = 0.6187135868082909
-    vertical_descent_throttle_truth   = 0.5925255481996211
+    hover_throttle_truth              = 0.5962569361317036
+    vertical_climb_1_throttle_truth   = 0.6160323373581633
+    vertical_descent_throttle_truth   = 0.5891369096688992
     
     # Store errors 
     error = Data() 
@@ -114,9 +114,9 @@ def stopped_rotor_transition_test(update_regression_values):
             print(val)
     
     # Truth values 
-    hover_throttle_truth  = 0.6113063676052419
-    lst_throttle_truth    = 0.596221733428434
-    hsct_throttle_truth   = 0.49177786771719284
+    hover_throttle_truth  = 0.5590852980635563
+    lst_throttle_truth    = 0.5426308450480425
+    hsct_throttle_truth   = 0.43730782471289087
     
     # Store errors 
     error = Data() 
@@ -162,30 +162,27 @@ def TW_base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle() 
+    analyses.vehicle = vehicle
 
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
     geometry.settings.unique_geometry = True
-    geometry.vehicle = vehicle
     analyses.append(geometry)
     
     # ------------------------------------------------------------------
     #  Weights
-    weights         = RCAIDE.Framework.Analyses.Weights.Electric_VTOL() 
-    weights.vehicle = vehicle 
+    weights         = RCAIDE.Framework.Analyses.Weights.Electric_VTOL()  
     weights.settings.update_center_of_gravity    = True    
     analyses.append(weights)
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
-    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.vehicle = vehicle 
+    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
     analyses.append(aerodynamics)   
 
     # ------------------------------------------------------------------
     #  Energy
-    energy          = RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle  = vehicle 
+    energy          = RCAIDE.Framework.Analyses.Energy.Energy() 
     analyses.append(energy)
 
     # ------------------------------------------------------------------
@@ -196,7 +193,6 @@ def TW_base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Atmosphere Analysis
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
     analyses.append(atmosphere)   
 
     # done!
@@ -208,31 +204,28 @@ def SR_base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle() 
+    analyses.vehicle = vehicle
     
     #  Geometry
-    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.vehicle = vehicle 
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
     geometry.settings.unique_geometry = True
     analyses.append(geometry)
     
     # ------------------------------------------------------------------
     #  Weights
     weights         = RCAIDE.Framework.Analyses.Weights.Electric_VTOL() 
-    weights.vehicle = vehicle
     weights.settings.update_center_of_gravity   = True
     weights.settings.update_moment_of_inertia   = True
     analyses.append(weights)
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
-    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.vehicle = vehicle 
+    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
     analyses.append(aerodynamics)   
 
     # ------------------------------------------------------------------
     #  Energy
-    energy          = RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle  = vehicle 
+    energy          = RCAIDE.Framework.Analyses.Energy.Energy() 
     analyses.append(energy)
 
     # ------------------------------------------------------------------
@@ -243,7 +236,6 @@ def SR_base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Atmosphere Analysis
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
     analyses.append(atmosphere)   
 
     # done!
@@ -357,7 +349,7 @@ def SR_mission_setup(analyses,vehicle):
     segment.altitude_end                                  = 200.  * Units.ft   
     segment.initial_battery_state_of_charge               = 1.0 
     segment.climb_rate                                    = 500. * Units['ft/min']   
-    segment.state.numerics.solver.type                              = "root_finder"
+    segment.state.numerics.solver.type                    = "root_finder"
             
     # define flight dynamics to model  
     segment.flight_dynamics.force_z                       = True     
@@ -382,7 +374,7 @@ def SR_mission_setup(analyses,vehicle):
     segment.acceleration                                  = 1.5
     segment.pitch_initial                                 = 0.0 * Units.degrees
     segment.pitch_final                                   = 2.  * Units.degrees 
-    segment.state.numerics.solver.type                              = "root_finder"
+    segment.state.numerics.solver.type                    = "root_finder"
 
     # define flight dynamics to model 
     segment.flight_dynamics.force_x                       = True  

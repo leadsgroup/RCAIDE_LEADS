@@ -47,9 +47,7 @@ class Stability(Analysis):
         Properties Used:
         N/A
         """   
-        self.tag                                                         = 'stability'
-        self.vehicle                                                     = Data() 
-        
+        self.tag                                                         = 'stability' 
         self.settings                                                    = Data()
         self.settings.maximum_lift_coefficient                           = np.inf 
         self.settings.fuselage_lift_correction                           = 1.20

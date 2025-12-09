@@ -91,7 +91,7 @@ class Integral_Tank(Fuel_Tank):
         append_fuel_tank_conditions(self,segment)  
         return       
 
-    def compute_volume(self, wings, fuselages):
+    def compute_volume(self, wings, fuselages, _):
         """
         Compute the internal volume of an integral fuel tank based on its location.
 

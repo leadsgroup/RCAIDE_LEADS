@@ -104,15 +104,15 @@ def vehicle_setup():
     wing.t_tail                  = False 
     wing.dynamic_pressure_ratio  = 1.0
      
-    cabin         = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-    cabin.offset_x = 2.5
+    cabin          = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
+    cabin.origin   = [[2.5, 0, 0]]
     business_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business() 
     business_class.number_of_seats_abrest              = 4
     business_class.number_of_rows                      = 4
     business_class.galley_lavatory_percent_x_locations = [0] 
     business_class.seat_arm_rest_width                 = 4 *  Units.inches 
     business_class.seat_width                          = 25 *  Units.inches
-    business_class.aile_width                          = 15  *  Units.inches 
+    business_class.aisle_width                          = 15  *  Units.inches 
     business_class.type_A_exit_percent_x_locations     = [0,0]
     cabin.append_cabin_class(business_class)  
 
@@ -132,7 +132,7 @@ def vehicle_setup():
     business_class.galley_lavatory_percent_x_locations   = [0] 
     business_class.seat_arm_rest_width                   = 4 *  Units.inches 
     business_class.seat_width                            = 30 *  Units.inches
-    business_class.aile_width                            = 15  *  Units.inches  
+    business_class.aisle_width                            = 15  *  Units.inches  
     business_class.type_A_exit_percent_x_locations       = [0,0]
     side_cabin.append_cabin_class(business_class)
     
@@ -151,8 +151,7 @@ def vehicle_setup():
     segment.twist                         = 0.0 
     segment.percent_span_location         = 0.0  
     segment.root_chord_percent            = 1.0 
-    segment.dihedral_outboard             = 2  *  Units.degrees
-    #segment.thickness_to_chord            = 0.11
+    segment.dihedral_outboard             = 2  *  Units.degrees 
     segment.sweeps.quarter_chord          = 10.037 *  Units.degrees 
     airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil.coordinate_file               = rel_path + 's1016.txt' 
@@ -211,17 +210,11 @@ def vehicle_setup():
     segment.root_chord_percent            = 0.636
     segment.dihedral_outboard             = 15 *  Units.degrees  
     segment.thickness_to_chord            = 0.1
-    segment.sweeps.quarter_chord           = 25*Units.degrees
-    segment.has_fuel_tank                 = True 
-    segment.fuel_tank.percent_chord_start_location = 0.2  
-    segment.fuel_tank.percent_chord_end_location   = 0.6   
+    segment.sweeps.quarter_chord          = 25*Units.degrees  
     airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil.coordinate_file               = rel_path +  's1016.txt'
     segment.append_airfoil(airfoil )
-    wing.append_segment(segment)     
-
-
-
+    wing.append_segment(segment)       
 
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Wing_Section_1'
@@ -367,15 +360,9 @@ def vehicle_setup():
     segment.dihedral_outboard             = 0 
     segment.thickness_to_chord            = 0.1 
     wing.append_segment(segment)
-
     
-        
-
     # add to vehicle
-    vehicle.append_component(wing)     
-     
-     
-
+    vehicle.append_component(wing)      
 
     # ################################################# Landing Gear #############################################################   
 
@@ -418,8 +405,8 @@ def vehicle_setup():
     turbofan1                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan()  
     turbofan1.origin                             = [[30, 3, 3]] 
     turbofan1.tag                                = 'propulsor_1'    
-    turbofan1.engine_length                      = 3.5                   
-    turbofan1.engine_diameter                    = 2.6  # 3.556                     
+    turbofan1.length                             = 3.5                   
+    turbofan1.diameter                           = 2.6  # 3.556                     
     turbofan1.bypass_ratio                       = 9.1                        
     turbofan1.design_altitude                    = 40000*Units.ft             
     turbofan1.design_mach_number                 = 0.7                       
@@ -528,7 +515,7 @@ def vehicle_setup():
     turbofan2.active_fuel_tanks                = ['fuel_tank'] 
     turbofan2.tag                              = 'propulsor_2' 
     turbofan2.origin                           = [[30, -3, 3]] 
-    turbofan2.nacelle.tag                      =  'propulsor_2_nacelle'
+    turbofan2.nacelle.tag                      = 'propulsor_2_nacelle'
     turbofan2.nacelle.origin                   = [[30, -3, 3]] 
         
     # append propulsor to distribution line 
@@ -537,13 +524,16 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------- 
     #  Energy Source: Fuel Tank
     #-------------------------------------------------------------------------------------------------------------------------  
-   # fuel tank
-    fuel_tank_1                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
-    fuel_tank_1.tag                                    = 'H2_Fuel_Tank_1' 
-    fuel_tank_1.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()   
-    fuel_tank_1.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
-    fuel_tank_1.insulation_material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Jacketed_Multilayer_Insulation()
-    fuel_tank_1.fuel.gravimetric_efficiency            = 0.5
+    # fuel tank
+    fuel_tank_1                                                = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
+    fuel_tank_1.tag                                            = 'H2_Fuel_Tank_1' 
+    fuel_tank_1.fuel                                           = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()   
+    fuel_tank_1.material                                       = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank_1.insulation_material                            = RCAIDE.Library.Attributes.Materials.Vacuum_Jacketed_Multilayer_Insulation()
+    fuel_tank_1.fuel.gravimetric_efficiency                    = 0.5
+    fuel_tank_1.segments_bounding_tank                         = ['fuel_wall', 'wing_section_1']  
+    fuel_tank_1.segments_percent_chord_start                   = [0.2,0.2] 
+    fuel_tank_1.segments_percent_chord_end                     = [0.6,0.6]  
     fuel_line.fuel_tanks.append(fuel_tank_1)
     #------------------------------------------------------------------------------------------------------------------------------------   
     # Assign propulsors to fuel line to network      

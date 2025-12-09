@@ -24,20 +24,7 @@ import numpy as np
 sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
 from Embraer_190 import vehicle_setup, configs_setup  
 
-def base_analysis(vehicle):
 
-    # ------------------------------------------------------------------
-    #   Initialize the Analyses
-    # ------------------------------------------------------------------     
-    analyses = RCAIDE.Framework.Analyses.Vehicle()
-
-    #  Aerodynamics Analysis
-    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.geometry = vehicle 
-    analyses.append(aerodynamics)
-
-    # done!
-    return analyses     
 
 
 def main():
@@ -94,11 +81,24 @@ def main():
     plt.figure(1); plt.plot(w_vec,truth_LFL, label = 'Landing Field Length (true)')
     legend = plt.legend(loc='lower right')
     plt.xlabel('Weight (kg)')
-    plt.ylabel('Landing Field Length (m)')
+    plt.ylabel('Landing Field Length (m)') 
+ 
+    return
 
-    #assert( LFL_error   < 1e-5 )
+def base_analysis(vehicle):
 
-    return 
+    # ------------------------------------------------------------------
+    #   Initialize the Analyses
+    # ------------------------------------------------------------------     
+    analyses = RCAIDE.Framework.Analyses.Vehicle()
+    analyses.vehicle = vehicle
+
+    #  Aerodynamics Analysis
+    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
+    analyses.append(aerodynamics)
+
+    # done!
+    return analyses     
 
 # ----------------------------------------------------------------------        
 #   Call Main

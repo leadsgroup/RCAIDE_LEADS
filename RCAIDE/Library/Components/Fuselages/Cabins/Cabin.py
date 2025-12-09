@@ -29,12 +29,12 @@ class Cabin(Component):
         self.filled_seats_arrangement  = 'random' # ['random','ascending','descending']
         self.type_A_door_length        = 36 *  Units.inches
         self.galley_lavatory_length    = 32 *  Units.inches  
-        self.emergency_exit_seat_pitch = 36 *  Units.inches 
-        self.offset_x                  = 0
+        self.emergency_exit_seat_pitch = 36 *  Units.inches  
         self.length                    = 0
         self.width                     = 0
         self.height                    = 0
-        self.wide_body                 = False 
+        self.wide_body                 = False
+        self.wall_thickness            = 0 *  Units.inches
         self.tail                      = Data()
         self.tail.fineness_ratio       = 0 
         self.nose                      = Data() 

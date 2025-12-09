@@ -73,16 +73,15 @@ def base_analysis(vehicle, configs):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses        = RCAIDE.Framework.Analyses.Vehicle() 
+    analyses.vehicle =  vehicle
 
-    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.vehicle                             = vehicle
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
     analyses.append(geometry)
 
     # ------------------------------------------------------------------
     #  Weights
     # ------------------------------------------------------------------
     weights         = RCAIDE.Framework.Analyses.Weights.Conventional()
-    weights.vehicle = vehicle
     weights.method  = "FLOPS"
     weights.aircraft_type = "General_Aviation"
     weights.settings.FLOPS.fidelity   = "Simple"
@@ -92,8 +91,7 @@ def base_analysis(vehicle, configs):
     #  Aerodynamics Analysis
     # ------------------------------------------------------------------ 
     
-    aerodynamics                                    = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.vehicle                            = vehicle          
+    aerodynamics                                    = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
     aerodynamics.stability_derivatives.CX_alpha     = 0.0001
     aerodynamics.stability_derivatives.CX_u         =  0.0001
     aerodynamics.stability_derivatives.CY_beta      = -0.195398
@@ -121,16 +119,14 @@ def base_analysis(vehicle, configs):
     aerodynamics.stability_derivatives.CM_delta_f   =  0.0001  
     analyses.append(aerodynamics) 
      
-    stability                                       = RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method()   
-    stability.vehicle                               = vehicle
+    stability                                       = RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method()  
     stability.settings.update_center_of_gravity     = False
     analyses.append(stability)
 
     # ------------------------------------------------------------------
     #  Energy
     # ------------------------------------------------------------------
-    energy     = RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle = vehicle  
+    energy     = RCAIDE.Framework.Analyses.Energy.Energy()  
     analyses.append(energy)
 
     # ------------------------------------------------------------------
@@ -143,7 +139,6 @@ def base_analysis(vehicle, configs):
     #  Atmosphere Analysis
     # ------------------------------------------------------------------
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
     analyses.append(atmosphere)   
 
     # done!

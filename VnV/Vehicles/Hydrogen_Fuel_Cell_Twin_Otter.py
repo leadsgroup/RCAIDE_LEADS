@@ -115,8 +115,7 @@ def vehicle_setup(fuel_cell_model= 'PEM'):
     segment.root_chord_percent            = 1. 
     segment.dihedral_outboard             = 3. * Units.degree 
     segment.sweeps.quarter_chord          = 0.
-    segment.thickness_to_chord            = 0.12
-    segment.has_fuel_tank                 = True
+    segment.thickness_to_chord            = 0.12 
     segment.append_airfoil(airfoil)
     wing.append_segment(segment)
     
@@ -330,8 +329,7 @@ def vehicle_setup(fuel_cell_model= 'PEM'):
     segment.percent_x_location                  = 0.716936232 
     segment.percent_z_location                  = 0.394233333/ fuselage.lengths.total	 	 
     segment.height                              = 1.558333333	 
-    segment.width                               = 1.64
-    segment.has_fuel_tank                       = True
+    segment.width                               = 1.64 
     fuselage.segments.append(segment)
     
 

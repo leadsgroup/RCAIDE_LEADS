@@ -21,7 +21,7 @@ import os,sys
 # ----------------------------------------------------------------------
 #  Calculate vehicle Payload Range Diagram
 # ----------------------------------------------------------------------  
-def compute_payload_range_diagram(mission = None, type = 'conventional' , cruise_segment_tag = "cruise", fuel_reserve_percentage=0.05, plot_diagram = True, fuel_name=None, delete_training_data=True):  
+def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise", fuel_reserve_percentage=0.05, plot_diagram = True, fuel_name=None, delete_training_data=True):  
     """
     Calculate and plot the payload range diagram for an aircraft by modifying the cruise segment and weights.
     
@@ -106,18 +106,19 @@ def compute_payload_range_diagram(mission = None, type = 'conventional' , cruise
         # perform inital weights analysis
         segment.analyses.vehicle.mass_properties.takeoff = None
     mass_properties(mission)
-        
+    vehicle = mission.segments[initial_segment].analyses.vehicle 
   
-    vehicle = mission.segments[initial_segment].analyses.vehicle
-    [setattr(seg.analyses.aerodynamics.settings, "store_training_data", True) for seg in mission.segments] 
-    if type == 'conventional':  
-        payload_range  =  conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_reserve_percentage,plot_diagram,fuel_name) 
-    elif type == 'electric':  
-        payload_range  =  electric_payload_range_diagram(vehicle,mission,cruise_segment_tag,plot_diagram)
+    [setattr(seg.analyses.aerodynamics.settings, "store_training_data", True) for seg in mission.segments]
+    file_name = [(seg.analyses.aerodynamics.tag) for seg in mission.segments][0]
+    for network in vehicle.networks:
+        if type(network) == RCAIDE.Framework.Networks.Fuel:  
+            payload_range  =  conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_reserve_percentage,plot_diagram,fuel_name) 
+        else:
+            payload_range  =  electric_payload_range_diagram(vehicle,mission,cruise_segment_tag,plot_diagram)
     
     if delete_training_data:
         for fname in os.listdir(os.path.dirname(os.path.abspath(sys.argv[0]))):
-            if fname.endswith(".pkl") and "payload_range_mission" in fname:
+            if fname.endswith(".pkl") and "payload_range_mission" in fname and file_name in fname:
                 os.remove(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), fname))
 
     print("\n============== Payload Range Report ==============\n")            
@@ -223,6 +224,7 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
         mission.segments[0].analyses.vehicle.mass_properties.takeoff  = TOW[i]
         mission.segments[0].analyses.vehicle.mass_properties.payload  = PLD[i]
         mission.segments[0].analyses.vehicle.mass_properties.fuel     = FUEL[i]
+
 
         # Evaluate mission with current TOW
         results = mission.evaluate()

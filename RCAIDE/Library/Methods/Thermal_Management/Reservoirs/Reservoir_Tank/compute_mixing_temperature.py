@@ -75,7 +75,7 @@ def compute_mixing_temperature(reservoir, state, coolant_line, delta_t, t_idx):
         T_outlet_HEX.append(state.conditions.energy.coolant_lines[coolant_line.tag][HEX.tag].outlet_coolant_temperature[t_idx + 1])
         Cp_HEX.append(coolant.compute_cp(T_outlet_HEX[-1]))
 
-    # Solve for T_final using fsolve
+        # Solve for T_final using fsolve
         T_final = fsolve(energy_balance, T_current, args=(T_current, delta_t, mass_coolant, Cp_RES, Cp_HAS, Cp_HEX, mass_flow_HAS, T_outlet_HAS, mass_flow_HEX, T_outlet_HEX, reservoir, state, t_idx))[0]
 
     # Update the reservoir temperature

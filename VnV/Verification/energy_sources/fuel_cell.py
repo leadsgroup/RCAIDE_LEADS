@@ -99,16 +99,15 @@ def analyses_setup(configs):
 
 def base_analysis(vehicle):    
     #   Initialize the Analyses     
-    analyses = RCAIDE.Framework.Analyses.Vehicle()  
+    analyses = RCAIDE.Framework.Analyses.Vehicle()
+    analyses.vehicle =  vehicle
 
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.vehicle = vehicle
     analyses.append(geometry)
     
     #  Energy
-    energy          = RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle  = vehicle 
+    energy          = RCAIDE.Framework.Analyses.Energy.Energy() 
     analyses.append(energy)
  
     #  Planet Analysis
@@ -117,7 +116,6 @@ def base_analysis(vehicle):
  
     #  Atmosphere Analysis
     atmosphere                 = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
     analyses.append(atmosphere)   
  
     return analyses     

@@ -16,7 +16,7 @@ def get_seat_y_coords(cabin,cabin_class,cabin_class_origin):
     n      = cabin_class.number_of_seats_abrest
     s_w    = cabin_class.seat_width
     ar_w   = cabin_class.seat_arm_rest_width   
-    a_w    = cabin_class.aile_width      
+    a_w    = cabin_class.aisle_width      
 
     # determine number of aisles
     if n > 7:
@@ -122,7 +122,7 @@ def get_seat_y_coords(cabin,cabin_class,cabin_class_origin):
         y_10 = -y_9 
         s_y_coord = np.array([ y_1, y_2, y_3,y_4, y_5,y_6,y_7,y_8,y_9,y_10 ])
     
-    cabin.width = 2 * (np.max(s_y_coord) + s_w /2 + ar_w)
+    cabin.width = np.maximum(cabin.width, 2 * (np.max(s_y_coord) + s_w /2 + ar_w))
     s_y_coord  += cabin_class_origin[1] 
     return s_y_coord , cabin_class_origin
 
@@ -218,7 +218,7 @@ def get_seat_x_coords(cabin,cabin_class,cabin_class_origin):
 # ----------------------------------------------------------------------------------------------------------------------
 #  update_seat_map_layout_using_cabin_taper
 # ----------------------------------------------------------------------------------------------------------------------  
-def update_seat_map_layout_using_cabin_taper(seat_data,cabin):
+def update_seat_map_layout_using_cabin_taper(seat_data,cabin,side_cabin_offset):
     
     cabin_width = cabin.width
     n_fr        = cabin.nose.fineness_ratio 
@@ -231,17 +231,17 @@ def update_seat_map_layout_using_cabin_taper(seat_data,cabin):
     n_idxs =  np.where(nose_length > seat_data[:,2])[0]
     removed_indexes =  [] 
     for n_i in  range(len(n_idxs)):
-        x0    = seat_data[n_i,2] - seat_data[n_i,5]/2
-        x1    = seat_data[n_i,2] + seat_data[n_i,5]/2
-        y0    = seat_data[n_i,3] - seat_data[n_i,6]/2
-        y1    = seat_data[n_i,3] + seat_data[n_i,6]/2
+        x0    = seat_data[n_idxs[n_i],2] - seat_data[n_idxs[n_i],5]/2
+        x1    = seat_data[n_idxs[n_i],2] + seat_data[n_idxs[n_i],5]/2
+        y0    = seat_data[n_idxs[n_i],3] - seat_data[n_idxs[n_i],6]/2
+        y1    = seat_data[n_idxs[n_i],3] + seat_data[n_idxs[n_i],6]/2
         
         x_pts = np.array([x0, x1])
         y_pts = np.array([y0, y1])
         
-        y_border = max(x_pts * np.tan(theta1))
+        y_border = min(x_pts * np.tan(theta1)) + side_cabin_offset / 2
         
-        if np.any( y_pts > y_border):
+        if np.any( abs(y_pts) > y_border):
             removed_indexes.append(n_idxs[n_i])
     seat_data = np.delete(seat_data,(removed_indexes), axis=0) 
         
@@ -251,16 +251,16 @@ def update_seat_map_layout_using_cabin_taper(seat_data,cabin):
     t_idxs     = np.where(tail_start < seat_data[:,2])[0]
     removed_indexes =  []
     for t_i in  range(len(t_idxs)):
-        x0    = seat_data[t_i,2] - seat_data[t_i,5]/2
-        x1    = seat_data[t_i,2] + seat_data[t_i,5]/2
-        y0    = seat_data[t_i,3] - seat_data[t_i,6]/2
-        y1    = seat_data[t_i,3] + seat_data[t_i,6]/2
+        x0    = seat_data[t_idxs[t_i],2] - seat_data[t_idxs[t_i],5]/2
+        x1    = seat_data[t_idxs[t_i],2] + seat_data[t_idxs[t_i],5]/2
+        y0    = seat_data[t_idxs[t_i],3] - seat_data[t_idxs[t_i],6]/2
+        y1    = seat_data[t_idxs[t_i],3] + seat_data[t_idxs[t_i],6]/2
         
-        x_pts = np.array([x0, x1])
+        x_pts =  cabin.length - np.array([x0, x1])
         y_pts = np.array([y0, y1])
         
-        y_border = max(x_pts * np.tan(theta2)) 
-        if np.any( y_pts > y_border): # or remove_feature == True:
+        y_border = max(x_pts * np.tan(theta2)) + side_cabin_offset / 2
+        if np.any( abs(y_pts) > y_border): 
             removed_indexes.append(t_idxs[t_i])
     seat_data = np.delete(seat_data,(removed_indexes), axis=0)
             

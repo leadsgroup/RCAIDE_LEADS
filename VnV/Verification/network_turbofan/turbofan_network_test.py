@@ -173,30 +173,27 @@ def base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle() 
+    analyses.vehicle =  vehicle
     
     # ------------------------------------------------------------------
     #  geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.vehicle = vehicle
     geometry.settings.overwrite_reference        = False
     analyses.append(geometry)
 
     # ------------------------------------------------------------------
     #  Weights
-    weights                                          = RCAIDE.Framework.Analyses.Weights.Conventional_Transport() 
-    weights.vehicle                                  = vehicle
+    weights                                          = RCAIDE.Framework.Analyses.Weights.Conventional_Transport()  
     analyses.append(weights)
  
     #  Aerodynamics Analysis
-    aerodynamics                                        = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.vehicle                                = vehicle
+    aerodynamics                                        = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
     aerodynamics.settings.number_of_spanwise_vortices   = 8
     aerodynamics.settings.number_of_chordwise_vortices  = 2       
     analyses.append(aerodynamics)
   
     #  Energy
-    energy                                           = RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle                                   = vehicle 
+    energy                                           = RCAIDE.Framework.Analyses.Energy.Energy() 
     analyses.append(energy)
  
     #  Planet Analysis
@@ -206,7 +203,6 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Atmosphere Analysis
     atmosphere                                       = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet                       = planet.features
     analyses.append(atmosphere)   
 
     # done!

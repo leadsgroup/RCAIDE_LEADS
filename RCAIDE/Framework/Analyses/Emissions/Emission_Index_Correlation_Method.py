@@ -83,7 +83,7 @@ class Emission_Index_Correlation_Method(Emissions):
                 
         return
             
-    def initialize(self):   
+    def initialize(self, vehicle):   
         """
         This function computes the emissions of different species from the Emission Indices 
         available in literature.
@@ -100,7 +100,7 @@ class Emission_Index_Correlation_Method(Emissions):
         return 
 
 
-    def evaluate(self,state,vehicle):
+    def evaluate(self,segment, vehicle):
         """
         The default evaluate function.
 
@@ -120,7 +120,7 @@ class Emission_Index_Correlation_Method(Emissions):
         self.settings
         self.vehicle
         """          
-        settings = self.settings 
-        results  = self.process.compute(state,settings,vehicle)
+        settings = self.settings   
+        results  = self.process.compute(segment,settings,vehicle)
 
         return results             

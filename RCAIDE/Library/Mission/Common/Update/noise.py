@@ -25,4 +25,4 @@ def noise(segment):
     noise_model = segment.analyses.noise
     
     if noise_model:
-        noise_model.evaluate_noise(segment)    
+        noise_model.evaluate_noise(segment, segment.analyses.vehicle)    

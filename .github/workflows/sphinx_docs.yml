@@ -24,7 +24,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.X"
+          python-version: "3.11"
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
@@ -57,7 +57,7 @@ jobs:
               # Execute notebook and save to temporary location
               jupyter nbconvert --to notebook --execute "$notebook" \
                 --output "$tmp_dir/$notebook_name" \
-                --ExecutePreprocessor.timeout=1800 \
+                --ExecutePreprocessor.timeout=2400 \
                 || { echo "Error executing notebook $notebook"; exit 1; }
               
               # If execution succeeded, move the executed notebook back

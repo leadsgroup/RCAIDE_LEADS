@@ -105,23 +105,21 @@ def base_analysis(vehicle,emissions_method, use_surrogate):
     # ------------------------------------------------------------------
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
-    analyses = RCAIDE.Framework.Analyses.Vehicle() 
+    analyses = RCAIDE.Framework.Analyses.Vehicle()
+    analyses.vehicle = vehicle
 
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.vehicle = vehicle
     analyses.append(geometry)
     
     # ------------------------------------------------------------------
     #  Weights
     weights         = RCAIDE.Framework.Analyses.Weights.Conventional_Transport() 
-    weights.vehicle = vehicle
     analyses.append(weights)
     
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis 
-    aerodynamics                                       = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.vehicle                               = vehicle 
+    aerodynamics                                       = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
     aerodynamics.settings.model_fuselage               = True 
     analyses.append(aerodynamics)
 
@@ -135,15 +133,13 @@ def base_analysis(vehicle,emissions_method, use_surrogate):
         emissions.training.pressure          = np.linspace(2.5,5, 1) *1E6
         emissions.training.temperature       = np.linspace(710, 800, 1) 
         emissions.training.air_mass_flowrate = np.linspace(40, 50, 1) 
-        emissions.training.fuel_to_air_ratio = np.linspace(0.025, 0.03, 1)             
-    emissions.vehicle = vehicle          
+        emissions.training.fuel_to_air_ratio = np.linspace(0.025, 0.03, 1)     
     analyses.append(emissions)
         
     
     # ------------------------------------------------------------------
     #  Energy
-    energy= RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle  = vehicle 
+    energy= RCAIDE.Framework.Analyses.Energy.Energy() 
     analyses.append(energy)
     
     # ------------------------------------------------------------------
@@ -154,7 +150,6 @@ def base_analysis(vehicle,emissions_method, use_surrogate):
     # ------------------------------------------------------------------
     #  Atmosphere Analysis
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
     analyses.append(atmosphere)   
     
     # done!

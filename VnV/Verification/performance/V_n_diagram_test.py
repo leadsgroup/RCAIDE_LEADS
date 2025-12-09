@@ -22,12 +22,50 @@ import numpy as np
 # import vehicle file
 sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
 
-from  Cessna_172 import vehicle_setup  
+from  Cessna_172 import vehicle_setup   as GA_vehicle_setup  
+from  Boeing_737 import vehicle_setup   as Transport_vehicle_setup  
 
 def main():
+    part_35_V_n_Diagram()
+    part_23_V_n_Diagram()
+    
+    return
 
-    vehicle  = vehicle_setup()
+def part_35_V_n_Diagram():
 
+    
+    vehicle  = Transport_vehicle_setup() 
+
+    vehicle.flight_envelope.category                  = 'normal'
+    vehicle.flight_envelope.FAR_part_number           = '25' 
+    vehicle.flight_envelope.maximum_lift_coefficient  = 3
+    vehicle.flight_envelope.minimum_lift_coefficient  = -1.5 
+
+    for wing in vehicle.wings: 
+        wing_planform(wing) 
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
+            vehicle.reference_area = wing.areas.reference
+
+    analyses = RCAIDE.Framework.Analyses.Vehicle()
+
+    # ------------------------------------------------------------------
+    #  Planet Analysis
+    planet = RCAIDE.Framework.Analyses.Planets.Earth()
+    analyses.append(planet)
+
+    # ------------------------------------------------------------------
+    #  Atmosphere Analysis
+    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
+    analyses.append(atmosphere)   
+
+    V_n_data = generate_V_n_diagram(vehicle,analyses)
+    
+    return    
+    
+    
+def part_23_V_n_Diagram():
+    
+    vehicle  = GA_vehicle_setup() 
 
     vehicle.flight_envelope.category                  = 'normal'
     vehicle.flight_envelope.FAR_part_number           = '23' 
@@ -49,13 +87,9 @@ def main():
     # ------------------------------------------------------------------
     #  Atmosphere Analysis
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
-    analyses.append(atmosphere)      
+    analyses.append(atmosphere)   
 
-    altitude  = 0 * Units.m
-    delta_ISA = 0 
-
-    V_n_data = generate_V_n_diagram(vehicle,analyses,altitude,delta_ISA) 
+    V_n_data = generate_V_n_diagram(vehicle,analyses) 
 
     print(V_n_data.Vs1.positive)
     print(V_n_data.Vs1.negative) 

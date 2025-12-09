@@ -145,25 +145,23 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
-    analyses = RCAIDE.Framework.Analyses.Vehicle()  
+    analyses = RCAIDE.Framework.Analyses.Vehicle() 
+    analyses.vehicle = vehicle    
 
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.vehicle = vehicle
     analyses.append(geometry)
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     # ------------------------------------------------------------------     
-    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.vehicle                            = vehicle 
+    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
     analyses.append(aerodynamics) 
 
     # ------------------------------------------------------------------
     #  Energy
     # ------------------------------------------------------------------     
-    energy= RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle = vehicle 
+    energy= RCAIDE.Framework.Analyses.Energy.Energy() 
     analyses.append(energy)
 
     # ------------------------------------------------------------------
@@ -176,7 +174,6 @@ def base_analysis(vehicle):
     #  Atmosphere Analysis
     # ------------------------------------------------------------------     
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
     analyses.append(atmosphere)   
 
     # done!
@@ -310,7 +307,7 @@ def plot_battery_pack_conditions(plot_data,
             # Plot battery pack results if any            
             # ---------------------------------------------------------------------------            
             
-            for network in results.segments[0].analyses.energy.vehicle.networks: 
+            for network in results.segments[0].analyses.vehicle.networks: 
                 busses  = network.busses
                 
                 for  b_i , bus in  enumerate(busses):  
@@ -367,7 +364,7 @@ def plot_battery_pack_conditions(plot_data,
             
             axis_2_1.set_ylabel(r'Throttle')
             set_axes(axis_2_1)               
-            for network in results.segments[i].analyses.energy.vehicle.networks:   
+            for network in results.segments[i].analyses.vehicle.networks:   
                 propulsor_tag = list(network.propulsors.keys())[0] 
                 eta = results.segments[i].conditions.energy.propulsors[propulsor_tag].throttle[:,0] 
                 if i ==0:

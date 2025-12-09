@@ -62,23 +62,23 @@ def build_VLM_surrogates(aerodynamics, vehicle):
     sub_len    = int(sum(Mach<1.))  
     sup_Mach   = Mach[sub_len:]
     
-    surrogates.subsonic    =  build_surrogate(aerodynamics, vehicle, training.subsonic)
+    surrogates.subsonic    =  build_surrogate(aerodynamics, training.subsonic, vehicle)
     
     # only build supersonic surrogates if necessary
     if len(sup_Mach) > 2: 
-        surrogates.supersonic  =  build_surrogate(aerodynamics, vehicle, training.supersonic)
-        surrogates.transonic   =  build_surrogate(aerodynamics, vehicle, training.transonic)
+        surrogates.supersonic  =  build_surrogate(aerodynamics, training.supersonic, vehicle)
+        surrogates.transonic   =  build_surrogate(aerodynamics, training.transonic, vehicle)
     else: 
-        surrogates.supersonic  =  no_surrogate(aerodynamics, training.supersonic)
-        surrogates.transonic   =  no_surrogate(aerodynamics, training.transonic)        
+        surrogates.supersonic  =  no_surrogate(aerodynamics, training.supersonic, vehicle)
+        surrogates.transonic   =  no_surrogate(aerodynamics, training.transonic, vehicle)        
         
     return
 
-def build_surrogate(aerodynamics, vehicle, training):
+def build_surrogate(aerodynamics, training, vehicle):
     
     # unpack data
     surrogates     = Data()
-    mach_data      = training.Mach 
+    mach_data      = training.Mach
     AoA_data       = aerodynamics.training.angle_of_attack     
     Beta_data      = aerodynamics.training.sideslip_angle     
     
@@ -164,7 +164,7 @@ def build_surrogate(aerodynamics, vehicle, training):
     return surrogates
  
  
-def no_surrogate(aerodynamics, vehicle, training):
+def no_surrogate(aerodynamics, training, vehicle):
     
     # unpack data
     surrogates     = Data()  

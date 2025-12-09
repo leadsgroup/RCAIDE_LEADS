@@ -13,7 +13,7 @@ from RCAIDE.Library.Methods.Aerodynamics.Athena_Vortex_Lattice.create_avl_datast
 # ----------------------------------------------------------------------------------------------------------------------
 #  write_geometry
 # ---------------------------------------------------------------------------------------------------------------------- 
-def write_geometry(avl_object,run_script_path):
+def write_geometry(avl_object,run_script_path,vehicle):
     """This function writes the translated aircraft geometry into text file read 
     by AVL when it is called
 
@@ -33,8 +33,7 @@ def write_geometry(avl_object,run_script_path):
         N/A
     """    
     
-    # unpack inputs
-    aircraft                          = avl_object.vehicle
+    # unpack inputs 
     geometry_file                     = avl_object.settings.filenames.features
     number_of_spanwise_vortices       = avl_object.settings.number_of_spanwise_vortices
     number_of_chordwise_vortices      = avl_object.settings.number_of_chordwise_vortices   
@@ -44,16 +43,16 @@ def write_geometry(avl_object,run_script_path):
     geometry             = open(geometry_file,'w')
 
     with open(geometry_file,'w') as geometry:
-        header_text       = make_header_text(avl_object)
+        header_text       = make_header_text(avl_object,vehicle)
         geometry.write(header_text)
         
-        for w in aircraft.wings:
+        for w in vehicle.wings:
             avl_wing      = translate_avl_wing(w)
             wing_text     = make_surface_text(avl_wing,number_of_spanwise_vortices,number_of_chordwise_vortices)
             geometry.write(wing_text)  
         
         if avl_object.settings.model_fuselage:
-            for b in aircraft.fuselages:
+            for b in vehicle.fuselages:
                 avl_body  = translate_avl_body(b)
                 body_text = make_body_text(avl_body,number_of_chordwise_vortices)
                 geometry.write(body_text)
@@ -61,7 +60,7 @@ def write_geometry(avl_object,run_script_path):
     return
 
 
-def make_header_text(avl_object):  
+def make_header_text(avl_object,vehicle):  
     """This function writes the header using the template required for the AVL executable to read
 
     Assumptions:
@@ -74,11 +73,11 @@ def make_header_text(avl_object):
         avl_object.settings.flow_symmetry.xz_plane                      [-]
         avl_object.settings.flow_symmetry.xy_parallel                   [-]
         avl_object.settings.flow_symmetry.z_symmetry_plane              [-]
-        avl_object.vehicle.wings['main_wing'].areas.reference          [meters**2]
-        avl_object.vehicle.wings['main_wing'].chords.mean_aerodynamic  [meters]
-        avl_object.vehicle.wings['main_wing'].spans.projected          [meters]
-        avl_object.vehicle.mass_properties.center_of_gravity           [meters]
-        avl_object.vehicle.tag                                         [-]
+        vehicle.wings['main_wing'].areas.reference          [meters**2]
+        vehicle.wings['main_wing'].chords.mean_aerodynamic  [meters]
+        vehicle.wings['main_wing'].spans.projected          [meters]
+        vehicle.mass_properties.center_of_gravity           [meters]
+        vehicle.tag                                         [-]
     
     Outputs:
         header_text                                                     [-]
@@ -107,13 +106,13 @@ def make_header_text(avl_object):
     Iysym = avl_object.settings.flow_symmetry.xz_plane
     Izsym = avl_object.settings.flow_symmetry.xy_parallel
     Zsym  = avl_object.settings.flow_symmetry.z_symmetry_plane
-    Sref  = avl_object.vehicle.wings['main_wing'].areas.reference
-    Cref  = avl_object.vehicle.wings['main_wing'].chords.mean_aerodynamic
-    Bref  = avl_object.vehicle.wings['main_wing'].spans.projected
-    Xref  = avl_object.vehicle.mass_properties.center_of_gravity[0][0]
-    Yref  = avl_object.vehicle.mass_properties.center_of_gravity[0][1]
-    Zref  = avl_object.vehicle.mass_properties.center_of_gravity[0][2]
-    name  = avl_object.vehicle.tag     
+    Sref  = vehicle.wings['main_wing'].areas.reference
+    Cref  = vehicle.wings['main_wing'].chords.mean_aerodynamic
+    Bref  = vehicle.wings['main_wing'].spans.projected
+    Xref  = vehicle.mass_properties.center_of_gravity[0][0]
+    Yref  = vehicle.mass_properties.center_of_gravity[0][1]
+    Zref  = vehicle.mass_properties.center_of_gravity[0][2]
+    name  = vehicle.tag     
     mach = 0.0
 
     # Insert inputs into the template

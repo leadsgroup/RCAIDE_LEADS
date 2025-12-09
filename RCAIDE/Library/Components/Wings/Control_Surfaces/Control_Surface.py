@@ -98,13 +98,10 @@ class Control_Surface(Component):
         self.tag                   = 'control_surface' 
         self.span                  = 0.0
         self.span_fraction_start   = 0.0
-        self.span_fraction_end     = 0.0
-        
+        self.span_fraction_end     = 0.0 
         self.hinge_fraction        = 0.0
-        self.chord_fraction        = 0.0
-        
+        self.chord_fraction        = 0.0 
         self.sign_duplicate        = 1.0
         self.deflection            = 0.0  
-        self.configuration_type    = 'single_slotted'
-        
+        self.configuration_type    = 'single_slotted' 
         self.gain                  = 1.0 #deflection multiplier used only for AVL

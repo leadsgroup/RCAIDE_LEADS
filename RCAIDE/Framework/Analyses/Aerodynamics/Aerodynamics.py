@@ -103,7 +103,7 @@ class Aerodynamics(Analysis):
         self.stability_derivatives.Clift_delta_f                         = None 
         
         
-    def evaluate(self,state,vehicle):
+    def evaluate(self,state, vehicle):
         """The default evaluate function.
 
         Assumptions:

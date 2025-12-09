@@ -9,7 +9,8 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 import RCAIDE
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia                             import compute_aircraft_moment_of_inertia
-from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity                             import compute_vehicle_center_of_gravity 
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity                             import compute_vehicle_center_of_gravity
+from copy import deepcopy 
 # ----------------------------------------------------------------------------------------------------------------------
 #  mass_properties
 # ----------------------------------------------------------------------------------------------------------------------  
@@ -91,16 +92,18 @@ def mass_properties(mission):
  
     for i ,  segment in enumerate(mission.segments):
         if segment.analyses.weights != None: 
-            mass_properties_preprocess_routine(i, segment.analyses)              
+            mass_properties_preprocess_routine(i, segment.analyses)
+                            
         else:
             # If there is no analysis defined, it copies over the vehicle from the geometry analysis
             segment.analyses.weights = RCAIDE.Framework.Analyses.Weights.Weights() 
             if segment.analyses.vehicle.mass_properties.takeoff == None:
                 segment.analyses.vehicle.mass_properties.takeoff = segment.analyses.vehicle.mass_properties.max_takeoff
+                  
     return 
 
 def mass_properties_preprocess_routine(i, analyses):
-    weights_analysis = analyses.weights
+    weights_analysis = analyses.weights 
     if analyses.vehicle.mass_properties.max_takeoff == None:
         # For all weights analysis a maximum take off weight needs to be defined by the user
         raise AttributeError("Max Takeoff Weight for aircraft not defined")
@@ -126,7 +129,7 @@ def mass_properties_preprocess_routine(i, analyses):
             analyses.vehicle.mass_properties.takeoff = analyses.vehicle.mass_properties.max_takeoff
         else:
             if analyses.vehicle.mass_properties.payload >analyses.vehicle.mass_properties.max_payload:
-                raise AssertionError('Prescribed payload is greater than maxmimum payload')
+                        raise AssertionError('Prescribed payload is greater than maxmimum payload')
 
             if analyses.vehicle.mass_properties.max_fuel == None or analyses.vehicle.mass_properties.max_zero_fuel == None:
                 # Before proceeding to the weight buildups, the buildups need either the max fuel capacity or the max zero fuel to compute OEW
@@ -149,7 +152,7 @@ def mass_properties_preprocess_routine(i, analyses):
                                                                             analyses.vehicle.mass_properties.weight_breakdown.operational_items.total 
                                     
                     # Apply Correction Factors if any
-                    apply_correction_factors(weights_analysis)
+                    apply_correction_factors(analyses)
 
                     analyses.vehicle.mass_properties.takeoff       = analyses.vehicle.mass_properties.operating_empty + analyses.vehicle.mass_properties.payload + analyses.vehicle.mass_properties.fuel                    
                     mew_max_zero_fuel                                      = analyses.vehicle.mass_properties.operating_empty + analyses.vehicle.mass_properties.max_payload
@@ -234,46 +237,48 @@ def mass_properties_preprocess_routine(i, analyses):
                     print("\n===============================\n")
     
     # Compute Center of Gravity  
-    CG ,_, _ = compute_vehicle_center_of_gravity(analyses.vehicle, update_center_of_gravity= weights_analysis.settings.update_center_of_gravity) 
+    if weights_analysis.settings.update_center_of_gravity:
+        CG ,_, _ = compute_vehicle_center_of_gravity(analyses.vehicle, update_center_of_gravity= weights_analysis.settings.update_center_of_gravity) 
     
     # Compute Moment of Intertia
-    _, _ = compute_aircraft_moment_of_inertia(analyses.vehicle, CG, update_moment_of_inertia= weights_analysis.settings.update_moment_of_inertia)          
+    if weights_analysis.settings.update_moment_of_inertia:
+        _, _ = compute_aircraft_moment_of_inertia(analyses.vehicle, CG, update_moment_of_inertia= weights_analysis.settings.update_moment_of_inertia)          
 
     
-def apply_correction_factors(analyses):
+def apply_correction_factors(analyses): 
     weights_analysis = analyses.weights
     # Apply correction factors  
     for tag, item in weights_analysis.settings.weight_correction_factors.items():
         if tag == 'empty':
             for subtag, subitem in weights_analysis.settings.weight_correction_factors[tag].items():
                 for subsubtag, subsubitem in weights_analysis.settings.weight_correction_factors[tag][subtag].items():
-                    analyses.vehicle.mass_properties.weight_breakdown[tag].total              -= analyses.vehicle.mass_properties.weight_breakdown[tag][subtag][subsubtag]
-                    analyses.vehicle.mass_properties.weight_breakdown[tag][subtag].total      -= analyses.vehicle.mass_properties.weight_breakdown[tag][subtag][subsubtag]
-                    analyses.vehicle.mass_properties.operating_empty                          -= analyses.vehicle.mass_properties.weight_breakdown[tag][subtag][subsubtag]
+                    analyses.vehicle.mass_properties.weight_breakdown[tag].total  -= analyses.vehicle.mass_properties.weight_breakdown[tag][subtag][subsubtag]
+                    analyses.vehicle.mass_properties.weight_breakdown[tag][subtag].total  -= analyses.vehicle.mass_properties.weight_breakdown[tag][subtag][subsubtag]
+                    analyses.vehicle.mass_properties.operating_empty -= analyses.vehicle.mass_properties.weight_breakdown[tag][subtag][subsubtag]
                     analyses.vehicle.mass_properties.weight_breakdown[tag][subtag][subsubtag] *= subsubitem
-                    analyses.vehicle.mass_properties.weight_breakdown[tag][subtag].total      += analyses.vehicle.mass_properties.weight_breakdown[tag][subtag][subsubtag]
-                    analyses.vehicle.mass_properties.weight_breakdown[tag].total              += analyses.vehicle.mass_properties.weight_breakdown[tag][subtag][subsubtag]
-                    analyses.vehicle.mass_properties.operating_empty                          += analyses.vehicle.mass_properties.weight_breakdown[tag][subtag][subsubtag]
+                    analyses.vehicle.mass_properties.weight_breakdown[tag][subtag].total  += analyses.vehicle.mass_properties.weight_breakdown[tag][subtag][subsubtag]
+                    analyses.vehicle.mass_properties.weight_breakdown[tag].total  += analyses.vehicle.mass_properties.weight_breakdown[tag][subtag][subsubtag]
+                    analyses.vehicle.mass_properties.operating_empty += analyses.vehicle.mass_properties.weight_breakdown[tag][subtag][subsubtag]
         elif tag == 'operational_items':
             for subtag, subitem in weights_analysis.settings.weight_correction_factors[tag].items():
-                analyses.vehicle.mass_properties.weight_breakdown[tag].total    -= subitem
-                analyses.vehicle.mass_properties.operating_empty                -= subitem
-                analyses.vehicle.mass_properties.weight_breakdown[tag][subtag]  *= subitem
-                analyses.vehicle.mass_properties.weight_breakdown[tag].total    += analyses.vehicle.mass_properties.weight_breakdown[tag][subtag]
-                analyses.vehicle.mass_properties.operating_empty                += analyses.vehicle.mass_properties.weight_breakdown[tag][subtag]
+                analyses.vehicle.mass_properties.weight_breakdown[tag].total  -= subitem
+                analyses.vehicle.mass_properties.operating_empty -= subitem
+                analyses.vehicle.mass_properties.weight_breakdown[tag][subtag] *= subitem
+                analyses.vehicle.mass_properties.weight_breakdown[tag].total  += analyses.vehicle.mass_properties.weight_breakdown[tag][subtag]
+                analyses.vehicle.mass_properties.operating_empty += analyses.vehicle.mass_properties.weight_breakdown[tag][subtag]
 
     for tag, _ in weights_analysis.settings.weight_correction_additions.items():
         if tag == 'empty':
             for subtag, subitem in weights_analysis.settings.weight_correction_additions[tag].items():
                 for subsubtag, subsubitem in weights_analysis.settings.weight_correction_additions[tag][subtag].items():
                     analyses.vehicle.mass_properties.weight_breakdown[tag][subtag][subsubtag] = subsubitem
-                    analyses.vehicle.mass_properties.weight_breakdown[tag][subtag].total     += subsubitem
-                    analyses.vehicle.mass_properties.weight_breakdown[tag].total             += subsubitem
-                    analyses.vehicle.mass_properties.operating_empty                         += subsubitem
+                    analyses.vehicle.mass_properties.weight_breakdown[tag][subtag].total += subsubitem
+                    analyses.vehicle.mass_properties.weight_breakdown[tag].total  += subsubitem
+                    analyses.vehicle.mass_properties.operating_empty += subsubitem
         elif tag == 'operational_items':
             for subtag, subitem in weights_analysis.settings.weight_correction_additions[tag].items():
                 analyses.vehicle.mass_properties.weight_breakdown[tag][subtag] = subitem
                 analyses.vehicle.mass_properties.weight_breakdown[tag].total  += subitem
-                analyses.vehicle.mass_properties.operating_empty              += subitem
+                analyses.vehicle.mass_properties.operating_empty += subitem
     return
                                     

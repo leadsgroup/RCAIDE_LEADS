@@ -58,7 +58,8 @@ class Athena_Vortex_Lattice(Aerodynamics):
         Properties Used:
         N/A
         """          
-        self.tag                                     = 'Athena_Vortex_Lattice'   
+        self.tag                                     = 'Athena_Vortex_Lattice'  
+        self.vehicle                                 = Data()  
         self.process                                 = Process()
         self.process.initialize                      = Process()  
                    
@@ -153,13 +154,13 @@ class Athena_Vortex_Lattice(Aerodynamics):
         self.process.compute                       = compute
         
 
-    def initialize(self,vehicle):  
+    def initialize(self, vehicle):  
         use_surrogate   = self.settings.use_surrogate  
 
         # If we are using the surrogate
         if use_surrogate == True: 
             # sample training data
-            train_AVL_surrogates(self)
+            train_AVL_surrogates(self, vehicle)
 
             # build surrogate
             build_AVL_surrogates(self)  
@@ -173,7 +174,7 @@ class Athena_Vortex_Lattice(Aerodynamics):
         return 
     
          
-    def evaluate(self,state,vehicle):
+    def evaluate(self,state, vehicle):
         """The default evaluate function.
 
         Assumptions:

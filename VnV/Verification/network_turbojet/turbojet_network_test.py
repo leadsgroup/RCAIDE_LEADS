@@ -97,11 +97,11 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
-    analyses = RCAIDE.Framework.Analyses.Vehicle() 
+    analyses = RCAIDE.Framework.Analyses.Vehicle()
+    analyses.vehicle = vehicle
 
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.vehicle = vehicle
     geometry.settings.unique_geometry = True
     geometry.settings.overwrite_reference        = False
     analyses.append(geometry)
@@ -111,14 +111,12 @@ def base_analysis(vehicle):
     weights                 = RCAIDE.Framework.Analyses.Weights.Conventional_Transport() 
     weights.settings.update_mass_properties         = False
     weights.settings.update_center_of_gravity       = False
-    weights.settings.update_moment_of_inertia       = False
-    weights.vehicle        = vehicle
+    weights.settings.update_moment_of_inertia       = False 
     analyses.append(weights)
     
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
-    aerodynamics                                       = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.vehicle                               = vehicle
+    aerodynamics                                       = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
     aerodynamics.settings.number_of_spanwise_vortices  = 25
     aerodynamics.settings.number_of_chordwise_vortices = 5     
     aerodynamics.settings.model_fuselage               = True 
@@ -127,14 +125,12 @@ def base_analysis(vehicle):
 
     # ------------------------------------------------------------------
     #  Emissions
-    emissions = RCAIDE.Framework.Analyses.Emissions.Emission_Index_Correlation_Method()
-    emissions.vehicle = vehicle          
+    emissions = RCAIDE.Framework.Analyses.Emissions.Emission_Index_Correlation_Method()    
     analyses.append(emissions)
   
     # ------------------------------------------------------------------
     #  Energy
-    energy= RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle  = vehicle 
+    energy= RCAIDE.Framework.Analyses.Energy.Energy() 
     analyses.append(energy)
     
     # ------------------------------------------------------------------
@@ -145,7 +141,6 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Atmosphere Analysis
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
     analyses.append(atmosphere)   
     
     # done!

@@ -1,11 +1,10 @@
-# Planet.py
+#RCAIDE/Frameworks/Planets/Planet.py
 #
-# Created:  
-# Modified: Feb 2016, Andrew Wendorff
+# Created: Dec 2024, M. Clarke
 
 # ----------------------------------------------------------------------
 #  Imports
-# ---------------------------------------------------------------------- 
+# ----------------------------------------------------------------------
 from RCAIDE.Framework.Core import Data 
 from RCAIDE.Framework.Analyses import Analysis
 

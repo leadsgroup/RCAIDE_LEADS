@@ -28,7 +28,7 @@ from shutil import rmtree
 # ----------------------------------------------------------------------------------------------------------------------
 # run_analysis
 # ---------------------------------------------------------------------------------------------------------------------- 
-def run_AVL_analysis(aerodynamics,vehicle,run_conditions):
+def run_AVL_analysis(aerodynamics,run_conditions,vehicle):
     """Process vehicle to setup avl geometry, condititons, and configurations.
 
     Assumptions:
@@ -89,7 +89,7 @@ def run_AVL_analysis(aerodynamics,vehicle,run_conditions):
     cs_functions     = [] 
     control_surfaces = False
     
-    for wing in  vehicle.wings: # this parses through the wings to determine how many control surfaces does the vehicle have 
+    for wing in vehicle.wings: # this parses through the wings to determine how many control surfaces does the vehicle have 
         if wing.control_surfaces:
             control_surfaces = True 
             wing = populate_control_sections(wing)     
@@ -111,7 +111,7 @@ def run_AVL_analysis(aerodynamics,vehicle,run_conditions):
                 cs_functions.append(ctrl_surf_function)  
 
     # translate conditions
-    cases = translate_conditions_to_cases(aerodynamics,run_conditions)    
+    cases = translate_conditions_to_cases(aerodynamics,run_conditions,vehicle)    
     for case in cases:
         case.stability_and_control.number_of_control_surfaces = num_cs
         case.stability_and_control.control_surface_names      = cs_names
@@ -127,14 +127,14 @@ def run_AVL_analysis(aerodynamics,vehicle,run_conditions):
     
     # write the input files
     with redirect.folder(run_folder,force=False):
-        write_geometry(aerodynamics,run_script_path)
-        write_mass_file(aerodynamics,run_conditions)
-        write_run_cases(aerodynamics,trim_aircraft)
-        write_input_deck(aerodynamics, trim_aircraft,control_surfaces)
+        write_geometry(aerodynamics,run_script_path,vehicle)
+        write_mass_file(aerodynamics,run_conditions,vehicle)
+        write_run_cases(aerodynamics,trim_aircraft,vehicle)
+        write_input_deck(aerodynamics, trim_aircraft,control_surfaces,vehicle)
 
         # RUN AVL! 
         exit_status = call_avl(aerodynamics,print_output)
-        results_avl = read_results(aerodynamics)
+        results_avl = read_results(aerodynamics,vehicle)
         
     # translate results
     translate_results_to_conditions(cases,run_conditions,results_avl) 

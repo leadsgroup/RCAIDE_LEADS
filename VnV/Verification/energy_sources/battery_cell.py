@@ -78,7 +78,7 @@ def lithium_ion_battery_test():
     marker_size           = 5 
     mAh                   = np.array([3800,2600]) 
     V_ul_true             = np.array([[3.1746312064954223, 3.14117403134389],[3.1746312064954223,3.14117403134389]])
-    bat_temp_true         =  np.array([[309.71055344633555, 304.960078170585], [309.88846111316843,305.1659469226417]])  
+    bat_temp_true         =  np.array([[309.71055344633555,  304.960078170585], [309.88846111316843,305.1659469226417]])  
     # PLot parameters 
     marker                = ['s' ,'o' ,'P']
     linestyles            = ['-','--',':']
@@ -187,16 +187,15 @@ def analyses_setup(configs):
 
 def base_analysis(vehicle):    
     #   Initialize the Analyses     
-    analyses = RCAIDE.Framework.Analyses.Vehicle()  
+    analyses = RCAIDE.Framework.Analyses.Vehicle()
+    analyses.vehicle = vehicle
 
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.vehicle = vehicle
     analyses.append(geometry)
     
     #  Energy
-    energy          = RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle  = vehicle 
+    energy          = RCAIDE.Framework.Analyses.Energy.Energy() 
     analyses.append(energy)
  
     #  Planet Analysis
@@ -205,7 +204,6 @@ def base_analysis(vehicle):
  
     #  Atmosphere Analysis
     atmosphere                 = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
     analyses.append(atmosphere)   
  
     return analyses     

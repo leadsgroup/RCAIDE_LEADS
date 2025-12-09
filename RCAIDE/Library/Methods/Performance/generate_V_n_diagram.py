@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Compute a V-n diagram
 # ---------------------------------------------------------------------------------------------------------------------- 
-def generate_V_n_diagram(vehicle,analyses,altitude,delta_ISA):
+def generate_V_n_diagram(vehicle,analyses,altitude = 0,delta_ISA = 0):
     
     """
     Computes a V-n (velocity-load factor) diagram for an aircraft according to FAR requirements.
@@ -448,14 +448,14 @@ def base_analysis(vehicle):
     analyses.vehicle = vehicle
     
     #  Geometry
-    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
     analyses.append(geometry)
     
 
     # ------------------------------------------------------------------
     #  Weights
     # ------------------------------------------------------------------
-    weights         = RCAIDE.Framework.Analyses.Weights.Conventional_General_Aviation()  
+    weights         = RCAIDE.Framework.Analyses.Weights.Conventional_General_Aviation() 
     analyses.append(weights)
 
     # ------------------------------------------------------------------
@@ -469,7 +469,7 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Energy
     # ------------------------------------------------------------------
-    energy     = RCAIDE.Framework.Analyses.Energy.Energy() 
+    energy     = RCAIDE.Framework.Analyses.Energy.Energy()
     analyses.append(energy)
 
     # ------------------------------------------------------------------
@@ -482,7 +482,6 @@ def base_analysis(vehicle):
     #  Atmosphere Analysis
     # ------------------------------------------------------------------
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
     analyses.append(atmosphere)
 
     # done!

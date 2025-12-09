@@ -10,7 +10,7 @@ from matplotlib import pyplot as plt
 # ----------------------------------------------------------------------
 #  Plot Aircraft Noise Certification Data  
 # ----------------------------------------------------------------------  
-def plot_certification_noise_contour( noise_data,
+def plot_noise_certification_contour( noise_data,
                                     noise_level       = None, 
                                     min_noise_level   = 45,  
                                     max_noise_level   = 105, 

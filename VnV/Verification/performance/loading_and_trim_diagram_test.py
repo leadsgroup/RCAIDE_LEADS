@@ -10,7 +10,6 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units  , Container
 from RCAIDE.Library.Methods.Performance.compute_load_and_trim_diagram        import compute_load_and_trim_diagram
-from RCAIDE.Library.Plots.Common import set_axes, plot_style
 import matplotlib.pyplot as plt
 from RCAIDE.Library.Plots import  * 
 
@@ -24,140 +23,147 @@ import matplotlib.pyplot as plt
 
 # local imports 
 sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
-from Embraer_190    import vehicle_setup as vehicle_setup       
-from Embraer_190    import configs_setup as configs_setup 
+from Embraer_190    import vehicle_setup as E190_vehicle_setup       
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  REGRESSION
 # ----------------------------------------------------------------------------------------------------------------------  
-def main(): 
-    
-    vehicle    = vehicle_setup()  
-    for wing in vehicle.wings:
-        wing.control_surfaces  = Container()   
+def main():
      
-    configs   = configs_setup(vehicle) 
-    analyses  = analyses_setup(configs) 
-    mission   = mission_setup(analyses)    
-    load_data =  compute_load_and_trim_diagram(vehicle, mission)
+    vehicle    = E190_vehicle_setup()  
     
-    save_results(load_data,'loading_results') 
- 
-    LEMAC_truth = np.array([[-37.96970039,  51.73364162, 141.43698363],
-                            [-37.96970039,  51.73364162, 141.43698363],
-                            [-37.96970039,  51.73364162, 141.43698363]])
+    # take out control surfaces to make regression run faster
+    for wing in vehicle.wings:
+        wing.control_surfaces  = Container() 
+  
+    # Set up vehicle configs
+    configs  = configs_setup(vehicle)
 
+    # create analyses
+    analyses = analyses_setup(configs)
+
+    # mission analyses 
+    mission = mission_setup(analyses)
+ 
+    load_data =  compute_load_and_trim_diagram( mission, cruise_segment_tag= 'cruise', discretization=  3)
+    
+    save_results(load_data,'loading_results')
+ 
+    LEMAC_truth = np.array([[-54.67980201,  30.8460146 , 116.37183121],
+                            [-54.67980201,  30.8460146 , 116.37183121],
+                            [-54.67980201,  30.8460146 , 116.37183121]])
     plot_load_diagram(load_data) 
 
     LEMAC_error = np.max(abs((load_data.aerodynamic_LEMAC_location - LEMAC_truth)/LEMAC_truth))
     print(f"LEMAC error: {LEMAC_error}")
     assert LEMAC_error < 1e-4, f"LEMAC error too large: {LEMAC_error}"
         
-    return
-
+    return 
+ 
+def configs_setup(vehicle): 
+    configs     = RCAIDE.Library.Components.Configs.Config.Container() 
+    base_config = RCAIDE.Library.Components.Configs.Config(vehicle)
+    base_config.tag = 'base'  
+    configs.append(base_config) 
+    return configs
+  
 def analyses_setup(configs):
-
-    """Set up analyses for each of the different configurations."""
 
     analyses = RCAIDE.Framework.Analyses.Analysis.Container()
 
-    # Build a base analysis for each configuration. Here the base analysis is always used, but
-    # this can be modified if desired for other cases.
+    # build a base analysis for each config
     for tag,config in configs.items():
         analysis = base_analysis(config)
         analyses[tag] = analysis
 
     return analyses
-
-def base_analysis(vehicle):
-
-    """This is the baseline set of analyses to be used with this vehicle. Of these, the most
-    commonly changed are the weights and aerodynamics methods."""
-   
-    analyses = RCAIDE.Framework.Analyses.Vehicle()
-   
-    # append vehicle 
-    analyses.vehicle = vehicle 
-
-    #  Geometry
-    analyses.geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    
-    #  Weights
-    analyses.weights = RCAIDE.Framework.Analyses.Weights.Conventional() 
-    analyses.weights.settings.FLOPS.fidelity                      = 'Complex'      
-    analyses.weights.settings.advanced_composites                 = True 
-    
-    # Aerodynamics
-    analyses.aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    analyses.aerodynamics.settings.number_of_spanwise_vortices   = 15
-    analyses.aerodynamics.settings.number_of_chordwise_vortices  = 2 
-
-    analyses.stability = RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method()  
-    analyses.stability.settings.number_of_spanwise_vortices   = 15
-    analyses.stability.settings.number_of_chordwise_vortices  = 2 
  
-    #  Energy
-    analyses.energy = RCAIDE.Framework.Analyses.Energy.Energy() 
-
-    #  Planet Analysis
-    analyses.planet = RCAIDE.Framework.Analyses.Planets.Earth() 
-
-    #  Atmosphere Analysis
-    analyses.atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    analyses.atmosphere.features.planet = analyses.planet.features 
-
-    return analyses    
+def base_analysis(vehicle):
+    # ------------------------------------------------------------------
+    #   Initialize the Analyses
+    # ------------------------------------------------------------------     
+    analyses = RCAIDE.Framework.Analyses.Vehicle() 
+    analyses.vehicle =  vehicle
     
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()   
+    analyses.append(geometry)
+
+     # ------------------------------------------------------------------
+    #  Weights 
+    weights = RCAIDE.Framework.Analyses.Weights.Conventional_Transport()   
+    weights.settings.FLOPS.fidelity              = 'Complex' 
+    weights.print_weight_analysis_report         = False
+    analyses.append(weights)
+
+    # ------------------------------------------------------------------
+    #  Aerodynamics Analysis  
+    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
+    aerodynamics.settings.number_of_spanwise_vortices   = 5
+    aerodynamics.settings.number_of_chordwise_vortices  = 2    
+    analyses.append(aerodynamics)
+
+    # ------------------------------------------------------------------
+    #  Aerodynamics Analysis  
+    stability     = RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method()  
+    stability.settings.number_of_spanwise_vortices   = 5
+    stability.settings.number_of_chordwise_vortices  = 2   
+    analyses.append(stability)       
+
+    # ------------------------------------------------------------------
+    #  Energy
+    energy          = RCAIDE.Framework.Analyses.Energy.Energy() 
+    analyses.append(energy)
+
+    # ------------------------------------------------------------------
+    #  Planet Analysis
+    planet = RCAIDE.Framework.Analyses.Planets.Earth()
+    analyses.append(planet)
+
+    # ------------------------------------------------------------------
+    #  Atmosphere Analysis
+    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
+    analyses.append(atmosphere)   
+
+    # done!
+    return analyses    
+
 def mission_setup(analyses): 
-
-    """This function defines the baseline mission that will be flown by the aircraft in order
-    to compute performance."""
-
+    
     # ------------------------------------------------------------------
     #   Initialize the Mission
     # ------------------------------------------------------------------
 
     mission = RCAIDE.Framework.Mission.Sequential_Segments()
-    mission.tag = 'the_mission'
+    mission.tag = 'mission'
   
     Segments = RCAIDE.Framework.Mission.Segments 
     base_segment = Segments.Segment()
     base_segment.state.numerics.solver.type = 'root_finder'
- 
+
     # ------------------------------------------------------------------    
-    #   Cruise Segment: Constant Speed Constant Altitude
+    #   Cruise Segment 
     # ------------------------------------------------------------------    
 
-    segment = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
+    segment = Segments.Single_Point.Set_Speed_Set_Altitude(base_segment)
     segment.tag = "cruise" 
-    segment.analyses.extend( analyses.cruise ) 
-    segment.altitude                                      = 10.668 * Units.km  
-    segment.air_speed                                     = 230.412 * Units['m/s']
-    segment.distance                                      = 1000 * Units.nmi  
-    segment.hybrid_power_split_ratio = 0.05
-    segment.battery_fuel_cell_power_split_ratio = 1.0
+    segment.analyses.extend( analyses.base )  
+    segment.altitude  =  35000 *  Units.ft
+    segment.air_speed =  450 * Units['knots'] 
     
     # define flight dynamics to model 
-    segment.flight_dynamics.force_x                       = True  
-    segment.flight_dynamics.force_z                       = True     
+    segment.flight_dynamics.force_x                      = True  
+    segment.flight_dynamics.force_z                      = True     
     
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]   
     segment.assigned_control_variables.body_angle.active             = True                
     
     mission.append_segment(segment) 
+  
+    return mission 
 
-    return mission
-
-def missions_setup(mission):
-    """This allows multiple missions to be incorporated if desired, but only one is used here."""
-
-    missions     = RCAIDE.Framework.Mission.Missions() 
-    mission.tag  = 'base_mission'
-    missions.append(mission)
-
-    return missions
 
 def save_results(data,filename): 
     pickle_file  = filename + '.pkl'

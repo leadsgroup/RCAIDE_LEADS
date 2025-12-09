@@ -20,7 +20,8 @@ from copy import deepcopy
 #------------------------------------------------------------------------------
 # aircraft_aerodynamic_analysis
 #------------------------------------------------------------------------------  
-def aircraft_aerodynamic_analysis(aerodynamics_analysis            = None, 
+def aircraft_aerodynamic_analysis(vehicle, 
+                                  aerodynamics_analysis            = None, 
                                   angle_of_attacks                 = None,
                                   mach_numbers                     = None,
                                   non_dimensional_reynolds_numbers = None,
@@ -79,9 +80,8 @@ def aircraft_aerodynamic_analysis(aerodynamics_analysis            = None,
     # Preprocess Geometry 
     #------------------------------------------------------------------------
     geometry_analysis          = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry_analysis.vehicle  = deepcopy(aerodynamics_analysis.vehicle) 
-    geometry_preprocess_routine(geometry_analysis)
-    aerodynamics_analysis.vehicle = geometry_analysis.vehicle 
+    geometry_preprocess_routine(geometry_analysis.settings, vehicle)
+    
     #------------------------------------------------------------------------  
     # Check size of arrays 
     #------------------------------------------------------------------------
@@ -156,8 +156,9 @@ def aircraft_aerodynamic_analysis(aerodynamics_analysis            = None,
     state.conditions.expand_rows(ctrl_pts)
   
     state.analyses  =  Data()
+    
     aerodynamics_analysis.filename =  os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "aerodynamic_training_data.pkl" )
-    aerodynamics_analysis.initialize()            
+    aerodynamics_analysis.initialize(vehicle)            
     state.analyses.aerodynamics = aerodynamics_analysis 
      
     state.conditions.freestream.mach_number                 = mach_numbers
@@ -170,7 +171,7 @@ def aircraft_aerodynamic_analysis(aerodynamics_analysis            = None,
     # ---------------------------------------------------------------------------------------
     # Evaluate With Surrogate
     # ---------------------------------------------------------------------------------------  
-    _                 = state.analyses.aerodynamics.evaluate(state)   
+    _                 = state.analyses.aerodynamics.evaluate(state,vehicle)   
     results = Data(
         Mach                             = mach_numbers, 
         alpha                            = angle_of_attacks, 

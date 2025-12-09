@@ -65,7 +65,7 @@ class Frequency_Domain_Buildup(Noise):
         self.settings.use_plane_loading_surrogate            =  True 
         self.settings.wing_wake_interactional_dB_adjustment =  15 
 
-    def evaluate_noise(self,segment,vehicle):
+    def evaluate_noise(self,segment, vehicle):
         """ Process vehicle to setup vehicle, condititon and configuration
     
         Assumptions:

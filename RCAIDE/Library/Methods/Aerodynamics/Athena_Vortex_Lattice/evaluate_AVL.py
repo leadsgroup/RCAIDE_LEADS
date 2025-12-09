@@ -82,7 +82,7 @@ def evaluate_AVL_no_surrogate(state,settings,vehicle):
     # unpack 
     conditions     = state.conditions
     aerodynamics   = state.analyses.aerodynamics   
-    run_AVL_analysis(aerodynamics,conditions)
+    run_AVL_analysis(aerodynamics,conditions, vehicle)
                        
     return
 

@@ -41,7 +41,6 @@ class Vehicle(Analysis.Container):
                 Properties Used:
                 N/A
         """
-        
         self.vehicle      = None
         self.aerodynamics = None
         self.atmosphere   = None

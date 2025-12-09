@@ -113,7 +113,6 @@ def vehicle_setup():
     segment.dihedral_outboard             = 2.5 * Units.degrees
     segment.twist                         = 3.5   * Units.degrees
     segment.sweeps.quarter_chord          = 28.225 * Units.degrees 
-    segment.has_fuel_tank                 = True
     segment.append_airfoil(root_airfoil)
     wing.append_segment(segment)
 
@@ -126,7 +125,6 @@ def vehicle_setup():
     segment.twist                         = 2.5  * Units.degrees
     segment.dihedral_outboard             = 5.5 * Units.degrees
     segment.sweeps.quarter_chord          = 25. * Units.degrees  
-    segment.has_fuel_tank                 = True
     segment.append_airfoil(yehudi_airfoil)
     wing.append_segment(segment)
 
@@ -642,11 +640,19 @@ def vehicle_setup():
     #  Energy Source: Fuel Tank
     #------------------------------------------------------------------------------------------------------------------------- 
     # fuel tank
-    fuel_tank                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)
-    fuel_tank.origin                                 = vehicle.wings.main_wing.origin   
-    fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Jet_A1()    
-    fuel_tank.fuel.origin                            = vehicle.wings.main_wing.mass_properties.center_of_gravity      
-    fuel_line.fuel_tanks.append(fuel_tank)
+    fuel_tank_1                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing) 
+    fuel_tank_1.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A1()         
+    fuel_tank_1.segments_bounding_tank       = ['root','yehudi']
+    fuel_tank_1.segments_percent_chord_start = [0.1, 0.1]
+    fuel_tank_1.segments_percent_chord_end   = [0.7, 0.7] 
+    fuel_line.fuel_tanks.append(fuel_tank_1)
+    
+    fuel_tank_2                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing) 
+    fuel_tank_2.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A1()         
+    fuel_tank_2.segments_bounding_tank       = ['yehudi', 'section_2']
+    fuel_tank_2.segments_percent_chord_start = [0.1, 0.1]
+    fuel_tank_2.segments_percent_chord_end   = [0.7, 0.7] 
+    fuel_line.fuel_tanks.append(fuel_tank_2)
     
     #------------------------------------------------------------------------------------------------------------------------------------   
     # Assign propulsors to fuel line to network      
@@ -753,6 +759,5 @@ def configs_setup(vehicle):
     for landing_gear in  config.landing_gears:
         landing_gear.gear_extended = True 
     configs.append(config)    
-
 
     return configs  

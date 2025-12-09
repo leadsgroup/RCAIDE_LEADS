@@ -12,14 +12,13 @@ from RCAIDE.Library.Methods.Aerodynamics.Athena_Vortex_Lattice.purge_files      
 # ----------------------------------------------------------------------------------------------------------------------
 #  write_mass_file
 # ---------------------------------------------------------------------------------------------------------------------- 
-def write_mass_file(avl_object,run_conditions):
+def write_mass_file(avl_object,run_conditions, vehicle):
     """This function writes the translated aircraft mass into text file read 
     by AVL when it is called
     """    
     
     # unpack inputs
-    mass_file       = avl_object.settings.filenames.mass_file 
-    aircraft        = avl_object.vehicle
+    mass_file       = avl_object.settings.filenames.mass_file  
     
     # Open the mass file after purging if it already exists
     purge_files([mass_file]) 
@@ -65,23 +64,23 @@ rho = {2}
 '''
 
         # Unpack inputs
-        name    = avl_object.vehicle.tag
+        name    = vehicle.tag
         density = run_conditions.freestream.density[0][0] 
         gravity = run_conditions.freestream.gravity[0][0] 
         
-        if aircraft.mass_properties.mass == 0:
-            mass = aircraft.mass_properties.max_takeoff
-        elif aircraft.mass_properties.max_takeoff == 0:
-            mass = aircraft.mass_properties.mass
+        if vehicle.mass_properties.mass == 0:
+            mass = vehicle.mass_properties.max_takeoff
+        elif vehicle.mass_properties.max_takeoff == 0:
+            mass = vehicle.mass_properties.mass
         else:
             raise AttributeError("Specify Vehicle Mass")
          
-        x       = aircraft.mass_properties.center_of_gravity[0][0]
-        y       = aircraft.mass_properties.center_of_gravity[0][1]
-        z       = aircraft.mass_properties.center_of_gravity[0][2]
-        Ixx     = aircraft.mass_properties.moments_of_inertia.tensor[0][0]
-        Iyy     = aircraft.mass_properties.moments_of_inertia.tensor[1][1]
-        Izz     = aircraft.mass_properties.moments_of_inertia.tensor[2][2]
+        x       = vehicle.mass_properties.center_of_gravity[0][0]
+        y       = vehicle.mass_properties.center_of_gravity[0][1]
+        z       = vehicle.mass_properties.center_of_gravity[0][2]
+        Ixx     = vehicle.mass_properties.moments_of_inertia.tensor[0][0]
+        Iyy     = vehicle.mass_properties.moments_of_inertia.tensor[1][1]
+        Izz     = vehicle.mass_properties.moments_of_inertia.tensor[2][2]
         
         # Insert inputs into the template
         text = base_text.format(name, gravity , density,mass, x,y,z,Ixx,Iyy,Izz)

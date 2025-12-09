@@ -16,7 +16,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  translate_data
 # ---------------------------------------------------------------------------------------------------------------------- 
-def translate_conditions_to_cases(avl ,conditions):
+def translate_conditions_to_cases(avl ,conditions, vehicle):
     """ Takes RCAIDE Conditions() data structure and translates to a Container of
     avl Run_Case()s.
 
@@ -39,7 +39,6 @@ def translate_conditions_to_cases(avl ,conditions):
         N/A
     """    
     # set up aerodynamic Conditions object
-    aircraft = avl.vehicle
     cases    = Run_Case.Container()
     for i in range(len(conditions.aerodynamics.angles.alpha)):      
         case                                                  = Run_Case()
@@ -59,7 +58,7 @@ def translate_conditions_to_cases(avl ,conditions):
         
         # determine the number of wings 
         n_wings = 0 
-        for wing in aircraft.wings:
+        for wing in vehicle.wings:
             n_wings += 1
             if wing.xz_plane_symmetric == True:
                 n_wings += 1                

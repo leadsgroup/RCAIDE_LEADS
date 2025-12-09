@@ -237,7 +237,7 @@ def populate_wing_sections(avl_wing,rcaide_wing):
             tip_section.origin    = [[origin[0][0]+semispan*np.tan(sweep), origin[0][1]+semispan,origin[0][2]+semispan*np.tan(dihedral)]]
 
         # assign wing airfoil
-        if  (rcaide_wing.airfoil !=  None) and (isinstance(rcaide_wing.airfoil) == RCAIDE.Library.Components.Airfoils.Airfoil) :
+        if  (rcaide_wing.airfoil !=  None) and (isinstance(rcaide_wing.airfoil, RCAIDE.Library.Components.Airfoils.Airfoil)) :
             root_section.airfoil_coord_file  = rcaide_wing.airfoil.coordinate_file          
             tip_section.airfoil_coord_file   = rcaide_wing.airfoil.coordinate_file     
 

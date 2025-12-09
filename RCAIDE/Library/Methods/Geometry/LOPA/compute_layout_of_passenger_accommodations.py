@@ -29,14 +29,20 @@ def compute_layout_of_passenger_accommodations(fuselage):
     origin_y = 0
     origin_z = 0
 
-    for cabin in fuselage.cabins: 
+    for cabin in fuselage.cabins:
+        CABIN_LOPA = np.empty(( 0, 14)) 
         cabin_number_of_seats = 0
         cabin_class_origin    = [0, 0, 0]
         for cabin_class in cabin.classes: 
             seat_data ,cabin_class_origin,cabin_number_of_seats  = create_class_seating_map_layout(cabin, cabin_class,cabin_class_origin, side_cabin_offset,cabin_number_of_seats)
-            side_cabin_offset = cabin.width / 2
-            LOPA = np.vstack((LOPA,seat_data))  
-            cabin.number_of_seats = cabin_number_of_seats 
+            CABIN_LOPA = np.vstack((CABIN_LOPA,seat_data)) 
+            
+        if type(cabin) != RCAIDE.Library.Components.Fuselages.Cabins.Side_Cabin: 
+            side_cabin_offset = cabin.width
+             
+        CABIN_LOPA  = update_seat_map_layout_using_cabin_taper(CABIN_LOPA,cabin,side_cabin_offset)
+        cabin.number_of_seats = cabin_number_of_seats 
+        LOPA = np.vstack((LOPA,CABIN_LOPA))  
         if not isinstance(cabin,RCAIDE.Library.Components.Fuselages.Cabins.Side_Cabin):
             origin_x = cabin.origin[0][0]
             origin_y = cabin.origin[0][1]
@@ -107,9 +113,7 @@ def compute_layout_of_passenger_accommodations(fuselage):
         fuselage.layout_of_passenger_accommodations.cabin_width            = 2*max(starboard_y_points)    
 
         if fuselage.width == 0:
-            fuselage.width = fuselage.layout_of_passenger_accommodations.cabin_width
-        # if fuselage.height == 0:
-        #     fuselage.height = fuselage.layout_of_passenger_accommodations.cabin_height
+            fuselage.width = fuselage.layout_of_passenger_accommodations.cabin_width 
         if fuselage.lengths.nose == 0:
             fuselage.lengths.nose          = fuselage.fineness.nose*fuselage.layout_of_passenger_accommodations.cabin_width
         if fuselage.lengths.tail == 0:
@@ -154,10 +158,12 @@ def create_class_seating_map_layout(cabin,cabin_class,cabin_class_origin, side_c
     seat_data = np.hstack((n_rows , n_seats_y, X_coords,Y_coords, Z_coords, length ,width,F_c,B_c,E_c,object_vec))
      
     if type(cabin) == RCAIDE.Library.Components.Fuselages.Cabins.Side_Cabin:
+        offset = 0
+        if cabin.side_aisle: 
+            offset = cabin_class.aisle_width      
         
-        seat_data[:, 3] += cabin.width / 2
-        seat_data  = update_seat_map_layout_using_cabin_taper(seat_data,cabin) 
-        seat_data[:, 3] += side_cabin_offset  
+        seat_data[:, 3] += max(seat_data[:, 3]) + cabin_class.seat_width /2
+        seat_data[:, 3] += side_cabin_offset /2 + offset
         
         # make copy about center
         seat_data_        = deepcopy(seat_data)

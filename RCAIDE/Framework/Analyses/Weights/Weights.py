@@ -52,6 +52,7 @@ class Weights(Analysis):
         """           
         self.tag                                                    = 'weights' 
         self.method                                                 = None 
+        self.aircraft_type                                          = None
         self.propulsion_architecture                                = None
         self.print_weight_analysis_report                           = True
         self.settings                                               = Data() 
@@ -78,7 +79,10 @@ class Weights(Analysis):
         self.settings.weight_correction_additions.empty.propulsion  = Data()
         self.settings.weight_correction_additions.empty.structural  = Data()
         self.settings.weight_correction_additions.empty.systems     = Data()
-        self.settings.weight_correction_additions.operational_items = Data()  
+        self.settings.weight_correction_additions.operational_items = Data()
+        
+
+
 
     def evaluate(self, vehicle):
         """Evaluate the weight analysis.
@@ -94,8 +98,8 @@ class Weights(Analysis):
 
         Outputs:
         results 
-        """ 
-        
+        """
+        #unpack
         compute_module = importlib.import_module(f"RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.{self.propulsion_architecture}.{self.aircraft_type}.{self.method}.compute_operating_empty_weight")
 
         compute_operating_empty_weight = getattr(compute_module, "compute_operating_empty_weight")

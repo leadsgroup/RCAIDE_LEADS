@@ -135,15 +135,14 @@ def base_analysis(vehicle,use_surrogate,trim_aircraft,keep_regression_files,new_
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle()
+    analyses.vehicle =  vehicle
 
     #  Geometry
-    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.vehicle = vehicle
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
     analyses.append(geometry)
 
     #  Aerodynamics Analysis
-    aerodynamics                                     = RCAIDE.Framework.Analyses.Aerodynamics.Athena_Vortex_Lattice()
-    aerodynamics.vehicle                             = vehicle 
+    aerodynamics                                     = RCAIDE.Framework.Analyses.Aerodynamics.Athena_Vortex_Lattice() 
     aerodynamics.settings.filenames.avl_bin_name     = '/Users/matthewclarke/Documents/LEADS/CODES/AVL/avl3.35'
     aerodynamics.settings.filenames.run_folder       = os.path.join(os.path.dirname(__file__),'avl_files' +  folder_name)
     aerodynamics.settings.use_surrogate              = use_surrogate
@@ -155,13 +154,11 @@ def base_analysis(vehicle,use_surrogate,trim_aircraft,keep_regression_files,new_
     analyses.append(aerodynamics) 
 
     # Stability Analysis
-    stability                                        = RCAIDE.Framework.Analyses.Stability.Athena_Vortex_Lattice()
-    stability.vehicle                                = vehicle  
+    stability                                        = RCAIDE.Framework.Analyses.Stability.Athena_Vortex_Lattice() 
     analyses.append(stability)    
   
     #  Energy
-    energy                                           = RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle                                   = vehicle 
+    energy                                           = RCAIDE.Framework.Analyses.Energy.Energy() 
     analyses.append(energy)
  
     #  Planet Analysis
@@ -171,7 +168,6 @@ def base_analysis(vehicle,use_surrogate,trim_aircraft,keep_regression_files,new_
     # ------------------------------------------------------------------
     #  Atmosphere Analysis
     atmosphere                                       = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet                       = planet.features
     analyses.append(atmosphere)   
 
     # done!

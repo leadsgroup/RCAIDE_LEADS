@@ -3,11 +3,15 @@
 # 
 # Created:  Jul 2024, M. Clarke 
 # Modified: Aug 2025, S. Shekar 
+# ----------------------------------------------------------------------------------------------------------------------
+# Imports  
+# ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
+
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_fuel_volume 
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_fuel_volume(vehicle, overwrite_fuel_volume = False):
+def compute_fuel_volume(vehicle, compute_fuel_volume = False, update_max_fuel = False):
     """
     Computes the total fuel volume and mass for all fuel tanks in a vehicle.
 
@@ -68,23 +72,26 @@ def compute_fuel_volume(vehicle, overwrite_fuel_volume = False):
     total_fuel_volume = 0
     total_fuel_mass   = 0
     for network in vehicle.networks: 
-        for fuel_tank in network.sources:
-            if isinstance(fuel_tank, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+        for source in network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
                 try:
-                    compute_fuel_tank_volume = fuel_tank.compute_volume
+                    compute_fuel_tank_volume = source.compute_volume
                 except Exception as e:
-                    total_fuel_volume += getattr(fuel_tank.fuel.volume_properties, "net_volume", None)
-                    total_fuel_mass   += getattr(fuel_tank.fuel.mass_properties, "mass", None)
+                    total_fuel_volume += getattr(source.fuel.volume_properties, "net_volume", None)
+                    total_fuel_mass   += getattr(source.fuel.mass_properties, "mass", None)
                 else:
                     # if no error getting the method, run it normally
-                    if overwrite_fuel_volume:
-                        compute_fuel_tank_volume(wings, fuselages) 
-                        fuel_tank.fuel.volume_properties.net_volume = fuel_tank.fuel.mass_properties.mass / fuel_tank.fuel.density
-                    total_fuel_volume += fuel_tank.fuel.volume_properties.net_volume 
-                    total_fuel_mass   += fuel_tank.fuel.mass_properties.mass 
+                    if compute_fuel_volume:
+                        compute_fuel_tank_volume(wings, fuselages, network.sources) 
+                        source.fuel.volume_properties.net_volume = source.fuel.mass_properties.mass / source.fuel.density
+                    total_fuel_volume += source.fuel.volume_properties.net_volume 
+                    total_fuel_mass   += source.fuel.mass_properties.mass 
                     
-    # Assign Total Fuel Volume and Mass to Vehicle
-    if overwrite_fuel_volume:
-        vehicle.volume_properties.fuel = total_fuel_volume
-        vehicle.mass_properties.fuel   = total_fuel_mass
+    # Assign Total Fuel Volume and Mass to Vehicle 
+    vehicle.volume_properties.fuel   = total_fuel_volume
+    vehicle.mass_properties.fuel     = total_fuel_mass
+
+    if update_max_fuel:
+        vehicle.mass_properties.max_fuel = total_fuel_mass
+
     return 
