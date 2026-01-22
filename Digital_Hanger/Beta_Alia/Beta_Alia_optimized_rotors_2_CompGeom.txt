@@ -1,0 +1,59 @@
+...Comp Geom...
+14 Num Comps
+24 Total Num Meshes
+115304 Total Num Tris
+
+Theo_Area   Wet_Area   Theo_Vol    Wet_Vol  Name
+  452.260    398.306    103.569     96.524  main_wing      
+   91.554     84.396      9.397      9.167  tail           
+   91.554     84.396      9.397      9.167  tail           
+  361.419    334.159    402.463    393.772  Fuselage       
+  143.593    133.606     55.412     54.560  Right_Boom     
+  143.593    133.606     55.412     54.560  Left_Boom      
+   11.905     11.877      0.862      0.862  Left_Skid      
+   11.905     11.877      0.862      0.862  Right_Skid     
+    1.541      1.371      0.038      0.035  Front_strut    
+    1.541      1.371      0.038      0.035  Front_strut    
+    1.554      1.491      0.038      0.038  Rear_Strut     
+    1.554      1.491      0.038      0.038  Rear_Strut     
+   17.476     17.476      2.087      2.087  Front_Left     
+   17.476     17.476      2.087      2.087  Front_Left     
+   17.476     17.476      2.087      2.087  Front_Right    
+   17.476     17.476      2.087      2.087  Front_Right    
+   17.476     17.476      2.087      2.087  Back_Right     
+   17.476     17.476      2.087      2.087  Back_Right     
+   17.476     17.476      2.087      2.087  Back_Left      
+   17.476     17.476      2.087      2.087  Back_Left      
+    2.326      2.326      0.049      0.049  Pusher_Prop    
+    2.326      2.326      0.049      0.049  Pusher_Prop    
+    2.326      2.288      0.049      0.049  Pusher_Prop    
+-------------------------------------------------
+ 1460.759   1344.693    654.371    636.466  Totals         
+
+Tag_Theo_Area   Tag_Wet_Area    Tag_Name
+      226.130        199.153    main_wing_Surf0
+      226.130        199.153    main_wing_Surf1
+       91.554         84.396    tail_Surf0     
+       91.554         84.396    tail_Surf1     
+      361.419        334.159    Fuselage_Surf0 
+      143.593        133.606    Right_Boom_Surf0
+      143.593        133.606    Left_Boom_Surf0
+       11.905         11.877    Left_Skid_Surf0
+       11.905         11.877    Right_Skid_Surf0
+        1.541          1.371    Front_strut_Surf0
+        1.541          1.371    Front_strut_Surf1
+        1.554          1.491    Rear_Strut_Surf0
+        1.554          1.491    Rear_Strut_Surf1
+       17.476         17.476    Front_Left_Surf0
+       17.476         17.476    Front_Left_Surf1
+       17.476         17.476    Front_Right_Surf0
+       17.476         17.476    Front_Right_Surf1
+       17.476         17.476    Back_Right_Surf0
+       17.476         17.476    Back_Right_Surf1
+       17.476         17.476    Back_Left_Surf0
+       17.476         17.476    Back_Left_Surf1
+        2.326          2.326    Pusher_Prop_Surf0
+        2.326          2.326    Pusher_Prop_Surf1
+        2.326          2.288    Pusher_Prop_Surf2
+WARNING: 1 open meshes merged
+     Merged: main_wing

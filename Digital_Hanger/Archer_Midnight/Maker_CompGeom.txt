@@ -1,0 +1,135 @@
+...Comp Geom...
+29 Num Comps
+62 Total Num Meshes
+96720 Total Num Tris
+
+Theo_Area   Wet_Area   Theo_Vol    Wet_Vol  Name
+  307.912    279.048     43.637     41.685  Main_wing      
+  108.293    100.668      9.574      9.381  Tail           
+  290.576    269.666    293.243    286.856  Fuselage       
+   29.273     24.851      5.167      4.623  l_inboard_boom 
+    9.657      8.968      2.033      1.990  l_inboard_nacelle
+    1.670      1.670      0.026      0.026  l_inboard_prop 
+    1.670      1.670      0.026      0.026  l_inboard_prop 
+    1.670      1.670      0.026      0.026  l_inboard_prop 
+    1.670      1.670      0.026      0.026  l_inboard_prop 
+    1.670      1.670      0.026      0.026  l_inboard_prop 
+    2.787      2.785      0.076      0.076  l_inner_rotor  
+    2.787      2.787      0.076      0.076  l_inner_rotor  
+   29.370     26.026      5.572      5.205  l_mid_boom     
+    9.657      8.955      2.033      1.987  l_mid_nacelle  
+    1.670      1.670      0.026      0.026  l_mid_prop     
+    1.670      1.670      0.026      0.026  l_mid_prop     
+    1.670      1.670      0.026      0.026  l_mid_prop     
+    1.670      1.670      0.026      0.026  l_mid_prop     
+    1.670      1.670      0.026      0.026  l_mid_prop     
+    2.787      2.787      0.076      0.076  l_mid_rotor    
+    2.787      2.787      0.076      0.076  l_mid_rotor    
+   25.402     22.273      4.538      4.194  l_outer_boom   
+    9.657      8.727      2.033      1.937  l_outer_nacelle
+    1.670      1.670      0.026      0.026  l_outer_prop   
+    1.670      1.670      0.026      0.026  l_outer_prop   
+    1.670      1.670      0.026      0.026  l_outer_prop   
+    1.670      1.670      0.026      0.026  l_outer_prop   
+    1.670      1.670      0.026      0.026  l_outer_prop   
+    2.787      2.787      0.076      0.076  l_outer_rotor  
+    2.787      2.787      0.076      0.076  l_outer_rotor  
+   29.273     24.793      5.167      4.613  r_inboard_boom 
+    9.657      8.968      2.033      1.990  r_inboard_nacelle
+    1.670      1.670      0.026      0.026  r_inboard_prop 
+    1.670      1.670      0.026      0.026  r_inboard_prop 
+    1.670      1.670      0.026      0.026  r_inboard_prop 
+    1.670      1.670      0.026      0.026  r_inboard_prop 
+    1.670      1.670      0.026      0.026  r_inboard_prop 
+    2.787      2.713      0.076      0.076  r_inner_rotor  
+    2.787      2.787      0.076      0.076  r_inner_rotor  
+   29.370     26.026      5.572      5.205  r_mid_boom     
+    9.657      8.955      2.033      1.987  r_mid_nacelle  
+    1.670      1.670      0.026      0.026  r_mid_prop     
+    1.670      1.670      0.026      0.026  r_mid_prop     
+    1.670      1.670      0.026      0.026  r_mid_prop     
+    1.670      1.670      0.026      0.026  r_mid_prop     
+    1.670      1.670      0.026      0.026  r_mid_prop     
+    2.787      2.787      0.076      0.076  r_mid_rotor    
+    2.787      2.787      0.076      0.076  r_mid_rotor    
+   25.402     22.273      4.538      4.194  r_outer_boom   
+    9.657      8.727      2.033      1.937  r_outer_nacelle
+    1.670      1.670      0.026      0.026  r_outer_prop   
+    1.670      1.670      0.026      0.026  r_outer_prop   
+    1.670      1.670      0.026      0.026  r_outer_prop   
+    1.670      1.670      0.026      0.026  r_outer_prop   
+    1.670      1.670      0.026      0.026  r_outer_prop   
+    2.787      2.787      0.076      0.076  r_outer_rotor  
+    2.787      2.787      0.076      0.076  r_outer_rotor  
+    7.888      7.445      0.515      0.513  main_gear      
+    7.888      7.445      0.515      0.513  main_gear      
+    4.638      2.447      0.275      0.153  nose_gear      
+-------------------------------------------------
+ 1036.762    949.719    392.199    380.648  Totals         
+
+Tag_Theo_Area   Tag_Wet_Area    Tag_Name
+      153.956        139.524    Main_wing_Surf0
+      153.956        139.524    Main_wing_Surf1
+       54.146         50.334    Tail_Surf0     
+       54.146         50.334    Tail_Surf1     
+      290.576        269.666    Fuselage_Surf0 
+       29.273         24.851    l_inboard_boom_Surf0
+        9.657          8.968    l_inboard_nacelle_Surf0
+        1.670          1.670    l_inboard_prop_Surf0
+        1.670          1.670    l_inboard_prop_Surf1
+        1.670          1.670    l_inboard_prop_Surf2
+        1.670          1.670    l_inboard_prop_Surf3
+        1.670          1.670    l_inboard_prop_Surf4
+        2.787          2.785    l_inner_rotor_Surf0
+        2.787          2.787    l_inner_rotor_Surf1
+       29.370         26.026    l_mid_boom_Surf0
+        9.657          8.955    l_mid_nacelle_Surf0
+        1.670          1.670    l_mid_prop_Surf0
+        1.670          1.670    l_mid_prop_Surf1
+        1.670          1.670    l_mid_prop_Surf2
+        1.670          1.670    l_mid_prop_Surf3
+        1.670          1.670    l_mid_prop_Surf4
+        2.787          2.787    l_mid_rotor_Surf0
+        2.787          2.787    l_mid_rotor_Surf1
+       25.402         22.273    l_outer_boom_Surf0
+        9.657          8.727    l_outer_nacelle_Surf0
+        1.670          1.670    l_outer_prop_Surf0
+        1.670          1.670    l_outer_prop_Surf1
+        1.670          1.670    l_outer_prop_Surf2
+        1.670          1.670    l_outer_prop_Surf3
+        1.670          1.670    l_outer_prop_Surf4
+        2.787          2.787    l_outer_rotor_Surf0
+        2.787          2.787    l_outer_rotor_Surf1
+       29.273         24.793    r_inboard_boom_Surf0
+        9.657          8.968    r_inboard_nacelle_Surf0
+        1.670          1.670    r_inboard_prop_Surf0
+        1.670          1.670    r_inboard_prop_Surf1
+        1.670          1.670    r_inboard_prop_Surf2
+        1.670          1.670    r_inboard_prop_Surf3
+        1.670          1.670    r_inboard_prop_Surf4
+        2.787          2.713    r_inner_rotor_Surf0
+        2.787          2.787    r_inner_rotor_Surf1
+       29.370         26.026    r_mid_boom_Surf0
+        9.657          8.955    r_mid_nacelle_Surf0
+        1.670          1.670    r_mid_prop_Surf0
+        1.670          1.670    r_mid_prop_Surf1
+        1.670          1.670    r_mid_prop_Surf2
+        1.670          1.670    r_mid_prop_Surf3
+        1.670          1.670    r_mid_prop_Surf4
+        2.787          2.787    r_mid_rotor_Surf0
+        2.787          2.787    r_mid_rotor_Surf1
+       25.402         22.273    r_outer_boom_Surf0
+        9.657          8.727    r_outer_nacelle_Surf0
+        1.670          1.670    r_outer_prop_Surf0
+        1.670          1.670    r_outer_prop_Surf1
+        1.670          1.670    r_outer_prop_Surf2
+        1.670          1.670    r_outer_prop_Surf3
+        1.670          1.670    r_outer_prop_Surf4
+        2.787          2.787    r_outer_rotor_Surf0
+        2.787          2.787    r_outer_rotor_Surf1
+        7.888          7.445    main_gear_Surf0
+        7.888          7.445    main_gear_Surf1
+        4.638          2.447    nose_gear_Surf0
+WARNING: 2 open meshes merged
+     Merged: Main_wing
+     Merged: Tail
