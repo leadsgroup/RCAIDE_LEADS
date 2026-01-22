@@ -43,10 +43,10 @@ def main():
     results = missions.base_mission.evaluate()  
     
     # Step 6: plot results 
-    plot_mission(results) 
-
+    plot_mission(results)  
+    
     # Step 7: plot vehicle 
-    plot_3d_vehicle(vehicle)
+    # plot_3d_vehicle(vehicle) <---- Uncomment to view aircraft 
     
     return 
     
@@ -1210,5 +1210,4 @@ def plot_mission(results):
 
 if __name__ == '__main__': 
     main()
-    plt.ion()
     plt.show()
