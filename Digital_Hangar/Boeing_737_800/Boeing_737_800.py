@@ -110,6 +110,27 @@ def vehicle_setup():
 
     # ################################################# Wings ##################################################################### 
     # ------------------------------------------------------------------
+    # Carbo Bays 
+    # ------------------------------------------------------------------ 
+    forward_cargo_bay = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
+    forward_cargo_bay.cargo.mass_properties.mass  = 1850
+    forward_cargo_bay.origin                      = [[5.82, 0, -0.6]]
+    forward_cargo_bay.length                      = 7.82
+    forward_cargo_bay.width                       = 2.5
+    forward_cargo_bay.height                      = 1.12
+    vehicle.cargo_bays.append(forward_cargo_bay) 
+ 
+    aft_cargo_bay  = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
+    aft_cargo_bay.cargo.mass_properties.mass  = 1440
+    aft_cargo_bay.origin                      = [[23.43, 0, -0.6]]
+    aft_cargo_bay.length                      =  5.5
+    aft_cargo_bay.width                       =  2.5
+    aft_cargo_bay.height                      =  1.12
+    vehicle.cargo_bays.append(aft_cargo_bay)
+
+
+    # ################################################# Wings ##################################################################### 
+    # ------------------------------------------------------------------
     #   Main Wing
     # ------------------------------------------------------------------
  
@@ -379,7 +400,7 @@ def vehicle_setup():
     fuselage.heights.at_wing_root_quarter_chord        = 3.74 * Units.meter
     
     cabin                                              = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-    cabin.origin                                       = [[3, 0, 0]]
+    cabin.origin                                       = [[5, 0, 0]]
     first_class                                        = RCAIDE.Library.Components.Fuselages.Cabins.Classes.First() 
     first_class.number_of_seats_abrest                 = 4
     first_class.number_of_rows                         = 4
@@ -389,7 +410,7 @@ def vehicle_setup():
 
     business_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business() 
     business_class.number_of_seats_abrest              = 6
-    business_class.number_of_rows                      = 7  
+    business_class.number_of_rows                      = 3  
     cabin.append_cabin_class(business_class) 
     
     economy_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
@@ -653,7 +674,7 @@ def vehicle_setup():
     nacelle                                     = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()
     nacelle.diameter                            = 1.6
     nacelle.length                              = 2.71
-    nacelle.tag                                 = 'nacelle_1'
+    nacelle.tag                                 = 'starboard_nacelle'
     nacelle.inlet_diameter                      = 2.0
     nacelle.origin                              = [[13.5,4.38,-1.5]] 
     nacelle.areas.wetted                        = 1.1*np.pi*nacelle.diameter*nacelle.length 
@@ -670,7 +691,8 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------   
     turbofan_2                                  = deepcopy(turbofan) 
     turbofan_2.tag                              = 'port_propulsor' 
-    turbofan_2.origin                           = [[13.72,-4.38,-1.1]]   
+    turbofan_2.origin                           = [[13.72,-4.38,-1.1]] 
+    turbofan_2.nacelle.tag                      = 'port_nacelle'    
     turbofan_2.nacelle.origin                   = [[13.5,-4.38,-1.5]]
          
     # append propulsor to network
@@ -864,29 +886,17 @@ def base_analysis(vehicle):
     analyses.vehicle = vehicle 
     
     #  Geometry
-    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
-    geometry.settings.compute_fuel_volume         =   True
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()  
     analyses.append(geometry)
     
     # ------------------------------------------------------------------
     #  Weights 
-    weights         = RCAIDE.Framework.Analyses.Weights.Conventional_Transport()
-    weights.aircraft_type =  "Transport" 
-    weights.settings.update_center_of_gravity                      = True
-    weights.settings.update_moment_of_inertia                      = True 
-    weights.settings.weight_correction_additions.empty.structural.paint      = 250 + 1000
-    weights.settings.weight_correction_additions.operational_items.ETOPS     = 7.7 * vehicle.number_of_passengers
-    weights.settings.update_mass_properties                = True
-    weights.settings.FLOPS.fidelity        = 'Complex' 
+    weights         = RCAIDE.Framework.Analyses.Weights.Conventional_Transport() 
     analyses.append(weights)
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis 
-    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.settings.number_of_spanwise_vortices   = 40
-    aerodynamics.settings.number_of_chordwise_vortices  = 2 
-    aerodynamics.training.Mach                          = np.array([0.1  ,0.3,  0.5,  0.65 , 0.85 , 0.9]) 
-    aerodynamics.settings.drag_reduction_factors.parasite_drag = 0.175      
+    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
     analyses.append(aerodynamics)   
 
     # ------------------------------------------------------------------
@@ -909,8 +919,7 @@ def base_analysis(vehicle):
 
 # ----------------------------------------------------------------------
 #   Define the Mission
-# ----------------------------------------------------------------------
- 
+# ---------------------------------------------------------------------- 
 def mission_setup(analyses):
     """This function defines the baseline mission that will be flown by the aircraft in order
     to compute performance."""
@@ -1196,9 +1205,10 @@ def plot_mission(results):
     
     # Plot Velocities 
     plot_aircraft_velocities(results)
-        
+    
     return
 
 if __name__ == '__main__': 
     main()
+    plt.ion()
     plt.show()
