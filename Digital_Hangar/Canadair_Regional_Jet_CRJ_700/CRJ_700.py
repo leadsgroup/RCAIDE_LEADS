@@ -143,7 +143,7 @@ def vehicle_setup():
     wing.append_segment(segment)
 
     yehudi_airfoil                        = RCAIDE.Library.Components.Airfoils.Airfoil()
-    yehudi_airfoil.coordinate_file        = rel_path+ 'Airfoils' + separator + 'transonic_wing_inboard_section_airfoil.txt'
+    yehudi_airfoil.coordinate_file        ='transonic_wing_inboard_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Yehudi'
     segment.percent_span_location         = 0.4
@@ -156,7 +156,7 @@ def vehicle_setup():
     wing.append_segment(segment)
 
     mid_airfoil                           = RCAIDE.Library.Components.Airfoils.Airfoil()
-    mid_airfoil.coordinate_file           = rel_path + 'Airfoils' + separator + 'transonic_wing_outboard_section_airfoil.txt'
+    mid_airfoil.coordinate_file           = 'transonic_wing_outboard_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Tip'
     segment.percent_span_location         = 0.99
@@ -678,16 +678,16 @@ def configs_setup(vehicle):
 
     configs                                 = RCAIDE.Library.Components.Configs.Config.Container() 
     base_config                             = RCAIDE.Library.Components.Configs.Config(vehicle)
-    base_config.tag = 'base' 
-    base_config.landing_gear.gear_condition                      = 'up'
+    base_config.tag                         = 'base' 
+    base_config.landing_gear.gear_condition = 'up'
     configs.append(base_config)
 
     # ------------------------------------------------------------------
     #   Cruise Configuration
     # ------------------------------------------------------------------
 
-    config = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag = 'cruise'
+    config                = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag            = 'cruise'
     configs.append(config)
 
 
@@ -695,14 +695,14 @@ def configs_setup(vehicle):
     #   Takeoff Configuration
     # ------------------------------------------------------------------
 
-    config = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag = 'takeoff'
-    config.wings['main_wing'].control_surfaces.flap.deflection  = 15. * Units.deg
-    config.wings['main_wing'].control_surfaces.slat.deflection  = 20. * Units.deg 
+    config                                                                                              = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag                                                                                          = 'takeoff'
+    config.wings['main_wing'].control_surfaces.flap.deflection                                          = 15. * Units.deg
+    config.wings['main_wing'].control_surfaces.slat.deflection                                          = 20. * Units.deg 
     config.networks.fuel.fuel_lines['fuel_line'].propulsors['starboard_propulsor'].fan.angular_velocity =  7400. * Units.rpm
     config.networks.fuel.fuel_lines['fuel_line'].propulsors['port_propulsor'].fan.angular_velocity      =  7400. * Units.rpm
-    config.landing_gear.gear_condition                          = 'down' 
-    config.V2_VS_ratio = 1.258
+    config.landing_gear.gear_condition                                                                  = 'down' 
+    config.V2_VS_ratio                                                                                  = 1.258
     configs.append(config)
 
     
@@ -710,13 +710,13 @@ def configs_setup(vehicle):
     #   Cutback Configuration
     # ------------------------------------------------------------------
 
-    config = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag = 'cutback'
-    config.wings['main_wing'].control_surfaces.flap.deflection  = 10. * Units.deg
-    config.wings['main_wing'].control_surfaces.slat.deflection  = 20. * Units.deg
+    config                                                                                              = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag                                                                                          = 'cutback'
+    config.wings['main_wing'].control_surfaces.flap.deflection                                          = 10. * Units.deg
+    config.wings['main_wing'].control_surfaces.slat.deflection                                          = 20. * Units.deg
     config.networks.fuel.fuel_lines['fuel_line'].propulsors['starboard_propulsor'].fan.angular_velocity =  5920. * Units.rpm
     config.networks.fuel.fuel_lines['fuel_line'].propulsors['port_propulsor'].fan.angular_velocity      =  5920. * Units.rpm
-    config.landing_gear.gear_condition                          = 'up'       
+    config.landing_gear.gear_condition                                                                  = 'up'       
     configs.append(config)   
     
         
@@ -725,14 +725,14 @@ def configs_setup(vehicle):
     #   Landing Configuration
     # ------------------------------------------------------------------
 
-    config = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag = 'landing'
-    config.wings['main_wing'].control_surfaces.flap.deflection  = 30. * Units.deg
-    config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg
+    config                                                                                              = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag                                                                                          = 'landing'
+    config.wings['main_wing'].control_surfaces.flap.deflection                                          = 30. * Units.deg
+    config.wings['main_wing'].control_surfaces.slat.deflection                                          = 25. * Units.deg
     config.networks.fuel.fuel_lines['fuel_line'].propulsors['starboard_propulsor'].fan.angular_velocity =  4440. * Units.rpm
     config.networks.fuel.fuel_lines['fuel_line'].propulsors['port_propulsor'].fan.angular_velocity      =  4440. * Units.rpm
-    config.landing_gear.gear_condition                          = 'down'   
-    config.Vref_VS_ratio = 1.207
+    config.landing_gear.gear_condition                                                                  = 'down'   
+    config.Vref_VS_ratio                                                                                = 1.207
     configs.append(config)   
       
 
@@ -740,15 +740,15 @@ def configs_setup(vehicle):
     #   Landing Configuration
     # ------------------------------------------------------------------
 
-    config = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag = 'reverse_thrust'
-    config.wings['main_wing'].control_surfaces.flap.deflection  = 45. * Units.deg
-    config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg
-    config.networks.fuel.reverse_thrust =  True 
+    config                                                                                              = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag                                                                                          = 'reverse_thrust'
+    config.wings['main_wing'].control_surfaces.flap.deflection                                          = 45. * Units.deg
+    config.wings['main_wing'].control_surfaces.slat.deflection                                          = 25. * Units.deg
+    config.networks.fuel.reverse_thrust                                                                 =  True 
     config.networks.fuel.fuel_lines['fuel_line'].propulsors['starboard_propulsor'].fan.angular_velocity =  5550. * Units.rpm
     config.networks.fuel.fuel_lines['fuel_line'].propulsors['port_propulsor'].fan.angular_velocity      =  5550. * Units.rpm
-    config.landing_gear.gear_condition                          = 'down'   
-    config.Vref_VS_ratio = 1.207
+    config.landing_gear.gear_condition                                                                  = 'down'   
+    config.Vref_VS_ratio                                                                                = 1.207
     configs.append(config)   
             
     
