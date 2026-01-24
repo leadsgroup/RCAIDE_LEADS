@@ -10,8 +10,8 @@ import RCAIDE
 from RCAIDE.Framework.Core import Units   
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan          import design_turbofan
 #from RCAIDE.Library.Methods.Stability.Center_of_Gravity            import compute_component_centers_of_gravity
-from RCAIDE.Library.Methods.Geometry.Planform                      import segment_properties
-from RCAIDE.Library.Plots                                          import *     
+from RCAIDE.Library.Methods.Geometry.Planform                       import segment_properties
+from RCAIDE.Library.Plots                                           import *     
 
 # python imports 
 import numpy as np  
@@ -77,7 +77,7 @@ def vehicle_setup():
     vehicle.flight_envelope.design_cruise_altitude    = 35000*Units.feet
     vehicle.flight_envelope.design_range              = 3500 * Units.nmi
     vehicle.reference_area                            = 70.61 * Units['meters**2']   
-    vehicle.number_of_passengers                                = 70
+    vehicle.number_of_passengers                      = 70
     vehicle.systems.control                           = "fully powered" 
     vehicle.systems.accessories                       = "medium range"
     
@@ -362,25 +362,25 @@ def vehicle_setup():
     fuselage                                    = RCAIDE.Library.Components.Fuselages.Fuselage() 
     fuselage.number_coach_seats                 = vehicle.number_of_passengers 
     fuselage.seats_abreast                      = 4
-    fuselage.seat_pitch                         = 0.85     * Units.meter 
+    fuselage.seat_pitch                         = 0.85    * Units.meter 
     fuselage.fineness.nose                      = 1.6
     fuselage.fineness.tail                      = 2. 
-    fuselage.lengths.nose                       = 4.23   * Units.meter
-    fuselage.lengths.tail                       = 7.62   * Units.meter
-    fuselage.lengths.total                      = 29.68 * Units.meter # here  
+    fuselage.lengths.nose                       = 4.23    * Units.meter
+    fuselage.lengths.tail                       = 7.62    * Units.meter
+    fuselage.lengths.total                      = 29.68   * Units.meter # here  
     fuselage.lengths.fore_space                 = 2.37    * Units.meter
     fuselage.lengths.aft_space                  = 7.62    * Units.meter
-    fuselage.width                              = 2.69  * Units.meter
-    fuselage.heights.maximum                    = 2.69  * Units.meter
-    fuselage.effective_diameter                 = 2.69     * Units.meter
+    fuselage.width                              = 2.69    * Units.meter
+    fuselage.heights.maximum                    = 2.69    * Units.meter
+    fuselage.effective_diameter                 = 2.69    * Units.meter
     
-    fuselage.areas.side_projected               = 67.43 * Units['meters**2'] 
-    fuselage.areas.wetted                       = 216  * Units['meters**2'] 
-    fuselage.areas.front_projected              = 22.73    * Units['meters**2']  
-    fuselage.differential_pressure              = 5.0e4 * Units.pascal 
-    fuselage.heights.at_quarter_length          = 2.69 * Units.meter
-    fuselage.heights.at_three_quarters_length   = 2.69 * Units.meter
-    fuselage.heights.at_wing_root_quarter_chord = 2.69 * Units.meter
+    fuselage.areas.side_projected               = 67.43   * Units['meters**2'] 
+    fuselage.areas.wetted                       = 216     * Units['meters**2'] 
+    fuselage.areas.front_projected              = 22.73   * Units['meters**2']  
+    fuselage.differential_pressure              = 5.0e4   * Units.pascal 
+    fuselage.heights.at_quarter_length          = 2.69    * Units.meter
+    fuselage.heights.at_three_quarters_length   = 2.69    * Units.meter
+    fuselage.heights.at_wing_root_quarter_chord = 2.69    * Units.meter
 
     # Segment  
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment() 
@@ -509,52 +509,52 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------- 
     #  Turbofan Network
     #-------------------------------------------------------------------------------------------------------------------------   
-    net                                         = RCAIDE.Framework.Networks.Fuel() 
+    net                                          = RCAIDE.Framework.Networks.Fuel() 
     
     #------------------------------------------------------------------------------------------------------------------------- 
     # Fuel Distrubition Line 
     #------------------------------------------------------------------------------------------------------------------------- 
-    fuel_line                                   = RCAIDE.Library.Components.Energy.Distributors.Fuel_Line()  
+    fuel_line                                    = RCAIDE.Library.Components.Energy.Distributors.Fuel_Line()  
     
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor: Starboard Propulsor CF34-8C
     #------------------------------------------------------------------------------------------------------------------------------------         
-    turbofan                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
-    turbofan.tag                                = 'starboard_propulsor'
-    turbofan.active_fuel_tanks                  = ['fuel_tank']   
-    turbofan.origin                             = [[21.5, -2.2,1.45]]  
-    turbofan.engine_length                      = 3.3     
-    turbofan.bypass_ratio                       = 5    
-    turbofan.design_altitude                    = 0.0*Units.ft
-    turbofan.design_mach_number                 = 0.1   
-    turbofan.design_thrust                      = 60000.0* Units.N 
+    turbofan                                       = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
+    turbofan.tag                                   = 'starboard_propulsor'
+    turbofan.active_fuel_tanks                     = ['fuel_tank']   
+    turbofan.origin                                = [[21.5, -2.2,1.45]]  
+    turbofan.engine_length                         = 3.3     
+    turbofan.bypass_ratio                          = 5    
+    turbofan.design_altitude                       = 0.0*Units.ft
+    turbofan.design_mach_number                    = 0.1   
+    turbofan.design_thrust                         = 60000.0* Units.N 
              
     # fan                
-    fan                                         = RCAIDE.Library.Components.Powertrain.Converters.Fan()   
-    fan.tag                                     = 'fan'
-    fan.polytropic_efficiency                   = 0.93
-    fan.pressure_ratio                          = 1.7   
-    turbofan.fan                                = fan        
+    fan                                            = RCAIDE.Library.Components.Powertrain.Converters.Fan()   
+    fan.tag                                        = 'fan'
+    fan.polytropic_efficiency                      = 0.93
+    fan.pressure_ratio                             = 1.7   
+    turbofan.fan                                   = fan        
                    
     # working fluid                   
-    turbofan.working_fluid                      = RCAIDE.Library.Attributes.Gases.Air() 
-    ram                                         = RCAIDE.Library.Components.Powertrain.Converters.Ram()
-    ram.tag                                     = 'ram' 
-    turbofan.ram                                = ram 
+    turbofan.working_fluid                         = RCAIDE.Library.Attributes.Gases.Air() 
+    ram                                            = RCAIDE.Library.Components.Powertrain.Converters.Ram()
+    ram.tag                                        = 'ram' 
+    turbofan.ram                                   = ram 
           
     # inlet nozzle          
-    inlet_nozzle                                = RCAIDE.Library.Components.Powertrain.Converters.Compression_Nozzle()
-    inlet_nozzle.tag                            = 'inlet nozzle'
-    inlet_nozzle.polytropic_efficiency          = 0.98
-    inlet_nozzle.pressure_ratio                 = 0.98 
-    turbofan.inlet_nozzle                       = inlet_nozzle 
+    inlet_nozzle                                   = RCAIDE.Library.Components.Powertrain.Converters.Compression_Nozzle()
+    inlet_nozzle.tag                               = 'inlet nozzle'
+    inlet_nozzle.polytropic_efficiency             = 0.98
+    inlet_nozzle.pressure_ratio                    = 0.98 
+    turbofan.inlet_nozzle                          = inlet_nozzle 
 
     # low pressure compressor    
-    low_pressure_compressor                       = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
-    low_pressure_compressor.tag                   = 'lpc'
-    low_pressure_compressor.polytropic_efficiency = 0.91
-    low_pressure_compressor.pressure_ratio        = 1.65   
-    turbofan.low_pressure_compressor              = low_pressure_compressor
+    low_pressure_compressor                        = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
+    low_pressure_compressor.tag                    = 'lpc'
+    low_pressure_compressor.polytropic_efficiency  = 0.91
+    low_pressure_compressor.pressure_ratio         = 1.65   
+    turbofan.low_pressure_compressor               = low_pressure_compressor
 
     # high pressure compressor  
     high_pressure_compressor                       = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
@@ -607,17 +607,17 @@ def vehicle_setup():
    
  
     # Nacelle updated for CRJ 
-    nacelle                                     = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()
-    nacelle.diameter                            = 1.55
-    nacelle.length                              = 3.90
-    nacelle.tag                                 = 'nacelle_1'
-    nacelle.inlet_diameter                      = 1.30
-    nacelle.origin                              = [[21.5, -2.2,1.45]] 
-    nacelle.areas.wetted                        = 1.1*np.pi*nacelle.diameter*nacelle.length 
-    nacelle_airfoil                             = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
-    nacelle_airfoil.NACA_4_Series_code          = '2410'
+    nacelle                                       = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()
+    nacelle.diameter                              = 1.55
+    nacelle.length                                = 3.90
+    nacelle.tag                                   = 'nacelle_1'
+    nacelle.inlet_diameter                        = 1.30
+    nacelle.origin                                = [[21.5, -2.2,1.45]] 
+    nacelle.areas.wetted                          = 1.1*np.pi*nacelle.diameter*nacelle.length 
+    nacelle_airfoil                               = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
+    nacelle_airfoil.NACA_4_Series_code            = '2410'
     nacelle.append_airfoil(nacelle_airfoil)  
-    turbofan.nacelle                            = nacelle
+    turbofan.nacelle                              = nacelle
     
     fuel_line.propulsors.append(turbofan)  
 
@@ -676,8 +676,8 @@ def configs_setup(vehicle):
     #   Initialize Configurations
     # ------------------------------------------------------------------
 
-    configs     = RCAIDE.Library.Components.Configs.Config.Container() 
-    base_config = RCAIDE.Library.Components.Configs.Config(vehicle)
+    configs                                 = RCAIDE.Library.Components.Configs.Config.Container() 
+    base_config                             = RCAIDE.Library.Components.Configs.Config(vehicle)
     base_config.tag = 'base' 
     base_config.landing_gear.gear_condition                      = 'up'
     configs.append(base_config)
