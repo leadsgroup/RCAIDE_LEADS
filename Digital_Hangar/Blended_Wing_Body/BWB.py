@@ -9,16 +9,16 @@
 # ----------------------------------------------------------------------
 #   Imports
 # ----------------------------------------------------------------------
-
+# RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core import Units, Data
+from RCAIDE.Library.Plots                 import *    
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan import design_turbofan
 
+# python imports 
 import numpy as np
 import os
 from copy import deepcopy
-from RCAIDE.Library.Plots                 import *    
-
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan import design_turbofan
 
 # ----------------------------------------------------------------------
 #   Main
@@ -85,7 +85,7 @@ def analyses_setup(configs):
 def base_analysis(vehicle):
 
     # ------------------------------------------------------------------
-    #   Initialize the Analyses
+    #  Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle()
     analyses.vehicle = vehicle
@@ -162,19 +162,19 @@ def vehicle_setup():
     vehicle.mass_properties.cargo                     = 00.  * Units.kilogram   
 
     # envelope properties
-    vehicle.flight_envelope.ultimate_load = 2.5
+    vehicle.flight_envelope.ultimate_load          = 2.5
     vehicle.flight_envelope.positive_limit_load    = 1.5
 
     # basic parameters
     vehicle.reference_area         = 15680. * Units.feet**2       
-    vehicle.number_of_passengers             = 450.
+    vehicle.number_of_passengers   = 450.
     vehicle.systems.control        = "fully powered" 
     vehicle.systems.accessories    = "medium range"
 
-    root_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
-    ospath                                = os.path.abspath(__file__)
-    separator                             = os.path.sep
-    rel_path                              = os.path.dirname(ospath) + separator  + '..'  + separator
+    root_airfoil                   = RCAIDE.Library.Components.Airfoils.Airfoil()
+    ospath                         = os.path.abspath(__file__)
+    separator                      = os.path.sep
+    rel_path                       = os.path.dirname(ospath) + separator  + '..'  + separator
     
 
     # ------------------------------------------------------------------        
@@ -225,13 +225,13 @@ def vehicle_setup():
     wing.append_segment(segment)  
     
     segment = RCAIDE.Library.Components.Wings.Segments.Segment()
-    segment.tag                   = 'section_2'
-    segment.percent_span_location = 0.052
-    segment.twist                 = 0. * Units.deg
-    segment.root_chord_percent    = 0.9436
-    segment.dihedral_outboard     = 0.   * Units.degrees
-    segment.sweeps.quarter_chord  = 52.5 * Units.degrees
-    segment.thickness_to_chord    = 0.167
+    segment.tag                       = 'section_2'
+    segment.percent_span_location     = 0.052
+    segment.twist                     = 0. * Units.deg
+    segment.root_chord_percent        = 0.9436
+    segment.dihedral_outboard         = 0.   * Units.degrees
+    segment.sweeps.quarter_chord      = 52.5 * Units.degrees
+    segment.thickness_to_chord        = 0.167
     section_2_airfoil = RCAIDE.Library.Components.Airfoils.Airfoil()
     segment.append_airfoil(section_2_airfoil)
     section_2_airfoil.coordinate_file = 'e336.dat'    
@@ -321,8 +321,8 @@ def vehicle_setup():
     
     fuselage.lengths.total         = 145.0 * Units.feet
     fuselage.width                 = 0.221*wing.spans.projected*2 # assumes fuselage ends at section 4 
-    fuselage.heights.maximum       = 0.165*fuselage.lengths.total # thickess to chord ration at section 1
-    fuselage.areas.wetted          =  0.0  # need to correct 
+    fuselage.heights.maximum       = 0.165*fuselage.lengths.total # thickness to chord ratio at section 1
+    fuselage.areas.wetted          = 0.0  # need to correct 
 
     # add to vehicle
     vehicle.append_component(fuselage)
@@ -330,23 +330,23 @@ def vehicle_setup():
 
 
     # ################################################# Energy Network #######################################################         
-    # Step 1: Define network
+    # Step 1: Define Network
     # Step 2: Define Distribution Type
-    # Step 3: Define Propulsors 
-    # Step 4: Define Enegy Source 
+    # Step 3: Define Propulsors
+    # Step 4: Define Energy Source
 
     #------------------------------------------------------------------------------------------------------------------------- 
-    #  Turbofan Network
+    # Turbofan Network
     #-------------------------------------------------------------------------------------------------------------------------   
     net                                         = RCAIDE.Framework.Networks.Fuel() 
     
     #------------------------------------------------------------------------------------------------------------------------- 
-    # Fuel Distrubition Line 
+    # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
     fuel_line                                   = RCAIDE.Library.Components.Energy.Distributors.Fuel_Line()  
      
     #------------------------------------------------------------------------------------------------------------------------- 
-    #  Energy Source: Fuel Tank
+    # Energy Source: Fuel Tank
     #------------------------------------------------------------------------------------------------------------------------- 
     # fuel tank
     fuel_tank                                   = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)
@@ -354,7 +354,7 @@ def vehicle_setup():
     fuel                                        = RCAIDE.Library.Attributes.Propellants.Jet_A1()     
     fuel_tank.fuel                              = fuel            
     
-    # apend fuel tank to dataclass of fuel tanks on fuel line 
+    # append fuel tank to dataclass of fuel tanks on fuel line 
     fuel_line.fuel_tanks.append(fuel_tank)     
 
 
@@ -385,7 +385,7 @@ def vehicle_setup():
     turbofan.working_fluid                      = RCAIDE.Library.Attributes.Gases.Air() 
 
     
-    # Ram inlet 
+    # ram inlet 
     ram                                         = RCAIDE.Library.Components.Powertrain.Converters.Ram()
     ram.tag                                     = 'ram' 
     turbofan.ram                                = ram 
@@ -404,12 +404,12 @@ def vehicle_setup():
     low_pressure_compressor.pressure_ratio        = 1.9   
     turbofan.low_pressure_compressor              = low_pressure_compressor
 
-    ## high pressure compressor  
+    #high pressure compressor  
     #medium_pressure_compressor                       = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
     #medium_pressure_compressor.tag                   = 'hpc'
     #medium_pressure_compressor.polytropic_efficiency = 0.91
     #medium_pressure_compressor.pressure_ratio        = 12.38 
-    #turbofan.high_pressure_compressor              = high_pressure_compressor
+    #turbofan.high_pressure_compressor                = high_pressure_compressor
 
     # high pressure compressor  
     high_pressure_compressor                       = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
@@ -550,7 +550,6 @@ def plot_mission(results,line_style='bo-'):
     # ------------------------------------------------------------------
     #   Aerodynamics
     # ------------------------------------------------------------------
-
 
     fig = plt.figure("Aerodynamic Forces",figsize=(8,6))
     for segment in results.segments.values():
@@ -737,7 +736,7 @@ def simple_sizing(configs):
     base = configs.base
     base.pull_base()
 
-    # zero fuel weight
+    # zero the fuel weight
     base.mass_properties.max_zero_fuel = 0.9 * base.mass_properties.max_takeoff 
 
     # wing areas
@@ -798,7 +797,7 @@ def mission_setup(analyses):
     segment.air_speed      = 125.0 * Units['m/s']
     segment.climb_rate     = 6.0   * Units['m/s']
 
-    # add to misison
+    # add to mission
     mission.append_segment(segment)
 
 
