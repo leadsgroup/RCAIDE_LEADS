@@ -71,8 +71,8 @@ def vehicle_setup():
     vehicle.mass_properties.operating_empty           = 19051 * Units.kilogram  
     vehicle.mass_properties.max_zero_fuel             = 28259 * Units.kilogram 
     vehicle.mass_properties.cargo                     = 7000  * Units.kilogram 
-    vehicle.flight_envelope.ultimate_load                    = 3.75
-    vehicle.flight_envelope.positive_limit_load                       = 2.5 
+    vehicle.flight_envelope.ultimate_load             = 3.75
+    vehicle.flight_envelope.positive_limit_load       = 2.5 
     vehicle.flight_envelope.design_mach_number        = 0.78 
     vehicle.flight_envelope.design_cruise_altitude    = 35000*Units.feet
     vehicle.flight_envelope.design_range              = 3500 * Units.nmi
