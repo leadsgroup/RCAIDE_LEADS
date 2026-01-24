@@ -626,3 +626,5 @@ def vehicle_setup():
     vehicle.append_energy_network(net)        
         
     return vehicle 
+if __name__ == '__main__': 
+    main()    

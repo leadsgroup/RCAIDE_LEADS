@@ -755,4 +755,3 @@ def vehicle_setup():
 
 if __name__ == '__main__': 
     main()    
-    plt.show()
