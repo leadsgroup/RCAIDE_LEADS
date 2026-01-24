@@ -114,7 +114,7 @@ def vehicle_setup():
     forward_cargo_bay.length                      = 7.82
     forward_cargo_bay.width                       = 2.5
     forward_cargo_bay.height                      = 1.12
-    vehicle.cargo_bays.append(forward_cargo_bay) 
+    vehicle.append_component(forward_cargo_bay) 
  
     aft_cargo_bay  = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
     aft_cargo_bay.cargo.mass_properties.mass  = 1440
@@ -122,7 +122,7 @@ def vehicle_setup():
     aft_cargo_bay.length                      =  5.5
     aft_cargo_bay.width                       =  2.5
     aft_cargo_bay.height                      =  1.12
-    vehicle.cargo_bays.append(aft_cargo_bay)
+    vehicle.append_component(aft_cargo_bay)
 
 
     # ################################################# Wings ##################################################################### 
