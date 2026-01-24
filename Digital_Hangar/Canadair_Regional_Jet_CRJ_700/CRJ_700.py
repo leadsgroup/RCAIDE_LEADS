@@ -130,7 +130,7 @@ def vehicle_setup():
     separator                             = os.path.sep
     rel_path                              = os.path.dirname(ospath) + separator  + '..'  + separator
     print(rel_path)
-    root_airfoil.coordinate_file          = rel_path  + 'Airfoils' + separator + 'transonic_wing_root_section_airfoil.txt'
+    root_airfoil.coordinate_file          = 'transonic_wing_root_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Root'
     segment.percent_span_location         = 0.0
