@@ -223,7 +223,8 @@ def wing_planform(wing):
         sref        = wing.areas.reference
         taper       = wing.taper
         sweep       = wing.sweeps.quarter_chord
-        ar          = wing.aspect_ratio
+        span        = wing.spans.projected
+        ar          = (span**2)/sref
         dihedral    = wing.dihedral 
         vertical    = wing.vertical
         symmetric   = wing.xz_plane_symmetric  
@@ -237,8 +238,7 @@ def wing_planform(wing):
                 
         t_c_w  = wing.thickness_to_chord   
         
-        # calculate
-        span       = (ar*sref)**.5
+        # calculate 
         semispan   = span/(1+sym)
         span_total = span/np.cos(dihedral)
         chord_root = 2*sref/span/(1+taper)

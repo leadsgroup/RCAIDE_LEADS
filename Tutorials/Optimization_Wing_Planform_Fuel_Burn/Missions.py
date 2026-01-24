@@ -1,25 +1,27 @@
-
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ---------------------------------------------------------------------------------------------------------------------- 
+# RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core import Units
 
-import numpy as np
-
 # ----------------------------------------------------------------------
-#   Define the Mission
+# Set Up
 # ----------------------------------------------------------------------
-    
 def setup(analyses): 
     # ------------------------------------------------------------------
     #   Base Mission
     # ------------------------------------------------------------------
-    mission      = mission_setup(analyses)  
+    mission      = mission_setup(analyses)   
     missions     = RCAIDE.Framework.Mission.Missions() 
-    mission.tag  = 'base'
+    mission.tag  = 'base_mission'
     missions.append(mission)
 
     return missions
  
-     
+# ----------------------------------------------------------------------
+# Mission Setup 
+# ----------------------------------------------------------------------     
 def mission_setup(analyses):
     """This function defines the baseline mission that will be flown by the aircraft in order
     to compute performance."""
@@ -33,6 +35,7 @@ def mission_setup(analyses):
   
     Segments = RCAIDE.Framework.Mission.Segments 
     base_segment = Segments.Segment()
+    base_segment.state.numerics.solver.type = 'root_finder'
 
     # ------------------------------------------------------------------------------------------------------------------------------------ 
     #   Takeoff Roll
@@ -100,7 +103,7 @@ def mission_setup(analyses):
 
     segment = Segments.Climb.Constant_Speed_Constant_Rate(base_segment)
     segment.tag = "climb_3" 
-    segment.analyses.extend( analyses.cruise ) 
+    segment.analyses.extend( analyses.cruise )  
     segment.altitude_end = 10.5   * Units.km
     segment.air_speed    = 226.0  * Units['m/s']
     segment.climb_rate   = 3.0    * Units['m/s']  
@@ -146,9 +149,9 @@ def mission_setup(analyses):
 
     segment = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
     segment.tag = "descent_1" 
-    segment.analyses.extend( analyses.cruise ) 
+    segment.analyses.extend( analyses.descent ) 
     segment.altitude_start                                = 10.5 * Units.km 
-    segment.altitude_end                                  = 8.0   * Units.km
+    segment.altitude_end                                  = 6.0    * Units.km
     segment.air_speed                                     = 220.0 * Units['m/s']
     segment.descent_rate                                  = 4.5   * Units['m/s']  
     
@@ -168,11 +171,11 @@ def mission_setup(analyses):
     #   Second Descent Segment: Constant Speed Constant Rate  
     # ------------------------------------------------------------------
 
-    segment = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
+    segment = Segments.Descent.Linear_Speed_Constant_Rate(base_segment)
     segment.tag  = "descent_2" 
-    segment.analyses.extend( analyses.cruise ) 
+    segment.analyses.extend( analyses.descent ) 
     segment.altitude_end                                  = 6.0   * Units.km
-    segment.air_speed                                     = 195.0 * Units['m/s']
+    segment.altitude_end                                  = 170.0 * Units['m/s']
     segment.descent_rate                                  = 5.0   * Units['m/s']  
     
     # define flight dynamics to model 
@@ -193,7 +196,7 @@ def mission_setup(analyses):
 
     segment = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
     segment.tag = "descent_3"  
-    segment.analyses.extend( analyses.cruise ) 
+    segment.analyses.extend( analyses.landing ) 
     segment.altitude_end                                  = 4.0   * Units.km
     segment.air_speed                                     = 170.0 * Units['m/s']
     segment.descent_rate                                  = 5.0   * Units['m/s']  
@@ -216,7 +219,7 @@ def mission_setup(analyses):
 
     segment = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
     segment.tag = "descent_4" 
-    segment.analyses.extend( analyses.cruise ) 
+    segment.analyses.extend( analyses.landing ) 
     segment.altitude_end                                  = 2.0   * Units.km
     segment.air_speed                                     = 150.0 * Units['m/s']
     segment.descent_rate                                  = 5.0   * Units['m/s']  
@@ -255,6 +258,25 @@ def mission_setup(analyses):
     segment.assigned_control_variables.body_angle.active             = True                
     
     mission.append_segment(segment)
-     
+    
+    # ------------------------------------------------------------------------------------------------------------------------------------ 
+    #   Landing Roll
+    # ------------------------------------------------------------------------------------------------------------------------------------ 
+
+    segment = Segments.Ground.Landing(base_segment)
+    segment.tag = "landing"
+
+    segment.analyses.extend( analyses.landing ) 
+    segment.velocity_end                                                   = 10 * Units.knots 
+    segment.friction_coefficient                                           = 0.4
+    segment.altitude                                                       = 0.0   
+    segment.assigned_control_variables.elapsed_time.active                 = True  
+    segment.assigned_control_variables.elapsed_time.initial_guess_values   = [[30.]]  
+    mission.append_segment(segment)     
+
+
+    # ------------------------------------------------------------------
+    #   Mission definition complete    
+    # ------------------------------------------------------------------    
 
     return mission

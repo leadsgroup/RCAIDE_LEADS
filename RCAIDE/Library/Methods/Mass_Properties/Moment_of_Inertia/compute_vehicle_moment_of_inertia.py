@@ -39,7 +39,7 @@ def compute_vehicle_moment_of_inertia(vehicle,overwrite_moment_of_intertia=True,
     total_MOI    = np.zeros((3, 3))               
     for key in vehicle.keys():
         item       = vehicle[key]  
-        total_MOI  = compute_component_moment_of_inertia(item,vehicle,total_MOI ,segment)
+        total_MOI  = compute_component_moment_of_inertia(item,vehicle,total_MOI ,segment, verbose)
     
     # print center of gravity  
     if verbose:

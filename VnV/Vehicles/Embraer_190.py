@@ -276,18 +276,6 @@ def vehicle_setup():
 
     fuselage                                          = RCAIDE.Library.Components.Fuselages.Fuselage() 
     fuselage.origin                                   = [[0,0,0]] 
-    cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
-    economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
-    economy_class.number_of_seats_abrest              = 4
-    economy_class.number_of_rows                      = 28
-    economy_class.number_of_passengers                = 106
-    economy_class.galley_lavatory_percent_x_locations = [0, 1]      
-    economy_class.emergency_exit_percent_x_locations  = [0.5, 0.5]      
-    economy_class.type_A_exit_percent_x_locations     = [0, 1]
-    cabin.origin                                      = [[4.65, 0, 0]]
-    cabin.append_cabin_class(economy_class)
-    fuselage.append_cabin(cabin) 
-
     fuselage.fineness.nose                      = 1.28
     fuselage.fineness.tail                      = 3.48 
     fuselage.lengths.nose                       = 6.0
@@ -304,6 +292,18 @@ def vehicle_setup():
     fuselage.areas.front_projected              = np.pi * (fuselage.heights.maximum  / 2) ** 2
     fuselage.effective_diameter                 = 3.18 
     fuselage.differential_pressure              = 10**5 * Units.pascal    # Maximum differential pressure  
+
+    cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
+    economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
+    economy_class.number_of_seats_abrest              = 4
+    economy_class.number_of_rows                      = 28
+    economy_class.number_of_passengers                = 106
+    economy_class.galley_lavatory_percent_x_locations = [0, 1]      
+    economy_class.emergency_exit_percent_x_locations  = [0.5, 0.5]      
+    economy_class.type_A_exit_percent_x_locations     = [0, 1]
+    cabin.origin                                      = [[4.65, 0, 0]]
+    cabin.append_cabin_class(economy_class)
+    fuselage.append_cabin(cabin) 
     
 
     # Segment  
