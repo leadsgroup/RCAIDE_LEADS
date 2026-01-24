@@ -1,3 +1,9 @@
+''' 
+  Boeing 737-800.py
+  
+  Created: Jan 2026, M Clarke 
+
+''' 
 # ----------------------------------------------------------------------
 #   Imports
 # ----------------------------------------------------------------------
@@ -20,14 +26,7 @@ import matplotlib.pyplot as plt
 def main():
     
     # Step 1: design a vehicle
-    vehicle  = vehicle_setup()  
-
-    try:
-        import vsp as vsp
-        from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
-        export_vsp_vehicle(vehicle, 'Boeing_737_800.vsp')
-    except ImportError:
-        pass
+    vehicle  = vehicle_setup()   
       
     # Step 2: create aircraft configuration based on vehicle 
     configs  = configs_setup(vehicle)
@@ -43,10 +42,7 @@ def main():
     results = missions.base_mission.evaluate()  
     
     # Step 6: plot results 
-    plot_mission(results)  
-    
-    # Step 7: plot vehicle 
-    # plot_3d_vehicle(vehicle) <---- Uncomment to view aircraft 
+    plot_mission(results)   
     
     return 
     

@@ -318,7 +318,21 @@ def vehicle_setup():
     fuselage.areas.wetted                           = 442.
     fuselage.areas.front_projected                  = 11.9 
     fuselage.effective_diameter                     = 3.1 
-    fuselage.differential_pressure                  = 7.4e4 * Units.pascal    # Maximum differential pressure  
+    fuselage.differential_pressure                  = 7.4e4 * Units.pascal    # Maximum differential pressure
+
+
+    cabin                                               = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
+    cabin.origin                                        =  [[8.5, 0, -0.5]]  
+    business_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business() 
+    business_class.number_of_seats_abrest               = 4
+    business_class.number_of_rows                       = 32  
+    business_class.seat_arm_rest_width                  = 3 *  Units.inches 
+    business_class.seat_width                           = 17 *  Units.inches
+    business_class.aisle_width                          = 13  *  Units.inches  
+    business_class.galley_lavatory_percent_x_locations  = [0, 0.5, 0.51, 1]       
+    business_class.type_A_exit_percent_x_locations      = [0.02, 0.4, 1]
+    cabin.append_cabin_class(business_class)  
+    fuselage.append_cabin(cabin)          
     
     # Segment  
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment() 
