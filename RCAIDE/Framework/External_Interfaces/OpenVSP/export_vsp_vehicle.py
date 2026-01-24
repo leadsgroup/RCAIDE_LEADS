@@ -138,23 +138,8 @@ def export_vsp_vehicle(vehicle, vehicle_tag, fuel_tank_set_ind=3, verbose=True, 
         if verbose:
             print('Writing '+wing.tag+' to OpenVSP Model')
             area_tags, wing_id = write_vsp_wing(vehicle,wing,area_tags, fuel_tank_set_ind, OML_set_ind) 
-    
-    # ------------------------------------------------------------------------- 
-    # Engines
-    # -------------------------------------------------------------------------  
-    for network in vehicle.networks: 
-        for propulsor in network.propulsors: 
-            for  tag ,  item in  propulsor.items():
-                if isinstance(item, RCAIDE.Library.Components.Powertrain.Converters.Rotor):
-                    vsp_bem_filename = item.tag + '.bem' 
-                    write_vsp_rotor_bem(vsp_bem_filename,item)
-                    
-            if propulsor.nacelle !=  None:                
-                nacelle =  propulsor.nacelle
-                if verbose:
-                    print('Writing '+ nacelle.tag +' to OpenVSP Model')
-                write_vsp_nacelle(nacelle, OML_set_ind)
-                     
+        
+                             
     # ------------------------------------------------------------------------- 
     # Fuselage
     # ------------------------------------------------------------------------- 
@@ -167,6 +152,25 @@ def export_vsp_vehicle(vehicle, vehicle_tag, fuel_tank_set_ind=3, verbose=True, 
         except AttributeError:
             area_tags = write_vsp_fuselage(fuselage, area_tags, None, fuel_tank_set_ind,
                                            OML_set_ind)
+            
+    # ------------------------------------------------------------------------- 
+    # Engines
+    # -------------------------------------------------------------------------  
+    for network in vehicle.networks: 
+        for propulsor in network.propulsors: 
+            for  tag ,  item in  propulsor.items():
+                if isinstance(item, RCAIDE.Library.Components.Powertrain.Converters.Rotor):
+                    if (item.radius_distribution) is None:
+                        pass
+                    else:
+                        vsp_bem_filename = item.tag + '.bem' 
+                        write_vsp_rotor_bem(vsp_bem_filename,item)
+                    
+            if propulsor.nacelle !=  None:                
+                nacelle =  propulsor.nacelle
+                if verbose:
+                    print('Writing '+ nacelle.tag +' to OpenVSP Model')
+                write_vsp_nacelle(nacelle, OML_set_ind)
             
     # ------------------------------------------------------------------------- 
     # Boom

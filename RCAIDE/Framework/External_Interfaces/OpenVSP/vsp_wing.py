@@ -568,7 +568,7 @@ def write_vsp_wing(vehicle,wing, area_tags, fuel_tank_set_ind, OML_set_ind):
                 else:
                     airfoil_vsp_types.append(vsp.XS_FILE_AIRFOIL)
             else:
-                airfoil_vsp_types.append(vsp.XS_FILE_AIRFOIL)
+                airfoil_vsp_types.append(vsp.XS_FOUR_SERIES)
     elif wing.airfoil != None:
         if type(wing.airfoil) == RCAIDE.Library.Components.Airfoils.Biconvex_Airfoil:
             airfoil_vsp_types.append(vsp.XS_BICONVEX)
@@ -577,7 +577,7 @@ def write_vsp_wing(vehicle,wing, area_tags, fuel_tank_set_ind, OML_set_ind):
         else:
             airfoil_vsp_types.append(vsp.XS_FILE_AIRFOIL)
     else:
-        airfoil_vsp_types = [vsp.XS_FILE_AIRFOIL] 
+        airfoil_vsp_types = [vsp.XS_FOUR_SERIES] 
 
     if n_segments==0:
         if wing.airfoil != None:
@@ -638,9 +638,14 @@ def write_vsp_wing(vehicle,wing, area_tags, fuel_tank_set_ind, OML_set_ind):
     else:
         adjust = 1
 
-
+    if n_segments >  0:
+        x_sec_id  = vsp.GetXSec(vsp.GetXSecSurf(wing_id, 0),0)
+        tc_i         = wing.segments[segment_keys[0]].thickness_to_chord
+        tc_parm      = vsp.GetXSecParm(x_sec_id, 'ThickChord')     
+        vsp.SetParmVal(tc_parm, tc_i)    
+         
     # Loop for the number of segments left over
-    for i_segs in range(1,n_segments+1):
+    for i_segs in range(1,n_segments+1): 
 
         if (wing.segments[segment_keys[i_segs-1]] == wing.segments[segment_keys[-1]]) and (wing.segments[segment_keys[-1]].percent_span_location == 1.):
             break
@@ -654,7 +659,7 @@ def write_vsp_wing(vehicle,wing, area_tags, fuel_tank_set_ind, OML_set_ind):
         except:
             no_twist_flag = True
         sweep_i    = wing.segments[segment_keys[i_segs-1]].sweeps.quarter_chord / Units.deg
-        tc_i       = wing.segments[segment_keys[i_segs-1]].thickness_to_chord
+        tc_i       = wing.segments[segment_keys[i_segs]].thickness_to_chord
 
         # Calculate the local span
         if i_segs == n_segments:
@@ -670,10 +675,7 @@ def write_vsp_wing(vehicle,wing, area_tags, fuel_tank_set_ind, OML_set_ind):
             vsp.ReadFileAirfoil(xsec, wing.segments[segment_keys[i_segs]].airfoil.coordinate_file)
         else:
             vsp.InsertXSec(wing_id,i_segs-1+adjust,vsp.XS_FOUR_SERIES)
-
-        # Set the parms
-
-
+ 
         # Find the id
         x_sec_id  = vsp.GetXSec(vsp.GetXSecSurf(wing_id, 0),i_segs+adjust)
 

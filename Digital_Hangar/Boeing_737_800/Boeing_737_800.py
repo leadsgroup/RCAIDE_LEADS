@@ -23,7 +23,7 @@ def main():
     try:
         import vsp as vsp
         from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
-        export_vsp_vehicle(vehicle, 'Boeing_737_800.vsp')
+        export_vsp_vehicle(vehicle, 'Boeing_737_800')
     except ImportError:
         pass
        
@@ -150,6 +150,7 @@ def vehicle_setup():
     segment.dihedral_outboard             = 3.5 * Units.degrees
     segment.twist                         = 2.5   * Units.degrees
     segment.sweeps.quarter_chord          = 28.225 * Units.degrees 
+    segment.thickness_to_chord            = 0.11
     segment.append_airfoil(root_airfoil)
     wing.append_segment(segment)
 
@@ -161,7 +162,8 @@ def vehicle_setup():
     segment.root_chord_percent            = 0.5
     segment.twist                         = 2.5  * Units.degrees
     segment.dihedral_outboard             = 5.5 * Units.degrees
-    segment.sweeps.quarter_chord          = 25. * Units.degrees  
+    segment.sweeps.quarter_chord          = 25. * Units.degrees   
+    segment.thickness_to_chord            = 0.12
     segment.append_airfoil(yehudi_airfoil)
     wing.append_segment(segment)
 
@@ -173,7 +175,8 @@ def vehicle_setup():
     segment.root_chord_percent            = 0.220  
     segment.dihedral_outboard             = 5.5 * Units.degrees
     segment.sweeps.quarter_chord          = 56.75 * Units.degrees 
-    segment.twist                         = 0 * Units.degrees
+    segment.twist                         = 0 * Units.degrees 
+    segment.thickness_to_chord            = 0.13
     segment.append_airfoil(mid_airfoil)
     wing.append_segment(segment)
 
@@ -186,6 +189,7 @@ def vehicle_setup():
     segment.dihedral_outboard             = 0.
     segment.twist                         = 0 * Units.degrees
     segment.sweeps.quarter_chord          = 56.75 * Units.degrees 
+    segment.thickness_to_chord            = 0.14
     segment.append_airfoil(tip_airfoil)
     wing.append_segment(segment)
     

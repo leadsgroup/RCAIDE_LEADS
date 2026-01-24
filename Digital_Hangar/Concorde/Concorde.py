@@ -23,7 +23,7 @@ def main():
     try:
         import vsp as vsp
         from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
-        export_vsp_vehicle(vehicle, 'Concorde.vsp')
+        export_vsp_vehicle(vehicle, 'Concorde')
     except ImportError:
         pass
        
@@ -61,7 +61,7 @@ def vehicle_setup():
   
     # basic parameters  
     vehicle.reference_area                 = 358.25      
-    vehicle.number_of_passengers                     = 100
+    vehicle.number_of_passengers           = 100
     vehicle.systems.control                = "fully powered" 
     vehicle.systems.accessories            = "sst"
     vehicle.maximum_cross_sectional_area   = 13.9
