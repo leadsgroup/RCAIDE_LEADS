@@ -349,7 +349,7 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------       
     fuel_tank                                   = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)  
     fuel_tank.fuel                              = RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline()
-    fuel_tank.segments_bounding_tank        = ['root_segment', 'tip']
+    fuel_tank.segments_bounding_tank            = ['root_segment', 'tip']
     fuel_line.fuel_tanks.append(fuel_tank)  
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor
