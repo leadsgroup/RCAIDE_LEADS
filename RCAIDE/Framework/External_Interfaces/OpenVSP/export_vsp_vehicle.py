@@ -160,7 +160,7 @@ def export_vsp_vehicle(vehicle, vehicle_tag, fuel_tank_set_ind=3, verbose=True, 
         for propulsor in network.propulsors: 
             for  tag ,  item in  propulsor.items():
                 if isinstance(item, RCAIDE.Library.Components.Powertrain.Converters.Rotor):
-                    if (item.radius_distribution) is None:
+                    if len(item.airfoils) == 0:
                         pass
                     else:
                         vsp_bem_filename = item.tag + '.bem' 

@@ -197,7 +197,10 @@ def compute_wing_integral_tank_volume(fuel_tank,wing):
     
     if len(wing.segments) > 1: 
         segment_tank_moment = np.array([0.0, 0.0, 0.0])
-        seg_bounds =  fuel_tank.segments_bounding_tank  
+        seg_bounds =  fuel_tank.segments_bounding_tank
+        
+        if seg_bounds == [None, None]:
+            raise AssertionError('Wing segments bounding tank must be set using "tank.segments_bounding_tank"')
 
         # Collect all segment tags between start and end (inclusive)
         collect = False
