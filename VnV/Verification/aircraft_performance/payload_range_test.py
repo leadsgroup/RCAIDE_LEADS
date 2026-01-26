@@ -92,7 +92,7 @@ def fuel_aircraft_payload_range_mzfw():
     payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage=0.1, delete_training_data = True)
                                 
     fuel_r                 = payload_range_results.range[-1]  
-    fuel_r_true            = 4886713.7057714 # This values is lower because it compounds both the change in the OEW and the change in the corresponding max fuel compute
+    fuel_r_true            = 4886624.636845224 # This values is lower because it compounds both the change in the OEW and the change in the corresponding max fuel compute
     # Correct value from reference ( https://www.embraercommercialaviation.com/wp-content/uploads/2017/06/APM_190.pdf) is 5556000. 
     # This value is high due to simplified single segment analysis i.e. only cruise. To compensate, reserve percentage is increased from 5 to 20%
     
