@@ -11,7 +11,6 @@ from RCAIDE.Library.Components  import Component
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia import compute_cuboid_moment_of_inertia
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity import compute_cargo_bay_center_of_gravity
 
-
 import  numpy as  np
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -84,4 +83,6 @@ class Cargo_Bay(Component):
             3x3 moment of inertia tensor
         """ 
         _,_ = compute_cuboid_moment_of_inertia(self,self.length,self.width,self.height, inner_length = 0, inner_width = 0, inner_height = 0, center_of_gravity = np.array([[0,0,0]]))  
-        return       
+        return
+    
+    

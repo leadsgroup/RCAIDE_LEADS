@@ -11,7 +11,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_turboshaft_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_turboshaft_conditions(turboshaft, segment, energy_conditions, noise_conditions):
+def append_turboshaft_conditions(turboshaft, segment, energy_conditions, aeroacoustics_conditions):
     """
     Appends data structures for storing turboshaft operating conditions during mission analysis.
     
@@ -23,13 +23,13 @@ def append_turboshaft_conditions(turboshaft, segment, energy_conditions, noise_c
         The mission segment being evaluated
     energy_conditions : RCAIDE.Framework.Mission.Common.Conditions
         Container for energy-related conditions during the mission segment
-    noise_conditions : RCAIDE.Framework.Mission.Common.Conditions
+    aeroacoustics_conditions : RCAIDE.Framework.Mission.Common.Conditions
         Container for noise-related conditions during the mission segment
         
     Returns
     -------
     None
-        This function modifies the energy_conditions and noise_conditions objects in-place
+        This function modifies the energy_conditions and aeroacoustics_conditions objects in-place
     
     Notes
     -----
@@ -62,8 +62,8 @@ def append_turboshaft_conditions(turboshaft, segment, energy_conditions, noise_c
  
     for tag, item in  turboshaft.items(): 
         if issubclass(type(item), RCAIDE.Library.Components.Component):
-            item.append_operating_conditions(segment,energy_conditions,noise_conditions) 
+            item.append_operating_conditions(segment,energy_conditions,aeroacoustics_conditions) 
             for sub_tag, sub_item in  item.items(): 
                 if issubclass(type(sub_item), RCAIDE.Library.Components.Component):
-                    sub_item.append_operating_conditions(segment,energy_conditions,noise_conditions) 
+                    sub_item.append_operating_conditions(segment,energy_conditions,aeroacoustics_conditions) 
     return 

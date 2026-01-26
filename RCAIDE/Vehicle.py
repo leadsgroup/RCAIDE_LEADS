@@ -119,7 +119,7 @@ class Vehicle(Data):
         self.flight_envelope.gust.load_factor.velocity_max_cruise          = 0
         self.flight_envelope.gust.load_factor.velocity_max_dive            = 0 
         
-        self.performance                              = DataOrdered()
+        self.performance  = DataOrdered()
          
     _energy_network_root_map = None 
 
@@ -152,7 +152,7 @@ class Vehicle(Data):
             Components.Nacelles.Nacelle                : self['nacelles']         , 
             Components.Booms.Boom                      : self['booms']            ,
             Components.Landing_Gear.Landing_Gear       : self['landing_gears']    ,
-            Components.Cargo_Bays.Cargo_Bay            : self['cargo_bays']       , 
+            Components.Cargo_Bays.Cargo_Bay            : self['cargo_bays']       ,
             Vehicle_Mass_Properties                    : self['mass_properties']  ,
             Vehicle_Volume_Properties                  : self['volume_properties'],
         }

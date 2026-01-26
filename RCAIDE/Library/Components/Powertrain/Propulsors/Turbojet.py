@@ -167,8 +167,8 @@ class Turbojet(Propulsor):
         self.areas.inflow                                = 0.0 
 
 
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
-        append_turbojet_conditions(self,segment,energy_conditions,noise_conditions)
+    def append_operating_conditions(self,segment,energy_conditions,aeroacoustics_conditions=None):
+        append_turbojet_conditions(self,segment,energy_conditions,aeroacoustics_conditions)
         return
 
     def unpack_propulsor_unknowns(self,segment):   

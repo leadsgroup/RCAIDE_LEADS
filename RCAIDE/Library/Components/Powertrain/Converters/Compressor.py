@@ -68,6 +68,6 @@ class Compressor(Converter):
         self.generator                       = None
         self.nondimensional_massflow         = 0.0
 
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):  
+    def append_operating_conditions(self,segment,energy_conditions,aeroacoustics_conditions=None):  
         append_compressor_conditions(self,segment,energy_conditions)
         return        

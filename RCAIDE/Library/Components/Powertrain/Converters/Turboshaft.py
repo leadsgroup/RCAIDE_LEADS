@@ -124,11 +124,11 @@ class Turboshaft(Converter):
         self.design_angular_velocity                          = 0.0
         self.inverse_calculation                              = False
 
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None): 
+    def append_operating_conditions(self,segment,energy_conditions,aeroacoustics_conditions=None): 
         """
         Appends operating conditions of the segment.
         """  
-        append_turboshaft_conditions(self,segment,energy_conditions,noise_conditions) 
+        append_turboshaft_conditions(self,segment,energy_conditions,aeroacoustics_conditions) 
         return
 
     def unpack_propulsor_unknowns(self,segment):   

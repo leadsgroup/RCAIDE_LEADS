@@ -165,7 +165,7 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.compute_thrust
     """ 
     conditions               = state.conditions 
-    noise_conditions         = conditions.noise.propulsors[turboprop.tag]  
+    aeroacoustics_conditions = conditions.aeroacoustics.propulsors[turboprop.tag]  
     turboprop_conditions     = conditions.energy.propulsors[turboprop.tag]
     U0                       = conditions.freestream.velocity
     T                        = conditions.freestream.temperature
@@ -322,7 +322,7 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
                 exit_velocity                       = core_nozzle_conditions.outputs.velocity
             )
   
-    noise_conditions.core_nozzle   = core_nozzle_res  
+    aeroacoustics_conditions.core_nozzle   = core_nozzle_res  
     
     # Pack results    
     stored_results_flag    = True
@@ -369,7 +369,7 @@ def reuse_stored_turboprop_data(turboprop,state,network,stored_propulsor_tag,cen
 
     # deep copy results 
     conditions.energy.propulsors[turboprop.tag]                = deepcopy(conditions.energy.propulsors[stored_propulsor_tag])
-    conditions.noise.propulsors[turboprop.tag]                 = deepcopy(conditions.noise.propulsors[stored_propulsor_tag]) 
+    conditions.aeroacoustics.propulsors[turboprop.tag]         = deepcopy(conditions.aeroacoustics.propulsors[stored_propulsor_tag]) 
     conditions.energy.converters[ram.tag]                      = deepcopy(conditions.energy.converters[ram_0.tag]                     )
     conditions.energy.converters[inlet_nozzle.tag]             = deepcopy(conditions.energy.converters[inlet_nozzle_0.tag]            ) 
     conditions.energy.converters[compressor.tag]               = deepcopy(conditions.energy.converters[compressor_0.tag] ) 

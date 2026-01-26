@@ -156,7 +156,7 @@ def design_turboshaft(turboshaft):
     
     segment                  = RCAIDE.Framework.Mission.Segments.Segment()  
     segment.state.conditions = conditions
-    turboshaft.append_operating_conditions(segment,conditions.energy,conditions.noise)  
+    turboshaft.append_operating_conditions(segment,conditions.energy,conditions.aeroacoustics)  
             
     ram                     = turboshaft.ram
     inlet_nozzle            = turboshaft.inlet_nozzle

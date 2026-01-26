@@ -10,7 +10,7 @@
 # RCAIDE Imports 
 import RCAIDE 
 from RCAIDE.Framework.Core                                                        import Units  
-from RCAIDE.Library.Methods.Noise.Frequency_Domain_Buildup.Rotor                  import compute_rotor_noise 
+from RCAIDE.Library.Methods.Aeroacoustics.Frequency_Domain_Buildup.Rotor          import compute_rotor_noise 
 from RCAIDE.Framework.Analyses.Process                                            import Process    
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance import compute_rotor_performance 
 
@@ -238,7 +238,7 @@ def run_rotor_hover(nexus):
     conditions.frames.planet.true_course                = np.array([[[1., 0., 0.],[0., 1., 0.],[0., 0.,  1.]]])  
     segment.state.conditions                            = conditions
      
-    rotor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)
+    rotor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.aeroacoustics)
     
     rotor_conditions                            = segment.state.conditions.energy.converters[rotor.tag]     
     rotor_conditions.omega                      = (atmosphere_conditions.speed_of_sound*rotor.hover.design_tip_mach)/rotor.tip_radius 
@@ -267,19 +267,19 @@ def run_rotor_hover(nexus):
     
  
     # Run noise model    
-    conditions.noise.relative_microphone_locations   = np.repeat(mic_positions_hover[ np.newaxis,:,: ],1,axis=0)
+    conditions.aeroacoustics.relative_microphone_locations   = np.repeat(mic_positions_hover[ np.newaxis,:,: ],1,axis=0)
     conditions.aerodynamics.angles.alpha             = np.ones((ctrl_pts,1))* 0. * Units.degrees 
     segment                                          = RCAIDE.Framework.Mission.Segments.Segment() 
     segment.state.conditions                         = conditions
     segment.state.conditions.expand_rows(ctrl_pts)  
-    noise                                            = RCAIDE.Framework.Analyses.Noise.Frequency_Domain_Buildup() 
-    settings                                         = noise.settings   
-    num_mic                                          = len(conditions.noise.relative_microphone_locations[0])  
-    conditions.noise.number_of_microphones           = num_mic   
+    aeroacoustics                                    = RCAIDE.Framework.Analyses.Aeroacoustics.Frequency_Domain_Buildup() 
+    settings                                         = aeroacoustics.settings   
+    num_mic                                          = len(conditions.aeroacoustics.relative_microphone_locations[0])  
+    conditions.aeroacoustics.number_of_microphones   = num_mic   
     
     if alpha != 1: 
-        compute_rotor_noise(conditions.noise.relative_microphone_locations,rotor,segment,settings)    
-        nexus.results.hover.mean_SPL   = np.mean(conditions.noise.converters[rotor.tag].SPL_dBA) 
+        compute_rotor_noise(conditions.aeroacoustics.relative_microphone_locations,rotor,segment,settings)    
+        nexus.results.hover.mean_SPL   = np.mean(conditions.aeroacoustics.converters[rotor.tag].SPL_dBA) 
     else: 
         nexus.results.hover.mean_SPL   = 0  
 
@@ -310,7 +310,7 @@ def run_rotor_OEI(nexus):
     conditions.frames.planet.true_course                = np.array([[[1., 0., 0.],[0., 1., 0.],[0., 0.,  1.]]]) 
     segment.state.conditions                            = conditions
      
-    rotor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)
+    rotor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.aeroacoustics)
                 
     rotor_conditions                            =  segment.state.conditions.energy.converters[rotor.tag]     
     rotor_conditions.omega                      = (atmosphere_conditions.speed_of_sound*rotor.oei.design_tip_mach)/rotor.tip_radius 
@@ -356,7 +356,7 @@ def run_rotor_cruise(nexus):
         conditions.frames.planet.true_course                = np.array([[[1., 0., 0.],[0., 1., 0.],[0., 0.,  1.]]]) 
         segment.state.conditions                            = conditions
           
-        rotor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)
+        rotor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.aeroacoustics)
             
         rotor_conditions                            =  segment.state.conditions.energy.converters[rotor.tag]     
         rotor_conditions.omega                      = (atmosphere_conditions.speed_of_sound*rotor.cruise.design_tip_mach)/rotor.tip_radius 
@@ -383,19 +383,19 @@ def run_rotor_cruise(nexus):
         mic_positions_cruise                             = np.array([[0.0 ,S_cruise*np.sin(theta)  ,S_cruise*np.cos(theta)]])      
         
         # Run noise model  
-        conditions.noise.relative_microphone_locations   = np.repeat(mic_positions_cruise[ np.newaxis,:,: ],1,axis=0)
+        conditions.aeroacoustics.relative_microphone_locations   = np.repeat(mic_positions_cruise[ np.newaxis,:,: ],1,axis=0)
         conditions.aerodynamics.angles.alpha             = np.ones((ctrl_pts,1))* 0. * Units.degrees 
         segment                                          = RCAIDE.Framework.Mission.Segments.Segment() 
         segment.state.conditions                         = conditions
         segment.state.conditions.expand_rows(ctrl_pts)  
-        noise                                            = RCAIDE.Framework.Analyses.Noise.Frequency_Domain_Buildup() 
+        noise                                            = RCAIDE.Framework.Analyses.Aeroacoustics.Frequency_Domain_Buildup() 
         settings                                         = noise.settings   
-        num_mic                                          = len(conditions.noise.relative_microphone_locations[0])  
-        conditions.noise.number_of_microphones           = num_mic    
+        num_mic                                          = len(conditions.aeroacoustics.relative_microphone_locations[0])  
+        conditions.aeroacoustics.number_of_microphones   = num_mic    
         
         if alpha != 1: 
-            compute_rotor_noise(conditions.noise.relative_microphone_locations,rotor,segment,settings)  
-            nexus.results.cruise.mean_SPL   = np.mean(conditions.noise.converters[rotor.tag].SPL_dBA)   
+            compute_rotor_noise(conditions.aeroacoustics.relative_microphone_locations,rotor,segment,settings)  
+            nexus.results.cruise.mean_SPL   = np.mean(conditions.aeroacoustics.converters[rotor.tag].SPL_dBA)   
         else:
             nexus.results.cruise.mean_SPL   = 0  
             

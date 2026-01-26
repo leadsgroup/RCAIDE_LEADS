@@ -83,7 +83,7 @@ class Engine(Converter):
         self.power_split_ratio               = 0.0
         self.power_specific_fuel_consumption = 0.36
 
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):   
-        append_engine_conditions(self,segment,energy_conditions,noise_conditions) 
+    def append_operating_conditions(self,segment,energy_conditions,aeroacoustics_conditions=None):   
+        append_engine_conditions(self,segment,energy_conditions,aeroacoustics_conditions) 
         return                
 

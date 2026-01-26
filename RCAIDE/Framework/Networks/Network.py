@@ -400,7 +400,7 @@ class Network(Component):
         
         for network in segment.analyses.vehicle.networks:
             for propulsor in network.propulsors: 
-                propulsor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)     
+                propulsor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.aeroacoustics)     
     
             for converter in network.converters: 
                 converter.append_operating_conditions(segment,segment.state.conditions.energy)                 

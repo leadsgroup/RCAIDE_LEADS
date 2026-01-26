@@ -70,7 +70,7 @@ class Test_Stand(Evaluate):
         iterate.conditions.aerodynamics    = skip
         iterate.conditions.stability       = skip  
         post_process                       = self.process.post_process  
-        post_process.noise                 = skip      
+        post_process.aeroacoustics         = skip      
         
         return
 

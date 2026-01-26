@@ -86,6 +86,6 @@ class Ram(Converter):
         self.working_fluid            = Data()
 
 
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
+    def append_operating_conditions(self,segment,energy_conditions,aeroacoustics_conditions=None):
         append_ram_conditions(self,segment,energy_conditions)
         return                         

@@ -165,7 +165,8 @@ class Combustor(Converter):
         self.fuel_to_air_ratio_take_off              = 0.025          # [-] Fuel to air ratio at take-off
         self.air_data                                = RCAIDE.Library.Attributes.Gases.Air()         # [-] Air object
         self.fuel_data                               = RCAIDE.Library.Attributes.Propellants.Jet_A1()       # [-] Fuel object
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
+        
+    def append_operating_conditions(self,segment,energy_conditions,aeroacoustics_conditions=None):
         """
         Appends operating conditions of the combustor.
         """ 

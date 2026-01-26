@@ -7,7 +7,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_engine_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_engine_conditions(engine,segment,energy_conditions,noise_conditions=None): 
+def append_engine_conditions(engine,segment,energy_conditions,aeroacoustics_conditions=None): 
     """
     Initializes and appends engine operating conditions of the propulsor conditions data structure.
     
@@ -19,7 +19,7 @@ def append_engine_conditions(engine,segment,energy_conditions,noise_conditions=N
         Mission segment instance containing flight conditions
     energy_conditions : dict
         variable onto which engine operating conditions are appended
-    noise_conditions : dict, optional
+    aeroacoustics_conditions : dict, optional
         variable onto which engine noise conditions are appended. Unused for now.
         
     Returns

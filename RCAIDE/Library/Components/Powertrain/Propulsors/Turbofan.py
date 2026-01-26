@@ -179,11 +179,11 @@ class Turbofan(Propulsor):
         
         self.OpenVSP_flow_through                       = False
     
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
+    def append_operating_conditions(self,segment,energy_conditions,aeroacoustics_conditions=None):
         """
         Appends operating conditions of the segment.
         """
-        append_turbofan_conditions(self,segment,energy_conditions,noise_conditions)
+        append_turbofan_conditions(self,segment,energy_conditions,aeroacoustics_conditions)
         return
 
     def unpack_propulsor_unknowns(self,segment):   

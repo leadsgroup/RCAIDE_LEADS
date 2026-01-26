@@ -11,7 +11,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_turboprop_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_turboprop_conditions(propulsor, segment, energy_conditions, noise_conditions):
+def append_turboprop_conditions(propulsor, segment, energy_conditions, aeroacoustics_conditions):
     """
     Initializes turboprop operating conditions for a mission segment.
     
@@ -31,14 +31,14 @@ def append_turboprop_conditions(propulsor, segment, energy_conditions, noise_con
                         Function to create array of ones with specified length
     energy_conditions : RCAIDE.Framework.Mission.Common.Conditions
         Energy conditions container where turboprop conditions will be stored
-    noise_conditions : RCAIDE.Framework.Mission.Common.Conditions
-        Noise conditions container where turboprop noise conditions will be stored
+    aeroacoustics_conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Aeroacoustics conditions container where turboprop noise conditions will be stored
     
     Returns
     -------
     None
         Results are stored in energy_conditions.propulsors[propulsor.tag] and
-        noise_conditions.propulsors[propulsor.tag]
+        aeroacoustics_conditions.propulsors[propulsor.tag]
     
     Notes
     -----
@@ -76,12 +76,12 @@ def append_turboprop_conditions(propulsor, segment, energy_conditions, noise_con
     energy_conditions.propulsors[propulsor.tag].fuel_mass_flow_rate           = 0. * ones_row(1)
     energy_conditions.propulsors[propulsor.tag].inputs                        = Conditions()
     energy_conditions.propulsors[propulsor.tag].outputs                       = Conditions() 
-    noise_conditions.propulsors[propulsor.tag]                                = Conditions()  
-    noise_conditions.propulsors[propulsor.tag].core_nozzle                    = Conditions()
+    aeroacoustics_conditions.propulsors[propulsor.tag]                        = Conditions()  
+    aeroacoustics_conditions.propulsors[propulsor.tag].core_nozzle            = Conditions()
      
     for tag, item in  propulsor.items(): 
         if issubclass(type(item), RCAIDE.Library.Components.Component):
-            item.append_operating_conditions(segment,energy_conditions,noise_conditions) 
+            item.append_operating_conditions(segment,energy_conditions,aeroacoustics_conditions) 
             for sub_tag, sub_item in  item.items(): 
                 if issubclass(type(sub_item), RCAIDE.Library.Components.Component): 
                     sub_item.append_operating_conditions(segment,energy_conditions)      

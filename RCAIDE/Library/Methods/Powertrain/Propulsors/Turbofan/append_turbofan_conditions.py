@@ -12,7 +12,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_propulsor_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_turbofan_conditions(propulsor, segment, energy_conditions, noise_conditions):
+def append_turbofan_conditions(propulsor, segment, energy_conditions, aeroacoustics_conditions):
     """
     Initializes turbofan operating conditions for a mission segment.
     
@@ -32,14 +32,14 @@ def append_turbofan_conditions(propulsor, segment, energy_conditions, noise_cond
                         Function to create array of ones with specified length
     energy_conditions : RCAIDE.Framework.Mission.Common.Conditions
         Energy conditions container where turbofan conditions will be stored
-    noise_conditions : RCAIDE.Framework.Mission.Common.Conditions
-        Noise conditions container where turbofan noise conditions will be stored
+    aeroacoustics_conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Aeroacoustics conditions container where turbofan noise conditions will be stored
     
     Returns
     -------
     None
         Results are stored in energy_conditions.propulsors[propulsor.tag] and
-        noise_conditions.propulsors[propulsor.tag]
+        aeroacoustics_conditions.propulsors[propulsor.tag]
     
     Notes
     -----
@@ -57,7 +57,7 @@ def append_turbofan_conditions(propulsor, segment, energy_conditions, noise_cond
         * fuel_mass_flow_rate
         * inputs and outputs containers
     
-    It also creates the following containers in noise_conditions:
+    It also creates the following containers in aeroacoustics_conditions:
         * core_nozzle
         * fan_nozzle
         * fan
@@ -84,10 +84,10 @@ def append_turbofan_conditions(propulsor, segment, energy_conditions, noise_cond
     energy_conditions.propulsors[propulsor.tag].fuel_mass_flow_rate           = 0. * ones_row(1)
     energy_conditions.propulsors[propulsor.tag].inputs                        = Conditions()
     energy_conditions.propulsors[propulsor.tag].outputs                       = Conditions() 
-    noise_conditions.propulsors[propulsor.tag]                                = Conditions()  
-    noise_conditions.propulsors[propulsor.tag].core_nozzle                    = Conditions() 
-    noise_conditions.propulsors[propulsor.tag].fan_nozzle                     = Conditions() 
-    noise_conditions.propulsors[propulsor.tag].fan                            = Conditions()
+    aeroacoustics_conditions.propulsors[propulsor.tag]                        = Conditions()  
+    aeroacoustics_conditions.propulsors[propulsor.tag].core_nozzle            = Conditions() 
+    aeroacoustics_conditions.propulsors[propulsor.tag].fan_nozzle             = Conditions() 
+    aeroacoustics_conditions.propulsors[propulsor.tag].fan                    = Conditions()
  
     for tag, item in  propulsor.items(): 
         if issubclass(type(item), RCAIDE.Library.Components.Component):

@@ -148,7 +148,7 @@ class PMSM_Motor(Converter):
         self.Conduction_laminar_flow       = True                        # [-]            True if the flow is laminar, False if the flow is turbulent
         self.Convection_laminar_flow       = True                        # [-]            True if the flow is laminar, False if the flow is turbulent
         
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None): 
+    def append_operating_conditions(self,segment,energy_conditions,aeroacoustics_conditions=None): 
         append_motor_conditions(self,segment,energy_conditions)
         return
 

@@ -188,7 +188,7 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_thurst
     """ 
     conditions                = state.conditions   
-    noise_conditions          = conditions.noise.propulsors[turbofan.tag] 
+    aeroacoustics_conditions  = conditions.aeroacoustics.propulsors[turbofan.tag] 
     turbofan_conditions       = conditions.energy.propulsors[turbofan.tag] 
     U0                        = conditions.freestream.velocity
     T                         = conditions.freestream.temperature
@@ -429,11 +429,11 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
                 angular_velocity    = fan_conditions.omega, 
             )
 
-    noise_conditions.fan_nozzle             = fan_nozzle_res
-    noise_conditions.core_nozzle            = core_nozzle_res  
-    noise_conditions.low_pressure_spool     = lpc_res
-    stored_results_flag                     = True
-    stored_propulsor_tag                    = turbofan.tag 
+    aeroacoustics_conditions.fan_nozzle         = fan_nozzle_res
+    aeroacoustics_conditions.core_nozzle        = core_nozzle_res  
+    aeroacoustics_conditions.low_pressure_spool = lpc_res
+    stored_results_flag                         = True
+    stored_propulsor_tag                        = turbofan.tag 
     
     return thrust_vector,moment,power,power_elec,stored_results_flag,stored_propulsor_tag 
     
@@ -485,7 +485,7 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
     
     # deep copy results 
     conditions.energy.propulsors[turbofan.tag]                 = deepcopy(conditions.energy.propulsors[stored_propulsor_tag])
-    conditions.noise.propulsors[turbofan.tag]                  = deepcopy(conditions.noise.propulsors[stored_propulsor_tag]) 
+    conditions.aeroacoustics.propulsors[turbofan.tag]          = deepcopy(conditions.aeroacoustics.propulsors[stored_propulsor_tag]) 
     conditions.energy.converters[ram.tag]                      = deepcopy(conditions.energy.converters[ram_0.tag]                     )
     conditions.energy.converters[inlet_nozzle.tag]             = deepcopy(conditions.energy.converters[inlet_nozzle_0.tag]            )
     conditions.energy.converters[fan.tag]                      = deepcopy(conditions.energy.converters[fan_0.tag]                     )

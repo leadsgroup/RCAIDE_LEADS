@@ -12,7 +12,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_propulsor_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_turbojet_conditions(propulsor, segment, energy_conditions, noise_conditions):
+def append_turbojet_conditions(propulsor, segment, energy_conditions, aeroacoustics_conditions):
     """
     Initializes turbojet operating conditions for a mission segment.
     
@@ -32,8 +32,8 @@ def append_turbojet_conditions(propulsor, segment, energy_conditions, noise_cond
                         Function to create array of ones with specified length
     energy_conditions : RCAIDE.Framework.Mission.Common.Conditions
         Energy conditions container where turbojet conditions will be stored
-    noise_conditions : RCAIDE.Framework.Mission.Common.Conditions
-        Noise conditions container where turbojet noise conditions will be stored
+    aeroacoustics_conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Aeroacoustics conditions container where turbojet noise conditions will be stored
     
     Returns
     -------
@@ -73,8 +73,8 @@ def append_turbojet_conditions(propulsor, segment, energy_conditions, noise_cond
     energy_conditions.propulsors[propulsor.tag].fuel_mass_flow_rate           = 0. * ones_row(1)
     energy_conditions.propulsors[propulsor.tag].inputs                        = Conditions()
     energy_conditions.propulsors[propulsor.tag].outputs                       = Conditions() 
-    noise_conditions.propulsors[propulsor.tag]                                = Conditions()  
-    noise_conditions.propulsors[propulsor.tag].core_nozzle                    = Conditions()
+    aeroacoustics_conditions.propulsors[propulsor.tag]                        = Conditions()  
+    aeroacoustics_conditions.propulsors[propulsor.tag].core_nozzle            = Conditions()
     
  
     for tag, item in  propulsor.items(): 

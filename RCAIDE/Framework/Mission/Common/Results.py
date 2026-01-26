@@ -409,12 +409,12 @@ class Results(Conditions):
         self.emissions                                       = Conditions()         
         
         # ----------------------------------------------------------------------------------------------------------------------         
-        # Noise
+        # Aeroacoustics
         # ----------------------------------------------------------------------------------------------------------------------       
-        self.noise                                            = Conditions() 
-        self.noise.converters                                 = Conditions() 
-        self.noise.propulsors                                 = Conditions() 
-        self.noise.modulators                                 = Conditions() 
+        self.aeroacoustics                                   = Conditions() 
+        self.aeroacoustics.converters                        = Conditions() 
+        self.aeroacoustics.propulsors                        = Conditions() 
+        self.aeroacoustics.modulators                        = Conditions() 
 
         # ----------------------------------------------------------------------------------------------------------------------         
         # Energy

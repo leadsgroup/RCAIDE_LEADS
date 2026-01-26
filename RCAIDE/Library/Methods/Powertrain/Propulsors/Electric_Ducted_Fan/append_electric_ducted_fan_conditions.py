@@ -12,7 +12,7 @@ from RCAIDE.Framework.Mission.Common                             import Conditio
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append electric ducted fan network conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_electric_ducted_fan_conditions(propulsor, segment, energy_conditions, noise_conditions):
+def append_electric_ducted_fan_conditions(propulsor, segment, energy_conditions, aeroacoustics_conditions):
     """
     Appends data structures arrays for storing electric ducted fan conditions.
     
@@ -32,14 +32,14 @@ def append_electric_ducted_fan_conditions(propulsor, segment, energy_conditions,
                     Function to create array of ones with specified length
     energy_conditions : RCAIDE.Framework.Mission.Common.Conditions
         Energy conditions container where electric ducted fan conditions will be stored
-    noise_conditions : RCAIDE.Framework.Mission.Common.Conditions
-        Noise conditions container where electric ducted fan noise conditions will be stored
+    aeroacoustics_conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Aeroacoustics conditions container where electric ducted fan noise conditions will be stored
     
     Returns
     -------
     None
         Results are stored in energy_conditions.propulsors[propulsor.tag] and
-        noise_conditions.propulsors[propulsor.tag]
+        aeroacoustics_conditions.propulsors[propulsor.tag]
     
     Notes
     -----

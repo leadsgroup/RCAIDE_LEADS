@@ -9,7 +9,7 @@
 
 # RCAIDE imports 
 from RCAIDE.Framework.Core import   Data    
-from RCAIDE.Library.Methods.Noise.Common import post_process_noise_data
+from RCAIDE.Library.Methods.Aeroacoustics.Common import post_process_noise_data
  
 # Pacakge imports 
 import numpy as np 
@@ -34,31 +34,31 @@ def compute_noise_certification_data(approach_mission  = None, takeoff_mission  
     
     # update weights analysis
     for segment in approach_mission.segments:
-        if segment.analyses.noise == None:
-            raise AssertionError('Noise analysis not specifed!')
-        noise_analysis = segment.analyses.noise
-        noise_analysis.settings.microphone_x_resolution                = microphone_x_resolution
-        noise_analysis.settings.microphone_y_resolution                = microphone_y_resolution
-        noise_analysis.settings.noise_times_steps                      = noise_times_steps
-        noise_analysis.settings.number_of_microphone_in_stencil        = number_of_microphone_in_stencil
-        noise_analysis.settings.microphone_min_y                       = 1E-6   
-        noise_analysis.settings.microphone_max_y                       = 1800
-        noise_analysis.settings.microphone_min_x                       = 1E-6   
-        noise_analysis.settings.microphone_max_x                       = 8000
+        if segment.analyses.aeroacoustics == None:
+            raise AssertionError('Aeroacoustics analysis not specifed!')
+        aeroacoustics_analysis = segment.analyses.aeroacoustics
+        aeroacoustics_analysis.settings.microphone_x_resolution                = microphone_x_resolution
+        aeroacoustics_analysis.settings.microphone_y_resolution                = microphone_y_resolution
+        aeroacoustics_analysis.settings.noise_times_steps                      = noise_times_steps
+        aeroacoustics_analysis.settings.number_of_microphone_in_stencil        = number_of_microphone_in_stencil
+        aeroacoustics_analysis.settings.microphone_min_y                       = 1E-6   
+        aeroacoustics_analysis.settings.microphone_max_y                       = 1800
+        aeroacoustics_analysis.settings.microphone_min_x                       = 1E-6   
+        aeroacoustics_analysis.settings.microphone_max_x                       = 8000
     
     # update weights analysis
     for segment in takeoff_mission.segments:
-        if segment.analyses.noise == None:
-            raise AssertionError('Noise analysis not specifed!')
-        noise_analysis = segment.analyses.noise 
-        noise_analysis.settings.microphone_x_resolution                = microphone_x_resolution
-        noise_analysis.settings.microphone_y_resolution                = microphone_y_resolution
-        noise_analysis.settings.noise_times_steps                      = noise_times_steps
-        noise_analysis.settings.number_of_microphone_in_stencil        = number_of_microphone_in_stencil
-        noise_analysis.settings.microphone_min_y                       = 1E-6   
-        noise_analysis.settings.microphone_max_y                       = 1800
-        noise_analysis.settings.microphone_min_x                       = -2000 + 1E-6  
-        noise_analysis.settings.microphone_max_x                       = 6000
+        if segment.analyses.aeroacoustics == None:
+            raise AssertionError('Aeroacoustics analysis not specifed!')
+        acoustics_analysis = segment.analyses.aeroacoustics 
+        acoustics_analysis.settings.microphone_x_resolution                = microphone_x_resolution
+        acoustics_analysis.settings.microphone_y_resolution                = microphone_y_resolution
+        acoustics_analysis.settings.noise_times_steps                      = noise_times_steps
+        acoustics_analysis.settings.number_of_microphone_in_stencil        = number_of_microphone_in_stencil
+        acoustics_analysis.settings.microphone_min_y                       = 1E-6   
+        acoustics_analysis.settings.microphone_max_y                       = 1800
+        acoustics_analysis.settings.microphone_min_x                       = -2000 + 1E-6  
+        acoustics_analysis.settings.microphone_max_x                       = 6000
     
     # evaluate both missions
     approach_results = approach_mission.evaluate() 

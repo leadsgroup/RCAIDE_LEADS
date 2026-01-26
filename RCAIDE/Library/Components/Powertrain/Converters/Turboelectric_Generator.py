@@ -59,7 +59,7 @@ class Turboelectric_Generator(Converter):
         self.gearbox.gear_ratio        = None  
         self.inverse_calculation       = False
 
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None): 
+    def append_operating_conditions(self,segment,energy_conditions,aeroacoustics_conditions=None): 
         """
         Appends operating conditions of the segment.
         """  

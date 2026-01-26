@@ -7,7 +7,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_rotor_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_rotor_conditions(rotor, segment, energy_conditions, noise_conditions): 
+def append_rotor_conditions(rotor, segment, energy_conditions, aeroacoustics_conditions): 
     """
     Initializes and appends rotor conditions to the energy and noise conditions dictionaries.
     
@@ -19,13 +19,13 @@ def append_rotor_conditions(rotor, segment, energy_conditions, noise_conditions)
         The mission segment in which the rotor is operating.
     energy_conditions : dict
         Dictionary containing energy-related conditions for all propulsion components.
-    noise_conditions : dict
+    aeroacoustics_conditions : dict
         Dictionary containing noise-related conditions for all propulsion components.
     
     Returns
     -------
     None
-        This function modifies the energy_conditions and noise_conditions dictionaries in-place.
+        This function modifies the energy_conditions and aeroacoustics_conditions dictionaries in-place.
     
     Notes
     -----
@@ -67,5 +67,5 @@ def append_rotor_conditions(rotor, segment, energy_conditions, noise_conditions)
     energy_conditions.converters[rotor.tag].efficiency                    = 0. * ones_row(1)
     energy_conditions.converters[rotor.tag].figure_of_merit               = 0. * ones_row(1)
     energy_conditions.converters[rotor.tag].power_coefficient             = 0. * ones_row(1) 
-    noise_conditions.converters[rotor.tag]                                = Conditions() 
+    aeroacoustics_conditions.converters[rotor.tag]                        = Conditions() 
     return 

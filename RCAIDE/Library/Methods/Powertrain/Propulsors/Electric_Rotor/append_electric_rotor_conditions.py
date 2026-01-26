@@ -13,7 +13,7 @@ from RCAIDE.Framework.Mission.Common                      import Conditions
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append electric rotor network conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_electric_rotor_conditions(propulsor, segment, energy_conditions, noise_conditions):
+def append_electric_rotor_conditions(propulsor, segment, energy_conditions, aeroacoustics_conditions):
     """
     Appends data structures arrays for storing electric rotor conditions.
     
@@ -33,14 +33,14 @@ def append_electric_rotor_conditions(propulsor, segment, energy_conditions, nois
                     Function to create array of ones with specified length
     energy_conditions : RCAIDE.Framework.Mission.Common.Conditions
         Energy conditions container where electric rotor conditions will be stored
-    noise_conditions : RCAIDE.Framework.Mission.Common.Conditions
-        Noise conditions container where electric rotor noise conditions will be stored
+    aeroacoustics_conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Aeroacoustics conditions container where electric rotor noise conditions will be stored
     
     Returns
     -------
     None
         Results are stored in energy_conditions.propulsors[propulsor.tag] and
-        noise_conditions.propulsors[propulsor.tag]
+        aeroacoustics_conditions.propulsors[propulsor.tag]
     
     Notes
     -----
@@ -72,10 +72,10 @@ def append_electric_rotor_conditions(propulsor, segment, energy_conditions, nois
     energy_conditions.propulsors[propulsor.tag].thrust                        = 0. * ones_row(3) 
     energy_conditions.propulsors[propulsor.tag].power                         = 0. * ones_row(1) 
     energy_conditions.propulsors[propulsor.tag].moment                        = 0. * ones_row(3)  
-    noise_conditions.propulsors[propulsor.tag]                                = Conditions() 
+    aeroacoustics_conditions.propulsors[propulsor.tag]                        = Conditions() 
        
     # parse propulsor for comoonent and append 
     for tag, item in  propulsor.items(): 
         if issubclass(type(item), RCAIDE.Library.Components.Component):
-            item.append_operating_conditions(segment,energy_conditions,noise_conditions)
+            item.append_operating_conditions(segment,energy_conditions,aeroacoustics_conditions)
     return

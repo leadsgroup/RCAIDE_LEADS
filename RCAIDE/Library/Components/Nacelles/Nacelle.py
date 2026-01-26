@@ -118,7 +118,7 @@ class Nacelle(Component):
         self.differential_pressure    = 0.0    
         self.cowling_airfoil_angle    = 0.0
 
-    def append_operating_conditions(self, segment, energy_conditions, noise_conditions=None): 
+    def append_operating_conditions(self, segment, energy_conditions, aeroacoustics_conditions=None): 
         """
         Placeholder for adding operating conditions of the nacelle.
 

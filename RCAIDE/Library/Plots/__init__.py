@@ -21,7 +21,7 @@ from .Emissions          import *
 from .Performance        import * 
 from .Mission            import *  
 from .Mass_Properties    import *
-from .Noise              import *
+from .Aeroacoustics      import *
 from .Thermal_Management import * 
 from .Topography         import * 
 from .Stability          import * 
