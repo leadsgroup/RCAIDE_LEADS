@@ -111,8 +111,8 @@ def compute_propulsion_system_weight(vehicle,network):
 
     See Also
     --------
-    RCAIDE.Library.Methods.Weights.Correlation_Buildups.FLOPS.compute_jet_engine_weight
-    RCAIDE.Library.Methods.Weights.Correlation_Buildups.FLOPS.compute_piston_engine_weight
+    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Transport.FLOPS.compute_jet_engine_weight
+    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Transport.FLOPS.compute_piston_engine_weight
     """
 
     NENG            =  0 

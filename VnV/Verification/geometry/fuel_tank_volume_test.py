@@ -45,7 +45,7 @@ def main():
 
 def single_wing_segment_integral_fuel_tank_volume_test():
 
-    fuel_volume_true = [0.1604406939938338]
+    fuel_volume_true = [0.16044005289435948]
 
     vehicle = Nav_vehicle_setup()
     

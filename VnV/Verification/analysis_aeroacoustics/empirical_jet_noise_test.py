@@ -12,7 +12,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units 
 from RCAIDE.Library.Plots import * 
-from RCAIDE.Library.Methods.Noise.Common import post_process_noise_data      
+from RCAIDE.Library.Methods.Aeroacoustics.Common import post_process_noise_data      
 
 import sys
 import matplotlib.pyplot as plt 
@@ -46,7 +46,7 @@ def main():
     _   = post_process_noise_data(baseline_results,compute_PNL=True )      
      
     # SPL of rotor check during hover 
-    E190_SPL        = np.max(baseline_results.segments.takeoff.conditions.noise.hemisphere_SPL_dBA)
+    E190_SPL        = np.max(baseline_results.segments.takeoff.conditions.aeroacoustics.hemisphere_SPL_dBA)
     E190_SPL_true   = 104.61335434997156 # this value is high because its of a hemisphere of radius 20
     E190_diff_SPL   = np.abs(E190_SPL - E190_SPL_true)
     print('SPL difference: ',E190_diff_SPL)
@@ -78,7 +78,7 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Noise Analysis
     # ------------------------------------------------------------------
-    noise = RCAIDE.Framework.Analyses.Noise.Correlation_Buildup()   
+    noise = RCAIDE.Framework.Analyses.Aeroacoustics.Semi_Empirical()   
     analyses.append(noise)
 
     # ------------------------------------------------------------------

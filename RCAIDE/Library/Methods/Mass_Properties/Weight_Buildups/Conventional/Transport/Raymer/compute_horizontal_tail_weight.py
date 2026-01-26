@@ -89,8 +89,8 @@ def compute_horizontal_tail_weight(vehicle, wing, settings,elevator_fraction=0.4
 
     See Also
     --------
-    RCAIDE.Library.Methods.Weights.Correlation_Buildups.Raymer.compute_vertical_tail_weight
-    RCAIDE.Library.Methods.Weights.Correlation_Buildups.Raymer.compute_operating_empty_weight
+    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_vertical_tail_weight
+    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_operating_empty_weight
     """
 
     ref_wing = None 

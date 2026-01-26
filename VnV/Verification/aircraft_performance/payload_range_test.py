@@ -58,7 +58,7 @@ def fuel_aircraft_payload_range():
     payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage=0.1, delete_training_data = True)
                                 
     fuel_r                 = payload_range_results.range[-1]  
-    fuel_r_true            = 5593456.220678145 # Reference ( https://www.embraercommercialaviation.com/wp-content/uploads/2017/06/APM_190.pdf) is 5556000.  
+    fuel_r_true            = 5593348.520224805 # Reference ( https://www.embraercommercialaviation.com/wp-content/uploads/2017/06/APM_190.pdf) is 5556000.  
     
     print('Fuel Range: ' + str(fuel_r))
     fuel_error =  abs(fuel_r - fuel_r_true) /fuel_r_true

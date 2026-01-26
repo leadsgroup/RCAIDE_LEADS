@@ -10,7 +10,7 @@
 # RCAIDE Imports 
 import RCAIDE 
 from RCAIDE.Framework.Core                                                        import Units  
-from RCAIDE.Library.Methods.Aeroacoustics.Frequency_Domain_Buildup.Rotor          import compute_rotor_noise 
+from RCAIDE.Library.Methods.Aeroacoustics.Physics_Based.Rotor                     import compute_rotor_noise 
 from RCAIDE.Framework.Analyses.Process                                            import Process    
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance import compute_rotor_performance 
 
@@ -272,7 +272,7 @@ def run_rotor_hover(nexus):
     segment                                          = RCAIDE.Framework.Mission.Segments.Segment() 
     segment.state.conditions                         = conditions
     segment.state.conditions.expand_rows(ctrl_pts)  
-    aeroacoustics                                    = RCAIDE.Framework.Analyses.Aeroacoustics.Frequency_Domain_Buildup() 
+    aeroacoustics                                    = RCAIDE.Framework.Analyses.Aeroacoustics.Physics_Based() 
     settings                                         = aeroacoustics.settings   
     num_mic                                          = len(conditions.aeroacoustics.relative_microphone_locations[0])  
     conditions.aeroacoustics.number_of_microphones   = num_mic   
@@ -388,7 +388,7 @@ def run_rotor_cruise(nexus):
         segment                                          = RCAIDE.Framework.Mission.Segments.Segment() 
         segment.state.conditions                         = conditions
         segment.state.conditions.expand_rows(ctrl_pts)  
-        noise                                            = RCAIDE.Framework.Analyses.Aeroacoustics.Frequency_Domain_Buildup() 
+        noise                                            = RCAIDE.Framework.Analyses.Aeroacoustics.Physics_Based() 
         settings                                         = noise.settings   
         num_mic                                          = len(conditions.aeroacoustics.relative_microphone_locations[0])  
         conditions.aeroacoustics.number_of_microphones   = num_mic    

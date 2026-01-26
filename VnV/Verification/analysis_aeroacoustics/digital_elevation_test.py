@@ -9,7 +9,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units , Data 
 from RCAIDE.Library.Plots import *
-from RCAIDE.Library.Methods.Noise.Common import post_process_noise_data     
+from RCAIDE.Library.Methods.Aeroacoustics.Common import post_process_noise_data     
 
 # Python imports
 import matplotlib.pyplot as plt  
@@ -39,7 +39,7 @@ def main():
     mission  = mission_setup(analyses)
     missions = missions_setup(mission)  
     results  = missions.base_mission.evaluate()  
-    results.segments[0].analyses.noise.settings.topography_file = data_file
+    results.segments[0].analyses.aeroacoustics.settings.topography_file = data_file
     
     regression_plotting_flag = False 
     flight_times = np.array(['06:00:00','06:05:00','06:10:00', 
@@ -55,7 +55,7 @@ def main():
     plot_results(results,noise_data,regression_plotting_flag)
     plot_battery_pack_conditions(results) 
 
-    X57_SPL        = np.max(results.segments.cruise.conditions.noise.hemisphere_SPL_dBA) 
+    X57_SPL        = np.max(results.segments.cruise.conditions.aeroacoustics.hemisphere_SPL_dBA) 
     X57_SPL_true   = 80.32077228241845
     X57_diff_SPL   = np.abs(X57_SPL - X57_SPL_true)
     print('Error: ',X57_diff_SPL)
@@ -124,7 +124,7 @@ def base_analysis(vehicle):
 
     # ------------------------------------------------------------------
     #  Noise 
-    noise = RCAIDE.Framework.Analyses.Noise.Frequency_Domain_Buildup()   
+    noise = RCAIDE.Framework.Analyses.Aeroacoustics.Physics_Based()   
     noise.settings.mean_sea_level_altitude          = False         
     noise.settings.aircraft_origin_coordinates      = [33.94067953101678, -118.40513722978149]# Los Angeles International Airport
     noise.settings.aircraft_destination_coordinates = [33.8146, -118.1459]  # Ontario International airport 

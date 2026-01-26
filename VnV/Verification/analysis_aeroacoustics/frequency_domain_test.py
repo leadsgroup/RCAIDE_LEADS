@@ -3,7 +3,7 @@
 # Imports    
 import RCAIDE
 from RCAIDE.Framework.Core import Units, Data  
-from RCAIDE.Library.Methods.Noise.Frequency_Domain_Buildup.Rotor                  import compute_rotor_noise
+from RCAIDE.Library.Methods.Aeroacoustics.Physics_Based.Rotor                     import compute_rotor_noise
 from RCAIDE.Framework.Mission.Common                                              import Results  
 from RCAIDE.Framework.Mission.Segments.Segment                                    import Segment 
 from RCAIDE.Framework.Mission.Common                                              import Conditions
@@ -88,7 +88,7 @@ def Harmonic_Noise_Validation(PP):
  
     segment                                                = Segment()  
     conditions                                             = Results() 
-    conditions.noise.relative_microphone_locations         = np.repeat(mic_positions[ np.newaxis,:,: ],1,axis=0)   
+    conditions.aeroacoustics.relative_microphone_locations = np.repeat(mic_positions[ np.newaxis,:,: ],1,axis=0)   
     conditions.aerodynamics.angles.alpha                   = np.atleast_2d(AoA).T 
     conditions.freestream.density                          = np.ones((ctrl_pts,1)) * density
     conditions.freestream.dynamic_viscosity                = np.ones((ctrl_pts,1)) * dynamic_viscosity   
@@ -129,7 +129,7 @@ def Harmonic_Noise_Validation(PP):
     # Run simulation using different fidelities 
     # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     for fid in  range(len(fidelities)): 
-        rotor.append_operating_conditions(segment, segment.state.conditions.energy,segment.state.conditions.noise)
+        rotor.append_operating_conditions(segment, segment.state.conditions.energy,segment.state.conditions.aeroacoustics)
         
         # Run BEMT
         segment.state.conditions.expand_rows(ctrl_pts)
@@ -137,11 +137,11 @@ def Harmonic_Noise_Validation(PP):
         rotor_conditions.omega[:,0]  = test_omega
         compute_rotor_performance(rotor,segment.state.conditions)      
         
-        noise                                                  = RCAIDE.Framework.Analyses.Noise.Frequency_Domain_Buildup() 
+        noise                                                  = RCAIDE.Framework.Analyses.Aeroacoustics.Physics_Based() 
         settings                                               = noise.settings
         settings.fidelity                                      = fidelities[fid]
         settings.use_plane_loading_surrogate                   = False  
-        conditions.noise.number_of_microphones                 = len(theta)
+        conditions.aeroacoustics.number_of_microphones                 = len(theta)
         
         # time
         ti  = time.time()
@@ -149,10 +149,10 @@ def Harmonic_Noise_Validation(PP):
         compute_rotor_noise(mic_positions,rotor,segment,settings)
         tf  = time.time()
         
-        F8745D4_SPL                                            = conditions.noise.converters[rotor.tag].SPL     
-        F8745D4_SPL_harmonic                                   = conditions.noise.converters[rotor.tag].SPL_harmonic 
-        F8745D4_SPL_broadband                                  = conditions.noise.converters[rotor.tag].SPL_broadband  
-        F8745D4_SPL_harmonic_bpf_spectrum                      = conditions.noise.converters[rotor.tag].SPL_harmonic_bpf_spectrum     
+        F8745D4_SPL                                            = conditions.aeroacoustics.converters[rotor.tag].SPL     
+        F8745D4_SPL_harmonic                                   = conditions.aeroacoustics.converters[rotor.tag].SPL_harmonic 
+        F8745D4_SPL_broadband                                  = conditions.aeroacoustics.converters[rotor.tag].SPL_broadband  
+        F8745D4_SPL_harmonic_bpf_spectrum                      = conditions.aeroacoustics.converters[rotor.tag].SPL_harmonic_bpf_spectrum     
         
         Cp =  segment.state.conditions.energy.converters[rotor.tag].power_coefficient
 
@@ -285,17 +285,17 @@ def Broadband_Noise_Validation(PP):
     rotor.number_azimuthal_stations                        = 16
     rotor.use_2d_analysis                                  = True
      
-    rotor.append_operating_conditions(segment, segment.state.conditions.energy,segment.state.conditions.noise)
+    rotor.append_operating_conditions(segment, segment.state.conditions.energy,segment.state.conditions.aeroacoustics)
     # Run BEMT
     segment.state.conditions.expand_rows(ctrl_pts)
     rotor_conditions             =  segment.state.conditions.energy.converters[rotor.tag]       
     rotor_conditions.omega[:,0]  = APC_SF_omega_vector
     compute_rotor_performance(rotor,segment.state.conditions)      
 
-    noise                                                  = RCAIDE.Framework.Analyses.Noise.Frequency_Domain_Buildup() 
+    noise                                                  = RCAIDE.Framework.Analyses.Aeroacoustics.Physics_Based() 
     settings                                               = noise.settings
     settings.fidelity                                      = 'plane_source' 
-    conditions.noise.number_of_microphones                 = len(theta)
+    conditions.aeroacoustics.number_of_microphones                 = len(theta)
     
     # time
     ti = time.time()             
@@ -303,8 +303,8 @@ def Broadband_Noise_Validation(PP):
     compute_rotor_noise(mic_positions,rotor,segment,settings)
     tf = time.time()
     
-    APC_SF_1_3_Spectrum                                     = conditions.noise.converters[rotor.tag].SPL_1_3_spectrum 
-    APC_SF_SPL_broadband_1_3_spectrum                       = conditions.noise.converters[rotor.tag].SPL_broadband_1_3_spectrum  
+    APC_SF_1_3_Spectrum                                     = conditions.aeroacoustics.converters[rotor.tag].SPL_1_3_spectrum 
+    APC_SF_SPL_broadband_1_3_spectrum                       = conditions.aeroacoustics.converters[rotor.tag].SPL_broadband_1_3_spectrum  
 
     axes_3_1,axes_3_2, axes_3_3, axes_3_4, validation_data = Broadband_Noise_Validation_Data(PP)
 

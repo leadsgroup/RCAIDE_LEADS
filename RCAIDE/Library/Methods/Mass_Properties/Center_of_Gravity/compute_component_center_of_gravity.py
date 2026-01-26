@@ -38,9 +38,7 @@ def compute_component_center_of_gravity(component,vehicle,total_mass,total_momen
             total_mass,total_moment = compute_component_center_of_gravity(item,vehicle,total_mass,total_moment,segment,verbose)
     if isinstance(component,Component):
         component.compute_center_of_gravity(vehicle)
-        update_mass_and_moment(total_mass,total_moment,component,segment,verbose)    
-        if isinstance(component,RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
-            update_mass_and_moment(total_mass,total_moment,component.fuel,segment,verbose)        
+        update_mass_and_moment(total_mass,total_moment,component,segment,verbose)     
         for key in component.keys():
             item = component[key]
             if isinstance(item,Component.Container):

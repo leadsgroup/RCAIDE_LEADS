@@ -35,9 +35,7 @@ def compute_component_moment_of_inertia(component,vehicle,total_MOI,segment=None
             total_MOI = compute_component_moment_of_inertia(item,vehicle,total_MOI,segment,verbose)
     if isinstance(component,Component):
         component.compute_moments_of_inertia(vehicle, center_of_gravity=vehicle.mass_properties.center_of_gravity)
-        update_total_moment_of_inertia(total_MOI,component,segment, verbose) 
-        if isinstance(component,RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
-            update_total_moment_of_inertia(total_MOI,component.fuel,segment, verbose) 
+        update_total_moment_of_inertia(total_MOI,component,segment, verbose)
         for key in component.keys():
             item = component[key]
             if isinstance(item,Component.Container):
