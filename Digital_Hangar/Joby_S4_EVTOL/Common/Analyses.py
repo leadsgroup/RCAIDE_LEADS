@@ -33,38 +33,38 @@ def base_analysis(vehicle,run_noise_analysis_flag,use_topology_flag,microphone_t
     # ------------------------------------------------------------------
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
-    analyses = RCAIDE.Framework.Analyses.Vehicle()
-    analyses.vehicle = vehicle
+    analyses                       = RCAIDE.Framework.Analyses.Vehicle()
+    analyses.vehicle               = vehicle
 
     # ------------------------------------------------------------------
     #  Basic Geometry Relations
-    sizing = RCAIDE.Framework.Analyses.Sizing.Sizing()
-    sizing.features.vehicle = vehicle
+    sizing                         = RCAIDE.Framework.Analyses.Sizing.Sizing()
+    sizing.features.vehicle        = vehicle
     analyses.append(sizing)
 
     # ------------------------------------------------------------------
     #  Weights
-    weights = RCAIDE.Framework.Analyses.Weights.Weights_eVTOL()
+    weights                        = RCAIDE.Framework.Analyses.Weights.Weights_eVTOL()
     analyses.append(weights)
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
-    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
-    aerodynamics.settings.model_fuselage = True 
-    aerodynamics.settings.number_spanwise_vortices           = 25
-    aerodynamics.settings.number_chordwise_vortices          = 5    
+    aerodynamics                                         = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
+    aerodynamics.settings.model_fuselage                 = True 
+    aerodynamics.settings.number_spanwise_vortices       = 25
+    aerodynamics.settings.number_chordwise_vortices      = 5    
     analyses.append(aerodynamics)  
         
     if run_noise_analysis_flag:  
         # ------------------------------------------------------------------
         #  Noise Analysis
-        noise = RCAIDE.Framework.Analyses.Noise.Fidelity_Zero()   
-        noise.geometry = vehicle
+        noise                                            = RCAIDE.Framework.Analyses.Noise.Fidelity_Zero()   
+        noise.geometry                                   = vehicle
 
         # ------------------------------------------------------------------
         #  Noise Analysis
-        noise = RCAIDE.Framework.Analyses.Noise.Fidelity_Zero()   
-        noise.geometry = vehicle  
+        noise                                            = RCAIDE.Framework.Analyses.Noise.Fidelity_Zero()   
+        noise.geometry                                   = vehicle  
         noise.settings.mean_sea_level_altitude           = False 
         noise.settings.ground_microphone_x_resolution    = microphone_terrain_data.ground_microphone_x_resolution           
         noise.settings.ground_microphone_y_resolution    = microphone_terrain_data.ground_microphone_y_resolution             
