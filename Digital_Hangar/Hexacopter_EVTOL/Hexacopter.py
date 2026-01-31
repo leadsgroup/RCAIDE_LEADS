@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt
 # ----------------------------------------------------------------------------------------------------------------------  
 def main():           
          
-    # vehicle data
+    
     new_geometry = True
     redesign_rotors =  False 
     if new_geometry :
@@ -32,22 +32,22 @@ def main():
     else: 
         vehicle = load_aircraft_geometry('Hexacopter') 
 
-    # Set up configs
+    
     configs = configs_setup(vehicle)
 
-    # vehicle analyses
+    
     analyses = analyses_setup(configs)
 
-    # mission analyses
+    
     mission = mission_setup(analyses)
     missions = missions_setup(mission) 
      
     results = missions.base_mission.evaluate() 
      
-    # plot the results 
+     
     plot_results(results) 
 
-    ## plot vehicle 
+     
   
     return 
 # ----------------------------------------------------------------------
@@ -104,7 +104,7 @@ def vehicle_setup(redesign_rotors) :
     # ------------------------------------------------------    
     # FUSELAGE    
     # ------------------------------------------------------    
-    # FUSELAGE PROPERTIES
+    
     fuselage                                    = RCAIDE.Library.Components.Fuselages.Fuselage()
     fuselage.tag                                = 'fuselage' 
     fuselage.seats_abreast                      = 2.  
@@ -228,7 +228,7 @@ def vehicle_setup(redesign_rotors) :
            
     # Lift Rotor Design              
     g                                                      = 9.81                                     
-    Hover_Load                                             = vehicle.mass_properties.takeoff*g *1.1 
+    Hover_Load                                             = vehicle.mass_properties.takeoff * g * 1.1 
     
     lift_rotor                                             = RCAIDE.Library.Components.Powertrain.Converters.Lift_Rotor()    
     lift_rotor.active                                      = True           
@@ -263,7 +263,7 @@ def vehicle_setup(redesign_rotors) :
     #------------------------------------------------------------------------------------------------------------------------------------    
     lift_rotor_motor                                       = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     lift_rotor_motor.efficiency                            = 0.9
-    lift_rotor_motor.nominal_voltage                       = bus.voltage*3/4    
+    lift_rotor_motor.nominal_voltage                       = bus.voltage * 3/4    
     lift_rotor_motor.no_load_current                       = 2      
     propulsor.motor                                        = lift_rotor_motor
      
@@ -273,9 +273,9 @@ def vehicle_setup(redesign_rotors) :
     nacelle                                                = RCAIDE.Library.Components.Nacelles.Nacelle()
     nacelle.tag                                            = 'rotor_nacelle' 
     nacelle.length                                         = 0.4
-    nacelle.diameter                                       = 2.6*2
-    nacelle.inlet_diameter                                 = 2.55*2     
-    nacelle.orientation_euler_angles                       = [0,-90*Units.degrees,0.]    
+    nacelle.diameter                                       = 2.6 * 2
+    nacelle.inlet_diameter                                 = 2.55 * 2     
+    nacelle.orientation_euler_angles                       = [0,-90 * Units.degrees,0.]    
     nacelle.flow_through                                   = True  
     propulsor.nacelle                                      = nacelle
     
@@ -292,8 +292,8 @@ def vehicle_setup(redesign_rotors) :
         for key,item in propulsor.motor.items():
             propulsor.motor[key]                                              = loaded_propulsor.motor[key]  
 
-    # Front Rotors Locations
-            # foward starboard |foward port |    middle starboard |middle port  | aft starbard  | aft port   
+    
+              
     origins = [[ -1.5,2.6,1.8],[ -1.5,-2.6,1.8], [2.5,6.0,1.8] ,[2.5,-6.,1.8], [6.5,2.6,1.8] ,[6.5,-2.6,1.8]]  
     
     for i in range(len(origins)): 
@@ -312,14 +312,14 @@ def vehicle_setup(redesign_rotors) :
                              
     # Avionics                            
     avionics                                              = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.power_draw                                   = 10. # Watts  
+    avionics.power_draw                                   = 10.   
     avionics.mass_properties.mass                         = 1.0 * Units.kg
     bus.avionics                                          = avionics    
 
    
     network.busses.append(bus)       
         
-    # append energy network 
+     
     vehicle.append_energy_network(network) 
  
     return vehicle
@@ -385,7 +385,7 @@ def configs_setup(vehicle):
     for network in  config.networks: 
         for bus in network.busses: 
             for propulsor in  bus.propulsors: 
-                propulsor.rotor.blade_pitch_command   = 2.  * Units.degrees 
+                propulsor.rotor.blade_pitch_command  = 2.  * Units.degrees 
     configs.append(config) 
     
     # ------------------------------------------------------------------
@@ -405,7 +405,7 @@ def analyses_setup(configs):
 
     analyses = RCAIDE.Framework.Analyses.Analysis.Container()
 
-    # build a base analysis for each config
+    
     for tag,config in configs.items():
         analysis = base_analysis(config)
         analyses[tag] = analysis
@@ -470,7 +470,7 @@ def mission_setup(analyses):
     mission                             = RCAIDE.Framework.Mission.Sequential_Segments()
     mission.tag                         = 'mission'
 
-    # unpack Segments module
+  
     Segments                            = RCAIDE.Framework.Mission.Segments  
     base_segment                        = Segments.Segment()
      
@@ -481,8 +481,8 @@ def mission_setup(analyses):
     segment                                                          = Segments.Vertical_Flight.Climb(base_segment)
     segment.tag                                                      = "Vertical_Climb" 
     segment.analyses.extend( analyses.vertical_flight) 
-    segment.altitude_start                                           = 0.0  * Units.ft 
-    segment.altitude_end                                             = 50.  * Units.ft  
+    segment.altitude_start                                           = 0.0 * Units.ft 
+    segment.altitude_end                                             = 50. * Units.ft  
     segment.climb_rate                                               = 500. * Units['ft/min']   
     segment.initial_battery_state_of_charge                          = 1.0
     segment.true_course                                              = 0 * Units.degree 
@@ -503,7 +503,7 @@ def mission_setup(analyses):
     segment                                                          = Segments.Cruise.Constant_Acceleration_Constant_Altitude(base_segment)
     segment.tag                                                      = "Vertical_Transition"  
     segment.analyses.extend( analyses.vertical_transition) 
-    segment.altitude                                                 = 50.  * Units.ft       
+    segment.altitude                                                 = 50. * Units.ft       
     segment.air_speed_start                                          = 300. * Units['ft/min'] 
     segment.air_speed_end                                            = 35 * Units['mph']    
     segment.acceleration                                             = 1.0
@@ -531,8 +531,8 @@ def mission_setup(analyses):
     segment.tag                                                      = "Departure_Climb"  
     segment.analyses.extend(analyses.climb) 
     segment.climb_rate                                               = 551. * Units['ft/min']
-    segment.air_speed_start                                          = 35.   * Units['mph']
-    segment.air_speed_end                                            = 55.  * Units['mph']   
+    segment.air_speed_start                                          = 35. * Units['mph']
+    segment.air_speed_end                                            = 55. * Units['mph']   
     segment.altitude_end                                             = 500.0 * Units.ft
     segment.true_course                                              = 30 * Units.degree 
         
@@ -554,7 +554,7 @@ def mission_setup(analyses):
     segment.tag                                           = "Departure_Pattern_Curve"     
     segment.analyses.extend(analyses.climb) 
     segment.altitude                                      = 500.0 * Units.ft  
-    segment.air_speed                                     = 55.  * Units['mph']       
+    segment.air_speed                                     = 55. * Units['mph']       
     segment.turn_radius                                   = 3600 * Units.feet  
     segment.true_course                                   = 0 * Units.degree  
     segment.turn_angle                                    = 90 * Units.degree
@@ -586,8 +586,8 @@ def mission_setup(analyses):
     segment.tag                                                      = "Climb_2"  
     segment.analyses.extend(analyses.climb) 
     segment.climb_rate                                               = 500. * Units['ft/min']
-    segment.air_speed_start                                          = 55.   * Units['mph']
-    segment.air_speed_end                                            = 75.  * Units['mph']       
+    segment.air_speed_start                                          = 55. * Units['mph']
+    segment.air_speed_end                                            = 75. * Units['mph']       
     segment.altitude_start                                           = 500.0 * Units.ft     
     segment.altitude_end                                             = 1000.0 * Units.ft
     segment.true_course                                              = 90 * Units.degree  
@@ -611,7 +611,7 @@ def mission_setup(analyses):
     segment.analyses.extend(analyses.forward_flight)  
     segment.altitude                                                 = 1000.0 * Units.ft      
     segment.air_speed                                                = 75. * Units['mph']      
-    segment.distance                                                 = 58*Units.nmi
+    segment.distance                                                 = 58 * Units.nmi
     segment.true_course                                              = 90 * Units.degree  
 
     # define flight dynamics to model 
@@ -656,7 +656,7 @@ def mission_setup(analyses):
     segment.tag                                                      = "Approach_Pattern_Curve"     
     segment.analyses.extend(analyses.climb) 
     segment.altitude                                                 = 500.0 * Units.ft  
-    segment.air_speed                                                = 55.  * Units['mph']       
+    segment.air_speed                                                = 55. * Units['mph']       
     segment.turn_radius                                              = 3600 * Units.feet  
     segment.true_course                                              = 90 * Units.degree     
     segment.turn_angle                                               = 90 * Units.degree
@@ -761,36 +761,36 @@ def missions_setup(mission):
  
     missions = RCAIDE.Framework.Mission.Missions()
     
-    # base mission 
+     
     mission.tag  = 'base_mission'
     missions.append(mission)
  
     return missions
 
 def plot_results(results):
-    # Plots fligh conditions 
+     
     plot_flight_conditions(results) 
     
-    # Plot arcraft trajectory
+    
     plot_flight_trajectory(results)
     
-    # Plot Aerodynamic Coefficients
+    
     plot_aerodynamic_coefficients(results)  
      
-    # Plot Aircraft Stability
+    
     plot_longitudinal_stability(results) 
     
-    # Plot Aircraft Electronics 
+     
     plot_battery_temperature(results)
     plot_battery_cell_conditions(results) 
     plot_battery_degradation(results) 
     plot_electric_propulsor_efficiencies(results) 
     
-    # Plot Propeller Conditions 
+    
     plot_rotor_conditions(results) 
     plot_disc_and_power_loading(results)
      
-    # Plot Battery Degradation  
+      
     plot_battery_degradation(results)   
     return
 
