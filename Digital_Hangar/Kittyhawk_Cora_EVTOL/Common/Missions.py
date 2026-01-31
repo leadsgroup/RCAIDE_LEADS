@@ -27,7 +27,7 @@ def baseline_mission_setup(analyses,vehicle,simulated_days = 1,flights_per_day =
     mission            = RCAIDE.Framework.Analyses.Mission.Sequential_Segments()
     mission.tag        = 'baseline_mission'
 
-    # airport
+    
     airport            = RCAIDE.Attributes.Airports.Airport()
     airport.altitude   = 0.0  * Units.ft
     airport.delta_isa  = 0.0
@@ -37,10 +37,10 @@ def baseline_mission_setup(analyses,vehicle,simulated_days = 1,flights_per_day =
     atmosphere         = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976() 
     atmo_data          = atmosphere.compute_values(altitude = airport.altitude,temperature_deviation= 1.)     
 
-    # unpack Segments module
+    
     Segments           = RCAIDE.Framework.Analyses.Mission.Segments
 
-    # base segment           
+               
     base_segment                                                              = Segments.Segment() 
     base_segment.battery_discharge                                            = True  
     base_segment.state.numerics.number_of_control_points                      = control_points 
@@ -48,7 +48,7 @@ def baseline_mission_setup(analyses,vehicle,simulated_days = 1,flights_per_day =
     base_segment.process.finalize.post_process.update_battery_state_of_health = RCAIDE.Methods.Missions.Segments.Common.Energy.update_battery_state_of_health  
     base_segment.process.finalize.post_process.stability                      = RCAIDE.Methods.skip 
 
-    # VSTALL Calculation  
+      
     vehicle_mass   = vehicle.mass_properties.max_takeoff
     reference_area = vehicle.reference_area 
     Vstall         = estimate_stall_speed(vehicle_mass,reference_area,altitude = 0.0,maximum_lift_coefficient = 1.2)        
@@ -240,7 +240,7 @@ def repeated_flight_operation_setup(analyses,vehicle,simulated_days = 1,flights_
     mission                    = RCAIDE.Framework.Analyses.Mission.Sequential_Segments()
     mission.tag                = 'repeated_flight_operation_mission'
 
-    # airport
+   
     airport                    = RCAIDE.Attributes.Airports.Airport()
     airport.altitude           = 0.0  * Units.ft
     airport.delta_isa          = 0.0
@@ -250,10 +250,10 @@ def repeated_flight_operation_setup(analyses,vehicle,simulated_days = 1,flights_
     atmosphere                 = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976() 
     atmo_data                  = atmosphere.compute_values(altitude = airport.altitude,temperature_deviation= 1.)     
 
-    # unpack Segments module
+    
     Segments                   = RCAIDE.Framework.Analyses.Mission.Segments
 
-    # base segment           
+              
     base_segment                                                                      = Segments.Segment() 
     base_segment.battery_discharge                                                    = True  
     base_segment.state.numerics.number_of_control_points                              = control_points 
@@ -261,14 +261,14 @@ def repeated_flight_operation_setup(analyses,vehicle,simulated_days = 1,flights_
     base_segment.process.finalize.post_process.update_battery_state_of_health         = RCAIDE.Methods.Missions.Segments.Common.Energy.update_battery_state_of_health  
     base_segment.process.finalize.post_process.stability                              = RCAIDE.Methods.skip 
 
-    # VSTALL Calculation  
+      
     vehicle_mass       = vehicle.mass_properties.max_takeoff
     reference_area     = vehicle.reference_area
     Vstall             = estimate_stall_speed(vehicle_mass,reference_area,altitude = 0.0,maximum_lift_coefficient = 1.2)     
     
     for day in range(simulated_days): 
 
-        # compute daily temperature in san francisco: link: https://www.usclimatedata.com/climate/san-francisco/california/united-states/usca0987/2019/1
+        
         daily_temp = (13.5 + (day)*(-0.00882) + (day**2)*(0.00221) + (day**3)*(-0.0000314) + (day**4)*(0.000000185)  + \
                       (day**5)*(-0.000000000483)  + (day**6)*(4.57E-13)) + 273.2
         
@@ -480,7 +480,7 @@ def constant_elevation_in_cruise_mission_setup(analyses,vehicle,simulated_days =
     mission            = RCAIDE.Framework.Analyses.Mission.Sequential_Segments()
     mission.tag        = 'constant_elevation_in_cruise_mission'
 
-    # airport
+    
     airport            = RCAIDE.Attributes.Airports.Airport()
     airport.altitude   = 0.0  * Units.ft
     airport.delta_isa  = 0.0
@@ -490,10 +490,10 @@ def constant_elevation_in_cruise_mission_setup(analyses,vehicle,simulated_days =
     atmosphere         = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976() 
     atmo_data          = atmosphere.compute_values(altitude = airport.altitude,temperature_deviation= 1.)     
 
-    # unpack Segments module
+    
     Segments           = RCAIDE.Framework.Analyses.Mission.Segments
 
-    # base segment           
+               
     base_segment                                                                     = Segments.Segment() 
     base_segment.battery_discharge                                                   = True  
     base_segment.state.numerics.number_of_control_points                             = control_points
@@ -503,7 +503,7 @@ def constant_elevation_in_cruise_mission_setup(analyses,vehicle,simulated_days =
     base_segment.process.finalize.post_process.stability                             = RCAIDE.Methods.skip
 
 
-    # VSTALL Calculation  
+      
     vehicle_mass                                                        = vehicle.mass_properties.max_takeoff
     reference_area                                                      = vehicle.reference_area
     Vstall                                                              = estimate_stall_speed(vehicle_mass,reference_area,altitude = 0.0,maximum_lift_coefficient = 1.2)    
@@ -700,7 +700,7 @@ def approach_departure_mission_setup(analyses,vehicle,simulated_days = 1,flights
     mission                           = RCAIDE.Framework.Analyses.Mission.Sequential_Segments()
     mission.tag                       = 'approach_departure_mission'
 
-    # airport
+    
     airport                           = RCAIDE.Attributes.Airports.Airport()
     airport.altitude                  =  0.0  * Units.ft
     airport.delta_isa                 =  0.0
@@ -710,10 +710,10 @@ def approach_departure_mission_setup(analyses,vehicle,simulated_days = 1,flights
     atmosphere                        = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976() 
     atmo_data                         = atmosphere.compute_values(altitude = airport.altitude,temperature_deviation= 1.)     
 
-    # unpack Segments module
+    
     Segments                                                                  = RCAIDE.Framework.Analyses.Mission.Segments
 
-    # base segment           
+               
     base_segment                                                              = Segments.Segment() 
     base_segment.battery_discharge                                            = True  
     base_segment.state.numerics.number_of_control_points                      = control_points
@@ -723,7 +723,7 @@ def approach_departure_mission_setup(analyses,vehicle,simulated_days = 1,flights
     base_segment.process.finalize.post_process.stability                      = RCAIDE.Methods.skip
 
 
-    # VSTALL Calculation  
+      
     vehicle_mass                                                              = vehicle.mass_properties.max_takeoff
     reference_area                                                            = vehicle.reference_area
     Vstall                                                                    = estimate_stall_speed(vehicle_mass,reference_area,altitude = 0.0,maximum_lift_coefficient = 1.2)      
@@ -856,14 +856,14 @@ def range_mission_setup(analyses,vehicle,simulated_days = 1,flights_per_day = 1,
     mission                                                                   = RCAIDE.Framework.Analyses.Mission.Variable_Range_Cruise.Given_State_of_Charge()
     mission.tag                                                               = 'Payload_Range'
 
-    # the cruise tag to vary cruise distance
+    
     mission.cruise_tag                                                        = 'cruise'
     mission.target_state_of_charge                                            = 0.5
 
-    # unpack Segments module
+    
     Segments                                                                  = RCAIDE.Framework.Analyses.Mission.Segments
 
-    # base segment
+    
     base_segment                                                              = Segments.Segment()                 
     ones_row                                                                  = base_segment.state.ones_row    
     base_segment.state.numerics.number_of_control_points                      = 4
@@ -901,10 +901,10 @@ def hover_mission_setup(analyses,vehicle,simulated_days = 1,flights_per_day = 1,
     mission                                                               = RCAIDE.Framework.Analyses.Mission.Sequential_Segments()
     mission.tag                                                           = 'uber_mission'
     
-    # unpack Segments module
+    
     Segments = RCAIDE.Framework.Analyses.Mission.Segments
 
-    # base segment
+    
     base_segment                                                          = Segments.Segment()
     base_segment.state.numerics.number_of_control_points                  = 4
     base_segment.process.initialize.initialize_battery                    = RCAIDE.Methods.Missions.Segments.Common.Energy.initialize_battery
@@ -931,7 +931,7 @@ def hover_mission_setup(analyses,vehicle,simulated_days = 1,flights_per_day = 1,
     
     segment                                                               = hover.networks.battery_electric_rotor.add_lift_unknowns_and_residuals_to_segment(segment)
     
-    # add to misison
+    
     mission.append_segment(segment)        
 
     return mission
@@ -949,10 +949,10 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     mission                                                              = RCAIDE.Framework.Analyses.Mission.Sequential_Segments()
     mission.tag                                                          = 'uber_mission'
     
-    # unpack Segments module
+    
     Segments                                                             = RCAIDE.Framework.Analyses.Mission.Segments
 
-    # base segment
+    
     base_segment                                                         = Segments.Segment()
     base_segment.state.numerics.number_of_control_points                 = 4
     base_segment.process.initialize.initialize_battery                   = RCAIDE.Methods.Missions.Segments.Common.Energy.initialize_battery
@@ -961,7 +961,7 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     base_segment.process.finalize.post_process.stability                 = RCAIDE.Methods.skip    
     
     
-    # VSTALL Calculation
+    
     m      = base.mass_properties.max_takeoff
     g      = 9.81
     S      = base.reference_area
@@ -1010,7 +1010,7 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
 
     segment                                     = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
 
-    # add to misison
+    
     mission.append_segment(segment)
     
     # ------------------------------------------------------------------
@@ -1028,7 +1028,7 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     
     segment                                     = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
 
-    # add to misison
+    
     mission.append_segment(segment)
     
     # ------------------------------------------------------------------
@@ -1048,7 +1048,7 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     
     segment                                     = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment,initial_prop_power_coefficient = 0.01)    
     
-    # add to misison
+    
     mission.append_segment(segment)    
     
     
@@ -1070,7 +1070,7 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     
         
         
-    # add to misison
+    
     mission.append_segment(segment)      
     
     # ------------------------------------------------------------------
@@ -1089,7 +1089,7 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
 
     segment                                         = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
 
-    # add to misison
+    
     mission.append_segment(segment)    
     
     # ------------------------------------------------------------------
@@ -1107,7 +1107,7 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     
     segment                                         = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
 
-    # add to misison
+    
     mission.append_segment(segment)        
         
     
@@ -1122,13 +1122,13 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     
     segment.altitude_start                          = 300.0 * Units.ft
     segment.altitude_end                            = 40. * Units.ft
-    segment.climb_rate                              = -400.  * Units['ft/min']  # Uber has 500->300
+    segment.climb_rate                              = -400.  * Units['ft/min']  
     segment.air_speed_start                         = np.sqrt((400 * Units['ft/min'])**2 + (1.2*Vstall)**2)
     segment.air_speed_end                           = 1.2*Vstall                    
     
     segment                                         = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
 
-    # add to misison
+    
     mission.append_segment(segment)     
     
         
@@ -1150,7 +1150,7 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     
     segment                                                  = base.networks.battery_electric_rotor.add_lift_unknowns_and_residuals_to_segment(segment)    
 
-    # add to misison
+    
     mission.append_segment(segment)     
     
     # ------------------------------------------------------------------
@@ -1177,7 +1177,7 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     
     segment                                                  = base.networks.battery_electric_rotor.add_lift_unknowns_and_residuals_to_segment(segment)    
 
-    # add to misison
+   
     mission.append_segment(segment)    
     
     # ------------------------------------------------------------------
@@ -1199,7 +1199,7 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
 
     segment                                                  = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
 
-    # add to misison
+    
     mission.append_segment(segment)    
     
     # ------------------------------------------------------------------
@@ -1222,7 +1222,7 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     
     segment                                                   = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
     
-    # add to misison
+    
     mission.append_segment(segment)    
         
         
@@ -1244,7 +1244,7 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     
     segment                                                   = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
     
-    # add to misison
+    
     mission.append_segment(segment)         
     
     # ------------------------------------------------------------------
@@ -1266,7 +1266,7 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     
     segment                                                   = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
     
-    # add to misison
+    
     mission.append_segment(segment)      
     
     # ------------------------------------------------------------------
@@ -1289,7 +1289,7 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     
     segment                                                   = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
     
-    # add to misison
+    
     mission.append_segment(segment)       
     
     
@@ -1312,7 +1312,7 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     segment                                                   = base.networks.battery_electric_rotor.add_lift_unknowns_and_residuals_to_segment(segment)    
 
     
-    # add to misison
+    
     mission.append_segment(segment)        
 
     return mission
@@ -1324,7 +1324,7 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
 # ----------------------------------------------------------------------
 def missions_setup(base_mission):
 
-    # the mission container
+    
     missions = RCAIDE.Framework.Analyses.Mission.Mission.Container()
 
     # ------------------------------------------------------------------
