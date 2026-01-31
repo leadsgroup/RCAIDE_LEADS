@@ -29,17 +29,17 @@ def baseline_mission_setup(analyses,vehicle,simulated_days = 1,flights_per_day =
     mission                    = RCAIDE.Framework.Analyses.Mission.Sequential_Segments()
     mission.tag                = 'mission'
 
-    # airport
+    
     airport                    = RCAIDE.Attributes.Airports.Airport() 
     airport.atmosphere         = RCAIDE.Attributes.Atmospheres.Earth.US_Standard_1976() 
     mission.airport            = airport    
     atmosphere                 = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976() 
     atmo_data                  = atmosphere.compute_values(altitude = airport.altitude,temperature_deviation= 1.)    
     
-    # unpack Segments module
+    
     Segments = RCAIDE.Framework.Analyses.Mission.Segments
 
-    # base segment
+    
     base_segment                                                              = Segments.Segment() 
     base_segment.state.numerics.number_of_control_points                      = control_points     
     ones_row                                                                  = base_segment.state.ones_row
@@ -51,7 +51,7 @@ def baseline_mission_setup(analyses,vehicle,simulated_days = 1,flights_per_day =
 
 
 
-    # VSTALL Calculation
+    
     m      = vehicle.mass_properties.max_takeoff
     g      = 9.81
     S      = vehicle.reference_area
@@ -214,14 +214,14 @@ def baseline_mission_setup(analyses,vehicle,simulated_days = 1,flights_per_day =
     # ------------------------------------------------------------------
     #   Descent Segment: Constant Speed, Constant Rate
     # ------------------------------------------------------------------ 
-    segment                                                           = Segments.Hover.Descent(base_segment)
-    segment.tag                                                       = "Vertical_Descent" 
+    segment                                                         = Segments.Hover.Descent(base_segment)
+    segment.tag                                                     = "Vertical_Descent" 
     segment.analyses.extend( analyses.vertical_flight) 
-    segment.altitude_start                                            = 200.0  * Units.ft  
-    segment.altitude_end                                              = 0.  * Units.ft  
-    segment.descent_rate                                              = 300. * Units['ft/min']   
-    segment.true_course_angle                                         = airport_geospacial_data.true_course_angle 
-    segment                                                           = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment)  
+    segment.altitude_start                                          = 200.0  * Units.ft  
+    segment.altitude_end                                            = 0.  * Units.ft  
+    segment.descent_rate                                            = 300. * Units['ft/min']   
+    segment.true_course_angle                                       = airport_geospacial_data.true_course_angle 
+    segment                                                         = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment)  
     mission.append_segment(segment)  
                  
     return mission 
@@ -239,7 +239,7 @@ def repeated_flight_operation_setup(analyses,vehicle,simulated_days = 1,flights_
     mission                           = RCAIDE.Framework.Analyses.Mission.Sequential_Segments()
     mission.tag                       = 'repeated_flight_operation_mission'
 
-    # airport
+    
     airport                           = RCAIDE.Attributes.Airports.Airport()
     airport.altitude                  = 0.0  * Units.ft
     airport.delta_isa                 = 0.0
@@ -249,10 +249,10 @@ def repeated_flight_operation_setup(analyses,vehicle,simulated_days = 1,flights_
     atmosphere                        = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976() 
     atmo_data                         = atmosphere.compute_values(altitude = airport.altitude,temperature_deviation= 1.)     
 
-    # unpack Segments module
+    
     Segments = RCAIDE.Framework.Analyses.Mission.Segments
 
-    # base segment           
+              
     base_segment                                                              = Segments.Segment() 
     base_segment.battery_discharge                                            = True  
     base_segment.state.numerics.number_of_control_points                      = control_points 
@@ -261,14 +261,14 @@ def repeated_flight_operation_setup(analyses,vehicle,simulated_days = 1,flights_
     base_segment.process.finalize.post_process.update_battery_state_of_health = RCAIDE.Methods.Missions.Segments.Common.Energy.update_battery_state_of_health  
     base_segment.process.finalize.post_process.stability                      = RCAIDE.Methods.skip 
 
-    # VSTALL Calculation  
+      
     vehicle_mass = vehicle.mass_properties.max_takeoff
     reference_area = vehicle.reference_area
     Vstall = estimate_stall_speed(vehicle_mass,reference_area,altitude = 0.0,maximum_lift_coefficient = 1.2)   
     
     for day in range(simulated_days): 
 
-        # compute daily temperature in san francisco: link: https://www.usclimatedata.com/climate/san-francisco/california/united-states/usca0987/2019/1
+        
         daily_temp = (13.5 + (day)*(-0.00882) + (day**2)*(0.00221) + (day**3)*(-0.0000314) + (day**4)*(0.000000185)  + \
                       (day**5)*(-0.000000000483)  + (day**6)*(4.57E-13)) + 273.2
         
@@ -299,7 +299,7 @@ def repeated_flight_operation_setup(analyses,vehicle,simulated_days = 1,flights_
             # --------------------------------------------------------------------------
             #   First Transition Segment: Linear Speed, Constant Climb Rate
             # --------------------------------------------------------------------------
-            # Use original transition segment, converge on rotor y-axis rotation and throttle
+            
             segment                                                            = Segments.Cruise.Constant_Acceleration_Constant_Pitchrate_Constant_Altitude(base_segment)
             segment.tag                                                        = "Transition_1"  + "_F_" + str(flight_no) + "_D" + str (day)
             segment.analyses.extend( analyses.vertical_transition_1)
@@ -313,13 +313,13 @@ def repeated_flight_operation_setup(analyses,vehicle,simulated_days = 1,flights_
             segment.process.iterate.conditions.stability                       = RCAIDE.Methods.skip
             segment.process.finalize.post_process.stability                    = RCAIDE.Methods.skip
             segment                                                            = vehicle.networks.battery_electric_rotor.add_tiltrotor_transition_unknowns_and_residuals_to_segment(segment, initial_rotor_power_coefficients = [0.06] ,initial_throttles = [ 0.8] ) 
-            # add to misison
+            
             mission.append_segment(segment)
             
             # --------------------------------------------------------------------------
             #   Second Transition Segment: Linear Speed, Linear Climb
             # --------------------------------------------------------------------------
-            # Use original transition segment, converge on rotor y-axis rotation and throttle
+            
             segment                                                           = Segments.Climb.Constant_Acceleration_Constant_Pitchrate_Constant_Angle(base_segment)
             segment.tag                                                       = "Transition_2"  + "_F_" + str(flight_no) + "_D" + str (day)
             segment.analyses.extend( analyses.climb_transition)
@@ -333,14 +333,14 @@ def repeated_flight_operation_setup(analyses,vehicle,simulated_days = 1,flights_
             segment.process.iterate.conditions.stability                      = RCAIDE.Methods.skip
             segment.process.finalize.post_process.stability                   = RCAIDE.Methods.skip
             segment                                                           = vehicle.networks.battery_electric_rotor.add_tiltrotor_transition_unknowns_and_residuals_to_segment(segment, initial_rotor_power_coefficients = [0.03] ,initial_throttles = [ 0.8] )   
-            # add to misison
+            
             mission.append_segment(segment) 
             
 
             # --------------------------------------------------------------------------
             # Third Transition Segment: Linear Speed, Linear Climb
             # --------------------------------------------------------------------------
-            # Use original transition segment, converge on rotor y-axis rotation and throttle
+            
             segment                                                           = Segments.Climb.Constant_Acceleration_Constant_Pitchrate_Constant_Angle(base_segment)
             segment.tag                                                       = "Transition_3"  + "_F_" + str(flight_no) + "_D" + str (day)
             segment.analyses.extend( analyses.climb_transition)
@@ -354,7 +354,7 @@ def repeated_flight_operation_setup(analyses,vehicle,simulated_days = 1,flights_
             segment.process.iterate.conditions.stability                      = RCAIDE.Methods.skip
             segment.process.finalize.post_process.stability                   = RCAIDE.Methods.skip
             segment                                                           = vehicle.networks.battery_electric_rotor.add_tiltrotor_transition_unknowns_and_residuals_to_segment(segment, initial_rotor_power_coefficients = [0.06] ,initial_throttles = [ 0.8] )    
-            # add to misison
+            
             mission.append_segment(segment)   
                              
             # ------------------------------------------------------------------
@@ -403,7 +403,7 @@ def repeated_flight_operation_setup(analyses,vehicle,simulated_days = 1,flights_
             # --------------------------------------------------------------------------
             # Decelerating Transition Segment: Linear Speed, Constant Climb Rate
             # --------------------------------------------------------------------------
-            # Use original transition segment, converge on rotor y-axis rotation and throttle
+            
             segment                                                              = Segments.Climb.Constant_Acceleration_Constant_Pitchrate_Constant_Angle(base_segment)
             segment.tag                                                          = "Transition_4"  + "_F_" + str(flight_no) + "_D" + str (day)
             segment.analyses.extend( analyses.climb_transition)
@@ -417,13 +417,13 @@ def repeated_flight_operation_setup(analyses,vehicle,simulated_days = 1,flights_
             segment.process.finalize.post_process.stability                      = RCAIDE.Methods.skip
             segment.true_course_angle                                            = airport_geospacial_data.true_course_angle 
             segment                                                              = vehicle.networks.battery_electric_rotor.add_tiltrotor_transition_unknowns_and_residuals_to_segment(segment, initial_rotor_power_coefficients = [0.06] ,initial_throttles = [ 0.2] ) 
-            # add to misison
+            
             mission.append_segment(segment)   
         
             # --------------------------------------------------------------------------
             #   Fifth Transition Segment: Linear Speed, Constant Climb Rate
             # --------------------------------------------------------------------------
-            # Use original transition segment, converge on rotor y-axis rotation and throttle
+            
             segment                                                              = Segments.Cruise.Constant_Acceleration_Constant_Pitchrate_Constant_Altitude(base_segment)
             segment.tag                                                          = "Transition_5"  + "_F_" + str(flight_no) + "_D" + str (day)
             segment.analyses.extend( analyses.vertical_transition_1)
@@ -437,31 +437,31 @@ def repeated_flight_operation_setup(analyses,vehicle,simulated_days = 1,flights_
             segment.process.finalize.post_process.stability                      = RCAIDE.Methods.skip
             segment.true_course_angle                                            = airport_geospacial_data.true_course_angle 
             segment                                                              = vehicle.networks.battery_electric_rotor.add_tiltrotor_transition_unknowns_and_residuals_to_segment(segment, initial_rotor_power_coefficients = [0.03] ,initial_throttles = [ 0.8] )  
-            # add to misison
+            
             mission.append_segment(segment)
             
             # ------------------------------------------------------------------
             #   Descent Segment: Constant Speed, Constant Rate
             # ------------------------------------------------------------------ 
-            segment                                              = Segments.Hover.Descent(base_segment)
-            segment.tag                                          = "Vertical_Descent"  + "_F_" + str(flight_no) + "_D" + str (day)
+            segment                                                              = Segments.Hover.Descent(base_segment)
+            segment.tag                                                          = "Vertical_Descent"  + "_F_" + str(flight_no) + "_D" + str (day)
             segment.analyses.extend( analyses.vertical_descent) 
-            segment.altitude_start                               = 40.0  * Units.ft  
-            segment.altitude_end                                 = 0.  * Units.ft  
-            segment.descent_rate                                 = 300. * Units['ft/min']   
-            segment.true_course_angle                            = airport_geospacial_data.true_course_angle 
-            segment                                              = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment, initial_rotor_power_coefficients = [0.03] ,initial_throttles = [ 0.8] )   
+            segment.altitude_start                                               = 40.0  * Units.ft  
+            segment.altitude_end                                                 = 0.  * Units.ft  
+            segment.descent_rate                                                 = 300. * Units['ft/min']   
+            segment.true_course_angle                                            = airport_geospacial_data.true_course_angle 
+            segment                                                              = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment, initial_rotor_power_coefficients = [0.03] ,initial_throttles = [ 0.8] )   
             mission.append_segment(segment)  
             
             if recharge_battery:
                 # ------------------------------------------------------------------
                 #  Charge Segment: 
                 # ------------------------------------------------------------------  
-                # Charge Model 
-                segment                                           = Segments.Ground.Battery_Charge_Discharge(base_segment)     
-                segment.tag                                       = 'Charge Day ' + "_F_" + str(flight_no) + "_D" + str (day)  
+                 
+                segment                                                           = Segments.Ground.Battery_Charge_Discharge(base_segment)     
+                segment.tag                                                       = 'Charge Day ' + "_F_" + str(flight_no) + "_D" + str (day)  
                 segment.analyses.extend(analyses.base)           
-                segment.battery_discharge                         = False   
+                segment.battery_discharge  = False   
                 if flight_no  == flights_per_day:  
                     segment.increment_battery_cycle_day=True                     
                 segment = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment )    
@@ -480,17 +480,17 @@ def direct_mission_setup_at_1000ft(analyses,vehicle,simulated_days = 1,flights_p
     mission            = RCAIDE.Framework.Analyses.Mission.Sequential_Segments()
     mission.tag        = 'cruise_at_1000ft'
 
-    # airport
+    
     airport            = RCAIDE.Attributes.Airports.Airport() 
     airport.atmosphere = RCAIDE.Attributes.Atmospheres.Earth.US_Standard_1976() 
     mission.airport    = airport    
     atmosphere         = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976() 
     atmo_data          = atmosphere.compute_values(altitude = airport.altitude,temperature_deviation= 1.)    
     
-    # unpack Segments module
+    
     Segments = RCAIDE.Framework.Analyses.Mission.Segments
 
-    # base segment
+    
     base_segment                                                              = Segments.Segment() 
     base_segment.state.numerics.number_of_control_points                      = control_points     
     ones_row                                                                  = base_segment.state.ones_row
@@ -502,7 +502,7 @@ def direct_mission_setup_at_1000ft(analyses,vehicle,simulated_days = 1,flights_p
 
 
 
-    # VSTALL Calculation
+    
     m      = vehicle.mass_properties.max_takeoff
     g      = 9.81
     S      = vehicle.reference_area
@@ -515,16 +515,16 @@ def direct_mission_setup_at_1000ft(analyses,vehicle,simulated_days = 1,flights_p
     # ------------------------------------------------------------------
     #   First Climb Segment: Constant Speed, Constant Rate
     # ------------------------------------------------------------------ 
-    segment                                            = Segments.Hover.Climb(base_segment)
-    segment.tag                                        = "Vertical_Climb"  
+    segment                                                         = Segments.Hover.Climb(base_segment)
+    segment.tag                                                     = "Vertical_Climb"  
     segment.analyses.extend(analyses.vertical_flight) 
-    segment.altitude_start                             = 0.0  * Units.ft  
-    segment.altitude_end                               = 200.  * Units.ft  
-    segment.climb_rate                                 = 300. * Units['ft/min']  
-    segment.battery_energy                             = vehicle.networks.battery_electric_rotor.battery.pack.max_energy   
-    segment.battery_pack_temperature                   = atmo_data.temperature[0,0]   
-    segment.true_course_angle                          = airport_geospacial_data.true_course_angle     
-    segment                                            = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) 
+    segment.altitude_start                                          = 0.0  * Units.ft  
+    segment.altitude_end                                            = 200.  * Units.ft  
+    segment.climb_rate                                              = 300. * Units['ft/min']  
+    segment.battery_energy                                          = vehicle.networks.battery_electric_rotor.battery.pack.max_energy   
+    segment.battery_pack_temperature                                = atmo_data.temperature[0,0]   
+    segment.true_course_angle                                       = airport_geospacial_data.true_course_angle     
+    segment                                                         = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) 
     mission.append_segment(segment)  
      
     # ------------------------------------------------------------------
@@ -688,20 +688,20 @@ def direct_mission_setup_at_1500ft(analyses,vehicle,simulated_days = 1,flights_p
     #   Initialize the Mission
     # ------------------------------------------------------------------
 
-    mission            = RCAIDE.Framework.Analyses.Mission.Sequential_Segments()
-    mission.tag        = 'cruise_at_1500ft'
+    mission                                                                   = RCAIDE.Framework.Analyses.Mission.Sequential_Segments()
+    mission.tag                                                               = 'cruise_at_1500ft'
 
-    # airport
-    airport            = RCAIDE.Attributes.Airports.Airport() 
-    airport.atmosphere = RCAIDE.Attributes.Atmospheres.Earth.US_Standard_1976() 
-    mission.airport    = airport    
-    atmosphere         = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976() 
-    atmo_data          = atmosphere.compute_values(altitude = airport.altitude,temperature_deviation= 1.)    
     
-    # unpack Segments module
-    Segments = RCAIDE.Framework.Analyses.Mission.Segments
+    airport                                                                   = RCAIDE.Attributes.Airports.Airport() 
+    airport.atmosphere                                                        = RCAIDE.Attributes.Atmospheres.Earth.US_Standard_1976() 
+    mission.airport                                                           = airport    
+    atmosphere                                                                = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976() 
+    atmo_data                                                                 = atmosphere.compute_values(altitude = airport.altitude,temperature_deviation= 1.)    
+    
+    
+    Segments                                                                  = RCAIDE.Framework.Analyses.Mission.Segments
 
-    # base segment
+    
     base_segment                                                              = Segments.Segment() 
     base_segment.state.numerics.number_of_control_points                      = control_points     
     ones_row                                                                  = base_segment.state.ones_row
@@ -713,7 +713,7 @@ def direct_mission_setup_at_1500ft(analyses,vehicle,simulated_days = 1,flights_p
 
 
 
-    # VSTALL Calculation
+    
     m      = vehicle.mass_properties.max_takeoff
     g      = 9.81
     S      = vehicle.reference_area
@@ -787,73 +787,73 @@ def direct_mission_setup_at_1500ft(analyses,vehicle,simulated_days = 1,flights_p
     # ------------------------------------------------------------------
     #   First Cruise Segment: Constant Acceleration, Constant Altitude
     # ------------------------------------------------------------------ 
-    segment                                            = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
-    segment.tag                                        = "Climb_2"  
-    segment.analyses.extend(analyses.forward_flight) 
-    segment.air_speed_start                            = Vstall * 1.0 
-    segment.air_speed_end                              = 110.   * Units['mph'] 
-    segment.climb_rate                                 = 500.   * Units['ft/min'] 
-    segment.altitude_start                             = 500.0  * Units.ft                      
-    segment.altitude_end                               = 1500.0 * Units.ft       
-    segment.true_course_angle                          = airport_geospacial_data.true_course_angle         
-    segment                                            = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment)     
+    segment                                                            = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
+    segment.tag                                                        = "Climb_2"  
+    segment.analyses.extend(analyses.forward_flight)
+    segment.air_speed_start                                            = Vstall * 1.0 
+    segment.air_speed_end                                              = 110.   * Units['mph'] 
+    segment.climb_rate                                                 = 500.   * Units['ft/min'] 
+    segment.altitude_start                                             = 500.0  * Units.ft                      
+    segment.altitude_end                                               = 1500.0 * Units.ft       
+    segment.true_course_angle                                          = airport_geospacial_data.true_course_angle         
+    segment                                                            = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment)     
     mission.append_segment(segment)     
 
     # ------------------------------------------------------------------
     #   First Cruise Segment: Constant Acceleration, Constant Altitude
     # ------------------------------------------------------------------ 
-    segment                                           = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
-    segment.tag                                       = "Cruise" 
+    segment                                                            = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
+    segment.tag                                                        = "Cruise" 
     segment.analyses.extend(analyses.forward_flight) 
-    segment.altitude                                  = 1500.0 * Units.ft               
-    segment.air_speed                                 = 110.   * Units['mph']  
-    segment.distance                                  = airport_geospacial_data.flight_range  - 9.62*Units.nmi 
-    segment.true_course_angle                         = airport_geospacial_data.true_course_angle     
-    segment                                           = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment)     
+    segment.altitude                                                   = 1500.0 * Units.ft               
+    segment.air_speed                                                  = 110.   * Units['mph']  
+    segment.distance                                                   = airport_geospacial_data.flight_range  - 9.62*Units.nmi 
+    segment.true_course_angle                                          = airport_geospacial_data.true_course_angle     
+    segment                                                            = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment)     
     mission.append_segment(segment)     
     
     # ------------------------------------------------------------------
     #    Descent Segment: Constant Acceleration, Constant Altitude
     # ------------------------------------------------------------------ 
-    segment                                           = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
-    segment.tag                                       = "Descent"   
+    segment                                                            = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
+    segment.tag                                                        = "Descent"   
     segment.analyses.extend(analyses.forward_flight)
-    segment.climb_rate                                = -300. * Units['ft/min'] 
-    segment.air_speed_end                             = Vstall* 1.0
-    segment.altitude_start                            = 1500.0 * Units.ft 
-    segment.altitude_end                              = 500.0 * Units.ft       
-    segment.true_course_angle                         = airport_geospacial_data.true_course_angle 
-    segment                                           = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) 
+    segment.climb_rate                                                 = -300. * Units['ft/min'] 
+    segment.air_speed_end                                              = Vstall* 1.0
+    segment.altitude_start                                             = 1500.0 * Units.ft 
+    segment.altitude_end                                               = 500.0 * Units.ft       
+    segment.true_course_angle                                          = airport_geospacial_data.true_course_angle 
+    segment                                                            = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) 
     mission.append_segment(segment)       
     
 
     # ------------------------------------------------------------------
     #  First Transition Segment
     # ------------------------------------------------------------------ 
-    segment                                                         = Segments.Cruise.Constant_Acceleration_Constant_Altitude(base_segment)
-    segment.tag                                                     = "decelerating_transition_1" 
+    segment                                                           = Segments.Cruise.Constant_Acceleration_Constant_Altitude(base_segment)
+    segment.tag                                                       = "decelerating_transition_1" 
     segment.analyses.extend(analyses.high_speed_transition_flight) 
-    segment.altitude                                                = 500.0 * Units.ft 
-    segment.air_speed_end                                           = Vstall*0.5
-    segment.acceleration                                            = -0.5
-    segment.pitch_initial                                           = 0. * Units.degrees 
-    segment.pitch_final                                             = -5. * Units.degrees 
-    segment.true_course_angle                                       = airport_geospacial_data.true_course_angle     
-    segment                                                         = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) 
+    segment.altitude                                                  = 500.0 * Units.ft 
+    segment.air_speed_end                                             = Vstall*0.5
+    segment.acceleration                                              = -0.5
+    segment.pitch_initial                                             = 0. * Units.degrees 
+    segment.pitch_final                                               = -5. * Units.degrees 
+    segment.true_course_angle                                         = airport_geospacial_data.true_course_angle     
+    segment                                                           = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) 
     mission.append_segment(segment) 
      
     # ------------------------------------------------------------------
     #  Forth Transition Segment
     # ------------------------------------------------------------------ 
-    segment                                                          = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
-    segment.tag                                                      = "decelerating_transition_2"  
+    segment                                                           = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
+    segment.tag                                                       = "decelerating_transition_2"  
     segment.analyses.extend(analyses.low_speed_transition_flight)  
-    segment.climb_rate                                               = -300. * Units['ft/min'] 
-    segment.air_speed_end                                            = Vstall* 0.4 
-    segment.altitude_start                                           = 500.0 * Units.ft     
-    segment.altitude_end                                             = 200.0 * Units.ft   
-    segment.true_course_angle                                        = airport_geospacial_data.true_course_angle 
-    segment                                                          = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) 
+    segment.climb_rate                                                = -300. * Units['ft/min'] 
+    segment.air_speed_end                                             = Vstall* 0.4 
+    segment.altitude_start                                            = 500.0 * Units.ft     
+    segment.altitude_end                                              = 200.0 * Units.ft   
+    segment.true_course_angle                                         = airport_geospacial_data.true_course_angle 
+    segment                                                           = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) 
     mission.append_segment(segment)      
     
     # ------------------------------------------------------------------
@@ -899,20 +899,19 @@ def direct_mission_setup_at_2000ft(analyses,vehicle,simulated_days = 1,flights_p
     #   Initialize the Mission
     # ------------------------------------------------------------------
 
-    mission     = RCAIDE.Framework.Analyses.Mission.Sequential_Segments()
-    mission.tag = 'cruise_at_2000ft'
+    mission                   = RCAIDE.Framework.Analyses.Mission.Sequential_Segments()
+    mission.tag               = 'cruise_at_2000ft'
 
-    # airport
-    airport            = RCAIDE.Attributes.Airports.Airport() 
-    airport.atmosphere = RCAIDE.Attributes.Atmospheres.Earth.US_Standard_1976() 
-    mission.airport    = airport    
-    atmosphere         = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976() 
-    atmo_data          = atmosphere.compute_values(altitude = airport.altitude,temperature_deviation= 1.)    
     
-    # unpack Segments module
-    Segments = RCAIDE.Framework.Analyses.Mission.Segments
+    airport                   = RCAIDE.Attributes.Airports.Airport() 
+    airport.atmosphere        = RCAIDE.Attributes.Atmospheres.Earth.US_Standard_1976() 
+    mission.airport           = airport    
+    atmosphere                = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976() 
+    atmo_data                 = atmosphere.compute_values(altitude = airport.altitude,temperature_deviation= 1.)    
+    
+    Segments                  = RCAIDE.Framework.Analyses.Mission.Segments
 
-    # base segment
+    
     base_segment                                                              = Segments.Segment() 
     base_segment.state.numerics.number_of_control_points                      = control_points     
     ones_row                                                                  = base_segment.state.ones_row
@@ -924,7 +923,7 @@ def direct_mission_setup_at_2000ft(analyses,vehicle,simulated_days = 1,flights_p
 
 
 
-    # VSTALL Calculation
+    
     m      = vehicle.mass_properties.max_takeoff
     g      = 9.81
     S      = vehicle.reference_area
@@ -1109,23 +1108,23 @@ def constant_elevation_in_cruise_mission_setup(analyses,vehicle,simulated_days =
     #   Initialize the Mission
     # ------------------------------------------------------------------
 
-    mission = RCAIDE.Framework.Analyses.Mission.Sequential_Segments()
-    mission.tag = 'constant_elevation_in_cruise_mission'
+    mission                                                             = RCAIDE.Framework.Analyses.Mission.Sequential_Segments()
+    mission.tag                                                         = 'constant_elevation_in_cruise_mission'
 
-    # airport
-    airport            = RCAIDE.Attributes.Airports.Airport()
-    airport.altitude   = 0.0  * Units.ft
-    airport.delta_isa  = 0.0
-    airport.atmosphere = RCAIDE.Attributes.Atmospheres.Earth.US_Standard_1976() 
-    mission.airport    = airport      
+    
+    airport                                                             = RCAIDE.Attributes.Airports.Airport()
+    airport.altitude                                                    = 0.0  * Units.ft
+    airport.delta_isa                                                   = 0.0
+    airport.atmosphere                                                  = RCAIDE.Attributes.Atmospheres.Earth.US_Standard_1976() 
+    mission.airport                                                     = airport      
 
-    atmosphere         = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976() 
-    atmo_data          = atmosphere.compute_values(altitude = airport.altitude,temperature_deviation= 1.)     
+    atmosphere                                                          = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976() 
+    atmo_data                                                           = atmosphere.compute_values(altitude = airport.altitude,temperature_deviation= 1.)     
 
-    # unpack Segments module
-    Segments = RCAIDE.Framework.Analyses.Mission.Segments
+    
+    Segments                                                            = RCAIDE.Framework.Analyses.Mission.Segments
 
-    # base segment           
+               
     base_segment                                                              = Segments.Segment() 
     base_segment.battery_discharge                                            = True  
     base_segment.state.numerics.number_of_control_points                      = control_points
@@ -1148,7 +1147,7 @@ def approach_departure_mission_setup(analyses,vehicle,simulated_days = 1,flights
     mission                  = RCAIDE.Framework.Analyses.Mission.Sequential_Segments()
     mission.tag              = 'approach_departure_mission'
 
-    # airport   
+       
     airport                  = RCAIDE.Attributes.Airports.Airport()
     airport.altitude         =  0.0  * Units.ft
     airport.delta_isa        =  0.0
@@ -1158,10 +1157,10 @@ def approach_departure_mission_setup(analyses,vehicle,simulated_days = 1,flights
     atmosphere               = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976() 
     atmo_data                = atmosphere.compute_values(altitude = airport.altitude,temperature_deviation= 1.)     
 
-    # unpack Segments module
-    Segments = RCAIDE.Framework.Analyses.Mission.Segments
+    
+    Segments                 = RCAIDE.Framework.Analyses.Mission.Segments
 
-    # base segment           
+               
     base_segment                                                              = Segments.Segment() 
     base_segment.battery_discharge                                            = True  
     base_segment.state.numerics.number_of_control_points                      = control_points
@@ -1172,10 +1171,10 @@ def approach_departure_mission_setup(analyses,vehicle,simulated_days = 1,flights
     base_segment.process.finalize.post_process.stability                      = RCAIDE.Methods.skip
 
 
-    # VSTALL Calculation  
-    vehicle_mass = vehicle.mass_properties.max_takeoff
-    reference_area = vehicle.reference_area
-    Vstall = estimate_stall_speed(vehicle_mass,reference_area,altitude = 0.0,maximum_lift_coefficient = 1.2)       
+     
+    vehicle_mass                                                               = vehicle.mass_properties.max_takeoff
+    reference_area                                                             = vehicle.reference_area
+    Vstall                                                                     = estimate_stall_speed(vehicle_mass,reference_area,altitude = 0.0,maximum_lift_coefficient = 1.2)       
     
  
 
@@ -1190,17 +1189,17 @@ def range_mission_setup(analyses,vehicle,simulated_days = 1,flights_per_day = 1,
     #   Initialize the Mission
     # ------------------------------------------------------------------
      
-    mission = RCAIDE.Framework.Analyses.Mission.Variable_Range_Cruise.Given_State_of_Charge()
-    mission.tag = 'Payload_Range'
+    mission                                                  = RCAIDE.Framework.Analyses.Mission.Variable_Range_Cruise.Given_State_of_Charge()
+    mission.tag                                              = 'Payload_Range'
 
-    # the cruise tag to vary cruise distance
-    mission.cruise_tag = 'cruise'
-    mission.target_state_of_charge = 0.5
+    
+    mission.cruise_tag                                       = 'cruise'
+    mission.target_state_of_charge                           = 0.5
 
-    # unpack Segments module
-    Segments = RCAIDE.Framework.Analyses.Mission.Segments
+    
+    Segments                                                 = RCAIDE.Framework.Analyses.Mission.Segments
 
-    # base segment
+    
     base_segment                                             = Segments.Segment()
     ones_row                                                 = base_segment.state.ones_row    
     base_segment.state.numerics.number_of_control_points     = 4
@@ -1214,8 +1213,8 @@ def range_mission_setup(analyses,vehicle,simulated_days = 1,flights_per_day = 1,
     #   Cruise Segment: constant speed, constant altitude
     # ------------------------------------------------------------------
 
-    segment = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
-    segment.tag = "cruise"
+    segment                                                  = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
+    segment.tag                                              = "cruise"
 
     segment.analyses.extend(analyses.base)  
     segment.altitude                                         = 1500.0 * Units.ft
@@ -1236,13 +1235,13 @@ def hover_mission_setup(analyses,vehicle,simulated_days = 1,flights_per_day = 1,
     #   Initialize the Mission
     # ------------------------------------------------------------------
 
-    mission = RCAIDE.Framework.Analyses.Mission.Sequential_Segments()
-    mission.tag = 'uber_mission'
+    mission                                                 = RCAIDE.Framework.Analyses.Mission.Sequential_Segments()
+    mission.tag                                             = 'uber_mission'
     
-    # unpack Segments module
-    Segments = RCAIDE.Framework.Analyses.Mission.Segments
+    
+    Segments                                                = RCAIDE.Framework.Analyses.Mission.Segments
 
-    # base segment
+    
     base_segment                                            = Segments.Segment()
     base_segment.state.numerics.number_of_control_points    = 4
     base_segment.state.numerics.discretization_method       = linear_data
@@ -1255,8 +1254,8 @@ def hover_mission_setup(analyses,vehicle,simulated_days = 1,flights_per_day = 1,
     #   First Climb Segment: Constant Speed, Constant Rate
     # ------------------------------------------------------------------
 
-    segment = Segments.Hover.Climb(base_segment)
-    segment.tag = "climb_1"
+    segment                                                  = Segments.Hover.Climb(base_segment)
+    segment.tag                                              = "climb_1"
 
     segment.analyses.extend( analyses.hover_oei )
 
@@ -1268,9 +1267,9 @@ def hover_mission_setup(analyses,vehicle,simulated_days = 1,flights_per_day = 1,
     segment.process.iterate.conditions.stability             = RCAIDE.Methods.skip
     segment.process.finalize.post_process.stability          = RCAIDE.Methods.skip      
     
-    segment = hover.networks.battery_electric_rotor.add_lift_unknowns_and_residuals_to_segment(segment)
+    segment                                                  = hover.networks.battery_electric_rotor.add_lift_unknowns_and_residuals_to_segment(segment)
     
-    # add to misison
+    
     mission.append_segment(segment)        
 
     return mission
@@ -1285,13 +1284,13 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     #   Initialize the Mission
     # ------------------------------------------------------------------
 
-    mission = RCAIDE.Framework.Analyses.Mission.Sequential_Segments()
-    mission.tag = 'uber_mission'
+    mission                                                    = RCAIDE.Framework.Analyses.Mission.Sequential_Segments()
+    mission.tag                                                = 'uber_mission'
     
-    # unpack Segments module
-    Segments = RCAIDE.Framework.Analyses.Mission.Segments
+    
+    Segments                                                   = RCAIDE.Framework.Analyses.Mission.Segments
 
-    # base segment
+    
     base_segment                                               = Segments.Segment()
     base_segment.state.numerics.number_of_control_points       = 4
     base_segment.state.numerics.discretization_method          = linear_data
@@ -1301,14 +1300,14 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     base_segment.process.finalize.post_process.stability       = RCAIDE.Methods.skip    
     
     
-    # VSTALL Calculation
+    
     m      = base.mass_properties.max_takeoff
     g      = 9.81
     S      = base.reference_area
     atmo   = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
     rho    = atmo.compute_values(1000.*Units.feet,0.).density
     CLmax  = 1.2
-        
+                                                            
     Vstall = float(np.sqrt(2.*m*g/(rho*S*CLmax)))
     
     
@@ -1316,8 +1315,8 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     #   First Climb Segment: Constant Speed, Constant Rate
     # ------------------------------------------------------------------
 
-    segment = Segments.Hover.Climb(base_segment)
-    segment.tag = "climb_1"
+    segment                                           = Segments.Hover.Climb(base_segment)
+    segment.tag                                       = "climb_1"
 
     segment.analyses.extend( analyses.base )
 
@@ -1330,36 +1329,36 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     segment.process.iterate.conditions.stability      = RCAIDE.Methods.skip
     segment.process.finalize.post_process.stability   = RCAIDE.Methods.skip      
     
-    segment = base.networks.battery_electric_rotor.add_lift_unknowns_and_residuals_to_segment(segment)
+    segment                                           = base.networks.battery_electric_rotor.add_lift_unknowns_and_residuals_to_segment(segment)
     
-    # add to misison
+   
     mission.append_segment(segment)    
     
     # ------------------------------------------------------------------
     #   Second Climb Segment: Constant Speed, Constant Rate
     # ------------------------------------------------------------------
 
-    segment = Segments.Climb.Constant_Speed_Constant_Rate(base_segment)
-    segment.tag = "climb_2"
+    segment                                         = Segments.Climb.Constant_Speed_Constant_Rate(base_segment)
+    segment.tag                                     = "climb_2"
 
     segment.analyses.extend( analyses.base )
 
-    segment.air_speed                              = np.sqrt((500 * Units['ft/min'])**2 + (1.2*Vstall)**2)
-    segment.altitude_start                         = 40.0 * Units.ft
-    segment.altitude_end                           = 300. * Units.ft
-    segment.climb_rate                             = 500. * Units['ft/min'] 
-    segment.true_course_angle                      = airport_geospacial_data.true_course_angle 
-    segment                                        = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
+    segment.air_speed                               = np.sqrt((500 * Units['ft/min'])**2 + (1.2*Vstall)**2)
+    segment.altitude_start                          = 40.0 * Units.ft
+    segment.altitude_end                            = 300. * Units.ft
+    segment.climb_rate                              = 500. * Units['ft/min'] 
+    segment.true_course_angle                       = airport_geospacial_data.true_course_angle 
+    segment                                         = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
 
-    # add to misison
+    
     mission.append_segment(segment)
     
     # ------------------------------------------------------------------
     #   Second Cruise Segment: Constant Speed, Constant Altitude
     # ------------------------------------------------------------------
 
-    segment = Segments.Cruise.Constant_Speed_Constant_Altitude_Loiter(base_segment)
-    segment.tag = "Departure_Terminal_Procedures"
+    segment                                        = Segments.Cruise.Constant_Speed_Constant_Altitude_Loiter(base_segment)
+    segment.tag                                    = "Departure_Terminal_Procedures"
 
     segment.analyses.extend( analyses.base )
 
@@ -1367,18 +1366,18 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     segment.time                                   = 60.   * Units.second
     segment.air_speed                              = 1.2*Vstall    
     segment.true_course_angle                      = airport_geospacial_data.true_course_angle 
-    
-    segment = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
+                
+    segment                                        = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
 
-    # add to misison
+    
     mission.append_segment(segment)
     
     # ------------------------------------------------------------------
     #   Third Climb Segment: Constant Acceleration, Constant Rate
     # ------------------------------------------------------------------
     
-    segment = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
-    segment.tag = "Accelerated_Climb"
+    segment                                        = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
+    segment.tag                                    = "Accelerated_Climb"
     
     segment.analyses.extend( analyses.base )
     
@@ -1389,9 +1388,9 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     segment.air_speed_end                          = 110.  * Units['mph']              
     segment.true_course_angle                      = airport_geospacial_data.true_course_angle 
     
-    segment = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment,initial_prop_power_coefficient = 0.01)    
+    segment                                        = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment,initial_prop_power_coefficient = 0.01)    
     
-    # add to misison
+    
     mission.append_segment(segment)    
     
     
@@ -1399,28 +1398,28 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     #   Third Cruise Segment: Constant Acceleration, Constant Altitude
     # ------------------------------------------------------------------
     
-    segment = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
-    segment.tag = "Cruise"
+    segment                                         = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
+    segment.tag                                     = "Cruise"
     
     segment.analyses.extend( analyses.base )
     
     segment.altitude                                = 1500.0 * Units.ft
-    segment.air_speed                               = 110.   * Units['mph']
-    segment.distance                                = 60.    * Units.miles              
+    segment.air_speed                               = 110. * Units['mph']
+    segment.distance                                = 60. * Units.miles              
     segment.true_course_angle                       = airport_geospacial_data.true_course_angle 
     
-    segment = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
+    segment                                         = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
 
      
-    # add to misison
+   
     mission.append_segment(segment)      
     
     # ------------------------------------------------------------------
     #   First Descent Segment: Constant Acceleration, Constant Rate
     # ------------------------------------------------------------------
     
-    segment = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
-    segment.tag = "Decelerating_Descent"
+    segment                                         = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
+    segment.tag                                     = "Decelerating_Descent"
     
     segment.analyses.extend( analyses.base )  
     segment.altitude_start                          = 1500.0 * Units.ft
@@ -1431,15 +1430,15 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     segment.true_course_angle                       = airport_geospacial_data.true_course_angle 
     segment                                         = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
 
-    # add to misison
+    
     mission.append_segment(segment)    
     
     # ------------------------------------------------------------------
     #   Fourth Cruise Segment: Constant Speed, Constant Altitude
     # ------------------------------------------------------------------
     
-    segment = Segments.Cruise.Constant_Speed_Constant_Altitude_Loiter(base_segment)
-    segment.tag = "Arrival_Terminal_Procedures"
+    segment                                         = Segments.Cruise.Constant_Speed_Constant_Altitude_Loiter(base_segment)
+    segment.tag                                     = "Arrival_Terminal_Procedures"
     
     segment.analyses.extend( analyses.base )
     
@@ -1448,9 +1447,9 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     segment.time                                    = 60 * Units.seconds
     segment.true_course_angle                       = airport_geospacial_data.true_course_angle 
     
-    segment = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
+    segment                                         = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
 
-    # add to misison
+    
     mission.append_segment(segment)        
         
     
@@ -1458,21 +1457,21 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     #   Second Descent Segment: Constant Speed, Constant Rate
     # ------------------------------------------------------------------
     
-    segment = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
-    segment.tag = "descent_2"
+    segment                                         = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
+    segment.tag                                     = "descent_2"
     
     segment.analyses.extend( analyses.base )
      
     segment.altitude_start                          = 300.0 * Units.ft
     segment.altitude_end                            = 40. * Units.ft
-    segment.climb_rate                              = -400.  * Units['ft/min']  # Uber has 500->300
+    segment.climb_rate                              = -400.  * Units['ft/min']  
     segment.air_speed_start                         = np.sqrt((400 * Units['ft/min'])**2 + (1.2*Vstall)**2)
     segment.air_speed_end                           = 1.2*Vstall                    
     segment.true_course_angle                       = airport_geospacial_data.true_course_angle 
     
-    segment = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
+    segment                                         = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
 
-    # add to misison
+    
     mission.append_segment(segment)     
     
         
@@ -1480,8 +1479,8 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     #   Third Descent Segment: Constant Speed, Constant Rate
     # ------------------------------------------------------------------
     
-    segment = Segments.Hover.Descent(base_segment)
-    segment.tag = "descent_1"
+    segment                                          = Segments.Hover.Descent(base_segment)
+    segment.tag                                      = "descent_1"
     
     segment.analyses.extend( analyses.base )
     
@@ -1494,9 +1493,9 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     segment.process.finalize.post_process.stability  = RCAIDE.Methods.skip 
     segment.true_course_angle                        = airport_geospacial_data.true_course_angle  
     
-    segment = base.networks.battery_electric_rotor.add_lift_unknowns_and_residuals_to_segment(segment)    
+    segment                                          = base.networks.battery_electric_rotor.add_lift_unknowns_and_residuals_to_segment(segment)    
 
-    # add to misison
+    
     mission.append_segment(segment)     
     
     # ------------------------------------------------------------------
@@ -1509,8 +1508,8 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     #   First Climb Segment: Constant Speed, Constant Rate
     # ------------------------------------------------------------------
 
-    segment = Segments.Hover.Climb(base_segment)
-    segment.tag = "reserve_climb_1"
+    segment                                          = Segments.Hover.Climb(base_segment)
+    segment.tag                                      = "reserve_climb_1"
 
     segment.analyses.extend( analyses.base )
 
@@ -1522,17 +1521,17 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     segment.process.finalize.post_process.stability  = RCAIDE.Methods.skip  
     segment.true_course_angle                        = airport_geospacial_data.true_course_angle 
     
-    segment = base.networks.battery_electric_rotor.add_lift_unknowns_and_residuals_to_segment(segment)    
+    segment                                          = base.networks.battery_electric_rotor.add_lift_unknowns_and_residuals_to_segment(segment)    
 
-    # add to misison
+    
     mission.append_segment(segment)    
     
     # ------------------------------------------------------------------
     #   Second Climb Segment: Constant Speed, Constant Rate
     # ------------------------------------------------------------------
 
-    segment = Segments.Climb.Constant_Speed_Constant_Rate(base_segment)
-    segment.tag = "reserve_climb_2"
+    segment                                         = Segments.Climb.Constant_Speed_Constant_Rate(base_segment)
+    segment.tag                                     = "reserve_climb_2"
 
     segment.analyses.extend( analyses.base )
 
@@ -1545,17 +1544,17 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     segment.process.iterate.conditions.stability    = RCAIDE.Methods.skip
     segment.process.finalize.post_process.stability = RCAIDE.Methods.skip    
 
-    segment = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
+    segment                                         = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
 
-    # add to misison
+    
     mission.append_segment(segment)    
     
     # ------------------------------------------------------------------
     #   Third Climb Segment: Constant Acceleration, Constant Rate
     # ------------------------------------------------------------------
     
-    segment = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
-    segment.tag = "reserve_Accelerated_Climb"
+    segment                                         = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
+    segment.tag                                     = "reserve_Accelerated_Climb"
     
     segment.analyses.extend( analyses.base )
     
@@ -1569,9 +1568,9 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     segment.process.iterate.conditions.stability    = RCAIDE.Methods.skip
     segment.process.finalize.post_process.stability = RCAIDE.Methods.skip      
     
-    segment = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
+    segment                                         = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
     
-    # add to misison
+    
     mission.append_segment(segment)    
         
         
@@ -1579,30 +1578,30 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     #   Third Cruise Segment: Constant Acceleration, Constant Altitude
     # ------------------------------------------------------------------
     
-    segment = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
-    segment.tag = "reserve_Cruise"
+    segment                                         = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
+    segment.tag                                     = "reserve_Cruise"
     
     segment.analyses.extend( analyses.base )
     
     segment.altitude                                = 500.0 * Units.ft
-    segment.air_speed                               = 110.   * Units['mph']
-    segment.distance                                = 6.    * Units.miles                      
+    segment.air_speed                               = 110. * Units['mph']
+    segment.distance                                = 6. * Units.miles                      
     segment.true_course_angle                       = airport_geospacial_data.true_course_angle  
 
     segment.process.iterate.conditions.stability    = RCAIDE.Methods.skip
     segment.process.finalize.post_process.stability = RCAIDE.Methods.skip      
     
-    segment = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
+    segment                                         = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
     
-    # add to misison
+
     mission.append_segment(segment)         
     
     # ------------------------------------------------------------------
     #   First Descent Segment: Constant Acceleration, Constant Rate
     # ------------------------------------------------------------------
     
-    segment = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
-    segment.tag = "reserve_Decelerating_Descent"
+    segment                                         = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
+    segment.tag                                     = "reserve_Decelerating_Descent"
     
     segment.analyses.extend( analyses.base )  
     segment.altitude_start                          = 500.0 * Units.ft
@@ -1615,23 +1614,23 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     segment.process.iterate.conditions.stability    = RCAIDE.Methods.skip
     segment.process.finalize.post_process.stability = RCAIDE.Methods.skip 
     
-    segment = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
+    segment                                         = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
     
-    # add to misison
+    
     mission.append_segment(segment)      
     
     # ------------------------------------------------------------------
     #   Second Descent Segment: Constant Speed, Constant Rate
     # ------------------------------------------------------------------
     
-    segment = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
-    segment.tag = "reserve_Descent_2"
+    segment                                         = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
+    segment.tag                                     = "reserve_Descent_2"
     
     segment.analyses.extend( analyses.base )
     
     segment.altitude_start                          = 300.0 * Units.ft
     segment.altitude_end                            = 40. * Units.ft
-    segment.climb_rate                              = -400.  * Units['ft/min']  # Uber has 500->300
+    segment.climb_rate                              = -400.  * Units['ft/min']  
     segment.air_speed_start                         = np.sqrt((400 * Units['ft/min'])**2 + (1.2*Vstall)**2)
     segment.air_speed_end                           = 1.2*Vstall                   
     segment.true_course_angle                       = airport_geospacial_data.true_course_angle         
@@ -1639,9 +1638,9 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     segment.process.iterate.conditions.stability    = RCAIDE.Methods.skip
     segment.process.finalize.post_process.stability = RCAIDE.Methods.skip  
     
-    segment = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
+    segment                                         = base.networks.battery_electric_rotor.add_cruise_unknowns_and_residuals_to_segment(segment)    
     
-    # add to misison
+    
     mission.append_segment(segment)       
     
     
@@ -1649,8 +1648,8 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     #   Third Descent Segment: Constant Speed, Constant Rate
     # ------------------------------------------------------------------
     
-    segment = Segments.Hover.Descent(base_segment)
-    segment.tag = "reserve_descent_1"
+    segment                                             = Segments.Hover.Descent(base_segment)
+    segment.tag                                         = "reserve_descent_1"
     
     segment.analyses.extend( analyses.base )
     
@@ -1662,10 +1661,10 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
     segment.process.iterate.conditions.stability        = RCAIDE.Methods.skip
     segment.process.finalize.post_process.stability     = RCAIDE.Methods.skip      
 
-    segment = base.networks.battery_electric_rotor.add_lift_unknowns_and_residuals_to_segment(segment)    
+    segment                                             = base.networks.battery_electric_rotor.add_lift_unknowns_and_residuals_to_segment(segment)    
 
     
-    # add to misison
+    
     mission.append_segment(segment)        
 
     return mission
@@ -1675,7 +1674,7 @@ def uber_mission_setup(analyse,vehicle,simulated_days = 1,flights_per_day = 1,co
 # ----------------------------------------------------------------------
 def missions_setup(base_mission):
 
-    # the mission container
+    
     missions = RCAIDE.Framework.Analyses.Mission.Mission.Container()
 
     # ------------------------------------------------------------------
