@@ -68,7 +68,7 @@ def baseline_mission_setup(analyses,vehicle,simulated_days = 1,flights_per_day =
     segment.process.iterate.unknowns.mission                        = RCAIDE.Methods.skip
     segment.process.iterate.conditions.stability                    = RCAIDE.Methods.skip
     segment.process.finalize.post_process.stability                 = RCAIDE.Methods.skip
-    segment                                                         = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) #,initial_rotor_power_coefficients = [0.02,0.05],initial_throttles =  [0.7,0.9] )
+    segment                                                         = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) 
     mission.append_segment(segment)
     
     # ------------------------------------------------------------------
@@ -88,7 +88,7 @@ def baseline_mission_setup(analyses,vehicle,simulated_days = 1,flights_per_day =
     segment.process.iterate.unknowns.mission                        = RCAIDE.Methods.skip
     segment.process.iterate.conditions.stability                    = RCAIDE.Methods.skip
     segment.process.finalize.post_process.stability                 = RCAIDE.Methods.skip
-    segment                                                         = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) #, initial_rotor_power_coefficients = [0.2,0.05],initial_throttles =  [0.9,0.9]  ) 
+    segment                                                         = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment)  
     mission.append_segment(segment)
     
     # ------------------------------------------------------------------
@@ -107,7 +107,7 @@ def baseline_mission_setup(analyses,vehicle,simulated_days = 1,flights_per_day =
     segment.process.iterate.unknowns.mission                        = RCAIDE.Methods.skip
     segment.process.iterate.conditions.stability                    = RCAIDE.Methods.skip
     segment.process.finalize.post_process.stability                 = RCAIDE.Methods.skip 
-    segment                                                         = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) #,initial_rotor_power_coefficients = [0.1,0.05],initial_throttles =  [0.9,0.9]  ) 
+    segment                                                         = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment)  
     mission.append_segment(segment) 
   
     # ------------------------------------------------------------------
@@ -122,7 +122,7 @@ def baseline_mission_setup(analyses,vehicle,simulated_days = 1,flights_per_day =
     segment.air_speed_start                                          = 118.  * Units['mph']
     segment.air_speed_end                                            = 125.  * Units['mph']      
     segment.true_course_angle                                        = airport_geospacial_data.true_course_angle   
-    segment                                                          = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) #, initial_throttles = [0.7,0.0])   
+    segment                                                          = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment)    
     mission.append_segment(segment)  
 
     # ------------------------------------------------------------------
@@ -137,7 +137,7 @@ def baseline_mission_setup(analyses,vehicle,simulated_days = 1,flights_per_day =
     segment.air_speed_start                                          = 125.  * Units['mph']  
     segment.air_speed_end                                            = 130.  * Units['mph']     
     segment.true_course_angle                                        = airport_geospacial_data.true_course_angle   
-    segment                                                          = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) #, initial_throttles = [0.8,0.0])     
+    segment                                                          = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment)      
     mission.append_segment(segment)  
 
     # ------------------------------------------------------------------
@@ -151,7 +151,7 @@ def baseline_mission_setup(analyses,vehicle,simulated_days = 1,flights_per_day =
     cruise_distance                                                  = airport_geospacial_data.flight_range - 20.09 * Units.nmi
     segment.distance                                                 = cruise_distance   
     segment.true_course_angle                                        = airport_geospacial_data.true_course_angle   
-    segment                                                          = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) #, initial_throttles = [0.8,0.0])      
+    segment                                                          = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment)       
     mission.append_segment(segment)   
     
     # ------------------------------------------------------------------
@@ -166,7 +166,7 @@ def baseline_mission_setup(analyses,vehicle,simulated_days = 1,flights_per_day =
     segment.climb_rate                                               = -500.  * Units['ft/min']
     segment.air_speed_start                                          = 130.  * Units['mph']  
     segment.air_speed_end                                            = 1.1*Vstall     
-    segment                                                          = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) # , initial_throttles = [0.8,0.0])      
+    segment                                                          = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment)       
     mission.append_segment(segment)  
      
             
@@ -186,7 +186,7 @@ def baseline_mission_setup(analyses,vehicle,simulated_days = 1,flights_per_day =
     segment.process.iterate.conditions.stability                     = RCAIDE.Methods.skip
     segment.process.finalize.post_process.stability                  = RCAIDE.Methods.skip  
     segment.true_course_angle                                        = airport_geospacial_data.true_course_angle          
-    segment                                                          = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) #,initial_rotor_power_coefficients = [0.2,0.05],initial_throttles =  [0.9,0.9]) 
+    segment                                                          = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment)  
     mission.append_segment(segment)  
 
     # ------------------------------------------------------------------
@@ -205,7 +205,7 @@ def baseline_mission_setup(analyses,vehicle,simulated_days = 1,flights_per_day =
     segment.process.iterate.conditions.stability                    = RCAIDE.Methods.skip
     segment.process.finalize.post_process.stability                 = RCAIDE.Methods.skip   
     segment.true_course_angle                                       = airport_geospacial_data.true_course_angle  
-    segment                                                         = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) #,initial_rotor_power_coefficients = [0.2,0.05],initial_throttles =  [0.3,0.9])            
+    segment                                                         = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment)             
     mission.append_segment(segment)       
     
     # ------------------------------------------------------------------
@@ -221,7 +221,7 @@ def baseline_mission_setup(analyses,vehicle,simulated_days = 1,flights_per_day =
     segment.process.iterate.unknowns.mission                        = RCAIDE.Methods.skip
     segment.process.iterate.conditions.stability                    = RCAIDE.Methods.skip
     segment.process.finalize.post_process.stability                 = RCAIDE.Methods.skip 
-    segment                                                         = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) #, initial_rotor_power_coefficients = [0.0,0.02], initial_throttles = [0.0,0.7])
+    segment                                                         = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) 
     mission.append_segment(segment)  
   
     return mission 
@@ -296,7 +296,7 @@ def repeated_flight_operation_setup(analyses,vehicle,simulated_days = 1,flights_
             segment.process.iterate.unknowns.mission                    = RCAIDE.Methods.skip
             segment.process.iterate.conditions.stability                = RCAIDE.Methods.skip
             segment.process.finalize.post_process.stability             = RCAIDE.Methods.skip
-            segment                                                     = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) # ,initial_rotor_power_coefficients = [0.02,0.05],initial_throttles =  [0.7,0.9] )
+            segment                                                     = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) 
             mission.append_segment(segment)
             
             # ------------------------------------------------------------------
@@ -316,7 +316,7 @@ def repeated_flight_operation_setup(analyses,vehicle,simulated_days = 1,flights_
             segment.process.iterate.unknowns.mission                    = RCAIDE.Methods.skip
             segment.process.iterate.conditions.stability                = RCAIDE.Methods.skip
             segment.process.finalize.post_process.stability             = RCAIDE.Methods.skip
-            segment                                                     = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) #, initial_rotor_power_coefficients = [0.2,0.05],initial_throttles =  [0.9,0.9]  ) 
+            segment                                                     = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment)  
             mission.append_segment(segment)
             
             # ------------------------------------------------------------------
@@ -335,7 +335,7 @@ def repeated_flight_operation_setup(analyses,vehicle,simulated_days = 1,flights_
             segment.process.iterate.unknowns.mission                    = RCAIDE.Methods.skip
             segment.process.iterate.conditions.stability                = RCAIDE.Methods.skip
             segment.process.finalize.post_process.stability             = RCAIDE.Methods.skip 
-            segment                                                     = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) #,initial_rotor_power_coefficients = [0.1,0.05],initial_throttles =  [0.9,0.9]  ) 
+            segment                                                     = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) 
             mission.append_segment(segment) 
           
             # ------------------------------------------------------------------
@@ -350,7 +350,7 @@ def repeated_flight_operation_setup(analyses,vehicle,simulated_days = 1,flights_
             segment.air_speed_start                                      = 118.  * Units['mph']
             segment.air_speed_end                                        = 125.  * Units['mph']      
             segment.true_course_angle                                    = airport_geospacial_data.true_course_angle   
-            segment                                                      = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) #, initial_throttles = [0.7,0.0])   
+            segment                                                      = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment)    
             mission.append_segment(segment)  
         
             # ------------------------------------------------------------------
@@ -365,7 +365,7 @@ def repeated_flight_operation_setup(analyses,vehicle,simulated_days = 1,flights_
             segment.air_speed_start                                      = 125.  * Units['mph']  
             segment.air_speed_end                                        = 130.  * Units['mph']     
             segment.true_course_angle                                    = airport_geospacial_data.true_course_angle   
-            segment                                                      = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) #, initial_throttles = [0.8,0.0])     
+            segment                                                      = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment)      
             mission.append_segment(segment)  
         
             # ------------------------------------------------------------------
@@ -379,7 +379,7 @@ def repeated_flight_operation_setup(analyses,vehicle,simulated_days = 1,flights_
             cruise_distance                                              = airport_geospacial_data.flight_range - 20.09 * Units.nmi
             segment.distance                                             = cruise_distance   
             segment.true_course_angle                                    = airport_geospacial_data.true_course_angle   
-            segment                                                      = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) #,initial_throttles = [0.8,0.0])      
+            segment                                                      = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment)       
             mission.append_segment(segment)   
             
             # ------------------------------------------------------------------
@@ -395,7 +395,7 @@ def repeated_flight_operation_setup(analyses,vehicle,simulated_days = 1,flights_
             segment.air_speed_start                                      = 130.  * Units['mph']  
             segment.air_speed_end                                        = 1.1*Vstall     
             segment.true_course_angle                                    = airport_geospacial_data.true_course_angle   
-            segment                                                      = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) #, initial_throttles = [0.8,0.0])      
+            segment                                                      = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment)       
             mission.append_segment(segment)  
              
                     
@@ -415,7 +415,7 @@ def repeated_flight_operation_setup(analyses,vehicle,simulated_days = 1,flights_
             segment.process.iterate.conditions.stability                 = RCAIDE.Methods.skip
             segment.process.finalize.post_process.stability              = RCAIDE.Methods.skip  
             segment.true_course_angle                                    = airport_geospacial_data.true_course_angle          
-            segment                                                      = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) #,initial_rotor_power_coefficients = [0.2,0.05],initial_throttles =  [0.9,0.9]) 
+            segment                                                      = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment)  
             mission.append_segment(segment)  
         
             # ------------------------------------------------------------------
@@ -434,7 +434,7 @@ def repeated_flight_operation_setup(analyses,vehicle,simulated_days = 1,flights_
             segment.process.iterate.conditions.stability                = RCAIDE.Methods.skip
             segment.process.finalize.post_process.stability             = RCAIDE.Methods.skip 
             segment.true_course_angle                                   = airport_geospacial_data.true_course_angle    
-            segment                                                     = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) #,initial_rotor_power_coefficients = [0.2,0.05],initial_throttles =  [0.3,0.9])            
+            segment                                                     = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment)             
             mission.append_segment(segment)       
             
             # ------------------------------------------------------------------
@@ -450,7 +450,7 @@ def repeated_flight_operation_setup(analyses,vehicle,simulated_days = 1,flights_
             segment.process.iterate.unknowns.mission                    = RCAIDE.Methods.skip
             segment.process.iterate.conditions.stability                = RCAIDE.Methods.skip
             segment.process.finalize.post_process.stability             = RCAIDE.Methods.skip 
-            segment                                                     = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) #, initial_rotor_power_coefficients = [0.0,0.02], initial_throttles = [0.0,0.7])
+            segment                                                     = vehicle.networks.battery_electric_rotor.add_unknowns_and_residuals_to_segment(segment) 
             mission.append_segment(segment)  
            
             # ------------------------------------------------------------------
