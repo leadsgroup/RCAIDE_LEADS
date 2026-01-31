@@ -36,7 +36,7 @@ def main(plot_results=True, plot_vehicle=True):
     results                  = missions.base_mission.evaluate()  
     plot_mission(results) 
 
-    # run payload range analysis 
+     
     compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage = 0.05)  
     
     return 
@@ -46,16 +46,16 @@ def vehicle_setup():
     # ------------------------------------------------------------------------------------------------------------------
     #  Vehicle-level Properties 
     # ------------------------------------------------------------------------------------------------------------------
-    vehicle = RCAIDE.Vehicle()
+    vehicle     = RCAIDE.Vehicle()
     vehicle.tag = 'Embraer_E175_Baseline'
  
-    # mass properties (http://www.embraercommercialaviation.com/AircraftPDF/E190_Weights.pdf)
-    vehicle.mass_properties.max_takeoff               = 37500 # kg
-    vehicle.mass_properties.takeoff                   = 37500. # kg
-    vehicle.mass_properties.max_zero_fuel             = 31700. # kg
-    vehicle.mass_properties.max_fuel                  = 9428. # kg
-    vehicle.mass_properties.max_payload               = 10200. # kg
-    vehicle.mass_properties.operating_empty           = 21700  #  kg
+    # mass properties 
+    vehicle.mass_properties.max_takeoff               = 37500 
+    vehicle.mass_properties.takeoff                   = 37500. 
+    vehicle.mass_properties.max_zero_fuel             = 31700. 
+    vehicle.mass_properties.max_fuel                  = 9428. 
+    vehicle.mass_properties.max_payload               = 10200. 
+    vehicle.mass_properties.operating_empty           = 21700  
     vehicle.mass_properties.center_of_gravity         = [[13.76, 0, 0]]
     vehicle.mass_properties.moments_of_inertia.tensor = [[10 ** 5, 0, 0],[0, 10 ** 6, 0,],[0,0, 10 ** 7]] 
 
@@ -277,7 +277,7 @@ def vehicle_setup():
     segment.twist                         = 0. * Units.deg
     segment.root_chord_percent            = 4.18795/7.72923
     segment.dihedral_outboard             = 0. * Units.degrees
-    segment.sweeps.leading_edge           = 40* Units.degrees   
+    segment.sweeps.leading_edge           = 40 * Units.degrees   
     segment.thickness_to_chord            = .13
     wing.append_segment(segment)
 
@@ -441,33 +441,28 @@ def configs_setup(vehicle):
     #   Initialize Configurations
     # ------------------------------------------------------------------
 
-    configs                                        = RCAIDE.Library.Components.Configs.Config.Container() 
-    base_config                                    = RCAIDE.Library.Components.Configs.Config(vehicle)
-    base_config.tag                                = 'base'  
+    configs                                    = RCAIDE.Library.Components.Configs.Config.Container() 
+    base_config                                = RCAIDE.Library.Components.Configs.Config(vehicle)
+    base_config.tag                            = 'base'  
     configs.append(base_config)
 
     # ------------------------------------------------------------------
     #   Cruise Configuration
     # ------------------------------------------------------------------
 
-    config                                         = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag                                     = 'cruise'
+    config                                      = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag                                  = 'cruise'
     configs.append(config)
 
     # ------------------------------------------------------------------
     #   Takeoff Configuration
     # ------------------------------------------------------------------
 
-    config                                                                                = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag                                                                            = 'takeoff'
-    config.wings['main_wing'].control_surfaces.flap.deflection                            = 20. * Units.deg
-    config.wings['main_wing'].control_surfaces.slat.deflection                            = 25. * Units.deg 
-    # config.networks.network.converters['starboard_fan'].fan.angular_velocity            =  3470. * Units.rpm
-    # config.networks.network.propulsors['port_propulsor'].fan.angular_velocity           =  3470. * Units.rpm 
-    # config.networks.network.propulsors['starboard_propulsor'].core_nozzle.exit_velocity =  315.
-    # config.networks.network.propulsors['port_propulsor'].core_nozzle.exit_velocity      =  315.
-    # config.networks.network.propulsors['starboard_propulsor'].fan_nozzle.exit_velocity  =  415.
-    # config.networks.network.propulsors['port_propulsor'].fan_nozzle.exit_velocity       =  415. 
+    config                                                                = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag                                                            = 'takeoff'
+    config.wings['main_wing'].control_surfaces.flap.deflection            = 20. * Units.deg
+    config.wings['main_wing'].control_surfaces.slat.deflection            = 25. * Units.deg 
+     
     for landing_gear in  config.landing_gears:
         landing_gear.gear_extended = True 
     configs.append(config)
@@ -476,16 +471,11 @@ def configs_setup(vehicle):
     #   Cutback Configuration
     # ------------------------------------------------------------------
 
-    config                                                                                = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag                                                                            = 'cutback'
-    config.wings['main_wing'].control_surfaces.flap.deflection                            = 20. * Units.deg
-    config.wings['main_wing'].control_surfaces.slat.deflection                            = 20. * Units.deg
-    # config.networks.network.propulsors['starboard_propulsor'].fan.angular_velocity      =  2780. * Units.rpm
-    # config.networks.network.propulsors['port_propulsor'].fan.angular_velocity           =  2780. * Units.rpm 
-    # config.networks.network.propulsors['starboard_propulsor'].core_nozzle.exit_velocity =  210.
-    # config.networks.network.propulsors['port_propulsor'].core_nozzle.exit_velocity      =  210.
-    # config.networks.network.propulsors['starboard_propulsor'].fan_nozzle.exit_velocity  =  360.
-    # config.networks.network.propulsors['port_propulsor'].fan_nozzle.exit_velocity       =  360. 
+    config                                                                 = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag                                                             = 'cutback'
+    config.wings['main_wing'].control_surfaces.flap.deflection             = 20. * Units.deg
+    config.wings['main_wing'].control_surfaces.slat.deflection             = 20. * Units.deg
+     
     for landing_gear in  config.landing_gears:
         landing_gear.gear_extended = True 
     configs.append(config)
@@ -494,25 +484,20 @@ def configs_setup(vehicle):
     #   Descent Configuration
     # ------------------------------------------------------------------ 
 
-    config                                                         = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag                                                     = 'descent' 
-    config.wings['main_wing'].control_surfaces.spoiler.deflection  = 45. * Units.deg    
+    config                                                                  = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag                                                              = 'descent' 
+    config.wings['main_wing'].control_surfaces.spoiler.deflection           = 45. * Units.deg    
     configs.append(config)  
     
     # ------------------------------------------------------------------
     #   Landing Configuration
     # ------------------------------------------------------------------
 
-    config                                                                                = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag                                                                            = 'landing'
-    config.wings['main_wing'].control_surfaces.flap.deflection                            = 30. * Units.deg
-    config.wings['main_wing'].control_surfaces.slat.deflection                            = 25. * Units.deg
-    # config.networks.network.propulsors['starboard_propulsor'].fan.angular_velocity      =  2030. * Units.rpm
-    # config.networks.network.propulsors['port_propulsor'].fan.angular_velocity           =  2030. * Units.rpm
-    # config.networks.network.propulsors['starboard_propulsor'].core_nozzle.exit_velocity = 92.
-    # config.networks.network.propulsors['port_propulsor'].core_nozzle.exit_velocity      = 92.
-    # config.networks.network.propulsors['starboard_propulsor'].fan_nozzle.exit_velocity  = 109.3
-    # config.networks.network.propulsors['port_propulsor'].fan_nozzle.exit_velocity       = 109.3 
+    config                                                                   = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag                                                               = 'landing'
+    config.wings['main_wing'].control_surfaces.flap.deflection               = 30. * Units.deg
+    config.wings['main_wing'].control_surfaces.slat.deflection               = 25. * Units.deg
+    
     for landing_gear in  config.landing_gears:
         landing_gear.gear_extended = True 
     configs.append(config)   
@@ -521,12 +506,11 @@ def configs_setup(vehicle):
     #   Short Field Takeoff Configuration
     # ------------------------------------------------------------------ 
      
-    config                                                                           = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag                                                                       = 'short_field_takeoff'    
-    config.wings['main_wing'].control_surfaces.flap.deflection                       = 20. * Units.deg
-    config.wings['main_wing'].control_surfaces.slat.deflection                       = 25. * Units.deg
-    # config.networks.network.propulsors['starboard_propulsor'].fan.angular_velocity =  3470. * Units.rpm
-    # config.networks.network.propulsors['port_propulsor'].fan.angular_velocity      =  3470. * Units.rpm
+    config                                                                    = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag                                                                = 'short_field_takeoff'    
+    config.wings['main_wing'].control_surfaces.flap.deflection                = 20. * Units.deg
+    config.wings['main_wing'].control_surfaces.slat.deflection                = 25. * Units.deg
+    
     for landing_gear in  config.landing_gears:
         landing_gear.gear_extended = True 
     configs.append(config)    
@@ -850,7 +834,7 @@ def mission_setup(analyses):
 
 def missions_setup(mission):
 
-    missions = RCAIDE.Framework.Mission.Missions() 
+    missions    = RCAIDE.Framework.Mission.Missions() 
     mission.tag = 'base_mission'
     missions.append(mission)
 
