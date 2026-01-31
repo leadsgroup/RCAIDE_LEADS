@@ -73,7 +73,7 @@ def vehicle_setup(resize_aircraft,vehicle_name = 'Wisk_Cora_CRM') :
         # ------------------------------------------------------------------    
         # WINGS                                    
         # ------------------------------------------------------------------    
-        # WING PROPERTIES           
+               
         wing                                    = RCAIDE.Components.Wings.Main_Wing()
         wing.tag                                = 'main_wing'  
         wing.aspect_ratio                       = 12.000
@@ -240,7 +240,7 @@ def vehicle_setup(resize_aircraft,vehicle_name = 'Wisk_Cora_CRM') :
         # ---------------------------------------------------------------   
         # FUSELAGE                
         # ---------------------------------------------------------------   
-        # FUSELAGE PROPERTIES
+        
         fuselage                                    = RCAIDE.Components.Fuselages.Fuselage()
         fuselage.tag                                = 'fuselage'
         fuselage.configuration                      = 'Tube_Wing'  
@@ -388,7 +388,7 @@ def vehicle_setup(resize_aircraft,vehicle_name = 'Wisk_Cora_CRM') :
         # add to vehicle
         vehicle.append_component(long_boom)   
     
-        # add left long boom 
+         
         long_boom                                    = deepcopy(vehicle.fuselages.boom_1r)
         long_boom.origin[0][1]                       = -long_boom.origin[0][1]
         long_boom.tag                                = 'Boom_1L'
@@ -426,62 +426,62 @@ def vehicle_setup(resize_aircraft,vehicle_name = 'Wisk_Cora_CRM') :
         short_boom.index                              = 1
     
         # Segment  
-        segment                           = RCAIDE.Library.Components.Nacelles.Segments.Segment() 
-        segment.tag                       = 'segment_1'   
-        segment.percent_x_location        = 0.
-        segment.percent_z_location        = 0.0 
-        segment.height                    = 0.05  
-        segment.width                     = 0.05   
+        segment                                       = RCAIDE.Library.Components.Nacelles.Segments.Segment() 
+        segment.tag                                   = 'segment_1'   
+        segment.percent_x_location                    = 0.
+        segment.percent_z_location                    = 0.0 
+        segment.height                                = 0.05  
+        segment.width                                 = 0.05   
         short_boom.append_segment(segment)           
     
         # Segment                                   
-        segment                           = RCAIDE.Library.Components.Nacelles.Segments.Segment()
-        segment.tag                       = 'segment_2'   
-        segment.percent_x_location        = 0.2/3.3
-        segment.percent_z_location        = 0. 
-        segment.height                    = 0.15 
-        segment.width                     = 0.15 
+        segment                                       = RCAIDE.Library.Components.Nacelles.Segments.Segment()
+        segment.tag                                   = 'segment_2'   
+        segment.percent_x_location                    = 0.2/3.3
+        segment.percent_z_location                    = 0. 
+        segment.height                                = 0.15 
+        segment.width                                 = 0.15 
         short_boom.append_segment(segment) 
     
         # Segment                                   
-        segment                           = RCAIDE.Library.Components.Nacelles.Segments.Segment()
-        segment.tag                       = 'segment_3'   
-        segment.percent_x_location        = 3.1/3.3
-        segment.percent_z_location        = 0. 
-        segment.height                    = 0.15
-        segment.width                     = 0.15
+        segment                                       = RCAIDE.Library.Components.Nacelles.Segments.Segment()
+        segment.tag                                   = 'segment_3'   
+        segment.percent_x_location                    = 3.1/3.3
+        segment.percent_z_location                    = 0. 
+        segment.height                                = 0.15
+        segment.width                                 = 0.15
         short_boom.append_segment(segment)           
     
         # Segment                                  
-        segment                           = RCAIDE.Library.Components.Nacelles.Segments.Segment()
-        segment.tag                       = 'segment_4'     
-        segment.percent_x_location        = 1.   
-        segment.percent_z_location        = 0.   
-        segment.height                    = 0.05   
-        segment.width                     = 0.05   
+        segment                                       = RCAIDE.Library.Components.Nacelles.Segments.Segment()
+        segment.tag                                   = 'segment_4'     
+        segment.percent_x_location                    = 1.   
+        segment.percent_z_location                    = 0.   
+        segment.height                                = 0.05   
+        segment.width                                 = 0.05   
         short_boom.append_segment(segment)       
     
         # add to vehicle
         vehicle.append_component(short_boom)    
     
         # add outer right boom 
-        short_boom                           = deepcopy(vehicle.fuselages.boom_2r)
-        short_boom.origin[0][1]              = short_boom.y_pitch + short_boom.origin[0][1]
-        short_boom.tag                       = 'boom_3r'
-        short_boom.index                     = 1 
+        short_boom                                     = deepcopy(vehicle.fuselages.boom_2r)
+        short_boom.origin[0][1]                        = short_boom.y_pitch + short_boom.origin[0][1]
+        short_boom.tag                                 = 'boom_3r'
+        short_boom.index                               = 1 
         vehicle.append_component(short_boom)  
     
-        # add inner left boom 
-        short_boom                           = deepcopy(vehicle.fuselages.boom_2r)
-        short_boom.origin[0][1]              = - (short_boom.origin[0][1])
-        short_boom.tag                       = 'boom_2l'
-        short_boom.index                     = 1 
+        
+        short_boom                                     = deepcopy(vehicle.fuselages.boom_2r)
+        short_boom.origin[0][1]                        = - (short_boom.origin[0][1])
+        short_boom.tag                                 = 'boom_2l'
+        short_boom.index                               = 1 
         vehicle.append_component(short_boom)     
     
-        short_boom                           = deepcopy(vehicle.fuselages.boom_2r)
-        short_boom.origin[0][1]              = - (short_boom.origin[0][1] + short_boom.y_pitch)
-        short_boom.tag                       = 'boom_3l'
-        short_boom.index                     = 1 
+        short_boom                                     = deepcopy(vehicle.fuselages.boom_2r)
+        short_boom.origin[0][1]                        = - (short_boom.origin[0][1] + short_boom.y_pitch)
+        short_boom.tag                                 = 'boom_3l'
+        short_boom.index                               = 1 
         vehicle.append_component(short_boom) 
     
         #------------------------------------------------------------------
@@ -658,7 +658,7 @@ def vehicle_setup(resize_aircraft,vehicle_name = 'Wisk_Cora_CRM') :
         lift_rotor_motor                         = size_optimal_motor(lift_rotor_motor)
         lift_rotor_motor.mass_properties.mass    = nasa_motor(lift_rotor_motor.design_torque)    
     
-        # Appending motors with different origins
+        
         for i in range(12):
             lr_motor                              = deepcopy(lift_rotor_motor)
             lr_motor.tag                          = 'lift_rotor_motor_' + str(i+1)
@@ -668,24 +668,24 @@ def vehicle_setup(resize_aircraft,vehicle_name = 'Wisk_Cora_CRM') :
         #------------------------------------------------------------------
         # Design Avionics
         #------------------------------------------------------------------
-        avionics                                                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-        avionics.power_draw                                          = 20.   
-        net.avionics                                                 = avionics  
+        avionics                                  = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
+        avionics.power_draw                       = 20.   
+        net.avionics                              = avionics  
     
         #------------------------------------------------------------------
         # Miscellaneous Systems 
         #------------------------------------------------------------------ 
-        sys                                                          = RCAIDE.Library.Components.Powertrain.Systems.Systems()
-        sys.mass_properties.mass                                     = 5       
+        sys                                       = RCAIDE.Library.Components.Powertrain.Systems.Systems()
+        sys.mass_properties.mass                  = 5       
         
            
-        # append motor locations to wing 
+        
         rotor_motor_origins                                          = np.array(lift_rotor_origins)
         propeller_motor_origins                                      = np.array(propeller_origins) 
         vehicle.wings['main_wing'].motor_spanwise_locations          = rotor_motor_origins[:,1]/vehicle.wings['main_wing'].spans.projected
         vehicle.wings['horizontal_tail'].motor_spanwise_locations    = propeller_motor_origins[:,1]/vehicle.wings['horizontal_tail'].spans.projected 
         
-        # append motor origin spanwise locations onto wing data structure
+        
         vehicle.append_component(net)
     
         settings = Data()
