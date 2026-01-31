@@ -84,7 +84,7 @@ def base_analysis(vehicle,run_noise_analysis_flag,use_topology_flag,microphone_t
                                                                               
     # ------------------------------------------------------------------
     #  Energy
-    energy= RCAIDE.Framework.Analyses.Energy.Energy()
+    energy = RCAIDE.Framework.Analyses.Energy.Energy()
     energy.network = vehicle.networks
     analyses.append(energy)
 
