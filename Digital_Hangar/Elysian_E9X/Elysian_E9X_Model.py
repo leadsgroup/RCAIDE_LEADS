@@ -23,7 +23,7 @@ def vehicle_setup():
     #   Initialize the Vehicle
     # ------------------------------------------------------------------    
     
-    vehicle = RCAIDE.Vehicle()
+    vehicle     = RCAIDE.Vehicle()
     vehicle.tag = 'Elysian_E9X'
 
     
@@ -33,7 +33,7 @@ def vehicle_setup():
     vehicle.mass_properties.operating_empty           = 75000 * Units.kilogram  
     vehicle.mass_properties.max_zero_fuel             = 75000 * Units.kilogram 
     vehicle.mass_properties.cargo                     = 9000.  * Units.kilogram  
-    vehicle.mass_properties.center_of_gravity         = [[15.75,0, 0, 0]] # CHANGE
+    vehicle.mass_properties.center_of_gravity         = [[15.75,0, 0, 0]] 
     vehicle.flight_envelope.ultimate_load             = 3.75
     vehicle.flight_envelope.positive_limit_load       = 2.5 
     vehicle.flight_envelope.design_mach_number        = 0.45 
@@ -167,21 +167,21 @@ def vehicle_setup():
 
     # control surfaces -------------------------------------------
 
-    flap                          = RCAIDE.Library.Components.Wings.Control_Surfaces.Flap()
-    flap.tag                      = 'flap'
-    flap.span_fraction_start      = 0.2
-    flap.span_fraction_end        = 0.7
-    flap.deflection               = 0.0 * Units.degrees
-    flap.configuration_type       = 'double_slotted'
-    flap.chord_fraction           = 0.30
+    flap                                  = RCAIDE.Library.Components.Wings.Control_Surfaces.Flap()
+    flap.tag                              = 'flap'
+    flap.span_fraction_start              = 0.2
+    flap.span_fraction_end                = 0.7
+    flap.deflection                       = 0.0 * Units.degrees
+    flap.configuration_type               = 'double_slotted'
+    flap.chord_fraction                   = 0.30
     wing.append_control_surface(flap)
 
-    aileron                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron()
-    aileron.tag                   = 'aileron'
-    aileron.span_fraction_start   = 0.7
-    aileron.span_fraction_end     = 0.963
-    aileron.deflection            = 0.0 * Units.degrees
-    aileron.chord_fraction        = 0.16
+    aileron                               = RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron()
+    aileron.tag                           = 'aileron'
+    aileron.span_fraction_start           = 0.7
+    aileron.span_fraction_end             = 0.963
+    aileron.deflection                    = 0.0 * Units.degrees
+    aileron.chord_fraction                = 0.16
     wing.append_control_surface(aileron)
 
     # add to vehicle
@@ -192,27 +192,27 @@ def vehicle_setup():
     #  Horizontal Stabilizer
     # ------------------------------------------------------------------
 
-    wing  = RCAIDE.Library.Components.Wings.Horizontal_Tail()
+    wing     = RCAIDE.Library.Components.Wings.Horizontal_Tail()
     wing.tag = 'horizontal_stabilizer'
 
-    wing.aspect_ratio            = 4.63
-    wing.sweeps.quarter_chord    = 12.0 * Units.deg  
-    wing.thickness_to_chord      = 0.1
-    wing.taper                   = 0.5  
-    wing.spans.projected         = 10.48 
-    wing.chords.root             = 3.0 
-    wing.chords.tip              = 1.5 
-    wing.chords.mean_aerodynamic = 2.25 
-    wing.areas.reference         = 23.58
-    wing.areas.exposed           = 48.00    
-    wing.areas.wetted            = 48.00     
-    wing.twists.root             = 0.0 * Units.degrees
-    wing.twists.tip              = 0.0 * Units.degrees 
-    wing.origin                  = [[29.92,0,5.328]]
-    wing.aerodynamic_center      = [0,0,0] 
-    wing.vertical                = False
-    wing.xz_plane_symmetric      = True 
-    wing.dynamic_pressure_ratio  = 0.9
+    wing.aspect_ratio              = 4.63
+    wing.sweeps.quarter_chord      = 12.0 * Units.deg  
+    wing.thickness_to_chord        = 0.1
+    wing.taper                     = 0.5  
+    wing.spans.projected           = 10.48 
+    wing.chords.root               = 3.0 
+    wing.chords.tip                = 1.5 
+    wing.chords.mean_aerodynamic   = 2.25 
+    wing.areas.reference           = 23.58
+    wing.areas.exposed             = 48.00    
+    wing.areas.wetted              = 48.00     
+    wing.twists.root               = 0.0 * Units.degrees
+    wing.twists.tip                = 0.0 * Units.degrees 
+    wing.origin                    = [[29.92,0,5.328]]
+    wing.aerodynamic_center        = [0,0,0] 
+    wing.vertical                  = False
+    wing.xz_plane_symmetric        = True 
+    wing.dynamic_pressure_ratio    = 0.9
 
 
     # Wing Segments
@@ -478,7 +478,7 @@ def vehicle_setup():
     # ################################################# Energy Network #######################################################          
     
     
-    # TO BE ADDED
+    
         
     #------------------------------------------------------------------------------------------------------------------------- 
     # Done ! 
@@ -496,9 +496,9 @@ def configs_setup(vehicle):
     #   Initialize Configurations
     # ------------------------------------------------------------------
 
-    configs                                  = RCAIDE.Library.Components.Configs.Config.Container() 
-    base_config                              = RCAIDE.Library.Components.Configs.Config(vehicle)
-    base_config.tag                          = 'base' 
+    configs                           = RCAIDE.Library.Components.Configs.Config.Container() 
+    base_config                       = RCAIDE.Library.Components.Configs.Config(vehicle)
+    base_config.tag                   = 'base' 
     configs.append(base_config)
 
     # ------------------------------------------------------------------
@@ -513,12 +513,12 @@ def configs_setup(vehicle):
     #   Takeoff Configuration
     # ------------------------------------------------------------------
 
-    config                                                                        = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag                                                                    = 'takeoff'
-    config.wings['main_wing'].control_surfaces.flap.deflection                    = 20. * Units.deg
-    # config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity =  3470. * Units.rpm
-    # config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity      =  3470. * Units.rpm 
-    config.V2_VS_ratio                                                            = 1.21
+    config                                                           = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag                                                       = 'takeoff'
+    config.wings['main_wing'].control_surfaces.flap.deflection       = 20. * Units.deg
+    
+     
+    config.V2_VS_ratio                                               = 1.21
     configs.append(config)
 
     
@@ -526,11 +526,11 @@ def configs_setup(vehicle):
     #   Cutback Configuration
     # ------------------------------------------------------------------
 
-    config                                                                        = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag                                                                    = 'cutback'
-    config.wings['main_wing'].control_surfaces.flap.deflection                    = 20. * Units.deg
-    # config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity =  2780. * Units.rpm
-    # config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity      =  2780. * Units.rpm 
+    config                                                            = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag                                                        = 'cutback'
+    config.wings['main_wing'].control_surfaces.flap.deflection        = 20. * Units.deg
+    
+     
     configs.append(config)   
     
         
@@ -539,39 +539,39 @@ def configs_setup(vehicle):
     #   Landing Configuration
     # ------------------------------------------------------------------
 
-    config                                                                        = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag                                                                    = 'landing'
-    config.wings['main_wing'].control_surfaces.flap.deflection                    = 30. * Units.deg
-    # config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity =  2030. * Units.rpm
-    # config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity      =  2030. * Units.rpm
-    config.landing_gears.main_gear.gear_extended                                  = True
-    config.landing_gears.nose_gear.gear_extended                                  = True  
-    config.Vref_VS_ratio                                                          = 1.23
+    config                                                            = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag                                                        = 'landing'
+    config.wings['main_wing'].control_surfaces.flap.deflection        = 30. * Units.deg
+    
+    
+    config.landing_gears.main_gear.gear_extended                      = True
+    config.landing_gears.nose_gear.gear_extended                      = True  
+    config.Vref_VS_ratio                                              = 1.23
     configs.append(config)   
      
     # ------------------------------------------------------------------
     #   Short Field Takeoff Configuration
     # ------------------------------------------------------------------ 
 
-    config                                                                       = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag                                                                   = 'short_field_takeoff'    
-    config.wings['main_wing'].control_surfaces.flap.deflection                   = 20. * Units.deg
-    #config.networks.fuel.propulsors['starboard_propulsor'].fan.angular_velocity =  3470. * Units.rpm
-    #config.networks.fuel.propulsors['port_propulsor'].fan.angular_velocity      =  3470. * Units.rpm 
-    config.landing_gears.main_gear.gear_extended                                 = True
-    config.landing_gears.nose_gear.gear_extended                                 = True  
-    config.V2_VS_ratio                                                           = 1.21 
+    config                                                            = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag                                                        = 'short_field_takeoff'    
+    config.wings['main_wing'].control_surfaces.flap.deflection        = 20. * Units.deg
+    
+     
+    config.landing_gears.main_gear.gear_extended                      = True
+    config.landing_gears.nose_gear.gear_extended                      = True  
+    config.V2_VS_ratio                                                = 1.21 
     configs.append(config)
     
     # ------------------------------------------------------------------
     #   Short Field Takeoff Configuration
     # ------------------------------------------------------------------  
 
-    config                                                      = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag                                                  = 'reverse_thrust'
-    config.wings['main_wing'].control_surfaces.flap.deflection  = 30. * Units.deg
-    config.landing_gears.main_gear.gear_extended                = True
-    config.landing_gears.nose_gear.gear_extended                = True  
+    config                                                            = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag                                                        = 'reverse_thrust'
+    config.wings['main_wing'].control_surfaces.flap.deflection        = 30. * Units.deg
+    config.landing_gears.main_gear.gear_extended                      = True
+    config.landing_gears.nose_gear.gear_extended                      = True  
     configs.append(config)    
     
 
