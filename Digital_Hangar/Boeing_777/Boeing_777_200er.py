@@ -25,8 +25,7 @@ def main(plot_results=True, plot_vehicle=False, fuel='Jet_A1'):
     vehicle  = vehicle_setup(fuel)
     
     # plot vehicle
-    if plot_vehicle:
-        plot_3d_vehicle(vehicle)           
+    plot_3d_vehicle(vehicle)           
     
     # Step 2 create aircraft configuration based on vehicle 
     configs  = configs_setup(vehicle)
@@ -74,7 +73,7 @@ def vehicle_setup(fuel):
     #   Initialize the Vehicle   https://www.boeing.com/content/dam/boeing/boeingdotcom/commercial/airports/acaps/777-200-200ER-300_Rev_E.pdf
     # ------------------------------------------------------------------    
     
-    vehicle = RCAIDE.Vehicle()
+    vehicle     = RCAIDE.Vehicle()
     vehicle.tag = 'Boeing_777-200er'
 
     
@@ -95,7 +94,7 @@ def vehicle_setup(fuel):
     vehicle.flight_envelope.design_cruise_altitude    = 35000*Units.feet
     vehicle.flight_envelope.design_range              = 6500 * Units.nmi
     vehicle.reference_area                            = 436.80 * Units['meters**2']   
-    vehicle.number_of_passengers                                = 280
+    vehicle.number_of_passengers                      = 280
     vehicle.systems.control                           = "fully powered" 
     vehicle.systems.accessories                       = "medium range" 
     
@@ -106,7 +105,6 @@ def vehicle_setup(fuel):
 
     wing                                  = RCAIDE.Library.Components.Wings.Main_Wing()
     wing.tag                              = 'main_wing'
-    # wing.sweeps.leading_edge              = 35.214 * Units.deg
     wing.sweeps.quarter_chord             = 25 * Units.deg
     wing.thickness_to_chord               = 0.10  
     wing.spans.projected                  = 64.8 
@@ -121,7 +119,7 @@ def vehicle_setup(fuel):
     wing.aspect_ratio                     = (wing.spans.projected ** 2) /  wing.areas.reference 
     wing.twists.root                      = 4.0 * Units.degrees 
     wing.twists.tip                       = 0.0 * Units.degrees 
-    wing.percent_span_unexposed           = 6.2 /  wing.spans.projected 
+    wing.percent_span_unexposed           = 6.2 / wing.spans.projected 
     wing.origin                           = [[25 ,0, -0.75]]
     wing.aerodynamic_center               = [25+ 0.25*wing.chords.root ,0, -0.75]  
     wing.vertical                         = False
@@ -132,16 +130,13 @@ def vehicle_setup(fuel):
         
     # Wing Segments
     root_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
-    ospath                                = os.path.abspath(__file__)
-    separator                             = os.path.sep
-    rel_path                              = os.path.dirname(ospath) + separator  + '..'  + separator
+
     
     
-    root_airfoil.coordinate_file          = rel_path  + 'Airfoils' + separator + 'transonic_wing_root_section_airfoil.txt'
+    root_airfoil.coordinate_file          = 'transonic_wing_root_section_airfoil.txt'
     segment                               =  RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Root'
     segment.percent_span_location         = 0.0
-    #segment.twist                         = 3 * Units.degrees 
     segment.root_chord_percent            = 1.0
     segment.thickness_to_chord            = 0.07
     segment.dihedral_outboard             = 7.5 * Units.degrees 
@@ -150,11 +145,10 @@ def vehicle_setup(fuel):
     wing.append_segment(segment)
 
     inboard_airfoil                       = RCAIDE.Library.Components.Airfoils.Airfoil()
-    inboard_airfoil.coordinate_file       = rel_path+ 'Airfoils' + separator + 'transonic_wing_inboard_section_airfoil.txt'
+    inboard_airfoil.coordinate_file       = 'transonic_wing_inboard_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'inboard'
     segment.percent_span_location         = 0.26382
-    #segment.twist                         = 2 * Units.degrees 
     segment.root_chord_percent            = 0.635424
     segment.thickness_to_chord            = 0.07
     segment.dihedral_outboard             = 7.5 * Units.degrees 
@@ -164,11 +158,10 @@ def vehicle_setup(fuel):
     
 
     outboard_airfoil                      = RCAIDE.Library.Components.Airfoils.Airfoil()
-    outboard_airfoil.coordinate_file      = rel_path+ 'Airfoils' + separator + 'transonic_wing_outboard_section_airfoil.txt'
+    outboard_airfoil.coordinate_file      = 'transonic_wing_outboard_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'outboard'
     segment.percent_span_location         = 0.3772
-    #segment.twist                         = 2 * Units.degrees 
     segment.root_chord_percent            = 0.5154
     segment.thickness_to_chord            = 0.07
     segment.dihedral_outboard             = 7.5 * Units.degrees 
@@ -178,11 +171,10 @@ def vehicle_setup(fuel):
  
 
     tip_airfoil                           =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    tip_airfoil.coordinate_file           = rel_path + 'Airfoils' + separator + 'transonic_wing_tip_section_airfoil.txt'
+    tip_airfoil.coordinate_file           = 'transonic_wing_tip_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Tip'
     segment.percent_span_location         = 1.0 
-    #segment.twist                         = 0 * Units.degrees  
     segment.root_chord_percent            = 0.11930 
     segment.thickness_to_chord            = 0.07  
     segment.dihedral_outboard             = 0 * Units.degrees      
@@ -192,12 +184,12 @@ def vehicle_setup(fuel):
     
 
     # control surfaces -------------------------------------------
-    slat                                   = RCAIDE.Library.Components.Wings.Control_Surfaces.Slat()
-    slat.tag                               = 'slat'
-    slat.span_fraction_start               = 0.2
-    slat.span_fraction_end                 = 0.963
-    slat.deflection                        = 0.0 * Units.degrees
-    slat.chord_fraction                    = 0.075
+    slat                                  = RCAIDE.Library.Components.Wings.Control_Surfaces.Slat()
+    slat.tag                              = 'slat'
+    slat.span_fraction_start              = 0.2
+    slat.span_fraction_end                = 0.963
+    slat.deflection                       = 0.0 * Units.degrees
+    slat.chord_fraction                   = 0.075
     wing.append_control_surface(slat)
 
     inboard_flap                          = RCAIDE.Library.Components.Wings.Control_Surfaces.Flap()
@@ -259,19 +251,18 @@ def vehicle_setup(fuel):
     wing.aspect_ratio                = (wing.spans.projected ** 2) /  wing.areas.reference 
     wing.twists.root                 = 1.0 * Units.degrees
     wing.twists.tip                  = 1.0 * Units.degrees  
-    wing.percent_span_unexposed   = 6.2 / wing.spans.projected 
+    wing.percent_span_unexposed      = 6.2 / wing.spans.projected 
     wing.dihedral                    = 7.6 * Units.degrees 
     wing.origin                      = [[63.03027968  , 0  ,  2.1745719]] 
     wing.aerodynamic_center          = [63.03027968 + 0.25*wing.chords.root, 0 , 2.1745719]
     wing.vertical                    = False
-    wing.xz_plane_symmetric          = True 
-    wing.dynamic_pressure_ratio      = 1.0 
+    wing.xz_plane_symmetric          = True
+    wing.dynamic_pressure_ratio      = 1.0
  
     # Wing Segments
     segment                        =  RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                    = 'root_segment'
     segment.percent_span_location  = 0.0
-    #segment.twist                  = 1.0 * Units.degrees
     segment.root_chord_percent     = 1.0
     segment.dihedral_outboard      = 7.6 * Units.degrees 
     segment.sweeps.leading_edge    = 38.6598082  * Units.degrees 
@@ -281,7 +272,6 @@ def vehicle_setup(fuel):
     segment                        =  RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                    = 'tip_segment'
     segment.percent_span_location  = 1.
-    #segment.twist                  = 1.0 * Units.degrees
     segment.root_chord_percent     = wing.taper            
     segment.dihedral_outboard      = 0 * Units.degrees
     segment.sweeps.quarter_chord   = 0 * Units.degrees  
@@ -600,7 +590,7 @@ def vehicle_setup(fuel):
     # ------------------------------------------------------------------  
     main_gear               = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
     main_gear.tire_diameter = 1.12000 * Units.m  
-    main_gear.strut_length  =1.8 * Units.m 
+    main_gear.strut_length  = 1.8 * Units.m 
     main_gear.units         = 2    # Number of main landing gear
     main_gear.wheels        = 6    # Number of wheels on the main landing gear
     vehicle.append_component(main_gear)  
@@ -621,19 +611,19 @@ def vehicle_setup(fuel):
     #------------------------------------------------------------------------------------------------------------------------- 
     #  Turbofan Network
     #-------------------------------------------------------------------------------------------------------------------------   
-    net                                         = RCAIDE.Framework.Networks.Fuel() 
+    net                                        = RCAIDE.Framework.Networks.Fuel() 
     
     #------------------------------------------------------------------------------------------------------------------------- 
     # Fuel Distrubition Line 
     #------------------------------------------------------------------------------------------------------------------------- 
-    fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
+    fuel_line                                  = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
      
     #------------------------------------------------------------------------------------------------------------------------- 
     #  Energy Source: Fuel Tank
     #-------------------------------------------------------------------------------------------------------------------------  
-    inboard_tank                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)  
-    inboard_tank.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A()
-    inboard_tank.segments_bounding_tank       = ['root','inboard']   
+    inboard_tank                               = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)  
+    inboard_tank.fuel                          = RCAIDE.Library.Attributes.Propellants.Jet_A()
+    inboard_tank.segments_bounding_tank        = ['root','inboard']   
     fuel_line.fuel_tanks.append(inboard_tank)
     
     outboard_tank                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)  
@@ -652,9 +642,9 @@ def vehicle_setup(fuel):
     turbofan.engine_length                      = 7.29
     turbofan.bypass_ratio                       = 8.1
     turbofan.diameter                           = 3.124
-    turbofan.design_altitude                    = 39000.0*Units.ft
+    turbofan.design_altitude                    = 39000.0 * Units.ft
     turbofan.design_mach_number                 = 0.84   
-    turbofan.design_thrust                      = 70000  * Units.N  
+    turbofan.design_thrust                      = 70000 * Units.N  
 
 
     # fan                
@@ -681,11 +671,11 @@ def vehicle_setup(fuel):
     turbofan.inlet_nozzle                       = inlet_nozzle 
 
     # low pressure compressor    
-    low_pressure_compressor                       = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
-    low_pressure_compressor.tag                   = 'lpc'
-    low_pressure_compressor.polytropic_efficiency = 0.98
-    low_pressure_compressor.pressure_ratio        = 1.9   
-    turbofan.low_pressure_compressor              = low_pressure_compressor 
+    low_pressure_compressor                        = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
+    low_pressure_compressor.tag                    = 'lpc'
+    low_pressure_compressor.polytropic_efficiency  = 0.98
+    low_pressure_compressor.pressure_ratio         = 1.9   
+    turbofan.low_pressure_compressor               = low_pressure_compressor 
 
     # high pressure compressor  
     high_pressure_compressor                       = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
@@ -736,42 +726,42 @@ def vehicle_setup(fuel):
 
     combustor.air_data                             = RCAIDE.Library.Attributes.Gases.Air()
     if fuel == 'Jet_A1':
-        combustor.fuel_to_air_ratio_take_off           = 0.025   # [-]
-        combustor.fuel_data                            = RCAIDE.Library.Attributes.Propellants.Jet_A1()
+        combustor.fuel_to_air_ratio_take_off              = 0.025   # [-]
+        combustor.fuel_data                               = RCAIDE.Library.Attributes.Propellants.Jet_A1()
         combustor.fuel_data.stoichiometric_fuel_air_ratio = 0.068
-        combustor.fuel_data.heat_of_vaporization = 360000
-        combustor.fuel_data.fuel_surrogate_S1 = {'NC12H26':0.404, 'IC8H18':0.295, 'TMBENZ' : 0.073,'NPBENZ':0.228, 'C10H8':0.02}
-        combustor.fuel_data.temperature = 298.15
-        combustor.fuel_data.pressure    = 101325
+        combustor.fuel_data.heat_of_vaporization          = 360000
+        combustor.fuel_data.fuel_surrogate_S1             = {'NC12H26':0.404, 'IC8H18':0.295, 'TMBENZ' : 0.073,'NPBENZ':0.228, 'C10H8':0.02}
+        combustor.fuel_data.temperature                   = 298.15
+        combustor.fuel_data.pressure                      = 101325
         combustor.fuel_data.kinetic_mechanism             = 'Fuel.yaml'
     elif fuel == 'Liquid_Hydrogen':
-        combustor.fuel_to_air_ratio_take_off = 0.00977 
-        combustor.fuel_data = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+        combustor.fuel_to_air_ratio_take_off              = 0.00977 
+        combustor.fuel_data                               = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
         combustor.fuel_data.stoichiometric_fuel_air_ratio = 0.02941
-        combustor.fuel_data.heat_of_vaporization = 447000
-        combustor.fuel_data.fuel_surrogate_S1 = {'H2': 1}
-        combustor.fuel_data.temperature = 20
-        combustor.fuel_data.pressure    = 101325
+        combustor.fuel_data.heat_of_vaporization          = 447000
+        combustor.fuel_data.fuel_surrogate_S1             = {'H2': 1}
+        combustor.fuel_data.temperature                   = 20
+        combustor.fuel_data.pressure                      = 101325
         combustor.fuel_data.kinetic_mechanism             = 'Fuel.yaml'
     elif fuel == 'Liquid_Petroleum_Gas':
-        combustor.fuel_to_air_ratio_take_off = 0.02144  
-        combustor.fuel_data = RCAIDE.Library.Attributes.Propellants.Liquid_Petroleum_Gas()
+        combustor.fuel_to_air_ratio_take_off              = 0.02144  
+        combustor.fuel_data                               = RCAIDE.Library.Attributes.Propellants.Liquid_Petroleum_Gas()
         combustor.fuel_data.stoichiometric_fuel_air_ratio = 0.06451
-        combustor.fuel_data.heat_of_vaporization = 426200
-        combustor.fuel_data.fuel_surrogate_S1 = {'C3H8':0.822, 'NC4H10':0.178}
-        combustor.fuel_data.temperature = 298.15
-        combustor.fuel_data.pressure    = 810600
+        combustor.fuel_data.heat_of_vaporization          = 426200
+        combustor.fuel_data.fuel_surrogate_S1             = {'C3H8':0.822, 'NC4H10':0.178}
+        combustor.fuel_data.temperature                   = 298.15
+        combustor.fuel_data.pressure                      = 810600
         combustor.fuel_data.kinetic_mechanism             = 'Fuel.yaml'
     elif fuel == 'Liquid_Natural_Gas':
-        combustor.fuel_to_air_ratio_take_off = 0.0193226
-        combustor.fuel_data = RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas()
+        combustor.fuel_to_air_ratio_take_off              = 0.0193226
+        combustor.fuel_data                               = RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas()
         combustor.fuel_data.stoichiometric_fuel_air_ratio = 0.058139
-        combustor.fuel_data.heat_of_vaporization = 510000
-        combustor.fuel_data.fuel_surrogate_S1 = {'CH4':0.9, 'C2H6':0.05, 'C3H8':0.05}
-        combustor.fuel_data.temperature = 111
-        combustor.fuel_data.pressure = 101325
+        combustor.fuel_data.heat_of_vaporization          = 510000
+        combustor.fuel_data.fuel_surrogate_S1             = {'CH4':0.9, 'C2H6':0.05, 'C3H8':0.05}
+        combustor.fuel_data.temperature                   = 111
+        combustor.fuel_data.pressure                      = 101325
         combustor.fuel_data.kinetic_mechanism             = 'Fuel.yaml' 
-    turbofan.combustor                             = combustor
+    turbofan.combustor                                    = combustor
 
     # core nozzle
     core_nozzle                                    = RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle()   
@@ -788,10 +778,8 @@ def vehicle_setup(fuel):
     turbofan.fan_nozzle                            = fan_nozzle 
     
     # design turbofan
-    design_turbofan(turbofan)  
-    # append propulsor to distribution line
+    design_turbofan(turbofan)
     
-
     # Nacelle 
     nacelle                                     = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()
     nacelle.diameter                            = 3.124
@@ -844,8 +832,8 @@ def configs_setup(vehicle):
     #   Initialize Configurations
     # ------------------------------------------------------------------
 
-    configs     = RCAIDE.Library.Components.Configs.Config.Container() 
-    base_config = RCAIDE.Library.Components.Configs.Config(vehicle)
+    configs         = RCAIDE.Library.Components.Configs.Config.Container() 
+    base_config     = RCAIDE.Library.Components.Configs.Config(vehicle)
     base_config.tag = 'base' 
     configs.append(base_config)
 
@@ -854,25 +842,23 @@ def configs_setup(vehicle):
     # ------------------------------------------------------------------
     #   Initialize Configurations
     # ------------------------------------------------------------------ 
-    config = RCAIDE.Library.Components.Configs.Config(vehicle)
-    config.tag = 'idle' 
-    # config.networks.fuel.propulsors['propulsor_1'].emission_indices.NOx      = 4.85 /1000      
-    # config.networks.fuel.propulsors['propulsor_2'].emission_indices.NOx      = 4.85 /1000      
+    config          = RCAIDE.Library.Components.Configs.Config(vehicle)
+    config.tag      = 'idle'     
     configs.append(config) 
     
     # ------------------------------------------------------------------
     #   Cruise Configuration
     # ------------------------------------------------------------------
 
-    config = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag = 'cruise'
+    config          = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag      = 'cruise'
     configs.append(config)
      
     # ------------------------------------------------------------------
     #   Cruise Configuration
     # ------------------------------------------------------------------ 
-    config = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag = 'descent' 
+    config          = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag      = 'descent' 
     config.wings['main_wing'].control_surfaces.spoiler.deflection  = 45. * Units.deg    
     configs.append(config) 
 
@@ -880,14 +866,10 @@ def configs_setup(vehicle):
     #   Takeoff Configuration
     # ------------------------------------------------------------------
 
-    config = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag = 'takeoff'    
-    # config.wings['main_wing'].control_surfaces.flap.deflection  = 20. * Units.deg
-    # config.wings['main_wing'].control_surfaces.slat.deflection  = 30. * Units.deg 
-    config.networks.fuel.propulsors['propulsor_1'].fan.angular_velocity      =  3470. * Units.rpm
-    config.networks.fuel.propulsors['propulsor_2'].fan.angular_velocity      =  3470. * Units.rpm 
-    # config.networks.fuel.propulsors['propulsor_1'].emission_indices.NOx      = 34.77 /1000      
-    # config.networks.fuel.propulsors['propulsor_2'].emission_indices.NOx      = 34.77 /1000             
+    config          = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag      = 'takeoff'     
+    config.networks.fuel.propulsors['propulsor_1'].fan.angular_velocity      = 3470. * Units.rpm
+    config.networks.fuel.propulsors['propulsor_2'].fan.angular_velocity      = 3470. * Units.rpm             
     config.networks.fuel.propulsors['propulsor_1'].fan.rotation              = 3470. #N1 speed
     config.networks.fuel.propulsors['propulsor_2'].fan.rotation              = 3470. #N1 speed
     config.networks.fuel.propulsors['propulsor_1'].fan_nozzle.noise_speed    = 315.
@@ -903,14 +885,10 @@ def configs_setup(vehicle):
     #   Cutback Configuration
     # ------------------------------------------------------------------
 
-    config = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag = 'cutback'
-    # config.wings['main_wing'].control_surfaces.flap.deflection  = 20. * Units.deg
-    # config.wings['main_wing'].control_surfaces.slat.deflection  = 20. * Units.deg
+    config          = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag      = 'cutback'
     config.networks.fuel.propulsors['propulsor_1'].fan.angular_velocity    =  2780. * Units.rpm
-    config.networks.fuel.propulsors['propulsor_2'].fan.angular_velocity    =  2780. * Units.rpm 
-    # config.networks.fuel.propulsors['propulsor_1'].emission_indices.NOx    = 20.87 /1000      
-    # config.networks.fuel.propulsors['propulsor_2'].emission_indices.NOx    = 20.87 /1000       
+    config.networks.fuel.propulsors['propulsor_2'].fan.angular_velocity    =  2780. * Units.rpm       
     config.networks.fuel.propulsors['propulsor_1'].fan.rotation            = 2780.  
     config.networks.fuel.propulsors['propulsor_2'].fan.rotation            = 2780. 
     config.networks.fuel.propulsors['propulsor_1'].fan_nozzle.noise_speed  = 210.
@@ -926,22 +904,20 @@ def configs_setup(vehicle):
     #   Landing Configuration
     # ------------------------------------------------------------------
 
-    config = RCAIDE.Library.Components.Configs.Config(base_config)
+    config     = RCAIDE.Library.Components.Configs.Config(base_config)
     config.tag = 'landing'
-    # config.wings['main_wing'].control_surfaces.flap.deflection  = 30. * Units.deg
-    # config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg
-    config.networks.fuel.propulsors['propulsor_1'].fan.angular_velocity =  2780. * Units.rpm
+    config.networks.fuel.propulsors['propulsor_1'].fan.angular_velocity      =  2780. * Units.rpm
     config.networks.fuel.propulsors['propulsor_2'].fan.angular_velocity      =  2780. * Units.rpm
-    config.landing_gears.main_gear.gear_extended    = True
-    config.landing_gears.nose_gear.gear_extended    = True  
+    config.landing_gears.main_gear.gear_extended                             = True
+    config.landing_gears.nose_gear.gear_extended                             = True  
     # config.networks.fuel.propulsors['propulsor_1'].emission_indices.NOx    = 11.02/1000              
     # config.networks.fuel.propulsors['propulsor_2'].emission_indices.NOx    = 11.02 /1000      
-    config.networks.fuel.propulsors['propulsor_1'].fan.rotation            = 2780.  
-    config.networks.fuel.propulsors['propulsor_2'].fan.rotation            = 2780. 
-    config.networks.fuel.propulsors['propulsor_1'].core_nozzle.noise_speed = 92.
-    config.networks.fuel.propulsors['propulsor_2'].core_nozzle.noise_speed = 92.
-    config.networks.fuel.propulsors['propulsor_1'].fan_nozzle.noise_speed  = 109.3
-    config.networks.fuel.propulsors['propulsor_2'].fan_nozzle.noise_speed  = 109.3 
+    config.networks.fuel.propulsors['propulsor_1'].fan.rotation              = 2780.  
+    config.networks.fuel.propulsors['propulsor_2'].fan.rotation              = 2780. 
+    config.networks.fuel.propulsors['propulsor_1'].core_nozzle.noise_speed   = 92.
+    config.networks.fuel.propulsors['propulsor_2'].core_nozzle.noise_speed   = 92.
+    config.networks.fuel.propulsors['propulsor_1'].fan_nozzle.noise_speed    = 109.3
+    config.networks.fuel.propulsors['propulsor_2'].fan_nozzle.noise_speed    = 109.3 
     
     config.Vref_VS_ratio = 1.23
     configs.append(config)   
@@ -950,14 +926,12 @@ def configs_setup(vehicle):
     #   Short Field Takeoff Configuration
     # ------------------------------------------------------------------ 
 
-    config = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag = 'short_field_takeoff'    
-    # config.wings['main_wing'].control_surfaces.flap.deflection  = 20. * Units.deg
-    # config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg
-    config.networks.fuel.propulsors['propulsor_1'].fan.angular_velocity =  3470. * Units.rpm
+    config      = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag  = 'short_field_takeoff'    
+    config.networks.fuel.propulsors['propulsor_1'].fan.angular_velocity      =  3470. * Units.rpm
     config.networks.fuel.propulsors['propulsor_2'].fan.angular_velocity      =  3470. * Units.rpm 
-    config.landing_gears.main_gear.gear_extended    = True
-    config.landing_gears.nose_gear.gear_extended    = True  
+    config.landing_gears.main_gear.gear_extended                             = True
+    config.landing_gears.nose_gear.gear_extended                             = True  
     config.V2_VS_ratio = 1.21 
     configs.append(config)
 
@@ -965,10 +939,8 @@ def configs_setup(vehicle):
     #   Short Field Takeoff Configuration
     # ------------------------------------------------------------------  
 
-    config = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag = 'reverse_thrust'
-    # config.wings['main_wing'].control_surfaces.flap.deflection  = 30. * Units.deg
-    # config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg 
+    config      = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag  = 'reverse_thrust'
     config.landing_gears.main_gear.gear_extended    = True
     config.landing_gears.nose_gear.gear_extended    = True  
     configs.append(config)
@@ -1013,21 +985,21 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Weights
     # ------------------------------------------------------------------
-    weights = RCAIDE.Framework.Analyses.Weights.Conventional()
-    weights.aircraft_type =  "Transport"
-    weights.settings.FLOPS.fidelity                                           = 'Complex'  
+    weights = RCAIDE.Framework.Analyses.Weights.Conventional_Transport()
+    weights.aircraft_type                                                    =  "Transport"
+    weights.settings.FLOPS.fidelity                                          = 'Complex'  
     weights.settings.weight_correction_additions.empty.structural.paint      = 450 
     weights.settings.weight_correction_additions.operational_items.ETOPS     = 7.7 * vehicle.number_of_passengers
     weights.settings.weight_correction_factors.empty.structural.landing_gear = 1.1   
-    weights.settings.update_mass_properties                = True
+    weights.settings.update_mass_properties                                  = True
     analyses.append(weights)
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     # ------------------------------------------------------------------
     aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.settings.number_of_spanwise_vortices   = 40
-    aerodynamics.settings.number_of_chordwise_vortices  = 2 
+    aerodynamics.settings.number_of_spanwise_vortices           = 40
+    aerodynamics.settings.number_of_chordwise_vortices          = 2 
     aerodynamics.settings.drag_reduction_factors.parasite_drag  = -0.10 #-0.25
     analyses.append(aerodynamics)
 
@@ -1042,7 +1014,7 @@ def base_analysis(vehicle):
     # Emissions 
     # ------------------------------------------------------------------
     emissions = RCAIDE.Framework.Analyses.Emissions.Emission_Index_CRN_Method() 
-    emissions.settings.use_surrogate     = False                 
+    emissions.settings.use_surrogate = False                 
     analyses.append(emissions)
     
 
@@ -1141,10 +1113,10 @@ def mission_setup(analyses):
     segment = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
     segment.tag = "Climb_to_Cruise_1" 
     segment.analyses.extend( analyses.cutback )  
-    segment.air_speed_start                                          = 200 * Units['knots']
-    segment.altitude_end                                             = 8000   * Units['ft']
-    segment.air_speed_end                                            = 300 * Units['knots']
-    segment.climb_rate                                               = 800   * Units['fpm']  
+    segment.air_speed_start                                          = 200  * Units['knots']
+    segment.altitude_end                                             = 8000 * Units['ft']
+    segment.air_speed_end                                            = 300  * Units['knots']
+    segment.climb_rate                                               = 800  * Units['fpm']  
             
     # define flight dynamics to model             
     segment.flight_dynamics.force_x                                  = True  
@@ -1161,8 +1133,8 @@ def mission_setup(analyses):
     segment = Segments.Climb.Constant_Speed_Constant_Rate(base_segment)
     segment.tag = "Climb_to_Cruise_4" 
     segment.analyses.extend( analyses.cruise ) 
-    segment.altitude_end                                             = 35000   * Units['ft']
-    segment.air_speed                                                = 420 * Units['knots']
+    segment.altitude_end                                             = 35000 * Units['ft']
+    segment.air_speed                                                = 420   * Units['knots']
     segment.climb_rate                                               = 280   * Units['fpm']  
               
     # define flight dynamics to model               
@@ -1184,8 +1156,8 @@ def mission_setup(analyses):
     segment.tag = "cruise" 
     segment.analyses.extend( analyses.cruise ) 
     segment.altitude                                                 = 35000 * Units['ft']  
-    segment.air_speed                                                = 450 * Units['knots']
-    segment.distance                                                 = 9200 * Units.km   
+    segment.air_speed                                                = 450   * Units['knots']
+    segment.distance                                                 = 9200  * Units.km   
             
     # define flight dynamics to model             
     segment.flight_dynamics.force_x                                  = True  
@@ -1206,9 +1178,9 @@ def mission_setup(analyses):
     segment = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
     segment.tag = "descent_1" 
     segment.analyses.extend( analyses.descent ) 
-    segment.altitude_end                                             = 10000   * Units.ft
-    segment.air_speed                                                = 300 * Units['knots']
-    segment.descent_rate                                             = 1850   * Units['fpm']  
+    segment.altitude_end                                             = 10000 * Units.ft
+    segment.air_speed                                                = 300   * Units['knots']
+    segment.descent_rate                                             = 1850  * Units['fpm']  
             
     # define flight dynamics to model             
     segment.flight_dynamics.force_x                                  = True  
@@ -1229,9 +1201,9 @@ def mission_setup(analyses):
     segment = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
     segment.tag  = "approach" 
     segment.analyses.extend( analyses.landing ) 
-    segment.altitude_end                                             = 0 * Units.ft
+    segment.altitude_end                                             = 0     * Units.ft
     segment.air_speed                                                = 225.0 * Units['knots']
-    segment.descent_rate                                             = 650  * Units['fpm']  
+    segment.descent_rate                                             = 650   * Units['fpm']  
              
     # define flight dynamics to model              
     segment.flight_dynamics.force_x                                  = True  
@@ -1272,10 +1244,10 @@ def simplified_mission_setup(analyses):
     segment = Segments.Climb.Constant_Speed_Constant_Rate(base_segment)
     segment.tag = "Inital_Climb" 
     segment.analyses.extend( analyses.cutback )  
-    segment.altitude_start                                           = 0.0 * Units['knots'] 
+    segment.altitude_start                                           = 0.0   * Units['knots'] 
     segment.altitude_end                                             = 1000  * Units['feet']
     segment.air_speed                                                = 200.0 * Units['knots']
-    segment.climb_rate                                               = 1800   * Units['fpm']  
+    segment.climb_rate                                               = 1800  * Units['fpm']  
               
     # define flight dynamics to model               
     segment.flight_dynamics.force_x                                  = True  
@@ -1297,9 +1269,9 @@ def simplified_mission_setup(analyses):
     segment.tag = "Climb_to_Cruise_1" 
     segment.analyses.extend( analyses.cutback ) 
     segment.air_speed_start                                          = 200.0 * Units['knots'] 
-    segment.altitude_end                                             = 8000   * Units['ft']
-    segment.air_speed_end                                            = 300 * Units['knots']
-    segment.climb_rate                                               = 1700   * Units['fpm']  
+    segment.altitude_end                                             = 8000  * Units['ft']
+    segment.air_speed_end                                            = 300   * Units['knots']
+    segment.climb_rate                                               = 1700  * Units['fpm']  
             
     # define flight dynamics to model             
     segment.flight_dynamics.force_x                                  = True  
@@ -1315,9 +1287,9 @@ def simplified_mission_setup(analyses):
     segment = Segments.Climb.Constant_Speed_Constant_Rate(base_segment)
     segment.tag = "Climb_to_Cruise_2" 
     segment.analyses.extend( analyses.cruise ) 
-    segment.altitude_end                                             = 16000   * Units['ft']
-    segment.air_speed                                                = 350 * Units['knots']
-    segment.climb_rate                                               = 1300   * Units['fpm']  
+    segment.altitude_end                                             = 16000 * Units['ft']
+    segment.air_speed                                                = 350   * Units['knots']
+    segment.climb_rate                                               = 1300  * Units['fpm']  
              
     # define flight dynamics to model              
     segment.flight_dynamics.force_x                                  = True  
@@ -1334,9 +1306,9 @@ def simplified_mission_setup(analyses):
     segment = Segments.Climb.Constant_Speed_Constant_Rate(base_segment)
     segment.tag = "Climb_to_Cruise_3" 
     segment.analyses.extend( analyses.cruise ) 
-    segment.altitude_end                                             = 35000   * Units['ft']
-    segment.air_speed                                                = 450 * Units['knots']
-    segment.climb_rate                                               = 1000   * Units['fpm']  
+    segment.altitude_end                                             = 35000 * Units['ft']
+    segment.air_speed                                                = 450   * Units['knots']
+    segment.climb_rate                                               = 1000  * Units['fpm']  
               
     # define flight dynamics to model               
     segment.flight_dynamics.force_x                                  = True  
@@ -1357,8 +1329,8 @@ def simplified_mission_setup(analyses):
     segment.tag = "cruise" 
     segment.analyses.extend( analyses.cruise ) 
     segment.altitude                                                 = 35000 * Units['ft']  
-    segment.air_speed                                                = 480 * Units['knots']
-    segment.distance                                                 = 7370 * Units.km   
+    segment.air_speed                                                = 480   * Units['knots']
+    segment.distance                                                 = 7370  * Units.km   
             
     # define flight dynamics to model             
     segment.flight_dynamics.force_x                                  = True  
@@ -1379,9 +1351,9 @@ def simplified_mission_setup(analyses):
     segment = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
     segment.tag = "descent_1" 
     segment.analyses.extend( analyses.descent ) 
-    segment.altitude_end                                             = 10000   * Units.ft
-    segment.air_speed                                                = 380 * Units['knots']
-    segment.descent_rate                                             = 1850   * Units['fpm']  
+    segment.altitude_end                                             = 10000 * Units.ft
+    segment.air_speed                                                = 380   * Units['knots']
+    segment.descent_rate                                             = 1850  * Units['fpm']  
             
     # define flight dynamics to model             
     segment.flight_dynamics.force_x                                  = True  
@@ -1402,9 +1374,9 @@ def simplified_mission_setup(analyses):
     segment = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
     segment.tag  = "approach" 
     segment.analyses.extend( analyses.landing ) 
-    segment.altitude_end                                             = 0 * Units.ft
+    segment.altitude_end                                             = 0     * Units.ft
     segment.air_speed                                                = 225.0 * Units['knots']
-    segment.descent_rate                                             = 650  * Units['fpm']  
+    segment.descent_rate                                             = 650   * Units['fpm']  
              
     # define flight dynamics to model              
     segment.flight_dynamics.force_x                                  = True  
@@ -1445,9 +1417,9 @@ def approach_mission_setup(analyses):
     segment.tag = "final_approach"  
     segment.analyses.extend( analyses.landing ) 
     segment.altitude_start                                           = 120.5   
-    segment.altitude_end                                             = 10.0   * Units.ft
+    segment.altitude_end                                             = 10.0 * Units.ft
     segment.air_speed                                                = 160  * Units['knots']
-    segment.descent_angle                                            = 3.  * Units.deg                               
+    segment.descent_angle                                            = 3.   * Units.deg                               
            
     # define flight dynamics to model            
     segment.flight_dynamics.force_x                                  = True  
@@ -1484,7 +1456,7 @@ def takeoff_mission_setup(analyses):
     segment = Segments.Ground.Takeoff(base_segment)
     segment.tag = "Takeoff_Ground_Run" 
     segment.analyses.extend( analyses.takeoff )
-    segment.velocity_start                                           = 20.* Units.knots
+    segment.velocity_start                                           = 20.   * Units.knots
     segment.velocity_end                                             = 167.0 * Units['knots']
     segment.friction_coefficient                                     = 0.03
     segment.altitude                                                 = 5.0   
@@ -1495,9 +1467,9 @@ def takeoff_mission_setup(analyses):
     segment = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
     segment.tag = "Takeoff_Climb" 
     segment.analyses.extend( analyses.takeoff ) 
-    segment.altitude_end                                             = 35 * Units['ft']
+    segment.altitude_end                                             = 35    * Units['ft']
     segment.air_speed_end                                            = 175.0 * Units['knots']
-    segment.climb_rate                                               = 1800 * Units['fpm']  
+    segment.climb_rate                                               = 1800  * Units['fpm']  
             
     # define flight dynamics to model             
     segment.flight_dynamics.force_x                                  = True  
@@ -1519,7 +1491,7 @@ def takeoff_mission_setup(analyses):
     segment.analyses.extend( analyses.cutback )  
     segment.altitude_end                                             = 1500  * Units['feet']
     segment.air_speed                                                = 200.0 * Units['knots']
-    segment.climb_rate                                               = 1800   * Units['fpm']  
+    segment.climb_rate                                               = 1800  * Units['fpm']  
             
     # define flight dynamics to model             
     segment.flight_dynamics.force_x                                  = True  
@@ -1556,7 +1528,7 @@ def LTO_mission_setup(analyses):
     segment.velocity                                    = 157.0 * Units['knots']  
     segment.altitude                                    = 5.0   
     segment.throttle                                    = 1
-    segment.time                                        = 0.7 *  Units.minutes
+    segment.time                                        = 0.7   * Units.minutes
     mission.append_segment(segment)
  
     
@@ -1566,7 +1538,7 @@ def LTO_mission_setup(analyses):
     segment.velocity                                    = 250.0 * Units['knots']
     segment.altitude                                    = 5.0   
     segment.throttle                                    = 0.85
-    segment.time                                        = 2.2 *  Units.minutes
+    segment.time                                        = 2.2   * Units.minutes
     mission.append_segment(segment)
  
     
@@ -1576,7 +1548,7 @@ def LTO_mission_setup(analyses):
     segment.velocity                                    = 160  * Units['knots']
     segment.altitude                                    = 5.0   
     segment.throttle                                    = 0.3
-    segment.time                                        = 4 *  Units.minutes
+    segment.time                                        = 4    * Units.minutes
     mission.append_segment(segment)
  
     
@@ -1586,7 +1558,7 @@ def LTO_mission_setup(analyses):
     segment.velocity                                    = 50  * Units['knots']
     segment.altitude                                    = 5.0   
     segment.throttle                                    = 0.07
-    segment.time                                        = 26 *  Units.minutes
+    segment.time                                        = 26  * Units.minutes
     mission.append_segment(segment) 
 
     return mission    
@@ -1600,13 +1572,13 @@ def aviation_mission_setup(analyses):
     #   Initialize the Mission
     # ------------------------------------------------------------------
 
-    mission = RCAIDE.Framework.Mission.Sequential_Segments()
+    mission     = RCAIDE.Framework.Mission.Sequential_Segments()
     mission.tag = 'aviation_mission'
 
     Segments = RCAIDE.Framework.Mission.Segments 
-    base_segment = Segments.Segment()
+    base_segment                                         = Segments.Segment()
     base_segment.state.numerics.number_of_control_points = 2
-    base_segment.state.numerics.solver.type = 'root_finder'
+    base_segment.state.numerics.solver.type              = 'root_finder'
 
     #------------------------------------------------------------------------------------------------------------------------------------ 
     #  Takeoff Ground Run
@@ -1631,9 +1603,9 @@ def aviation_mission_setup(analyses):
     segment.analyses.extend( analyses.takeoff ) 
     segment.air_speed_start                                          = 180.0 * Units['knots']
     segment.altitude_start                                           = 0.0   
-    segment.altitude_end                                             = 35 * Units['ft']
+    segment.altitude_end                                             = 35    * Units['ft']
     segment.air_speed_end                                            = 200.0 * Units['knots']
-    segment.climb_rate                                               = 200 * Units['fpm']  
+    segment.climb_rate                                               = 200   * Units['fpm']  
              
     # define flight dynamics to model              
     segment.flight_dynamics.force_x                                  = True  
@@ -1655,7 +1627,7 @@ def aviation_mission_setup(analyses):
     segment.analyses.extend( analyses.cutback )  
     segment.altitude_end                                             = 1000  * Units['feet']
     segment.air_speed                                                = 230.0 * Units['knots']
-    segment.climb_rate                                               = 1500   * Units['fpm']  
+    segment.climb_rate                                               = 1500  * Units['fpm']  
               
     # define flight dynamics to model               
     segment.flight_dynamics.force_x                                  = True  
@@ -1676,9 +1648,9 @@ def aviation_mission_setup(analyses):
     segment.tag = "climb_to_cruise" 
     segment.analyses.extend( analyses.cutback ) 
     segment.air_speed_start                                          = 230.0 * Units['knots'] 
-    segment.altitude_end                                             = 40000   * Units['ft']
-    segment.air_speed_end                                            = 350 * Units['knots']
-    segment.climb_rate                                               = 1300   * Units['fpm']  
+    segment.altitude_end                                             = 40000 * Units['ft']
+    segment.air_speed_end                                            = 350   * Units['knots']
+    segment.climb_rate                                               = 1300  * Units['fpm']  
             
     # define flight dynamics to model             
     segment.flight_dynamics.force_x                                  = True  
@@ -1699,8 +1671,8 @@ def aviation_mission_setup(analyses):
     segment.tag = "cruise" 
     segment.analyses.extend( analyses.cruise ) 
     segment.altitude                                                 = 40000 * Units['ft']  
-    segment.air_speed                                                = 490 * Units['knots']
-    segment.distance                                                 = 7500 * Units.km   
+    segment.air_speed                                                = 490   * Units['knots']
+    segment.distance                                                 = 7500  * Units.km   
             
     # define flight dynamics to model             
     segment.flight_dynamics.force_x                                  = True  
@@ -1721,9 +1693,9 @@ def aviation_mission_setup(analyses):
     segment = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
     segment.tag = "descent_from_cruise" 
     segment.analyses.extend( analyses.descent ) 
-    segment.altitude_end                                             = 10000   * Units.ft
-    segment.air_speed                                                = 330 * Units['knots']
-    segment.descent_rate                                             = 1500   * Units['fpm']  
+    segment.altitude_end                                             = 10000 * Units.ft
+    segment.air_speed                                                = 330   * Units['knots']
+    segment.descent_rate                                             = 1500  * Units['fpm']  
             
     # define flight dynamics to model             
     segment.flight_dynamics.force_x                                  = True  
@@ -1745,9 +1717,9 @@ def aviation_mission_setup(analyses):
     segment.tag  = "final_descent" 
     segment.analyses.extend( analyses.landing )
     segment.altitude_start                                           = 10000 * Units.ft
-    segment.altitude_end                                             = 2000 * Units.ft
+    segment.altitude_end                                             = 2000  * Units.ft
     segment.air_speed                                                = 250.0 * Units['knots']
-    segment.descent_rate                                             = 500  * Units['fpm']  
+    segment.descent_rate                                             = 500   * Units['fpm']  
              
     # define flight dynamics to model              
     segment.flight_dynamics.force_x                                  = True  
@@ -1768,9 +1740,9 @@ def aviation_mission_setup(analyses):
     segment = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
     segment.tag = "approach"  
     segment.analyses.extend( analyses.landing ) 
-    segment.altitude_end                                             = 50.0   * Units.ft
+    segment.altitude_end                                             = 50.0  * Units.ft
     segment.air_speed                                                = 190.0 * Units['knots']
-    segment.descent_rate                                             = 500.0   * Units['fpm']  
+    segment.descent_rate                                             = 500.0 * Units['fpm']  
             
     # define flight dynamics to model             
     segment.flight_dynamics.force_x                                  = True  
@@ -1791,9 +1763,9 @@ def aviation_mission_setup(analyses):
     segment = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
     segment.tag = "level_off" 
     segment.analyses.extend( analyses.landing ) 
-    segment.altitude_end                                             = 0  * Units.ft
+    segment.altitude_end                                             = 0   * Units.ft
     segment.air_speed                                                = 180 * Units['knots']
-    segment.descent_rate                                             = 300   * Units['fpm']  
+    segment.descent_rate                                             = 300 * Units['fpm']  
            
     # define flight dynamics to model            
     segment.flight_dynamics.force_x                                  = True  
@@ -1815,7 +1787,7 @@ def aviation_mission_setup(analyses):
 
     segment.analyses.extend( analyses.reverse_thrust ) 
     segment.velocity_start                                                = 160.0 * Units['knots']
-    segment.velocity_end                                                  = 10 * Units.knots 
+    segment.velocity_end                                                  = 10    * Units.knots 
     segment.friction_coefficient                                          = 0.4
     segment.altitude                                                      = 0.0   
     segment.assigned_control_variables.elapsed_time.active                = True  
