@@ -23,9 +23,11 @@ import os
 
 def main(): 
 
-    vehicle    = vehicle_setup()   
+    #Step 1: design a vehicle
+    vehicle = vehicle_setup()   
     
-    plot_3d_vehicle (vehicle,
+    #Step 2: plot vehicle
+    plot_3d_vehicle(vehicle,
                     show_wing_control_points    = False,
                     show_rotor_wake_vortex_core = False,
                     min_x_axis_limit            = 0,
@@ -33,24 +35,7 @@ def main():
                     min_y_axis_limit            = -20,
                     max_y_axis_limit            = 20,
                     min_z_axis_limit            = -20,
-                    max_z_axis_limit            = 20)         
-    
-    configs    = configs_setup(vehicle)
-     
-    # create analyses
-    analyses = analyses_setup(configs)
-
-    # mission analyses
-    mission  = mission_setup(analyses) 
-
-    # create mission instances (for multiple types of missions)
-    missions = missions_setup(mission) 
-
-    # mission analysis 
-    results = missions.base_mission.evaluate()   
-
-    # plot the results 
-    plot_mission(results)    
+                    max_z_axis_limit            = 20)          
         
     return 
 
@@ -71,28 +56,28 @@ def vehicle_setup():
     #   Vehicle-level Properties
     # ------------------------------------------------------------------
 
-    ## mass properties
-    #vehicle.mass_properties.max_takeoff               = 23000 
-    #vehicle.mass_properties.takeoff                   = 23000  
-    #vehicle.mass_properties.operating_empty           = 13600  
-    #vehicle.mass_properties.max_zero_fuel             = 21000 
-    #vehicle.mass_properties.cargo                     = 7400
-    #vehicle.mass_properties.center_of_gravity         = [[0,0,0]] # Unknown 
-    #vehicle.mass_properties.moments_of_inertia.tensor = [[0,0,0]] # Unknown 
-    #vehicle.mass_properties.max_fuel                  = 5000
-    #vehicle.design_mach_number                        = 0.41 
-    #vehicle.design_range                              = 1528000  
-    #vehicle.design_cruise_alt                         = 25000 *Units.feet
+    # mass properties
+    vehicle.mass_properties.max_takeoff               = 23000 
+    vehicle.mass_properties.takeoff                   = 23000  
+    vehicle.mass_properties.operating_empty           = 13600  
+    vehicle.mass_properties.max_zero_fuel             = 21000 
+    vehicle.mass_properties.cargo                     = 7400
+    vehicle.mass_properties.center_of_gravity         = [[0,0,0]] 
+    vehicle.mass_properties.moments_of_inertia.tensor = [[0,0,0]] 
+    vehicle.mass_properties.max_fuel                  = 5000
+    vehicle.design_mach_number                        = 0.41 
+    vehicle.design_range                              = 1528000  
+    vehicle.design_cruise_alt                         = 25000 *Units.feet
 
-    ## envelope properties
-    #vehicle.flight_envelope.ultimate_load        = 3.75
-    #vehicle.flight_envelope.positive_limit_load           = 1.5
+    # envelope properties
+    vehicle.flight_envelope.ultimate_load             = 3.75
+    vehicle.flight_envelope.positive_limit_load       = 1.5
        
-    ## basic parameters       
-    #vehicle.reference_area                = 61.0  
-    #vehicle.number_of_passengers                    = 72
-    #vehicle.systems.control               = "fully powered"
-    #vehicle.systems.accessories           = "short range"
+    # basic parameters       
+    vehicle.reference_area                            = 61.0  
+    vehicle.number_of_passengers                      = 72
+    vehicle.systems.control                           = "fully powered"
+    vehicle.systems.accessories                       = "short range"
 
  
     # ------------------------------------------------------------------
@@ -294,9 +279,9 @@ def vehicle_setup():
     fuselage.lengths.cabin                      = fuselage.lengths.total- (fuselage.lengths.nose + fuselage.lengths.tail  )
     fuselage.width                              = 3.18  
     fuselage.heights.maximum                    = 3.565  
-    fuselage.areas.side_projected               = 1.0 # incorrect 
-    fuselage.areas.wetted                       = 1.0 # incorrect 
-    fuselage.areas.front_projected              = 1.0 # incorrect 
+    fuselage.areas.side_projected               = 1.0 
+    fuselage.areas.wetted                       = 1.0  
+    fuselage.areas.front_projected              = 1.0 
     fuselage.effective_diameter                 = 3.5  
     fuselage.differential_pressure              = 8.5 * Units.psi    
     
@@ -340,7 +325,7 @@ def vehicle_setup():
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment() 
     segment.tag                                 = 'segment_5'    
     segment.percent_x_location                  = 0.753451685/fuselage.lengths.total
-    segment.percent_z_location                  = 0.0014551442477876075 # this is given as a percentage of the fuselage length i.e. location of the center of the cross section/fuselage length
+    segment.percent_z_location                  = 0.0014551442477876075 
     segment.height                              = 1.320329956 
     segment.width                               = 1.664763858 
     fuselage.append_segment(segment)   
@@ -473,7 +458,7 @@ def vehicle_setup():
                                                      
     # Engine                     
     starboard_engine                                     = RCAIDE.Library.Components.Powertrain.Converters.Engine()
-    starboard_engine.sea_level_power                     = 2475 * Units.horsepower # 1,846 KW
+    starboard_engine.sea_level_power                     = 2475 * Units.horsepower 
     starboard_engine.flat_rate_altitude                  = 0.0
     starboard_engine.rated_speed                         = 1200* Units.rpm
     starboard_engine.power_specific_fuel_consumption     = 0.459 * Units['lb/hp/hr']
@@ -493,19 +478,17 @@ def vehicle_setup():
     propeller.cruise.design_angular_velocity             = 1200 * Units.rpm
     propeller.cruise.design_Cl                           = 0.7
     propeller.cruise.design_altitude                     = 25000  * Units.feet
-    propeller.cruise.design_thrust                       = 10000 # incorrect 
+    propeller.cruise.design_thrust                       = 10000
     propeller.variable_pitch                             = True  
-    ospath                                               = os.path.abspath(__file__)
-    separator                                            = os.path.sep
-    rel_path                                             = os.path.dirname(ospath) + separator + '..' + separator  
+
     airfoil                                              = RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil.tag                                          = 'NACA_4412' 
-    airfoil.coordinate_file                              =  rel_path + 'Airfoils' + separator + 'NACA_4412.txt'   # absolute path   
-    airfoil.polar_files                                  = [ rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_50000.txt',
-                                                            rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_100000.txt',
-                                                            rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_200000.txt',
-                                                            rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_500000.txt',
-                                                            rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_1000000.txt']  
+    airfoil.coordinate_file                              = 'NACA_4412.txt'   
+    airfoil.polar_files                                  = [ 'NACA_4412_polar_Re_50000.txt',
+                                                            'NACA_4412_polar_Re_100000.txt',
+                                                            'NACA_4412_polar_Re_200000.txt',
+                                                            'NACA_4412_polar_Re_500000.txt',
+                                                            'NACA_4412_polar_Re_1000000.txt']  
     propeller.append_airfoil(airfoil)                   
     propeller.airfoil_polar_stations                     = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]  
     propeller                                            = design_propeller(propeller)    
@@ -518,7 +501,7 @@ def vehicle_setup():
     nacelle.tag                                 = 'nacelle_1'
     nacelle.length                              = 4.214256527
     nacelle.diameter                            = 0.465412755  
-    nacelle.areas.wetted                        = 1.0 # incorrect  
+    nacelle.areas.wetted                        = 1.0   
     nacelle.origin                              = [[8.941625295,4.219315295, 1.616135105 ]]
     nacelle.flow_through                        = False    
          
@@ -586,9 +569,9 @@ def vehicle_setup():
     port_engine.origin                         = [[ 9.559106394 ,-4.219315295, 1.616135105]]  
     port_propulsor.engine                      = port_engine
 
-    nacelle_2                                    = deepcopy(nacelle)
-    nacelle_2.tag                                = 'nacelle_2'
-    nacelle_2.origin                             = [[8.941625295,-4.219315295, 1.616135105 ]]
+    nacelle_2                                  = deepcopy(nacelle)
+    nacelle_2.tag                              = 'nacelle_2'
+    nacelle_2.origin                           = [[8.941625295,-4.219315295, 1.616135105 ]]
     port_propulsor.nacelle =  nacelle_2  
     
     # append propulsor to distribution line 
@@ -608,171 +591,14 @@ def vehicle_setup():
     #   Vehicle Definition Complete
     #------------------------------------------------------------------------------------------------------------------------------------ 
 
-
+    #------------------------------------------------------------------------------------------------------------------------- 
+    # Done ! 
+    #-------------------------------------------------------------------------------------------------------------------------  
     return vehicle
 
-
-# ----------------------------------------------------------------------
-#   Define the Configurations
-# ---------------------------------------------------------------------
-
-def configs_setup(vehicle): 
-    return configs
-
-# ----------------------------------------------------------------------
-#   Plot Mission
-# ----------------------------------------------------------------------
-def plot_mission(results,line_style='bo-'):
-
-    
-    # Plot Flight Conditions 
-    plot_flight_conditions(results, line_style)
-    
-    # Plot Aerodynamic Forces 
-    plot_aerodynamic_forces(results, line_style)
-    
-    # Plot Aerodynamic Coefficients 
-    plot_aerodynamic_coefficients(results, line_style)
-    
-    # Plot Static Stability Coefficients 
-    plot_stability_coefficients(results, line_style)    
-    
-    # Drag Components
-    plot_drag_components(results, line_style)
-    
-    # Plot Altitude, sfc, vehicle weight 
-    plot_altitude_sfc_weight(results, line_style)
-    
-    # Plot Velocities 
-    plot_aircraft_velocities(results, line_style)  
-    
-    # Plot Trajectory
-    plot_flight_trajectory(results)
-
-    return 
- 
-
-# ----------------------------------------------------------------------
-#   Define the Mission
-# ----------------------------------------------------------------------
-
-def mission_setup(analyses):
-
-    # ------------------------------------------------------------------
-    #   Initialize the Mission
-    # ------------------------------------------------------------------
-
-    mission = RCAIDE.Framework.Analyses.Mission.Sequential_Segments()
-    mission.tag = 'the_mission'
- 
-
-    # unpack Segments module
-    Segments = RCAIDE.Framework.Analyses.Mission.Segments
-
-    # base segment
-    base_segment = Segments.Segment()
-    
-
-
-    # ------------------------------------------------------------------    
-    #   Cruise Segment: Constant Speed Constant Altitude
-    # ------------------------------------------------------------------    
-
-    segment     = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
-    segment.tag = "cruise" 
-    segment.analyses.extend( analyses.base ) 
-    segment.altitude                                = 12000. * Units.feet
-    segment.air_speed                               = 119.   * Units.knots
-    segment.distance                                = 10 * Units.nautical_mile
-    
-    # define flight dynamics to model 
-    segment.flight_dynamics.force_x                       = True  
-    segment.flight_dynamics.force_z                       = True     
-    
-    # define flight controls 
-    segment.assigned_control_variables.RPM.active                    = True           
-    segment.assigned_control_variables.RPM.assigned_propulsors       = [['starboard_propulsor','port_propulsor']]
-    segment.assigned_control_variables.RPM.initial_guess             = True 
-    segment.assigned_control_variables.RPM.initial_guess_values      = [[2500]] 
-    segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]
-    segment.assigned_control_variables.body_angle.active             = True                  
-    
-    mission.append_segment(segment)
-
-
-    return mission
-
-
-def base_analysis(vehicle):
-
-    # ------------------------------------------------------------------
-    #   Initialize the Analyses
-    # ------------------------------------------------------------------     
-    analyses = RCAIDE.Framework.Analyses.Vehicle()
-    analyses.vehicle = vehicle 
-
-    # ------------------------------------------------------------------
-    #  Weights
-    weights = RCAIDE.Framework.Analyses.Weights.Weights_Transport()
-    analyses.append(weights)
-
-    # ------------------------------------------------------------------
-    #  Aerodynamics Analysis
-    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
-    aerodynamics.settings.drag_coefficient_increment = 0.0000
-    analyses.append(aerodynamics) 
-
-    # ------------------------------------------------------------------
-    #  Energy
-    energy= RCAIDE.Framework.Analyses.Energy.Energy()  
-    analyses.append(energy)
-
-    # ------------------------------------------------------------------
-    #  Planet Analysis
-    planet = RCAIDE.Framework.Analyses.Planets.Earth()
-    analyses.append(planet)
-
-    # ------------------------------------------------------------------
-    #  Atmosphere Analysis
-    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    analyses.append(atmosphere)   
-
-    # done!
-    return analyses 
-
-
-def analyses_setup(configs):
-
-    analyses = RCAIDE.Framework.Analyses.Analysis.Container()
-
-    # build a base analysis for each config
-    for tag,config in configs.items():
-        analysis = base_analysis(config)
-        analyses[tag] = analysis
-
-    return analyses
-
-def missions_setup(mission): 
- 
-    missions         = RCAIDE.Framework.Analyses.Mission.Missions()
-    
-    # base mission 
-    mission.tag  = 'base_mission'
-    missions.append(mission)
- 
-    return missions  
-
-
-def save_results(results):
- 
-    # Store data (serialize)
-    with open('B737_results.pkl', 'wb') as file:
-        pickle.dump(results, file)
-        
     return
  
 if __name__ == '__main__': 
     main()    
-    plt.show()
+  
  
