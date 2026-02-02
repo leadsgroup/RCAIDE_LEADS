@@ -325,56 +325,6 @@ def vehicle_setup(redesign_rotors) :
     return vehicle
   
 
-def plot_results(results):
-     
-    plot_flight_conditions(results) 
-    
-    
-    plot_flight_trajectory(results)
-    
-    
-    plot_aerodynamic_coefficients(results)  
-     
-    
-    plot_longitudinal_stability(results) 
-    
-     
-    plot_battery_temperature(results)
-    plot_battery_cell_conditions(results) 
-    plot_battery_degradation(results) 
-    plot_electric_propulsor_efficiencies(results) 
-    
-    
-    plot_rotor_conditions(results) 
-    plot_disc_and_power_loading(results)
-     
-      
-    plot_battery_degradation(results)   
-    return
-
-def save_aircraft_geometry(geometry,filename): 
-    pickle_file  = filename + '.pkl'
-    with open(pickle_file, 'wb') as file:
-        pickle.dump(geometry, file) 
-    return 
-
-
-def load_aircraft_geometry(filename):  
-    load_file = filename + '.pkl' 
-    with open(load_file, 'rb') as file:
-        results = pickle.load(file) 
-    return results
-
-
-
-def load_propulsor(filename):
-    propulsor =  load(filename)
-    return propulsor
-
-def save_propulsor(propulsor, filename):
-    save(propulsor, filename)
-    return
-
 
 if __name__ == '__main__': 
     main()    
