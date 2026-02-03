@@ -29,15 +29,15 @@ def main(plot_results=True, plot_vehicle=True):
      
     vehicle                  = vehicle_setup()  
 
-    configs                  = configs_setup(vehicle) 
-    analyses                 = analyses_setup(configs) 
-    mission                  = mission_setup(analyses)
-    missions                 = missions_setup(mission)
-    results                  = missions.base_mission.evaluate()  
-    plot_mission(results) 
+    #configs                  = configs_setup(vehicle) 
+    #analyses                 = analyses_setup(configs) 
+    #mission                  = mission_setup(analyses)
+    #missions                 = missions_setup(mission)
+    #results                  = missions.base_mission.evaluate()  
+    #plot_mission(results) 
 
      
-    compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage = 0.05)  
+    #compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage = 0.05)  
     
     return 
 
