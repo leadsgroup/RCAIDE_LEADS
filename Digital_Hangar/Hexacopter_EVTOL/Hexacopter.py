@@ -33,19 +33,19 @@ def main():
         vehicle = load_aircraft_geometry('Hexacopter') 
 
     
-    configs = configs_setup(vehicle)
+    #configs = configs_setup(vehicle)
 
     
-    analyses = analyses_setup(configs)
+    #analyses = analyses_setup(configs)
 
     
-    mission = mission_setup(analyses)
-    missions = missions_setup(mission) 
+    #mission = mission_setup(analyses)
+    #missions = missions_setup(mission) 
      
-    results = missions.base_mission.evaluate() 
+    #results = missions.base_mission.evaluate() 
      
      
-    plot_results(results) 
+    #plot_results(results) 
 
      
   
