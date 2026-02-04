@@ -4,7 +4,7 @@
 # ---------------------------------------------------------------------
 import RCAIDE
 from RCAIDE.Framework.Core import Units 
-from RCAIDE.Library.Methods.Geometry.Planform                     import segment_properties,wing_segmented_planform   
+from RCAIDE.Library.Methods.Geometry.Planform                     import segment_properties,wing_planform   
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor  import design_electric_rotor
 from RCAIDE.Library.Plots                                         import * 
 from RCAIDE import  load 
@@ -23,44 +23,13 @@ import matplotlib.pyplot as plt
 # ----------------------------------------------------------------------------------------------------------------------  
 def main():           
          
-    
-    new_geometry = True
-    redesign_rotors =  False 
-    if new_geometry :
-        vehicle = vehicle_setup(redesign_rotors)
-        save_aircraft_geometry(vehicle , 'Hexacopter')
-    else: 
-        vehicle = load_aircraft_geometry('Hexacopter') 
-
-    
-    configs = configs_setup(vehicle)
-
-    
-    analyses = analyses_setup(configs)
-
-    
-    mission = mission_setup(analyses)
-    missions = missions_setup(mission) 
-     
-    results = missions.base_mission.evaluate() 
-     
-     
-    plot_results(results) 
-
-     
+    vehicle = vehicle_setup()
   
     return 
 # ----------------------------------------------------------------------
 #   Build the Vehicle
 # ----------------------------------------------------------------------
-def vehicle_setup(redesign_rotors) : 
-
-    ospath                                      = os.path.abspath(__file__)
-    separator                                   = os.path.sep
-    airfoil_path                                = os.path.dirname(ospath) + separator  + '..' + separator  
-    local_path                                  = os.path.dirname(ospath) + separator       
-     
-    # ------------------------------------------------------------------
+def vehicle_setup(): 
     #   Initialize the Vehicle
     # ------------------------------------------------------------------    
     vehicle                                     = RCAIDE.Vehicle()
@@ -223,6 +192,7 @@ def vehicle_setup(redesign_rotors) :
     # Electronic Speed Controller           
     lift_rotor_esc                                         = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller() 
     lift_rotor_esc.efficiency                              = 0.95     
+    lift_rotor_esc.bus_voltage                             = bus.voltage
     lift_rotor_esc.origin                                  = [[-0.073 ,  1.950 , 1.2]] 
     propulsor.electronic_speed_controller                  = lift_rotor_esc 
            
@@ -278,21 +248,8 @@ def vehicle_setup(redesign_rotors) :
     nacelle.orientation_euler_angles                       = [0,-90 * Units.degrees,0.]    
     nacelle.flow_through                                   = True  
     propulsor.nacelle                                      = nacelle
-    
-    if redesign_rotors:
-        design_electric_rotor(propulsor)
-        save_propulsor(propulsor, os.path.join(local_path, 'lift_rotor_propulsor.res'))
-    else:
-        regression_prop_rotor_propulsor                                       = deepcopy(propulsor)        
-        design_electric_rotor(regression_prop_rotor_propulsor, iterations=2)
-        loaded_propulsor                                                      = load_propulsor(os.path.join(local_path, 'lift_rotor_propulsor.res'))
-
-        for key,item in propulsor.prop_rotor.items():
-            propulsor.prop_rotor[key]                                         = loaded_propulsor.rotor[key] 
-        for key,item in propulsor.motor.items():
-            propulsor.motor[key]                                              = loaded_propulsor.motor[key]  
-
-    
+     
+    design_electric_rotor(propulsor)  
               
     origins = [[ -1.5,2.6,1.8],[ -1.5,-2.6,1.8], [2.5,6.0,1.8] ,[2.5,-6.,1.8], [6.5,2.6,1.8] ,[6.5,-2.6,1.8]]  
     
@@ -323,7 +280,6 @@ def vehicle_setup(redesign_rotors) :
     vehicle.append_energy_network(network) 
  
     return vehicle
-  
 
 
 if __name__ == '__main__': 
