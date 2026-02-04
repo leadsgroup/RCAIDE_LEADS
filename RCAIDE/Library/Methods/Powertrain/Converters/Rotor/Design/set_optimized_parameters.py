@@ -44,7 +44,7 @@ def set_optimized_parameters(rotor, optimization_problem):
             - design_thrust (if not specified)
             - design_torque
             - design_angular_velocity
-            - design_Cl
+            - design_lift_coefficient
             - design_thrust_coefficient
             - design_power_coefficient
             - design_SPL_dBA
@@ -62,7 +62,7 @@ def set_optimized_parameters(rotor, optimization_problem):
             - design_thrust (if not specified)
             - design_torque
             - design_angular_velocity
-            - design_Cl
+            - design_lift_coefficient
             - design_thrust_coefficient
             - design_power_coefficient
             - design_SPL_dBA
@@ -90,7 +90,7 @@ def set_optimized_parameters(rotor, optimization_problem):
         
     rotor.hover.design_torque              = results.hover.torque  
     rotor.hover.design_angular_velocity    = results.hover.omega  
-    rotor.hover.design_Cl                  = results.hover.mean_CL 
+    rotor.hover.design_lift_coefficient    = results.hover.mean_lift_coefficient 
     rotor.hover.design_thrust_coefficient  = results.hover.thurst_c
     rotor.hover.design_power_coefficient   = results.hover.power_c 
     rotor.hover.design_SPL_dBA             = results.hover.mean_SPL 
@@ -111,7 +111,7 @@ def set_optimized_parameters(rotor, optimization_problem):
      
         rotor.cruise.design_torque              = results.cruise.torque  
         rotor.cruise.design_angular_velocity    = results.cruise.omega  
-        rotor.cruise.design_Cl                  = results.cruise.mean_CL 
+        rotor.cruise.design_lift_coefficient    = results.cruise.mean_lift_coefficient 
         rotor.cruise.design_thrust_coefficient  = results.cruise.thurst_c
         rotor.cruise.design_power_coefficient   = results.cruise.power_c   
         rotor.cruise.design_SPL_dBA             = results.cruise.mean_SPL

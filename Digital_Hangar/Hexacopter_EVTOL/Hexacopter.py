@@ -4,7 +4,8 @@
 # ---------------------------------------------------------------------
 import RCAIDE
 from RCAIDE.Framework.Core import Units 
-from RCAIDE.Library.Methods.Geometry.Planform                     import segment_properties,wing_planform   
+from RCAIDE.Library.Methods.Geometry.Planform                     import segment_properties,wing_planform  
+from RCAIDE.Library.Methods.Geometry.Airfoil.compute_airfoil_properties import compute_airfoil_properties 
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor  import design_electric_rotor
 from RCAIDE.Library.Plots                                         import * 
 from RCAIDE import  load 
@@ -23,7 +24,20 @@ import matplotlib.pyplot as plt
 # ----------------------------------------------------------------------------------------------------------------------  
 def main():           
          
-    vehicle = vehicle_setup()
+    
+    # Step 1: design a vehicle
+    vehicle  = vehicle_setup()  
+
+    try:
+        import vsp as vsp
+        from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
+        export_vsp_vehicle(vehicle, 'Hexacopter')
+    except ImportError:
+        pass 
+    
+    # Step 2: plot vehicle 
+    plot_3d_vehicle(vehicle,export_gltf=True)  
+         
   
     return 
 # ----------------------------------------------------------------------
@@ -200,32 +214,70 @@ def vehicle_setup():
     g                                                      = 9.81                                     
     Hover_Load                                             = vehicle.mass_properties.takeoff * g * 1.1 
     
-    lift_rotor                                             = RCAIDE.Library.Components.Powertrain.Converters.Lift_Rotor()    
-    lift_rotor.active                                      = True           
-    lift_rotor.tip_radius                                  = 2.5
-    lift_rotor.hub_radius                                  = 0.15 * lift_rotor.tip_radius 
-    lift_rotor.number_of_blades                            = 3
+    #lift_rotor                                             = RCAIDE.Library.Components.Powertrain.Converters.Lift_Rotor()    
+    #lift_rotor.active                                      = True           
+    #lift_rotor.tip_radius                                  = 2.5
+    #lift_rotor.hub_radius                                  = 0.15 * lift_rotor.tip_radius 
+    #lift_rotor.number_of_blades                            = 3
     
-    lift_rotor.hover.design_altitude                       = 40 * Units.feet  
-    lift_rotor.hover.design_thrust                         = Hover_Load/6
-    lift_rotor.hover.design_freestream_velocity            = np.sqrt(lift_rotor.hover.design_thrust/(2*1.2*np.pi*(lift_rotor.tip_radius**2)))
+    #lift_rotor.hover.design_altitude                       = 40 * Units.feet  
+    #lift_rotor.hover.design_thrust                         = Hover_Load/6
+    #lift_rotor.hover.design_freestream_velocity            = np.sqrt(lift_rotor.hover.design_thrust/(2*1.2*np.pi*(lift_rotor.tip_radius**2)))
     
-    lift_rotor.oei.design_altitude                         = 40 * Units.feet  
-    lift_rotor.oei.design_thrust                           = Hover_Load/5  
-    lift_rotor.oei.design_freestream_velocity              = np.sqrt(lift_rotor.oei.design_thrust/(2*1.2*np.pi*(lift_rotor.tip_radius**2)))
+    #lift_rotor.oei.design_altitude                         = 40 * Units.feet  
+    #lift_rotor.oei.design_thrust                           = Hover_Load/5  
+    #lift_rotor.oei.design_freestream_velocity              = np.sqrt(lift_rotor.oei.design_thrust/(2*1.2*np.pi*(lift_rotor.tip_radius**2)))
     
-    airfoil                                                = RCAIDE.Library.Components.Airfoils.Airfoil()   
-    airfoil.coordinate_file                                = 'NACA_4412.txt'
-    airfoil.polar_files                                    = ['NACA_4412_polar_Re_50000.txt' ,
-                                                             'NACA_4412_polar_Re_100000.txt' ,
-                                                             'NACA_4412_polar_Re_200000.txt' ,
-                                                              'NACA_4412_polar_Re_500000.txt' ,
-                                                              'NACA_4412_polar_Re_1000000.txt',
-                                                              'NACA_4412_polar_Re_3500000.txt',
-                                                              'NACA_4412_polar_Re_5000000.txt',
-                                                              'NACA_4412_polar_Re_7500000.txt' ]
-    lift_rotor.append_airfoil(airfoil)                         
-    lift_rotor.airfoil_polar_stations                      = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    #airfoil                                                = RCAIDE.Library.Components.Airfoils.Airfoil()   
+    #airfoil.coordinate_file                                = 'NACA_4412.txt'
+    #airfoil.polar_files                                    = ['NACA_4412_polar_Re_50000.txt' ,
+                                                             #'NACA_4412_polar_Re_100000.txt' ,
+                                                             #'NACA_4412_polar_Re_200000.txt' ,
+                                                              #'NACA_4412_polar_Re_500000.txt' ,
+                                                              #'NACA_4412_polar_Re_1000000.txt',
+                                                              #'NACA_4412_polar_Re_3500000.txt',
+                                                              #'NACA_4412_polar_Re_5000000.txt',
+                                                              #'NACA_4412_polar_Re_7500000.txt' ]
+    #lift_rotor.append_airfoil(airfoil)                         
+    #lift_rotor.airfoil_polar_stations                      = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] 
+    
+
+    lift_rotor                               = RCAIDE.Library.Components.Powertrain.Converters.Lift_Rotor()
+    lift_rotor.inputs                        = Data() 
+    lift_rotor.inputs.blade_pitch_command    = 0 
+    lift_rotor.inputs.y_axis_rotation        = 0.
+    lift_rotor.tag                           = 'BO_105_40_percent_scale'
+    lift_rotor.hub_radius                    = lift_rotor.tip_radius*0.1 
+    lift_rotor.tip_radius                    = 2.5
+    lift_rotor.hub_radius                    = 0.1 
+    lift_rotor.number_of_blades              = 3     
+    lift_rotor.thrust_angle                  = 0.
+    lift_rotor.airfoil_flag                  = True 
+    lift_rotor.hover.design_lift_coefficient = 0.7 
+    num_sec                                  = 20
+    delta_beta                               = 1.5 * Units.degrees 
+    non_dim_r                                = np.linspace(lift_rotor.hub_radius,0.99,num_sec)
+    lift_rotor.radius_distribution           = non_dim_r*lift_rotor.tip_radius
+    lift_rotor.thickness_to_chord            = np.ones(num_sec)*0.12
+    lift_rotor.chord_distribution            = np.ones(num_sec)*0.225
+    lift_rotor.max_thickness_distribution    = lift_rotor.thickness_to_chord* lift_rotor.chord_distribution
+    lift_rotor.twist_distribution            = np.flip(np.linspace(90,90,num_sec))*Units.degrees # 8*np.flip(np.linspace(0,1,num_sec))*Units.degrees  #+ delta_beta 
+    lift_rotor.airfoil_polar_stations        = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]    
+          
+    ospath                                   = os.path.abspath(__file__)
+    separator                                = os.path.sep
+    rel_path                                 = os.path.dirname(ospath) + separator   
+               
+    airfoil_1                                = RCAIDE.Library.Components.Airfoils.Airfoil()   
+    airfoil_1.coordinate_file                =  rel_path +'..' + separator + 'Airfoils' + separator + 'NACA_23012.txt'
+    airfoil_1.polar_files                    = [rel_path +'..' + separator + 'Airfoils' + separator + 'Polars' + separator +'NACA_23012_polar_Re_50000.txt',
+                                                 rel_path +'..' + separator + 'Airfoils' + separator + 'Polars' + separator +'NACA_23012_polar_Re_100000.txt',
+                                                 rel_path +'..' + separator + 'Airfoils' + separator + 'Polars' + separator +'NACA_23012_polar_Re_200000.txt',
+                                                 rel_path +'..' + separator + 'Airfoils' + separator + 'Polars' + separator +'NACA_23012_polar_Re_500000.txt',
+                                                 rel_path +'..' + separator + 'Airfoils' + separator + 'Polars' + separator +'NACA_23012_polar_Re_1000000.txt']
+    airfoil_1.geometry                       = import_airfoil_geometry(airfoil_1.coordinate_file,airfoil_1.number_of_points)
+    airfoil_1.polars                         = compute_airfoil_properties(airfoil_1.geometry,airfoil_1.polar_files)
+    lift_rotor.append_airfoil(airfoil_1)       
     propulsor.rotor                                        = lift_rotor
 
     #------------------------------------------------------------------------------------------------------------------------------------               
@@ -240,16 +292,20 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------               
     # Lift Rotor Nacelle
     #------------------------------------------------------------------------------------------------------------------------------------     
-    nacelle                                                = RCAIDE.Library.Components.Nacelles.Nacelle()
-    nacelle.tag                                            = 'rotor_nacelle' 
+    nacelle                                                = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()
+    nacelle.tag                                            = 'rotor_nacelle'
     nacelle.length                                         = 0.4
     nacelle.diameter                                       = 2.6 * 2
     nacelle.inlet_diameter                                 = 2.55 * 2     
     nacelle.orientation_euler_angles                       = [0,-90 * Units.degrees,0.]    
     nacelle.flow_through                                   = True  
+    nacelle.areas.wetted                                   = np.pi*nacelle.diameter*nacelle.length
+    nacelle_airfoil                                        = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
+    nacelle_airfoil.NACA_4_Series_code                     = '4305'
+    nacelle.append_airfoil(nacelle_airfoil) 
     propulsor.nacelle                                      = nacelle
      
-    design_electric_rotor(propulsor)  
+    #design_electric_rotor(propulsor)  
               
     origins = [[ -1.5,2.6,1.8],[ -1.5,-2.6,1.8], [2.5,6.0,1.8] ,[2.5,-6.,1.8], [6.5,2.6,1.8] ,[6.5,-2.6,1.8]]  
     
@@ -264,7 +320,7 @@ def vehicle_setup():
         propulsor_i.electronic_speed_controller.origin    = [origins[i]]  
         propulsor_i.nacelle.tag                           = 'rotor_nacelle_' + str(i + 1)  
         propulsor_i.nacelle.origin                        = [origins[i]]   
-        bus.propulsors.append(propulsor_i)    
+        network.propulsors.append(propulsor_i)    
  
                              
     # Avionics                            
