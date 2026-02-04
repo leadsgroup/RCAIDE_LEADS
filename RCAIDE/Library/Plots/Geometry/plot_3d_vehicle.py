@@ -41,7 +41,8 @@ def plot_3d_vehicle(vehicle,
                     rotor_color                 = 'black', 
                     cargo_bay_color             = 'blue',
                     plot_actuator_disc          = False,
-                    show_LOPA                   = True, 
+                    show_LOPA                   = True,
+                    export_gltf                 = False, 
                     wing_opacity                = 0.5, 
                     fuselage_opacity            = 0.5,
                     boom_opacity                = 1.0,
@@ -322,8 +323,16 @@ def plot_3d_vehicle(vehicle,
 
     # Use the custom interactor style
     custom_style = vtk.vtkInteractorStyleTrackballCamera() 
-    renderWindowInteractor.SetInteractorStyle(custom_style)
+    renderWindowInteractor.SetInteractorStyle(custom_style) 
 
+    if export_gltf:
+        # 4. Export to GLTF
+        exporter = vtk.vtkGLTFExporter()
+        exporter.SetFileName( save_filename + ".gltf")
+        exporter.SetRenderWindow(renderWindow)
+        exporter.SetInlineData(True)  
+        exporter.Write()
+        
     if save_figure:
         # Create a vtkWindowToImageFilter to capture the render window content
         window_to_image = vtk.vtkWindowToImageFilter()
@@ -344,8 +353,8 @@ def plot_3d_vehicle(vehicle,
         renderWindow.Render() # Render the scene initially
         renderWindowInteractor.Start()
 
-    return
-
+    return 
+    
 def make_object(renderer, GEOM,  rgb_color, opacity): 
 
     actor = generate_vtk_object(GEOM.PTS)

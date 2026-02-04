@@ -29,7 +29,7 @@ def main():
        
     
     # Step 2: plot vehicle 
-    plot_3d_vehicle(vehicle)  
+    plot_3d_vehicle(vehicle,export_gltf=True)  
     
     return 
     
