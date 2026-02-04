@@ -22,7 +22,6 @@ import numpy as np
 from copy import deepcopy
 import matplotlib.pyplot as plt 
 import  pickle
-import  vsp
 from RCAIDE.Framework.External_Interfaces.OpenVSP.export_vsp_vehicle import export_vsp_vehicle
 # ----------------------------------------------------------------------------------------------------------------------
 #  REGRESSION

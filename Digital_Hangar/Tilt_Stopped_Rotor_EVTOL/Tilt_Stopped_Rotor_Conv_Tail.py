@@ -33,6 +33,8 @@ def main():
         save_aircraft_geometry(vehicle , 'Tilt_Stopped_Rotor_Conv_Tail')
     else: 
         vehicle = load_aircraft_geometry('Tilt_Stopped_Rotor_Conv_Tail')
+
+    plot_3d_vehicle(vehicle) 
         
     # Set up configs
     configs  = configs_setup(vehicle)
@@ -57,17 +59,7 @@ def main():
     # plot the results 
     plot_results(results)    
     plt.show()
-
-    ## plot vehicle 
-    #plot_3d_vehicle(vehicle, 
-                    #min_x_axis_limit            = -5,
-                    #max_x_axis_limit            = 15,
-                    #min_y_axis_limit            = -10,
-                    #max_y_axis_limit            = 10,
-                    #min_z_axis_limit            = -10,
-                    #max_z_axis_limit            = 10,
-                    #show_figure                 = False 
-                    #)               
+           
           
     return
  
@@ -226,7 +218,7 @@ def vehicle_setup(redesign_rotors=True) :
     wing.xz_plane_symmetric       = True
     wing.vertical                 = False
     airfoil                       = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file       = airfoil_path + 'Airfoils' + separator + 'NACA_63_412.txt'
+    airfoil.coordinate_file       = '/Users/siripunn/Desktop/LEADS_WORK/LEADS_Research/RCAIDE_LEADS/Digital_Hangar/Tilt_Stopped_Rotor_EVTOL/NACA_63_412.txt'
     
     # Segment                                  
     segment                       = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -552,7 +544,7 @@ def vehicle_setup(redesign_rotors=True) :
     boom.index                              = 1
     
     # Segment  
-    segment                           = RCAIDE.Library.Components.Fuselages.Segments.Segment() 
+    segment                           = RCAIDE.Library.Components.Booms.Segments.Segment()
     segment.tag                       = 'segment_1'   
     segment.percent_x_location        = 0.
     segment.percent_z_location        = 0.0 
@@ -561,7 +553,7 @@ def vehicle_setup(redesign_rotors=True) :
     boom.append_segment(segment)           
     
     # Segment                                   
-    segment                           = RCAIDE.Library.Components.Fuselages.Segments.Segment()
+    segment                           = RCAIDE.Library.Components.Booms.Segments.Segment()
     segment.tag                       = 'segment_2'   
     segment.percent_x_location        = 0.03
     segment.percent_z_location        = 0. 
@@ -570,7 +562,7 @@ def vehicle_setup(redesign_rotors=True) :
     boom.append_segment(segment) 
     
     # Segment                                   
-    segment                           = RCAIDE.Library.Components.Fuselages.Segments.Segment()
+    segment                           = RCAIDE.Library.Components.Booms.Segments.Segment()
     segment.tag                       = 'segment_3'    
     segment.percent_x_location        = 0.97
     segment.percent_z_location        = 0. 
@@ -579,7 +571,7 @@ def vehicle_setup(redesign_rotors=True) :
     boom.append_segment(segment)           
     
     # Segment                                  
-    segment                           = RCAIDE.Library.Components.Fuselages.Segments.Segment()
+    segment                           = RCAIDE.Library.Components.Booms.Segments.Segment()
     segment.tag                       = 'segment_4'   
     segment.percent_x_location        = 1.   
     segment.percent_z_location        = 0.   
