@@ -255,29 +255,23 @@ def vehicle_setup():
     lift_rotor.airfoil_flag                  = True 
     lift_rotor.hover.design_lift_coefficient = 0.7 
     num_sec                                  = 20
-    delta_beta                               = 1.5 * Units.degrees 
     non_dim_r                                = np.linspace(lift_rotor.hub_radius,0.99,num_sec)
     lift_rotor.radius_distribution           = non_dim_r*lift_rotor.tip_radius
     lift_rotor.thickness_to_chord            = np.ones(num_sec)*0.12
     lift_rotor.chord_distribution            = np.ones(num_sec)*0.225
     lift_rotor.max_thickness_distribution    = lift_rotor.thickness_to_chord* lift_rotor.chord_distribution
-    lift_rotor.twist_distribution            = np.flip(np.linspace(90,90,num_sec))*Units.degrees # 8*np.flip(np.linspace(0,1,num_sec))*Units.degrees  #+ delta_beta 
+    lift_rotor.twist_distribution            = np.flip(np.linspace(90,75,num_sec))*Units.degrees 
     lift_rotor.airfoil_polar_stations        = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]    
-          
-    ospath                                   = os.path.abspath(__file__)
-    separator                                = os.path.sep
-    rel_path                                 = os.path.dirname(ospath) + separator   
-               
-    airfoil_1                                = RCAIDE.Library.Components.Airfoils.Airfoil()   
-    airfoil_1.coordinate_file                =  rel_path +'..' + separator + 'Airfoils' + separator + 'NACA_23012.txt'
-    airfoil_1.polar_files                    = [rel_path +'..' + separator + 'Airfoils' + separator + 'Polars' + separator +'NACA_23012_polar_Re_50000.txt',
-                                                 rel_path +'..' + separator + 'Airfoils' + separator + 'Polars' + separator +'NACA_23012_polar_Re_100000.txt',
-                                                 rel_path +'..' + separator + 'Airfoils' + separator + 'Polars' + separator +'NACA_23012_polar_Re_200000.txt',
-                                                 rel_path +'..' + separator + 'Airfoils' + separator + 'Polars' + separator +'NACA_23012_polar_Re_500000.txt',
-                                                 rel_path +'..' + separator + 'Airfoils' + separator + 'Polars' + separator +'NACA_23012_polar_Re_1000000.txt']
-    airfoil_1.geometry                       = import_airfoil_geometry(airfoil_1.coordinate_file,airfoil_1.number_of_points)
-    airfoil_1.polars                         = compute_airfoil_properties(airfoil_1.geometry,airfoil_1.polar_files)
-    lift_rotor.append_airfoil(airfoil_1)       
+    airfoil                                = RCAIDE.Library.Components.Airfoils.Airfoil()   
+    airfoil.coordinate_file                =  'NACA_23012.txt'
+    airfoil.polar_files                    = ['NACA_23012_polar_Re_50000.txt',
+                                                'NACA_23012_polar_Re_100000.txt',
+                                                'NACA_23012_polar_Re_200000.txt',
+                                                'NACA_23012_polar_Re_500000.txt',
+                                                'NACA_23012_polar_Re_1000000.txt']
+    airfoil.geometry                       = import_airfoil_geometry(airfoil.coordinate_file,airfoil.number_of_points)
+    airfoil.polars                         = compute_airfoil_properties(airfoil.geometry,airfoil.polar_files)
+    lift_rotor.append_airfoil(airfoil)       
     propulsor.rotor                                        = lift_rotor
 
     #------------------------------------------------------------------------------------------------------------------------------------               
