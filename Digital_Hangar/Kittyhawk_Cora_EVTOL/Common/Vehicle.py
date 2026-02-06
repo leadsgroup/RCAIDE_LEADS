@@ -9,7 +9,7 @@
 #   Imports
 # ---------------------------------------------------------------------
 import RCAIDE
-from RCAIDE.Core import Units, Data   
+from RCAIDE.Framework.Core import Units, Data  
 import pickle
 from RCAIDE.Visualization.Performance.Aerodynamics.Vehicle import *  
 from RCAIDE.Visualization.Performance.Mission import *     
@@ -28,7 +28,6 @@ from RCAIDE.Methods.Center_of_Gravity.compute_component_centers_of_gravity    im
 from RCAIDE.Methods.Geometry.Two_Dimensional.Planform.wing_segmented_planform import wing_segmented_planform 
 from RCAIDE.Methods.Weights.Buildups.eVTOL.converge_evtol_weight              import converge_evtol_weight  
 from RCAIDE.Methods.Performance.estimate_cruise_drag                          import estimate_cruise_drag
- 
 import os
 import numpy as np 
 from copy import deepcopy 
