@@ -101,7 +101,7 @@ def base_analysis(vehicle):
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
-    aerodynamics         = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
+    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
     aerodynamics.settings.drag_coefficient_increment = 0.0000
     aerodynamics.stability_derivatives.CX_alpha      = None
     aerodynamics.stability_derivatives.CX_u          = None
@@ -688,15 +688,15 @@ def vehicle_setup(redesign_rotors=True) :
     prop_rotor.cruise.design_freestream_velocity  = 130.* Units['mph']      
     
     airfoil                                       = RCAIDE.Library.Components.Airfoils.Airfoil()   
-    airfoil.coordinate_file                       =  airfoil_path + 'Airfoils' + separator + 'NACA_4412.txt'
-    airfoil.polar_files                           = [airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_50000.txt' ,
-                                                     airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_100000.txt' ,
-                                                     airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_200000.txt' ,
-                                                     airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_500000.txt' ,
-                                                     airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_1000000.txt',
-                                                     airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_3500000.txt',
-                                                     airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_5000000.txt',
-                                                     airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_7500000.txt' ]
+    airfoil.coordinate_file                       =  'NACA_4412.txt'
+    airfoil.polar_files                           = ['NACA_4412_polar_Re_50000.txt' ,
+                                                     'NACA_4412_polar_Re_100000.txt' ,
+                                                     'NACA_4412_polar_Re_200000.txt' ,
+                                                     'NACA_4412_polar_Re_500000.txt' ,
+                                                     'NACA_4412_polar_Re_1000000.txt',
+                                                     'NACA_4412_polar_Re_3500000.txt',
+                                                     'NACA_4412_polar_Re_5000000.txt',
+                                                     'NACA_4412_polar_Re_7500000.txt' ]
     prop_rotor.append_airfoil(airfoil)                
     prop_rotor.airfoil_polar_stations             = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]    
     #prop_rotor.fidelity                           = "Momentum_Theory"  
