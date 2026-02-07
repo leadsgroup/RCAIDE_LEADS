@@ -44,6 +44,7 @@ def main():
 #   Build the Vehicle
 # ----------------------------------------------------------------------
 def vehicle_setup(): 
+    # ------------------------------------------------------------------    
     #   Initialize the Vehicle
     # ------------------------------------------------------------------    
     vehicle                                     = RCAIDE.Vehicle()
@@ -280,7 +281,12 @@ def vehicle_setup():
     lift_rotor_motor                                       = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     lift_rotor_motor.efficiency                            = 0.9
     lift_rotor_motor.nominal_voltage                       = bus.voltage * 3/4    
-    lift_rotor_motor.no_load_current                       = 2      
+    lift_rotor_motor.no_load_current                       = 2
+    lift_rotor_motor.design_current  =  283.17708409744006 
+    lift_rotor_motor.design_torque=   1594.4850334069392 
+    lift_rotor_motor.resistance =  0.1561751225240043 
+    lift_rotor_motor.design_angular_velocity =  75.52347779341196 
+    lift_rotor_motor.speed_constant =   0.1763435079077846   
     propulsor.motor                                        = lift_rotor_motor
      
     #------------------------------------------------------------------------------------------------------------------------------------               
