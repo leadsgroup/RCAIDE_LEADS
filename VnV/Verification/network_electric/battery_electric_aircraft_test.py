@@ -214,7 +214,7 @@ def plot_results(results):
     plot_rotor_conditions(results)  
     
     # Plot Electric Motor and Propeller Efficiencies 
-    plot_electric_propulsor_efficiencies(results)
+    plot_motor_conditions(results)
     
     plot_thermal_management_performance(results)
     return

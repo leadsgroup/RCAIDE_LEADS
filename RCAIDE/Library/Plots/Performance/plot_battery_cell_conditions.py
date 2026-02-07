@@ -136,10 +136,12 @@ def plot_battery_cell_conditions(results,
                          
                         axis_5.plot(time, cell_volts, color = line_colors[i], marker = ps.markers[bus_i], linewidth = ps.line_width) 
                         axis_5.set_ylabel(r'Voltage (V)')
+                        axis_5.set_xlabel('Time (mins)')
                         set_axes(axis_5) 
                  
                         axis_6.plot(time, cell_temperature, color = line_colors[i], marker = ps.markers[bus_i], linewidth = ps.line_width)
                         axis_6.set_ylabel(r'Temperature, $\degree$C')
+                        axis_6.set_xlabel('Time (mins)')
                         set_axes(axis_6)  
                   
     if show_legend:      

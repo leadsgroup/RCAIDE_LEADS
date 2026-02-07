@@ -1,4 +1,4 @@
-# RCAIDE/Library/Plots/Performance/plot_electric_propulsor_efficiencies.py
+# RCAIDE/Library/Plots/Performance/plot_motor_conditions.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke
@@ -16,12 +16,12 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
 # ----------------------------------------------------------------------------------------------------------------------   
-def plot_electric_propulsor_efficiencies(results,
-                                  save_figure = False,
-                                  show_legend = True,
-                                  save_filename = "Electric_Efficiencies",
-                                  file_type = ".png",
-                                  width = 11, height = 7):
+def plot_motor_conditions(results,
+                            save_figure = False,
+                            show_legend = True,
+                            save_filename = "Motor_Performance",
+                            file_type = ".png",
+                            width = 11, height = 7):
     """
     Creates a three-panel plot showing efficiencies of electric propulsion system components.
 
@@ -91,38 +91,40 @@ def plot_electric_propulsor_efficiencies(results,
     
     fig = plt.figure(save_filename)
     fig.set_size_inches(width,height)   
-    axis_1 = plt.subplot(1,2,1) 
-    axis_2 = plt.subplot(1,2,2)
-
+    axis_1 = plt.subplot(2,2,1) 
+    axis_2 = plt.subplot(2,2,2)
+    axis_3 = plt.subplot(2,2,3) 
+    axis_4 = plt.subplot(2,2,4) 
 
     for network in results.segments[0].analyses.vehicle.networks:  
         for p_i, propulsor in enumerate(network.propulsors):
             if (p_i == 0) or (network.identical_propulsors == False): 
-                for i in range(len(results.segments)):  
-                    if 'rotor' in propulsor: 
-                        thrustor =  propulsor.rotor
-                        axis_1.set_ylabel(r'$\eta_{rotor}$')
-                    elif 'ducted_fan' in propulsor:
-                        thrustor =  propulsor.ducted_fan
-                        axis_1.set_ylabel(r'$\eta_{ducted fan}$')
-                    motor =  propulsor.motor
-                       
-                    time         = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min      
-                    effp         = results.segments[i].conditions.energy.converters[thrustor.tag].efficiency[:,0] 
-                    effm         = results.segments[i].conditions.energy.converters[motor.tag].efficiency[:,0]  
-                    
+                for i in range(len(results.segments)):   
+                    motor =  propulsor.motor 
+                    time         = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min   
+                    Q            = results.segments[i].conditions.energy.converters[motor.tag].outputs.torque[:,0]  
+                    omega        = results.segments[i].conditions.energy.converters[motor.tag].outputs.omega[:,0] / Units.rpm
+                    P            = results.segments[i].conditions.energy.converters[motor.tag].outputs.power [:,0] /1000   
+                    effm         = results.segments[i].conditions.energy.converters[motor.tag].efficiency[:,0] 
                     if p_i == 0 and i ==0:              
-                        axis_1.plot(time, effp, color = line_colors[i], marker = ps.markers[p_i], markersize= ps.marker_size, linewidth = ps.line_width, label = thrustor.tag)
+                        axis_1.plot(time, Q, color = line_colors[i], marker = ps.markers[p_i], markersize= ps.marker_size, linewidth = ps.line_width, label = motor.tag)
                     else:
-                        axis_1.plot(time, effp, color = line_colors[i], marker = ps.markers[p_i], markersize= ps.marker_size, linewidth = ps.line_width) 
-                    axis_1.set_ylim([0,1.1])
+                        axis_1.plot(time, Q, color = line_colors[i], marker = ps.markers[p_i], markersize= ps.marker_size, linewidth = ps.line_width)  
+                    axis_1.set_ylabel(r'Torque [N-m]') 
                     set_axes(axis_1)
                     
-                    axis_2.plot(time, effm, color = line_colors[i], marker = ps.markers[p_i], markersize= ps.marker_size, linewidth = ps.line_width)
-                    axis_2.set_xlabel('Time (mins)')
+                    axis_2.plot(time, effm, color = line_colors[i], marker = ps.markers[p_i], markersize= ps.marker_size, linewidth = ps.line_width) 
                     axis_2.set_ylabel(r'$\eta_{motor}$')
                     axis_2.set_ylim([0,1.1])
                     set_axes(axis_2)
+
+                    axis_3.plot(time, omega, color = line_colors[i], marker = ps.markers[p_i], markersize= ps.marker_size, linewidth = ps.line_width) 
+                    axis_3.set_ylabel(r'RPM') 
+                    set_axes(axis_3)
+                    
+                    axis_4.plot(time, P, color = line_colors[i], marker = ps.markers[p_i], markersize= ps.marker_size, linewidth = ps.line_width) 
+                    axis_4.set_ylabel(r'Power [kW]') 
+                    set_axes(axis_4)                    
            
     if show_legend:     
         leg =  fig.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol = 4)  
@@ -132,7 +134,7 @@ def plot_electric_propulsor_efficiencies(results,
     fig.subplots_adjust(top=0.8) 
     
     # set title of plot 
-    title_text  =  'Electronic Network Efficiencies' 
+    title_text  =  'Motor Conditions' 
     fig.suptitle(title_text)
     if save_figure:
         plt.savefig(save_filename + file_type) 

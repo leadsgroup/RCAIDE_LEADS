@@ -116,7 +116,7 @@ def plot_battery_temperature(results,
                         
                         axis_2.plot(time, cell_charge, color = line_colors[i], marker = ps.markers[bus_i], linewidth = ps.line_width)
                         axis_2.set_xlabel('Time (mins)')
-                        axis_2.set_ylabel(r'Charge Throughput (Ah)')
+                        axis_2.set_ylabel(r'Charge Throughput (Amp-Hours)')
                         set_axes(axis_2)   
                         
                         axis_3.plot(time, pack_Q/1000, color = line_colors[i], marker = ps.markers[bus_i], linewidth = ps.line_width)
