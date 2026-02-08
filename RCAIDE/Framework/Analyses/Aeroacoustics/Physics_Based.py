@@ -103,12 +103,13 @@ class Physics_Based(Aeroacoustics):
         i = 0
         for network in vehicle.networks:
             for propulsor in network.propulsors:
-                for sub_tag , sub_item in  propulsor.items():
-                    if isinstance(sub_item, RCAIDE.Library.Components.Powertrain.Converters.Rotor): 
-                        rotor_tag         = compute_rotor_noise(microphone_locations,sub_item,segment,settings, rotor_index = i, previous_rotor_tag= rotor_tag, identical_propulsors=network.identical_propulsors)   
-                        total_SPL_dBA     = SPL_arithmetic(np.concatenate((total_SPL_dBA[:,None,:],conditions.aeroacoustics.converters[sub_item.tag].SPL_dBA[:,None,:]),axis =1),sum_axis=1)
-                        total_SPL_spectra = SPL_arithmetic(np.concatenate((total_SPL_spectra[:,None,:,:],conditions.aeroacoustics.converters[sub_item.tag].SPL_1_3_spectrum[:,None,:,:]),axis =1),sum_axis=1) 
-                        i += 1
+                if propulsor.active == True:
+                    for sub_tag , sub_item in  propulsor.items():
+                        if isinstance(sub_item, RCAIDE.Library.Components.Powertrain.Converters.Rotor): 
+                            rotor_tag         = compute_rotor_noise(microphone_locations,sub_item,segment,settings, rotor_index = i, previous_rotor_tag= rotor_tag, identical_propulsors=network.identical_propulsors)   
+                            total_SPL_dBA     = SPL_arithmetic(np.concatenate((total_SPL_dBA[:,None,:],conditions.aeroacoustics.converters[sub_item.tag].SPL_dBA[:,None,:]),axis =1),sum_axis=1)
+                            total_SPL_spectra = SPL_arithmetic(np.concatenate((total_SPL_spectra[:,None,:,:],conditions.aeroacoustics.converters[sub_item.tag].SPL_1_3_spectrum[:,None,:,:]),axis =1),sum_axis=1) 
+                            i += 1
                         
         conditions.aeroacoustics.hemisphere_SPL_dBA              = (total_SPL_dBA) *  (1 - settings.noise_reduction_factors.SPL_dbA)
         conditions.aeroacoustics.hemisphere_SPL_1_3_spectrum_dBA = (total_SPL_spectra) * (1 - settings.noise_reduction_factors.SPL_dbA) 
