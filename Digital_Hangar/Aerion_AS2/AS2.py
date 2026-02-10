@@ -14,6 +14,7 @@ from RCAIDE.Visualization.Geometry                                         impor
 # python imports 
 import numpy as np
 import pylab as plt
+import os 
 
 # ----------------------------------------------------------------------
 #   Main
