@@ -97,15 +97,15 @@ def vehicle_setup():
     wing.transition_x_lower       = 0.9
     wing.dynamic_pressure_ratio   = 1.0
     wing_airfoil                  = RCAIDE.Library.Components.Airfoils.Airfoil()   
-    airfoil.coordinate_file       =  airfoil_path + 'Airfoils' + separator + 'NACA65_203.dat'
-    airfoil.polar_files           = [airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_50000.txt' ,
-                                                     airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_100000.txt' ,
-                                                     airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_200000.txt' ,
-                                                     airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_500000.txt' ,
-                                                     airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_1000000.txt',
-                                                     airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_3500000.txt',
-                                                     airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_5000000.txt',
-                                                     airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_7500000.txt' ]    
+    airfoil.coordinate_file       =  airfoil_path + 'Airfoils' + separator + 'NACA65_203.txt'
+    airfoil.polar_files           = [airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA65_203_polar_Re_50000.txt' ,
+                                                     airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA65_203_polar_Re_100000.txt' ,
+                                                     airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA65_203_polar_Re_200000.txt' ,
+                                                     airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA65_203_polar_Re_500000.txt' ,
+                                                     airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA65_203_polar_Re_1000000.txt',
+                                                     airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA65_203_polar_Re_3500000.txt',
+                                                     airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA65_203_polar_Re_5000000.txt',
+                                                     airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA65_203_polar_Re_7500000.txt' ]    
 
     # set section 1 start point
     segment                       = RCAIDE.Library.Components.Wings.Segments.Segment()
