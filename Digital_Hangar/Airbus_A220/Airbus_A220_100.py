@@ -1,6 +1,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
+
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core                                                 import Units
@@ -9,7 +10,7 @@ from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan                 impor
 from RCAIDE.Framework.External_Interfaces.OpenVSP.export_vsp_vehicle import export_vsp_vehicle
 
 
-# python imports
+# python imports 
 import numpy                                               as np
 import matplotlib.pyplot                                   as plt
 from copy                                                  import deepcopy 
@@ -21,128 +22,17 @@ import os
 
 def main():
     
-    # Step 1 design a vehicle
+    # design a vehicle
     vehicle  = vehicle_setup()    
-    
-    # Step 2 create aircraft configuration based on vehicle 
-    configs  = configs_setup(vehicle)
-    
-    # Step 3 set up analysis
-    analyses = analyses_setup(configs)
-    
     
     return
 
- 
-# ----------------------------------------------------------------------
-#   Define the Configurations
-# ---------------------------------------------------------------------
+def vehicle_setup():
 
-
-def configs_setup(vehicle):
- 
-    # ------------------------------------------------------------------
-    #   Initialize Configurations
-    # ------------------------------------------------------------------
-
-    configs     = RCAIDE.Library.Components.Configs.Config.Container() 
-    base_config = RCAIDE.Library.Components.Configs.Config(vehicle)
-    base_config.tag = 'base' 
-    configs.append(base_config)
-
-    # ------------------------------------------------------------------
-    #   Initialize Configurations
-    # ------------------------------------------------------------------ 
-    config = RCAIDE.Library.Components.Configs.Config(vehicle)
-    config.tag = 'idle' 
-    for landing_gear in  config.landing_gears:
-        landing_gear.gear_extended = True     
-    configs.append(config) 
-    
-    # ------------------------------------------------------------------
-    #   Cruise Configuration
-    # ------------------------------------------------------------------
-
-    config = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag = 'cruise'
-    configs.append(config)
-     
-    # ------------------------------------------------------------------
-    #   Cruise Configuration
-    # ------------------------------------------------------------------ 
-    config = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag = 'descent' 
-    config.wings['main_wing'].control_surfaces.spoiler.deflection  = 45. * Units.deg    
-    configs.append(config) 
-
-    # ------------------------------------------------------------------
-    #   Takeoff Configuration
-    # ------------------------------------------------------------------
-
-    config = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag = 'takeoff'    
-    config.wings['main_wing'].control_surfaces.flap.deflection  = 20. * Units.deg
-    config.wings['main_wing'].control_surfaces.slat.deflection  = 30. * Units.deg  
-    for landing_gear in  config.landing_gears:
-        landing_gear.gear_extended = True
-    
-    config.V2_VS_ratio = 1.21
-    configs.append(config)
-
-
-    # ------------------------------------------------------------------
-    #   Cutback Configuration
-    # ------------------------------------------------------------------
-
-    config = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag = 'cutback'
-    config.wings['main_wing'].control_surfaces.flap.deflection  = 20. * Units.deg
-    config.wings['main_wing'].control_surfaces.slat.deflection  = 20. * Units.deg 
-    for landing_gear in  config.landing_gears:
-        landing_gear.gear_extended = True 
-    configs.append(config)
-    
-    # ------------------------------------------------------------------
-    #   Landing Configuration
-    # ------------------------------------------------------------------
-
-    config = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag = 'landing'
-    config.wings['main_wing'].control_surfaces.flap.deflection  = 30. * Units.deg
-    config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg 
-    for landing_gear in  config.landing_gears:
-        landing_gear.gear_extended = True 
-    config.Vref_VS_ratio = 1.23
-    configs.append(config)   
-
-    # ------------------------------------------------------------------
-    #   Short Field Takeoff Configuration
-    # ------------------------------------------------------------------ 
-
-    config = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag = 'short_field_takeoff'    
-    config.wings['main_wing'].control_surfaces.flap.deflection  = 20. * Units.deg
-    config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg 
-    for landing_gear in  config.landing_gears:
-        landing_gear.gear_extended = True
-    config.V2_VS_ratio = 1.21 
-    configs.append(config)
-
-    # ------------------------------------------------------------------
-    #   Short Field Takeoff Configuration
-    # ------------------------------------------------------------------  
-
-    config = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag = 'reverse_thrust'
-    config.wings['main_wing'].control_surfaces.flap.deflection  = 30. * Units.deg
-    config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg 
-    for landing_gear in  config.landing_gears:
-        landing_gear.gear_extended = True
-    configs.append(config)
-    
-    return configs
-
-def vehicle_setup(): 
+    ospath      = os.path.abspath(__file__)
+    separator   = os.path.sep
+    airfoil_path    = os.path.dirname(ospath) + separator  + '..' + separator  
+    local_path  = os.path.dirname(ospath) + separator           
 
     # ------------------------------------------------------------------
     #   Initialize the Vehicle
@@ -156,7 +46,7 @@ def vehicle_setup():
     vehicle.mass_properties.takeoff                 = 63100  # kg 
     vehicle.mass_properties.max_zero_fuel           = 52200  # kg 
     vehicle.mass_properties.max_payload             = 17230  # kg
-    vehicle.mass_properties.max_fuel                = 17000  # kg 
+    vehicle.mass_properties.max_fuel                = 17000  # kg 17600
     vehicle.mass_properties.min_payload             = 0  # kg
     vehicle.flight_envelope.ultimate_load           = 3.75
     vehicle.flight_envelope.positive_limit_load     = 1.5
@@ -166,8 +56,7 @@ def vehicle_setup():
     vehicle.reference_area                          = 112.3* Units['meters**2']
     vehicle.number_of_passengers                    = 135
     vehicle.systems.control                         = "fully powered"
-    vehicle.systems.accessories                     = "medium range"   
-               
+    vehicle.systems.accessories                     = "medium range"              
     cruise_speed                                    = 470 * Units.kts
     altitude                                        = 30000 * Units.feet
     atmo                                            = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
@@ -298,8 +187,14 @@ def vehicle_setup():
     spoiler.chord_fraction                         = 0.05
     wing.append_control_surface(spoiler)    
 
+   
+    
     # add to vehicle
     vehicle.append_component(wing)
+
+
+
+
 
     # ------------------------------------------------------------------
     #  Horizontal Stabilizer
@@ -361,6 +256,7 @@ def vehicle_setup():
     elevator.chord_fraction        = 0.3
     wing.append_control_surface(elevator)
 
+    # add to vehicle
     vehicle.append_component(wing)
 
 
@@ -435,6 +331,8 @@ def vehicle_setup():
     vehicle.append_component(wing)
 
     # ################################################# Landing Gear #############################################################   
+
+    # ################################################# CORRECT IT #############################################################   
     # ------------------------------------------------------------------        
     #  Landing Gear
     # ------------------------------------------------------------------  
@@ -763,12 +661,14 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor: Port Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------      
+    # copy turbofan
     turbofan_2                                  = deepcopy(turbofan)
     turbofan_2.active_fuel_tanks                = ['fuel_tank'] 
     turbofan_2.tag                              = 'port_propulsor' 
     turbofan_2.origin                           = [[10.150, -5.435, -1.087]]  
     turbofan_2.nacelle.origin                   = [[10.150, -5.435, -1.087]]
          
+    # append propulsors to distribution line 
     fuel_line.assigned_propulsors = [['starboard_propulsor', 'port_propulsor']]
     net.propulsors.append(turbofan_2)
   
@@ -816,6 +716,8 @@ def analyses_setup(configs):
 
     analyses = RCAIDE.Framework.Analyses.Analysis.Container()
 
+    # Build a base analysis for each configuration. Here the base analysis is always used, but
+    # this can be modified if desired for other cases.
     for tag,config in configs.items():
         analysis = base_analysis(config)
         analyses[tag] = analysis
@@ -874,7 +776,6 @@ def base_analysis(vehicle):
     return analyses    
  
 
-# This section is needed to actually run the various functions in the file
 if __name__ == '__main__': 
     main()
     plt.show()
