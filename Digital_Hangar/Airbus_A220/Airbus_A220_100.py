@@ -9,7 +9,7 @@ from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan                 impor
 from RCAIDE.Framework.External_Interfaces.OpenVSP.export_vsp_vehicle import export_vsp_vehicle
 
 
-# python imports 
+# python imports
 import numpy                                               as np
 import matplotlib.pyplot                                   as plt
 from copy                                                  import deepcopy 
