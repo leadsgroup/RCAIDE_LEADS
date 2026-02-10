@@ -98,8 +98,8 @@ def vehicle_setup():
     wing.transition_x_lower       = 0.9
     wing.dynamic_pressure_ratio   = 1.0
     wing_airfoil                  = RCAIDE.Library.Components.Airfoils.Airfoil()   
-    airfoil.coordinate_file       =  airfoil_path + 'Airfoils' + separator + 'NACA65_203.txt'
-    airfoil.polar_files           = [airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA65_203_polar_Re_50000.txt' ,
+    wing_airfoil.coordinate_file  =  airfoil_path + 'Airfoils' + separator + 'NACA65_203.txt'
+    wing_airfoil.polar_files      = [airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA65_203_polar_Re_50000.txt' ,
                                                      airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA65_203_polar_Re_100000.txt' ,
                                                      airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA65_203_polar_Re_200000.txt' ,
                                                      airfoil_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA65_203_polar_Re_500000.txt' ,
