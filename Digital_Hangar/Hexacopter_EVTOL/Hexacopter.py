@@ -13,6 +13,7 @@ from RCAIDE import  save
 
 # python imports 
 import os
+import sys
 import numpy as np 
 from copy import deepcopy
 import pickle
@@ -44,6 +45,9 @@ def main():
 #   Build the Vehicle
 # ----------------------------------------------------------------------
 def vehicle_setup(): 
+
+    local_path = sys.path[0] + os.sep
+
     # ------------------------------------------------------------------    
     #   Initialize the Vehicle
     # ------------------------------------------------------------------    
@@ -263,17 +267,17 @@ def vehicle_setup():
     lift_rotor.max_thickness_distribution    = lift_rotor.thickness_to_chord* lift_rotor.chord_distribution
     lift_rotor.twist_distribution            = np.flip(np.linspace(90,75,num_sec))*Units.degrees 
     lift_rotor.airfoil_polar_stations        = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]    
-    airfoil                                = RCAIDE.Library.Components.Airfoils.Airfoil()   
-    airfoil.coordinate_file                =  'NACA_23012.txt'
-    airfoil.polar_files                    = ['NACA_23012_polar_Re_50000.txt',
-                                                'NACA_23012_polar_Re_100000.txt',
-                                                'NACA_23012_polar_Re_200000.txt',
-                                                'NACA_23012_polar_Re_500000.txt',
-                                                'NACA_23012_polar_Re_1000000.txt']
-    airfoil.geometry                       = import_airfoil_geometry(airfoil.coordinate_file,airfoil.number_of_points)
-    airfoil.polars                         = compute_airfoil_properties(airfoil.geometry,airfoil.polar_files)
+    airfoil                                  = RCAIDE.Library.Components.Airfoils.Airfoil()   
+    airfoil.coordinate_file                  =  local_path + 'NACA_23012.txt'
+    airfoil.polar_files                      = [local_path + 'NACA_23012_polar_Re_50000.txt',
+                                                local_path + 'NACA_23012_polar_Re_100000.txt',
+                                                local_path + 'NACA_23012_polar_Re_200000.txt',
+                                                local_path + 'NACA_23012_polar_Re_500000.txt',
+                                                local_path + 'NACA_23012_polar_Re_1000000.txt']
+    airfoil.geometry                         = import_airfoil_geometry(airfoil.coordinate_file,airfoil.number_of_points)
+    airfoil.polars                           = compute_airfoil_properties(airfoil.geometry,airfoil.polar_files)
     lift_rotor.append_airfoil(airfoil)       
-    propulsor.rotor                                        = lift_rotor
+    propulsor.rotor                          = lift_rotor
 
     #------------------------------------------------------------------------------------------------------------------------------------               
     # Lift Rotor Motor  

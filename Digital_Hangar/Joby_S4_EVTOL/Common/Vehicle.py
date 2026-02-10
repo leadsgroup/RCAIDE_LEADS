@@ -39,9 +39,9 @@ def main(plot_results=True, plot_vehicle=True) :
 #   Build the Vehicle
 # ----------------------------------------------------------------------
 def vehicle_setup():
-
-    #local_path = sys.path[0] + os.sep
-    local_path = ""
+    import sys 
+    local_path = sys.path[0] + os.sep
+    #local_path = ""
 
     
     # ------------------------------------------------------------------
@@ -141,7 +141,7 @@ def vehicle_setup():
     wing.sweeps.quarter_chord                 = 22.46  * Units.degrees 
     wing.thickness_to_chord                   = 0.15 
     wing.spans.projected                      = 3.6
-    wing.chords.root                          = 1.193 
+    wing.chords.root                          = 0.75
     wing.total_length                         = 1.193 
     wing.chords.tip                           = 0.535 
     wing.taper                                = 0.44  
@@ -472,27 +472,14 @@ def vehicle_setup():
     bus.assigned_propulsors = [assigned_propulsor_list]
 
 
-    # Component 3: Avionics    
-    avionics                       = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.power_draw            = 20. # Watts  
-    net.avionics                   = avionics   
-    
-    # Component 4: Miscellaneous Systems 
-    sys                            = RCAIDE.Library.Components.Powertrain.Systems.Systems()
-    sys.mass_properties.mass       = 5 # kg      
-        
-    
-    vehicle.append_component(net) 
-    
-    main_wing_motor_origins                 = np.array([[-0.109,2.283 ,1.630],[-0.109,-2.283 ,1.630] ,[ 2.283,4.891,2.391],[ 2.283,-4.891,2.391]]) 
-    tail_motor_origins                      = np.array([[6.522,2.174,2.065],[6.522,-2.174,2.065]]) 
-    vehicle.wings['main_wing'].motor_spanwise_locations = main_wing_motor_origins[:,1]/vehicle.wings['main_wing'].spans.projected
-    vehicle.wings['v_tail'].motor_spanwise_locations    = tail_motor_origins[:,1]/vehicle.wings['main_wing'].spans.projected
-    
-    
-    
-    
-    save_aircraft_geometry(vehicle,vehicle.tag)        
+    avionics                        = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
+    avionics.power_draw             = 10. # Watts  
+    avionics.mass_properties.mass   = 1.0 * Units.kg
+    bus.avionics                    = avionics    
+   
+    network.busses.append(bus)
+     
+    vehicle.append_energy_network(network)
         
   
     
