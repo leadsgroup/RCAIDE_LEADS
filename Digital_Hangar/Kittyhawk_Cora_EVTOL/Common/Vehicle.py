@@ -9,33 +9,26 @@
 #   Imports
 # ---------------------------------------------------------------------
 import RCAIDE
-from RCAIDE.Framework.Core import Units, Data  
-import pickle
-from RCAIDE.Visualization.Performance.Aerodynamics.Vehicle import *  
-from RCAIDE.Visualization.Performance.Mission import *     
-from RCAIDE.Visualization.Performance.Energy.Battery import *   
-from RCAIDE.Visualization.Performance.Noise import *  
-from RCAIDE.Visualization.Geometry import *
-from RCAIDE.Components.Energy.Networks.Battery_Electric_Rotor                 import Battery_Electric_Rotor
-from RCAIDE.Methods.Power.Battery.Sizing                                      import initialize_from_mass 
-from RCAIDE.Methods.Geometry.Two_Dimensional.Planform                         import segment_properties
-from RCAIDE.Methods.Power.Battery.Sizing                                      import initialize_from_circuit_configuration 
-from RCAIDE.Methods.Weights.Correlations.Propulsion                           import nasa_motor
-from RCAIDE.Methods.Propulsion.electric_motor_sizing                          import size_optimal_motor
-from RCAIDE.Methods.Propulsion                                                import propeller_design ,lift_rotor_design 
-from RCAIDE.Methods.Weights.Buildups.eVTOL.empty                              import empty
-from RCAIDE.Methods.Center_of_Gravity.compute_component_centers_of_gravity    import compute_component_centers_of_gravity
-from RCAIDE.Methods.Geometry.Two_Dimensional.Planform.wing_segmented_planform import wing_segmented_planform 
-from RCAIDE.Methods.Weights.Buildups.eVTOL.converge_evtol_weight              import converge_evtol_weight  
-from RCAIDE.Methods.Performance.estimate_cruise_drag                          import estimate_cruise_drag
+from RCAIDE.Framework.Core import Units  
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor  import design_electric_rotor
+from RCAIDE.Library.Plots                                         import * 
+from RCAIDE import  load 
+from RCAIDE import  save  
+from RCAIDE.Framework.External_Interfaces.OpenVSP.export_vsp_vehicle  import export_vsp_vehicle 
+
 import os
 import numpy as np 
-from copy import deepcopy 
+from copy import deepcopy
+import matplotlib.pyplot as plt 
+import pickle
+import time 
 
 # ----------------------------------------------------------------------
 #   Build the Vehicle
 # ----------------------------------------------------------------------
 def vehicle_setup(resize_aircraft,vehicle_name = 'Wisk_Cora_CRM') :
+
+    local_path = sys.path[0] + os.sep
     
     # ------------------------------------------------------------------
     #   Initialize the Vehicle
@@ -559,15 +552,15 @@ def vehicle_setup(resize_aircraft,vehicle_name = 'Wisk_Cora_CRM') :
         ospath                                      = os.path.abspath(__file__)
         separator                                   = os.path.sep
         rel_path                                    = ospath.split( 'Cora' + separator + 'Common')[0]          
-        airfoil.coordinate_file                     = 'NACA_4412.txt'
-        airfoil.polar_files                         = ['NACA_4412_polar_Re_50000.txt' ,
-                                                      'NACA_4412_polar_Re_100000.txt' ,
-                                                      'NACA_4412_polar_Re_200000.txt' ,
-                                                      'NACA_4412_polar_Re_500000.txt' ,
-                                                      'NACA_4412_polar_Re_1000000.txt',
-                                                      'NACA_4412_polar_Re_3500000.txt',
-                                                      'NACA_4412_polar_Re_5000000.txt',
-                                                      'NACA_4412_polar_Re_7500000.txt' ]
+        airfoil.coordinate_file                     = local_path + 'NACA_4412.txt'
+        airfoil.polar_files                         = [local_path + 'NACA_4412_polar_Re_50000.txt' ,
+                                                      local_path + 'NACA_4412_polar_Re_100000.txt' ,
+                                                      local_path + 'NACA_4412_polar_Re_200000.txt' ,
+                                                      local_path + 'NACA_4412_polar_Re_500000.txt' ,
+                                                      local_path + 'NACA_4412_polar_Re_1000000.txt',
+                                                      local_path + 'NACA_4412_polar_Re_3500000.txt',
+                                                      local_path + 'NACA_4412_polar_Re_5000000.txt',
+                                                      local_path + 'NACA_4412_polar_Re_7500000.txt' ]
         propeller.append_airfoil(airfoil)          
         propeller.airfoil_polar_stations            = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] 
         propeller                                   = propeller_design(propeller) 
@@ -614,15 +607,15 @@ def vehicle_setup(resize_aircraft,vehicle_name = 'Wisk_Cora_CRM') :
         rotor.oei.design_thrust                 = Hover_Load/10 
         rotor.oei.design_freestream_velocity    = np.sqrt(rotor.oei.design_thrust/(2*1.2*np.pi*(rotor.tip_radius**2)))  
         airfoil                                 = RCAIDE.Library.Components.Airfoils.Airfoil()   
-        airfoil.coordinate_file                 = 'NACA_4412.txt'
-        airfoil.polar_files                     =['NACA_4412_polar_Re_50000.txt' ,
-                                                   'NACA_4412_polar_Re_100000.txt' ,
-                                                   'NACA_4412_polar_Re_200000.txt' ,
-                                                   'NACA_4412_polar_Re_500000.txt' ,
-                                                   'NACA_4412_polar_Re_1000000.txt',
-                                                   'NACA_4412_polar_Re_3500000.txt',
-                                                   'NACA_4412_polar_Re_5000000.txt',
-                                                   'NACA_4412_polar_Re_7500000.txt' ]
+        airfoil.coordinate_file                 = local_path + 'NACA_4412.txt'
+        airfoil.polar_files                     =[local_path + 'NACA_4412_polar_Re_50000.txt' ,
+                                                   local_path + 'NACA_4412_polar_Re_100000.txt' ,
+                                                   local_path + 'NACA_4412_polar_Re_200000.txt' ,
+                                                   local_path + 'NACA_4412_polar_Re_500000.txt' ,
+                                                   local_path + 'NACA_4412_polar_Re_1000000.txt',
+                                                   local_path + 'NACA_4412_polar_Re_3500000.txt',
+                                                   local_path + 'NACA_4412_polar_Re_5000000.txt',
+                                                   local_path + 'NACA_4412_polar_Re_7500000.txt' ]
         rotor.append_airfoil(airfoil)          
         rotor.airfoil_polar_stations           = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
         rotor                                  = lift_rotor_design(rotor)   
@@ -703,61 +696,7 @@ def vehicle_setup(resize_aircraft,vehicle_name = 'Wisk_Cora_CRM') :
     
     return vehicle 
  
-# ---------------------------------------------------------------------
-#   Define the Configurations
-# ---------------------------------------------------------------------
+ 
+ 
 
-def configs_setup(vehicle): 
-
-    configs                                                                        = RCAIDE.Library.Components.Configs.Config.Container()
-  
-    base_config                                                                    = RCAIDE.Library.Components.Configs.Config(vehicle)
-    base_config.tag                                                                = 'base'
-    base_config.networks.battery_electric_rotor.blade_pitch_command                = 0
-    base_config.networks.battery_electric_rotor.active_propulsor_groups            = [True,True] 
-    configs.append(base_config)
-
-
-    forward_config                                                                 = RCAIDE.Library.Components.Configs.Config(vehicle)
-    forward_config.tag                                                             = 'forward_flight'
-    forward_config.networks.battery_electric_rotor.blade_pitch_command             = 0
-    forward_config.networks.battery_electric_rotor.active_propulsor_groups         = [True,False]
-    configs.append(forward_config) 
-
-
-    transition_config                                                              = RCAIDE.Library.Components.Configs.Config(vehicle)
-    transition_config.tag                                                          = 'transition_flight'
-    transition_config.networks.battery_electric_rotor.blade_pitch_command          = 0
-    transition_config.networks.battery_electric_rotor.active_propulsor_groups      = [True,True]
-    configs.append(transition_config)
     
-
-    vertical_config                                                                = RCAIDE.Library.Components.Configs.Config(vehicle)
-    vertical_config.tag                                                            = 'vertical_flight' 
-    vertical_config.networks.battery_electric_rotor.blade_pitch_command            = 0
-    vertical_config.networks.battery_electric_rotor.active_propulsor_groups        = [False,True]
-    configs.append(vertical_config)  
-
-
-    descent_config                                                                 = RCAIDE.Library.Components.Configs.Config(vehicle)
-    descent_config.tag                                                             = 'descent'
-    descent_config.networks.battery_electric_rotor.blade_pitch_command             = -5 * Units.degrees
-    descent_config.networks.battery_electric_rotor.active_propulsor_groups         = [True,False]
-    configs.append(descent_config)  
-    
-    
-    # done!
-    return configs
-
-def save_aircraft_geometry(geometry,filename): 
-    pickle_file  = filename + '.pkl'
-    with open(pickle_file, 'wb') as file:
-        pickle.dump(geometry, file) 
-    return 
-
-
-def load_aircraft_geometry(filename):  
-    load_file = filename + '.pkl' 
-    with open(load_file, 'rb') as file:
-        results = pickle.load(file) 
-    return results

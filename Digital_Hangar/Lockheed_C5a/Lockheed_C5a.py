@@ -11,8 +11,8 @@ import RCAIDE
 from RCAIDE.Framework.Core import Units      
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan   import design_turbofan
 from RCAIDE.Library.Plots                 import *
-from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_aircraft_moment_of_inertia import compute_aircraft_moment_of_inertia
-from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_cuboid_moment_of_inertia import compute_cuboid_moment_of_inertia
+#from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_aircraft_moment_of_inertia import compute_aircraft_moment_of_inertia
+#from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_cuboid_moment_of_inertia import compute_cuboid_moment_of_inertia
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity                        import compute_vehicle_center_of_gravity
 
 # python imports 
@@ -30,6 +30,8 @@ def main():
     
     vehicle = vehicle_setup()
     vehicle.mass_properties.takeoff = None
+
+
     
     # ------------------------------------------------------------------
     #   Weight Breakdown 
@@ -38,22 +40,22 @@ def main():
           
     
      
-    configs  = configs_setup(vehicle)
+    # configs  = configs_setup(vehicle)
     
     
-    analyses = analyses_setup(configs)
+    # analyses = analyses_setup(configs)
     
     
     
-    mission = simple_mission(analyses)
+    # mission = simple_mission(analyses)
     
-    missions = missions_setup(mission) 
+    # missions = missions_setup(mission) 
     
     
-    results = missions.base_mission.evaluate()  
+    # results = missions.base_mission.evaluate()  
     
      
-    display_stability_derivatives(results.segments.linear_cruise)
+    # display_stability_derivatives(results.segments.linear_cruise)
     
     
     

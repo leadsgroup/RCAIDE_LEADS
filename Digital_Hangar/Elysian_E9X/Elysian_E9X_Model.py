@@ -8,7 +8,8 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core import Units       
-from RCAIDE.Library.Methods.Geometry.Planform               import segment_properties    
+from RCAIDE.Library.Methods.Geometry.Planform               import segment_properties   
+from RCAIDE.Library.Methods.Geometry.Airfoil.compute_airfoil_properties import compute_airfoil_properties 
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan   import design_turbofan    
 from RCAIDE.Library.Plots                                   import *     
  
@@ -16,9 +17,14 @@ from RCAIDE.Library.Plots                                   import *
 import numpy as np  
 from copy import deepcopy 
 import os
+import sys
 
 def vehicle_setup(): 
+
     
+    local_path = sys.path[0] + os.sep
+    plot_3d_vehicle(vehicle,export_gltf=True)  
+
     # ------------------------------------------------------------------
     #   Initialize the Vehicle
     # ------------------------------------------------------------------    
@@ -95,7 +101,7 @@ def vehicle_setup():
     ospath                                = os.path.abspath(__file__)
     separator                             = os.path.sep
     rel_path                              = os.path.dirname(ospath) + separator   
-    root_airfoil.coordinate_file          = 'transonic_wing_root_section_airfoil.txt'
+    root_airfoil.coordinate_file          = local_path + 'transonic_wing_root_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Root'
     segment.percent_span_location         = 0.0
@@ -109,7 +115,7 @@ def vehicle_setup():
     wing.append_segment(segment)
 
     yehudi_airfoil                        = RCAIDE.Library.Components.Airfoils.Airfoil()
-    yehudi_airfoil.coordinate_file        = 'transonic_wing_inboard_section_airfoil.txt'
+    yehudi_airfoil.coordinate_file        = local_path + 'transonic_wing_inboard_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Main_Tip'
     segment.percent_span_location         = 0.9
@@ -122,7 +128,7 @@ def vehicle_setup():
     wing.append_segment(segment)
 
     mid_airfoil                           = RCAIDE.Library.Components.Airfoils.Airfoil()
-    mid_airfoil.coordinate_file           = 'transonic_wing_outboard_section_airfoil.txt'
+    mid_airfoil.coordinate_file           = local_path + 'transonic_wing_outboard_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Winglet_1'
     segment.percent_span_location         = 0.928
@@ -136,7 +142,7 @@ def vehicle_setup():
     wing.append_segment(segment)
 
     tip_airfoil                           =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    tip_airfoil.coordinate_file           = 'transonic_wing_tip_section_airfoil.txt'
+    tip_airfoil.coordinate_file           = local_path + 'transonic_wing_tip_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Winglet_2'
     segment.percent_span_location         = 0.952
@@ -150,7 +156,7 @@ def vehicle_setup():
     wing.append_segment(segment)
     
     tip_airfoil                           =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    tip_airfoil.coordinate_file           = 'transonic_wing_tip_section_airfoil.txt'
+    tip_airfoil.coordinate_file           = local_path + 'transonic_wing_tip_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Winglet_2'
     segment.percent_span_location         = 1.0
@@ -485,4 +491,5 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------- 
       
     return vehicle
+
 
