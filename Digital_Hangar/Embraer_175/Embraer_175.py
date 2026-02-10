@@ -20,6 +20,7 @@ from RCAIDE.Library.Methods.Performance.compute_payload_range_diagram  import co
 # python imports 
 import numpy as np  
 import os
+import sys 
 import matplotlib.pyplot as plt 
 
 # ----------------------------------------------------------------------
@@ -43,6 +44,8 @@ def main(plot_results=True, plot_vehicle=True):
 
 def vehicle_setup():
     
+    local_path = sys.path[0] + os.sep
+
     # ------------------------------------------------------------------------------------------------------------------
     #  Vehicle-level Properties 
     # ------------------------------------------------------------------------------------------------------------------
@@ -135,7 +138,7 @@ def vehicle_setup():
     segment.dihedral_outboard             = 7 * Units.degrees
     segment.sweeps.quarter_chord          = 20.6 * Units.degrees  
     root_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
-    root_airfoil.coordinate_file          = 'transonic_wing_root_section_airfoil.txt'
+    root_airfoil.coordinate_file          =  local_path +  'transonic_wing_root_section_airfoil.txt'
     segment.append_airfoil(root_airfoil)
     wing.segments.append(segment)    
     
@@ -146,7 +149,7 @@ def vehicle_setup():
     segment.dihedral_outboard             = 7 * Units.degrees
     segment.sweeps.quarter_chord          = 24.1 * Units.degrees 
     yehudi_airfoil                        = RCAIDE.Library.Components.Airfoils.Airfoil()
-    yehudi_airfoil.coordinate_file        = 'transonic_wing_inboard_section_airfoil.txt'
+    yehudi_airfoil.coordinate_file        =  local_path +  'transonic_wing_inboard_section_airfoil.txt'
     segment.append_airfoil(yehudi_airfoil)
     wing.segments.append(segment)
 
@@ -157,7 +160,7 @@ def vehicle_setup():
     segment.dihedral_outboard            = 75. * Units.degrees
     segment.sweeps.quarter_chord         = 26.28571 * Units.degrees 
     mid_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
-    mid_airfoil.coordinate_file          = 'transonic_wing_outboard_section_airfoil.txt'
+    mid_airfoil.coordinate_file          =  local_path +  'transonic_wing_outboard_section_airfoil.txt'
     segment.append_airfoil(mid_airfoil)
     wing.segments.append(segment)
 
@@ -168,7 +171,7 @@ def vehicle_setup():
     segment.dihedral_outboard            = 0.
     segment.sweeps.quarter_chord         = 0.  
     tip_airfoil                          =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    tip_airfoil.coordinate_file          = 'transonic_wing_tip_section_airfoil.txt'
+    tip_airfoil.coordinate_file          =  local_path +  'transonic_wing_tip_section_airfoil.txt'
     segment.append_airfoil(tip_airfoil)
     wing.segments.append(segment) 
 
