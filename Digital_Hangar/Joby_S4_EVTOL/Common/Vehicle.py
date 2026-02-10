@@ -61,14 +61,14 @@ def vehicle_setup():
     #   Vehicle-level Properties
     # ------------------------------------------------------------------    
     # mass properties
-    vehicle.mass_properties.takeoff           = 2177
-    vehicle.mass_properties.operating_empty   = 2177      
-    vehicle.mass_properties.max_takeoff       = 2177             
-    vehicle.mass_properties.center_of_gravity = [[2.0144,   0.  ,  0. ]]      
-    vehicle.reference_area                    = 10.39
+    vehicle.mass_properties.takeoff                  = 2177
+    vehicle.mass_properties.operating_empty          = 2177      
+    vehicle.mass_properties.max_takeoff              = 2177             
+    vehicle.mass_properties.center_of_gravity        = [[2.0144,   0.  ,  0. ]]      
+    vehicle.reference_area                           = 10.39
     vehicle.flight_envelope.ultimate_load            = 5.7   
-    vehicle.flight_envelope.positive_limit_load               = 3.  
-    vehicle.number_of_passengers                        = 5
+    vehicle.flight_envelope.positive_limit_load      = 3.  
+    vehicle.number_of_passengers                     = 5
 
     # ------------------------------------------------------------------    
     # WINGS                                    
@@ -174,21 +174,21 @@ def vehicle_setup():
     fuselage.lengths.tail                       = 1.5
     fuselage.lengths.cabin                      = 4.46 
     fuselage.lengths.total                      = 6.46
-    fuselage.width                              = 5.85 * Units.feet      # change 
-    fuselage.heights.maximum                    = 4.65 * Units.feet      # change 
-    fuselage.heights.at_quarter_length          = 3.75 * Units.feet      # change 
-    fuselage.heights.at_wing_root_quarter_chord = 4.65 * Units.feet      # change 
-    fuselage.heights.at_three_quarters_length   = 4.26 * Units.feet      # change 
-    fuselage.areas.wetted                       = 236. * Units.feet**2   # change 
-    fuselage.areas.front_projected              = 0.14 * Units.feet**2   # change 
-    fuselage.effective_diameter                 = 1.276     # change 
+    fuselage.width                              = 5.85 * Units.feet      
+    fuselage.heights.maximum                    = 4.65 * Units.feet     
+    fuselage.heights.at_quarter_length          = 3.75 * Units.feet     
+    fuselage.heights.at_wing_root_quarter_chord = 4.65 * Units.feet      
+    fuselage.heights.at_three_quarters_length   = 4.26 * Units.feet       
+    fuselage.areas.wetted                       = 236. * Units.feet**2    
+    fuselage.areas.front_projected              = 0.14 * Units.feet**2    
+    fuselage.effective_diameter                 = 1.276      
     fuselage.differential_pressure              = 0. 
     
     # Segment  
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment() 
     segment.tag                                 = 'segment_0'    
     segment.percent_x_location                  = 0.0 
-    segment.percent_z_location                  = 0.     # change  
+    segment.percent_z_location                  = 0.      
     segment.height                              = 0.049 
     segment.width                               = 0.032 
     fuselage.append_segment(segment)                     
@@ -321,8 +321,8 @@ def vehicle_setup():
     propulsor.electronic_speed_controller         = prop_rotor_esc  
     
     # Prop-Rotor Design
-    g                                             = 9.81                                    # gravitational acceleration   
-    Hover_Load                                    = vehicle.mass_properties.max_takeoff*g * 1.1 # hover load   
+    g                                             = 9.81                                
+    Hover_Load                                    = vehicle.mass_properties.max_takeoff*g * 1.1   
 
     prop_rotor                                    = RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor()   
     prop_rotor.tag                                = 'prop_rotor'   
@@ -437,7 +437,7 @@ def vehicle_setup():
     nac_segment.height                          = 0.1
     nac_segment.width                           = 0.1 
     nacelle.append_segment(nac_segment) 
-    propulsor.nacelle                 = nacelle  
+    propulsor.nacelle                           = nacelle  
             
     design_electric_rotor(propulsor, print_iterations=True, solver_sense_step=1E-3, solver_tolerance=1E-2)
     
@@ -473,7 +473,7 @@ def vehicle_setup():
 
 
     avionics                        = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.power_draw             = 10. # Watts  
+    avionics.power_draw             = 10.  
     avionics.mass_properties.mass   = 1.0 * Units.kg
     bus.avionics                    = avionics    
    
@@ -489,12 +489,7 @@ def vehicle_setup():
 #   Define the Configurations
 # --------------------------------------------------------------------- 
 def configs_setup(vehicle):
-    '''
-    The configration set up below the scheduling of the nacelle angle and vehicle speed.
-    Since one propeller operates at varying flight conditions, one must perscribe  the 
-    pitch command of the propeller which us used in the variable pitch model in the analyses
-    Note: low pitch at take off & low speeds, high pitch at cruise
-    '''
+   
     # ------------------------------------------------------------------
     #   Initialize Configurations
     # ------------------------------------------------------------------ 
@@ -510,8 +505,8 @@ def configs_setup(vehicle):
     config.tag                                        = 'vertical_climb'
     vector_angle                                      = 90.0 * Units.degrees
     for prop in config.networks.Battery_Electric_Rotor.rotors: 
-        prop.orientation_euler_angles                 = [0,vector_angle,0]
-        prop.inputs.blade_pitch_command                     = prop.inputs.pitch_command_hover
+        prop.orientation_euler_angles    = [0,vector_angle,0]
+        prop.inputs.blade_pitch_command  = prop.inputs.pitch_command_hover
     configs.append(config) 
 
     # ------------------------------------------------------------------
@@ -521,8 +516,8 @@ def configs_setup(vehicle):
     vector_angle                                      = 35.0  * Units.degrees
     config.tag                                        = 'vertical_transition_1'
     for prop in config.networks.Battery_Electric_Rotor.rotors: 
-        prop.orientation_euler_angles                 = [0,vector_angle,0]
-        prop.inputs.blade_pitch_command                     = -5.  * Units.degrees 
+        prop.orientation_euler_angles    = [0,vector_angle,0]
+        prop.inputs.blade_pitch_command  = -5.  * Units.degrees 
     configs.append(config)    
 
 
@@ -533,8 +528,8 @@ def configs_setup(vehicle):
     vector_angle                                      = 25.0  * Units.degrees
     config.tag                                        = 'vertical_transition_2'
     for prop in config.networks.Battery_Electric_Rotor.rotors: 
-        prop.orientation_euler_angles                 = [0,vector_angle,0]
-        prop.inputs.blade_pitch_command                     = -5.  * Units.degrees 
+        prop.orientation_euler_angles   = [0,vector_angle,0]
+        prop.inputs.blade_pitch_command = -5.  * Units.degrees 
     configs.append(config)    
     
 
@@ -545,8 +540,8 @@ def configs_setup(vehicle):
     vector_angle                                      = 15.0  * Units.degrees
     config.tag                                        = 'climb_transition'
     for prop in config.networks.Battery_Electric_Rotor.rotors: 
-        prop.orientation_euler_angles                 = [0,vector_angle,0]
-        prop.inputs.blade_pitch_command                     = -3.  * Units.degrees 
+        prop.orientation_euler_angles   = [0,vector_angle,0]
+        prop.inputs.blade_pitch_command = -3.  * Units.degrees 
     configs.append(config)    
 
      
@@ -557,8 +552,8 @@ def configs_setup(vehicle):
     config.tag                                        = 'climb'
     vector_angle                                      = 0.0 * Units.degrees 
     for prop in config.networks.Battery_Electric_Rotor.rotors: 
-        prop.orientation_euler_angles                 = [0,vector_angle,0]
-        prop.inputs.blade_pitch_command                     = 0.  * Units.degrees  
+        prop.orientation_euler_angles   = [0,vector_angle,0]
+        prop.inputs.blade_pitch_command = 0.  * Units.degrees  
     configs.append(config)
    
 
@@ -569,20 +564,20 @@ def configs_setup(vehicle):
     config.tag                                        = 'cruise'
     vector_angle                                      = 0.0 * Units.degrees 
     for prop in config.networks.Battery_Electric_Rotor.rotors: 
-        prop.orientation_euler_angles                 = [0,vector_angle,0]
-        prop.inputs.blade_pitch_command                     = prop.inputs.pitch_command_cruise
+        prop.orientation_euler_angles = [0,vector_angle,0]
+        prop.inputs.blade_pitch_command = prop.inputs.pitch_command_cruise
     configs.append(config)
   
 
     # ------------------------------------------------------------------
     #   Approach Configuration
     # ------------------------------------------------------------------  
-    config                                            = RCAIDE.Library.Components.Configs.Config(base_config)
-    vector_angle                                      = 15.0  * Units.degrees
-    config.tag                                        = 'approach'  
+    config                                                = RCAIDE.Library.Components.Configs.Config(base_config)
+    vector_angle                                          = 15.0  * Units.degrees
+    config.tag                                            = 'approach'  
     for prop in config.networks.Battery_Electric_Rotor.rotors: 
-        prop.orientation_euler_angles                 = [0,vector_angle,0]
-        prop.inputs.blade_pitch_command                     = 0.  * Units.degrees 
+        prop.orientation_euler_angles = [0,vector_angle,0]
+        prop.inputs.blade_pitch_command  = 0.  * Units.degrees 
     configs.append(config)    
 
     
@@ -590,12 +585,12 @@ def configs_setup(vehicle):
     # ------------------------------------------------------------------
     #  Descent Transition
     # ------------------------------------------------------------------  
-    config                                            = RCAIDE.Library.Components.Configs.Config(base_config)
-    vector_angle                                      = 45.0  * Units.degrees
-    config.tag                                        = 'descent_transition'  
+    config                                                = RCAIDE.Library.Components.Configs.Config(base_config)
+    vector_angle                                          = 45.0  * Units.degrees
+    config.tag                                            = 'descent_transition'  
     for prop in config.networks.Battery_Electric_Rotor.rotors: 
-        prop.orientation_euler_angles                 = [0,vector_angle,0]
-        prop.inputs.blade_pitch_command                     = -5.  * Units.degrees 
+        prop.orientation_euler_angles = [0,vector_angle,0]
+        prop.inputs.blade_pitch_command = -5.  * Units.degrees 
     configs.append(config)    
 
     
@@ -603,12 +598,12 @@ def configs_setup(vehicle):
     # ------------------------------------------------------------------
     #   Hover Configuration
     # ------------------------------------------------------------------ 
-    config                                            = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag                                        = 'vertical_descent'
-    vector_angle                                      = 90.0  * Units.degrees 
+    config                                                = RCAIDE.Library.Components.Configs.Config(base_config)
+    config.tag                                            = 'vertical_descent'
+    vector_angle                                          = 90.0  * Units.degrees 
     for prop in config.networks.Battery_Electric_Rotor.rotors: 
-        prop.orientation_euler_angles                 = [0,vector_angle,0]
-        prop.inputs.blade_pitch_command                     = -10.  * Units.degrees  
+        prop.orientation_euler_angles = [0,vector_angle,0]
+        prop.inputs.blade_pitch_command = -10.  * Units.degrees  
     configs.append(config) 
     configs.append(config)     
 
