@@ -208,8 +208,7 @@ def plot_3d_vehicle(vehicle,
         make_object(renderer, GEOM, fuselage_rgb_color,fuselage_opacity)
         if show_LOPA:
             lopa_geom = generate_3d_lopa_points(fuselage)
-            add_lopa_seats(renderer, lopa_geom, lopa_opacity)
-        
+            add_lopa_seats(renderer, lopa_geom, lopa_opacity) 
     
     # -------------------------------------------------------------------------  
     # Plot cargo bay

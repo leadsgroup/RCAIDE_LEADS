@@ -9,8 +9,7 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core import Units           
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan                import design_turbofan     
-from RCAIDE.Library.Methods.Geometry.Planform                             import segment_properties   
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan                import design_turbofan      
 from RCAIDE.Library.Plots                                                 import *     
 import RCAIDE.Framework.External_Interfaces.OpenVSP as openvsp
 from RCAIDE.Library.Plots.Common import set_axes, plot_style 
@@ -265,10 +264,7 @@ def vehicle_setup(drop_tank):
     segment.thickness_to_chord     = .05
     segment.append_airfoil(tail_airfoil)
     wing.append_segment(segment)
-    
-    # Fill out more segment properties automatically
-    wing = segment_properties(wing)
-    
+     
     # control surfaces -------------------------------------------
     elevator                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator()
     elevator.tag                   = 'elevator'
@@ -337,9 +333,7 @@ def vehicle_setup(drop_tank):
     rudder.deflection            = 0 
     rudder.chord_fraction        = 0.33  
     stabilizer_1.append_control_surface(rudder)    
-    
-    # Fill out more segment properties automatically
-    stabilizer_1 = segment_properties(stabilizer_1)        
+        
 
     # add to vehicle
     vehicle.append_component(stabilizer_1) 

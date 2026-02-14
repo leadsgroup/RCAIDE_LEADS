@@ -3,8 +3,7 @@
 #   Imports
 # ---------------------------------------------------------------------
 import RCAIDE
-from RCAIDE.Framework.Core import Units 
-from RCAIDE.Library.Methods.Geometry.Planform                     import segment_properties,wing_planform  
+from RCAIDE.Framework.Core import Units  
 from RCAIDE.Library.Methods.Geometry.Airfoil.compute_airfoil_properties import compute_airfoil_properties 
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor  import design_electric_rotor
 from RCAIDE.Library.Plots                                         import * 

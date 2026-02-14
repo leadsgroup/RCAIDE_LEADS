@@ -5,8 +5,7 @@
 import RCAIDE
 from RCAIDE.Core import Units  
 from RCAIDE.Visualization  import *      
-from RCAIDE.Methods.Energy.Propulsors.Converters.Rotor import design_propeller
-from RCAIDE.Methods.Geometry.Two_Dimensional.Planform      import segment_properties   
+from RCAIDE.Methods.Energy.Propulsors.Converters.Rotor import design_propeller 
 
 # python imports     
 import numpy as np  
@@ -168,10 +167,7 @@ def vehicle_setup():
     wing.vertical                = False  
     wing.xz_plane_symmetric      = True  
     wing.dynamic_pressure_ratio  = 1.0 
-
-    # update properties of the wing using segments     
-    wing = segment_properties(wing,update_wet_areas=True,update_ref_areas=True)
-
+ 
     # add to vehicle
     vehicle.append_component(wing)
 

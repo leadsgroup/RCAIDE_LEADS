@@ -9,8 +9,7 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core import Units           
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan                import design_turbofan     
-from RCAIDE.Library.Methods.Geometry.Planform                             import segment_properties   
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan                import design_turbofan      
 from RCAIDE.Library.Plots                                                 import *     
 import RCAIDE.Framework.External_Interfaces.OpenVSP as openvsp
 from RCAIDE.Library.Plots.Common import set_axes, plot_style 
@@ -261,11 +260,7 @@ def vehicle_setup():
     segment.sweeps.leading_edge    = 32.75  * Units.degrees 
     segment.thickness_to_chord     = .05
     segment.append_airfoil(tail_airfoil)
-    wing.append_segment(segment)
-    
-    # Fill out more segment properties automatically
-    wing = segment_properties(wing)
-    
+    wing.append_segment(segment) 
 
     # control surfaces -------------------------------------------
     elevator                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator() # F-35 appears to have a stabilator instead of an elevator

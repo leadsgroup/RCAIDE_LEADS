@@ -1,29 +1,44 @@
-# RESEARCH/Aircraft/Elysian_E9X_Model.py
+# Twin_Otter.py
 # 
-# Created:  Jan 2025, A. Molloy and S. Shekar
-
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ---------------------------------------------------------------------------------------------------------------------- 
+# ----------------------------------------------------------------------
+#   Imports
+# ----------------------------------------------------------------------
 # RCAIDE imports 
-import RCAIDE
-from RCAIDE.Framework.Core import Units       
-from RCAIDE.Library.Methods.Geometry.Planform               import segment_properties   
-from RCAIDE.Library.Methods.Geometry.Airfoil.compute_airfoil_properties import compute_airfoil_properties 
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan   import design_turbofan    
-from RCAIDE.Library.Plots                                   import *     
- 
+import RCAIDE      
+from RCAIDE.Framework.Core import Units  
+from   RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop        import design_turboprop   
+from RCAIDE.Library.Plots                                           import *      
+
 # python imports 
-import numpy as np  
+import numpy as np   
 from copy import deepcopy 
+import sys 
 import os
-import sys
 
-def vehicle_setup(): 
 
+# ----------------------------------------------------------------------
+#   Main
+# ----------------------------------------------------------------------
+def main():
     
-    local_path = sys.path[0] + os.sep
+    # Step 1: design a vehicle
+    vehicle  = vehicle_setup()  
+
+    try:
+        import vsp as vsp
+        from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
+        export_vsp_vehicle(vehicle, 'Elysian_E9X')
+    except ImportError:
+        pass
+        
+    # Step 2: plot vehicle 
     plot_3d_vehicle(vehicle,export_gltf=True)  
+    
+    return 
+ 
+def vehicle_setup():
+
+    local_path = sys.path[0] + os.sep 
 
     # ------------------------------------------------------------------
     #   Initialize the Vehicle
@@ -97,11 +112,6 @@ def vehicle_setup():
 
 
     # Wing Segments
-    root_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
-    ospath                                = os.path.abspath(__file__)
-    separator                             = os.path.sep
-    rel_path                              = os.path.dirname(ospath) + separator   
-    root_airfoil.coordinate_file          = local_path + 'transonic_wing_root_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Root'
     segment.percent_span_location         = 0.0
@@ -111,11 +121,11 @@ def vehicle_setup():
     segment.dihedral_outboard             = 4.0 * Units.degrees
     segment.sweeps.quarter_chord          = 1.93 * Units.degrees
     segment.thickness_to_chord            = .1
+    root_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil() 
+    root_airfoil.coordinate_file          = local_path + 'transonic_wing_root_section_airfoil.txt'
     segment.append_airfoil(root_airfoil)
     wing.append_segment(segment)
 
-    yehudi_airfoil                        = RCAIDE.Library.Components.Airfoils.Airfoil()
-    yehudi_airfoil.coordinate_file        = local_path + 'transonic_wing_inboard_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Main_Tip'
     segment.percent_span_location         = 0.9
@@ -124,6 +134,8 @@ def vehicle_setup():
     segment.thickness_to_chord            = 0.1
     segment.dihedral_outboard             = 8.0 * Units.degrees
     segment.sweeps.quarter_chord          = 17.4 * Units.degrees
+    yehudi_airfoil                        = RCAIDE.Library.Components.Airfoils.Airfoil()
+    yehudi_airfoil.coordinate_file        = local_path + 'transonic_wing_inboard_section_airfoil.txt'
     segment.append_airfoil(yehudi_airfoil)
     wing.append_segment(segment)
 
@@ -135,30 +147,28 @@ def vehicle_setup():
     segment.twist                         = 0.00 * Units.deg
     segment.root_chord_percent            = 0.47
     segment.thickness_to_chord            = 0.1
-    segment.dihedral_outboard             = 10.0 * Units.degrees
-    segment.sweeps.quarter_chord          = 37.66 * Units.degrees
+    segment.dihedral_outboard             = 45.0 * Units.degrees
+    segment.sweeps.quarter_chord          = 10 * Units.degrees
     segment.thickness_to_chord            = .1
     segment.append_airfoil(mid_airfoil)
     wing.append_segment(segment)
 
-    tip_airfoil                           =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    tip_airfoil.coordinate_file           = local_path + 'transonic_wing_tip_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Winglet_2'
-    segment.percent_span_location         = 0.952
+    segment.percent_span_location         = 0.98
     segment.twist                         = 0. * Units.degrees
     segment.root_chord_percent            = 0.39
     segment.thickness_to_chord            = 0.1
-    segment.dihedral_outboard             = 16.
-    segment.sweeps.quarter_chord          = 52.1
+    segment.dihedral_outboard             = 80.
+    segment.sweeps.quarter_chord          = 40 * Units.degrees
     segment.thickness_to_chord            = .1
+    tip_airfoil                           =  RCAIDE.Library.Components.Airfoils.Airfoil()
+    tip_airfoil.coordinate_file           = local_path + 'transonic_wing_tip_section_airfoil.txt'
     segment.append_airfoil(tip_airfoil)
     wing.append_segment(segment)
     
-    tip_airfoil                           =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    tip_airfoil.coordinate_file           = local_path + 'transonic_wing_tip_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
-    segment.tag                           = 'Winglet_2'
+    segment.tag                           = 'Tip'
     segment.percent_span_location         = 1.0
     segment.twist                         = 0. * Units.degrees
     segment.root_chord_percent            = 0.08
@@ -166,13 +176,12 @@ def vehicle_setup():
     segment.dihedral_outboard             = 0.
     segment.sweeps.quarter_chord          = 0.0
     segment.thickness_to_chord            = .1
+    tip_airfoil                           =  RCAIDE.Library.Components.Airfoils.Airfoil()
+    tip_airfoil.coordinate_file           = local_path + 'transonic_wing_tip_section_airfoil.txt'
     segment.append_airfoil(tip_airfoil)
-    wing.append_segment(segment)    
-    
-    
+    wing.append_segment(segment)     
 
-    # control surfaces -------------------------------------------
-
+    # control surfaces ------------------------------------------- 
     flap                                  = RCAIDE.Library.Components.Wings.Control_Surfaces.Flap()
     flap.tag                              = 'flap'
     flap.span_fraction_start              = 0.2
@@ -206,7 +215,7 @@ def vehicle_setup():
     wing.thickness_to_chord        = 0.1
     wing.taper                     = 0.5  
     wing.spans.projected           = 10.48 
-    wing.chords.root               = 3.0 
+    wing.chords.root               = 2.0 
     wing.chords.tip                = 1.5 
     wing.chords.mean_aerodynamic   = 2.25 
     wing.areas.reference           = 23.58
@@ -214,7 +223,7 @@ def vehicle_setup():
     wing.areas.wetted              = 48.00     
     wing.twists.root               = 0.0 * Units.degrees
     wing.twists.tip                = 0.0 * Units.degrees 
-    wing.origin                    = [[29.92,0,5.328]]
+    wing.origin                    = [[30,0,5.2]]
     wing.aerodynamic_center        = [0,0,0] 
     wing.vertical                  = False
     wing.xz_plane_symmetric        = True 
@@ -241,8 +250,7 @@ def vehicle_setup():
     segment.sweeps.quarter_chord   = 0 * Units.degrees  
     segment.thickness_to_chord     = .1
     wing.append_segment(segment)
-    
-        
+     
 
     # control surfaces -------------------------------------------
     elevator                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator()
@@ -259,38 +267,28 @@ def vehicle_setup():
 
     # ------------------------------------------------------------------
     #   Vertical Stabilizer
-    # ------------------------------------------------------------------
-
+    # ------------------------------------------------------------------ 
     wing                         = RCAIDE.Library.Components.Wings.Vertical_Tail()
     wing.tag                     = 'vertical_stabilizer'
-
     wing.aspect_ratio            = 1.64
     wing.sweeps.quarter_chord    = 41.5  * Units.deg   
     wing.thickness_to_chord      = 0.1
-    wing.taper                   = 0.5
-
+    wing.taper                   = 0.5 
     wing.spans.projected         = 3.2
-    wing.total_length            = wing.spans.projected 
-    
+    wing.total_length            = wing.spans.projected  
     wing.chords.root             = 6.0 
     wing.chords.tip              = 3.0 
-    wing.chords.mean_aerodynamic = 4.5
-
+    wing.chords.mean_aerodynamic = 4.5 
     wing.areas.reference         = 12.5
-    wing.areas.wetted            = 26.25 
-    
+    wing.areas.wetted            = 26.25  
     wing.twists.root             = 0.0 * Units.degrees
-    wing.twists.tip              = 0.0 * Units.degrees
-
+    wing.twists.tip              = 0.0 * Units.degrees 
     wing.origin                  = [[25.328,0,2.131]]
-    wing.aerodynamic_center      = [0,0,0]
-
+    wing.aerodynamic_center      = [0,0,0] 
     wing.vertical                = True
     wing.xz_plane_symmetric      = False
-    wing.t_tail                  = True
-
-    wing.dynamic_pressure_ratio  = 1.0
-
+    wing.t_tail                  = True 
+    wing.dynamic_pressure_ratio  = 1.0 
 
     # Wing Segments
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -299,7 +297,7 @@ def vehicle_setup():
     segment.twist                         = 0. * Units.deg
     segment.root_chord_percent            = 1.
     segment.dihedral_outboard             = 0 * Units.degrees
-    segment.sweeps.quarter_chord          = 61.485 * Units.degrees  
+    segment.sweeps.quarter_chord          = 68 * Units.degrees  
     segment.thickness_to_chord            = .1
     wing.append_segment(segment)
 
@@ -307,7 +305,7 @@ def vehicle_setup():
     segment.tag                           = 'segment_1'
     segment.percent_span_location         = 0.2962
     segment.twist                         = 0. * Units.deg
-    segment.root_chord_percent            = 0.45
+    segment.root_chord_percent            = 0.5
     segment.dihedral_outboard             = 0. * Units.degrees
     segment.sweeps.quarter_chord          = 31.2 * Units.degrees   
     segment.thickness_to_chord            = .1
@@ -317,14 +315,11 @@ def vehicle_setup():
     segment.tag                           = 'segment_2'
     segment.percent_span_location         = 1.0
     segment.twist                         = 0. * Units.deg
-    segment.root_chord_percent            = 0.1183 
+    segment.root_chord_percent            = 0.3
     segment.dihedral_outboard             = 0.0 * Units.degrees
     segment.sweeps.quarter_chord          = 0.0    
     segment.thickness_to_chord            = .1  
-    wing.append_segment(segment)
-    
-    
-        
+    wing.append_segment(segment) 
 
     # add to vehicle
     vehicle.append_component(wing)
@@ -481,15 +476,11 @@ def vehicle_setup():
     vehicle.append_component(fuselage)
      
 
-    # ################################################# Energy Network #######################################################          
-    
-    
-    
-        
-    #------------------------------------------------------------------------------------------------------------------------- 
-    # Done ! 
-    #------------------------------------------------------------------------------------------------------------------------- 
+    # ################################################# Energy Network #######################################################         
       
     return vehicle
 
 
+
+if __name__ == '__main__':
+    main() 
