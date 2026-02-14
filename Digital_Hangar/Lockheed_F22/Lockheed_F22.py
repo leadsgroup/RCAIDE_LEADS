@@ -1,45 +1,40 @@
-# RESEARCH/Aircraft/Lockheed_F22/Lockheed_F22.py
-# 
-# 
-# Created:  Jan 2025, A. Molloy, M. Guidotti, M. Clarke
-
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ---------------------------------------------------------------------------------------------------------------------- 
+# ----------------------------------------------------------------------
+#   Imports
+# ----------------------------------------------------------------------
 # RCAIDE imports 
 import RCAIDE
-from RCAIDE.Framework.Core import Units           
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan                import design_turbofan      
-from RCAIDE.Library.Plots                                                 import *     
-import RCAIDE.Framework.External_Interfaces.OpenVSP as openvsp
-from RCAIDE.Library.Plots.Common import set_axes, plot_style 
+from RCAIDE.Framework.Core import Units   
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan    import design_turbofan 
+from RCAIDE.Library.Plots                 import *       
 
 # python imports 
-import numpy as np  
-from   copy import deepcopy
-import matplotlib.pyplot as plt  
+import numpy as np   
+from copy import deepcopy 
+import sys 
 import os
-import sys
-import pickle
-import matplotlib.cm as cm
-import numpy as np 
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
-
 def main():
-   
+    
     # Step 1: design a vehicle
-    drop_tank = True
-    vehicle   = vehicle_setup(drop_tank)
+    vehicle  = vehicle_setup()  
 
+    try:
+        import vsp as vsp
+        from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
+        export_vsp_vehicle(vehicle, 'Lockheed_F22')
+    except ImportError:
+        pass
+    
     # Step 2: plot vehicle 
-    plot_3d_vehicle(vehicle)  
+    plot_3d_vehicle(vehicle,export_gltf=True)  
+    
+    return  
 
-    return
-
-def vehicle_setup(drop_tank): 
+def vehicle_setup(): 
+    local_path = sys.path[0] + os.sep
     # ------------------------------------------------------------------
     #   Initialize the Vehicle
     # ------------------------------------------------------------------      
@@ -65,7 +60,25 @@ def vehicle_setup(drop_tank):
     vehicle.number_of_passengers                      = 0 
     vehicle.systems.control                           = "fully powered" 
     vehicle.systems.accessories                       = "long range"
-    vehicle.Drop_Tank                                 = drop_tank           
+    
+    # ################################################# Landing Gear #############################################################   
+    # ------------------------------------------------------------------        
+    #  Landing Gear
+    # ------------------------------------------------------------------  
+    main_gear               = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
+    main_gear.tire_diameter = 20  * Units.inches
+    main_gear.strut_length  = 3.0 * Units.ft 
+    main_gear.units         = 2    
+    main_gear.wheels        = 1    
+    vehicle.append_component(main_gear)  
+
+    nose_gear               = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()       
+    nose_gear.tire_diameter = 5. * Units.inches
+    nose_gear.units         = 1    
+    nose_gear.wheels        = 1    
+    nose_gear.strut_length  = 2.0 * Units.ft 
+    vehicle.append_component(nose_gear)
+
 
     # ------------------------------------------------------------------
     #   Main Wing 
@@ -92,8 +105,6 @@ def vehicle_setup(drop_tank):
     wing.xz_plane_symmetric               = True 
     wing.dynamic_pressure_ratio           = 1.0
     
-    wing_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
-    wing_airfoil.coordinate_file          = 'NACA65_203.txt' 
 
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Segment_0'
@@ -102,6 +113,8 @@ def vehicle_setup(drop_tank):
     segment.dihedral_outboard             = 0.0 * Units.degrees
     segment.sweeps.leading_edge           = 0.0 * Units.degrees
     segment.thickness_to_chord            = .005
+    wing_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
+    wing_airfoil.coordinate_file          = local_path + 'NACA65_203.txt' 
     segment.append_airfoil(wing_airfoil)
     wing.append_segment(segment)
 
@@ -112,6 +125,8 @@ def vehicle_setup(drop_tank):
     segment.dihedral_outboard             = 0.0 * Units.degrees
     segment.sweeps.leading_edge           = 40 * Units.degrees
     segment.thickness_to_chord            = .0025
+    wing_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
+    wing_airfoil.coordinate_file          = local_path + 'NACA65_203.txt' 
     segment.append_airfoil(wing_airfoil)
     wing.append_segment(segment)
 
@@ -122,6 +137,8 @@ def vehicle_setup(drop_tank):
     segment.dihedral_outboard             = 0.0 * Units.degrees
     segment.sweeps.leading_edge           = 84.1 * Units.degrees
     segment.thickness_to_chord            = .005
+    wing_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
+    wing_airfoil.coordinate_file          = local_path + 'NACA65_203.txt' 
     segment.append_airfoil(wing_airfoil)
     wing.append_segment(segment)
 
@@ -132,6 +149,8 @@ def vehicle_setup(drop_tank):
     segment.dihedral_outboard             = -3.0 * Units.degrees
     segment.sweeps.leading_edge           = 41.2 * Units.degrees
     segment.thickness_to_chord            = .005
+    wing_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
+    wing_airfoil.coordinate_file          = local_path + 'NACA65_203.txt' 
     segment.append_airfoil(wing_airfoil)
     wing.append_segment(segment)
 
@@ -142,6 +161,8 @@ def vehicle_setup(drop_tank):
     segment.dihedral_outboard             = -3.0 * Units.degrees
     segment.sweeps.leading_edge           = 41.2 * Units.degrees
     segment.thickness_to_chord            = .005
+    wing_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
+    wing_airfoil.coordinate_file          = local_path + 'NACA65_203.txt' 
     segment.append_airfoil(wing_airfoil)
     wing.append_segment(segment)
 
@@ -152,6 +173,8 @@ def vehicle_setup(drop_tank):
     segment.dihedral_outboard             = -3.0 * Units.degrees
     segment.sweeps.leading_edge           = 41.2 * Units.degrees
     segment.thickness_to_chord            = .005
+    wing_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
+    wing_airfoil.coordinate_file          = local_path + 'NACA65_203.txt' 
     segment.append_airfoil(wing_airfoil)
     wing.append_segment(segment)
     
@@ -216,9 +239,7 @@ def vehicle_setup(drop_tank):
     wing.vertical                = False
     wing.xz_plane_symmetric      = True 
     wing.dynamic_pressure_ratio  = 0.9
-
-    tail_airfoil = RCAIDE.Library.Components.Airfoils.Airfoil() 
-    tail_airfoil.coordinate_file = 'supersonic_tail.txt'      
+  
 
     # Wing Segments
     segment                        = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -229,6 +250,8 @@ def vehicle_setup(drop_tank):
     segment.dihedral_outboard      = 0.0 * Units.degrees
     segment.sweeps.leading_edge    = 0.0  * Units.degrees 
     segment.thickness_to_chord     = .05
+    tail_airfoil                   = RCAIDE.Library.Components.Airfoils.Airfoil() 
+    tail_airfoil.coordinate_file   = local_path + 'supersonic_tail.txt'    
     segment.append_airfoil(tail_airfoil)
     wing.append_segment(segment)
 
@@ -240,6 +263,8 @@ def vehicle_setup(drop_tank):
     segment.dihedral_outboard      = 0.0 * Units.degrees
     segment.sweeps.leading_edge    = 35.0* Units.degrees 
     segment.thickness_to_chord     = .05
+    tail_airfoil                   = RCAIDE.Library.Components.Airfoils.Airfoil() 
+    tail_airfoil.coordinate_file   = local_path + 'supersonic_tail.txt'    
     segment.append_airfoil(tail_airfoil)
     wing.append_segment(segment)
 
@@ -251,6 +276,8 @@ def vehicle_setup(drop_tank):
     segment.dihedral_outboard      = 0.0  * Units.degrees
     segment.sweeps.leading_edge    = 45.0 * Units.degrees 
     segment.thickness_to_chord     = .2
+    tail_airfoil                   = RCAIDE.Library.Components.Airfoils.Airfoil() 
+    tail_airfoil.coordinate_file   = local_path + 'supersonic_tail.txt'    
     segment.append_airfoil(tail_airfoil)
     wing.append_segment(segment)
 
@@ -262,6 +289,8 @@ def vehicle_setup(drop_tank):
     segment.dihedral_outboard      = 0 * Units.degrees
     segment.sweeps.leading_edge    = 45.0  * Units.degrees 
     segment.thickness_to_chord     = .05
+    tail_airfoil                   = RCAIDE.Library.Components.Airfoils.Airfoil() 
+    tail_airfoil.coordinate_file   = local_path + 'supersonic_tail.txt'    
     segment.append_airfoil(tail_airfoil)
     wing.append_segment(segment)
      
@@ -286,9 +315,9 @@ def vehicle_setup(drop_tank):
     stabilizer_1.sweeps.leading_edge     = 22.92  * Units.deg   
     stabilizer_1.thickness_to_chord      = 0.05
     stabilizer_1.taper                   = 0.318 
-    stabilizer_1.spans.projected         = 2.67   * Units.meter 
+    stabilizer_1.spans.projected         = 2.6   * Units.meter 
     stabilizer_1.total_length            = 3.09   * Units.meter  
-    stabilizer_1.chords.root             = 4.1111 * Units.meter
+    stabilizer_1.chords.root             = 3.1111 * Units.meter
     stabilizer_1.chords.tip              = 1.3095 * Units.meter
     stabilizer_1.chords.mean_aerodynamic = 2.7103 * Units.meter 
     stabilizer_1.areas.reference         = 8.37   * Units['meters**2']
@@ -298,7 +327,7 @@ def vehicle_setup(drop_tank):
     stabilizer_1.origin                  = [[13.196, 1.45, 0.543]]
     stabilizer_1.aerodynamic_center      = [0,0,0] 
     stabilizer_1.vertical                = False
-    stabilizer_1.symmetric               = True
+    stabilizer_1.xz_plane_symmetric      = True
     stabilizer_1.t_tail                  = False 
     stabilizer_1.dynamic_pressure_ratio  = 1.0
     
@@ -309,8 +338,10 @@ def vehicle_setup(drop_tank):
     segment.twist                         = 0. * Units.deg
     segment.root_chord_percent            = 1.
     segment.dihedral_outboard             = 60 * Units.degrees
-    segment.sweeps.leading_edge           = 22.92 * Units.degrees
+    segment.sweeps.leading_edge           = 30 * Units.degrees
     segment.thickness_to_chord            = 0.05 
+    tail_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil() 
+    tail_airfoil.coordinate_file          = local_path + 'supersonic_tail.txt'    
     segment.append_airfoil(tail_airfoil)
     stabilizer_1.append_segment(segment)
 
@@ -322,6 +353,8 @@ def vehicle_setup(drop_tank):
     segment.dihedral_outboard             = 0. * Units.degrees
     segment.sweeps.leading_edge           = 22.92 * Units.degrees   
     segment.thickness_to_chord            = 0.05  
+    tail_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil() 
+    tail_airfoil.coordinate_file          = local_path + 'supersonic_tail.txt'    
     segment.append_airfoil(tail_airfoil)
     stabilizer_1.append_segment(segment)
 
@@ -462,112 +495,93 @@ def vehicle_setup(drop_tank):
 
     # add to vehicle
     vehicle.append_component(fuselage)
+ 
+    # ################################################# Drop Tank ################################################################ 
+        
+    Drop_Tank_Port                                    = RCAIDE.Library.Components.Booms.Boom() 
+    Drop_Tank_Port.tag                                = 'tank_port'
+    Drop_Tank_Port.number_coach_seats                 = vehicle.number_of_passengers 
+    Drop_Tank_Port.origin                             = [[6.8, -3.2, -0.41]]
+    Drop_Tank_Port.seats_abreast                      = 0
+    Drop_Tank_Port.seat_pitch                         = 0.0     * Units.meter 
+    Drop_Tank_Port.fineness.nose                      = 3.
+    Drop_Tank_Port.fineness.tail                      = 1.0 
+    Drop_Tank_Port.lengths.nose                       = 3.5   * Units.meter
+    Drop_Tank_Port.lengths.tail                       = 1.0   * Units.meter
+    Drop_Tank_Port.lengths.total                      = 6.0 * Units.meter  
+    Drop_Tank_Port.width                              = 1.0  * Units.meter
+    Drop_Tank_Port.heights.maximum                    = 1.0  * Units.meter
+    Drop_Tank_Port.effective_diameter                 = 1.0    * Units.meter
+    Drop_Tank_Port.areas.side_projected               = Drop_Tank_Port.heights.maximum * Drop_Tank_Port.lengths.total * Units['meters**2'] 
+    Drop_Tank_Port.areas.wetted                       = np.pi * Drop_Tank_Port.width/2 * Drop_Tank_Port.lengths.total * Units['meters**2']
+    Drop_Tank_Port.areas.front_projected              = np.pi * (Drop_Tank_Port.width/2)**2      * Units['meters**2']  
+    Drop_Tank_Port.differential_pressure              = 0
+    Drop_Tank_Port.heights.at_quarter_length          = Drop_Tank_Port.heights.maximum * Units.meter
+    Drop_Tank_Port.heights.at_three_quarters_length   = Drop_Tank_Port.heights.maximum * Units.meter
+    Drop_Tank_Port.heights.at_wing_root_quarter_chord = Drop_Tank_Port.heights.maximum* Units.meter
+    Drop_Tank_Port.differential_pressure              = 0
+    
+    # Segment  
+    segment                                     = RCAIDE.Library.Components.Booms.Segments.Segment() 
+    segment.tag                                 = 'segment_0'    
+    segment.percent_x_location                  = 0.0000
+    segment.percent_z_location                  = 0.00 
+    segment.height                              = 0.000 
+    segment.width                               = 0.000  
+    Drop_Tank_Port.append_segment(segment)   
+    
+    # Segment  
+    segment                                     = RCAIDE.Library.Components.Booms.Segments.Segment() 
+    segment.tag                                 = 'segment_1'    
+    segment.percent_x_location                  = 0.25
+    segment.percent_z_location                  = 0.0 
+    segment.height                              = 0.838
+    segment.width                               = 0.838
+    Drop_Tank_Port.append_segment(segment)   
+    
+    # Segment                                   
+    segment                                     = RCAIDE.Library.Components.Booms.Segments.Segment()
+    segment.tag                                 = 'segment_2'   
+    segment.percent_x_location                  = 0.534
+    segment.percent_z_location                  = 0.0 
+    segment.height                              = 1.0
+    segment.width                               = 1.0
+    Drop_Tank_Port.append_segment(segment)      
+    
+    # Segment                                   
+    segment                                     = RCAIDE.Library.Components.Booms.Segments.Segment()
+    segment.tag                                 = 'segment_3'   
+    segment.percent_x_location                  = 0.77
+    segment.percent_z_location                  = 0.0
+    segment.height                              = 1.0
+    segment.width                               = 1.0
+    Drop_Tank_Port.append_segment(segment)   
 
-    if vehicle.Drop_Tank:
-        # ################################################# Drop Tank ################################################################ 
-            
-        Drop_Tank_Port                                    = RCAIDE.Library.Components.Fuselages.Fuselage() 
-        Drop_Tank_Port.tag                                = 'tank_port'
-        Drop_Tank_Port.number_coach_seats                 = vehicle.number_of_passengers 
-        Drop_Tank_Port.origin                             = [[6.8, -3.2, -0.41]]
-        Drop_Tank_Port.seats_abreast                      = 0
-        Drop_Tank_Port.seat_pitch                         = 0.0     * Units.meter 
-        Drop_Tank_Port.fineness.nose                      = 3.
-        Drop_Tank_Port.fineness.tail                      = 1.0 
-        Drop_Tank_Port.lengths.nose                       = 3.5   * Units.meter
-        Drop_Tank_Port.lengths.tail                       = 1.0   * Units.meter
-        Drop_Tank_Port.lengths.total                      = 6.0 * Units.meter  
-        Drop_Tank_Port.width                              = 1.0  * Units.meter
-        Drop_Tank_Port.heights.maximum                    = 1.0  * Units.meter
-        Drop_Tank_Port.effective_diameter                 = 1.0    * Units.meter
-        Drop_Tank_Port.areas.side_projected               = Drop_Tank_Port.heights.maximum * Drop_Tank_Port.lengths.total * Units['meters**2'] 
-        Drop_Tank_Port.areas.wetted                       = np.pi * Drop_Tank_Port.width/2 * Drop_Tank_Port.lengths.total * Units['meters**2']
-        Drop_Tank_Port.areas.front_projected              = np.pi * (Drop_Tank_Port.width/2)**2      * Units['meters**2']  
-        Drop_Tank_Port.differential_pressure              = 0
-        Drop_Tank_Port.heights.at_quarter_length          = Drop_Tank_Port.heights.maximum * Units.meter
-        Drop_Tank_Port.heights.at_three_quarters_length   = Drop_Tank_Port.heights.maximum * Units.meter
-        Drop_Tank_Port.heights.at_wing_root_quarter_chord = Drop_Tank_Port.heights.maximum* Units.meter
-        Drop_Tank_Port.differential_pressure              = 0
-        
-        # Segment  
-        segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment() 
-        segment.tag                                 = 'segment_0'    
-        segment.percent_x_location                  = 0.0000
-        segment.percent_z_location                  = 0.00 
-        segment.height                              = 0.000 
-        segment.width                               = 0.000  
-        Drop_Tank_Port.append_segment(segment)   
-        
-        # Segment  
-        segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment() 
-        segment.tag                                 = 'segment_1'    
-        segment.percent_x_location                  = 0.25
-        segment.percent_z_location                  = 0.0 
-        segment.height                              = 0.838
-        segment.width                               = 0.838
-        Drop_Tank_Port.append_segment(segment)   
-        
-        # Segment                                   
-        segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
-        segment.tag                                 = 'segment_2'   
-        segment.percent_x_location                  = 0.534
-        segment.percent_z_location                  = 0.0 
-        segment.height                              = 1.0
-        segment.width                               = 1.0
-        Drop_Tank_Port.append_segment(segment)      
-        
-        # Segment                                   
-        segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
-        segment.tag                                 = 'segment_3'   
-        segment.percent_x_location                  = 0.77
-        segment.percent_z_location                  = 0.0
-        segment.height                              = 1.0
-        segment.width                               = 1.0
-        Drop_Tank_Port.append_segment(segment)   
+    # Segment                                   
+    segment                                     = RCAIDE.Library.Components.Booms.Segments.Segment()
+    segment.tag                                 = 'segment_4'   
+    segment.percent_x_location                  = 0.966	
+    segment.percent_z_location                  = 0.0
+    segment.height                              = 0.544
+    segment.width                               = 0.544
+    Drop_Tank_Port.append_segment(segment)   
+    
+    # Segment                                   
+    segment                                     = RCAIDE.Library.Components.Booms.Segments.Segment()
+    segment.tag                                 = 'segment_5'   
+    segment.percent_x_location                  = 1.0 
+    segment.percent_z_location                  = 0.0
+    segment.height                              = 0 
+    segment.width                               = 0
+    Drop_Tank_Port.append_segment(segment)     
+    
+    # add to vehicle
+    vehicle.append_component(Drop_Tank_Port)
 
-        # Segment                                   
-        segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
-        segment.tag                                 = 'segment_4'   
-        segment.percent_x_location                  = 0.966	
-        segment.percent_z_location                  = 0.0
-        segment.height                              = 0.544
-        segment.width                               = 0.544
-        Drop_Tank_Port.append_segment(segment)   
-        
-        # Segment                                   
-        segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
-        segment.tag                                 = 'segment_5'   
-        segment.percent_x_location                  = 1.0 
-        segment.percent_z_location                  = 0.0
-        segment.height                              = 0 
-        segment.width                               = 0
-        Drop_Tank_Port.append_segment(segment)     
-        
-        # add to vehicle
-        vehicle.append_component(Drop_Tank_Port)
-
-        Drop_Tank_Starboard = deepcopy(Drop_Tank_Port)
-        Drop_Tank_Starboard.tag = 'tank_starboard'
-        Drop_Tank_Starboard.origin = [[6.8, 3.2, -0.41]]
-        vehicle.append_component(Drop_Tank_Starboard)
-
-    # ################################################# Landing Gear #############################################################   
-    # ------------------------------------------------------------------        
-    #  Landing Gear
-    # ------------------------------------------------------------------  
-    main_gear               = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
-    main_gear.tire_diameter = 20  * Units.inches
-    main_gear.strut_length  = 3.0 * Units.ft 
-    main_gear.units         = 2    
-    main_gear.wheels        = 1    
-    vehicle.append_component(main_gear)  
-
-    nose_gear               = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()       
-    nose_gear.tire_diameter = 5. * Units.inches
-    nose_gear.units         = 1    
-    nose_gear.wheels        = 1    
-    nose_gear.strut_length  = 2.0 * Units.ft 
-    vehicle.append_component(nose_gear)
+    Drop_Tank_Starboard = deepcopy(Drop_Tank_Port)
+    Drop_Tank_Starboard.tag = 'tank_starboard'
+    Drop_Tank_Starboard.origin = [[6.8, 3.2, -0.41]]
+    vehicle.append_component(Drop_Tank_Starboard)
 
     #------------------------------------------------------------------------------------------------------------------------------------
     # ########################################################## Energy Network ######################################################### 
@@ -752,28 +766,8 @@ def vehicle_setup(drop_tank):
     turbofan2.nacelle.segments.segment_3.percent_y_location        *= -1
     turbofan2.nacelle.segments.segment_4.percent_y_location        *= -1
     net.propulsors.append(turbofan2)
-
-    #------------------------------------------------------------------------------------------------------------------------- 
-    #  Energy Source: Fuel Tank
-    #------------------------------------------------------------------------------------------------------------------------- 
-    # fuel tank
-    fuel_tank                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Wing_Fuel_Tank()
-    fuel_tank.origin                                 = vehicle.wings.main_wing.origin  
-    fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Jet_A1()     
-    fuel_line.fuel_tanks.append(fuel_tank)
-
-    if vehicle.Drop_Tank:
-        Drop_tank_fuel                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Wing_Fuel_Tank()
-        Drop_tank_fuel.tag                                    = 'tank_starboard'
-        Drop_tank_fuel.origin                                 = vehicle.fuselages.tank_starboard.origin
-        Drop_tank_fuel.fuel                                   = RCAIDE.Library.Attributes.Propellants.Jet_A1()     
-        fuel_line.fuel_tanks.append(Drop_tank_fuel)
-
-        Drop_tank_fuel_Port                                   = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Wing_Fuel_Tank()
-        Drop_tank_fuel_Port.tag                               = 'tank_port'
-        Drop_tank_fuel_Port.origin                            = vehicle.fuselages.tank_port.origin
-        Drop_tank_fuel_Port.fuel                              = RCAIDE.Library.Attributes.Propellants.Jet_A1()    
-        fuel_line.fuel_tanks.append(Drop_tank_fuel_Port)
+ 
+ 
 
     #------------------------------------------------------------------------------------------------------------------------------------   
     # Assign propulsors to fuel line to network   

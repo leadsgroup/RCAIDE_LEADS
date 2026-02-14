@@ -502,16 +502,7 @@ def vehicle_setup():
     nose_gear.wheels                         = 4 
     nose_gear.number_of_gear_types_in_tandem = 1
     nose_gear.number_of_wheels_in_gear_type  = 4 
-    vehicle.append_component(nose_gear)
-    
-      
-  
-  
-  
-  
-  
-  
-  
+    vehicle.append_component(nose_gear) 
   
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Turbofan Network

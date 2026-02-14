@@ -1,51 +1,40 @@
-# RESEARCH/Aircraft/Lockheed_F22/Lockheed_F22.py
-# 
-# 
-# Created:  Jan 2025, A. Molloy, M. Guidotti, M. Clarke
-
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ---------------------------------------------------------------------------------------------------------------------- 
+# ----------------------------------------------------------------------
+#   Imports
+# ----------------------------------------------------------------------
 # RCAIDE imports 
 import RCAIDE
-from RCAIDE.Framework.Core import Units           
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan                import design_turbofan      
-from RCAIDE.Library.Plots                                                 import *     
-import RCAIDE.Framework.External_Interfaces.OpenVSP as openvsp
-from RCAIDE.Library.Plots.Common import set_axes, plot_style 
+from RCAIDE.Framework.Core import Units   
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan    import design_turbofan 
+from RCAIDE.Library.Plots                 import *       
 
 # python imports 
-import numpy as np  
-from   copy import deepcopy
-import matplotlib.pyplot as plt  
+import numpy as np   
+from copy import deepcopy 
+import sys 
 import os
-import sys
-import pickle
-import matplotlib.cm as cm
-import numpy as np 
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
-
 def main():
- 
-    # Step 1: design a vehicle 
-    vehicle  = vehicle_setup()
     
-    #Step 2: plot vehicle
+    # Step 1: design a vehicle
+    vehicle  = vehicle_setup()  
 
-    plot_3d_vehicle(vehicle,
-                    min_x_axis_limit            = -1,
-                    max_x_axis_limit            = 50,
-                    min_y_axis_limit            = -25,
-                    max_y_axis_limit            = 25,
-                    min_z_axis_limit            = -25,
-                    max_z_axis_limit            = 25)          
-
-    return
+    try:
+        import vsp as vsp
+        from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
+        export_vsp_vehicle(vehicle, 'Lockheed_F35C')
+    except ImportError:
+        pass
+    
+    # Step 2: plot vehicle 
+    plot_3d_vehicle(vehicle,export_gltf=True)  
+    
+    return  
 
 def vehicle_setup(): 
+    local_path = sys.path[0] + os.sep 
     # ------------------------------------------------------------------
     #   Initialize the Vehicle
     # ------------------------------------------------------------------      
@@ -96,9 +85,6 @@ def vehicle_setup():
     wing.xz_plane_symmetric               = True 
     wing.dynamic_pressure_ratio           = 1.0
     
-    wing_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
-    wing_airfoil.coordinate_file          = 'NACA65_203.txt' 
-
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Segment_0'
     segment.percent_span_location         = 0.0
@@ -106,6 +92,8 @@ def vehicle_setup():
     segment.dihedral_outboard             = 0.0 * Units.degrees
     segment.sweeps.leading_edge           = 0.0 * Units.degrees
     segment.thickness_to_chord            =.005
+    wing_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
+    wing_airfoil.coordinate_file          = local_path +  'NACA65_203.txt' 
     segment.append_airfoil(wing_airfoil)
     wing.append_segment(segment)
 
@@ -116,6 +104,8 @@ def vehicle_setup():
     segment.dihedral_outboard             = 0.0 * Units.degrees
     segment.sweeps.leading_edge           = -47.04 * Units.degrees
     segment.thickness_to_chord            = .0025
+    wing_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
+    wing_airfoil.coordinate_file          = local_path +  'NACA65_203.txt' 
     segment.append_airfoil(wing_airfoil)
     wing.append_segment(segment)
 
@@ -126,6 +116,8 @@ def vehicle_setup():
     segment.dihedral_outboard             = 0.0 * Units.degrees
     segment.sweeps.leading_edge           = -47.04 * Units.degrees
     segment.thickness_to_chord            = .0025
+    wing_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
+    wing_airfoil.coordinate_file          = local_path +  'NACA65_203.txt' 
     segment.append_airfoil(wing_airfoil)
     wing.append_segment(segment)
 
@@ -136,6 +128,8 @@ def vehicle_setup():
     segment.dihedral_outboard             = 0.0 * Units.degrees
     segment.sweeps.leading_edge           = -47.04 * Units.degrees
     segment.thickness_to_chord            = .0025
+    wing_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
+    wing_airfoil.coordinate_file          = local_path +  'NACA65_203.txt' 
     segment.append_airfoil(wing_airfoil)
     wing.append_segment(segment)
 
@@ -146,6 +140,8 @@ def vehicle_setup():
     segment.dihedral_outboard             = 0.0 * Units.degrees
     segment.sweeps.leading_edge           =-47.04 * Units.degrees
     segment.thickness_to_chord            =.0025
+    wing_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
+    wing_airfoil.coordinate_file          = local_path +  'NACA65_203.txt' 
     segment.append_airfoil(wing_airfoil)
     wing.append_segment(segment)
 
@@ -156,6 +152,8 @@ def vehicle_setup():
     segment.dihedral_outboard             = 0.0 * Units.degrees
     segment.sweeps.leading_edge           = 86.6 * Units.degrees
     segment.thickness_to_chord            =.0025
+    wing_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
+    wing_airfoil.coordinate_file          = local_path +  'NACA65_203.txt' 
     segment.append_airfoil(wing_airfoil)
     wing.append_segment(segment)
 
@@ -166,6 +164,8 @@ def vehicle_setup():
     segment.dihedral_outboard             = 0.0 * Units.degrees
     segment.sweeps.leading_edge           = 35.0 * Units.degrees
     segment.thickness_to_chord            = .0025
+    wing_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
+    wing_airfoil.coordinate_file          = local_path +  'NACA65_203.txt' 
     segment.append_airfoil(wing_airfoil)
     wing.append_segment(segment)
     
@@ -176,6 +176,8 @@ def vehicle_setup():
     segment.dihedral_outboard             = 0 * Units.degrees
     segment.sweeps.quarter_chord          = 0 * Units.degrees
     segment.thickness_to_chord            = .0025
+    wing_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
+    wing_airfoil.coordinate_file          = local_path +  'NACA65_203.txt' 
     segment.append_airfoil(wing_airfoil)
     wing.append_segment(segment)
 
@@ -224,9 +226,7 @@ def vehicle_setup():
     wing.xz_plane_symmetric      = True 
     wing.dynamic_pressure_ratio  = 0.9
 
-
-    tail_airfoil = RCAIDE.Library.Components.Airfoils.Airfoil() 
-    tail_airfoil.coordinate_file = 'supersonic_tail.txt'      
+    
 
     # Wing Segments
     segment                        = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -237,6 +237,8 @@ def vehicle_setup():
     segment.dihedral_outboard      = 0.0 * Units.degrees
     segment.sweeps.leading_edge    = 0.0  * Units.degrees 
     segment.thickness_to_chord     = .05
+    tail_airfoil                   = RCAIDE.Library.Components.Airfoils.Airfoil() 
+    tail_airfoil.coordinate_file   = local_path + 'supersonic_tail.txt'  
     segment.append_airfoil(tail_airfoil)
     wing.append_segment(segment)
 
@@ -248,6 +250,8 @@ def vehicle_setup():
     segment.dihedral_outboard      = 0.0 * Units.degrees
     segment.sweeps.leading_edge    = 32.75 * Units.degrees 
     segment.thickness_to_chord     = .05
+    tail_airfoil                   = RCAIDE.Library.Components.Airfoils.Airfoil() 
+    tail_airfoil.coordinate_file   = local_path + 'supersonic_tail.txt'  
     segment.append_airfoil(tail_airfoil)
     wing.append_segment(segment)
 
@@ -259,6 +263,8 @@ def vehicle_setup():
     segment.dihedral_outboard      = 0 * Units.degrees
     segment.sweeps.leading_edge    = 32.75  * Units.degrees 
     segment.thickness_to_chord     = .05
+    tail_airfoil                   = RCAIDE.Library.Components.Airfoils.Airfoil() 
+    tail_airfoil.coordinate_file   = local_path + 'supersonic_tail.txt'  
     segment.append_airfoil(tail_airfoil)
     wing.append_segment(segment) 
 
@@ -283,7 +289,7 @@ def vehicle_setup():
     stabilizer_1.sweeps.leading_edge     = 38.67  * Units.deg   
     stabilizer_1.thickness_to_chord      = 0.05
     stabilizer_1.taper                   = 0.66234 
-    stabilizer_1.spans.projected         = 2.413 * Units.meter 
+    stabilizer_1.spans.projected         = 2.2 * Units.meter 
     stabilizer_1.total_length            = 2.413 * Units.meter  
     stabilizer_1.chords.root             = 2.444 * Units.meter
     stabilizer_1.chords.tip              = 1.61905 * Units.meter
@@ -295,7 +301,7 @@ def vehicle_setup():
     stabilizer_1.origin                  = [[11.686, 1.475, 0.426]]
     stabilizer_1.aerodynamic_center      = [12,1.5,1.0] 
     stabilizer_1.vertical                = False
-    stabilizer_1.symmetric               = True
+    stabilizer_1.xz_plane_symmetric      = True
     stabilizer_1.t_tail                  = False 
     stabilizer_1.dynamic_pressure_ratio  = 1.0
     
@@ -725,15 +731,7 @@ def vehicle_setup():
     nacelle_mirror.segments['segment_4'].percent_y_location = -0.00806
     ghost_propulsor.nacelle = nacelle_mirror
 
-    net.propulsors.append(ghost_propulsor)
-    #------------------------------------------------------------------------------------------------------------------------- 
-    #  Energy Source: Fuel Tank
-    #------------------------------------------------------------------------------------------------------------------------- 
-    # fuel tank
-    fuel_tank                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Wing_Fuel_Tank()
-    fuel_tank.origin                                 = vehicle.wings.main_wing.origin  
-    fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Jet_A() 
-    fuel_line.fuel_tanks.append(fuel_tank)
+    net.propulsors.append(ghost_propulsor) 
 
     #------------------------------------------------------------------------------------------------------------------------------------   
     # Assign propulsors to fuel line to network   
