@@ -5,51 +5,39 @@ import RCAIDE
 from RCAIDE.Framework.Core import Units  
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor  import design_electric_rotor
 from RCAIDE.Library.Plots                                         import * 
-from RCAIDE.Framework.External_Interfaces.OpenVSP                 import export_vsp_vehicle 
-from RCAIDE.load    import load as load_propulsor
-from RCAIDE.save    import save as save_propulsor 
+from RCAIDE import  load 
+from RCAIDE import  save   
 
-# python imports 
+# python imports   
+import numpy as np   
+from copy import deepcopy 
+import sys 
 import os
-import numpy as np 
-from copy import deepcopy
-import pickle
-import  pandas as pd
-import matplotlib.pyplot as plt  
- 
-# ----------------------------------------------------------------------------------------------------------------------
-#  Main 
-# ----------------------------------------------------------------------------------------------------------------------  
-def main():           
-         
-    # vehicle data
-    new_geometry    = False
-    redesign_rotors = False
-    plot_vehicle    = False
-    if new_geometry :
-        vehicle  = vehicle_setup(redesign_rotors)
-        save_aircraft_geometry(vehicle , 'Vahana')
-    else: 
-        vehicle = load_aircraft_geometry('Vahana')
-        
-    # Set up configs
-    configs  = configs_setup(vehicle)
 
-    # vehicle analyses
-    analyses = analyses_setup(configs)
-     
-    # plot the results 
-    plot_results(results)
+# ----------------------------------------------------------------------
+#   Main
+# ----------------------------------------------------------------------
+def main():
+    redesign_rotors = True
     
-    if plot_vehicle: 
-        plot_3d_vehicle(vehicle)
-    return
+    # Step 1: design a vehicle
+    vehicle  = vehicle_setup(redesign_rotors)  
 
-def vehicle_setup(redesign_rotors=True): 
+    try:
+        import vsp as vsp
+        from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
+        export_vsp_vehicle(vehicle, 'Vahana')
+    except ImportError:
+        pass
+    
+    # Step 2: plot vehicle 
+    plot_3d_vehicle(vehicle,export_gltf=True)  
+    
+    return  
 
-    ospath      = os.path.abspath(__file__)
-    separator   = os.path.sep 
-    local_path  = os.path.dirname(ospath) + separator +  '..' + separator   
+def vehicle_setup(redesign_rotors=True):
+    
+    local_path = sys.path[0] + os.sep  
     
     #------------------------------------------------------------------------------------------------------------------------------------
     # ################################################# Vehicle-level Properties ########################################################  
@@ -124,13 +112,9 @@ def vehicle_setup(redesign_rotors=True):
     wing.origin                                 = [[0.1,  0.0 , 0.0]]  
     wing.aerodynamic_center                     = [0., 0., 0.]     
     wing.winglet_fraction                       = 0.0 
-    wing.xz_plane_symmetric                     = True
-    
-    ospath                                      = os.path.abspath(__file__) 
-    separator                                   = os.path.sep 
+    wing.xz_plane_symmetric                     = True 
     airfoil                                     = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file                     = local_path + 'Airfoils' + separator + 'NACA_63_412.txt'
-        
+    airfoil.coordinate_file                     = local_path + 'NACA_63_412.txt' 
     wing.append_airfoil(airfoil)
                                                 
     # add to vehicle                                          
@@ -313,8 +297,7 @@ def vehicle_setup(redesign_rotors=True):
     
     # Lift Rotor Design
     g                                                   = 9.81                                
-    Hover_Load                                          = vehicle.mass_properties.takeoff*g *1.1  
-
+    Hover_Load                                          = vehicle.mass_properties.takeoff*g *1.1   
     prop_rotor                                          = RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor()   
     prop_rotor.tag                                      = 'prop_rotor'   
     prop_rotor.tip_radius                               = 0.8875
@@ -332,15 +315,15 @@ def vehicle_setup(redesign_rotors=True):
     
     
     airfoil                                             = RCAIDE.Library.Components.Airfoils.Airfoil()   
-    airfoil.coordinate_file                             =  local_path + 'Airfoils' + separator + 'NACA_4412.txt'
-    airfoil.polar_files                                 = [local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_50000.txt' ,
-                                                     local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_100000.txt' ,
-                                                     local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_200000.txt' ,
-                                                     local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_500000.txt' ,
-                                                     local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_1000000.txt',
-                                                     local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_3500000.txt',
-                                                     local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_5000000.txt',
-                                                     local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_7500000.txt' ]
+    airfoil.coordinate_file                             =  local_path + 'NACA_4412.txt'
+    airfoil.polar_files                                 = [local_path + 'NACA_4412_polar_Re_50000.txt' ,
+                                                           local_path  + 'NACA_4412_polar_Re_100000.txt' ,
+                                                           local_path  + 'NACA_4412_polar_Re_200000.txt' ,
+                                                           local_path  + 'NACA_4412_polar_Re_500000.txt' ,
+                                                           local_path  + 'NACA_4412_polar_Re_1000000.txt',
+                                                           local_path  + 'NACA_4412_polar_Re_3500000.txt',
+                                                           local_path  + 'NACA_4412_polar_Re_5000000.txt',
+                                                           local_path  + 'NACA_4412_polar_Re_7500000.txt' ]
     prop_rotor.append_airfoil(airfoil)                
     prop_rotor.airfoil_polar_stations                   = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     prop_rotor_propulsor.rotor                          =  prop_rotor
@@ -383,7 +366,8 @@ def vehicle_setup(redesign_rotors=True):
     rotor_origins = [[0., 1.347, 0.0], [0., 3.2969999999999997, 0.0], [0., -1.347, 0.0], [0., -3.2969999999999997, 0.0],\
                [5.0, 1.347, 1.4], [5.0, 3.2969999999999997, 1.4],[5.0, -1.347, 1.5], [5.0, -3.2969999999999997, 1.4]] 
     motor_origins = [[0.5, 1.347, 0.0], [0.5, 3.2969999999999997, 0.0], [0.5, -1.347, 0.0], [0.5, -3.2969999999999997, 0.0],\
-               [5.7, 1.347, 1.4], [5.7, 3.2969999999999997, 1.4],[5.7, -1.347, 1.5], [5.7, -3.2969999999999997, 1.4]] 
+               [5.7, 1.347, 1.4], [5.7, 3.2969999999999997, 1.4],[5.7, -1.347, 1.5], [5.7, -3.2969999999999997, 1.4]]
+    
     assigned_propulsor_list =  []
     for i in range(8): 
         prop_rotor_propulsor_i                                       = deepcopy(prop_rotor_propulsor)
@@ -416,9 +400,7 @@ def vehicle_setup(redesign_rotors=True):
     avionics                        = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
     avionics.power_draw             = 10. # Watts  
     avionics.mass_properties.mass   = 1.0 * Units.kg
-    bus.avionics                    = avionics    
-    
-  
+    bus.avionics                    = avionics     
     network.busses.append(bus) 
         
     # append energy network 
@@ -426,194 +408,13 @@ def vehicle_setup(redesign_rotors=True):
 
     return vehicle
 
-# ----------------------------------------------------------------------
-#   Define the Configurations
-# ---------------------------------------------------------------------
+def load_propulsor(filename):
+    propulsor =  load(filename)
+    return propulsor
 
-def configs_setup(vehicle):
-    
-    # ------------------------------------------------------------------
-    #   Initialize Configurations
-    # ------------------------------------------------------------------ 
-    configs                                                = RCAIDE.Library.Components.Configs.Config.Container() 
-    base_config                                            = RCAIDE.Library.Components.Configs.Config(vehicle)
-    base_config.tag                                        = 'base'     
-    configs.append(base_config) 
- 
-    # ------------------------------------------------------------------
-    #   Hover Climb Configuration
-    # ------------------------------------------------------------------
-    config                                            = RCAIDE.Library.Components.Configs.Config(vehicle)
-    config.tag                                        = 'vertical_climb'
-    vector_angle                                      = 90.0 * Units.degrees
-    config.wings.main_wing.twists.root                = vector_angle
-    config.wings.main_wing.twists.tip                 = vector_angle
-    config.wings.canard_wing.twists.root              = vector_angle
-    config.wings.canard_wing.twists.tip               = vector_angle    
-    for network in  config.networks:  
-        for propulsor in  network.propulsors:
-            propulsor.rotor.orientation_euler_angles  =  [0, vector_angle, 0]
-    configs.append(config)
-
-    # ------------------------------------------------------------------
-    #    
-    # ------------------------------------------------------------------
-    config                                            = RCAIDE.Library.Components.Configs.Config(vehicle)
-    vector_angle                                      = 30.0  * Units.degrees 
-    config.tag                                        = 'vertical_transition'
-    config.wings.main_wing.twists.root                = vector_angle
-    config.wings.main_wing.twists.tip                 = vector_angle
-    config.wings.canard_wing.twists.root              = vector_angle
-    config.wings.canard_wing.twists.tip               = vector_angle
-    for network in  config.networks:  
-        for propulsor in  network.propulsors:
-            propulsor.rotor.orientation_euler_angles  =  [0, vector_angle, 0]
-            propulsor.rotor.blade_pitch_command       = propulsor.rotor.hover.design_blade_pitch_command * 0.5 
-    configs.append(config) 
-
-    # ------------------------------------------------------------------
-    #   Hover-to-Cruise Configuration
-    # ------------------------------------------------------------------
-    config                                            = RCAIDE.Library.Components.Configs.Config(vehicle)
-    config.tag                                        = 'climb_transition'
-    vector_angle                                      = 5.0  * Units.degrees  
-    config.wings.main_wing.twists.root                = vector_angle
-    config.wings.main_wing.twists.tip                 = vector_angle
-    config.wings.canard_wing.twists.root              = vector_angle
-    config.wings.canard_wing.twists.tip               = vector_angle 
-    for network in  config.networks:  
-        for propulsor in  network.propulsors:
-            propulsor.rotor.orientation_euler_angles  =  [0, vector_angle, 0]
-            propulsor.rotor.blade_pitch_command       = propulsor.rotor.cruise.design_blade_pitch_command  
-    configs.append(config) 
-
-    # ------------------------------------------------------------------
-    #   Cruise Configuration
-    # ------------------------------------------------------------------
-    config                                            = RCAIDE.Library.Components.Configs.Config(vehicle)
-    config.tag                                        = 'cruise'   
-    vector_angle                                      = 0.0 * Units.degrees 
-    config.wings.main_wing.twists.root                = vector_angle
-    config.wings.main_wing.twists.tip                 = vector_angle
-    config.wings.canard_wing.twists.root              = vector_angle
-    config.wings.canard_wing.twists.tip               = vector_angle  
-    for network in  config.networks:  
-        for propulsor in  network.propulsors:
-            propulsor.rotor.orientation_euler_angles  =  [0, vector_angle, 0]
-            propulsor.rotor.blade_pitch_command       = propulsor.rotor.cruise.design_blade_pitch_command  
-    configs.append(config)     
-    
-    # ------------------------------------------------------------------
-    #   
-    # ------------------------------------------------------------------ 
-    config                                            = RCAIDE.Library.Components.Configs.Config(vehicle)
-    vector_angle                                      = 75.0  * Units.degrees   
-    config.tag                                        = 'descent_transition'   
-    config.wings.main_wing.twists.root                = vector_angle
-    config.wings.main_wing.twists.tip                 = vector_angle
-    config.wings.canard_wing.twists.root              = vector_angle
-    config.wings.canard_wing.twists.tip               = vector_angle
-    for network in  config.networks:  
-        for propulsor in  network.propulsors:
-            propulsor.rotor.orientation_euler_angles  =  [0, vector_angle, 0]
-            propulsor.rotor.blade_pitch_command       = propulsor.rotor.cruise.design_blade_pitch_command * 0.5
-    configs.append(config)  
-
-    # ------------------------------------------------------------------
-    #   Hover Configuration
-    # ------------------------------------------------------------------
-    config                                            = RCAIDE.Library.Components.Configs.Config(vehicle)
-    config.tag                                        = 'vertical_descent'
-    vector_angle                                      = 90.0  * Units.degrees   
-    config.wings.main_wing.twists.root                = vector_angle
-    config.wings.main_wing.twists.tip                 = vector_angle
-    config.wings.canard_wing.twists.root              = vector_angle
-    config.wings.canard_wing.twists.tip               = vector_angle     
-    for network in  config.networks:  
-        for propulsor in  network.propulsors:
-            propulsor.rotor.orientation_euler_angles  =  [0, vector_angle, 0]
-    configs.append(config)
-
-    return configs 
-
-    
- 
-def analyses_setup(configs):
-
-    analyses = RCAIDE.Framework.Analyses.Analysis.Container()
-
-    # build a base analysis for each config
-    for tag,config in configs.items():
-        analysis = base_analysis(config)
-        if config.networks.electric.propulsors['prop_rotor_propulsor_1'].rotor.orientation_euler_angles[1] > 45*Units.degrees: 
-            analysis.aerodynamics.settings.drag_coefficient_increment =  0.10
-        elif config.networks.electric.propulsors['prop_rotor_propulsor_1'].rotor.orientation_euler_angles[1] > 15*Units.degrees: 
-            analysis.aerodynamics.settings.drag_coefficient_increment =  0.05
-        analyses[tag] = analysis
-
-    return analyses
-
-def base_analysis(vehicle):
-
-    # ------------------------------------------------------------------
-    #   Initialize the Analyses
-    # ------------------------------------------------------------------     
-    analyses = RCAIDE.Framework.Analyses.Vehicle()
-    analyses.vehicle = vehicle 
-
-    # ------------------------------------------------------------------
-    #  Geometry
-    # ------------------------------------------------------------------
-    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.vehicle                               = vehicle 
-    geometry.settings.update_center_of_gravity     = True 
-    analyses.append(geometry)
-
-    # ------------------------------------------------------------------
-    #  Weights
-    weights         = RCAIDE.Framework.Analyses.Weights.Electric_VTOL()
-    weights.aircraft_type = "VTOL"
-    analyses.append(weights)
-
-    # ------------------------------------------------------------------
-    #  Aerodynamics Analysis
-    aerodynamics         = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.settings.maximum_lift_coefficient   =  1.5 
-    aerodynamics.settings.drag_coefficient_increment =  0.01  
-    analyses.append(aerodynamics)
-     
-    # ------------------------------------------------------------------
-    #  Energy 
-    energy          = RCAIDE.Framework.Analyses.Energy.Energy() 
-    analyses.append(energy)
-
-    # ------------------------------------------------------------------
-    #  Planet Analysis
-    planet = RCAIDE.Framework.Analyses.Planets.Earth()
-    analyses.append(planet)
-
-    # ------------------------------------------------------------------
-    #  Atmosphere Analysis
-    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    analyses.append(atmosphere)   
-
-    # done!
-    return analyses    
- 
-
-def save_aircraft_geometry(geometry,filename): 
-    pickle_file  = filename + '.pkl'
-    with open(pickle_file, 'wb') as file:
-        pickle.dump(geometry, file) 
+def save_propulsor(propulsor, filename):
+    save(propulsor, filename)
     return 
-
-
-def load_aircraft_geometry(filename):  
-    load_file = filename + '.pkl' 
-    with open(load_file, 'rb') as file:
-        results = pickle.load(file) 
-    return results
-
+ 
 if __name__ == '__main__': 
-    main()    
-    plt.show()
+    main()     

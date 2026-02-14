@@ -1,45 +1,47 @@
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ---------------------------------------------------------------------------------------------------------------------- 
-
+# ----------------------------------------------------------------------
+#   Imports
+# ----------------------------------------------------------------------
 # RCAIDE imports 
 import RCAIDE
-from RCAIDE.Framework.Core                                                 import Units
-from RCAIDE.Library.Plots                                                  import *     
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan                 import design_turbofan  
-from RCAIDE.Framework.External_Interfaces.OpenVSP.export_vsp_vehicle import export_vsp_vehicle
-
+from RCAIDE.Framework.Core import Units   
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan    import design_turbofan 
+from RCAIDE.Library.Plots                 import *       
 
 # python imports 
-import numpy                                               as np
-import matplotlib.pyplot                                   as plt
-from copy                                                  import deepcopy 
+import numpy as np   
+from copy import deepcopy 
+import sys 
 import os
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
-
 def main():
     
-    # design a vehicle
-    vehicle  = vehicle_setup()    
+    # Step 1: design a vehicle
+    vehicle  = vehicle_setup()  
+
+    try:
+        import vsp as vsp
+        from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
+        export_vsp_vehicle(vehicle, 'Airbus_A220_100')
+    except ImportError:
+        pass
     
-    return
+    # Step 2: plot vehicle 
+    plot_3d_vehicle(vehicle,export_gltf=True)  
+    
+    return  
 
-def vehicle_setup():
-
-    ospath      = os.path.abspath(__file__)
-    separator   = os.path.sep
-    airfoil_path    = os.path.dirname(ospath) + separator  + '..' + separator  
-    local_path  = os.path.dirname(ospath) + separator           
-
+def vehicle_setup(): 
+    local_path = sys.path[0] + os.sep
+    
     # ------------------------------------------------------------------
     #   Initialize the Vehicle
     # ------------------------------------------------------------------    
 
     vehicle = RCAIDE.Vehicle()
-    vehicle.tag = 'Airbus_220-100'   
+    vehicle.tag = 'Airbus_A220_100'   
 
     # ################################################# Vehicle-level Properties ########################################################  
     vehicle.mass_properties.max_takeoff             = 63100  # kg 
@@ -97,25 +99,18 @@ def vehicle_setup():
     wing.twists.root_twist                = 3 * Units.degree  
         
     # Wing Segments
-    root_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
-    ospath                                = os.path.abspath(__file__)
-    separator                             = os.path.sep
-    rel_path                              = os.path.dirname(ospath) + separator  + '..'  + separator 
-    root_airfoil.coordinate_file          = rel_path  + 'Airfoils' + separator + 'transonic_wing_root_section_airfoil.txt'
-    
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'root'
     segment.percent_span_location         = 0.0
     segment.twist                         = wing.twists.root_twist  +  segment.percent_span_location * wing.twists.outwash 
     segment.root_chord_percent            = 1.
     segment.dihedral_outboard             = 7.82609 * Units.degrees
-    segment.sweeps.quarter_chord          = 22.77 * Units.degrees
-
+    segment.sweeps.quarter_chord          = 22.77 * Units.degrees 
+    root_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil() 
+    root_airfoil.coordinate_file          = local_path + 'transonic_wing_root_section_airfoil.txt' 
     segment.append_airfoil(root_airfoil)
     wing.append_segment(segment) 
 
-    mid_airfoil                           = RCAIDE.Library.Components.Airfoils.Airfoil()
-    mid_airfoil.coordinate_file           = rel_path + 'Airfoils' + separator + 'transonic_wing_inboard_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'inboard'
     segment.percent_span_location         = 0.368 
@@ -123,12 +118,11 @@ def vehicle_setup():
     segment.root_chord_percent            = 0.5057
     segment.dihedral_outboard             = 6.41304 * Units.degrees
     segment.sweeps.quarter_chord          = 26.54545 * Units.degrees
-    segment.append_airfoil(mid_airfoil)
-    segment.has_fuel_tank                 = True
+    mid_airfoil                           = RCAIDE.Library.Components.Airfoils.Airfoil()
+    mid_airfoil.coordinate_file           = local_path +'transonic_wing_inboard_section_airfoil.txt'
+    segment.append_airfoil(mid_airfoil) 
     wing.append_segment(segment)
 
-    tip_airfoil                           =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    tip_airfoil.coordinate_file           = rel_path + 'Airfoils' + separator + 'transonic_wing_outboard_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'outboard'
     segment.percent_span_location         = 0.96
@@ -136,11 +130,11 @@ def vehicle_setup():
     segment.root_chord_percent            = 0.1986
     segment.dihedral_outboard             = 53.55* Units.degrees
     segment.sweeps.quarter_chord          = 48.0* Units.degrees
+    tip_airfoil                           =  RCAIDE.Library.Components.Airfoils.Airfoil()
+    tip_airfoil.coordinate_file           = local_path + 'transonic_wing_outboard_section_airfoil.txt'
     segment.append_airfoil(tip_airfoil)
     wing.append_segment(segment)
     
-    tip_airfoil                           =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    tip_airfoil.coordinate_file           = rel_path + 'Airfoils' + separator + 'transonic_wing_tip_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'tip'
     segment.percent_span_location         = 1.0
@@ -149,6 +143,8 @@ def vehicle_setup():
     segment.thickness_to_chord            = 0.1
     segment.dihedral_outboard             = 53.55* Units.degrees
     segment.sweeps.quarter_chord          = 0.
+    tip_airfoil                           =  RCAIDE.Library.Components.Airfoils.Airfoil()
+    tip_airfoil.coordinate_file           =  local_path +'transonic_wing_tip_section_airfoil.txt'
     segment.append_airfoil(tip_airfoil)
     wing.append_segment(segment)    
     
@@ -185,15 +181,11 @@ def vehicle_setup():
     spoiler.span_fraction_end                      = 0.7
     spoiler.deflection                             = 0.0 * Units.degrees
     spoiler.chord_fraction                         = 0.05
-    wing.append_control_surface(spoiler)    
-
+    wing.append_control_surface(spoiler)     
    
     
     # add to vehicle
-    vehicle.append_component(wing)
-
-
-
+    vehicle.append_component(wing) 
 
 
     # ------------------------------------------------------------------
@@ -706,76 +698,7 @@ def vehicle_setup():
     vehicle.append_energy_network(net)     
      
     return vehicle
-
-#------------------------------------------------------------------
-#   Define the Configurations
-# ---------------------------------------------------------------------
-
-def analyses_setup(configs):
-    """Set up analyses for each of the different configurations."""
-
-    analyses = RCAIDE.Framework.Analyses.Analysis.Container()
-
-    # Build a base analysis for each configuration. Here the base analysis is always used, but
-    # this can be modified if desired for other cases.
-    for tag,config in configs.items():
-        analysis = base_analysis(config)
-        analyses[tag] = analysis
-
-    return analyses
-
-def base_analysis(vehicle):
-    """This is the baseline set of analyses to be used with this vehicle. Of these, the most
-    commonly changed are the weights and aerodynamics methods."""
-
-    # ------------------------------------------------------------------
-    #   Initialize the Analyses
-    # ------------------------------------------------------------------     
-    analyses = RCAIDE.Framework.Analyses.Vehicle()
-    analyses.vehicle = vehicle
-    analyses.vehicle.mass_properties.takeoff = None
-
-    #  Geometry
-    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.settings.overwrite_reference          = True
-    geometry.settings.update_wing_properties       = True
-    geometry.settings.print_weight_analysis_report = True
-    analyses.append(geometry)
-
-    # ------------------------------------------------------------------
-    #  Weights
-    weights = RCAIDE.Framework.Analyses.Weights.Conventional_Transport()
-    weights.settings.print_weight_analysis_report = True
-    weights.method  = "FLOPS"
-    weights.settings.FLOPS.fidelity    = "Complex" 
-    weights.settings.weight_correction_additions.empty.structural.paint = 200
-    analyses.append(weights)
-
-    # ------------------------------------------------------------------
-    #  Aerodynamics Analysis
-    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.settings.store_training_data = True
-    analyses.append(aerodynamics)
- 
-    # ------------------------------------------------------------------
-    #  Energy
-    energy = RCAIDE.Framework.Analyses.Energy.Energy()
-    analyses.append(energy)
-
-    # ------------------------------------------------------------------
-    #  Planet Analysis
-    planet = RCAIDE.Framework.Analyses.Planets.Earth()
-    analyses.append(planet)
-
-    # ------------------------------------------------------------------
-    #  Atmosphere Analysis
-    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
-    analyses.append(atmosphere)   
-
-    return analyses    
  
 
 if __name__ == '__main__': 
-    main()
-    plt.show()
+    main() 

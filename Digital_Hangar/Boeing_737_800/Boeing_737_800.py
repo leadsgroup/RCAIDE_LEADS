@@ -5,8 +5,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units   
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan    import design_turbofan 
-from RCAIDE.Library.Plots                 import *      
-from RCAIDE.Library.Methods.Performance   import *  
+from RCAIDE.Library.Plots                 import *       
 
 # python imports 
 import numpy as np   
@@ -44,7 +43,7 @@ def vehicle_setup():
     # ------------------------------------------------------------------    
     
     vehicle = RCAIDE.Vehicle()
-    vehicle.tag = 'Boeing_737-800'
+    vehicle.tag = 'Boeing_737_800'
 
     # ################################################# Vehicle-level Properties #################################################   
     vehicle.mass_properties.max_takeoff               = 79000 * Units.kilogram    

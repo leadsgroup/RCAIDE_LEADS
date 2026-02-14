@@ -26,25 +26,26 @@ def main():
     try:
         import vsp as vsp
         from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
-        export_vsp_vehicle(vehicle, 'Boeing_737_800')
+        export_vsp_vehicle(vehicle, 'Boeing_787_8')
     except ImportError:
-        pass
-       
+        pass 
     
     # Step 2: plot vehicle 
     plot_3d_vehicle(vehicle,export_gltf=True)  
     
     return 
 
-def vehicle_setup(vehicle_name = 'Boeing_787-8', passengers = 248) :
-                
+def vehicle_setup() : 
+
+    local_path = sys.path[0] + os.sep
+    
     # ------------------------------------------------------------------
     #   Initialize the Vehicle
     # ------------------------------------------------------------------      
     vehicle = RCAIDE.Vehicle()
     
     # ################################################# Vehicle-level Properties #################################################   
-    vehicle.tag = vehicle_name 
+    vehicle.tag = 'Boeing_787_8' 
     vehicle.mass_properties.max_takeoff               = 227930
     vehicle.mass_properties.takeoff                   = 227930 
     vehicle.mass_properties.max_zero_fuel             = 161025.0 * Units.kilogram   
@@ -59,10 +60,29 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', passengers = 248) :
     vehicle.flight_envelope.design_cruise_altitude    = 35000.0*Units.feet 
     vehicle.flight_envelope.design_range              = 7305.0 * Units.nmi
     vehicle.reference_area                            = 395.0 * Units['meters**2']    
-    vehicle.number_of_passengers                                = passengers 
+    vehicle.number_of_passengers                      = 248 
     vehicle.systems.control                           = "fully powered" 
-    vehicle.systems.accessories                       = "long range"
+    vehicle.systems.accessories                       = "long range" 
 
+    # ################################################# Wings ##################################################################### 
+    # ------------------------------------------------------------------
+    # Carbo Bays 
+    # ------------------------------------------------------------------ 
+    forward_cargo_bay = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
+    forward_cargo_bay.cargo.mass_properties.mass  = 1850
+    forward_cargo_bay.origin                      = [[5.82, 0, -0.6]]
+    forward_cargo_bay.length                      = 10
+    forward_cargo_bay.width                       = 106 *  Units.inches 
+    forward_cargo_bay.height                      = 67 *  Units.inches 
+    vehicle.append_component(forward_cargo_bay) 
+ 
+    aft_cargo_bay  = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
+    aft_cargo_bay.cargo.mass_properties.mass     = 1440
+    aft_cargo_bay.origin                         = [[30, 0, -0.6]]
+    aft_cargo_bay.length                         =  10
+    aft_cargo_bay.width                          =  106 *  Units.inches 
+    aft_cargo_bay.height                         =  67 *  Units.inches 
+    vehicle.append_component(aft_cargo_bay)
 
     # ------------------------------------------------------------------
     #   Main Wing 
@@ -91,54 +111,51 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', passengers = 248) :
     wing.dynamic_pressure_ratio           = 1.0
         
     # Wing Segments
-    root_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
-    ospath                                = os.path.abspath(__file__)
-    separator                             = os.path.sep
-    rel_path                              = os.path.dirname(ospath) + separator  + '..'  + separator 
-    root_airfoil.coordinate_file          = rel_path  + 'Airfoils' + separator + 'transonic_wing_root_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
-    segment.tag                           = 'Root'
+    segment.tag                           = 'root'
     segment.percent_span_location         = 0.0 
     segment.root_chord_percent            = 1.
     segment.twist                         = 2.5 * Units.degrees
     segment.dihedral_outboard             = 8.0 * Units.degrees
     segment.sweeps.quarter_chord          = 27.57 * Units.degrees 
+    root_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil() 
+    root_airfoil.coordinate_file          = local_path+ 'transonic_wing_root_section_airfoil.txt'
     segment.append_airfoil(root_airfoil)
     wing.append_segment(segment)
 
-    yehudi_airfoil                        = RCAIDE.Library.Components.Airfoils.Airfoil()
-    yehudi_airfoil.coordinate_file        = rel_path+ 'Airfoils' + separator + 'transonic_wing_inboard_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
-    segment.tag                           = 'Yehudi'
+    segment.tag                           = 'yehudi'
     segment.percent_span_location         = 0.345 
     segment.root_chord_percent            = 0.53 
     segment.dihedral_outboard             = 7.0 * Units.degrees
     segment.sweeps.quarter_chord          = 31. * Units.degrees
     segment.twist                         = 1.5 * Units.degrees 
+    yehudi_airfoil                        = RCAIDE.Library.Components.Airfoils.Airfoil()
+    yehudi_airfoil.coordinate_file        = local_path + 'transonic_wing_inboard_section_airfoil.txt'
     segment.append_airfoil(yehudi_airfoil)
     wing.append_segment(segment)
 
-    tip_airfoil                           =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    tip_airfoil.coordinate_file           = rel_path + 'Airfoils' + separator + 'transonic_wing_outboard_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
-    segment.tag                           = 'Tip'
+    segment.tag                           = 'section_2'
     segment.percent_span_location         = 0.95 
     segment.root_chord_percent            = 0.155 
     segment.dihedral_outboard             = 12.0 * Units.degrees
     segment.sweeps.quarter_chord          = 42.0 * Units.degrees
     segment.twist                         = 1.0 * Units.degrees 
+    tip_airfoil                           =  RCAIDE.Library.Components.Airfoils.Airfoil()
+    tip_airfoil.coordinate_file           = local_path+ 'transonic_wing_outboard_section_airfoil.txt'
     segment.append_airfoil(tip_airfoil)
     wing.append_segment(segment)
 
-    tip_airfoil                           =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    tip_airfoil.coordinate_file           = rel_path + 'Airfoils' + separator + 'transonic_wing_tip_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
-    segment.tag                           = 'Winglet'
+    segment.tag                           = 'tip'
     segment.percent_span_location         = 1.00
     segment.twist                         = 0.0 * Units.degrees
     segment.root_chord_percent            = 0.093 
     segment.dihedral_outboard             = 0.0 * Units.degrees
     segment.sweeps.quarter_chord          = 0.0 * Units.degrees 
+    tip_airfoil                           =  RCAIDE.Library.Components.Airfoils.Airfoil()
+    tip_airfoil.coordinate_file           = local_path + 'transonic_wing_tip_section_airfoil.txt'
     segment.append_airfoil(tip_airfoil)
     wing.append_segment(segment)
 
@@ -566,16 +583,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', passengers = 248) :
     nose_gear.wheels                         = 2   
     nose_gear.number_of_gear_types_in_tandem = 1
     nose_gear.number_of_wheels_in_gear_type  = 2    
-    vehicle.append_component(nose_gear)
-
-    # ------------------------------------------------------------------
-    # Carbo Bays 
-    # ------------------------------------------------------------------ 
-    cargo_bay = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
-    cargo_bay.cargo.mass_properties.mass  = 19000 * Units.kilogram
-    vehicle.cargo_bays.append(cargo_bay)
-    
-    
+    vehicle.append_component(nose_gear) 
 
 
     # ################################################# Energy Network #######################################################          
@@ -735,5 +743,4 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', passengers = 248) :
     
     return vehicle 
 if __name__ == '__main__': 
-    main()    
-    plt.show()
+    main()     

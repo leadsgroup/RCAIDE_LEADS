@@ -5,12 +5,13 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units   
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan  import design_turbofan   
-from RCAIDE.Library.Plots                 import *      
-from RCAIDE.Library.Methods.Performance   import *  
+from RCAIDE.Library.Plots                 import *    
 
 # python imports 
 import numpy as np   
-from copy import deepcopy 
+from copy import deepcopy
+import os
+import sys
 
 # ----------------------------------------------------------------------
 #   Main
@@ -23,18 +24,18 @@ def main():
     try:
         import vsp as vsp
         from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
-        export_vsp_vehicle(vehicle, 'ATR_72')
+        export_vsp_vehicle(vehicle, 'BWB')
     except ImportError:
-        pass
-       
+        pass 
     
     # Step 2: plot vehicle 
-    plot_3d_vehicle(vehicle)  
+    plot_3d_vehicle(vehicle,export_gltf=True) 
     
     return 
 
 
 def vehicle_setup():  
+    local_path = sys.path[0] + os.sep 
      
     # ------------------------------------------------------------------
     #   Initialize the Vehicle
@@ -74,8 +75,7 @@ def vehicle_setup():
     left_cargo_bay.length                      =  60.4 *  Units.inches *  5
     left_cargo_bay.width                       =  96   *  Units.inches
     left_cargo_bay.height                      =  45   *  Units.inches
-    vehicle.cargo_bays.append(left_cargo_bay) 
-
+    vehicle.cargo_bays.append(left_cargo_bay)  
  
     right_cargo_bay  = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
     right_cargo_bay.cargo.mass_properties.mass  = 0  
@@ -223,7 +223,7 @@ def vehicle_setup():
     segment.dihedral_outboard                      = 5 *  Units.degrees    
     segment.sweeps.quarter_chord                   = 0.775369385#769415328
     airfoil                                        = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file                        = 's1014.dat'
+    airfoil.coordinate_file                        = local_path + 's1014.dat'
     segment.append_airfoil(airfoil )
     wing.append_segment(segment)     
     
@@ -235,7 +235,7 @@ def vehicle_setup():
     segment.dihedral_outboard                      = 1 *  Units.degrees 
     segment.sweeps.quarter_chord                   = 0.610554743 #0.557707107
     airfoil                                        =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file                        =  'transonic_wing_inboard_section_airfoil.txt'
+    airfoil.coordinate_file                        = local_path +  'transonic_wing_inboard_section_airfoil.txt'
     segment.append_airfoil(airfoil )
     wing.append_segment(segment)
 
@@ -248,7 +248,7 @@ def vehicle_setup():
     segment.sweeps.quarter_chord                   = 0.557683513
     segment.chords.reference_area_root             = True
     airfoil                                        =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file                        = 'transonic_wing_inboard_section_airfoil.txt'
+    airfoil.coordinate_file                        = local_path +  'transonic_wing_inboard_section_airfoil.txt'
     segment.append_airfoil(airfoil )
     wing.append_segment(segment)  
 
@@ -260,7 +260,7 @@ def vehicle_setup():
     segment.dihedral_outboard                      = 65 *  Units.degrees  
     segment.sweeps.quarter_chord                   = 55 *  Units.degrees 
     airfoil                                        =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file                        = 'transonic_wing_outboard_section_airfoil.txt'
+    airfoil.coordinate_file                        = local_path +  'transonic_wing_outboard_section_airfoil.txt'
     segment.append_airfoil(airfoil )
     wing.append_segment(segment)  
 
@@ -272,7 +272,7 @@ def vehicle_setup():
     segment.root_chord_percent                     = 0.02 
     segment.dihedral_outboard                      = 0  
     airfoil                                        =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file                        = 'transonic_wing_tip_section_airfoil.txt'
+    airfoil.coordinate_file                        = local_path + 'transonic_wing_tip_section_airfoil.txt'
     segment.append_airfoil(airfoil )
     wing.append_segment(segment)
     
@@ -416,13 +416,13 @@ def vehicle_setup():
     # Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------         
     turbofan1                                      = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan()  
-    turbofan1.tag                                  = 'propulsor_1' # 'Pratt_and_Whitney_2043'  https://prd-sc102-cdn.rtx.com/-/media/pw/products/commercial-jet-engines/pw2000/files/ce_pw2000_fact.pdf?rev=7377aaa21c9b415bad4b295dd5fc4c9b&hash=8B755FC15B1A44AB0817E984A8B3E2CB   
+    turbofan1.tag                                  = 'port_propulsor' 
     turbofan1.length                               = 141.4 * Units.inches                 
     turbofan1.diameter                             = 78.5 * Units.inches                     
     turbofan1.bypass_ratio                         = 8.         
     turbofan1.design_altitude                      = 40000*Units.ft             
     turbofan1.design_mach_number                   = 0.78                      
-    turbofan1.design_thrust                        = 26000.0
+    turbofan1.design_thrust                        = 40000.0
     turbofan1.wing_mounted                         = False
 
     # working fluid                   
@@ -482,7 +482,7 @@ def vehicle_setup():
     combustor.efficiency                           = 0.997                    
     combustor.turbine_inlet_temperature            = 1450               
     combustor.pressure_ratio                       = 0.94                     
-    combustor.fuel_data                            = RCAIDE.Library.Attributes.Propellants.Jet_A1()  
+    combustor.fuel_data                            = RCAIDE.Library.Attributes.Propellants.Jet_A()  
     turbofan1.combustor                            = combustor
 
     # core nozzle
@@ -508,14 +508,14 @@ def vehicle_setup():
     nacelle.length                              = 160 * Units.inches  
     nacelle.tag                                 = 'nacelle_1'
     nacelle.inlet_diameter                      = 80 * Units.inches    
-    nacelle.origin                              = [[25, 3.0, 1.5]] 
-    nacelle.orientation_euler_angles            = [0., -np.pi /30.,0.]    
+    nacelle.origin                              = [[23, 4.2, 1.75]]
+    nacelle.orientation_euler_angles            = [0, -7 * Units.degree, 0]
     nacelle.areas.wetted                        = np.pi*nacelle.diameter*nacelle.length
     nacelle_airfoil                             = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
     nacelle_airfoil.NACA_4_Series_code          = '4305'
     nacelle.append_airfoil(nacelle_airfoil) 
     turbofan1.nacelle                            = nacelle 
-    turbofan1.origin                             = [[25, 3.0, 1.5]]  
+    turbofan1.origin                             = [[23, 4.2, 1.75]]  
     
     net.propulsors.append(turbofan1)
     
@@ -524,13 +524,27 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------       
     turbofan2                                  = deepcopy(turbofan1)
     turbofan2.active_fuel_tanks                = ['fuel_tank'] 
-    turbofan2.tag                              = 'propulsor_2' 
-    turbofan2.origin                           = [[25, -3.0, 1.5]] 
-    turbofan2.nacelle.tag                      =  'nacelle_2'
-    turbofan2.nacelle.origin                   = [[25, -3.0, 1.5]] 
+    turbofan2.tag                              = 'starboard_propulsor' 
+    turbofan2.origin                           = [[23, -4.2, 1.75]] 
+    turbofan2.nacelle.tag                      =  'starboard_propulsor_nacelle'
+    turbofan2.nacelle.origin                   = [[23, -4.2, 1.75]] 
         
     # append propulsor to distribution line 
     net.propulsors.append(turbofan2) 
+
+
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    # Propulsor: Propulsor 3 (Center Engine)
+    #------------------------------------------------------------------------------------------------------------------------------------       
+    turbofan3                                  = deepcopy(turbofan1)
+    turbofan3.active_fuel_tanks                = ['fuel_tank'] 
+    turbofan3.tag                              = 'center_propulsor' 
+    turbofan3.origin                           = [[24, 0, 1.5]] 
+    turbofan3.nacelle.tag                      =  'center_engine_nacelle'
+    turbofan3.nacelle.origin                   = [[24, 0, 1.5]] 
+        
+    # append propulsor to distribution line 
+    net.propulsors.append(turbofan3)  
 
     #------------------------------------------------------------------------------------------------------------------------- 
     #  Energy Source: Fuel Tank
@@ -544,7 +558,7 @@ def vehicle_setup():
 
     #------------------------------------------------------------------------------------------------------------------------------------   
     # Assign propulsors to fuel line to network      
-    fuel_line.assigned_propulsors =  [['propulsor_1', 'propulsor_2']]
+    fuel_line.assigned_propulsors =  [['starboard_propulsor', 'port_propulsor', 'center_propulsor']]
 
     #------------------------------------------------------------------------------------------------------------------------------------   
     # Append fuel line to fuel line to network      

@@ -168,6 +168,7 @@ class Boom(Component):
         self.vsp_data                               = Data()
         self.vsp_data.xsec_surf_id                  = ''    # There is only one XSecSurf in each VSP geom.
         self.vsp_data.xsec_num                      = None  # Number if XSecs in rotor_boom geom.
+        self.supersonic                             = False
                         
         self.segments                               = Container()
          

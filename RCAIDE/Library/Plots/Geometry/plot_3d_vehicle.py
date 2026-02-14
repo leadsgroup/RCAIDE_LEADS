@@ -29,7 +29,7 @@ import matplotlib.colors as mcolors
 # ---------------------------------------------------------------------------------------------------------------------- 
 def plot_3d_vehicle(vehicle, 
                     save_figure                 = False,
-                    save_filename               = "geometry", 
+                    save_filename               = None, 
                     top_view                    = False, 
                     side_view                   = False, 
                     front_view                  = False,   
@@ -119,7 +119,8 @@ def plot_3d_vehicle(vehicle,
         - Propulsion systems
         - Customizable view and camera angles
     """
-
+    if save_filename == None:
+        save_filename = vehicle.tag
     if front_view:
         camera_eye_x  = -1 
         camera_eye_y  = 0
