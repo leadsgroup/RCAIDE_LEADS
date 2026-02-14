@@ -145,8 +145,7 @@ def vehicle_setup():
     wing.high_lift                              = False 
     wing.dynamic_pressure_ratio                 = 0.9 
     wing_airfoil                                = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil() 
-    wing.append_airfoil(wing_airfoil)    
-     
+    wing.append_airfoil(wing_airfoil)     
     
     elevator                              = RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator()
     elevator.tag                          = 'elevator'
@@ -220,19 +219,17 @@ def vehicle_setup():
     fuselage.areas.front_projected              = fuselage.width* fuselage.heights.maximum
     fuselage.effective_diameter                 = 50. * Units.inches
 
-    cabin                                              = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
-    economy_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
-    economy_class.number_of_seats_abrest              = 2
-    economy_class.number_of_rows                      = 2
-    economy_class.galley_lavatory_percent_x_locations = [0]      
-    economy_class.emergency_exit_percent_x_locations  = [0.0] 
-    economy_class.type_A_exit_percent_x_locations     = [0.0]
-    economy_class.number_of_seats                     = economy_class.number_of_rows  * economy_class.number_of_seats_abrest 
+    cabin              = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
+    economy_class      = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
+    cabin.origin                          = [[2, 0, 0]]
+    economy_class.number_of_seats_abrest  = 2
+    economy_class.number_of_rows          = 2 
+    economy_class.aisle_width             = 0
+    economy_class.seat_arm_rest_width     = 1 * Units.inches
+    economy_class.number_of_seats         = economy_class.number_of_rows  * economy_class.number_of_seats_abrest 
     cabin.append_cabin_class(economy_class)
     
-    fuselage.append_cabin(cabin)          
-
-
+    fuselage.append_cabin(cabin)           
 
     # Segment  
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment() 

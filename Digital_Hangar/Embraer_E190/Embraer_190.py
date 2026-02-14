@@ -5,12 +5,13 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units   
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan    import design_turbofan 
-from RCAIDE.Library.Plots                 import *      
-from RCAIDE.Library.Methods.Performance   import *  
+from RCAIDE.Library.Plots                 import *       
 
 # python imports 
 import numpy as np   
-from copy import deepcopy 
+from copy import deepcopy
+import os
+import sys
 
 # ----------------------------------------------------------------------
 #   Main
@@ -23,13 +24,13 @@ def main():
     try:
         import vsp as vsp
         from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
-        export_vsp_vehicle(vehicle, 'Embraer_E190AR.vsp')
+        export_vsp_vehicle(vehicle, 'Embraer_E190AR')
     except ImportError:
         pass
        
     
     # Step 2: plot vehicle 
-    plot_3d_vehicle(vehicle)  
+    plot_3d_vehicle(vehicle,export_gltf=True)    
     
     return
 
@@ -37,6 +38,8 @@ def main():
 #   Build the Vehicle
 # ----------------------------------------------------------------------------------------------------------------------
 def vehicle_setup(): 
+    local_path = sys.path[0] + os.sep
+    
     #------------------------------------------------------------------------------------------------------------------------------------
     # ################################################# Vehicle-level Properties ########################################################  
     #------------------------------------------------------------------------------------------------------------------------------------
@@ -129,7 +132,7 @@ def vehicle_setup():
     segment.dihedral_outboard             = 5. * Units.degrees
     segment.sweeps.quarter_chord          = 20.6 * Units.degrees  
     root_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
-    root_airfoil.coordinate_file          = 'transonic_wing_root_section_airfoil.txt'
+    root_airfoil.coordinate_file          = local_path +  'transonic_wing_root_section_airfoil.txt'
     segment.append_airfoil(root_airfoil)
     wing.segments.append(segment)    
     
@@ -140,7 +143,7 @@ def vehicle_setup():
     segment.dihedral_outboard             = 4 * Units.degrees
     segment.sweeps.quarter_chord          = 24.1 * Units.degrees 
     yehudi_airfoil                        = RCAIDE.Library.Components.Airfoils.Airfoil()
-    yehudi_airfoil.coordinate_file        = 'transonic_wing_inboard_section_airfoil.txt'
+    yehudi_airfoil.coordinate_file        = local_path + 'transonic_wing_inboard_section_airfoil.txt'
     segment.append_airfoil(yehudi_airfoil)
     wing.segments.append(segment)
     
@@ -151,7 +154,7 @@ def vehicle_setup():
     segment.dihedral_outboard            = 70. * Units.degrees
     segment.sweeps.quarter_chord         = 40. * Units.degrees 
     mid_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
-    mid_airfoil.coordinate_file          = 'transonic_wing_outboard_section_airfoil.txt'
+    mid_airfoil.coordinate_file          = local_path + 'transonic_wing_outboard_section_airfoil.txt'
     segment.append_airfoil(mid_airfoil)
     wing.segments.append(segment)
 
@@ -162,7 +165,7 @@ def vehicle_setup():
     segment.dihedral_outboard            = 0.
     segment.sweeps.quarter_chord         = 0.  
     tip_airfoil                          =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    tip_airfoil.coordinate_file          = 'transonic_wing_tip_section_airfoil.txt'
+    tip_airfoil.coordinate_file          = local_path + 'transonic_wing_tip_section_airfoil.txt'
     segment.append_airfoil(tip_airfoil)
     wing.segments.append(segment)       
 

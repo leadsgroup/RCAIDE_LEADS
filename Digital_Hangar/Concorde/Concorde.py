@@ -10,7 +10,9 @@ from RCAIDE.Library.Methods.Performance   import *
 
 # python imports 
 import numpy as np   
-from copy import deepcopy 
+from copy import deepcopy
+import os
+import sys 
 
 # ----------------------------------------------------------------------
 #   Main
@@ -25,16 +27,15 @@ def main():
         from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
         export_vsp_vehicle(vehicle, 'Concorde')
     except ImportError:
-        pass
-       
+        pass 
     
     # Step 2: plot vehicle 
-    plot_3d_vehicle(vehicle)  
-    
-    return 
-     
+    plot_3d_vehicle(vehicle,export_gltf=True)  
+    return  
 
 def vehicle_setup(): 
+
+    local_path = sys.path[0] + os.sep
     #------------------------------------------------------------------------------------------------------------------------------------
     # ################################################# Vehicle-level Properties ########################################################  
     #------------------------------------------------------------------------------------------------------------------------------------
@@ -141,9 +142,6 @@ def vehicle_setup():
     wing.high_mach                 = True 
     wing.dynamic_pressure_ratio    = 1.0
      
-    wing_airfoil                   = RCAIDE.Library.Components.Airfoils.Airfoil()   
-    wing_airfoil.coordinate_file   = 'NACA65_203.txt' 
-    wing.append_airfoil(wing_airfoil)  
     
     # set root sweep with inner section
     segment = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -154,6 +152,8 @@ def vehicle_setup():
     segment.dihedral_outboard     = 0.
     segment.sweeps.quarter_chord  = 67. * Units.deg
     segment.thickness_to_chord    = 0.03
+    wing_airfoil                  = RCAIDE.Library.Components.Airfoils.Airfoil()   
+    wing_airfoil.coordinate_file  = local_path +  'NACA65_203.txt'  
     segment.append_airfoil(wing_airfoil)
     wing.append_segment(segment)
     
@@ -166,6 +166,8 @@ def vehicle_setup():
     segment.dihedral_outboard     = 0.
     segment.sweeps.quarter_chord  = 48. * Units.deg
     segment.thickness_to_chord    = 0.03
+    wing_airfoil                  = RCAIDE.Library.Components.Airfoils.Airfoil()   
+    wing_airfoil.coordinate_file  = local_path +  'NACA65_203.txt'
     segment.append_airfoil(wing_airfoil)
     wing.append_segment(segment)
     
@@ -179,6 +181,8 @@ def vehicle_setup():
     segment.dihedral_outboard     = 0.
     segment.sweeps.quarter_chord  = 71. * Units.deg 
     segment.thickness_to_chord    = 0.03
+    wing_airfoil                  = RCAIDE.Library.Components.Airfoils.Airfoil()   
+    wing_airfoil.coordinate_file  = local_path +  'NACA65_203.txt'
     segment.append_airfoil(wing_airfoil)
     wing.append_segment(segment)  
     
@@ -191,6 +195,8 @@ def vehicle_setup():
     segment.dihedral_outboard     = 0.
     segment.sweeps.quarter_chord  = 0.
     segment.thickness_to_chord    = 0.03
+    wing_airfoil                  = RCAIDE.Library.Components.Airfoils.Airfoil()   
+    wing_airfoil.coordinate_file  = local_path +  'NACA65_203.txt'
     segment.append_airfoil(wing_airfoil)
     wing.append_segment(segment)      
     
@@ -260,14 +266,8 @@ def vehicle_setup():
     wing.vertical                = True 
     wing.xz_plane_symmetric      = False
     wing.t_tail                  = False
-    wing.high_mach               = True     
-    
-    wing.dynamic_pressure_ratio  = 1.0
-    
-    tail_airfoil = RCAIDE.Library.Components.Airfoils.Airfoil() 
-    tail_airfoil.coordinate_file =  'supersonic_tail.txt' 
-    
-    wing.append_airfoil(tail_airfoil)  
+    wing.high_mach               = True    
+    wing.dynamic_pressure_ratio  = 1.0  
 
     # set root sweep with inner section
     segment = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -278,6 +278,8 @@ def vehicle_setup():
     segment.dihedral_outboard     = 0.
     segment.sweeps.quarter_chord  = 63. * Units.deg
     segment.thickness_to_chord    = 0.04
+    tail_airfoil                  = RCAIDE.Library.Components.Airfoils.Airfoil() 
+    tail_airfoil.coordinate_file  =  local_path +  'supersonic_tail.txt'  
     segment.append_airfoil(tail_airfoil)
     wing.append_segment(segment)
     
@@ -290,6 +292,8 @@ def vehicle_setup():
     segment.dihedral_outboard     = 0.
     segment.sweeps.quarter_chord  = 40. * Units.deg
     segment.thickness_to_chord    = 0.04
+    tail_airfoil                  = RCAIDE.Library.Components.Airfoils.Airfoil() 
+    tail_airfoil.coordinate_file  =  local_path +  'supersonic_tail.txt'  
     segment.append_airfoil(tail_airfoil)
     wing.append_segment(segment)
     
@@ -302,6 +306,8 @@ def vehicle_setup():
     segment.dihedral_outboard     = 0.
     segment.sweeps.quarter_chord  = 0.
     segment.thickness_to_chord    = 0.04
+    tail_airfoil                  = RCAIDE.Library.Components.Airfoils.Airfoil() 
+    tail_airfoil.coordinate_file  =  local_path +  'supersonic_tail.txt'  
     segment.append_airfoil(tail_airfoil)
     wing.append_segment(segment)    
 

@@ -15,6 +15,7 @@ import RCAIDE
 from RCAIDE.Framework.Core import Units , Data 
 from RCAIDE.Library.Components.Airfoils.Airfoil import Airfoil
 from RCAIDE.Library.Methods.Geometry.Planform import wing_planform, bwb_wing_planform 
+from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry,  compute_naca_4series 
 
 import numpy as np
 import string
@@ -587,14 +588,14 @@ def write_vsp_wing(vehicle,wing, area_tags, fuel_tank_set_ind, OML_set_ind):
             xsec1 = vsp.GetXSec(xsecsurf,0)
             xsec2 = vsp.GetXSec(xsecsurf,1) 
             if isinstance(wing.airfoil,  RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil):
+                geometry = compute_naca_4series(wing.airfoil.NACA_4_Series_code)
                 for xsec in [xsec1, xsec2]:
-                    wid = vsp.GetXSecParm(xsec, 'ThickChord')
-                    import pdb; pdb.set_trace()
-                    vsp.SetParmVal(wid, wing.airfoil.geometry.thickness_to_chord)
+                    wid = vsp.GetXSecParm(xsec, 'ThickChord') 
+                    vsp.SetParmVal(wid, geometry.thickness_to_chord)
                     wid = vsp.GetXSecParm(xsec, 'Camber')
-                    vsp.SetParmVal(wid, wing.airfoil.geometry.camber)
+                    vsp.SetParmVal(wid, geometry.camber)
                     wid = vsp.GetXSecParm(xsec, 'CamberLoc')
-                    vsp.SetParmVal(wid, wing.airfoil.geometry.camber_location)
+                    vsp.SetParmVal(wid, geometry.camber_location)
         
             else:
                 vsp.ReadFileAirfoil(xsec1,wing.airfoil.coordinate_file)

@@ -322,9 +322,7 @@ def vehicle_setup():
     # add to vehicle
     vehicle.append_component(wing)
 
-    # ################################################# Landing Gear #############################################################   
-
-    # ################################################# CORRECT IT #############################################################   
+    # ################################################# Landing Gear #############################################################    
     # ------------------------------------------------------------------        
     #  Landing Gear
     # ------------------------------------------------------------------  
@@ -688,8 +686,7 @@ def vehicle_setup():
     center_tank.outer_width                  = 2
     center_tank.outer_height                 = 0.5
     center_tank.geometry_type                = 'prismatic'
-    fuel_line.fuel_tanks.append(center_tank)
-    
+    fuel_line.fuel_tanks.append(center_tank) 
 
     # Append fuel line to Network      
     net.fuel_lines.append(fuel_line)   
