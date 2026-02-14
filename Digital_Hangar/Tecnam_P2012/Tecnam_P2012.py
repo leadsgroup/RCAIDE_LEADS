@@ -1,36 +1,44 @@
- 
-
+# Twin_Otter.py
+# 
 # ----------------------------------------------------------------------
 #   Imports
 # ----------------------------------------------------------------------
 # RCAIDE imports 
-import RCAIDE
-from RCAIDE.Framework.Core import Units   
-from RCAIDE.Framework.Core import Units   
-from RCAIDE.Library.Plots  import *     
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Internal_Combustion_Engine import design_internal_combustion_engine
-from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle
+import RCAIDE      
+from RCAIDE.Framework.Core import Units  
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Internal_Combustion_Engine import design_internal_combustion_engine 
+from RCAIDE.Library.Plots                                           import *      
 
 # python imports 
-import numpy as np 
-from copy import deepcopy
-import os 
-import matplotlib.pyplot  as plt 
- 
-def main():     
-      
-    #Step 1: Design a vehicle
-    vehicle  = vehicle_setup() 
+import numpy as np   
+from copy import deepcopy 
+import sys 
+import os
 
-    #Step 2: plot vehicle 
-    plot_3d_vehicle(vehicle)         
-           
+
+# ----------------------------------------------------------------------
+#   Main
+# ----------------------------------------------------------------------
+def main():
+    
+    # Step 1: design a vehicle
+    vehicle  = vehicle_setup()  
+
+    try:
+        import vsp as vsp
+        from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
+        export_vsp_vehicle(vehicle, 'Tecnam_P2012')
+    except ImportError:
+        pass
+        
+    # Step 2: plot vehicle 
+    plot_3d_vehicle(vehicle,export_gltf=True)  
+    
     return 
-
-# ----------------------------------------------------------------------------------------------------------------------
-#   Build the Vehicle
-# ----------------------------------------------------------------------------------------------------------------------
+ 
 def vehicle_setup():
+
+    local_path = sys.path[0] + os.sep  
 
     #------------------------------------------------------------------------------------------------------------------------------------
     #   Initialize the Vehicle
@@ -89,17 +97,7 @@ def vehicle_setup():
     wing.xz_plane_symmetric               = True
     wing.high_lift                        = True 
     wing.winglet_fraction                 = 0.0  
-    wing.dynamic_pressure_ratio           = 1.0  
-    ospath                                = os.path.abspath(__file__)
-    separator                             = os.path.sep
-    rel_path                              = os.path.dirname(ospath) + separator + '..' + separator 
-    airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.tag                           = 'NACA_63_412.txt' 
-    airfoil.coordinate_file               = 'NACA_63_412.txt'      
-    cg_x                                  = wing.origin[0][0] + 0.25*wing.chords.mean_aerodynamic
-    cg_z                                  = wing.origin[0][2] - 0.2*wing.chords.mean_aerodynamic
-
-
+    wing.dynamic_pressure_ratio           = 1.0     
     # Wing Segments
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'inboard'
@@ -109,6 +107,9 @@ def vehicle_setup():
     segment.dihedral_outboard             = 0.  
     segment.sweeps.quarter_chord          = 0.
     segment.thickness_to_chord            = 0.12
+    airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
+    airfoil.tag                           = 'NACA_63_412.txt' 
+    airfoil.coordinate_file               = local_path + 'NACA_63_412.txt'      
     segment.append_airfoil(airfoil)
     wing.append_segment(segment)
 
@@ -120,6 +121,9 @@ def vehicle_setup():
     segment.dihedral_outboard             = 0. 
     segment.sweeps.quarter_chord          = 0.
     segment.thickness_to_chord            = 0.12 
+    airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
+    airfoil.tag                           = 'NACA_63_412.txt' 
+    airfoil.coordinate_file               = local_path + 'NACA_63_412.txt'      
     segment.append_airfoil(airfoil)
     wing.append_segment(segment)
     
@@ -523,7 +527,7 @@ def vehicle_setup():
     propeller.cruise.design_angular_velocity         = 2700. * Units.rpm 
     propeller.cruise.design_Cl                       = 0.7 
     propeller.cruise.design_altitude                 = 2500. * Units.feet 
-    propeller.cruise.design_thrust                   = 2000   
+    propeller.cruise.design_thrust                   = 5000   
     propeller.clockwise_rotation                     = False
     propeller.variable_pitch                         = True  
     propeller.origin                                 = [[3.36,2.25,1.15]]   

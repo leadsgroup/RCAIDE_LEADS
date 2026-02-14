@@ -1,44 +1,42 @@
-# X57_Maxwell.py
-#
-# Created: Feb 2020, M. Clarke
-#          Sep 2020, M. Clarke 
-
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------
+#   Imports
+# ----------------------------------------------------------------------
 # RCAIDE imports 
 import RCAIDE
-from RCAIDE.Framework.Core import Units     
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor             import design_electric_rotor
-from RCAIDE.Framework.External_Interfaces.OpenVSP                 import export_vsp_vehicle
-from RCAIDE.Library.Plots import  * 
-from RCAIDE.load    import load as load_propulsor
-from RCAIDE.save    import save as save_propulsor 
-# python imports 
-import numpy as np 
-from copy import deepcopy
+from RCAIDE.Framework.Core import Units    
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor   import design_electric_rotor  
+from RCAIDE.Library.Plots                 import *      
+from RCAIDE.Library.Methods.Performance   import *  
+
+# python imports  
+import numpy as np   
+from copy import deepcopy 
+import sys 
 import os
-#import vsp
-import matplotlib.pyplot as  plt
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
-
 def main():
-
-    # Step 1: design a vehicle
-    vehicle  = vehicle_setup()
-
-    # Step 2: plot vehicle 
-    plot_3d_vehicle(vehicle)
     
-    return  
+    # Step 1: design a vehicle
+    vehicle  = vehicle_setup()  
+
+    try:
+        import vsp as vsp
+        from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
+        export_vsp_vehicle(vehicle, 'X57_Maxwell_Mod2')
+    except ImportError:
+        pass
+        
+    # Step 2: plot vehicle 
+    plot_3d_vehicle(vehicle,export_gltf=True)  
+    
+    return 
  
-# ----------------------------------------------------------------------------------------------------------------------
-#   Build the Vehicle
-# ----------------------------------------------------------------------------------------------------------------------
 def vehicle_setup():
+
+    local_path = sys.path[0] + os.sep
     
     #------------------------------------------------------------------------------------------------------------------------------------
     # ################################################# Vehicle-level Properties ########################################################  
@@ -93,8 +91,6 @@ def vehicle_setup():
     wing.winglet_fraction                 = 0.0  
     wing.dynamic_pressure_ratio           = 1.0  
     airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.tag                           = 'NACA_63_412.txt' 
-    airfoil.coordinate_file               = 'NACA_63_412.txt' 
     cg_x                                  = wing.origin[0][0] + 0.25*wing.chords.mean_aerodynamic
     cg_z                                  = wing.origin[0][2] - 0.2*wing.chords.mean_aerodynamic
     vehicle.mass_properties.center_of_gravity = [[cg_x,   0.  ,  cg_z ]]  # SOURCE: Design and aerodynamic analysis of a twin-engine commuter aircraft
@@ -108,6 +104,8 @@ def vehicle_setup():
     segment.dihedral_outboard             = 0.  
     segment.sweeps.quarter_chord          = 0.
     segment.thickness_to_chord            = 0.12
+    airfoil.tag                           = 'NACA_63_412.txt' 
+    airfoil.coordinate_file               = local_path +  'NACA_63_412.txt' 
     segment.append_airfoil(airfoil)
     wing.append_segment(segment)
 
@@ -119,6 +117,8 @@ def vehicle_setup():
     segment.dihedral_outboard             = 0. 
     segment.sweeps.quarter_chord          = -3.5 * Units.degrees
     segment.thickness_to_chord            = 0.12 
+    airfoil.tag                           = 'NACA_63_412.txt' 
+    airfoil.coordinate_file               = local_path +  'NACA_63_412.txt' 
     segment.append_airfoil(airfoil)
     wing.append_segment(segment)
     
@@ -131,6 +131,8 @@ def vehicle_setup():
     segment.dihedral_outboard             = 75. * Units.degrees 
     segment.sweeps.quarter_chord          = 30. * Units.degrees 
     segment.thickness_to_chord            = 0.12 
+    airfoil.tag                           = 'NACA_63_412.txt' 
+    airfoil.coordinate_file               = local_path +  'NACA_63_412.txt' 
     segment.append_airfoil(airfoil)
     wing.append_segment(segment) 
 
@@ -142,6 +144,8 @@ def vehicle_setup():
     segment.dihedral_outboard             = 0.
     segment.sweeps.quarter_chord          = 0.
     segment.thickness_to_chord            = 0.12
+    airfoil.tag                           = 'NACA_63_412.txt' 
+    airfoil.coordinate_file               = local_path +  'NACA_63_412.txt' 
     segment.append_airfoil(airfoil)
     wing.append_segment(segment)    
     
@@ -194,7 +198,7 @@ def vehicle_setup():
     wing.aspect_ratio                     = wing.spans.projected**2. / wing.areas.reference 
     wing.twists.root                      = 0.0 * Units.degrees
     wing.twists.tip                       = 0.0 * Units.degrees 
-    wing.origin                           = [[6.75 ,0, 0.623]]
+    wing.origin                           = [[6.75 ,0, 0.5]]
     wing.aerodynamic_center               = [0.508 ,0,0]  
     wing.vertical                         = True 
     wing.xz_plane_symmetric               = False
@@ -210,10 +214,12 @@ def vehicle_setup():
     fuselage = RCAIDE.Library.Components.Fuselages.Fuselage()
 
     # define cabin
-    cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
+    cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
+    cabin.origin                                      =  [[2, 0, 0]]
     economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
     economy_class.number_of_seats_abrest              = 2
     economy_class.number_of_rows                      = 3 
+    economy_class.aisle_width                         = 0 
     economy_class.galley_lavatory_percent_x_locations = []  
     economy_class.emergency_exit_percent_x_locations  = []      
     economy_class.type_A_exit_percent_x_locations     = [] 
@@ -461,12 +467,12 @@ def vehicle_setup():
     propeller.origin                                 = [[2.5,1.75,0.95]]   
     airfoil                                          = RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil.tag                                      = 'NACA_4412' 
-    airfoil.coordinate_file                          = 'NACA_4412.txt'      
-    airfoil.polar_files                              =['NACA_4412_polar_Re_50000.txt',
-                                                       'NACA_4412_polar_Re_100000.txt',
-                                                       'NACA_4412_polar_Re_200000.txt',
-                                                       'NACA_4412_polar_Re_500000.txt',
-                                                       'NACA_4412_polar_Re_1000000.txt']   
+    airfoil.coordinate_file                          = local_path + 'NACA_4412.txt'      
+    airfoil.polar_files                              =[local_path + 'NACA_4412_polar_Re_50000.txt',
+                                                       local_path + 'NACA_4412_polar_Re_100000.txt',
+                                                       local_path + 'NACA_4412_polar_Re_200000.txt',
+                                                       local_path + 'NACA_4412_polar_Re_500000.txt',
+                                                       local_path + 'NACA_4412_polar_Re_1000000.txt']   
     propeller.append_airfoil(airfoil)                       
     propeller.airfoil_polar_stations                 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] 
     starboard_propulsor.rotor                        = propeller
@@ -534,9 +540,7 @@ def vehicle_setup():
     #   Vehicle Definition Complete
     # ------------------------------------------------------------------
     
-    return vehicle
-
-    return
+    return vehicle 
 
 if __name__ == '__main__': 
     main()    
