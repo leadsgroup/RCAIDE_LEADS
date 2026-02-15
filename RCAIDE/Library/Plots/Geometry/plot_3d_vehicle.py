@@ -6,8 +6,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-import RCAIDE
-from RCAIDE.Framework.Core import Units
+import RCAIDE 
 from RCAIDE.Library.Plots.Geometry.generate_3d_wing_points      import *
 from RCAIDE.Library.Plots.Geometry.generate_3d_fuselage_points  import *
 from RCAIDE.Library.Plots.Geometry.generate_3d_fuel_tank_points import *
@@ -15,13 +14,14 @@ from RCAIDE.Library.Plots.Geometry.plot_3d_rotor                import generate_
 from RCAIDE.Library.Plots.Geometry.generate_3d_nacelle_points   import *
 from RCAIDE.Library.Plots.Geometry.generate_3d_lopa_points      import generate_3d_lopa_points
 from RCAIDE.Library.Plots.Geometry.generate_3d_cargo_bay_points import generate_3d_cargo_bay_points
-from RCAIDE.Library.Methods.Geometry.Planform                   import  fuselage_planform, wing_planform, bwb_wing_planform , compute_fuel_volume  
-from RCAIDE.Library.Methods.Geometry.LOPA                       import  compute_layout_of_passenger_accommodations  
+from RCAIDE.Library.Methods.Geometry.Planform                   import fuselage_planform, wing_planform, bwb_wing_planform , compute_fuel_volume  
+from RCAIDE.Library.Methods.Geometry.LOPA                       import compute_layout_of_passenger_accommodations  
 
 # python imports 
 import numpy as np  
 from copy import deepcopy 
-import vtk 
+import vtk
+import pyvista as  pv
 import matplotlib.colors as mcolors
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -29,7 +29,7 @@ import matplotlib.colors as mcolors
 # ---------------------------------------------------------------------------------------------------------------------- 
 def plot_3d_vehicle(vehicle, 
                     save_figure                 = False,
-                    save_filename               = None, 
+                    save_filename               = "geometry", 
                     top_view                    = False, 
                     side_view                   = False, 
                     front_view                  = False,   
@@ -41,8 +41,7 @@ def plot_3d_vehicle(vehicle,
                     rotor_color                 = 'black', 
                     cargo_bay_color             = 'blue',
                     plot_actuator_disc          = False,
-                    show_LOPA                   = True,
-                    export_gltf                 = False, 
+                    show_LOPA                   = True, 
                     wing_opacity                = 0.5, 
                     fuselage_opacity            = 0.5,
                     boom_opacity                = 1.0,
@@ -53,10 +52,11 @@ def plot_3d_vehicle(vehicle,
                     cargo_bay_opacity           = 0.6, 
                     number_of_airfoil_points    = 101,
                     tessellation                = 96,
-                    camera_eye_x                = None,
-                    camera_eye_y                = None,
-                    camera_eye_z                = None,
-                    overwrite_geometry          = True, 
+                    camera_eye_x                = -1,
+                    camera_eye_y                = -1,
+                    camera_eye_z                = 0.75,
+                    overwrite_geometry          = True,
+                    export_gltf                 = False, 
                     show_figure                 = True):
     """
     Creates a complete 3D visualization of an aircraft including all major components.
@@ -104,14 +104,7 @@ def plot_3d_vehicle(vehicle,
     None
 
     Notes
-    -----
-                elif issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
-                    GEOM  = generate_non_integral_fuel_tank_points(fuel_tank,tessellation ) 
-                    make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity) 
-
-                    if wing.xz_plane_symmetric: 
-                        GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1] 
-                        make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity)
+    ----- 
                         
     Creates an interactive 3D visualization showing:
         - Wings and control surfaces
@@ -119,27 +112,14 @@ def plot_3d_vehicle(vehicle,
         - Propulsion systems
         - Customizable view and camera angles
     """
-    if save_filename == None:
-        save_filename = vehicle.tag
-    if front_view:
-        camera_eye_x  = -1 
-        camera_eye_y  = 0
-        camera_eye_z  = 0 
-
-    elif side_view:
-        camera_eye_x  =  0  
-        camera_eye_y  = -1 
-        camera_eye_z  =  0  
-
-    elif top_view:
-        camera_eye_x  = 0
-        camera_eye_y  = 0 
-        camera_eye_z  = 1  
-
-    else: 
-        camera_eye_x  = camera_eye_x if camera_eye_x is not None else -1
-        camera_eye_y  = camera_eye_y if camera_eye_y is not None else -1
-        camera_eye_z  = camera_eye_z if camera_eye_z is not None else 0.35  
+ 
+    # -------------------------------------------------------------------------  
+    # Initalize Renderer
+    # ------------------------------------------------------------------------- 
+    if save_figure: 
+        plotter = pv.Plotter(off_screen=True)
+    else:
+        plotter = pv.Plotter()     
     
     # -------------------------------------------------------------------------
     # Object RGB Colors  
@@ -154,7 +134,8 @@ def plot_3d_vehicle(vehicle,
      
     # -------------------------------------------------------------------------
     # Run Geoemtry Analysis
-    # -------------------------------------------------------------------------   
+    # -------------------------------------------------------------------------
+    L = 0
     geometry =  deepcopy(vehicle)  
     for wing in geometry.wings:  
         if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
@@ -163,66 +144,85 @@ def plot_3d_vehicle(vehicle,
                 compute_layout_of_passenger_accommodations(wing)
         else:
             if overwrite_geometry:
-                wing_planform(wing)  
+                wing_planform(wing)
+                
+        L = np.maximum(L, wing.spans.projected)
                      
     compute_fuel_volume(geometry, compute_fuel_volume=True) 
     
     for fuselage in  geometry.fuselages:    
         compute_layout_of_passenger_accommodations(fuselage)
         fuselage_planform(fuselage) 
-    
-    # -------------------------------------------------------------------------  
-    # Initalize Renderer
-    # -------------------------------------------------------------------------      
-    renderer = vtk.vtkRenderer()
-        
+        L = np.maximum(L, fuselage.lengths.total)
+     
     # -------------------------------------------------------------------------  
     # Plot wings
     # -------------------------------------------------------------------------  
     for wing in geometry.wings:
-        if isinstance(wing,RCAIDE.Library.Components.Wings.Blended_Wing_Body):
-            wing_opacity /= 1.25 # For clearer visualzation of lopa
         n_segments = len(wing.segments)
         dim        = n_segments if n_segments > 0 else 2
         GEOM       = generate_3d_wing_points(wing, number_of_airfoil_points, dim)
-        make_object(renderer, GEOM,wing_rgb_color,wing_opacity)
+        actor        = generate_vtk_object(GEOM.PTS) 
+        vtk_data     = actor.GetMapper().GetInput() 
+        pyvista_mesh = pv.wrap(vtk_data)                      
+        plotter.add_mesh(pyvista_mesh,color= wing_rgb_color,opacity= wing_opacity)
         if wing.yz_plane_symmetric: 
             GEOM.PTS[:, :, 0] = -GEOM.PTS[:, :, 0]
-            make_object(renderer, GEOM,wing_rgb_color,wing_opacity)
+            actor        = generate_vtk_object(GEOM.PTS) 
+            vtk_data     = actor.GetMapper().GetInput() 
+            pyvista_mesh = pv.wrap(vtk_data)                      
+            plotter.add_mesh(pyvista_mesh,color= wing_rgb_color,opacity= wing_opacity)
         if wing.xz_plane_symmetric: 
             GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
-            make_object(renderer, GEOM,wing_rgb_color,wing_opacity)
+            actor        = generate_vtk_object(GEOM.PTS) 
+            vtk_data     = actor.GetMapper().GetInput() 
+            pyvista_mesh = pv.wrap(vtk_data)                      
+            plotter.add_mesh(pyvista_mesh,color= wing_rgb_color,opacity= wing_opacity)
         if wing.xy_plane_symmetric: 
-            GEOM.PTS[:, :, 2] = -GEOM.PTS[:, :, 2]
-            make_object(renderer, GEOM,wing_rgb_color,wing_opacity)
+            GEOM.PTS[:, :, 2] = -GEOM.PTS[:, :, 2] 
+            actor        = generate_vtk_object(GEOM.PTS) 
+            vtk_data     = actor.GetMapper().GetInput() 
+            pyvista_mesh = pv.wrap(vtk_data)                      
+            plotter.add_mesh(pyvista_mesh,color= wing_rgb_color,opacity= wing_opacity)
+            
         if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
             if show_LOPA:
                 lopa_geom = generate_3d_lopa_points(wing)
-                add_lopa_seats(renderer, lopa_geom, lopa_opacity)
+                add_lopa_seats(plotter, lopa_geom, lopa_opacity)
+                
 
     # -------------------------------------------------------------------------  
     # Plot fuselage
     # -------------------------------------------------------------------------  
     for fuselage in geometry.fuselages:
-        GEOM = generate_3d_fuselage_points(fuselage, tessellation)
-        make_object(renderer, GEOM, fuselage_rgb_color,fuselage_opacity)
+        GEOM = generate_3d_fuselage_points(fuselage, tessellation) 
+        actor        = generate_vtk_object(GEOM.PTS) 
+        vtk_data     = actor.GetMapper().GetInput() 
+        pyvista_mesh = pv.wrap(vtk_data)                      
+        plotter.add_mesh(pyvista_mesh,color= fuselage_rgb_color,opacity= fuselage_opacity)        
         if show_LOPA:
             lopa_geom = generate_3d_lopa_points(fuselage)
-            add_lopa_seats(renderer, lopa_geom, lopa_opacity) 
+            add_lopa_seats(plotter, lopa_geom, lopa_opacity) 
     
     # -------------------------------------------------------------------------  
     # Plot cargo bay
     # -------------------------------------------------------------------------  
     for cargo_bay in geometry.cargo_bays:
-        GEOM = generate_3d_cargo_bay_points(cargo_bay)
-        make_object(renderer, GEOM, cargo_bay_rgb_color,cargo_bay_opacity) 
+        GEOM = generate_3d_cargo_bay_points(cargo_bay) 
+        actor        = generate_vtk_object(GEOM.PTS) 
+        vtk_data     = actor.GetMapper().GetInput() 
+        pyvista_mesh = pv.wrap(vtk_data)                      
+        plotter.add_mesh(pyvista_mesh,color= cargo_bay_rgb_color,opacity= cargo_bay_opacity)  
         
     # -------------------------------------------------------------------------  
     # Plot boom
     # -------------------------------------------------------------------------  
     for boom in geometry.booms:
-        GEOM = generate_3d_fuselage_points(boom, tessellation)
-        make_object(renderer, GEOM, boom_rgb_color,boom_opacity)
+        GEOM = generate_3d_fuselage_points(boom, tessellation) 
+        actor        = generate_vtk_object(GEOM.PTS) 
+        vtk_data     = actor.GetMapper().GetInput() 
+        pyvista_mesh = pv.wrap(vtk_data)                      
+        plotter.add_mesh(pyvista_mesh,color= boom_rgb_color,opacity= boom_opacity)  
 
     # -------------------------------------------------------------------------  
     # Plot Nacelle, Rotors and Fuel Tanks 
@@ -235,143 +235,128 @@ def plot_3d_vehicle(vehicle,
                 elif type(propulsor.nacelle) == RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle: 
                     GEOM = generate_3d_BOR_nacelle_points(propulsor.nacelle,tessellation = tessellation,number_of_airfoil_points = number_of_airfoil_points)
                 else:
-                    GEOM= generate_3d_basic_nacelle_points(propulsor.nacelle,tessellation = tessellation,number_of_airfoil_points = number_of_airfoil_points)
-                make_object(renderer, GEOM, nacelle_rgb_color,nacelle_opacity)
+                    GEOM= generate_3d_basic_nacelle_points(propulsor.nacelle,tessellation = tessellation,number_of_airfoil_points = number_of_airfoil_points) 
+                actor        = generate_vtk_object(GEOM.PTS) 
+                vtk_data     = actor.GetMapper().GetInput() 
+                pyvista_mesh = pv.wrap(vtk_data)                      
+                plotter.add_mesh(pyvista_mesh,color= nacelle_rgb_color,opacity= nacelle_opacity)  
                     
             if 'rotor' in propulsor:  
                 rot       = propulsor.rotor
                 rot_x     = rot.orientation_euler_angles[0]
-                rot_y     = np.pi / 2 +  rot.orientation_euler_angles[1]
+                rot_y     = rot.orientation_euler_angles[1]
                 rot_z     = rot.orientation_euler_angles[2]
                 num_B     = int(rot.number_of_blades) 
                 if (rot.radius_distribution) is None or (plot_actuator_disc == True):  
-                    make_actuator_disc(renderer, rot.hub_radius, rot.tip_radius, rot.origin, rot_x,rot_y,rot_z, rotor_rgb_color,rotor_opacity) 
+                    make_actuator_disc(plotter, rot.hub_radius, rot.tip_radius, rot.origin, rot_x,rot_y,rot_z, rotor_rgb_color,rotor_opacity) 
                 else:
+                    rot_y += np.pi / 2 
                     dim       = len(rot.radius_distribution) 
                     for i in range(num_B):
-                        GEOM = generate_3d_blade_points(rot,number_of_airfoil_points,dim,i)
-                        make_object(renderer, GEOM, rotor_rgb_color,rotor_opacity) 
+                        GEOM = generate_3d_blade_points(rot,number_of_airfoil_points,dim,i) 
+                        actor        = generate_vtk_object(GEOM.PTS) 
+                        vtk_data     = actor.GetMapper().GetInput() 
+                        pyvista_mesh = pv.wrap(vtk_data)                      
+                        plotter.add_mesh(pyvista_mesh,color= rotor_rgb_color,opacity= rotor_opacity)  
 
             if 'propeller' in propulsor:
                 prop      = propulsor.propeller
                 rot_x     = prop.orientation_euler_angles[0]
-                rot_y     = np.pi / 2 +  prop.orientation_euler_angles[1]
+                rot_y     = prop.orientation_euler_angles[1]
                 rot_z     = prop.orientation_euler_angles[2]
                 num_B     = int(prop.number_of_blades) 
                 if (prop.radius_distribution is None ) or ( plot_actuator_disc == True):  
-                    make_actuator_disc(renderer, prop.hub_radius, prop.tip_radius, prop.origin, rot_x,rot_y,rot_z,rotor_rgb_color,rotor_opacity) 
+                    make_actuator_disc(plotter, prop.hub_radius, prop.tip_radius, prop.origin, rot_x,rot_y,rot_z,rotor_rgb_color,rotor_opacity) 
                 else:
                     dim       = len(prop.radius_distribution)
                     for i in range(num_B):
-                        GEOM = generate_3d_blade_points(prop,number_of_airfoil_points,dim,i) 
-                        make_object(renderer, GEOM, rotor_rgb_color,rotor_opacity) 
+                        GEOM = generate_3d_blade_points(prop,number_of_airfoil_points,dim,i)  
+                        actor        = generate_vtk_object(GEOM.PTS) 
+                        vtk_data     = actor.GetMapper().GetInput() 
+                        pyvista_mesh = pv.wrap(vtk_data)                      
+                        plotter.add_mesh(pyvista_mesh,color= rotor_rgb_color,opacity= rotor_opacity)                           
 
         for fuel_line in network.fuel_lines:        
             for fuel_tank in fuel_line.fuel_tanks:   
                 if fuel_tank.wing_tag != None:
                     wing = geometry.wings[fuel_tank.wing_tag]
                     if issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
-                        GEOM  = generate_non_integral_fuel_tank_points(fuel_tank,tessellation ) 
-                        make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity) 
+                        GEOM  = generate_non_integral_fuel_tank_points(fuel_tank,tessellation )  
+                        actor        = generate_vtk_object(GEOM.PTS) 
+                        vtk_data     = actor.GetMapper().GetInput() 
+                        pyvista_mesh = pv.wrap(vtk_data)                      
+                        plotter.add_mesh(pyvista_mesh,color= fuel_tank_rgb_color,opacity= fuel_tank_opacity)                           
     
                         if wing.xz_plane_symmetric: 
                             GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1] 
-                            make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity)
+                            actor        = generate_vtk_object(GEOM.PTS) 
+                            vtk_data     = actor.GetMapper().GetInput() 
+                            pyvista_mesh = pv.wrap(vtk_data)                      
+                            plotter.add_mesh(pyvista_mesh,color= fuel_tank_rgb_color,opacity= fuel_tank_opacity)   
 
                     if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank:  
-                        seg_bounds = fuel_tank.segments_bounding_tank   
-                        GEOM       = generate_integral_wing_tank_points(wing,5,seg_bounds,fuel_tank)
-                        make_object(renderer, GEOM, fuel_tank_rgb_color, fuel_tank_opacity)  
+                        seg_bounds   = fuel_tank.segments_bounding_tank   
+                        GEOM         = generate_integral_wing_tank_points(wing,5,seg_bounds,fuel_tank)
+                        actor        = generate_vtk_object(GEOM.PTS) 
+                        vtk_data     = actor.GetMapper().GetInput() 
+                        pyvista_mesh = pv.wrap(vtk_data)                      
+                        plotter.add_mesh(pyvista_mesh,color= fuel_tank_rgb_color,opacity= fuel_tank_opacity)  
                         if wing.xz_plane_symmetric:
                             GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1] 
-                            make_object(renderer, GEOM,fuel_tank_rgb_color, fuel_tank_opacity) 
+                            actor        = generate_vtk_object(GEOM.PTS) 
+                            vtk_data     = actor.GetMapper().GetInput() 
+                            pyvista_mesh = pv.wrap(vtk_data)                      
+                            plotter.add_mesh(pyvista_mesh,color= fuel_tank_rgb_color,opacity= fuel_tank_opacity)                               
 
                 elif fuel_tank.fuselage_tag != None:
                     fuselage = geometry.fuselages[fuel_tank.fuselage_tag]
                     if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank:  
                         seg_bounds  = fuel_tank.segments_bounding_tank  
                         GEOM        = generate_integral_fuel_tank_points(fuselage,fuel_tank, seg_bounds,tessellation )
-                        make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity) 
+                        actor        = generate_vtk_object(GEOM.PTS) 
+                        vtk_data     = actor.GetMapper().GetInput() 
+                        pyvista_mesh = pv.wrap(vtk_data)                      
+                        plotter.add_mesh(pyvista_mesh,color= fuel_tank_rgb_color,opacity= fuel_tank_opacity)   
 
                 elif issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
-                    GEOM  = generate_non_integral_fuel_tank_points(fuel_tank,tessellation ) 
-                    make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity) 
+                    GEOM  = generate_non_integral_fuel_tank_points(fuel_tank,tessellation )  
+                    actor        = generate_vtk_object(GEOM.PTS) 
+                    vtk_data     = actor.GetMapper().GetInput() 
+                    pyvista_mesh = pv.wrap(vtk_data)                      
+                    plotter.add_mesh(pyvista_mesh,color= fuel_tank_rgb_color,opacity= fuel_tank_opacity)    
 
                     if wing.xz_plane_symmetric: 
                         GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1] 
-                        make_object(renderer, GEOM,  fuel_tank_rgb_color, fuel_tank_opacity) 
+                        actor        = generate_vtk_object(GEOM.PTS) 
+                        vtk_data     = actor.GetMapper().GetInput() 
+                        pyvista_mesh = pv.wrap(vtk_data)  
+                        plotter.add_mesh(pyvista_mesh,color= fuel_tank_rgb_color,opacity= fuel_tank_opacity)  
+                    
+                            
+    if front_view:
+        plotter.camera_position = [(-L , 0, 0), (0, 0,0), (0, 0, 1)] 
+    elif side_view:
+        plotter.camera_position = [(L /2 , L, 0), (L /2, 0, 0), (0, 0, 1)]  
+    elif top_view:
+        plotter.camera_position = [(L/2, 0 , L ), (L /2, 0,0), (0, 1, 0)]       
+    else:
+        plotter.camera_position = [(L * camera_eye_x, L * camera_eye_y, L * camera_eye_z), (L /2, 0, 0), (0, 0, 1)]
+    
+    plotter.window_size = [1500, 1500] # Set resolution
+    plotter.set_background('white') # Set background color
         
-    # Set camera and background
-    camera = vtk.vtkCamera()
-    camera.SetPosition(camera_eye_x, camera_eye_y, camera_eye_z)
-    camera.SetFocalPoint(0, 0, 0)
-    camera.SetViewUp(0, 0, 1)
-
-    renderer.SetActiveCamera(camera)
-    renderer.ResetCamera()
-    renderer.SetBackground(1.0, 1.0, 1.0)  # Background color 
-    
-    # 5. Create a render window to display the scene
-    renderWindow = vtk.vtkRenderWindow()
-    renderWindow.AddRenderer(renderer)
-    renderWindow.SetSize(1500, 1500)
-    renderWindow.SetWindowName(save_filename)
-    
-    # 6. Create an interactor to handle user input (mouse, keyboard)
-    renderWindowInteractor = vtk.vtkRenderWindowInteractor()
-    renderWindowInteractor.SetRenderWindow(renderWindow)
-
-    # Use the custom interactor style
-    custom_style = vtk.vtkInteractorStyleTrackballCamera() 
-    renderWindowInteractor.SetInteractorStyle(custom_style) 
-
     if export_gltf:
-        # 4. Export to GLTF
-        exporter = vtk.vtkGLTFExporter()
-        exporter.SetFileName( save_filename + ".gltf")
-        exporter.SetRenderWindow(renderWindow)
-        exporter.SetInlineData(True)  
-        exporter.Write()
+        plotter.export_gltf(save_filename + ".gltf")
         
-    if save_figure:
-        # Create a vtkWindowToImageFilter to capture the render window content
-        window_to_image = vtk.vtkWindowToImageFilter()
-        window_to_image.SetInput(renderWindow)
-        window_to_image.SetInputBufferTypeToRGBA()  # or RGB
-        window_to_image.ReadFrontBufferOff()  # Read from back buffer for off-screen rendering
-        window_to_image.Update()
-        
-        # Create a vtkPNGWriter to save the image
-        writer = vtk.vtkPNGWriter()
-        writer.SetFileName(save_filename + ".png")
-        writer.SetInputConnection(window_to_image.GetOutputPort())
-        writer.Write()
-        
-    # Start the VTK interactor 
-    if show_figure:      
-        renderWindowInteractor.Initialize()
-        renderWindow.Render() # Render the scene initially
-        renderWindowInteractor.Start()
-
-    return 
-    
-def make_object(renderer, GEOM,  rgb_color, opacity): 
-
-    actor = generate_vtk_object(GEOM.PTS)
-
-    # Set color of fuselage
-    mapper = actor.GetMapper()
-    mapper.ScalarVisibilityOff()
-    actor.GetProperty().SetColor(rgb_color[0], rgb_color[1], rgb_color[2])  # Set wing color to Light Grey
-    actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
-    actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
-    actor.GetProperty().SetOpacity(opacity)
-    renderer.AddActor(actor)
-    
+    if save_figure:  
+        # 4. Save the plot as a PNG image
+        plotter.screenshot(save_filename + ".png")          
+    else:
+        if show_figure: 
+            plotter.show()  
     return
 
-
-def add_lopa_seats(renderer, lopa_geometry, opacity):
+def add_lopa_seats(plotter, lopa_geometry, opacity):
     seats = getattr(lopa_geometry, "_lopa_seats", [])
     if not seats:
         return
@@ -412,39 +397,48 @@ def add_lopa_seats(renderer, lopa_geometry, opacity):
             actor.GetProperty().EdgeVisibilityOn()
             actor.GetProperty().SetEdgeColor(*rgb)  # same hue; outline for emphasis
             actor.GetProperty().SetLineWidth(1.0)
-
-        renderer.AddActor(actor)
-
-def make_actuator_disc(renderer, inner_radius, outer_radius, origin, rot_x,rot_y,rot_z, rgb_color, opacity): 
-    
-    disk_source = vtk.vtkDiskSource()
-    disk_source.SetInnerRadius(inner_radius)
-    disk_source.SetOuterRadius(outer_radius)
-    disk_source.SetRadialResolution(50)
-    disk_source.SetCircumferentialResolution(50) 
-    
-    # 2. Define a rotation using vtkTransform
-    transform = vtk.vtkTransform()
-    transform.RotateX(rot_x/Units.degrees)  
-    transform.RotateY(rot_y/Units.degrees)  
-    transform.RotateZ(rot_z/Units.degrees)  
-
-    # 3. Apply the transformation with vtkTransformPolyDataFilter
-    transformFilter = vtk.vtkTransformPolyDataFilter()
-    transformFilter.SetTransform(transform)
-    transformFilter.SetInputConnection(disk_source.GetOutputPort()) 
  
-    mapper = vtk.vtkPolyDataMapper()
-    mapper.SetInputConnection(transformFilter.GetOutputPort())
+        vtk_data     = actor.GetMapper().GetInput() 
+        pyvista_mesh = pv.wrap(vtk_data)  
+        plotter.add_mesh(pyvista_mesh,color= rgb,opacity= opacity)          
+
+def make_actuator_disc(plotter, inner_radius, outer_radius, origin, rot_x,rot_y,rot_z, rgb_color, opacity):
     
-    actor = vtk.vtkActor()
-    actor.SetMapper(mapper) 
-    actor.GetProperty().SetColor(rgb_color[0], rgb_color[1], rgb_color[2])  
-    actor.GetProperty().SetDiffuse(1.0)  
-    actor.GetProperty().SetSpecular(0.0) 
-    actor.GetProperty().SetOpacity(opacity)
-    actor.SetPosition( origin[0][0],  origin[0][1],  origin[0][2]) 
-    renderer.AddActor(actor)
+    disc_points =  np.array([[1],
+                            [0],
+                            [0]])
+    x_rotation = np.zeros(( 3, 3))
+    x_rotation[0,0] = 1
+    x_rotation[1,1] = np.cos(rot_x)
+    x_rotation[1,2] = -np.sin(rot_x)
+    x_rotation[2,1] = np.sin(rot_x)
+    x_rotation[2,2] = np.cos(rot_x)
+
+    y_rotation = np.zeros((3, 3))
+    y_rotation[0,0] = np.cos(rot_y)
+    y_rotation[0,2] = np.sin(rot_y)
+    y_rotation[1,1] = 1
+    y_rotation[2,0] = -np.sin(rot_y)
+    y_rotation[2,2] = np.cos(rot_y) 
+
+    z_rotation = np.zeros(( 3, 3))
+    z_rotation[0,0] = np.cos(rot_z)
+    z_rotation[0,1] = -np.sin(rot_z)
+    z_rotation[1,0] = np.sin(rot_z)
+    z_rotation[1,1] = np.cos(rot_z)
+    z_rotation[2,2] = 1
+    
+    R_total = z_rotation @ y_rotation @ x_rotation
+    disc_points_rotated =disc_points.T @ R_total.T  
+     
+    pyvista_mesh = pv.Disc(c_res=50,
+                           inner=inner_radius,
+                           outer=outer_radius,
+                           normal=(disc_points_rotated[0][0], disc_points_rotated[0][1], disc_points_rotated[0][2]),
+                           center= (origin[0][0], origin[0][1],origin[0][2]),
+                           )  
+    plotter.add_mesh(pyvista_mesh,color= rgb_color,opacity= opacity)  
+ 
     return
     
 def generate_vtk_object(pts):
