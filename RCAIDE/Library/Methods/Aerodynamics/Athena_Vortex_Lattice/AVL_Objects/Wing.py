@@ -33,7 +33,7 @@ class Wing(Data):
 
     def __defaults__(self):
 
-        self.tag                 = 'wing'
+        self.tag                = 'wing'
         self.xz_plane_symmetric = True
         self.vertical           = False
         self.origin             = [0.,0.,0.]

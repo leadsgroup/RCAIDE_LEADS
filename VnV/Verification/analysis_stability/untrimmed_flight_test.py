@@ -75,9 +75,9 @@ def base_analysis(vehicle, configs):
     analyses = RCAIDE.Framework.Analyses.Vehicle()
     analyses.vehicle =  vehicle
 
+    # ------------------------------------------------------------------
     #  Geometry
-    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.settings.overwrite_fuel_volume         = True
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
     analyses.append(geometry)
 
     # ------------------------------------------------------------------
@@ -86,6 +86,10 @@ def base_analysis(vehicle, configs):
     aerodynamics.settings.use_surrogate                = False 
     analyses.append(aerodynamics) 
 
+    # ------------------------------------------------------------------
+    #  Weights
+    weights = RCAIDE.Framework.Analyses.Weights.Electric_General_Aviation() 
+    analyses.append(weights) 
 
     # ------------------------------------------------------------------
     #  Stability Analysis

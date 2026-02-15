@@ -143,35 +143,26 @@ def miscellaneous_drag(state,settings,geometry):
                 cd_lg = 0.30
             landing_gear_drag[:,0] +=  landing_gear.wheels *  cd_lg * (landing_gear.tire_diameter * landing_gear.tire_width) /S_ref 
          
-    # miscellaneous drag
-    miscellaneous_drag =  np.zeros_like(Mach)
-    if np.all((Mach<=1.0) == True):  # Subsonic
-        swet_tot       = 0.
-        for wing in geometry.wings:
-            swet_tot += wing.areas.wetted 
-        for fuselage in geometry.fuselages:
-            swet_tot += fuselage.areas.wetted
-        for boom in geometry.booms:
-            swet_tot += boom.areas.wetted
-        for network in geometry.networks:
-            for nacelle in network.nacelles:                  
-                swet_tot += nacelle.areas.wetted
-                            
-        # Total miscellaneous drag 
-        miscellaneous_drag[:,0] =  (0.40* (0.0184 + 0.000469 * swet_tot - 1.13*10**-7 * swet_tot ** 2)) / S_ref    
-    else:  
-        # Initialize drag
-        total_nacelle_base_drag   = 0.0   
-        # Estimating nacelle drag 
-        for network in  geometry.networks:
-            for nacelle in  network.nacelles: 
-                nacelle_base_drag = 0.5/12. * np.pi * nacelle.diameter * 0.2/S_ref  
-                total_nacelle_base_drag += nacelle_base_drag     
-
-        # Fuselage upsweep drag 
-        fuselage_upsweep_drag = 0.006 /S_ref  
-        miscellaneous_drag[:,0] = total_nacelle_base_drag + fuselage_upsweep_drag
-        
+    # subsonic 
+    miscellaneous_drag =  np.zeros_like(Mach) 
+    swet_tot       = 0.
+    for wing in geometry.wings:
+        swet_tot += wing.areas.wetted 
+    for fuselage in geometry.fuselages:
+        swet_tot += fuselage.areas.wetted
+    for boom in geometry.booms:
+        swet_tot += boom.areas.wetted
+    for network in geometry.networks: 
+        for propulsor in network.propulsors:   
+            if propulsor.nacelle !=  None:                    
+                swet_tot += propulsor.nacelle.areas.wetted 
+    miscellaneous_drag[:,0] =  (0.40* (0.0184 + 0.000469 * swet_tot - 1.13*10**-7 * swet_tot ** 2)) / S_ref
+    
+    # supersonic 
+    fuselage_upsweep_drag   = 0.006 /S_ref  
+    miscellaneous_drag[Mach>1] = fuselage_upsweep_drag
+    
+    # total misc drag 
     total_miscellaneous_drag = miscellaneous_drag + landing_gear_drag
         
     # Store results 

@@ -63,11 +63,13 @@ def base_analysis(vehicle):
 
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
-    analyses.append(geometry)
+    analyses.append(geometry) 
 
-    # ------------------------------------------------------------------
-    #  Aerodynamics Analysis
-    # ------------------------------------------------------------------
+    #  Geometry
+    weights = RCAIDE.Framework.Analyses.Weights.Conventional_Transport() 
+    analyses.append(weights)    
+ 
+    #  Aerodynamics Analysis 
     aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
     aerodynamics.settings.number_of_spanwise_vortices   = 10
     aerodynamics.settings.number_of_chordwise_vortices  = 2     

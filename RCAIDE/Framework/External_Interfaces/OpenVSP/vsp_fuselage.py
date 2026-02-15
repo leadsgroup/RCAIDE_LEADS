@@ -304,8 +304,7 @@ def write_vsp_fuselage(fuselage,area_tags, main_wing, fuel_tank_set_ind, OML_set
     # set fuselage relative location and rotation
     vsp.SetParmVal( fuse_id,'X_Rel_Rotation','XForm',fuse_x_rotation)
     vsp.SetParmVal( fuse_id,'Y_Rel_Rotation','XForm',fuse_y_rotation)
-    vsp.SetParmVal( fuse_id,'Z_Rel_Rotation','XForm',fuse_z_rotation)
-
+    vsp.SetParmVal( fuse_id,'Z_Rel_Rotation','XForm',fuse_z_rotation) 
     vsp.SetParmVal( fuse_id,'X_Rel_Location','XForm',fuse_x)
     vsp.SetParmVal( fuse_id,'Y_Rel_Location','XForm',fuse_y)
     vsp.SetParmVal( fuse_id,'Z_Rel_Location','XForm',fuse_z)

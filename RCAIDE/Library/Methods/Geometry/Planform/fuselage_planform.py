@@ -40,33 +40,16 @@ def fuselage_planform(fuselage, circular_cross_section = True):
 
     Properties Used:
     N/A
-    """
-     
-    nose_fineness   = fuselage.fineness.nose
-    tail_fineness   = fuselage.fineness.tail
-    
-    fuselage_width  = fuselage.width 
-        
-    nose_length     = nose_fineness * fuselage_width
-    tail_length     = tail_fineness * fuselage_width 
+    """ 
+    fuselage_width  = fuselage.width  
+    nose_length     = fuselage.fineness.nose * fuselage_width
+    tail_length     = fuselage.fineness.tail  * fuselage_width 
     cabin_length    = fuselage.lengths.total -  nose_length - tail_length  
+    fuselage_height = fuselage.heights.maximum 
     
-    fuselage_height =  fuselage.heights.maximum
-    if fuselage.heights.maximum == 0:
-        fuselage.heights.maximum = fuselage_width
-        fuselage_height = fuselage_width 
-    
-    a     = fuselage_width/2.
-    b     = fuselage_height/2. 
-    R     = (a-b)/(a+b)
-    
-    # a =      base semi-major axis  
-    # b =      base semi-minor axis  
-    # c =      top semi-major axis  
-    # d =      top semi-minor axis  
-    # h =      height of segment
-    # h=       fuselage.length * (seg_2.percent_x_location -  seg_1.percent_x_location)
-
+    a     = fuselage_width/2.  # base semi-major axis  
+    b     = fuselage_height/2. # base semi-minor axis  
+    R     = (a-b)/(a+b) 
 
     side_projected_area  = 0 
     wetted_area          = 0   
@@ -89,17 +72,14 @@ def fuselage_planform(fuselage, circular_cross_section = True):
             A_1  = np.pi *  (seg_1.height / 2) *  (seg_1.width / 2)   
             A_2  = np.pi *  (seg_2.height / 2) *  (seg_2.width / 2)    
             front_projected_area  = np.maximum(front_projected_area,np.maximum(A_1,A_2)  )
-        
-
     else:    
         side_projected_area  = fuselage.heights.maximum * fuselage.lengths.total  
         wetted_area          = np.pi*a*(a+ np.sqrt( fuselage.lengths.nose **2 +(a)**2)) + \
                                np.pi*a*(a+ np.sqrt( fuselage.lengths.tail**2 +(a)**2))+ \
                                np.pi * fuselage.width * ( fuselage.lengths.total - (fuselage.lengths.tail+ fuselage.lengths.nose))  
         front_projected_area = np.pi * a *  b
-    effective_diameter   = ((fuselage_width/2)+(fuselage_height/2.))*(64.-3.*R**4)/(64.-16.*R**2) 
-    
-
+        
+    effective_diameter             = ((fuselage_width/2)+(fuselage_height/2.))*(64.-3.*R**4)/(64.-16.*R**2)  
     fuselage.lengths.nose          = nose_length
     fuselage.lengths.tail          = tail_length
     fuselage.lengths.cabin         = cabin_length 
@@ -108,7 +88,8 @@ def fuselage_planform(fuselage, circular_cross_section = True):
     fuselage.areas.side_projected  = side_projected_area 
     fuselage.effective_diameter    = effective_diameter 
 
-    return 
+    return
+
 
 def truncated_elliptic_cone_lateral_area(a, b, c, d, h):
     

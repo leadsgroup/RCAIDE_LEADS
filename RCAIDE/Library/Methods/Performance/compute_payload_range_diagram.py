@@ -12,6 +12,7 @@ import RCAIDE
 from RCAIDE.Framework.Core import Units , Data  
 from RCAIDE.Library.Plots.Common import set_axes, plot_style    
 from RCAIDE.Library.Mission.Common.Pre_Process import mass_properties,geometry
+from RCAIDE.Library.Plots import *
  
 # Pacakge imports 
 import numpy as np
@@ -104,7 +105,8 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
     geometry(mission)
     for segment in  mission.segments:
         # perform inital weights analysis
-        segment.analyses.vehicle.mass_properties.takeoff = None
+        segment.analyses.vehicle.mass_properties.takeoff      = None
+        segment.analyses.weights.print_weight_analysis_report = True
     mass_properties(mission)
     vehicle = mission.segments[initial_segment].analyses.vehicle 
   
@@ -211,12 +213,20 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
     # Define payload range points
     #Point  = [ RANGE WITH MAX. PLD   , RANGE WITH MAX. FUEL , FERRY RANGE   ]
     TOW     = [ MTOW                               , MTOW                   , OEW + MaxFuel ]
-    FUEL    = [ min(TOW[1] - OEW - MaxPLD,MaxFuel) , MaxFuel                , MaxFuel       ]
+    FUEL    = [ min(TOW[0] - OEW - MaxPLD,MaxFuel) , MaxFuel                , MaxFuel       ]
     PLD     = [ MaxPLD                             , MTOW - MaxFuel - OEW   , 0.   ]
     OEW_PLD = [  OEW + MaxPLD                      , MTOW - MaxFuel         , OEW  ]
     
     # allocating Range array
     R       = [0,0,0]
+    
+    for segment in  mission.segments:
+        segment.analyses.weights.settings.run_weights_analysis = False
+        segment.analyses.weights.settings.run_center_of_gravity_analysis = False
+        segment.analyses.weights.settings.run_moments_of_inertia_analysis = False
+        segment.analyses.geometry.settings.compute_fuel_volume = False
+        segment.analyses.geometry.settings.update_max_fuel  = False
+
 
     # loop for each point of Payload Range Diagram
     for i in range(len(TOW)):
@@ -254,7 +264,7 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
 
             # Current distance and fuel consuption in the cruise segment
             CruiseDist = np.diff( segment.conditions.frames.inertial.position_vector[[0,-1],0] )[0]        # Distance [m]
-            CruiseFuel = segment.conditions.weights.total_mass[0,0] - segment.conditions.weights.total_mass[-1,0]    # [kg]
+            CruiseFuel = segment.conditions.weights.vehicle.mass[0,0] - segment.conditions.weights.vehicle.mass[-1,0]    # [kg]
             
             # Current specific range (m/kg)
             CruiseSR    = CruiseDist / CruiseFuel        # [m/kg]
@@ -268,15 +278,15 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
             segment = results.segments[cruise_segment_tag]
 
             # Difference between burned fuel and target fuel
-            err = ( TOW[i] - results.segments[-1].conditions.weights.total_mass[-1,0] ) - FUEL[i] + reserve_fuel
+            err = ( TOW[i] - results.segments[-1].conditions.weights.vehicle.mass[-1,0] ) - FUEL[i] + reserve_fuel
 
             if iter == maxIter:
                 print(f"Did not converge.")
                 break
-
+        if (CruiseDist + DeltaDist) <=0: # This raise exception can be reworked but it is good to have this here
+            raise Exception('Negative Cruise distance not enough fuel for fixed portions of flight (To -> Climb)')
         # Allocating resulting range in ouput array.
         R[i] =  results.segments[-1].conditions.frames.inertial.position_vector[-1,0]
-
     # Inserting point (0,0) in output arrays
     R.insert(0,0)
     PLD.insert(0,MaxPLD) 

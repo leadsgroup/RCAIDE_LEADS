@@ -27,10 +27,11 @@ class Economy(Component):
         self.seat_arm_rest_width                 = 2 *  Units.inches
         self.seat_length                         = 18 *  Units.inches
         self.seat_pitch                          = 32 *  Units.inches
-        self.aisle_width                          = 15  *  Units.inches          
+        self.aisle_width                         = 15  *  Units.inches          
         self.galley_lavatory_percent_x_locations = []      
         self.emergency_exit_percent_x_locations  = []
         self.type_A_exit_percent_x_locations     = [] 
+        self.y_offset_distance                   = 0
          
                
      

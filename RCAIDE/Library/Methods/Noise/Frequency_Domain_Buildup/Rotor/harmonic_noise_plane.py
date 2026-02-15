@@ -251,8 +251,8 @@ def harmonic_noise_plane(harmonics_blade,harmonics_load,conditions,coordinates,r
     X              = 0.5*(X_edge[0:-1] + X_edge[1:])
     X_6            = np.tile(X[None,None,None,None,None,:],(num_cpt,num_mic,num_sec,num_h_b,num_h_l,1))
     exp_term_6     = np.exp(1j*k_x_hat_6*X_6)
-    psi_Lk_5       = np.trapz(fL_k_6*exp_term_6, x=X, axis=5)
-    psi_Dk_5       = np.trapz(fD_k_6*exp_term_6, x=X, axis=5)
+    psi_Lk_5       = np.trapezoid(fL_k_6*exp_term_6, x=X, axis=5)
+    psi_Dk_5       = np.trapezoid(fD_k_6*exp_term_6, x=X, axis=5)
     
     psi_hat_Lk_5   = psi_Lk_5*np.exp(1j*(phi_s_5 + phi_5))
     psi_hat_Dk_5   = psi_Dk_5*np.exp(1j*(phi_s_5 + phi_5))
@@ -262,16 +262,16 @@ def harmonic_noise_plane(harmonics_blade,harmonics_load,conditions,coordinates,r
     # FREQUENCY DOMAIN PRESSURE TERM FOR LOADING
     J_mBk_5        = jv(m_5*B-k_5, (m_5*B*z_5*M_t_5*np.sin(theta_r_prime_5))/(1-M_5*np.cos(theta_r_5)))
     L_Integrand_5  = (M_r_5**2)*psi_hat_Fk_5*J_mBk_5
-    L_Summand_4    = np.trapz(L_Integrand_5, x=z_5[0,0,:,0,0], axis=2)*np.exp(1j*(m_4*B-k_4)*(phi_prime_4-(np.pi/2)))
+    L_Summand_4    = np.trapezoid(L_Integrand_5, x=z_5[0,0,:,0,0], axis=2)*np.exp(1j*(m_4*B-k_4)*(phi_prime_4-(np.pi/2)))
     L_Summation_3  = np.sum(L_Summand_4, axis=3)
     P_Lm           = (-1j*rho_3*(a_3**2)*B*np.exp(1j*k_m_3*r_3)*L_Summation_3)/(4*np.pi*(r_3/R_tip)*(1-M_3*np.cos(theta_r_3)))
     
     # frequency domain source function for drag and lift
-    psi_V_5        = np.trapz(H_6*exp_term_6, x=X, axis=5)
+    psi_V_5        = np.trapezoid(H_6*exp_term_6, x=X, axis=5)
     
     # FREQUENCY DOMAIN PRESSURE TERM FOR THICKNESS
     V_Integrand_5  = (M_r_5**2)*(k_x_hat_5**2)*t_b_5*psi_V_5*J_mBk_5
-    V_Summand_4    = np.trapz(V_Integrand_5, x=z_5[0,0,:,0,0], axis=2)*np.exp(1j*m_4*B*(phi_prime_4-(np.pi/2)))
+    V_Summand_4    = np.trapezoid(V_Integrand_5, x=z_5[0,0,:,0,0], axis=2)*np.exp(1j*m_4*B*(phi_prime_4-(np.pi/2)))
     
     # we take a single dimension along the 4th axis because we only want the loading mode corresponding to k=0
     V_Summation_3  = V_Summand_4[:,:,:,0]

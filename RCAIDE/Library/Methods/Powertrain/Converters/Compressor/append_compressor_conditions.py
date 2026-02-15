@@ -36,10 +36,10 @@ def append_compressor_conditions(compressor,segment):
     RCAIDE.Library.Methods.Powertrain.Converters.Compressor.compute_compressor_performance
     """
     
-    ones_row    = segment.state.ones_row 
+    ones_row    = segment.state.ones_row  
     segment.state.conditions.energy.converters[compressor.tag]                                   = Conditions()
     segment.state.conditions.energy.converters[compressor.tag].inputs                            = Conditions()
     segment.state.conditions.energy.converters[compressor.tag].outputs                           = Conditions()
     segment.state.conditions.energy.converters[compressor.tag].outputs.external_shaft_work_done  = 0*ones_row(1)
-    segment.state.conditions.energy.converters[compressor.tag].outputs.external_electrical_power = 0*ones_row(1)
+    segment.state.conditions.energy.converters[compressor.tag].outputs.external_electrical_power = 0*ones_row(1) 
     return 

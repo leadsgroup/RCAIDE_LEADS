@@ -7,13 +7,24 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
 import pandas as pd 
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots 
-
+from RCAIDE.Framework.Core import Units
+from RCAIDE.Library.Plots.Common import set_axes, plot_style
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+import numpy as np 
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
 # ----------------------------------------------------------------------------------------------------------------------      
-def plot_rotor_performance(rotor, outputs,title=None, show_figure = True, save_figure=False, save_filename='Rotor_Performance', file_type=".png"):
+def plot_rotor_performance(rotor,
+                           outputs,
+                           title       = None,
+                           show_figure = True, 
+                           save_figure = False,
+                           show_legend = True, 
+                           line_colors = ['black', 'blue'], 
+                           save_filename='Rotor_Performance',
+                           file_type = ".png",
+                           width = 11, height = 7):
     """
     Generate plots summarizing rotor aerodynamic performance distributions.
 
@@ -90,39 +101,55 @@ def plot_rotor_performance(rotor, outputs,title=None, show_figure = True, save_f
     """
     # unpack 
     r_distribution = outputs.disc_radial_distribution[0, :, 0]
+     
     
-    # 2d plots
-    fig = make_subplots(rows=2, cols=2)
+    # get plotting style 
+    ps      = plot_style()  
+
+    parameters = {'axes.labelsize': ps.axis_font_size,
+                  'xtick.labelsize': ps.axis_font_size,
+                  'ytick.labelsize': ps.axis_font_size,
+                  'axes.titlesize': ps.title_font_size}
+    plt.rcParams.update(parameters) 
+    fig   = plt.figure(save_filename)
+    fig.set_size_inches(width,height) 
+    axis_1 = plt.subplot(2,2,1) 
+    axis_2 = plt.subplot(2,2,2) 
+    axis_3 = plt.subplot(2,2,3) 
+    axis_4 = plt.subplot(2,2,4)  
     
-    df1a = pd.DataFrame(dict(x=r_distribution, y=outputs.disc_axial_velocity[0, :, 0])) # label='Axial'
-    df1b = pd.DataFrame(dict(x=r_distribution, y=outputs.disc_tangential_velocity[0, :, 0]))  # label='Tangential'
-    df2a = pd.DataFrame(dict(x=r_distribution, y=outputs.disc_axial_induced_velocity[0, :, 0])) # label='Axial'
-    df2b = pd.DataFrame(dict(x=r_distribution, y=outputs.disc_tangential_induced_velocity[0, :, 0])) # label='Tangential'
-    df3  = pd.DataFrame(dict(x=r_distribution, y=outputs.disc_thrust_distribution[0, :, 0]))
-    df4  = pd.DataFrame(dict(x=r_distribution, y=outputs.disc_torque_distribution[0, :, 0]))
+    axis_1.plot(r_distribution, outputs.disc_axial_velocity[0, :, 0]     , color = line_colors[0],  label = 'Axial')
+    axis_1.plot(r_distribution, outputs.disc_tangential_velocity[0, :, 0], color = line_colors[1],  label = 'Tangential')
+    axis_2.plot(r_distribution, outputs.disc_axial_induced_velocity[0, :, 0], color = line_colors[0],  label = 'Axial') 
+    axis_2.plot(r_distribution, outputs.disc_tangential_induced_velocity[0, :, 0], color = line_colors[1],  label = 'Tangential')  
+    axis_3.plot(r_distribution, outputs.disc_thrust_distribution[0, :, 0], color = line_colors[0],  label = 'Thrust') 
+    axis_4.plot(r_distribution, outputs.disc_torque_distribution[0, :, 0], color = line_colors[0],  label = 'Torque') 
+
+    axis_1.set_xlabel(r'Radial Station')     
+    axis_1.set_ylabel(r'Velocity')  
+    axis_2.set_xlabel(r'Radial Station')     
+    axis_2.set_ylabel(r'Induced Velocity')  
+    axis_3.set_xlabel(r'Radial Station')     
+    axis_3.set_ylabel(r'Thrust, N')  
+    axis_4.set_xlabel(r'Radial Station')     
+    axis_4.set_ylabel(r'Torque, N-m') 
     
-    fig.append_trace(go.Line(df1a, name='Axial', legendgroup='1',showlegend=True), row=1, col=1)
-    fig.append_trace(go.Line(df1b, name='Tangential', legendgroup='1',showlegend=True), row=1, col=1)
-    fig.append_trace(go.Line(df2a, name='Axial', legendgroup='2',showlegend=True), row=1, col=2)    
-    fig.append_trace(go.Line(df2b, name='Tangential', legendgroup='2',showlegend=True), row=1, col=2)     
-    fig.append_trace(go.Line(df3, name='Thrust', legendgroup='3',showlegend=False), row=2, col=1)    
-    fig.append_trace(go.Line(df4, name='Torque', legendgroup='4',showlegend=False), row=2, col=2)        
+    set_axes(axis_1)  
+    set_axes(axis_2)  
+    set_axes(axis_3)  
+    set_axes(axis_4)  
+      
+    if show_legend:    
+        axis_1.legend()  
+        axis_2.legend()  
+        axis_3.legend()  
+        axis_4.legend()   
     
-    fig.update_xaxes(title_text="Radial Station", row=1, col=1)
-    fig.update_yaxes(title_text="Velocity", row=1, col=1)
-    fig.update_xaxes(title_text="Radial Station", row=1, col=2)
-    fig.update_yaxes(title_text="Induced Velocity", row=1, col=2)
-    fig.update_xaxes(title_text="Radial Station", row=2, col=1)
-    fig.update_yaxes(title_text="Thrust, N", row=2, col=1)
-    fig.update_xaxes(title_text="Radial Station", row=2, col=2)
-    fig.update_yaxes(title_text="Torque, N-m", row=2, col=2)
-    
-    fig.update_layout(title_text="Rotor Performance", height=700)
+    # set title of plot 
+    title_text    = 'Rotor Performance'      
+    fig.suptitle(title_text)
     
     if save_figure:
-        fig.write_image(save_filename + '_2D' + file_type) 
-    
-    if show_figure:
-        fig.write_html( save_filename + '.html', auto_open=True)
+        plt.savefig(save_filename + file_type)  
     return fig 
  

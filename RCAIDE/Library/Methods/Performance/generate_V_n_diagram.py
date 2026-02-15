@@ -449,8 +449,7 @@ def base_analysis(vehicle):
     
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    analyses.append(geometry)
-    
+    analyses.append(geometry) 
 
     # ------------------------------------------------------------------
     #  Weights

@@ -375,13 +375,16 @@ def vehicle_setup(fuel_cell_model= 'PEM'):
     # Crogenic Tank
     #------------------------------------------------------------------------------------------------------------------------------------       
     cryogenic_tank_1 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.fuselages.fuselage)    # for regression, aircraft has two tanks
-    cryogenic_tank_1.fuel_selector_ratio  = 0.5 
+    cryogenic_tank_1.fuel_selector_ratio  = 0.5
+    cryogenic_tank_1.lengths.external     = 1.0
+    cryogenic_tank_1.diameters.external   = 1.0
     cryogenic_tank_1.fuel                 = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen() 
     bus.fuel_tanks.append(cryogenic_tank_1)
     
     cryogenic_tank_2 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.fuselages.fuselage)  
-    cryogenic_tank_2.fuel_selector_ratio  = 0.5
-    cryogenic_tank_2.fuel                 = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen() 
+    cryogenic_tank_2.fuel_selector_ratio    = 0.5 
+    cryogenic_tank_2.fuel                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen() 
+    cryogenic_tank_2.segments_bounding_tank = ['segment_10','segment_11'] 
     bus.fuel_tanks.append(cryogenic_tank_2)    
           
     #------------------------------------------------------------------------------------------------------------------------------------  

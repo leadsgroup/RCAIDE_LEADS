@@ -47,7 +47,7 @@ def append_fuel_tank_conditions(tank, segment):
     See Also
     --------
     RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks 
-    """
+    """ 
     ones_row    = segment.state.ones_row
         
     segment.state.conditions.energy.sources[tank.tag]                           = Conditions()  
@@ -75,6 +75,6 @@ def append_fuel_tank_conditions(tank, segment):
     segment.state.conditions.energy.sources[tank.tag].outputs.power.chemical    = 0 * ones_row(1)
     segment.state.conditions.energy.sources[tank.tag].outputs.power.pneumatic   = 0 * ones_row(1)
     segment.state.conditions.energy.sources[tank.tag].outputs.power.hydraulic   = 0 * ones_row(1)
-    segment.state.conditions.energy.sources[tank.tag].outputs.power.thermal     = 0 * ones_row(1) 
+    segment.state.conditions.energy.sources[tank.tag].outputs.power.thermal     = 0 * ones_row(1)  
          
     return 

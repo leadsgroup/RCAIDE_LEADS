@@ -171,8 +171,8 @@ def compute_stack_properties(fuel_cell_stack):
         # compute fuel cell performance             
         t_idx                                                                    =  0
         fuel_cell_stack_conditions                                               = segment.state.conditions.energy.busses[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag]
-        fuel_cell_stack_conditions.fuel_cell.stagnation_temperature[t_idx, 0]    = atmo_data.temperature   
-        fuel_cell_stack_conditions.fuel_cell.stagnation_pressure[t_idx, 0]       = atmo_data.pressure   
+        fuel_cell_stack_conditions.fuel_cell.stagnation_temperature[t_idx, 0]    = atmo_data.temperature[0, 0]   
+        fuel_cell_stack_conditions.fuel_cell.stagnation_pressure[t_idx, 0]       = atmo_data.pressure[0, 0]    
         fuel_cell_stack_conditions.fuel_cell.pressure_drop[t_idx, 0]             = fuel_cell.rated_p_drop_fc
         fuel_cell_stack_conditions.fuel_cell.stack_temperature[t_idx, 0]         = fuel_cell.stack_temperature 
         rated_current_density, rated_power_density                               = evaluate_max_gross_power(fuel_cell_stack,fuel_cell_stack_conditions,t_idx)

@@ -9,7 +9,9 @@
 # RCAIDE imports
 import RCAIDE
 from RCAIDE.Library.Components import Component 
-from RCAIDE.Framework.Core     import Data, Container 
+from RCAIDE.Framework.Core     import Data, Container
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_boom_center_of_gravity     import compute_boom_center_of_gravity
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_cylinder_moment_of_inertia import compute_cylinder_moment_of_inertia
  
 # ----------------------------------------------------------------------------------------------------------------------
 #  BOOM
@@ -187,6 +189,38 @@ class Boom(Component):
         self.segments.append(segment)
 
         return
+
+
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
+        """
+        Computes the moment of inertia tensor for the boom.
+
+        Parameters
+        ----------
+        center_of_gravity : list, optional
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]] 
+
+        See Also
+        --------
+        RCAIDE.Library.Methods.weights.vehicle.moments_of_inertia.compute_fuselage_moment_of_inertia
+            Implementation of the moment of inertia calculation
+        """
+        _ , _ = compute_cylinder_moment_of_inertia(self,outer_length=self.lengths.total,outer_radius=self.width/2,center_of_gravity= center_of_gravity) 
+        return
+    
+
+    def compute_center_of_gravity(self,vehicle): 
+        """
+        Computes the center of gravity for the boom.
+
+        See Also
+        --------
+        RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_fuselage_center_of_gravity
+            Implementation of the center of gravity calculation
+        """
+        _  = compute_boom_center_of_gravity(self) 
+        return
+    
 
 class Container(Component.Container):
     def get_children(self): 

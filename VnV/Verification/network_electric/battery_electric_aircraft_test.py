@@ -75,7 +75,13 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle()
     analyses.vehicle =  vehicle
-    
+
+    # ------------------------------------------------------------------
+    # Weights
+    weights = RCAIDE.Framework.Analyses.Weights.Electric_General_Aviation() 
+    analyses.append(weights)    
+
+    # ------------------------------------------------------------------    
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
     geometry.settings.overwrite_reference        = False 

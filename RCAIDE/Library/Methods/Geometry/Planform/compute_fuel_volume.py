@@ -3,10 +3,6 @@
 # 
 # Created:  Jul 2024, M. Clarke 
 # Modified: Aug 2025, S. Shekar 
-# ----------------------------------------------------------------------------------------------------------------------
-# Imports  
-# ----------------------------------------------------------------------------------------------------------------------
-import RCAIDE
 
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_fuel_volume 
@@ -72,25 +68,50 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = False, update_max_fuel = 
     total_fuel_volume = 0
     total_fuel_mass   = 0
     for network in vehicle.networks: 
-        for source in network.sources:
-            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
+        for fuel_line in network.fuel_lines:
+            fuel_tanks = fuel_line.fuel_tanks
+            for fuel_tank in fuel_tanks:
+            
+                # update fuel tag to ensure no overwriting of mass 
+                fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag
+                                
                 try:
-                    compute_fuel_tank_volume = source.compute_volume
+                    compute_fuel_tank_volume = fuel_tank.compute_volume
                 except Exception as e:
-                    total_fuel_volume += getattr(source.fuel.volume_properties, "net_volume", None)
-                    total_fuel_mass   += getattr(source.fuel.mass_properties, "mass", None)
+                    total_fuel_volume += getattr(fuel_tank.fuel.volume_properties, "net_volume", None)
+                    total_fuel_mass   += getattr(fuel_tank.fuel.mass_properties, "mass", None)
                 else:
                     # if no error getting the method, run it normally
                     if compute_fuel_volume:
-                        compute_fuel_tank_volume(wings, fuselages, network.sources) 
-                        source.fuel.volume_properties.net_volume = source.fuel.mass_properties.mass / source.fuel.density
-                    total_fuel_volume += source.fuel.volume_properties.net_volume 
-                    total_fuel_mass   += source.fuel.mass_properties.mass 
+                        compute_fuel_tank_volume(wings, fuselages, fuel_tanks) 
+                        fuel_tank.fuel.volume_properties.net_volume = fuel_tank.fuel.mass_properties.mass / fuel_tank.fuel.density
+                    total_fuel_volume += fuel_tank.fuel.volume_properties.net_volume 
+                    total_fuel_mass   += fuel_tank.fuel.mass_properties.mass
+                    
+        for bus in network.busses:
+            fuel_tanks= bus.fuel_tanks
+            for fuel_tank in fuel_tanks:
+
+                # update fuel tag to ensure no overwriting of mass 
+                fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag
+                
+                try:
+                    compute_fuel_tank_volume = fuel_tank.compute_volume
+                except Exception as e:
+                    total_fuel_volume += getattr(fuel_tank.fuel.volume_properties, "net_volume", None)
+                    total_fuel_mass   += getattr(fuel_tank.fuel.mass_properties, "mass", None)
+                else:
+                    # if no error getting the method, run it normally
+                    if compute_fuel_volume:
+                        compute_fuel_tank_volume(wings, fuselages, fuel_tanks) 
+                        fuel_tank.fuel.volume_properties.net_volume = fuel_tank.fuel.mass_properties.mass / fuel_tank.fuel.density
+                    total_fuel_volume += fuel_tank.fuel.volume_properties.net_volume 
+                    total_fuel_mass   += fuel_tank.fuel.mass_properties.mass 
                     
     # Assign Total Fuel Volume and Mass to Vehicle 
     vehicle.volume_properties.fuel   = total_fuel_volume
     vehicle.mass_properties.fuel     = total_fuel_mass
-
+    
     if update_max_fuel:
         vehicle.mass_properties.max_fuel = total_fuel_mass
 

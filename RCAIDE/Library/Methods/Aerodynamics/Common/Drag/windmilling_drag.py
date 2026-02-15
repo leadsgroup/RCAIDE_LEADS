@@ -103,9 +103,10 @@ def windmilling_drag(geometry,state):
     # getting geometric data from engine (estimating when not available)
     swet_nac = 0
 
-    for network in vehicle.networks:
-        for nacelle in network.nacelles: 
-            swet_nac += nacelle.areas.wetted 
+    for network in vehicle.networks: 
+        for propulsor in network.propulsors:   
+            if propulsor.nacelle !=  None:                
+                swet_nac += propulsor.nacelle.areas.wetted 
     # Compute
     windmilling_drag_coefficient = 0.007274 * swet_nac / reference_area
 

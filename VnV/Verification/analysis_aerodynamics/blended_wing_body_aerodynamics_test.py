@@ -28,19 +28,52 @@ def main():
     plot_3d_vehicle_vlm_panelization(vortex_distribution=vortex_distribution,
                     save_filename               = "BWB_Top_View", 
                     show_wing_control_points    = False,  
-                    show_figure                 =False)
+                    show_figure                 = False)
 
     plot_3d_vehicle_vlm_panelization(vortex_distribution=vortex_distribution,
                     save_filename               = "BWB_Top_View",
                     show_wing_control_points    = True,  
-                    show_figure                 =False)
+                    show_figure                 = False)
 
     Cruise_CL        = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0] 
-    Cruise_CL_true   = 0.3841007724387933
+    Cruise_CL_true   = 0.38410077243879337
     Cruise_CL_diff   = np.abs(Cruise_CL - Cruise_CL_true)
     print('Error: ',Cruise_CL_diff)
-    assert np.abs((Cruise_CL - Cruise_CL_true)/Cruise_CL_true) < 1e-6
+    assert np.abs((Cruise_CL - Cruise_CL_true)/Cruise_CL_true) < 1e-6 
     
+    
+    # test lopa coordianates
+    LOPA_coords =  results.segments.cruise.analyses.vehicle.wings.main_wing.layout_of_passenger_accommodations.object_coordinates
+
+    # Extract sample values from computation   
+    coordinate_1_x         = LOPA_coords[22][2]
+    coordinate_1_y         = LOPA_coords[34][3]  
+    coordinate_2_x         = LOPA_coords[124][2]
+    coordinate_2_y         = LOPA_coords[68][3] 
+    coordinate_3_x         = LOPA_coords[0][2]
+    coordinate_3_y         = LOPA_coords[301][3] 
+    
+    # thruth values 
+    coordinate_1_x_thruth  = 5.6388
+    coordinate_1_y_thruth  = 1.7018 
+    coordinate_2_x_thruth  = 1.3716
+    coordinate_2_y_thruth  = 0.6858
+    coordinate_3_x_thruth  = 0.4572
+    coordinate_3_y_thruth  = -3.556
+    
+    # Truth values  
+    error = Data()  
+    error.coordinate_1_x   = np.max(np.abs(coordinate_1_x - coordinate_1_x_thruth))   
+    error.coordinate_1_y   = np.max(np.abs(coordinate_1_y - coordinate_1_y_thruth))    
+    error.coordinate_2_x   = np.max(np.abs(coordinate_2_x - coordinate_2_x_thruth))   
+    error.coordinate_2_y   = np.max(np.abs(coordinate_2_y - coordinate_2_y_thruth))    
+    error.coordinate_3_x   = np.max(np.abs(coordinate_3_x - coordinate_3_x_thruth))   
+    error.coordinate_3_y   = np.max(np.abs(coordinate_3_y - coordinate_3_y_thruth))    
+    print('Errors:')                               
+    print(error)
+     
+    for k,v in list(error.items()): 
+        assert(np.abs(v)<1e-6)        
     
     return 
 
@@ -75,8 +108,7 @@ def base_analysis(vehicle):
     #  Geometry
     # ------------------------------------------------------------------
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.settings.update_fuselage_properties = True
-    geometry.settings.overwrite_fuel_volume         = True
+    geometry.settings.update_fuselage_properties = True 
     analyses.append(geometry)
     
 
@@ -84,6 +116,7 @@ def base_analysis(vehicle):
     #  Weights
     weights = RCAIDE.Framework.Analyses.Weights.Conventional_BWB() 
     weights.settings.FLOPS.fidelity     = 'Complex'  
+    weights.settings.overwrite_center_of_gravity = True
     analyses.append(weights)
 
     # ------------------------------------------------------------------

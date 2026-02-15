@@ -1,3 +1,4 @@
+
 # RCAIDE/Methods/Powertrain/Sources/Fuel_Tanks/compute_integral_tank_volume.py
 # 
 # 
@@ -10,10 +11,13 @@
 # RCAIDE imports
 import  RCAIDE 
 from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry,  compute_naca_4series 
+from RCAIDE.Library.Methods.Geometry.Planform import compute_segment_meshes
 
 # Python Imports 
 import numpy as np
-from scipy.interpolate import interp1d
+from scipy.interpolate import interp1d 
+import trimesh
+from copy import deepcopy
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHOD
@@ -116,7 +120,7 @@ def compute_fuselage_integral_tank_fuel_volume(fuel_tank,fuselage):
                 origin_y = inner_segment.percent_y_location *fuselage.lengths.total    
                 origin_z = inner_segment.percent_z_location *fuselage.lengths.total                    
             
-        fuel_tank.fuel.mass_properties.center_of_gravity  = list(segment_tank_moment / total_fuel_mass)  
+        fuel_tank.fuel.mass_properties.center_of_gravity  = [list(segment_tank_moment / total_fuel_mass) ]
         fuel_tank.volume_properties.net_volume       = tank_volume_i
         fuel_tank.volume_properties.gross_volume     = tank_volume_o
     
@@ -125,7 +129,7 @@ def compute_fuselage_integral_tank_fuel_volume(fuel_tank,fuselage):
             if actual_fuel_volume > fuel_tank.volume_properties.net_volume + 1e-8 :
                 raise AttributeError('Specified fuel mass greater than mass of fuel capable of being stored in fuel tank') 
         else:
-            fuel_tank.fuel.mass_properties.mass = float(tank_volume_i *  fuel_tank.fuel.density)    
+            fuel_tank.fuel.mass_properties.mass           = tank_volume_i *  fuel_tank.fuel.density    
             fuel_tank.fuel.volume_properties.gross_volume = tank_volume_i
             
     # update orign of tank 
@@ -133,7 +137,7 @@ def compute_fuselage_integral_tank_fuel_volume(fuel_tank,fuselage):
     fuel_tank.fuel.origin = [[origin_x, origin_y, origin_z]]  
     return 
 
-def compute_wing_integral_tank_volume(fuel_tank,wing):
+def compute_wing_integral_tank_volume(fuel_tank,wing,n_points = 101,scale_factor = 0.85):
     """
     Computes the fuel volume for an integral fuel tank within a wing structure.
 
@@ -184,59 +188,142 @@ def compute_wing_integral_tank_volume(fuel_tank,wing):
     compute_wing_integral_tank_fuel_volume : Calculates volume for single-segment wings
     compute_segmented_wing_integral_tank_fuel_volume : Calculates volume for wing segments
     """ 
-    total_fuel_mass    = 0
-    total_fuel_volume  = 0
 
     # get orgin of fuel tank     
-    fuel_tank.origin      = wing.origin 
-    fuel_tank.fuel.origin = wing.origin 
+    fuel_tank.origin                  = wing.origin 
+    fuel_tank.fuel.origin             = wing.origin  
+    fuel_tank.fuel.xz_plane_symmetric = wing.xz_plane_symmetric
+    fuel_tank.fuel.xy_plane_symmetric = wing.xy_plane_symmetric
+    fuel_tank.fuel.yz_plane_symmetric = wing.yz_plane_symmetric 
     
     if len(wing.segments) > 1: 
-        segment_tank_moment = np.array([0.0, 0.0, 0.0])
-        seg_bounds =  fuel_tank.segments_bounding_tank  
 
+        seg_bounds =  fuel_tank.segments_bounding_tank  
         # Collect all segment tags between start and end (inclusive)
         collect = False
-        seg_tags = []
+        seg_keys = []
         for segment in wing.segments:
             if segment.tag == seg_bounds[0]:
                 collect = True
             if collect:
-                seg_tags.append(segment.tag)
+                seg_keys.append(segment.tag)
             if segment.tag == seg_bounds[1]:
                 break
-        
-        for i in range(len(seg_tags)-1):
-            inner_segment = wing.segments[seg_tags[i]]
-            outer_segment = wing.segments[seg_tags[i+1]]
 
-            # compute volume of fuel in wing
-            volume = compute_segmented_wing_integral_tank_fuel_volume(wing,inner_segment,outer_segment,fuel_tank)
+        segment_meshes = []
+        symm    = wing.xz_plane_symmetric
+
+        for i in range(len(seg_keys)-1):
+            # compute volume and assume unit density to get mass
+            inner_segment = wing.segments[seg_keys[i]]
+            outer_segment = wing.segments[seg_keys[i+1]] 
+ 
+            # Compute segment span length
+            L = (outer_segment.percent_span_location - inner_segment.percent_span_location) * wing.spans.projected/(symm + 1)
+            spanwise_shift = inner_segment.percent_span_location * wing.spans.projected/2 
+            
+            airfoil_in = inner_segment.airfoil 
+            if  airfoil_in !=  None:                 
+                if type(airfoil_in) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
+                    geometry_in = compute_naca_4series(airfoil_in.NACA_4_Series_code,n_points)
+                elif type(airfoil_in) == RCAIDE.Library.Components.Airfoils.Airfoil: 
+                    geometry_in     = import_airfoil_geometry(airfoil_in.coordinate_file,n_points)
+            else:
+                geometry_in = compute_naca_4series('0012',n_points)
     
-            total_fuel_mass      += volume * fuel_tank.fuel.density  
-            segment_tank_moment  += np.array(inner_segment.mass_properties.center_of_gravity)[0] * volume * fuel_tank.fuel.density  
-            total_fuel_volume    += volume
-                 
-        fuel_tank.fuel.mass_properties.center_of_gravity  = list(segment_tank_moment / total_fuel_mass)
-        fuel_tank.volume_properties.net_volume            = total_fuel_volume
+            airfoil_out = outer_segment.airfoil 
+            if  airfoil_out !=  None:                 
+                if type(airfoil_out) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
+                    geometry_out = compute_naca_4series(airfoil_out.NACA_4_Series_code,n_points)
+                elif type(airfoil_out) == RCAIDE.Library.Components.Airfoils.Airfoil: 
+                    geometry_out     = import_airfoil_geometry(airfoil_out.coordinate_file,n_points)
+            else:
+                geometry_out = compute_naca_4series('0012',n_points)
+            
+            
+            start_distance_in = inner_segment.origin[0][0]+wing.segments[seg_keys[i]].root_chord_percent* wing.chords.root * (fuel_tank.segments_percent_chord_start[i])
+            end_distance_in   = inner_segment.origin[0][0]+wing.segments[seg_keys[i]].root_chord_percent* wing.chords.root * (fuel_tank.segments_percent_chord_end[i])
+
+            start_distance_out = outer_segment.origin[0][0]+wing.segments[seg_keys[i+1]].root_chord_percent* wing.chords.root * (fuel_tank.segments_percent_chord_start[i+1])
+            end_distance_out   = outer_segment.origin[0][0]+wing.segments[seg_keys[i+1]].root_chord_percent* wing.chords.root * (fuel_tank.segments_percent_chord_end[i+1])
+                                
+            x_in  = np.array(geometry_in.x_coordinates)[:-1] * wing.chords.root *inner_segment.root_chord_percent + inner_segment.origin[0][0]
+            y_in  = np.array(geometry_in.y_coordinates)[:-1] * wing.chords.root *inner_segment.root_chord_percent + inner_segment.origin[0][2]
+            x_out = np.array(geometry_out.x_coordinates)[:-1] * wing.chords.root *outer_segment.root_chord_percent + outer_segment.origin[0][0]
+            y_out = np.array(geometry_out.y_coordinates)[:-1] * wing.chords.root *outer_segment.root_chord_percent + outer_segment.origin[0][2]
+
+            # ---------------- Inner segment ----------------
+            mask_in = (x_in >= start_distance_in) & (x_in <= end_distance_in)
+
+            x_in_capped = x_in[mask_in]
+            y_in_capped = y_in[mask_in]
+            
+            # ---------------- Outer segment ----------------
+            mask_out = (x_out >= start_distance_out) & (x_out <= end_distance_out)
+
+            x_out_capped = x_out[mask_out]
+            y_out_capped = y_out[mask_out]
+
+            solid_segment =  compute_segment_meshes(x_in_capped,y_in_capped, x_out_capped, y_out_capped, L, spanwise_shift) 
+            segment_meshes.append(solid_segment)
+        
+        combinde_mesh = trimesh.util.concatenate(segment_meshes)
+       
+       # Reflect across the YZ plane (mirror X)
+        Ry = np.diag([1, -1, 1])   # reflection matrix
+
+        # Compute centroid
+        centroid = combinde_mesh.centroid
+
+        # Create scaling transform about centroid
+        T = trimesh.transformations.scale_matrix(
+            scale_factor,
+            origin=centroid
+        )
+        combinde_mesh.apply_transform(T)
+
+        # 1. copy the mesh
+        combined_mesh_sym = deepcopy(combinde_mesh)
+
+        # 2. apply the mirror transform
+        combined_mesh_sym.vertices = (Ry @ combined_mesh_sym.vertices.T).T
+
+        # 3. fix face orientation (reverse winding)
+        combined_mesh_sym.faces = combined_mesh_sym.faces[:, ::-1]
+
+        # 4. concatenate original + mirrored
+        combined_mesh_full         = trimesh.util.concatenate([combinde_mesh, combined_mesh_sym]) 
+        combined_mesh_full.density = fuel_tank.fuel.density 
+        centroid = combined_mesh_full.centroid
+        cg_x     = centroid[0]
+        cg_y     = 0
+        cg_z     = centroid[2] 
+        
+        # Shift inertia tensor from origin to the requested (actual) centroid
+        I = combined_mesh_full.moment_inertia 
+        total_fuel_volume   = combined_mesh_full.volume 
+        
+        fuel_tank.fuel.mass_properties.center_of_gravity          = [[cg_x, cg_y, cg_z]]
+        fuel_tank.fuel.mass_properties.moments_of_inertia.tensor  = I
+
         fuel_tank.volume_properties.gross_volume          = total_fuel_volume
+        fuel_tank.volume_properties.net_volume            = total_fuel_volume
+
          
         if fuel_tank.fuel.mass_properties.mass != 0:
             actual_fuel_volume = fuel_tank.fuel.mass_properties.mass /  fuel_tank.fuel.density  
             if actual_fuel_volume > fuel_tank.volume_properties.net_volume + 1e-8 :
                 raise AttributeError('Specified fuel mass greater than mass of fuel capable of being stored in fuel tank') 
         else:
-            fuel_tank.fuel.mass_properties.mass = float(total_fuel_volume *  fuel_tank.fuel.density)  
+            fuel_tank.fuel.mass_properties.mass = total_fuel_volume *  fuel_tank.fuel.density   
             
     else:  
         # assume whole wing has fuel 
         total_fuel_volume                                 = compute_wing_integral_tank_fuel_volume(wing,fuel_tank) 
-        total_fuel_mass                                   = total_fuel_volume  * fuel_tank.fuel.density
-        
+        total_fuel_mass                                   = total_fuel_volume  * fuel_tank.fuel.density 
         fuel_tank.volume_properties.internal_volume       = total_fuel_volume
         fuel_tank.volume_properties.external_volume       = total_fuel_volume 
         fuel_tank.volume_properties.net_volume            = total_fuel_volume
-        fuel_tank.fuel.mass_properties.center_of_gravity  = wing.mass_properties.center_of_gravity
 
     if fuel_tank.fuel.mass_properties.mass != 0:
         actual_fuel_volume = fuel_tank.fuel.mass_properties.mass /  fuel_tank.fuel.density  
@@ -244,7 +331,7 @@ def compute_wing_integral_tank_volume(fuel_tank,wing):
             raise AttributeError('Specified fuel mass greater than mass of fuel capable of being stored in fuel tank') 
         fuel_tank.fuel.volume_properties.net_volume = actual_fuel_volume
     else:
-        fuel_tank.fuel.mass_properties.mass = float(total_fuel_volume *  fuel_tank.fuel.density)  
+        fuel_tank.fuel.mass_properties.mass         = total_fuel_volume *  fuel_tank.fuel.density   
         fuel_tank.fuel.volume_properties.net_volume = total_fuel_volume    
     return 
 
@@ -464,3 +551,4 @@ def compute_non_dimensional_rib_coordinates(compoment,fuel_tank,front_rib_nondim
     rear_rib_nondim_y_lower  = f_lower([rear_rib_nondim_x])[0]  + clearance   
 
     return front_rib_nondim_y_upper,rear_rib_nondim_y_upper, front_rib_nondim_y_lower, rear_rib_nondim_y_lower 
+

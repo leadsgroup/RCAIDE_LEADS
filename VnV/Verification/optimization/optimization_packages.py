@@ -94,9 +94,9 @@ def main():
     # end suppression of interation printout
     sys.stdout = sys.__stdout__  
     print(outputs)   
-    obj = outputs[1][0]
-    x1 = outputs[0][0]
-    x2 = outputs[0][1]
+    obj = outputs[1]
+    x1  = outputs[0][0]
+    x2  = outputs[0][1]
 
     #   Check Results 
     assert( np.isclose(obj,  1, atol=1e-2) )

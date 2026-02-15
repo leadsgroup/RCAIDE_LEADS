@@ -10,8 +10,8 @@ import RCAIDE
 from RCAIDE.Framework.Core                import Data ,  Units
 from RCAIDE.Library.Components.Component  import Container
 from RCAIDE.Library.Components            import Component 
-from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia import compute_cuboid_moment_of_inertia
-import numpy as np
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_cabin_moment_of_inertia import compute_cabin_moment_of_inertia
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_cabin_center_of_gravity import compute_cabin_center_of_gravity 
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Fuselage
@@ -53,23 +53,54 @@ class Cabin(Component):
         self.classes.append(cabin_class)
 
         return
-     
+      
 
-    def compute_moment_of_inertia(self, center_of_gravity=[[0, 0, 0]], fuel_flag=False): 
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
         """
         Computes the moment of inertia tensor for the cabin.
 
         Parameters
-        ---------- 
+        ----------
         center_of_gravity : list, optional
-            Reference point coordinates, defaults to [[0, 0, 0]]
-        
-        Returns
-        -------
-        ndarray
-            3x3 moment of inertia tensor
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]] 
+
+        See Also
+        --------
+        RCAIDE.Library.Methods.weights.vehicle.moments_of_inertia.compute_fuselage_moment_of_inertia
+            Implementation of the moment of inertia calculation
         """
-        if self.height == 0:
-            self.height = self.width
-        I = compute_cuboid_moment_of_inertia(self.origin, self.mass_properties.mass,self.length,self.width,self.height, inner_length = 0, width_inner = 0, height_inner = 0, center_of_gravity = np.array([[0,0,0]]))  
-        return I           
+        
+        for fuselage in vehicle.fuselages:
+            for cabin in fuselage.cabins:
+                if cabin.tag == self.tag: 
+                    _ , _ = compute_cabin_moment_of_inertia(self,fuselage,center_of_gravity) 
+        for wing in vehicle.wings:
+            if type(wing) == RCAIDE.Library.Components.Wings.Blended_Wing_Body:
+                for cabin in wing.cabins:
+                    if cabin.tag == self.tag: 
+                        _ , _ = compute_cabin_moment_of_inertia(self,wing,center_of_gravity) 
+        return
+
+    def compute_center_of_gravity(self,vehicle): 
+        """
+        Computes the center of gravity for the cabin.
+
+        See Also
+        --------
+        RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_fuselage_center_of_gravity
+            Implementation of the center of gravity calculation
+        """
+        
+        for fuselage in  vehicle.fuselages:
+            for cabin in fuselage.cabins:
+                if cabin.tag == self.tag and fuselage.layout_of_passenger_accommodations != None:
+                    _  = compute_cabin_center_of_gravity(self, fuselage) 
+            
+        for wing in vehicle.wings:
+            if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+                for cabin in wing.cabins:
+                    if cabin.tag == self.tag and wing.layout_of_passenger_accommodations != None: 
+                        _  = compute_cabin_center_of_gravity(self, wing)                     
+        return           
+    
+    

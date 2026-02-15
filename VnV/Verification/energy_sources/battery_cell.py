@@ -78,7 +78,7 @@ def lithium_ion_battery_test():
     marker_size           = 5 
     mAh                   = np.array([3800,2600]) 
     V_ul_true             = np.array([[3.1746312064954223, 3.14117403134389],[3.1746312064954223,3.14117403134389]])
-    bat_temp_true         =  np.array([[309.71055344633555,  304.960078170585], [309.88846111316843,305.1659469226417]])  
+    bat_temp_true         =  np.array([[309.51908573114554,304.75340976482204], [309.51908573114554,304.75240451615923]])  
     # PLot parameters 
     marker                = ['s' ,'o' ,'P']
     linestyles            = ['-','--',':']
@@ -193,6 +193,10 @@ def base_analysis(vehicle):
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
     analyses.append(geometry)
+
+    #  Weights
+    weights = RCAIDE.Framework.Analyses.Weights.Weights()
+    analyses.append(weights)    
     
     #  Energy
     energy          = RCAIDE.Framework.Analyses.Energy.Energy() 

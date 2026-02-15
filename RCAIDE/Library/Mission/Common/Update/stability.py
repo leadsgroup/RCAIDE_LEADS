@@ -32,6 +32,6 @@ def stability(segment):
         pass
     else: 
         if stability_model != None: 
-            _ = stability_model(segment,segment.analyses.vehicle)
+            _ = stability_model(segment.state,segment.analyses.vehicle)
 
     return

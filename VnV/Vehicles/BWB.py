@@ -33,12 +33,12 @@ def vehicle_setup():
     vehicle                                           = RCAIDE.Vehicle()    
     vehicle.tag                                       = 'BWB' 
     vehicle.mass_properties.max_takeoff               = 280000. * Units.lbs 
-    vehicle.mass_properties.payload                   = 35000
+    vehicle.mass_properties.payload                   = 67000. * Units.lbs 
     vehicle.mass_properties.fuel                      = 55000  
     vehicle.mass_properties.max_fuel                  = 100000  
     vehicle.mass_properties.takeoff                   = 280000 * Units.lbs
     vehicle.mass_properties.max_zero_fuel             = 206000 * Units.lbs 
-    vehicle.mass_properties.max_payload               = 69600.  * Units.lb   
+    vehicle.mass_properties.max_payload               = 69600.  * Units.lb 
     vehicle.mass_properties.center_of_gravity         = [[27.0, 0, 0]]
     vehicle.flight_envelope.ultimate_load             = 3.75 
     vehicle.flight_envelope.positive_limit_load       = 2.5  
@@ -46,7 +46,7 @@ def vehicle_setup():
     vehicle.flight_envelope.design_cruise_altitude    = 45000.0*Units.feet 
     vehicle.flight_envelope.design_range              = 5000.0 * Units.nmi
     vehicle.reference_area                            = 592.6575476422672 # 2424.9 * Units['feet**2']    
-    vehicle.number_of_passengers                                = 248 # Single class. 242 in dual class (24 business, 21 economy) 
+    vehicle.number_of_passengers                      = 248 # Single class. 242 in dual class (24 business, 21 economy) 
     vehicle.systems.control                           = "fully powered" 
     vehicle.systems.accessories                       = "long range"  
      
@@ -56,16 +56,18 @@ def vehicle_setup():
     # ------------------------------------------------------------------  
     main_gear               = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
     main_gear.tire_diameter = 50.0 * Units.inches
-    main_gear.strut_length  = 5.5 * Units.ft 
+    main_gear.strut_length  = 20.0 * Units.ft 
     main_gear.units         = 2    # Number of main landing gear
     main_gear.wheels        = 4    # Number of wheels on the main landing gear
+    main_gear.origin        = [[20.95,0., -2 ]]  # positioned using 30 degree (15 ground strike angle + 15 degree airfoil closeout angle )
     vehicle.append_component(main_gear)  
 
     nose_gear               = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()       
     nose_gear.tire_diameter = 40. * Units.inches
     nose_gear.units         = 1    # Number of nose landing gear
     nose_gear.wheels        = 2    # Number of wheels on the nose landing gear
-    nose_gear.strut_length  = 9.0 * Units.ft 
+    nose_gear.strut_length  = 20.0 * Units.ft 
+    nose_gear.origin        = [[3. ,0., -2 ]] 
     vehicle.append_component(nose_gear)
          
 
@@ -73,8 +75,11 @@ def vehicle_setup():
     # Carbo Bays 
     # ------------------------------------------------------------------ 
     cargo_bay = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
-    vehicle.append_component(cargo_bay)
-    
+    cargo_bay.origin  = [[5, 0, -1]]
+    cargo_bay.length  = 10
+    cargo_bay.width   = 3
+    cargo_bay.height  = 1
+    vehicle.append_component(cargo_bay) 
     
     # ------------------------------------------------------------------
     #  Main Wing 
@@ -90,10 +95,8 @@ def vehicle_setup():
     wing.areas.reference         = 592.6575476422672 
     wing.areas.wetted            = 1282.0437685524962 
     wing.chords.mean_aerodynamic = 20.059555133618403 
-    wing.chords.root             = 36 #32.4 # 30.2244 # 12.5 percent close out starting using total cabin height of 4 m
-    wing.chords.tip              = 1.8359256146144747 
-    wing.aft_center_body.length  = 9.021    
-    wing.aft_center_body.taper   = 0.85
+    wing.chords.root             = 36  
+    wing.chords.tip              = 1.8359256146144747   
     wing.total_length            = 32.4
     wing.twists.root             = 0.0 
     wing.twists.tip              = 0.0  
@@ -102,21 +105,25 @@ def vehicle_setup():
     wing.vertical                = False
     wing.xz_plane_symmetric      = True
     wing.t_tail                  = False 
-    wing.dynamic_pressure_ratio  = 1.0
+    wing.dynamic_pressure_ratio  = 1.0  
+    wing.aft_center_body.origin  = [[wing.chords.root - 2/3 * wing.aft_center_body.length,0,0]]    
+    wing.aft_center_body.length  = 9.021    
+    wing.aft_center_body.taper   = 0.85    
+    wing.center_body.origin      = [[0.5*(wing.chords.root - wing.aft_center_body.length),0,0]]
      
-    cabin          = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-    cabin.origin   = [[2.5, 0, 0]]
-    business_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business() 
+    cabin                                              = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
+    cabin.origin                                       = [[2.5, 0, 0]]
+    business_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business() 
     business_class.number_of_seats_abrest              = 4
     business_class.number_of_rows                      = 4
     business_class.galley_lavatory_percent_x_locations = [0] 
     business_class.seat_arm_rest_width                 = 4 *  Units.inches 
     business_class.seat_width                          = 25 *  Units.inches
-    business_class.aisle_width                          = 15  *  Units.inches 
+    business_class.aisle_width                         = 15  *  Units.inches 
     business_class.type_A_exit_percent_x_locations     = [0,0]
     cabin.append_cabin_class(business_class)  
 
-    economy_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
+    economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
     economy_class.number_of_seats_abrest              = 6
     economy_class.number_of_rows                      = 12
     economy_class.galley_lavatory_percent_x_locations = [0,1.0]       

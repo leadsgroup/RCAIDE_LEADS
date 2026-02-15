@@ -12,6 +12,9 @@ import numpy as np
 from shapely import Polygon
 from copy import deepcopy
 
+# ----------------------------------------------------------------------------------------------------------------------
+#  Compute segment volume 
+# ---------------------------------------------------------------------------------------------------------------------- 
 def compute_segment_volume(wing, inner_segment, outer_segment,n_points=401):
     """
     Estimate the prism volume between two consecutive wing segments using their

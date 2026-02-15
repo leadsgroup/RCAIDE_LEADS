@@ -9,11 +9,13 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
  # RCAIDE imports   
 from .                     import Propulsor
-from RCAIDE.Framework.Core import Data
+from RCAIDE.Framework.Core import Data 
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.design_turboprop               import design_turboprop
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.append_turboprop_conditions    import append_turboprop_conditions 
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.compute_turboprop_performance  import compute_turboprop_performance, reuse_stored_turboprop_data
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.compute_turboprop_performance  import compute_turboprop_performance, reuse_stored_turboprop_data 
  
+# python imports 
+import numpy as np
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Turboprop
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -148,6 +150,6 @@ class Turboprop(Propulsor):
     def reuse_stored_data(turboprop,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
         """
         Reuses stored turboprop data for performance calculations.
-        """
+        """ 
         inputs, outputs  = reuse_stored_turboprop_data(turboprop,state,network,stored_propulsor_tag,center_of_gravity)
-        return inputs, outputs
+        return inputs, outputs 

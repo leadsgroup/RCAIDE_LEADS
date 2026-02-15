@@ -21,7 +21,7 @@ import sys
 #  Design Prop-rotor
 # ----------------------------------------------------------------------------------------------------------------------   
 def design_prop_rotor(rotor, number_of_stations=20, solver_name='SLSQP', iterations=200,
-                      solver_sense_step=1E-6, solver_tolerance=1E-5, print_iterations=False):
+                      solver_sense_step=1E-4, solver_tolerance=1E-3, print_iterations=False):
     """
     Optimizes prop-rotor chord and twist distribution to meet design power or thrust requirements.
     

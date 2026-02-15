@@ -11,6 +11,7 @@ from RCAIDE.Framework.Core                import Data
 from RCAIDE.Library.Components.Component  import Container
 from RCAIDE.Library.Components            import Component
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_fuselage_moment_of_inertia import  compute_fuselage_moment_of_inertia
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_fuselage_center_of_gravity import  compute_fuselage_center_of_gravity
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Fuselage
@@ -187,8 +188,7 @@ class Fuselage(Component):
         self.vsp_data.xsec_surf_id                  = ''    # There is only one XSecSurf in each VSP geom.
         self.vsp_data.xsec_num                      = None  # Number if XSecs in fuselage geom. 
         self.segments                               = Container()
-        self.cabins                                 = Container()
-        self.cabin_offset                           = 0.0 
+        self.cabins                                 = Container() 
         self.vsp_data                               = Data()
         self.vsp_data.xsec_id                       = ''       
         self.vsp_data.shape                         = ''                
@@ -250,7 +250,7 @@ class Fuselage(Component):
 
         return 
 
-    def compute_moment_of_inertia(self, center_of_gravity=[[0, 0, 0]]): 
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
         """
         Computes the moment of inertia tensor for the fuselage.
 
@@ -259,15 +259,22 @@ class Fuselage(Component):
         center_of_gravity : list, optional
             Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
 
-        Returns
-        -------
-        I : ndarray
-            3x3 moment of inertia tensor in kg*m^2
+        See Also
+        --------
+        RCAIDE.Library.Methods.weights.vehicle.moments_of_inertia.compute_fuselage_moment_of_inertia
+            Implementation of the moment of inertia calculation
+        """
+        _ , _ = compute_fuselage_moment_of_inertia(self,center_of_gravity) 
+        return
+
+    def compute_center_of_gravity(self,vehicle): 
+        """
+        Computes the center of gravity for the fuselage.
 
         See Also
         --------
-        RCAIDE.Library.Methods.Weights.Moment_of_Inertia.compute_fuselage_moment_of_inertia
-            Implementation of the moment of inertia calculation
+        RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_wing_center_of_gravity
+            Implementation of the center of gravity calculation
         """
-        I = compute_fuselage_moment_of_inertia(self,center_of_gravity) 
-        return I    
+        _  = compute_fuselage_center_of_gravity(self) 
+        return       

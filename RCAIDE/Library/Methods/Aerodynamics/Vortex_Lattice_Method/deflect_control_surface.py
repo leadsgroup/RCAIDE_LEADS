@@ -17,9 +17,7 @@ import numpy as np
 
 # ----------------------------------------------------------------------
 #  Deflect Control Surface
-# ----------------------------------------------------------------------
-
-## @ingroup Methods-Aerodynamics-Common-Fidelity_Zero-Lift
+# ---------------------------------------------------------------------- 
 def deflect_control_surfaces(VD,geometry,settings):
     """ 
     Goes through a vehicle and updates the control surface deflections in the VD. Crucially this rebuilds the VD as a
@@ -265,8 +263,6 @@ def deflect_control_surface(VD,wing):
 # ----------------------------------------------------------------------
 #  Deflect Control Surface Strip
 # ----------------------------------------------------------------------
-
-## @ingroup Methods-Aerodynamics-Common-Fidelity_Zero-Lift
 def deflect_control_surface_strip(wing, raw_VD, is_first_strip, sym_sign):
     """ Rotates existing points in the VD with respect to current values of a delta deflection
 
@@ -521,8 +517,6 @@ def make_hinge_quaternion(point_on_line, direction_unit_vector, rotation_angle):
 # ----------------------------------------------------------------------
 #  Rotate Points with Quaternion
 # ----------------------------------------------------------------------
-
-## @ingroup Methods-Aerodynamics-Common-Fidelity_Zero-Lift
 def rotate_points_with_quaternion(quat, points):
     """ This rotates the points by a quaternion
 

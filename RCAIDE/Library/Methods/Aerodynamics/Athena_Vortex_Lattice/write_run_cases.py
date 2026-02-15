@@ -85,7 +85,7 @@ def write_run_cases(avl_object,trim_aircraft, vehicle):
     # Open the vehicle file after purging if it already exists
     purge_files([batch_filename]) 
     with open(batch_filename,'w') as runcases:
-        # extract C.G. coordinates and moment of intertia tensor
+        # extract C.G. coordinates and moment of inertia tensor
 
         x_cg = vehicle.mass_properties.center_of_gravity[0][0]
         y_cg = vehicle.mass_properties.center_of_gravity[0][1]

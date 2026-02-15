@@ -48,7 +48,7 @@ def main():
     mdot_truth  = 0.0036973789893088482
     
     P    = results.segments.cruise.state.conditions.energy.converters['internal_combustion_engine'].power[-1,0]
-    mdot = results.segments.cruise.state.conditions.weights.vehicle_mass_rate[-1,0]     
+    mdot = results.segments.cruise.state.conditions.weights.vehicle.mass_rate[-1,0]     
 
     # Check the errors
     error = Data()
@@ -250,12 +250,18 @@ def base_analysis(vehicle):
     analyses = RCAIDE.Framework.Analyses.Vehicle()
     analyses.vehicle    = vehicle 
 
+    # ------------------------------------------------------------------
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
     analyses.append(geometry)
+
+    # ------------------------------------------------------------------
+    #  Weights
+    weights = RCAIDE.Framework.Analyses.Weights.Conventional_General_Aviation()
+    analyses.append(weights)     
     
     # ------------------------------------------------------------------
-    #  Aerodynamics Analysis
+    #  Aerodynamics  
     aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
     analyses.append(aerodynamics)
 

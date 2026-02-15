@@ -17,6 +17,8 @@ from RCAIDE.Library.Methods.Powertrain.Propulsors.Internal_Combustion_Engine.app
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Internal_Combustion_Engine.compute_internal_combustion_engine_performance         import compute_internal_combustion_engine_performance, reuse_stored_internal_combustion_engine_data
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Internal_Combustion_Engine.append_internal_combustion_engine_residual_and_unknown import append_internal_combustion_engine_residual_and_unknown
  
+# python imports 
+import numpy as np 
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 # Internal_Combustion_Engine

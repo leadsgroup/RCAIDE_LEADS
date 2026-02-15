@@ -35,11 +35,14 @@ def vehicle_setup():
     # mass properties
     vehicle.mass_properties.max_takeoff               = 2948 * Units.pounds
     vehicle.mass_properties.takeoff                   = 2948 * Units.pounds
-    vehicle.mass_properties.moments_of_inertia.tensor = np.array([[164627.7,0.0,0.0],[0.0,471262.4,0.0],[0.0,0.0,554518.7]])
-    vehicle.mass_properties.center_of_gravity         = [[2.239696797,0,-0.131189711 ]]
+    vehicle.mass_properties.moments_of_inertia.tensor = [[1420.8784,0.0,0.0],[0.0,4067.4,0.0],[0.0,0.0,4785.974]]
+    vehicle.mass_properties.center_of_gravity         = [[2.239696797,0,-0.131189711 ]] 
+    vehicle.mass_properties.max_fuel                  =  60 * Units.pounds
+    vehicle.mass_properties.fuel                      =  60 * Units.pounds
+    vehicle.mass_properties.max_payload               =  700 *  Units.lbs 
      
     vehicle.reference_area                            = 17.112 
-    vehicle.number_of_passengers                                = 2 
+    vehicle.number_of_passengers                      = 2 
     vehicle.systems.control                           = "fully powered"
     vehicle.systems.accessories                       = "commuter"       
     
@@ -50,6 +53,32 @@ def vehicle_setup():
     vehicle.flight_envelope.positive_limit_load       = 3.8
     vehicle.flight_envelope.design_dynamic_pressure   = 1929.16080736607
     vehicle.flight_envelope.design_mach_number        = 0.1931864244395293
+    
+ 
+    # ------------------------------------------------------------------        
+    #  Landing Gear
+    # ------------------------------------------------------------------  
+    main_gear                                  = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
+    main_gear.tire_diameter                    = 19 *  Units.inches 
+    main_gear.rim_diameter                     = 8 *  Units.inches 
+    main_gear.tire_width                       = 7 *  Units.inches 
+    main_gear.strut_length                     = 5 * Units.feet  
+    main_gear.wheels                           = 1   
+    main_gear.number_of_gear_types_in_tandem   = 1
+    main_gear.number_of_wheels_in_gear_type    = 1 
+    main_gear.xz_plane_symmetric               = True 
+    main_gear.origin                           = [[ 2.595 ,1.245, 0]]
+    vehicle.append_component(main_gear)  
+
+    nose_gear                                 = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
+    nose_gear.tire_diameter                   =  19 *  Units.inches   
+    nose_gear.rim_diameter                    =  8 *  Units.inches 
+    nose_gear.tire_width                      =  7 *  Units.inches 
+    nose_gear.strut_length                    =  5 * Units.feet  
+    nose_gear.wheels                          = 1   
+    nose_gear.number_of_gear_types_in_tandem  = 1
+    nose_gear.origin                          = [[0.865 , 0, 0]] 
+    vehicle.append_component(nose_gear)    
     
     # ------------------------------------------------------------------        
     #   Main Wing
@@ -214,12 +243,13 @@ def vehicle_setup():
 
     # define cabin    
     cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
+    cabin.origin                                      = [[1.45, 0, -0.3]]
     economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
     economy_class.number_of_seats_abrest              = 2
     economy_class.number_of_rows                      = 1
     economy_class.galley_lavatory_percent_x_locations = []  
     economy_class.emergency_exit_percent_x_locations  = []      
-    economy_class.type_A_exit_percent_x_locations     = [] 
+    economy_class.type_A_exit_percent_x_locations     = []
     economy_class.number_of_seats                     = economy_class.number_of_rows  * economy_class.number_of_seats_abrest 
     cabin.append_cabin_class(economy_class)
     fuselage.append_cabin(cabin)
@@ -319,10 +349,15 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------       
     fuel_tank                                             = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank() 
     fuel_tank.origin                                      = vehicle.wings.main_wing.origin  
-    fuel_tank.fuel                                        = RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline() 
-    fuel_tank.fuel.mass_properties.mass                   = 319 *Units.lbs 
+    fuel_tank.origin                                      = [[2.44,0, -0.6]]
+    fuel_tank.fuel                                        = RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline()  
     fuel_tank.fuel.mass_properties.center_of_gravity      = wing.mass_properties.center_of_gravity
-    fuel_tank.volume_properties.internal                  = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density   
+    fuel_tank.fuel.mass_properties.mass                   = 40 *Units.lbs 
+    fuel_tank.fuel.origin                                 = [[2.44,0, -0.6]] 
+    fuel_tank.lengths.external                            = 0.5
+    fuel_tank.widths.external                             = 0.5
+    fuel_tank.heights.external                            = 0.15    
+    fuel_tank.volume_properties.internal                  = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density
     fuel_line.fuel_tanks.append(fuel_tank)  
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor
@@ -335,7 +370,8 @@ def vehicle_setup():
     engine.sea_level_power                     = 185. * Units.horsepower 
     engine.rated_speed                         = 2300. * Units.rpm 
     engine.power_specific_fuel_consumption     = 0.01  * Units['lb/hp/hr']
-    ice_prop.engine                            = engine 
+    ice_prop.engine                            = engine
+    ice_prop.origin                            = [[0.5,0, -0.2]]
     ice_prop.sealevel_static_thrust            = 2500 # N
      
     # Propeller 

@@ -6,10 +6,10 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE Imports
+import RCAIDE
 from RCAIDE.Framework.Core                                                                import Data, Units 
 from RCAIDE.Library.Components                                                            import Component  
 from RCAIDE.Library.Attributes.Coolants.Glycol_Water                                      import Glycol_Water  
-from RCAIDE.Library.Attributes.Gases                                                      import Air
 from RCAIDE.Library.Methods.Thermal_Management.Heat_Exchangers.Cross_Flow_Heat_Exchanger  import  cross_flow_hex_rating_model, append_cross_flow_heat_exchanger_conditions, append_cross_flow_hex_segment_conditions
 from RCAIDE.Library.Plots.Thermal_Management.plot_cross_flow_heat_exchanger_conditions    import plot_cross_flow_heat_exchanger_conditions 
 
@@ -150,7 +150,7 @@ class Cross_Flow_Heat_Exchanger(Component):
         """         
         self.tag                                                    = 'cross_flow_heat_exchanger'
         self.coolant                                                = Glycol_Water() 
-        self.air                                                    = Air() 
+        self.air                                                    = RCAIDE.Library.Attributes.Gases.Air()
         self.design_heat_removed                                    = 0.0
         self.minimum_air_speed                                      = 105 * Units.knots 
         

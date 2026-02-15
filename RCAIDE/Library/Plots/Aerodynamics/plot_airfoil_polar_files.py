@@ -16,9 +16,7 @@ import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
-# ----------------------------------------------------------------------------------------------------------------------     
-
-## @ingroup Library-Plots-Performance-Aerodynamics   
+# ----------------------------------------------------------------------------------------------------------------------       
 def plot_airfoil_polar_files(polar_data,
                              save_figure = False,
                              show_legend = True,
@@ -71,7 +69,7 @@ def plot_airfoil_polar_files(polar_data,
         - Bottom right: Lift-to-drag ratio vs angle of attack
 
     Each Reynolds number case is plotted in a different color using
-    the viridis colormap. Legend entries show Reynolds numbers in
+    the inferno colormap. Legend entries show Reynolds numbers in
     scientific notation (e.g., "Re=1.0e6").
 
     See Also

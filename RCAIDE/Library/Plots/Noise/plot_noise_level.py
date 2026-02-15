@@ -108,7 +108,7 @@ def plot_noise_level(noise_data,
     axes        = fig.add_subplot(1,1,1) 
     
     # get line colors for plots 
-    line_colors   = cm.viridis(np.linspace(0,0.9,N_gm_y))  
+    line_colors   = cm.inferno(np.linspace(0,0.9,N_gm_y))  
       
     for k in range(N_gm_y):    
         axes.plot(gm_x[:,0]/Units.nmi, noise_level[:,k], marker = 'o', color = line_colors[k], label= r'mic at y = ' + str(round(gm_y[0,k],1)) + r' m' ) 

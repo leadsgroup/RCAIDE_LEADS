@@ -173,7 +173,7 @@ def evaluate_slipstream(rotor,VD,conditions,settings,geometry,ctrl_pts,wing_inst
     rot_V_wake_ind = evaluate_wake_velocities(rotor,rotor_conditions,wing_CPs,ctrl_pts)
     
     # Expand
-    wake_V_ind = np.zeros((ctrl_pts,int(VD.n_cp[0]),3))
+    wake_V_ind = np.zeros((ctrl_pts,VD.n_cp[0][0],3))
     wake_V_ind[:,slipstream_vd_ids,:] = rot_V_wake_ind 
         
     return wake_V_ind

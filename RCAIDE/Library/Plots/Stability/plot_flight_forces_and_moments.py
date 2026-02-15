@@ -98,7 +98,7 @@ def plot_flight_forces_and_moments(results,
     plt.rcParams.update(parameters)
      
     # get line colors for plots 
-    line_colors   = cm.viridis(np.linspace(0,0.9,len(results.segments)))     
+    line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))     
   
     
     fig   = plt.figure(save_filename)

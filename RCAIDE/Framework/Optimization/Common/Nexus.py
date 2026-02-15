@@ -380,7 +380,7 @@ class Nexus(Data):
             newx     = np.asarray(x)*1.0
             newx[ii] = newx[ii] + diff_interval
             
-            grad_obj[ii]  = self.objective(newx)
+            grad_obj[ii]  = self.objective(newx)[0]
             jac_con[ii,:] = self.all_constraints(newx)
         
         grad_obj = (grad_obj - obj)/diff_interval

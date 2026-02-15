@@ -118,8 +118,8 @@ def get_conditions():
 
 def get_settings():
     settings = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method().settings
-    settings.number_of_spanwise_vortices        = None
-    settings.number_of_chordwise_vortices       = None  
+    settings.number_of_spanwise_vortices     = None
+    settings.number_of_chordwise_vortices    = None  
     settings.wing_spanwise_vortices          = 7
     settings.wing_chordwise_vortices         = 4
     settings.fuselage_spanwise_vortices      = 7

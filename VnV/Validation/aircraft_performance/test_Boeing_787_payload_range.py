@@ -20,7 +20,16 @@ import Boeing_787 as Boeing_787
 
 def main():
     ti                   = time.time()
-    payload_range_results = payload_range_test()     
+    
+    vehicle  = Boeing_787.vehicle_setup()   
+    configs  = Boeing_787.configs_setup(vehicle) 
+    analyses = analyses_setup(configs) 
+    mission  = payload_range_mission_setup(analyses)
+    missions = missions_setup(mission)
+     
+    # run payload range analysis 
+    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage = 0.05, delete_training_data = True) 
+    
 
     # Reference (trusted) values
     # DO not change these values without consulting the airport planning manual first:
@@ -29,11 +38,11 @@ def main():
     #     "payload": (([44000, 44000, 9071.8474, 0]) lbs
     #     "payload + oew": (([161025, 161025, 127005.864, 117934.016]) lbs
     truth_values = {
-        "range": np.array([       0.        , 10427130.82483258, 17639210.90415946,       18322690.66286845]),
-        "payload": np.array([44000.        , 44000.        ,  9764.43714727,     0.        ]),
-        "oew_plus_payload": np.array([160842.56285273, 160842.56285273, 126607.        , 116842.56285273]),
-        "fuel": np.array([     0.        ,  67087.43714727, 101323.        , 101323.        ]),
-        "takeoff_weight": np.array([     0.        , 227930.        , 227930.        , 218165.56285273]),
+        "range": np.array([       0.        , 10379861.95907129, 17639210.23636528, 18306191.89479472]),
+        "payload": np.array([44000.        , 44000.        ,  9526.30115302,     0.        ]),
+        "oew_plus_payload": np.array([161080.69884698, 161080.69884698, 126607.        , 117080.69884698]), 
+        "fuel": np.array([     0.        ,  66849.30115302, 101323.        , 101323.        ]),
+        "takeoff_weight": np.array([     0.        , 227930.        , 227930.        , 218403.69884698]),
     }
     # Tolerance checks
     for key in truth_values:
@@ -50,21 +59,7 @@ def main():
     elapsed_time         = round((tf-ti),2)
     print('Payload Range simulation Time: ' + str(elapsed_time) + ' seconds') 
             
-    return
-
-def payload_range_test():
-    
-    vehicle  = Boeing_787.vehicle_setup()   
-    configs  = Boeing_787.configs_setup(vehicle) 
-    analyses = Boeing_787.analyses_setup(configs) 
-    mission  = payload_range_mission_setup(analyses)
-    missions = Boeing_787.missions_setup(mission)
-     
-    # run payload range analysis 
-    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage = 0.05, delete_training_data = True)
-  
-    
-    return  payload_range_results
+    return 
 
 # ----------------------------------------------------------------------
 #   Define the Mission
@@ -321,5 +316,85 @@ def payload_range_mission_setup(analyses):
  
     return mission
 
+
+
+# ----------------------------------------------------------------------
+#   Define the Configurations
+# ---------------------------------------------------------------------
+
+def analyses_setup(configs):
+    """Set up analyses for each of the different configurations."""
+
+    analyses = RCAIDE.Framework.Analyses.Analysis.Container()
+
+    # Build a base analysis for each configuration. Here the base analysis is always used, but
+    # this can be modified if desired for other cases.
+    for tag,config in configs.items():
+        analysis = base_analysis(config)
+        analyses[tag] = analysis
+
+    return analyses
+
+
+def base_analysis(vehicle):
+    """This is the baseline set of analyses to be used with this vehicle. Of these, the most
+    commonly changed are the weights and aerodynamics methods."""
+
+    # ------------------------------------------------------------------
+    #   Initialize the Analyses
+    # ------------------------------------------------------------------     
+    analyses = RCAIDE.Framework.Analyses.Vehicle()
+    analyses.vehicle =  vehicle
+
+    # ------------------------------------------------------------------
+    #  Geometry
+    # ------------------------------------------------------------------
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
+    analyses.append(geometry)
+
+    # ------------------------------------------------------------------
+    #  Weights
+    weights = RCAIDE.Framework.Analyses.Weights.Conventional_Transport() 
+    weights.settings.FLOPS.fidelity                                          = 'Complex'      
+    weights.settings.advanced_composites                                     = True
+    weights.settings.weight_correction_additions.empty.structural.paint      = 450 
+    weights.settings.weight_correction_additions.operational_items.ETOPS     = 7.7 * vehicle.number_of_passengers
+    weights.settings.weight_correction_additions.empty.propulsion.battery    = 56 
+    weights.settings.weight_correction_factors.empty.structural.landing_gear = 1.05    
+    weights.settings.weight_correction_factors.empty.systems.electrical      = 2.67 
+    analyses.append(weights)
+
+    # ------------------------------------------------------------------
+    #  Aerodynamics Analysis
+    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
+    analyses.append(aerodynamics)
+
+    # ------------------------------------------------------------------
+    #  Energy
+    energy = RCAIDE.Framework.Analyses.Energy.Energy() 
+    analyses.append(energy)
+    
+  
+
+    # ------------------------------------------------------------------
+    #  Planet Analysis
+    planet = RCAIDE.Framework.Analyses.Planets.Earth()
+    analyses.append(planet)
+
+    # ------------------------------------------------------------------
+    #  Atmosphere Analysis
+    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
+    analyses.append(atmosphere)   
+
+    return analyses    
+
+def missions_setup(mission):
+    """This allows multiple missions to be incorporated if desired, but only one is used here."""
+
+    missions     = RCAIDE.Framework.Mission.Missions() 
+    mission.tag  = 'base_mission'
+    missions.append(mission)
+
+    return missions
 if __name__ == '__main__': 
     main()    

@@ -43,7 +43,7 @@ def translate_conditions_to_cases(avl ,conditions, vehicle):
     for i in range(len(conditions.aerodynamics.angles.alpha)):      
         case                                                  = Run_Case()
         case.tag                                              = avl.settings.filenames.case_template.format(avl.current_status.batch_index,i+1)
-        case.mass                                             = conditions.weights.total_mass
+        case.mass                                             = conditions.weights.vehicle.mass
         case.conditions.freestream.mach                       = conditions.freestream.mach_number[i, 0]
         case.conditions.freestream.density                    = conditions.freestream.density[i, 0]
         case.conditions.freestream.gravitational_acceleration = conditions.freestream.gravity[i, 0]      

@@ -75,7 +75,7 @@ def plot_emissions(results,
         - Time history of emissions
 
     Different emission types are distinguished by fill colors
-    and segments use different shades from the viridis colormap.
+    and segments use different shades from the inferno colormap.
 
     **Definitions**
 
@@ -101,7 +101,7 @@ def plot_emissions(results,
     fig   = plt.figure(save_filename)
     fig.set_size_inches(width,height)  
 
-    line_colors   = cm.viridis(np.linspace(0,0.9,len(results.segments)))
+    line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))
     
     cum_y0  = 0
     cum_y1  = 0 

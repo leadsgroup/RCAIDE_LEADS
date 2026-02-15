@@ -13,6 +13,7 @@ from RCAIDE.Framework.Analyses                                 import Process
 from RCAIDE.Library.Methods.Stability                          import Common
 from .Stability                                                import Stability     
 from RCAIDE.Library.Methods.Stability.Vortex_Lattice_Method    import *  
+import  numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Vortex_Lattice_Method
@@ -102,7 +103,11 @@ class Vortex_Lattice_Method(Stability):
     def initialize(self, vehicle): 
         
         # compute neutral point 
-        compute_neutral_point(self, vehicle)            
+        if self.settings.compute_neutral_point:
+            print("Computing neutral point (This might take a while)")
+            compute_neutral_point(self, vehicle)  
+        elif vehicle.neutral_point == None:
+            raise AttributeError('Neutral point not defined.')
         return 
     
          

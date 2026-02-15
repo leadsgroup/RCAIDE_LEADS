@@ -9,11 +9,14 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
  # RCAIDE imports
 from RCAIDE.Framework.Core     import Data
-from .                         import Propulsor
+from .                         import Propulsor 
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.design_turbofan                import design_turbofan
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.append_turbofan_conditions     import append_turbofan_conditions 
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_turbofan_performance   import compute_turbofan_performance, reuse_stored_turbofan_data
- 
+
+# python imports 
+import numpy as np
+
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Turbofan
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -141,23 +144,19 @@ class Turbofan(Propulsor):
     RCAIDE.Library.Components.Powertrain.Propulsors.Turboshaft
     """
     def __defaults__(self):    
-        # setting the default values
-        self.tag                                        = 'Turbofan'   
-        self.fan_tag                                    = []
-        self.ram_tag                                    = []
-        self.inlet_nozzle_tag                           = []
-        self.low_pressure_compressor_tag                = []
-        self.high_pressure_compressor_tag               = []
-        self.low_pressure_turbine_tag                   = []
-        self.high_pressure_turbine_tag                  = []
-        self.combustor_tag                              = []
-        self.core_nozzle_tag                            = []
-        self.fan_nozzle_tag                             = []   
-        self.generator_tag                              = []   
-        self.motor_tag                                  = []      
-        self.diameter                                   = 0.0      
-        self.length                                     = 0.0
-        self.height                                     = 0.0     # Engine centerline heigh above the ground plane 
+        # setting the default values 
+        self.tag                                        = 'Turbofan'  
+        self.nacelle                                    = None 
+        self.fan                                        = None 
+        self.ram                                        = None 
+        self.inlet_nozzle                               = None 
+        self.low_pressure_compressor                    = None 
+        self.high_pressure_compressor                   = None 
+        self.low_pressure_turbine                       = None 
+        self.high_pressure_turbine                      = None 
+        self.combustor                                  = None 
+        self.core_nozzle                                = None 
+        self.fan_nozzle                                 = None   
         self.plug_diameter                              = 0.1     # dimater of the engine plug
         self.geometry_xe                                = 1.      # Geometry information for the installation effects function
         self.geometry_ye                                = 1.      # Geometry information for the installation effects function
@@ -216,6 +215,6 @@ class Turbofan(Propulsor):
     def reuse_stored_data(turbofan,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
         """
         Reuses stored turbofan data for performance calculations.
-        """
+        """ 
         inputs, outputs  = reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,center_of_gravity)
-        return inputs, outputs
+        return inputs, outputs 

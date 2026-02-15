@@ -142,4 +142,4 @@ def estimate_landing_field_length(vehicle,analyses, altitude=0, delta_isa=0):
         landing_field_length += constant * Vref**idx
     
     # return
-    return landing_field_length
+    return landing_field_length[0][0]

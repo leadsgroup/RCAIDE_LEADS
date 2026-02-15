@@ -25,10 +25,10 @@ def initialize_conditions(segment):
     Inputs:
     segment.throttle                           [unitless]
     conditions.frames.inertial.position_vector [meters]
-    conditions.weights.total_mass              [kilogram]
+    conditions.weights.vehicle.mass              [kilogram]
 
     Outputs:
-    conditions.weights.total_mass              [kilogram]
+    conditions.weights.vehicle.mass              [kilogram]
     conditions.frames.inertial.position_vector [unitless]
     conditions.propulsion.throttle             [meters]
     
@@ -52,5 +52,5 @@ def initialize_conditions(segment):
     conditions.frames.inertial.velocity_vector[:,0] = v0  
     conditions.freestream.altitude[:,0]             = alt
     conditions.frames.inertial.position_vector[:,2] = -alt   
-    conditions.weights.total_mass[:,0]              = segment.analyses.vehicle.mass_properties.takeoff
+    conditions.weights.vehicle.mass[:,0]            = segment.analyses.vehicle.mass_properties.takeoff
     conditions.frames.inertial.position_vector[:,:] = conditions.frames.inertial.position_vector[0,:][None,:][:,:]

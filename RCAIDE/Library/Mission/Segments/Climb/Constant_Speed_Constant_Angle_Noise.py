@@ -102,8 +102,7 @@ def expand_state(segment):
     
     # unpack
     climb_angle  = segment.climb_angle
-    air_speed    = segment.air_speed   
-    conditions   = segment.state.conditions
+    air_speed    = segment.air_speed    
     
     #Necessary input for determination of noise trajectory    
     dt = 0.5  #time step in seconds for noise calculation - Certification requirement    

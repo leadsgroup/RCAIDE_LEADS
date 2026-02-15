@@ -9,6 +9,9 @@
 import RCAIDE
 from RCAIDE.Framework.Core              import Data 
 from RCAIDE.Library.Components          import Component   
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia                             import compute_cylinder_moment_of_inertia
+
+# python imports 
 import scipy as sp
 import numpy as np
  
@@ -197,5 +200,22 @@ class Nacelle(Component):
         rot_mat = sp.spatial.transform.Rotation.from_rotvec([0,np.pi,0]).as_matrix()
         return rot_mat
     
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
+        """
+        Computes the moment of inertia tensor for the propulsor.
+
+        Parameters
+        ---------- 
+        center_of_gravity : list, optional
+            Reference point coordinates, defaults to [[0, 0, 0]]
+        
+        Returns
+        -------
+        ndarray
+            3x3 moment of inertia tensor
+        """
+
+        _, _ =  compute_cylinder_moment_of_inertia(self, self.length, self.diameter/2, 0, 0, center_of_gravity = center_of_gravity)  
+        return            
     
         

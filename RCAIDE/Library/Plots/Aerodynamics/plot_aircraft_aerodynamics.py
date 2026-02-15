@@ -9,8 +9,6 @@
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Plots.Common import set_axes, plot_style 
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
-import numpy as np 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
@@ -129,7 +127,10 @@ def plot_aircraft_aerodynamics(results,
     axis_1.set_xlabel('AoA') 
     axis_2.set_xlabel('AoA')  
     axis_1.set_ylabel('$C_L$') 
-    axis_2.set_ylabel('$C_D$')   
+    axis_2.set_ylabel('$C_D$')
+    
+    set_axes(axis_1)
+    set_axes(axis_2)
     
     plt.tight_layout()    
     if save_figure:    

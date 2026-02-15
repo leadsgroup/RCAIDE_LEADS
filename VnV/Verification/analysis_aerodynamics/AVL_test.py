@@ -137,6 +137,10 @@ def base_analysis(vehicle,use_surrogate,trim_aircraft,keep_regression_files,new_
     analyses = RCAIDE.Framework.Analyses.Vehicle()
     analyses.vehicle =  vehicle
 
+    #  Weights
+    weights = RCAIDE.Framework.Analyses.Weights.Electric_General_Aviation() 
+    analyses.append(weights)    
+
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
     analyses.append(geometry)

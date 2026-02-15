@@ -17,7 +17,9 @@ from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.pack_electric_r
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.append_electric_rotor_conditions           import append_electric_rotor_conditions
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.compute_electric_rotor_performance         import compute_electric_rotor_performance, reuse_stored_electric_rotor_data
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor.append_electric_rotor_residual_and_unknown import append_electric_rotor_residual_and_unknown
-
+ 
+# python imports 
+import numpy as np
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Electric_Rotor
 # ----------------------------------------------------------------------------------------------------------------------  

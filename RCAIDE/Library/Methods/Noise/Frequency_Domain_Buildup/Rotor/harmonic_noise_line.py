@@ -231,16 +231,16 @@ def harmonic_noise_line(harmonics_blade,harmonics_load,conditions,coordinates,ro
     Term1_5        = ((m_5*B*z_5*M_t_5*np.cos(theta_r_prime_5))/(1-M_5*np.cos(theta_r_5)))*F_xk_5
     Term2_5        = -(m_5*B-k_5)*F_phik_5
     Integrand_5    = (1/z_5)*(Term1_5 + Term2_5)*J_mBk_5
-    Summand_4      = np.trapz(Integrand_5, x=z_5[0,0,:,0,0], axis=2)*np.exp(1j*(m_4*B-k_4)*(phi_prime_4-(np.pi/2)))
+    Summand_4      = np.trapezoid(Integrand_5, x=z_5[0,0,:,0,0], axis=2)*np.exp(1j*(m_4*B-k_4)*(phi_prime_4-(np.pi/2)))
     Summation_3    = np.sum(Summand_4, axis=3)
     P_Lm           = (1j*B*np.exp(1j*k_m_3*r_3)*Summation_3)/(4*np.pi*r_3*(1-M_3*np.cos(theta_r_3))) 
     
     # frequency domain source function for drag and lift
-    psi_V_5        = np.trapz(H_6*exp_term_6, x=X, axis=5)
+    psi_V_5        = np.trapezoid(H_6*exp_term_6, x=X, axis=5)
     
     # FREQUENCY DOMAIN PRESSURE TERM FOR THICKNESS
     V_Integrand_5  = (M_r_5**2)*(k_x_hat_5**2)*t_b_5*psi_V_5*J_mBk_5
-    V_Summand_4    = np.trapz(V_Integrand_5, x=z_5[0,0,:,0,0], axis=2)*np.exp(1j*m_4*B*(phi_prime_4-(np.pi/2)))
+    V_Summand_4    = np.trapezoid(V_Integrand_5, x=z_5[0,0,:,0,0], axis=2)*np.exp(1j*m_4*B*(phi_prime_4-(np.pi/2)))
     
     # we take a single dimension along the 4th axis because we only want the loading mode corresponding to k=0
     V_Summation_3  = V_Summand_4[:,:,:,0]

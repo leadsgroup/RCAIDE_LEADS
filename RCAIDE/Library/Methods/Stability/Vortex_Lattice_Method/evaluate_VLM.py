@@ -4,12 +4,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-# RCAIDE imports   
-from RCAIDE.Framework.Core     import Data    
-from RCAIDE.Library.Methods.Stability.Common.update_center_of_gravity import update_center_of_gravity
-
-# package imports
-import numpy   as np
+import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Vortex_Lattice
@@ -30,30 +25,9 @@ def evaluate(state,settings,vehicle):
         
     Returns: 
         None  
-    """ 
-   
-    # --------------------------------------------------------------------------
-    # unpack 
-    # --------------------------------------------------------------------------
-    conditions    = state.conditions 
-    AoA           = conditions.aerodynamics.angles.alpha  
-    
-    if settings.update_center_of_gravity:
-        CG = update_center_of_gravity(vehicle, conditions)
-    else:
-        CG = np.ones_like(AoA) * vehicle.mass_properties.center_of_gravity[0][0] 
- 
-    # --------------------------------------------------------------------------------------------      
-    # Vehicle Properties 
-    # --------------------------------------------------------------------------------------------      
-    c_ref         = vehicle.reference_chord   
-    NP            = vehicle.neutral_point
-    
-    # --------------------------------------------------------------------------------------------      
-    # Store Results 
-    # --------------------------------------------------------------------------------------------      
-    conditions.static_stability.center_of_gravity      = CG       
-    conditions.static_stability.neutral_point[:,0]     = NP 
-    conditions.static_stability.static_margin          = (NP - CG) / c_ref      
-        
+    """  
+    # update static margin 
+    c_ref                                                = vehicle.reference_chord   
+    state.conditions.static_stability.static_margin      = np.atleast_2d((vehicle.neutral_point  - state.conditions.weights.vehicle.global_center_of_gravity[:,0]) / c_ref).T
+    state.conditions.static_stability.neutral_point[:,0] = vehicle.neutral_point  
     return  

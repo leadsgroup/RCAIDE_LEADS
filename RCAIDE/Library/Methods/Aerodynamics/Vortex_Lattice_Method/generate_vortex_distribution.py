@@ -618,7 +618,6 @@ def generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,precision):
             
             if y_coordinates[idx_y+1] == break_spans[i_break+1]: 
                 i_break += 1
-            
     
     # -------------------------------------------------------------------------------------------------------------
     # Run the strip contruction loop again if wing is symmetric. 

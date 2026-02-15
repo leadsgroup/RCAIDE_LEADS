@@ -170,7 +170,8 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Starboard Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------   
-    center_propulsor                              = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan()  
+    center_propulsor                              = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan()
+    center_propulsor.wing_mounted                 = False
     center_propulsor.tag                          = 'center_propulsor' 
   
     # Electronic Speed Controller       
@@ -183,7 +184,7 @@ def vehicle_setup(regression_flag, ducted_fan_type):
 
     # Ducted_fan                            
     ducted_fan                                   = RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan()
-    ducted_fan.tag                               = 'ducted_fan'
+    ducted_fan.tag                               = 'ducted_fan' 
     ducted_fan.number_of_rotor_blades            = 12 
     ducted_fan.number_of_radial_stations         = 20
     ducted_fan.tip_radius                        = 6 * Units.inches  / 2

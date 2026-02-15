@@ -119,7 +119,7 @@ def plot_flight_trajectory(results,
     fig.set_size_inches(width,height) 
      
     # get line colors for plots 
-    line_colors   = cm.viridis(np.linspace(0,0.9,len(results.segments)))    
+    line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))    
      
     for i in range(len(results.segments)): 
         time     = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min

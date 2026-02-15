@@ -102,16 +102,15 @@ def base_analysis(vehicle):
 
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.settings.unique_geometry = True
-    geometry.settings.overwrite_reference        = False
+    geometry.settings.unique_geometry               = True # just for regression purposes
+    geometry.settings.overwrite_reference           = False
     analyses.append(geometry)
     
     # ------------------------------------------------------------------
     #  Weights
-    weights                 = RCAIDE.Framework.Analyses.Weights.Conventional_Transport() 
-    weights.settings.update_mass_properties         = False
-    weights.settings.update_center_of_gravity       = False
-    weights.settings.update_moment_of_inertia       = False 
+    weights                 = RCAIDE.Framework.Analyses.Weights.Conventional_Transport()  
+    weights.settings.overwrite_center_of_gravity    = False
+    weights.settings.overwrite_moments_of_inertia   = False 
     analyses.append(weights)
     
     # ------------------------------------------------------------------

@@ -103,8 +103,8 @@ class Additive_Solver():
             problem.fidelity_level = level
             for ii,x in enumerate(x_samples):
                 res = self.evaluate_model(problem,x,scaled_constraints)
-                f[level-1,ii]    = res[0]  # objective value
-                g[level-1,ii,:]  = res[1]  # constraints vector
+                f[level-1,ii]    = res[0][0]  # objective value
+                g[level-1,ii,:]  = res[1]     # constraints vector
         
         converged = False
         
@@ -203,7 +203,7 @@ class Additive_Solver():
                 for level in range(1,num_fidelity_levels+1):
                     problem.fidelity_level = level
                     res = self.evaluate_model(problem,xOpt,scaled_constraints)
-                    f[level-1][-1] = res[0]
+                    f[level-1][-1] = res[0][0]
                     g[level-1][-1] = res[1]
                     
                 # History writing

@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 name = "RCAIDE_LEADS"
 description = "RCAIDE: Research Community Aerospace Interdisciplinary Design Environment"
 readme = "README_PyPI.md"  # Updated to use PyPI-compatible README
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 license = {text = "GNU Affero General Public License v3.0"}
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -45,6 +45,7 @@ dependencies = [
     "python-dateutil",
     "pytz",
     "shapely",
+    "trimesh",
     "six",
     "vtk",
     "tenacity",

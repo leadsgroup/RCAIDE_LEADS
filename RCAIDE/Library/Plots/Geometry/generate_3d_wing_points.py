@@ -144,9 +144,9 @@ def generate_3d_wing_points(wing, n_points, dim):
         section_twist[:, :, 1, 1] = 1
         section_twist[:, :, 2, 2] = 1
         translation      = np.zeros((dim,n_points, 3,1))
-        
-        airfoil = wing.airfoil 
+         
         if wing.airfoil != None: 
+            airfoil = wing.airfoil
             if type(airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
                 geometry = compute_naca_4series(airfoil.NACA_4_Series_code,n_points)
             elif type(airfoil) == RCAIDE.Library.Components.Airfoils.Airfoil: 

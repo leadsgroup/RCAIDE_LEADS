@@ -27,7 +27,7 @@ from Navion    import vehicle_setup, configs_setup
 def main(): 
     
     # vehicle data
-    vehicle  = vehicle_setup() 
+    vehicle  = vehicle_setup()
 
     # Set up vehicle configs
     configs  = configs_setup(vehicle)
@@ -45,20 +45,19 @@ def main():
     results = missions.base_mission.evaluate() 
 
     elevator_deflection        = results.segments.climb.conditions.control_surfaces.elevator.deflection[0,0] / Units.deg
-    elevator_deflection_true   = -1.1876678416134367
+    elevator_deflection_true   = -1.2050015164508827
     elevator_deflection_diff   = np.abs(elevator_deflection - elevator_deflection_true)
     print('Error1: ',elevator_deflection_diff)
     assert np.abs(elevator_deflection_diff/elevator_deflection_true) < 5e-3
 
     aileron_deflection        = results.segments.climb.conditions.control_surfaces.aileron.deflection[0,0] / Units.deg
-    aileron_deflection_true   = 0.46244986328560833
+    aileron_deflection_true   = 0.46248573486214606
     aileron_deflection_diff   = np.abs(aileron_deflection - aileron_deflection_true)
     print('Error2: ',aileron_deflection_diff)
     assert np.abs(aileron_deflection_diff/aileron_deflection_true) < 5e-3
 
-
     rudder_deflection        = results.segments.climb.conditions.control_surfaces.rudder.deflection[0,0] / Units.deg
-    rudder_deflection_true   = 1.4111956122597813
+    rudder_deflection_true   = 1.4111784674575518
     rudder_deflection_diff   = np.abs(rudder_deflection - rudder_deflection_true)
     print('Error3: ',rudder_deflection_diff)
     assert np.abs(rudder_deflection_diff/rudder_deflection_true) < 5e-3    
@@ -91,10 +90,18 @@ def base_analysis(vehicle):
     analyses = RCAIDE.Framework.Analyses.Vehicle()  
     analyses.vehicle =  vehicle
 
+    # ------------------------------------------------------------------
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
-    analyses.append(geometry)
+    analyses.append(geometry) 
 
+    # ------------------------------------------------------------------
+    #  Weights
+    weights = RCAIDE.Framework.Analyses.Weights.Conventional_General_Aviation() 
+    weights.settings.run_weights_analysis = True
+    weights.settings.run_moments_of_inertia = True
+    weights.settings.run_center_of_gravity = True
+    analyses.append(weights) 
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
@@ -104,7 +111,7 @@ def base_analysis(vehicle):
 
     # ------------------------------------------------------------------
     #  Stability Analysis      
-    stability   = RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method()    
+    stability   = RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method()   
     analyses.append(stability)
 
     # ------------------------------------------------------------------
@@ -126,13 +133,16 @@ def base_analysis(vehicle):
     return analyses  
 
 def plot_mission(results): 
-
-    # Plot Aircraft Stability 
+ 
     plot_longitudinal_stability(results)  
     
     plot_lateral_stability(results) 
     
-    plot_flight_forces_and_moments(results) 
+    plot_flight_forces_and_moments(results)
+    
+    plot_center_of_gravity_drift(results)
+    
+    plot_moment_of_intertia_drift(results)
       
     return
  

@@ -134,7 +134,7 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, bus, coolant_lines, t_
     # Future State 
     # --------------------------------------------------------------------------------------------------- 
     if t_idx != state.numerics.number_of_control_points-1:   
-        dT_dt              =  gross_heat / (fuel_cell.mass *fuel_cell.specific_heat_capacity) 
+        dT_dt              =  gross_heat[0] / (fuel_cell.mass *fuel_cell.specific_heat_capacity) 
         fuel_cell_stack_conditions.fuel_cell.stack_temperature[t_idx+1,0]  = fuel_cell_stack_conditions.fuel_cell.stack_temperature[t_idx, 0] + dT_dt*delta_t[t_idx]  
     
     I_cell  = P_fuel_cell / V_fuel_cell

@@ -94,7 +94,7 @@ def plot_lift_distribution(results,
             fig.set_size_inches(width,height)      
             b_sw = np.concatenate(([0],np.cumsum(VD.n_sw[ti])))
             axes = plt.subplot(1,1,1)
-            for i in range(int(VD.n_w[ti]) ): 
+            for i in range(VD.n_w[ti][0]): 
                 y_pts = VD.Y_SW[ti,b_sw[i]:b_sw[i+1]]
                 z_pts = segment.conditions.aerodynamics.coefficients.lift.inviscid.spanwise[ti,b_sw[i]:b_sw[i+1]]
                 axes.plot(y_pts, z_pts, line[i] ) 

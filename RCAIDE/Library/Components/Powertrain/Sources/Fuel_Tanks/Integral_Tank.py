@@ -12,6 +12,10 @@ import RCAIDE
 from .Fuel_Tank  import Fuel_Tank 
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions import append_fuel_tank_conditions 
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Integral_Tank.compute_integral_tank_volume import *
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_wing_integral_tank_moment_of_inertia     import  compute_wing_integral_tank_moment_of_inertia
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_fuselage_integral_tank_moment_of_inertia import  compute_fuselage_integral_tank_moment_of_inertia
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_wing_integral_tank_center_of_gravity     import  compute_wing_integral_tank_center_of_gravity
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Integral_Tank
@@ -152,3 +156,52 @@ class Integral_Tank(Fuel_Tank):
             fuselage = fuselages[self.fuselage_tag]  
             compute_fuselage_integral_tank_fuel_volume(self, fuselage)
         return
+    
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
+        """
+        Computes the moment of inertia tensor for a fuel tank.
+
+        Parameters
+        ----------
+        center_of_gravity : list, optional
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
+
+        Returns
+        -------
+        I : ndarray
+            3x3 moment of inertia tensor in kg*m^2
+ 
+        """ 
+
+        if self.wing_tag != None:
+            wing = vehicle.wings[self.wing_tag]  
+            _, _ = compute_wing_integral_tank_moment_of_inertia(self, wing, center_of_gravity = center_of_gravity)
+        elif self.fuselage_tag != None:
+            fuselage = vehicle.fuselages[self.fuselage_tag] 
+            _, _     = compute_fuselage_integral_tank_moment_of_inertia(self, fuselage, center_of_gravity = center_of_gravity)
+         
+        return
+    
+
+    def compute_center_of_gravity(self,vehicle): 
+        """
+        Computes the center of gravity for a fuel tank.
+
+        Parameters
+        ----------
+        center_of_gravity : list, optional
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
+
+        Returns
+        -------
+        I : ndarray
+            3x3 moment of inertia tensor in kg*m^2 
+        """
+
+        if self.wing_tag != None:
+            _ = compute_wing_integral_tank_center_of_gravity(self,vehicle)
+            
+        if self.fuel.mass_properties.mass != 0: 
+            self.fuel_selector_ratio = self.fuel.mass_properties.mass / vehicle.mass_properties.fuel        
+        return
+        

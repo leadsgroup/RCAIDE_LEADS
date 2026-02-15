@@ -114,8 +114,8 @@ class Evaluate(Segment):
         iterate.conditions.freestream            = Common.Update.freestream
         iterate.conditions.thrust                = Common.Update.thrust
         iterate.conditions.aerodynamics          = Common.Update.aerodynamics
-        iterate.conditions.stability             = Common.Update.stability
         iterate.conditions.weights               = Common.Update.weights
+        iterate.conditions.stability             = Common.Update.stability
         iterate.conditions.forces                = Common.Update.forces
         iterate.conditions.moments               = Common.Update.moments
         iterate.conditions.planet_position       = Common.Update.planet_position

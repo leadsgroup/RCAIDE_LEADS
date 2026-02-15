@@ -32,7 +32,7 @@ from Hydrogen_Fuel_Cell_Twin_Otter   import vehicle_setup , configs_setup
 def main():  
  
     mdot_H2_true         = [0.016750563112746693 , 0.016563286022628142 ]
-    fuel_cell_models     = ['PEM', 'Larminie', ]
+    fuel_cell_models     = ['PEM', 'Larminie']
     
     for i in range(2): 
     
@@ -92,10 +92,9 @@ def base_analysis(vehicle):
  
     # ------------------------------------------------------------------
     #  Weights
-    weights          = RCAIDE.Framework.Analyses.Weights.Electric_General_Aviation() 
-    weights.settings.update_mass_properties         = False
-    weights.settings.update_center_of_gravity       = False
-    weights.settings.update_moment_of_inertia       = False  
+    weights          = RCAIDE.Framework.Analyses.Weights.Electric_General_Aviation()  
+    weights.settings.overwrite_center_of_gravity       = False
+    weights.settings.overwrite_moments_of_inertia      = False  
     analyses.append(weights)
 
     # ------------------------------------------------------------------

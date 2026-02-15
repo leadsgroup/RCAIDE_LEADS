@@ -194,7 +194,13 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
     thrust =  np.array([[0.0, 0.0, 0.0]]) 
     for network in vehicle.networks:   
         for propulsor in  network.propulsors: 
-            segment.state.conditions.energy.propulsors[propulsor.tag].throttle = np.array([[1]]) 
+            segment.state.conditions.energy.propulsors[propulsor.tag].throttle = np.array([[1]])
+            
+        for fuel_line in network.fuel_lines:
+            for fuel_tank in  fuel_line.fuel_tanks:
+                fuel = fuel_tank.fuel
+                segment.state.conditions.weights.components.mass[fuel.tag] = np.array([[0]])                
+                
         network.evaluate(segment.state,center_of_gravity = vehicle.mass_properties.center_of_gravity) 
         thrust += conditions.energy.thrust_force_vector
 

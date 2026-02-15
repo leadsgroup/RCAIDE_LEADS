@@ -1,4 +1,4 @@
-# RCAIDE/Library/Plots/Performance/Stability/plot_lateral_stability.py
+# RCAIDE/Library/Plots/Stability/plot_lateral_stability.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke 
@@ -103,7 +103,7 @@ def plot_lateral_stability(results,
     plt.rcParams.update(parameters)
      
     # get line colors for plots 
-    line_colors   = cm.viridis(np.linspace(0,0.9,len(results.segments)))     
+    line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))     
      
     fig   = plt.figure(save_filename)
     fig.set_size_inches(width,height) 

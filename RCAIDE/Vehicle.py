@@ -56,7 +56,7 @@ class Vehicle(Data):
         self.fuselages                                                     = Components.Fuselages.Fuselage.Container()
         self.wings                                                         = Components.Wings.Wing.Container()
         self.nacelles                                                      = Components.Nacelles.Nacelle.Container()
-        self.systems                                                       = Components.Powertrain.Systems.System()
+        self.systems                                                       = Components.Powertrain.Systems.Systems.Container() 
         self.booms                                                         = Components.Booms.Boom.Container()
         self.landing_gears                                                 = Components.Landing_Gear.Landing_Gear.Container()  
         self.cargo_bays                                                    = Components.Cargo_Bays.Cargo_Bay.Container() 
@@ -73,7 +73,8 @@ class Vehicle(Data):
         self.number_of_business_class_seats                                = 0 
         self.number_of_economy_class_seats                                 = 0 
         self.maximum_cross_sectional_area                                  = 0.0
-        self.length                                                        = 0.0 
+        self.length                                                        = 0.0
+         
         
         self.flight_envelope                                               = Data()
         self.flight_envelope.design_dynamic_pressure                       = None 
@@ -145,8 +146,8 @@ class Vehicle(Data):
 
         self._component_root_map = {
             Components.Fuselages.Fuselage              : self['fuselages']        ,
-            Components.Wings.Wing                      : self['wings']            ,
-            Components.Powertrain.Systems.System      : self['systems']          , 
+            Components.Wings.Wing                      : self['wings']            , 
+            Components.Powertrain.Systems.Systems      : self['systems']          , 
             Components.Nacelles.Nacelle                : self['nacelles']         , 
             Components.Booms.Boom                      : self['booms']            ,
             Components.Landing_Gear.Landing_Gear       : self['landing_gears']    ,
@@ -297,8 +298,9 @@ class Vehicle_Mass_Properties(Components.Mass_Properties):
         self.max_landing                 = None
         self.landing                     = None
         self.max_cargo                   = None
-        self.cargo                       = None
-        self.max_payload                 = None 
+        self.cargo                       = 0
+        self.max_payload                 = 0 
+        self.min_payload                 = 0 
         self.payload                     = 0
         self.passenger                   = None
         self.crew                        = None

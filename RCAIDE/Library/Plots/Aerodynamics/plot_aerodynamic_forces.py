@@ -102,14 +102,14 @@ def plot_aerodynamic_forces(results,
     plt.rcParams.update(parameters)
      
     # get line colors for plots 
-    line_colors   = cm.viridis(np.linspace(0,0.9,len(results.segments)))     
+    line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))     
     
     fig   = plt.figure(save_filename)
     fig.set_size_inches(width,height)
     
     for i in range(len(results.segments)): 
         time   = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min
-        Power  = results.segments[i].conditions.energy.net_power[:,0] 
+        Power  = results.segments[i].conditions.energy.power[:,0] 
         Thrust = results.segments[i].conditions.frames.body.thrust_force_vector[:,0]
         Lift   = -results.segments[i].conditions.frames.wind.force_vector[:,2]
         Drag   = -results.segments[i].conditions.frames.wind.force_vector[:,0]

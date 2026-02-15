@@ -55,5 +55,5 @@ class Volume_Properties(Data):
         """
         Sets default values for mass property attributes.
         """           
-        self.net_volume  = 0.0 
+        self.net_volume    = 0.0 
         self.gross_volume  = 0.0 

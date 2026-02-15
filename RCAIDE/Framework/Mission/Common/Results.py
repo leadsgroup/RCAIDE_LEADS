@@ -262,7 +262,6 @@ class Results(Conditions):
         # ----------------------------------------------------------------------------------------------------------------------
         # Stability 
         # ----------------------------------------------------------------------------------------------------------------------  
-        self.stability                                                         = Conditions()
         self.static_stability                                                  = Conditions()
  
         self.static_stability.forces                                           = Conditions()
@@ -440,6 +439,30 @@ class Results(Conditions):
         # Weights 
         # ----------------------------------------------------------------------------------------------------------------------     
         self.weights                                          = Conditions() 
-        self.weights.total_mass                               = ones_1col * 0 
-        self.weights.center_of_gravity                        = ones_3col * 0   
-        self.weights.vehicle_mass_rate                        = ones_1col * 0
+        self.weights.vehicle                                  = Conditions() 
+        self.weights.vehicle.mass                             = ones_1col * 0   
+        self.weights.vehicle.global_center_of_gravity         = ones_3col * 0 
+        self.weights.vehicle.mass_rate                        = ones_1col * 0 
+        self.weights.vehicle.moments_of_inertia_Ixx           = ones_1col * 0 
+        self.weights.vehicle.moments_of_inertia_Ixy           = ones_1col * 0 
+        self.weights.vehicle.moments_of_inertia_Ixz           = ones_1col * 0 
+        self.weights.vehicle.moments_of_inertia_Iyx           = ones_1col * 0 
+        self.weights.vehicle.moments_of_inertia_Iyy           = ones_1col * 0 
+        self.weights.vehicle.moments_of_inertia_Iyz           = ones_1col * 0 
+        self.weights.vehicle.moments_of_inertia_Izx           = ones_1col * 0 
+        self.weights.vehicle.moments_of_inertia_Izy           = ones_1col * 0 
+        self.weights.vehicle.moments_of_inertia_Izz           = ones_1col * 0 
+        self.weights.components                               = Conditions() 
+        self.weights.components.mass                          = Conditions() 
+        self.weights.components.global_center_of_gravity      = Conditions() 
+        self.weights.components.symmetry_flag                 = Conditions()
+        self.weights.components.mass_rate                     = Conditions() 
+        self.weights.components.moments_of_inertia_Ixx        = Conditions() 
+        self.weights.components.moments_of_inertia_Ixy        = Conditions() 
+        self.weights.components.moments_of_inertia_Ixz        = Conditions() 
+        self.weights.components.moments_of_inertia_Iyx        = Conditions() 
+        self.weights.components.moments_of_inertia_Iyy        = Conditions() 
+        self.weights.components.moments_of_inertia_Iyz        = Conditions() 
+        self.weights.components.moments_of_inertia_Izx        = Conditions() 
+        self.weights.components.moments_of_inertia_Izy        = Conditions() 
+        self.weights.components.moments_of_inertia_Izz        = Conditions() 

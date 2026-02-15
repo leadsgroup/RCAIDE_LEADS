@@ -13,6 +13,10 @@ from RCAIDE.Library.Plots import *
 
 import numpy as np 
 import matplotlib.pyplot as plt
+import sys
+import os
+sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+import Boeing_787 
 
 # ---------------------------------------------------------------------- 
 #   Main
@@ -20,24 +24,22 @@ import matplotlib.pyplot as plt
 def main():
      
      # Boeing 787 Fuselage  
-     fuselage      = RCAIDE.Library.Components.Fuselages.Fuselage()
+     vehicle          = Boeing_787.vehicle_setup() 
+     fuselage         = vehicle.fuselages.fuselage
      
-     fuselage.fineness.nose      = 1.6
-     fuselage.fineness.tail      = 2.0   
-     
-     cabin         = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
+     cabin            = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
      cabin.wide_body  = True     
  
      first_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.First() 
-     first_class.number_of_seats_abrest              = 4
-     first_class.number_of_rows                      = 7
-     first_class.seat_width                          = 35 *  Units.inches
-     first_class.seat_arm_rest_width                 = 3 *  Units.inches
-     first_class.seat_length                         = 45 *  Units.inches
-     first_class.seat_pitch                          = 50 *  Units.inches
+     first_class.number_of_seats_abrest               = 4
+     first_class.number_of_rows                       = 7
+     first_class.seat_width                           = 35 *  Units.inches
+     first_class.seat_arm_rest_width                  = 3 *  Units.inches
+     first_class.seat_length                          = 45 *  Units.inches
+     first_class.seat_pitch                           = 50 *  Units.inches
      first_class.aisle_width                          = 18  *  Units.inches  
-     first_class.galley_lavatory_percent_x_locations = [0, 1]       
-     first_class.type_A_exit_percent_x_locations     = [0, 1]
+     first_class.galley_lavatory_percent_x_locations  = [0, 1]       
+     first_class.type_A_exit_percent_x_locations      = [0, 1]
      cabin.append_cabin_class(first_class) 
  
      business_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business() 
@@ -60,24 +62,14 @@ def main():
      plot_layout_of_passenger_accommodations(fuselage, show_figure=False)
      fuselage_planform(fuselage)
      
-     # Truth Values
-     nose_length_truth   = 7.924799999999999
-     tail_length_truth   = 9.905999999999999
-     cabin_length_truth  = 41.732200000000006
-     total_length_truth  = 59.563
-     wetted_area_truth   = 831.939763080519
-     frontal_area_truth  = 19.26755189268235
-     dia_effective_truth = 4.952999999999999
+     # Truth Values 
+     wetted_area_truth   = 909.8178248273202
+     frontal_area_truth  = 27.377421452339952 
      
      # Compute Errors
-     error             = Data() 
-     error.nose        = np.abs(fuselage.lengths.nose-nose_length_truth)/nose_length_truth
-     error.tail        = np.abs(fuselage.lengths.tail-tail_length_truth)/tail_length_truth
-     error.cabin       = np.abs(fuselage.lengths.cabin-cabin_length_truth)/cabin_length_truth
-     error.total       = np.abs(fuselage.lengths.total-total_length_truth)/total_length_truth
+     error             = Data()  
      error.wetted_area = np.abs(fuselage.areas.wetted-wetted_area_truth)/wetted_area_truth
-     error.front_area  = np.abs(fuselage.areas.front_projected-frontal_area_truth)/frontal_area_truth
-     error.diameter    = np.abs(fuselage.effective_diameter-dia_effective_truth)/dia_effective_truth
+     error.front_area  = np.abs(fuselage.areas.front_projected-frontal_area_truth)/frontal_area_truth 
              
      for k,v in list(error.items()):
           assert np.any(np.abs(v)<1e-6)

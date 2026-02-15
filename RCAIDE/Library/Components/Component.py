@@ -30,7 +30,16 @@ class Component(Data):
         Mass and inertia properties, initialized empty
     
      volume_properties : Volume_Properties
-        Volume Properties, initialized empty
+        Volume Properties, initialized empty 
+        
+    xz_plane_symmetric : bool
+        Flag indicating if wing is xz_plane_symmetric about x-z plane, defaults to True
+        
+    yz_plane_symmetric : bool
+        Flag indicating if wing is yz_plane_symmetric about y-z plane, defaults to True
+        
+    xy_plane_symmetric : bool
+        Flag indicating if wing is xy_plane_symmetric about x-y plane, defaults to True
         
     origin : ndarray
         3D coordinates [x, y, z] defining component's reference point, 
@@ -56,10 +65,20 @@ class Component(Data):
         """
         Sets default values for the component attributes.
         """         
-        self.tag               = 'Component' 
-        self.mass_properties   = Mass_Properties()
-        self.volume_properties = Volume_Properties()
-        self.origin            = np.array([[0.0,0.0,0.0]])
+        self.tag                = 'Component' 
+        self.mass_properties    = Mass_Properties()
+        self.volume_properties  = Volume_Properties()
+        self.origin             = np.array([[0.0,0.0,0.0]])
+        self.xz_plane_symmetric = False
+        self.xy_plane_symmetric = False
+        self.yz_plane_symmetric = False
+         
+    def compute_center_of_gravity(self, vehicle):
+        return 
+
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]):
+        return      
+    
     
         
 # ----------------------------------------------------------------------------------------------------------------------

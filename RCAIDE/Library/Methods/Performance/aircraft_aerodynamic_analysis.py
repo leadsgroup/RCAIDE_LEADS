@@ -14,14 +14,12 @@ from RCAIDE.Library.Mission.Common.Pre_Process  import geometry_preprocess_routi
  
 # Pacakge imports 
 import numpy as np  
-import os, sys
-from copy import deepcopy
+import os, sys 
 
 #------------------------------------------------------------------------------
 # aircraft_aerodynamic_analysis
 #------------------------------------------------------------------------------  
-def aircraft_aerodynamic_analysis(vehicle, 
-                                  aerodynamics_analysis            = None, 
+def aircraft_aerodynamic_analysis(analyses                         = None, 
                                   angle_of_attacks                 = None,
                                   mach_numbers                     = None,
                                   non_dimensional_reynolds_numbers = None,
@@ -78,9 +76,8 @@ def aircraft_aerodynamic_analysis(vehicle,
 
     #------------------------------------------------------------------------   
     # Preprocess Geometry 
-    #------------------------------------------------------------------------
-    geometry_analysis          = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry_preprocess_routine(geometry_analysis.settings, vehicle)
+    #------------------------------------------------------------------------ 
+    geometry_preprocess_routine(analyses)
     
     #------------------------------------------------------------------------  
     # Check size of arrays 
@@ -94,8 +91,7 @@ def aircraft_aerodynamic_analysis(vehicle,
     dim_Mach  = len(mach_numbers[:, 0] )
     
     if dim_Mach != dim_AoA:
-        raise ValueError("Angle of attack and Mach number range must same dimension")
-    
+        raise ValueError("Angle of attack and Mach number range must same dimension") 
 
     #------------------------------------------------------------------------
     # setup flight conditions
@@ -155,23 +151,19 @@ def aircraft_aerodynamic_analysis(vehicle,
     state.conditions.frames.wind.transform_to_inertial = np.tile( np.array([[[1., 0., 0.],[0., 1., 0.],[0., 0.,  1.]]]) , ( ctrl_pts,  1, 1)  ) 
     state.conditions.expand_rows(ctrl_pts)
   
-    state.analyses  =  Data()
-    
-    aerodynamics_analysis.filename =  os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "aerodynamic_training_data.pkl" )
-    aerodynamics_analysis.initialize(vehicle)            
-    state.analyses.aerodynamics = aerodynamics_analysis 
-     
+    state.analyses  = analyses 
+    state.analyses.aerodynamics.filename =  os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "aerodynamic_training_data.pkl" )
+    state.analyses.aerodynamics.initialize(state.analyses.vehicle)    
     state.conditions.freestream.mach_number                 = mach_numbers
     state.conditions.freestream.velocity                    = V
     state.conditions.freestream.reynolds_number             = non_dimensional_reynolds_numbers
     state.conditions.frames.inertial.velocity_vector        = np.tile(np.array([[0, 0, 0]]), ( ctrl_pts,  1))
-    state.conditions.frames.inertial.velocity_vector[:,0]   = V[:,0] 
-    
+    state.conditions.frames.inertial.velocity_vector[:,0]   = V[:,0]  
  
     # ---------------------------------------------------------------------------------------
     # Evaluate With Surrogate
     # ---------------------------------------------------------------------------------------  
-    _                 = state.analyses.aerodynamics.evaluate(state,vehicle)   
+    _                 = state.analyses.aerodynamics.evaluate(state,state.analyses.vehicle)   
     results = Data(
         Mach                             = mach_numbers, 
         alpha                            = angle_of_attacks, 
@@ -186,6 +178,7 @@ def aircraft_aerodynamic_analysis(vehicle,
         cooling_drag_coefficient         = state.conditions.aerodynamics.coefficients.drag.cooling.total,
         trim_drag_coefficient            = state.conditions.aerodynamics.coefficients.drag.trim.total,
         moment_coefficient               = state.conditions.static_stability.coefficients.M, 
+        state_conditions                 = state.conditions,
         
     )  
           

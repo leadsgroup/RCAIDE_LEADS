@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 # RCAIDE imports     
 from .Landing_Gear import Landing_Gear
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia import compute_cuboid_moment_of_inertia
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Nose_Landing_Gear
@@ -62,3 +63,26 @@ class Nose_Landing_Gear(Landing_Gear):
         Sets default values for the nose landing gear attributes.
         """
         self.tag           = 'nose_gear'
+
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
+        """
+        Computes the moment of inertia tensor for the landing gear.
+
+        Parameters
+        ---------- 
+        center_of_gravity : list, optional
+            Reference point coordinates, defaults to [[0, 0, 0]]
+        
+        Returns
+        -------
+        ndarray
+            3x3 moment of inertia tensor
+        """
+        
+
+        length = self.strut_length * 1.1
+        width  = self.tire_diameter* 1.1
+        height = self.tire_diameter* 1.1      
+        
+        _, _  = compute_cuboid_moment_of_inertia(self,length,width,height, inner_length = 0, inner_width = 0, inner_height = 0, center_of_gravity = [[length / 2,width / 2, height / 2]] )  
+        return                           

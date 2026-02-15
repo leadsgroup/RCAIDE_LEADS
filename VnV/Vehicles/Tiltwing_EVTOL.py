@@ -19,7 +19,13 @@ import numpy as np
 from copy import deepcopy 
 
 def vehicle_setup(new_regression=True): 
-    
+
+    ospath      = os.path.abspath(__file__) 
+    separator   = os.path.sep
+    local_path  = os.path.dirname(ospath) + separator   
+    current_dir = os.path.abspath(os.path.dirname(__file__))
+    test_dir    = os.path.abspath(os.path.join(current_dir, '..' + separator + 'Verification' + separator + 'network_vtol')) 
+        
     #------------------------------------------------------------------------------------------------------------------------------------
     # ################################################# Vehicle-level Properties ########################################################  
     #------------------------------------------------------------------------------------------------------------------------------------
@@ -34,7 +40,38 @@ def vehicle_setup(new_regression=True):
     vehicle.mass_properties.center_of_gravity   = [[ 2.0144,   0.  ,  0.]] 
     vehicle.number_of_passengers                = 0
     vehicle.flight_envelope.ultimate_load       = 5.7
-    vehicle.flight_envelope.positive_limit_load = 3.     
+    vehicle.flight_envelope.positive_limit_load = 3.
+    vehicle.number_of_passengers                = 1
+
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # ##################################################### Landing Gear ################################################################    
+    #------------------------------------------------------------------------------------------------------------------------------------ 
+    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
+    main_gear.tire_diameter                  = 6  *  Units.inches 
+    main_gear.rim_diameter                   = 3  *  Units.inches 
+    main_gear.tire_width                     = 6  *  Units.inches 
+    main_gear.strut_length                   = 12  * Units.ft 
+    main_gear.wheels                         = 1   
+    main_gear.number_of_gear_types_in_tandem = 1
+    main_gear.number_of_wheels_in_gear_type  = 1
+    main_gear.origin                         = [[4.0,0, 0]]
+    main_gear.fairing                        = True
+    main_gear.xz_plane_symmetric             = True
+    main_gear.gear_extended                  = True
+    vehicle.append_component(main_gear)  
+
+    nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
+    nose_gear.tire_diameter                  =  5 *  Units.inches   
+    nose_gear.rim_diameter                   =  3 *  Units.inches 
+    nose_gear.tire_width                     =  5 *  Units.inches 
+    nose_gear.strut_length                   =  6.* Units.ft 
+    nose_gear.wheels                         = 1
+    nose_gear.origin                         = [[0.5,0, 0]]
+    nose_gear.fairing                        = True 
+    nose_gear.gear_extended                  = True
+    nose_gear.number_of_gear_types_in_tandem = 1
+    nose_gear.number_of_wheels_in_gear_type  = 1    
+    vehicle.append_component(nose_gear)    
 
     #------------------------------------------------------------------------------------------------------------------------------------
     # ######################################################## Wings ####################################################################  
@@ -63,10 +100,6 @@ def vehicle_setup(new_regression=True):
     wing.aerodynamic_center                     = [0., 0., 0.]     
     wing.winglet_fraction                       = 0.0 
     wing.xz_plane_symmetric                     = True
-    
-    ospath                                      = os.path.abspath(__file__) 
-    separator                                   = os.path.sep
-    local_path                                  = os.path.dirname(ospath) + separator  
     airfoil                                     = RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil.coordinate_file                     = local_path + 'Airfoils' + separator + 'NACA_63_412.txt'
     
@@ -110,17 +143,18 @@ def vehicle_setup(new_regression=True):
     fuselage                                    = RCAIDE.Library.Components.Fuselages.Fuselage()
     fuselage.tag                                = 'fuselage' 
 
-    # define cabin
-    # cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
-    # economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
-    # economy_class.number_of_seats_abrest              = 2
-    # economy_class.number_of_rows                      = 3
-    # economy_class.galley_lavatory_percent_x_locations = []  
-    # economy_class.emergency_exit_percent_x_locations  = []      
-    # economy_class.type_A_exit_percent_x_locations     = [] 
-    # cabin.append_cabin_class(economy_class)
-    # fuselage.append_cabin(cabin)
-       
+    # define cabin    
+    cabin                                       = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
+    cabin.origin                                = [[1, 0, 0]] 
+    economy_class                               = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
+    economy_class.number_of_seats_abrest        = 1
+    economy_class.number_of_rows                = 1 
+    economy_class.seat_arm_rest_width           = 2 *  Units.inches 
+    economy_class.seat_width                    = 15 *  Units.inches
+    economy_class.aisle_width                   = 0  *  Units.inches   
+    cabin.append_cabin_class(economy_class)
+    fuselage.append_cabin(cabin)
+
     fuselage.fineness.nose                      = 1.5 
     fuselage.fineness.tail                      = 4.0 
     fuselage.lengths.nose                       = 1.7   
@@ -206,11 +240,15 @@ def vehicle_setup(new_regression=True):
     fuselage.segments.append(segment)        
 
     # add to vehicle
+<<<<<<< HEAD
     vehicle.append_component(fuselage)    
    
     sys                            = RCAIDE.Library.Components.Powertrain.Systems.System()
     sys.mass_properties.mass       = 5 # kg   
     vehicle.append_component(sys)    
+=======
+    vehicle.append_component(fuselage)     
+>>>>>>> 3010a8169faaec3d73de7b5fd03471446e23db1f
 
     #------------------------------------------------------------------------------------------------------------------------------------
     # ########################################################  Energy Network  ######################################################### 
@@ -270,8 +308,8 @@ def vehicle_setup(new_regression=True):
     prop_rotor.oei.design_thrust                  = Hover_Load/7  
     prop_rotor.oei.design_freestream_velocity     = np.sqrt(prop_rotor.oei.design_thrust/(2*1.2*np.pi*(prop_rotor.tip_radius**2)))   
     prop_rotor.cruise.design_altitude             = 1500 * Units.feet
-    prop_rotor.cruise.design_thrust               = 200    
-    prop_rotor.cruise.design_freestream_velocity  = 130.* Units['mph']  
+    prop_rotor.cruise.design_thrust               = 500#200    
+    prop_rotor.cruise.design_freestream_velocity  = 150.* Units['mph']  #130.* Units['mph']  
     
     airfoil                                       = RCAIDE.Library.Components.Airfoils.Airfoil()   
     airfoil.coordinate_file                       =  local_path + 'Airfoils' + separator + 'NACA_4412.txt'
@@ -306,17 +344,13 @@ def vehicle_setup(new_regression=True):
     nacelle.flow_through              = False    
     prop_rotor_propulsor.nacelle      = nacelle       
     
-    current_dir = os.path.abspath(os.path.dirname(__file__))
-    test_dir = os.path.abspath(os.path.join(current_dir, '..' + separator + 'Verification' + separator + 'mission_segments'))
-     
-            
     if new_regression:
         design_electric_rotor(prop_rotor_propulsor)
-        save_propulsor(prop_rotor_propulsor, os.path.join(test_dir, 'vahana_tilt_rotor_propulsor.res'))
+        save_propulsor(prop_rotor_propulsor, os.path.join(local_path, 'tilt_wing_propulsor.res'))
     else:
         regression_prop_rotor_propulsor = deepcopy(prop_rotor_propulsor)        
         design_electric_rotor(regression_prop_rotor_propulsor, iterations=2)
-        loaded_propulsor = load_propulsor(os.path.join(test_dir, 'vahana_tilt_rotor_propulsor.res'))  
+        loaded_propulsor = load_propulsor(os.path.join(local_path, 'tilt_wing_propulsor.res'))  
         for key,item in prop_rotor_propulsor.rotor.items(): 
             prop_rotor_propulsor.rotor[key] = loaded_propulsor.rotor[key] 
                
@@ -354,15 +388,16 @@ def vehicle_setup(new_regression=True):
         prop_rotor_propulsor_i.nacelle.origin                        = [origins[i]]
         assigned_propulsor_list.append(prop_rotor_propulsor_i.tag)
         network.propulsors.append(prop_rotor_propulsor_i)  
-    bus.assigned_propulsors = [assigned_propulsor_list]       
+    bus.assigned_propulsors = [assigned_propulsor_list]
+    
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Additional Bus Loads
     #------------------------------------------------------------------------------------------------------------------------------------            
     # Payload   
-    payload                         = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    payload.power_draw              = 10. # Watts 
-    payload.mass_properties.mass    = 1.0 * Units.kg
-    bus.payload                     = payload 
+    systems                         = RCAIDE.Library.Components.Powertrain.Systems.Systems()
+    systems.power_draw              = 10. # Watts 
+    systems.mass_properties.mass    = 1.0 * Units.kg
+    bus.systems                     = systems 
                              
     # Avionics                            
     avionics                        = RCAIDE.Library.Components.Powertrain.Systems.Avionics()

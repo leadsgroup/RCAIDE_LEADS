@@ -54,7 +54,6 @@ class Stability(Analysis):
         self.settings.trim_drag_correction_factor                        = 1.02
         self.settings.wing_parasite_drag_form_factor                     = 1.1  
         self.settings.fuselage_parasite_drag_form_factor                 = 2.1
-        self.settings.update_center_of_gravity                           = True
         self.settings.drag_reduction_factors                             = Data()
         self.settings.drag_reduction_factors.parasite_drag               = 0.0  # Reduction factors are proportional (.1 is a 10% weight reduction)
         self.settings.drag_reduction_factors.induced_drag                = 0.0  # Reduction factors are proportional (.1 is a 10% weight reduction)
@@ -65,6 +64,7 @@ class Stability(Analysis):
         self.settings.recalculate_total_wetted_area                      = False
         self.settings.oswald_efficiency_factor                           = None
         self.settings.span_efficiency                                    = None
+        self.settings.compute_neutral_point                              = True
 
         self.settings.supersonic                                         = Data() 
         self.settings.supersonic.begin_drag_rise_mach_number             = 0.95

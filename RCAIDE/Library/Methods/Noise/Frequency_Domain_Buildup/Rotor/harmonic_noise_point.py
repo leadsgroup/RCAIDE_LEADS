@@ -234,11 +234,11 @@ def harmonic_noise_point(harmonics_blade,harmonics_load,conditions,coordinates,r
     P_Lm          = (1j*B*np.exp(1j*k_m_3*r_3)*Summation_3)/(4*np.pi*r_3*rs*(1-M_3*np.cos(theta_r_3)))
     
     # frequency domain source function for thickness
-    psi_V_5        = np.trapz(H_6*exp_term_6, x=X, axis=5)
+    psi_V_5        = np.trapezoid(H_6*exp_term_6, x=X, axis=5)
     
     # FREQUENCY DOMAIN PRESSURE TERM FOR THICKNESS
     V_Integrand_5  = (M_r_5**2)*(k_x_hat_5**2)*t_b_5*psi_V_5*J_mBk_5
-    V_Summand_4    = np.trapz(V_Integrand_5, x=z_5[0,0,:,0,0], axis=2)*np.exp(1j*m_4*B*(phi_prime_4-(np.pi/2)))
+    V_Summand_4    = np.trapezoid(V_Integrand_5, x=z_5[0,0,:,0,0], axis=2)*np.exp(1j*m_4*B*(phi_prime_4-(np.pi/2)))
     
     # we take a single dimension along the 4th axis because we only want the loading mode corresponding to k=0
     V_Summation_3  = V_Summand_4[:,:,:,0]

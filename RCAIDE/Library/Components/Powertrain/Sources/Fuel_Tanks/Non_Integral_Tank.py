@@ -13,7 +13,8 @@ import RCAIDE
 from .Fuel_Tank  import Fuel_Tank 
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions import append_fuel_tank_conditions 
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_non_integral_tank_volume import *
-
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_rounded_end_cylinder_moment_of_inertia, compute_cuboid_moment_of_inertia
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_cuboid_center_of_gravity,  compute_cylinder_center_of_gravity
 # ----------------------------------------------------------------------------------------------------------------------
 #  Fuel Tank
 # ---------------------------------------------------------------------------------------------------------------------    
@@ -106,8 +107,7 @@ class Non_Integral_Tank(Fuel_Tank):
         self.tag                         = 'non_integral_tank' 
         self.orientation_euler_angles    = [0.,0.,0.]
         self.geometry_type               = 'cylindrical'   # ['prismatic', 'cylindrical']
-        self.bwb_aft_tank                = False
-        self.aft_tank_segment_bound      =  None # This only has one bound since it is more of a end bound and it will always start from the rootchord and grow symmetrically till bound
+        self.aft_tank_segment_bound      = None # This only has one bound since it is more of a end bound and it will always start from the rootchord and grow symmetrically till bound
         self.radial_offset               = None
         self.aspect_ratio                = None # Defined as the ratio of total length of the tank to the diameter of the tank.
 
@@ -171,12 +171,80 @@ class Non_Integral_Tank(Fuel_Tank):
         if self.wing_tag is not None and self.bwb_aft_tank is False:
             if self.geometry_type == 'cylindrical':
                 wing = wings[self.wing_tag]  
-                compute_wing_non_integral_tank_volume(self,wing,fuel_tanks) 
+                compute_wing_non_integral_tank_volume(self,wing,fuel_tanks)             
         elif self.bwb_aft_tank is True:
             if self.bwb_aft_tank == True:
                 wing = wings[self.wing_tag]  
-                compute_bwb_aft_tank_volume(self,wing)
+                compute_bwb_aft_tank_volume(self,wing,fuel_tanks)
         else:
             if self.geometry_type == 'prismatic':
                 compute_prismatic_fuel_tank_volume(self)
+            if self.geometry_type == 'cylindrical':
+                compute_rounded_end_cylindical_tank_volume(self)
         return
+    
+   
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
+        """
+        Computes the moment of inertia tensor for a fuel tank.
+
+        Parameters
+        ----------
+        center_of_gravity : list, optional
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
+
+        Returns
+        -------
+        I : ndarray
+            3x3 moment of inertia tensor in kg*m^2
+ 
+        """
+        
+        if self.geometry_type == 'prismatic': 
+            _, _ = compute_cuboid_moment_of_inertia(self,
+                                                    outer_length=self.lengths.external,
+                                                    outer_width=self.widths.external,
+                                                    outer_height=self.heights.external,\
+                                                    inner_length=self.lengths.external- 2*self.wall_thickness,
+                                                    inner_width=self.widths.external- 2*self.wall_thickness,
+                                                    inner_height=self.heights.external- 2*self.wall_thickness,
+                                                    center_of_gravity=center_of_gravity,
+                                                    fuel_tank=True)
+ 
+        else: 
+            _, _ = compute_rounded_end_cylinder_moment_of_inertia(self,
+                                                                  outer_length=self.lengths.external,
+                                                                  outer_radius=self.diameters.external/2,
+                                                                  inner_length=self.lengths.external - 2*self.wall_thickness,
+                                                                  inner_radius=self.diameters.external/2 - self.wall_thickness,
+                                                                  center_of_gravity=center_of_gravity, 
+                                                                  fuel_tank = True)
+                
+        return
+    
+
+    def compute_center_of_gravity(self,vehicle): 
+        """
+        Computes the center of gravity for a fuel tank.
+
+        Parameters
+        ----------
+        center_of_gravity : list, optional
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
+
+        Returns
+        -------
+        I : ndarray
+            3x3 moment of inertia tensor in kg*m^2 
+        """
+        if self.geometry_type == 'prismatic': 
+            _  = compute_cuboid_center_of_gravity(self,length=self.lengths.external) 
+        else:
+            length = self.lengths.external +  self.diameters.external
+            _ = compute_cylinder_center_of_gravity(self, length )
+            
+        if self.fuel.mass_properties.mass != 0: 
+            self.fuel_selector_ratio = self.fuel.mass_properties.mass / vehicle.mass_properties.fuel    
+            
+        return
+        

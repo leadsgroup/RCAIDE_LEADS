@@ -12,6 +12,8 @@ from RCAIDE.Framework.Core import Units
 
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_non_integral_tank_volume       import *
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank.compute_liquid_hydrogen_tank_volume import compute_liquid_hydrogen_tank_volume
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_cylinder_center_of_gravity
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_rounded_end_cylinder_moment_of_inertia
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Liquid Hydrogen Tank
@@ -99,6 +101,7 @@ class Liquid_Hydrogen_Tank(Non_Integral_Tank):
         self.design_isa_deviation     = 0
         self.ullage_volume_fraction   = 0.07
         self.design_external_pressure = 0 
+        self.tank_accesories_weight_factor = 1.5
 
     def compute_volume(self, wings, fuselages,fuel_tanks):
         """
@@ -145,6 +148,56 @@ class Liquid_Hydrogen_Tank(Non_Integral_Tank):
                 if self.bwb_aft_tank == True:
                     if self.wing_tag != None:
                         wing = wings[self.wing_tag]  
-                        compute_bwb_aft_tank_volume(self, wing)
-                        compute_liquid_hydrogen_tank_volume(self)
+                        compute_bwb_aft_tank_volume(self, wing,fuel_tanks)
+                        if hasattr(fuel_tanks,self.tag):
+                            compute_liquid_hydrogen_tank_volume(self)
+                        
+        return
+  
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
+        """
+        Computes the moment of inertia tensor for a fuel tank.
+
+        Parameters
+        ----------
+        center_of_gravity : list, optional
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
+
+        Returns
+        -------
+        I : ndarray
+            3x3 moment of inertia tensor in kg*m^2
+ 
+        """
+        
+        outer_length = self.lengths.external
+        outer_radius = self.diameters.external/2
+        inner_length = self.inner_structure.inner_length 
+        inner_radius = self.inner_structure.inner_diameter/2
+         
+        _, _ = compute_rounded_end_cylinder_moment_of_inertia(self, outer_length,outer_radius,inner_length=inner_length, inner_radius=inner_radius, center_of_gravity=center_of_gravity, fuel_tank=True) 
+                
+        return
+    
+
+    def compute_center_of_gravity(self,vehicle): 
+        """
+        Computes the center of gravity for a fuel tank.
+
+        Parameters
+        ----------
+        center_of_gravity : list, optional
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
+
+        Returns
+        -------
+        I : ndarray
+            3x3 moment of inertia tensor in kg*m^2 
+        """
+        
+        length = self.lengths.external +  self.diameters.external
+        _      = compute_cylinder_center_of_gravity(self, length )
+
+        if self.fuel.mass_properties.mass != 0: 
+            self.fuel_selector_ratio = self.fuel.mass_properties.mass / vehicle.mass_properties.fuel                
         return

@@ -54,7 +54,7 @@ def main():
         vehicle  = conventional_vehicle_setup() 
         vehicle.networks.fuel.propulsors.identical_propulsors = False         
         configs  = conventional_configs_setup(vehicle) 
-        analyses = analyses_setup(configs) 
+        analyses = analyses_setup(configs, weights_method='conventional') 
         missions = missions_setup(analyses,solver_type,solver_objective)  
         conventional_results  = missions.base_mission.evaluate()
 
@@ -69,7 +69,7 @@ def main():
         vehicle  = all_electric_vehicle_setup()  
         vehicle.networks.electric.propulsors.identical_propulsors = False      
         configs  = all_electric_configs_setup(vehicle) 
-        analyses = analyses_setup(configs) 
+        analyses = analyses_setup(configs,weights_method='electric') 
         missions = missions_setup(analyses,solver_type,solver_objective)  
         electric_results  = missions.base_mission.evaluate()
 
@@ -83,7 +83,7 @@ def main():
         print("\n Series Hybrid Powertrain Test") 
         vehicle  = series_hybrid_vehicle_setup() 
         configs  = series_hybrid_configs_setup(vehicle) 
-        analyses = analyses_setup(configs) 
+        analyses = analyses_setup(configs,weights_method='electric')
         missions = missions_setup(analyses,solver_type,solver_objective)  
         series_hybrid_results  = missions.base_mission.evaluate()
     
@@ -97,7 +97,7 @@ def main():
         print("\n Parallel Hybrid Powertrain Test") 
         vehicle  = parallel_hybrid_vehicle_setup() 
         configs  = parallel_hybrid_configs_setup(vehicle) 
-        analyses = analyses_setup(configs) 
+        analyses = analyses_setup(configs,weights_method='electric')
         missions = missions_setup(analyses,solver_type,solver_objective)  
         parallel_hybrid_results  = missions.base_mission.evaluate() 
     
@@ -125,13 +125,13 @@ def main():
 #   Define the Analyses
 # ----------------------------------------------------------------------
 
-def analyses_setup(configs):
+def analyses_setup(configs,weights_method=None):
 
     analyses = RCAIDE.Framework.Analyses.Analysis.Container()
 
     # build a base analysis for each config
     for tag,config in configs.items():
-        analysis = base_analysis(config)
+        analysis = base_analysis(config,weights_method)
         analyses[tag] = analysis
 
     return analyses
@@ -140,17 +140,29 @@ def analyses_setup(configs):
 #   Define the Base Analysis
 # ----------------------------------------------------------------------
 
-def base_analysis(vehicle):
+def base_analysis(vehicle,weights_method):
 
     # ------------------------------------------------------------------
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle() 
-    analyses.vehicle = vehicle    
-
+    analyses.vehicle = vehicle
+    
+    # ------------------------------------------------------------------
     #  Geometry
+    # ------------------------------------------------------------------
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
     analyses.append(geometry)
+
+    
+    # ------------------------------------------------------------------
+    #  Weights
+    # ------------------------------------------------------------------
+    if weights_method == 'conventional': 
+        weights = RCAIDE.Framework.Analyses.Weights.Conventional_General_Aviation()
+    if weights_method == 'electric': 
+        weights = RCAIDE.Framework.Analyses.Weights.Electric_General_Aviation()
+    analyses.append(weights) 
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
@@ -295,8 +307,8 @@ def plot_battery_pack_conditions(plot_data,
             # ---------------------------------------------------------------------------
 
             time         = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min 
-            Weight       = results.segments[i].conditions.weights.total_mass[:, 0] * 9.81   
-            mdot         = results.segments[i].conditions.weights.vehicle_mass_rate[:, 0]
+            Weight       = results.segments[i].conditions.weights.vehicle.mass[:, 0] * 9.81   
+            mdot         = results.segments[i].conditions.weights.vehicle.mass_rate[:, 0]
             thrust       = results.segments[i].conditions.frames.body.thrust_force_vector[:, 0]
             sfc          = (mdot / Units.lb) / (thrust / Units.lbf) * Units.hr    
             cl           = results.segments[i].conditions.aerodynamics.coefficients.lift.total[:,0,None]

@@ -18,10 +18,10 @@ from .Geometry           import *
 from .Aerodynamics       import * 
 from .Common             import *
 from .Emissions          import *  
-from .Energy             import * 
+from .Performance        import * 
 from .Mission            import *  
+from .Mass_Properties    import *
 from .Noise              import *
 from .Thermal_Management import * 
 from .Topography         import * 
 from .Stability          import * 
-from .Weights            import *

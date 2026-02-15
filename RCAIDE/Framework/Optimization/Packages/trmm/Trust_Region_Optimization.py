@@ -588,7 +588,7 @@ class Trust_Region_Optimization(Data):
             
         # objective correction
         A[0,:] = df[1] - df[0]
-        b[0] = f[1] - f[0]
+        b[0] = f[1][0] - f[0][0]
             
         # constraint corrections
         A[1:,:] = dg[1] - dg[0]

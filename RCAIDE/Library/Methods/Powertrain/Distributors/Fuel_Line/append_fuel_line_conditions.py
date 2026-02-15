@@ -58,6 +58,14 @@ def append_fuel_line_conditions(distributor,segment):
     segment.state.conditions.energy.distributors[distributor.tag].fuel_mass_flow_rate                 = 0 * ones_row(1)  
     segment.state.conditions.energy.distributors[distributor.tag].fuel_tanks                          = Conditions() 
 
+    if fuel_line.additional_line_flow_rate != 0:
+        # If there is an additional flow rate on the line then we will split it between the fuel tanks on the fuel line based on the volume of the tank
+        total_mass = 0 
+        for fuel_tank in fuel_line.fuel_tanks:
+            total_mass += fuel_tank.fuel.mass_properties.mass 
+        for fuel_tank in fuel_line.fuel_tanks:
+            fuel_tank.secondary_mass_flow_rate= (fuel_tank.fuel.mass_properties.mass / total_mass) * fuel_line.additional_line_flow_rate
+
     return
 
 def append_fuel_line_segment_conditions(distributor,segment):

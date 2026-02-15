@@ -171,9 +171,9 @@ def non_integral_fuel_tank_volume_test():
     fuel_tank_2.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()  
     fuel_tank_2.tag                             = 'H2_Fuel_Tank_2' 
     fuel_tank_2.geometry_type                   = 'prismatic'
-    fuel_tank_2.outer_length                    = 1
-    fuel_tank_2.outer_width                     = 1
-    fuel_tank_2.outer_height                    = 1
+    fuel_tank_2.lengths.external                = 1
+    fuel_tank_2.widths.external                 = 1
+    fuel_tank_2.heights.external                = 1
     fuel_tank_2.segments_bounding_tank          = ['fuselage_section_3', 'wing_section_2']      
     fuel_tank_2.segments_percent_chord_start    = [0.2 ,0.2]
     fuel_tank_2.segments_percent_chord_end      = [0.6,0.6]  
@@ -184,9 +184,9 @@ def non_integral_fuel_tank_volume_test():
     fuel_tank_2a.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()  
     fuel_tank_2a.tag                             = 'H2_Fuel_Tank_2a' 
     fuel_tank_2a.geometry_type                   = 'prismatic'
-    fuel_tank_2a.outer_length                    = 1
-    fuel_tank_2a.outer_width                     = 1
-    fuel_tank_2a.outer_height                    = 1
+    fuel_tank_2a.lengths.external                = 1
+    fuel_tank_2a.widths.external                 = 1
+    fuel_tank_2a.heights.external                = 1
     fuel_tank_2a.wall_thickness                  = 2*Units.inches
     fuel_tank_2a.fuel.mass_properties.mass       = 0.1
     fuel_line.fuel_tanks.append(fuel_tank_2a)
@@ -317,8 +317,7 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Geometry
     # ------------------------------------------------------------------
-    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.settings.overwrite_fuel_volume = True
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
     analyses.append(geometry)
     return analyses    
 

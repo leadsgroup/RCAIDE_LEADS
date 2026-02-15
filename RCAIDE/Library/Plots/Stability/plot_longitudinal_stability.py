@@ -1,4 +1,4 @@
-# RCAIDE/Library/Plots/Performance/Stability/plot_longitudinal_stability.py
+# RCAIDE/Library/Plots/Stability/plot_longitudinal_stability.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke 
@@ -102,7 +102,7 @@ def plot_longitudinal_stability(results,
     plt.rcParams.update(parameters)
      
     # get line colors for plots 
-    line_colors   = cm.viridis(np.linspace(0,0.9,len(results.segments)))     
+    line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))     
      
     fig   = plt.figure(save_filename)
     fig.set_size_inches(width,height)
@@ -118,7 +118,7 @@ def plot_longitudinal_stability(results,
     for i in range(len(results.segments)): 
         time       = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min
         c_m        = results.segments[i].conditions.static_stability.coefficients.M[:,0]   
-        SM         = results.segments[i].conditions.static_stability.static_margin[:,0]  
+        SM         = results.segments[i].conditions.static_stability.static_margin[:,0] *100 
         delta_e    = results.segments[i].conditions.control_surfaces.elevator.deflection[:,0] / Units.deg
         CM_delta_e = results.segments[i].conditions.static_stability.derivatives.CM_delta_e[:,0]
         Cm_alpha   = results.segments[i].conditions.static_stability.derivatives.CM_alpha[:,0]

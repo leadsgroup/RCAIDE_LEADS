@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
+import RCAIDE
 from RCAIDE.Library.Components import Component  
 from RCAIDE.Library.Methods.Thermal_Management.Batteries.Air_Cooled import append_air_cooled_conditions, air_cooled_performance, append_air_cooled_segment_conditions
-from RCAIDE.Library.Attributes.Gases import Air
 from RCAIDE.Library.Plots.Thermal_Management.plot_air_cooled_conditions import plot_air_cooled_conditions
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -66,9 +66,8 @@ class Air_Cooled(Component):
         Sets default values for the air cooling system attributes.
         """                 
         self.tag                                  = 'air_cooled_heat_acquisition'
-        self.cooling_fluid                        = Air()    
-        self.cooling_fluid.flowspeed              = 0.01                                          
-        self.convective_heat_transfer_coefficient = 35.     
+        self.cooling_fluid                        = RCAIDE.Library.Attributes.Gases.Air()                                          
+        self.convective_heat_transfer_coefficient = 5    
         self.heat_transfer_efficiency             = 1.0      
    
     def append_operating_conditions(self, segment, coolant_line):

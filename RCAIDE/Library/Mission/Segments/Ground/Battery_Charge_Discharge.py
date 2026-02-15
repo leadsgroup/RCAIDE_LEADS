@@ -94,7 +94,6 @@ def initialize_conditions(segment):
             for fuel_tank in  bus.fuel_tanks:
                 fuel_tank.append_operating_conditions(segment,bus)
 
-
     if isinstance(segment, RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge):
         for network in vehicle.networks:
             time =  []

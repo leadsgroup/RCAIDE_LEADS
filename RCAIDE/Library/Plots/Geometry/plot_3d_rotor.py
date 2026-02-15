@@ -77,7 +77,7 @@ def plot_3d_rotor(rotor,
     rotor_rgb_color      = mcolors.to_rgb(color)
     
     # -------------------------------------------------------------------------  
-    # initialize Renderer
+    # Initalize Renderer
     # -------------------------------------------------------------------------      
     renderer  = vtk.vtkRenderer() 
     num_B     = rotor.number_of_blades  
