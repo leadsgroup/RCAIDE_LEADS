@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Weights/Correlation_Buildups/Raymer/compute_vertical_tail_weight.py
+# RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/Transport/Raymer/compute_vertical_tail_weight.py
 # 
 # 
 # Created:  Sep 2024, M. Clarke

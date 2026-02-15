@@ -38,7 +38,7 @@ class Source(Component):
         """          
         self.tag                          = 'source' 
         self.active                       = True 
-        self.assigned_distributors        = []
+        self.assigned_distributors        = None
         self.efficiency                   = Data()
         self.efficiency.propulsive        = 1.0
         self.efficiency.electrical        = 1.0

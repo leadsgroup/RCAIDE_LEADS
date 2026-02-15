@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
-import RCAIDE
 from RCAIDE.Library.Methods.Powertrain.Converters.Turboshaft import compute_power
 
 # Python package imports
@@ -16,7 +15,7 @@ import numpy                                                       as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  size_core
 # ----------------------------------------------------------------------------------------------------------------------
-def size_core(turboshaft, conditions, network):
+def size_core(turboshaft, conditions):
     """
     Sizes the core flow for a turboshaft engine at the design condition.
     
@@ -115,7 +114,7 @@ def size_core(turboshaft, conditions, network):
     total_pressure_reference                       = turboshaft_conditions.total_pressure_reference 
 
     #compute nondimensional power
-    compute_power(turboshaft,conditions, network)
+    compute_power(turboshaft,conditions)
 
     #unpack results 
     Psp                                            = turboshaft_conditions.non_dimensional_power
@@ -126,9 +125,6 @@ def size_core(turboshaft, conditions, network):
 
     #pack outputs
     turboshaft.mass_flow_rate                      = mdot_air
-    
-    for assigned_converter_tag in turboshaft.assigned_converters:
-        if isinstance(network.converters[assigned_converter_tag[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Compressor):                   
-            network.converters[assigned_converter_tag[0][0]].mass_flow_rate = mdot_compressor
+    turboshaft.compressor.mass_flow_rate           = mdot_compressor
 
     return    

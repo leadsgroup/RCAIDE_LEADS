@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Weights/Correlation_Buildups/Propulsion/compute_jet_engine_weight.py
+# RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/General_Aviation/Raymer/compute_jet_engine_weight.py
 # 
 # 
 # Created:  Sep 2024, M. Clarke
@@ -12,30 +12,32 @@ import RCAIDE
 from RCAIDE.Framework.Core import  Units, Data
 import numpy as np
  
-
-def compute_propulsion_system_weight(network):
+# ----------------------------------------------------------------------------------------------------------------------
+#  compute_propulsion_system_weight
+# ----------------------------------------------------------------------------------------------------------------------
+def compute_propulsion_system_weight(network, settings):
     W_energy_network_total = 0
     number_of_jet_engines = 0
     number_of_piston_engines = 0
     for propulsor in network.propulsors: # Check this 
             if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan):
                 number_of_jet_engines += 1
-                W_engine_jet            = compute_jet_engine_weight(propulsor)
-                W_propulsion            = integrated_propulsion_jet(W_engine_jet) 
+                W_engine_jet                   = compute_jet_engine_weight(propulsor)
+                W_propulsion                   = integrated_propulsion_jet(W_engine_jet) 
                 propulsor.mass_properties.mass = W_propulsion
-                W_energy_network_total  += W_propulsion                
+                W_energy_network_total         += W_propulsion                
             elif isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Internal_Combustion_Engine):    
                 number_of_piston_engines += 1
-                W_engine_piston          = compute_piston_engine_weight(propulsor)
-                W_propulsion             = integrated_propulsion_piston(W_engine_piston) 
+                W_engine_piston                = compute_piston_engine_weight(propulsor)
+                W_propulsion                   = integrated_propulsion_piston(W_engine_piston) 
                 propulsor.mass_properties.mass = W_propulsion
-                W_energy_network_total  += W_propulsion
+                W_energy_network_total         += W_propulsion
             elif type(propulsor) ==  RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop:      
                 number_of_piston_engines += 1
-                W_turboprop          = compute_turboprop_engine_weight(propulsor)
-                W_propulsion             = integrated_propulsion_piston(W_turboprop) 
+                W_turboprop                    = compute_turboprop_engine_weight(propulsor)
+                W_propulsion                   = integrated_propulsion_piston(W_turboprop) 
                 propulsor.mass_properties.mass = W_propulsion
-                W_energy_network_total  += W_propulsion     
+                W_energy_network_total         += W_propulsion     
     
     output = Data()
     output.W_prop = W_propulsion
@@ -64,12 +66,9 @@ def compute_jet_engine_weight(propulsor):
     Properties Used:
             N/A
     """     
-    # setup
-    thrust_sls    =  propulsor.sealevel_static_thrust 
-    thrust_sls_en = thrust_sls / Units.force_pound # Convert N to lbs force  
-    BPR = propulsor.bypass_ratio
-
-    WENG   = 0.084 *  (propulsor.sealevel_static_thrust/Units.lbf)**1.1 * np.exp(-0.045*BPR) * Units.lbs # Raymer 3rd Edition eq. 10.4 
+    # setup 
+    BPR  = propulsor.bypass_ratio 
+    WENG = 0.084 *  (propulsor.sealevel_static_thrust/Units.lbf)**1.1 * np.exp(-0.045*BPR) * Units.lbs # Raymer 3rd Edition eq. 10.4 
     
     return WENG
  

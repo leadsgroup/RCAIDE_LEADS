@@ -28,7 +28,7 @@ class Distributor(Component):
         self.type                     = 'distributor'
         self.working_fluid            = Data()
         self.active                   = True
-        self.assigned_distributors    = []
+        self.assigned_distributors    = None
         self.efficiency               = Data()
         self.efficiency.electrical    = 1.0
         self.efficiency.mechanical    = 1.0

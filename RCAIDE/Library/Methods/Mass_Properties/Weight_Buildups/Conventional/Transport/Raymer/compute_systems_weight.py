@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Weights/Correlation_Buildups/Raymer/compute_systems_weight.py
+# RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/Transport/Raymer/compute_systems_weight.py
 # 
 # 
 # Created:  Sep 2024, M. Clarke
@@ -106,16 +106,12 @@ def compute_systems_weight(vehicle):
     L              = ref_fuselage.lengths.total / Units.ft
     Bw             = ref_wing.spans.projected / Units.ft
     DG             = vehicle.mass_properties.max_takeoff / Units.lbs
-    Scs            = flap_ratio * vehicle.reference_area / Units.ft**2
-    design_mach    = vehicle.flight_envelope.design_mach_number
+    Scs            = flap_ratio * vehicle.reference_area / Units.ft**2 
     num_pax        = vehicle.number_of_passengers 
     NENG = 0 
     for network in  vehicle.networks:
-        for propulsor in network.propulsors:
-            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or \
-               isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet) or \
-               isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop):
-                NENG += 1  
+        for _ in network.propulsors: 
+            NENG += 1  
     fuse_w         = ref_fuselage.width / Units.ft
     fuse_h         = ref_fuselage.heights.maximum / Units.ft   
     cargo_weight   = vehicle.mass_properties.payload / Units.lbs
@@ -123,8 +119,7 @@ def compute_systems_weight(vehicle):
     if vehicle.number_of_passengers >= 150:
         flight_crew = 3 # number of flight crew
     else:
-        flight_crew = 2
-    Ns      = 4  # Number of flight control systems (typically 4)
+        flight_crew = 2 
     Kr      = 1  # assuming not a reciprocating engine
     Ktp     = 1  # assuming not a turboprop
     Nf      = 7  # number of functions performed by controls (typically 4-7)

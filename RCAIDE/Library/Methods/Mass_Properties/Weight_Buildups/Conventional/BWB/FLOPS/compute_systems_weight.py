@@ -182,11 +182,11 @@ def compute_systems_weight(vehicle):
     DESRNG  = vehicle.flight_envelope.design_range / Units.nmi
     WAVONC  = 15.8 * DESRNG ** 0.1 * NFLCR ** 0.7 * FPAREA ** 0.43  # avionics weight
     
-    WFURN   = 127 * NFLCR + 112 *  NPF + 78 *  NPB + 44 * NPE  + 2.6 * (ACABIN*(WF+DF*NBAY)/WF + WF*DF*(1+1/np.cos(SWPLE)))
+    WFURN   = 127 * NFLCR + 112 *  NPF + 78 *  NPB + 44 * NPE
 
     WAC     = (3.2 * (FPAREA * DF) ** 0.6 + 9 * NPASS ** 0.83) * VMAX + 0.075 * WAVONC  # ac weight
     WAI     = ref_wing.spans.projected / Units.ft * 1. / np.cos(ref_wing.sweeps.quarter_chord) + 3.8 * FNAC * NENG + 1.5 * WF  # anti-ice weight
-    output                      = Data()
+    output                     = Data()
     output.W_flight_control    = WSC * Units.lbs
     output.W_apu               = WAPU * Units.lbs
     output.W_hyd_pnu           = WHYD * Units.lbs

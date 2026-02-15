@@ -71,7 +71,7 @@ class System(Component):
         self.control                      = None
         self.accessories                  = None
         self.power_draw                   = 0.0
-        self.assigned_distributors        = []
+        self.assigned_distributors        = None
         self.efficiency                   = Data()
         self.efficiency.propulsive        = 1.0
         self.efficiency.electrical        = 1.0

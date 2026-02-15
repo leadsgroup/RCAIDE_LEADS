@@ -8,14 +8,13 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
  
-import RCAIDE
 # Python package imports
 import numpy                               as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_power
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_power(turboshaft,conditions, network):
+def compute_power(turboshaft,conditions):
     """
     Computes power and other performance properties for a turboshaft engine.
 
@@ -103,11 +102,9 @@ def compute_power(turboshaft,conditions, network):
     Tref                                       = turboshaft.reference_temperature                                                                   
     Pref                                       = turboshaft.reference_pressure                                  
     eta_c                                      = turboshaft.conversion_efficiency 
-    SFC_adjustment                             = turboshaft.specific_fuel_consumption_reduction_factor 
-    for assigned_converter_tag in turboshaft.assigned_converters:
-        if isinstance(network.converters[assigned_converter_tag[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Compressor):                   
-            pi_c                               = network.converters[assigned_converter_tag[0][0]].pressure_ratio                                                                   
-            m_dot_compressor                   = network.converters[assigned_converter_tag[0][0]].mass_flow_rate  
+    SFC_adjustment                             = turboshaft.specific_fuel_consumption_reduction_factor                                                     
+    pi_c                                       = turboshaft.compressor.pressure_ratio                                                                   
+    m_dot_compressor                           = turboshaft.compressor.mass_flow_rate  
     LHV                                        = turboshaft.fuel_type.lower_heating_value                                                                        
     gamma                                      = conditions.freestream.isentropic_expansion_factor                                                      
     a0                                         = conditions.freestream.speed_of_sound                                                                   

@@ -25,7 +25,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Design Turbofan
 # ---------------------------------------------------------------------------------------------------------------------- 
-def design_turbofan(turbofan, network):
+def design_turbofan(turbofan):
     """
     Computes performance properties of a turbofan engine at the design point by linking
     and analyzing the thermodynamic cycle of its components.
@@ -168,24 +168,19 @@ def design_turbofan(turbofan, network):
      
     segment                  = RCAIDE.Framework.Mission.Segments.Segment()  
     segment.state.conditions = conditions 
-    turbofan.append_operating_conditions(segment)
-
-    # extract compoment from network    
-    ram                       = network.converters[turbofan.assigned_converters.ram_tag[0][0]]
-    inlet_nozzle              = network.converters[turbofan.assigned_converters.inlet_nozzle_tag[0][0]]
-    fan                       = network.converters[turbofan.assigned_converters.fan_tag[0][0]]
-    low_pressure_compressor   = network.converters[turbofan.assigned_converters.low_pressure_compressor_tag[0][0]]
-    high_pressure_compressor  = network.converters[turbofan.assigned_converters.high_pressure_compressor_tag[0][0]]
-    combustor                 = network.converters[turbofan.assigned_converters.combustor_tag[0][0]]
-    high_pressure_turbine     = network.converters[turbofan.assigned_converters.high_pressure_turbine_tag[0][0]]
-    low_pressure_turbine      = network.converters[turbofan.assigned_converters.low_pressure_turbine_tag[0][0]]
-    core_nozzle               = network.converters[turbofan.assigned_converters.core_nozzle_tag[0][0]]
-    fan_nozzle                = network.converters[turbofan.assigned_converters.fan_nozzle_tag[0][0]]
-    bypass_ratio              = turbofan.bypass_ratio
-
-    for _, item in turbofan.assigned_converters.items():
-        converter = network.converters[item[0][0]] 
-        converter.append_operating_conditions(segment)
+    turbofan.append_operating_conditions(segment,conditions.energy,conditions.noise)
+                    
+    ram                       = turbofan.ram
+    inlet_nozzle              = turbofan.inlet_nozzle
+    fan                       = turbofan.fan
+    low_pressure_compressor   = turbofan.low_pressure_compressor
+    high_pressure_compressor  = turbofan.high_pressure_compressor
+    combustor                 = turbofan.combustor
+    high_pressure_turbine     = turbofan.high_pressure_turbine
+    low_pressure_turbine      = turbofan.low_pressure_turbine
+    core_nozzle               = turbofan.core_nozzle
+    fan_nozzle                = turbofan.fan_nozzle 
+    bypass_ratio              = turbofan.bypass_ratio  
 
     # unpack component conditions
     turbofan_conditions     = conditions.energy.propulsors[turbofan.tag]
@@ -273,7 +268,6 @@ def design_turbofan(turbofan, network):
     hpt_conditions.inputs.static_pressure           = combustor_conditions.outputs.static_pressure
     hpt_conditions.inputs.mach_number               = combustor_conditions.outputs.mach_number       
     hpt_conditions.inputs.compressor                = hpc_conditions.outputs  
-    hpt_conditions.inputs.fan                       = fan_conditions.outputs 
     hpt_conditions.inputs.bypass_ratio              = 0.0
     high_pressure_turbine.working_fluid             = combustor.working_fluid    
     
@@ -337,10 +331,10 @@ def design_turbofan(turbofan, network):
     # Step 23: Static Sea Level Thrust  
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
     V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
-    operating_state       = setup_operating_conditions(turbofan, network, velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
+    operating_state       = setup_operating_conditions(turbofan,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
     operating_state.conditions.energy.propulsors[turbofan.tag].throttle[:,0] = 1.0  
-    _,sls_outputs,_ ,_                     = turbofan.compute_performance(operating_state, network) 
-    turbofan.sealevel_static_thrust       = sls_outputs.thrust[0][0]
-    turbofan.sealevel_static_power        = sls_outputs.power.propulsive[0][0]
+    sls_T,_,sls_P,_,_,_                          = turbofan.compute_performance(operating_state) 
+    turbofan.sealevel_static_thrust              = sls_T[0][0]
+    turbofan.sealevel_static_power               = sls_P[0][0]
      
     return 

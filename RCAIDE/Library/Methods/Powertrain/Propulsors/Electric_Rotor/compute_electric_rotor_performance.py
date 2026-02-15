@@ -18,7 +18,7 @@ from copy import deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_electric_rotor_performance
 # ----------------------------------------------------------------------------------------------------------------------  
-def compute_electric_rotor_performance(propulsor, state, network, center_of_gravity=[[0.0, 0.0, 0.0]]):
+def compute_electric_rotor_performance(propulsor, state, center_of_gravity=[[0.0, 0.0, 0.0]]):
     """
     Computes the performance of an electric rotor propulsion system.
     
@@ -103,17 +103,10 @@ def compute_electric_rotor_performance(propulsor, state, network, center_of_grav
     RCAIDE.Library.Methods.Powertrain.Modulators.Electronic_Speed_Controller
     """
      
-    conditions                 = state.conditions
-    for assigned_converter_tag in propulsor.assigned_converters:
-        if isinstance(network.converters[assigned_converter_tag[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Rotor):
-            rotor = network.converters[assigned_converter_tag[0][0]]
-        elif isinstance(network.converters[assigned_converter_tag[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Motor):
-            motor = network.converters[assigned_converter_tag[0][0]]
-
-    for assigned_modulator_tag in propulsor.assigned_modulators:
-        if isinstance(network.modulators[assigned_modulator_tag[0][0]], RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller):
-            esc = network.modulators[assigned_modulator_tag[0][0]]
-
+    conditions                 = state.conditions    
+    motor                      = propulsor.motor 
+    rotor                      = propulsor.rotor 
+    esc                        = propulsor.electronic_speed_controller   
     electric_rotor_conditions  = conditions.energy.propulsors[propulsor.tag]
     eta                        = electric_rotor_conditions.throttle
      
@@ -145,16 +138,11 @@ def compute_electric_rotor_performance(propulsor, state, network, center_of_grav
     stored_propulsor_tag    = propulsor.tag 
     
     # compute total forces and moments from propulsor (future work would be to add moments from motors)
-    electric_rotor_conditions.outputs.thrust      = conditions.energy.converters[rotor.tag].thrust 
-    electric_rotor_conditions.outputs.moment      = moment
+    electric_rotor_conditions.thrust      = conditions.energy.converters[rotor.tag].thrust 
+    electric_rotor_conditions.power       = conditions.energy.converters[rotor.tag].power 
+    electric_rotor_conditions.moment      = moment
     
-    stored_results_flag            = True
-    stored_propulsor_tag           = propulsor.tag  
-
-    electric_rotor_conditions.inputs.power.electrical   = conditions.energy.modulators[esc.tag].inputs.power.electrical
-    electric_rotor_conditions.outputs.power.propulsive  = conditions.energy.converters[rotor.tag].power  
-
-    return electric_rotor_conditions.inputs ,electric_rotor_conditions.outputs, stored_results_flag,stored_propulsor_tag 
+    return electric_rotor_conditions.inputs ,electric_rotor_conditions.outputs, stored_results_flag,stored_propulsor_tag  
                 
 def reuse_stored_electric_rotor_data(propulsor,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one propulsor for identical propulsors
@@ -182,25 +170,13 @@ def reuse_stored_electric_rotor_data(propulsor,state,network,stored_propulsor_ta
     Properties Used: 
     N.A.        
     ''' 
-    conditions                 = state.conditions
-
-    for assigned_converter_tag in propulsor.assigned_converters:
-        if isinstance(network.converters[assigned_converter_tag[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Rotor):
-            rotor = network.converters[assigned_converter_tag[0][0]]
-        elif isinstance(network.converters[assigned_converter_tag[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Motor):
-            motor = network.converters[assigned_converter_tag[0][0]] 
-    for assigned_modulator_tag in propulsor.assigned_modulators:
-        if isinstance(network.modulators[assigned_modulator_tag[0][0]], RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller):
-            esc = network.modulators[assigned_modulator_tag[0][0]]
-
-    for stored_assigned_converter_tag in network.propulsors[stored_propulsor_tag].assigned_converters:
-        if isinstance(network.converters[stored_assigned_converter_tag[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Rotor):
-            rotor_0 = network.converters[stored_assigned_converter_tag[0][0]]
-        elif isinstance(network.converters[stored_assigned_converter_tag[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Motor):
-            motor_0 = network.converters[stored_assigned_converter_tag[0][0]]
-    for stored_assigned_modulator_tag in network.propulsors[stored_propulsor_tag].assigned_modulators:
-        if isinstance(network.modulators[stored_assigned_modulator_tag[0][0]], RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller):
-            esc_0 = network.modulators[stored_assigned_modulator_tag[0][0]]
+    conditions                 = state.conditions 
+    motor                      = propulsor.motor 
+    rotor                      = propulsor.rotor 
+    esc                        = propulsor.electronic_speed_controller  
+    motor_0                    = network.propulsors[stored_propulsor_tag].motor 
+    rotor_0                    = network.propulsors[stored_propulsor_tag].rotor 
+    esc_0                      = network.propulsors[stored_propulsor_tag].electronic_speed_controller
     
     conditions.energy.converters[motor.tag]        = deepcopy(conditions.energy.converters[motor_0.tag])
     conditions.energy.converters[rotor.tag]        = deepcopy(conditions.energy.converters[rotor_0.tag])

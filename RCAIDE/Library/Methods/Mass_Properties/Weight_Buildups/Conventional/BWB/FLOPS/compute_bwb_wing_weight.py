@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Weights/Correlation_Buildups/FLOPS/compute_main_wing_weight.py
+# RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Convetional/BWB/FLOPS/compute_main_wing_weight.py
 # 
 # 
 # Created:  Sep 2024, M. Clarke

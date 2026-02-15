@@ -7,7 +7,6 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports  
-import RCAIDE
 from RCAIDE.Framework.Core import Data   
 from RCAIDE.Library.Methods.Powertrain.Converters.Ram                  import compute_ram_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Combustor            import compute_combustor_performance
@@ -24,7 +23,7 @@ from copy import  deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_performance
 # ----------------------------------------------------------------------------------------------------------------------   
-def compute_turbofan_performance(turbofan, state, network, center_of_gravity=[[0.0, 0.0, 0.0]]):
+def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 0.0]]):
     """
     Computes the performance of a turbofan engine by analyzing the thermodynamic cycle.
     
@@ -190,44 +189,34 @@ def compute_turbofan_performance(turbofan, state, network, center_of_gravity=[[0
     """ 
     conditions                = state.conditions   
     noise_conditions          = conditions.noise.propulsors[turbofan.tag] 
-    turbofan_conditions       = conditions.energy.propulsors[turbofan.tag]
+    turbofan_conditions       = conditions.energy.propulsors[turbofan.tag] 
     U0                        = conditions.freestream.velocity
     T                         = conditions.freestream.temperature
     P                         = conditions.freestream.pressure
-
-    if turbofan.assigned_converters.generator_tag != []:
-        generator                 = network.converters[turbofan.assigned_converters.generator_tag[0][0]]
-    elif turbofan.assigned_converters.motor_tag != []:
-        motor                     = network.converters[turbofan.assigned_converters.motor_tag[0][0]]
-    ram                       = network.converters[turbofan.assigned_converters.ram_tag[0][0]]
-    inlet_nozzle              = network.converters[turbofan.assigned_converters.inlet_nozzle_tag[0][0]]
-    fan                       = network.converters[turbofan.assigned_converters.fan_tag[0][0]]
-    low_pressure_compressor   = network.converters[turbofan.assigned_converters.low_pressure_compressor_tag[0][0]]
-    high_pressure_compressor  = network.converters[turbofan.assigned_converters.high_pressure_compressor_tag[0][0]]
-    combustor                 = network.converters[turbofan.assigned_converters.combustor_tag[0][0]]
-    high_pressure_turbine     = network.converters[turbofan.assigned_converters.high_pressure_turbine_tag[0][0]]
-    low_pressure_turbine      = network.converters[turbofan.assigned_converters.low_pressure_turbine_tag[0][0]]
-    core_nozzle               = network.converters[turbofan.assigned_converters.core_nozzle_tag[0][0]]
-    fan_nozzle                = network.converters[turbofan.assigned_converters.fan_nozzle_tag[0][0]]
-    bypass_ratio              = turbofan.bypass_ratio
-
+    ram                       = turbofan.ram
+    inlet_nozzle              = turbofan.inlet_nozzle
+    fan                       = turbofan.fan
+    low_pressure_compressor   = turbofan.low_pressure_compressor
+    high_pressure_compressor  = turbofan.high_pressure_compressor
+    combustor                 = turbofan.combustor
+    high_pressure_turbine     = turbofan.high_pressure_turbine
+    low_pressure_turbine      = turbofan.low_pressure_turbine
+    core_nozzle               = turbofan.core_nozzle
+    fan_nozzle                = turbofan.fan_nozzle 
+    bypass_ratio              = turbofan.bypass_ratio 
+    
     # unpack component conditions 
-    turbofan_conditions     = conditions.energy.propulsors[turbofan.tag]
-    for converter in turbofan.assigned_converters:
-        if isinstance(network.converters[converter[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Generator):
-            generator_conditions    = conditions.energy.converters[generator.tag]
-        elif isinstance(network.converters[converter[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Motor):
-            motor_conditions        = conditions.energy.converters[motor.tag]
     ram_conditions          = conditions.energy.converters[ram.tag]    
     inlet_nozzle_conditions = conditions.energy.converters[inlet_nozzle.tag]
     fan_conditions          = conditions.energy.converters[fan.tag]    
     lpc_conditions          = conditions.energy.converters[low_pressure_compressor.tag]
     hpc_conditions          = conditions.energy.converters[high_pressure_compressor.tag]
-    combustor_conditions    = conditions.energy.converters[combustor.tag] 
+    combustor_conditions    = conditions.energy.converters[combustor.tag]     
     lpt_conditions          = conditions.energy.converters[low_pressure_turbine.tag]
     hpt_conditions          = conditions.energy.converters[high_pressure_turbine.tag]
     core_nozzle_conditions  = conditions.energy.converters[core_nozzle.tag]
-    fan_nozzle_conditions   = conditions.energy.converters[fan_nozzle.tag] 
+    fan_nozzle_conditions   = conditions.energy.converters[fan_nozzle.tag]    
+
  
     # Set the working fluid to determine the fluid properties
     ram.working_fluid = turbofan.working_fluid
@@ -304,7 +293,6 @@ def compute_turbofan_performance(turbofan, state, network, center_of_gravity=[[0
     hpt_conditions.inputs.static_pressure           = combustor_conditions.outputs.static_pressure
     hpt_conditions.inputs.mach_number               = combustor_conditions.outputs.mach_number  
     hpt_conditions.inputs.compressor                = hpc_conditions.outputs 
-    hpt_conditions.inputs.fan                       = fan_conditions.outputs
     hpt_conditions.inputs.bypass_ratio              = 0.0 #set to zero to ensure that fan not linked here 
     high_pressure_turbine.working_fluid             = combustor.working_fluid 
         
@@ -381,7 +369,7 @@ def compute_turbofan_performance(turbofan, state, network, center_of_gravity=[[0
     moment_vector[:,2]         =  turbofan.origin[0][2]  -  center_of_gravity[0][2]
     M                          =  np.cross(moment_vector, thrust_vector)   
     moment                     = M 
-    power                      = turbofan_conditions.outputs.power.propulsive 
+    power                      = turbofan_conditions.outputs.power.propulsive
     turbofan_conditions.moment = moment 
         
     # compute efficiencies 
@@ -403,19 +391,21 @@ def compute_turbofan_performance(turbofan, state, network, center_of_gravity=[[0
     hpc_conditions.omega        = high_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle
     
     # compute electrical power if generated/supplied  
-    for converter in turbofan.assigned_converters:
-
-        if isinstance(network.converters[converter[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Motor) and len(state.numerics.time.differentiate) > 0: 
-            motor_conditions.outputs.power                 = power * conditions.energy.hybrid_power_split_ratio   
-            motor_conditions.outputs.omega                 = lpc_conditions.omega
-            motor_conditions.outputs.torque                = motor_conditions.outputs.power.electrical / motor_conditions.outputs.omega   
-            turbofan_conditions.inputs.power.electrical    = motor_conditions.outputs.power.electrical     
-        
-        elif isinstance(network.converters[converter[0][0]], RCAIDE.Library.Components.Powertrain.Converters.Generator) and len(state.numerics.time.differentiate) > 0: 
-            generator_conditions.inputs.power.electrical   = power * conditions.energy.hybrid_power_split_ratio
-            generator_conditions.inputs.omega              = lpc_conditions.omega
-            generator_conditions.inputs.torque             = generator_conditions.inputs.power.electrical / generator_conditions.inputs.omega  
-            turbofan_conditions.outputs.power.electrical   = generator_conditions.inputs.power.electrical  
+    power_elec = 0*state.ones_row(1)
+    if low_pressure_compressor.motor != None and  len(state.numerics.time.differentiate) > 0: 
+        compressor_motor_conditions                 = conditions.energy.converters[low_pressure_compressor.motor.tag] 
+        compressor_motor_conditions.outputs.power   = power *conditions.energy.hybrid_power_split_ratio   
+        compressor_motor_conditions.outputs.omega   = lpc_conditions.omega
+        compressor_motor_conditions.outputs.torque  = compressor_motor_conditions.outputs.power / compressor_motor_conditions.outputs.omega   
+        power_elec =  compressor_motor_conditions.outputs.power  
+    
+    if low_pressure_compressor.generator != None and len(state.numerics.time.differentiate) > 0: 
+        compressor_generator_conditions                = conditions.energy.converters[low_pressure_compressor.generator.tag] 
+        compressor_generator_conditions.inputs.power   = power *conditions.energy.hybrid_power_split_ratio  
+        compressor_generator_conditions.inputs.omega   = lpc_conditions.omega
+        compressor_generator_conditions.outputs.torque = compressor_generator_conditions.outputs.power / compressor_generator_conditions.outputs.omega  
+        power_elec =  compressor_generator_conditions.inputs.power  
+    
   
     # store data
     core_nozzle_res = Data(
@@ -438,10 +428,9 @@ def compute_turbofan_performance(turbofan, state, network, center_of_gravity=[[0
                 angular_velocity    = fan_conditions.omega, 
             )
 
-    noise_conditions.fan_nozzle             = fan_nozzle_res
-    noise_conditions.core_nozzle            = core_nozzle_res  
-    noise_conditions.low_pressure_spool     = lpc_res
-    
+    noise_conditions.fan_nozzle                  = fan_nozzle_res
+    noise_conditions.core_nozzle                 = core_nozzle_res  
+    noise_conditions.low_pressure_spool          = lpc_res
     stored_results_flag                          = True
     stored_propulsor_tag                         = turbofan.tag  
 
@@ -478,27 +467,26 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
     '''
     # unpack
     conditions                  = state.conditions 
-    ram                         = network.converters[turbofan.assigned_converters.ram_tag[0][0]]
-    inlet_nozzle                = network.converters[turbofan.assigned_converters.inlet_nozzle_tag[0][0]]
-    fan                         = network.converters[turbofan.assigned_converters.fan_tag[0][0]]
-    low_pressure_compressor     = network.converters[turbofan.assigned_converters.low_pressure_compressor_tag[0][0]]
-    high_pressure_compressor    = network.converters[turbofan.assigned_converters.high_pressure_compressor_tag[0][0]]
-    combustor                   = network.converters[turbofan.assigned_converters.combustor_tag[0][0]]
-    high_pressure_turbine       = network.converters[turbofan.assigned_converters.high_pressure_turbine_tag[0][0]]
-    low_pressure_turbine        = network.converters[turbofan.assigned_converters.low_pressure_turbine_tag[0][0]]
-    core_nozzle                 = network.converters[turbofan.assigned_converters.core_nozzle_tag[0][0]]
-    fan_nozzle                  = network.converters[turbofan.assigned_converters.fan_nozzle_tag[0][0]]
-
-    ram_0                       = network.converters[network.propulsors[stored_propulsor_tag].assigned_converters.ram_tag[0][0]]
-    inlet_nozzle_0              = network.converters[network.propulsors[stored_propulsor_tag].assigned_converters.inlet_nozzle_tag[0][0]]
-    fan_0                       = network.converters[network.propulsors[stored_propulsor_tag].assigned_converters.fan_tag[0][0]]
-    low_pressure_compressor_0   = network.converters[network.propulsors[stored_propulsor_tag].assigned_converters.low_pressure_compressor_tag[0][0]]
-    high_pressure_compressor_0  = network.converters[network.propulsors[stored_propulsor_tag].assigned_converters.high_pressure_compressor_tag[0][0]]
-    combustor_0                 = network.converters[network.propulsors[stored_propulsor_tag].assigned_converters.combustor_tag[0][0]]
-    high_pressure_turbine_0     = network.converters[network.propulsors[stored_propulsor_tag].assigned_converters.high_pressure_turbine_tag[0][0]]
-    low_pressure_turbine_0      = network.converters[network.propulsors[stored_propulsor_tag].assigned_converters.low_pressure_turbine_tag[0][0]]
-    core_nozzle_0               = network.converters[network.propulsors[stored_propulsor_tag].assigned_converters.core_nozzle_tag[0][0]]
-    fan_nozzle_0                = network.converters[network.propulsors[stored_propulsor_tag].assigned_converters.fan_nozzle_tag[0][0]]
+    ram                         = turbofan.ram
+    inlet_nozzle                = turbofan.inlet_nozzle
+    fan                         = turbofan.fan
+    low_pressure_compressor     = turbofan.low_pressure_compressor
+    high_pressure_compressor    = turbofan.high_pressure_compressor
+    combustor                   = turbofan.combustor
+    high_pressure_turbine       = turbofan.high_pressure_turbine
+    low_pressure_turbine        = turbofan.low_pressure_turbine
+    core_nozzle                 = turbofan.core_nozzle
+    fan_nozzle                  = turbofan.fan_nozzle  
+    ram_0                       = network.propulsors[stored_propulsor_tag].ram
+    inlet_nozzle_0              = network.propulsors[stored_propulsor_tag].inlet_nozzle
+    fan_0                       = network.propulsors[stored_propulsor_tag].fan
+    low_pressure_compressor_0   = network.propulsors[stored_propulsor_tag].low_pressure_compressor
+    high_pressure_compressor_0  = network.propulsors[stored_propulsor_tag].high_pressure_compressor
+    combustor_0                 = network.propulsors[stored_propulsor_tag].combustor
+    high_pressure_turbine_0     = network.propulsors[stored_propulsor_tag].high_pressure_turbine
+    low_pressure_turbine_0      = network.propulsors[stored_propulsor_tag].low_pressure_turbine
+    core_nozzle_0               = network.propulsors[stored_propulsor_tag].core_nozzle
+    fan_nozzle_0                = network.propulsors[stored_propulsor_tag].fan_nozzle 
     
     # deep copy results 
     conditions.energy.propulsors[turbofan.tag]                 = deepcopy(conditions.energy.propulsors[stored_propulsor_tag])
@@ -522,13 +510,13 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
     moment_vector[:,1] = turbofan.origin[0][1]  -  center_of_gravity[0][1] 
     moment_vector[:,2] = turbofan.origin[0][2]  -  center_of_gravity[0][2]
     moment             = np.cross(moment_vector,thrust_vector)    
-  
+   
     conditions.energy.propulsors[turbofan.tag].outputs.moment = moment
-    conditions.energy.propulsors[turbofan.tag].inputs.fuel_mass_flow_rate = conditions.energy.propulsors[stored_propulsor_tag].fuel_mass_flow_rate
-    
-    if low_pressure_compressor.motor != None and  len(state.numerics.time.differentiate) > 0: 
+    conditions.energy.propulsors[turbofan.tag].inputs.fuel_mass_flow_rate = conditions.energy.propulsors[stored_propulsor_tag].fuel_mass_flow_rate    
+     
+    if low_pressure_compressor.motor != None and  len(state.numerics.time.differentiate) > 0:
         conditions.energy.converters[low_pressure_compressor.motor.tag] = deepcopy(conditions.energy.converters[low_pressure_compressor_0.motor.tag]) 
-        conditions.energy.propulsors[turbofan.tag].inputs.power.electrical = conditions.energy.converters[low_pressure_compressor.motor.tag].inputs.power  
+        conditions.energy.propulsors[turbofan.tag].inputs.power.electrical = conditions.energy.converters[low_pressure_compressor.motor.tag].inputs.power 
     
     if low_pressure_compressor.generator != None and len(state.numerics.time.differentiate) > 0:  
         conditions.energy.converters[low_pressure_compressor.generator.tag] = deepcopy(conditions.energy.converters[low_pressure_compressor_0.generator.tag]) 

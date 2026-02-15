@@ -70,7 +70,7 @@ class Systems(Component):
         self.tag                   = 'System' 
         self.control               = None
         self.accessories           = None 
-        self.assigned_distributors = []
+        self.assigned_distributors = None
         self.power                 = Container()
         self.electrical_efficiency = 1.0
         self.mechanical_efficiency = 1.0

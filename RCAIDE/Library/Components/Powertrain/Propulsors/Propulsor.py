@@ -88,10 +88,10 @@ class Propulsor(Component):
         self.reverse_thrust               = False
         self.sealevel_static_thrust       = 0.0
         self.working_fluid                = RCAIDE.Library.Attributes.Gases.Air()
-        self.assigned_converters          = Data() 
-        self.assigned_modulators          = Data() 
-        self.assigned_distributors        = []
-        self.nacelle                      = []
+        self.assigned_converters          = None 
+        self.assigned_modulators          = None 
+        self.assigned_distributors        = None
+        self.nacelle                      = None
         self.efficiency                   = Data()
         self.efficiency.propulsive        = 1.0
         self.efficiency.electrical        = 1.0

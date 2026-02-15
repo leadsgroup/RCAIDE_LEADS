@@ -9,7 +9,8 @@
 
 # RCAIDE Imports     
 import RCAIDE
-from RCAIDE.Framework.Core                                           import Data 
+from RCAIDE.Framework.Core                                           import Data
+from RCAIDE.Framework.Mission.Common                                 import Conditions
 from RCAIDE.Library.Methods.Powertrain.Converters.Ram                import compute_ram_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Combustor          import compute_combustor_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Compressor         import compute_compressor_performance
@@ -18,7 +19,6 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle   import comp
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle import compute_compression_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Turboshaft         import size_core  
 from RCAIDE.Library.Methods.Powertrain                               import setup_operating_conditions 
-from RCAIDE.Library.Mission.Common.Update.orientations               import orientations
 
 # Python package imports   
 import numpy                                                                as np
@@ -26,7 +26,7 @@ import numpy                                                                as n
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Design Turboshaft
 # ----------------------------------------------------------------------------------------------------------------------
-def design_turboshaft(turboshaft, network):  
+def design_turboshaft(turboshaft):  
     """
     Designs and sizes a turboshaft engine based on design point conditions and performance requirements.
 
@@ -156,20 +156,16 @@ def design_turboshaft(turboshaft, network):
     
     segment                  = RCAIDE.Framework.Mission.Segments.Segment()  
     segment.state.conditions = conditions
-    turboshaft.append_operating_conditions(segment)  
+    turboshaft.append_operating_conditions(segment,conditions.energy,conditions.noise)  
             
-    ram                     = network.converters[turboshaft.assigned_converters.ram_tag[0][0]]
-    inlet_nozzle            = network.converters[turboshaft.assigned_converters.inlet_nozzle_tag[0][0]]
-    compressor              = network.converters[turboshaft.assigned_converters.compressor_tag[0][0]]
-    combustor               = network.converters[turboshaft.assigned_converters.combustor_tag[0][0]]
-    high_pressure_turbine   = network.converters[turboshaft.assigned_converters.high_pressure_turbine_tag[0][0]]
-    low_pressure_turbine    = network.converters[turboshaft.assigned_converters.low_pressure_turbine_tag[0][0]]
-    core_nozzle             = network.converters[turboshaft.assigned_converters.core_nozzle_tag[0][0]]
+    ram                     = turboshaft.ram
+    inlet_nozzle            = turboshaft.inlet_nozzle
+    compressor              = turboshaft.compressor
+    combustor               = turboshaft.combustor
+    high_pressure_turbine   = turboshaft.high_pressure_turbine
+    low_pressure_turbine    = turboshaft.low_pressure_turbine
+    core_nozzle             = turboshaft.core_nozzle
     
-    for _, item in turboshaft.assigned_converters.items():
-        converter = network.converters[item[0][0]] 
-        converter.append_operating_conditions(segment)
-
     turboshaft_conditions   = conditions.energy.converters[turboshaft.tag]
     ram_conditions          = conditions.energy.converters[ram.tag]     
     inlet_nozzle_conditions = conditions.energy.converters[inlet_nozzle.tag]
@@ -245,8 +241,7 @@ def design_turboshaft(turboshaft, network):
     lpt_conditions.inputs.mach_number                         = hpt_conditions.outputs.mach_number  
     low_pressure_turbine.working_fluid                        = high_pressure_turbine.working_fluid    
     lpt_conditions.inputs.compressor                          = Data()
-    lpt_conditions.inputs.compressor.work_done                = 0.0 
-    lpt_conditions.inputs.compressor.external_shaft_work_done = 0.0 
+    lpt_conditions.inputs.compressor.work_done                = 0.0  
     lpt_conditions.inputs.fuel_to_air_ratio                   = combustor_conditions.outputs.fuel_to_air_ratio 
     lpt_conditions.inputs.bypass_ratio                        = 0.0
     lpt_conditions.inputs.fan                                 = Data()
@@ -291,13 +286,16 @@ def design_turboshaft(turboshaft, network):
     turboshaft_conditions.flow_through_fan                    = 0.0 #scaled constant to turn on fan power computation      
     
     # Step 25: Size the core of the turboshaft  
-    size_core(turboshaft,conditions, network)
+    size_core(turboshaft,conditions)
     
-    # Step 26: Static Sea Level Thrust   
-    atmo_data_sea_level                 = atmosphere.compute_values(0.0,0.0)   
-    V                                   = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
-    segment.state                       = setup_operating_conditions(turboshaft, network, velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
-    _,sls_outputs,_ ,_                  = turboshaft.compute_performance(segment.state, network)  
-    turboshaft.sealevel_static_power    = sls_outputs.power.propulsive[0][0]
-
+    # Step 26: Static Sea Level Thrust  
+    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
+    atmo_data_sea_level  = atmosphere.compute_values(0.0,0.0)   
+    V                    = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
+    operating_state      = setup_operating_conditions(turboshaft,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0,temperature_deviation=0)  
+    operating_state.conditions.energy.converters[turboshaft.tag].throttle[:,0] = 1.0  
+    sls_P,_,_                                                       = turboshaft.compute_performance(operating_state,fuel_line) 
+    turboshaft.sealevel_static_power                                = sls_P[0][0]
+     
     return      
+  

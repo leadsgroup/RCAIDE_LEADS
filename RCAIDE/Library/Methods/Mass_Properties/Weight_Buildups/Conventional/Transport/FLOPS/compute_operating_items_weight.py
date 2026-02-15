@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Weights/Correlation_Buildups/FLOPS/compute_operating_items_weight.py
+# RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/Transport/FLOPS/compute_operating_items_weight.py
 # 
 # 
 # Created:  Sep 2024, M. Clarke
@@ -63,9 +63,12 @@ def compute_operating_items_weight(vehicle):
     NPB  = vehicle.number_of_business_class_seats   
     NPE  = vehicle.number_of_economy_class_seats   
     for network in  vehicle.networks:
-        for propulsor in network.propulsors: 
-            ref_propulsor = propulsor  
-            NENG  += 1   
+        for propulsor in network.propulsors:
+            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan)\
+               or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet)\
+               or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop):
+                ref_propulsor = propulsor  
+                NENG  += 1   
     
     THRUST          = ref_propulsor.sealevel_static_thrust * 1 / Units.lbf
     SW              = vehicle.reference_area / Units.ft ** 2
@@ -74,10 +77,8 @@ def compute_operating_items_weight(vehicle):
     VMAX            = vehicle.flight_envelope.design_mach_number   
     number_of_tanks = 0  
     for network in  vehicle.networks:
-        for source in network.sources:
-            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank) or \
-                isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank) or \
-                isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
+        for fuel_line in network.fuel_lines:
+            for _ in fuel_line.fuel_tanks:
                 number_of_tanks += 1  
     
     WUF             = 11.5 * NENG * THRUST ** 0.2 + 0.07 * SW + 1.6 * number_of_tanks * FMXTOT ** 0.28  # unusable fuel weight
@@ -86,9 +87,11 @@ def compute_operating_items_weight(vehicle):
     WSRV        = (5.164 * NPF + 3.846 * NPB + 2.529 * NPE) * (DESRNG / VMAX) ** 0.255  # passenger service weight
 
     W_cargo = 0
+    WCON    = 0
     for cargo_bay in vehicle.cargo_bays:
-        W_cargo = cargo_bay.mass_properties.mass      
-    WCON        = 175 * np.ceil(W_cargo/ Units.lbs * 1. / 950)  # cargo container weight
+        W_cargo     = int(cargo_bay.mass_properties.mass) / len(vehicle.cargo_bays)
+        W_container = 175 * np.ceil(W_cargo/ Units.lbs * 1. / 950)  # cargo container weight
+        WCON        += W_container
 
     if vehicle.number_of_passengers >= 150:
         NFLCR = 3  # number of flight crew

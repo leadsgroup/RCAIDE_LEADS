@@ -12,6 +12,7 @@ import RCAIDE
 from RCAIDE.Framework.Core                                          import Units, Data 
 import RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.VTOL.Physics_Based as EVTOL
 import RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common as EVTOL_Common
+from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common import compute_payload_weight
 
 # package imports 
 import numpy as np
@@ -92,7 +93,7 @@ def compute_operating_empty_weight(vehicle,settings = None):
         weight.wiring                           = 0.0
         weight.wings                            = Data()
         weight.wings_total                      = 0.0
-        weight.thermal_management_system       = Data()
+        weight.thermal_management_system        = Data()
         
         #-------------------------------------------------------------------------------
         # Default Values
@@ -106,8 +107,14 @@ def compute_operating_empty_weight(vehicle,settings = None):
         #-------------------------------------------------------------------------------
         # Fixed Weights
         #-------------------------------------------------------------------------------
+    
+        #-------------------------------------------------------------------------------             
+        # Payload Weight
+        #-------------------------------------------------------------------------------  
+        payload = compute_payload_weight(vehicle, W_passenger=70.* Units.kg, W_baggage=0 * Units.lbs) 
+        
         weight.seats        = vehicle.number_of_passengers * 15.   * Units.kg
-        weight.passengers   = vehicle.number_of_passengers * 70.   * Units.kg
+        weight.passengers   = payload.passengers
         weight.avionics     = 15.                        * Units.kg
         weight.landing_gear = MTOW * 0.02                * Units.kg
         weight.ECS          = vehicle.number_of_passengers * 7.    * Units.kg
@@ -166,8 +173,6 @@ def compute_operating_empty_weight(vehicle,settings = None):
                 number_of_lift_rotors   = 0.0
                 total_number_of_rotors  = 0.0
                 lift_rotor_servo_weight = 0.0
-
-
     
             #-------------------------------------------------------------------------------
             # Propulsors
@@ -274,16 +279,12 @@ def compute_operating_empty_weight(vehicle,settings = None):
 
         #-------------------------------------------------------------------------------
         # Landing Gear Weight
-        #-------------------------------------------------------------------------------
-        main_landing_gear =  False
+        #------------------------------------------------------------------------------- 
         for LG in vehicle.landing_gears:
             if isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear):
-                LG.mass_properties.mass =  weight.landing_gear
-                main_landing_gear = True
-        if main_landing_gear == False:
-            main_gear = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
-            main_gear.mass_properties.mass =  weight.landing_gear
-            vehicle.landing_gears.append(main_gear)
+                LG.mass_properties.mass =  2 / 3 *  weight.landing_gear 
+            if isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear):
+                LG.mass_properties.mass = 1 / 3 *  weight.landing_gear 
 
         #-------------------------------------------------------------------------------
         # Fuselage  Weight
@@ -307,13 +308,16 @@ def compute_operating_empty_weight(vehicle,settings = None):
         #-------------------------------------------------------------------------------
         output                                            = Data()
         output.empty                                      = Data()
+        
+        # structural 
         output.empty.structural                           = Data()
         output.empty.structural.booms                     = miscelleneous_weight_factor *weight.booms
         output.empty.structural.fusleage                  = miscelleneous_weight_factor *weight.fuselage
         output.empty.structural.landing_gear              = miscelleneous_weight_factor *weight.landing_gear
         output.empty.structural.wings                     = miscelleneous_weight_factor *weight.wings_total
-        output.empty.structural.total                     = weight.booms + weight.fuselage + weight.landing_gear +weight.wings_total
-
+        output.empty.structural.total                     = output.empty.structural.booms + output.empty.structural.fusleage + output.empty.structural.landing_gear + output.empty.structural.wings
+        
+        # propulsion 
         output.empty.propulsion                           = Data()
         output.empty.propulsion.motors                    = miscelleneous_weight_factor *weight.motors
         output.empty.propulsion.rotors                    = miscelleneous_weight_factor *weight.rotors
@@ -323,26 +327,32 @@ def compute_operating_empty_weight(vehicle,settings = None):
         output.empty.propulsion.battery                   = miscelleneous_weight_factor *weight.battery
         output.empty.propulsion.fuel_cell                 = miscelleneous_weight_factor *weight.fuel_cell
         output.empty.propulsion.TMS                       = miscelleneous_weight_factor *weight.thermal_management_system.total
-        output.empty.propulsion.total                     = weight.rotors + weight.hubs  +  weight.fuel_cell  +  weight.battery +  weight.motors +   weight.wiring +   weight.servos +  weight.thermal_management_system.total
-
+        output.empty.propulsion.total                     = output.empty.propulsion.motors +  output.empty.propulsion.rotors +  output.empty.propulsion.hubs +\
+                                                            output.empty.propulsion.servos +  output.empty.propulsion.wiring +  output.empty.propulsion.battery +\
+                                                            output.empty.propulsion.fuel_cell +   output.empty.propulsion.TMS  
+        # systems 
         output.empty.systems                              = Data()
         output.empty.systems.environmental_control_system = miscelleneous_weight_factor * weight.ECS
         output.empty.systems.avionics                     = miscelleneous_weight_factor * weight.avionics
         output.empty.systems.seats                        = miscelleneous_weight_factor * weight.seats
         output.empty.systems.balistic_recovery_system     = miscelleneous_weight_factor * weight.BRS
-        output.empty.systems.total                        = weight.ECS + weight.avionics +   weight.BRS +  weight.seats
-
-        output.empty.total        = output.empty.systems.total +  output.empty.propulsion.total +  output.empty.structural.total
+        output.empty.systems.total                        = output.empty.systems.environmental_control_system + output.empty.systems.avionics +  output.empty.systems.seats +  output.empty.systems.balistic_recovery_system
+        
+        # operational items 
+        output.operational_items = Data()
+        output.operational_items.total = 0
+        
+        # payload 
         output.payload            = Data()
-        output.payload.total      = weight.passengers + weight.payload
         output.payload.passengers = weight.passengers
         output.payload.payload    = weight.payload
+        output.payload.total      = weight.passengers + weight.payload
+        
+        # total weight 
+        output.empty.total        = output.empty.systems.total +  output.empty.propulsion.total +  output.empty.structural.total        
         output.zero_fuel_weight   = output.empty.total + output.payload.total
         output.fuel               = 0
         output.total              = output.empty.total + output.payload.total 
-
-        output.operational_items = Data()
-        output.operational_items.total = 0
         
         diff = MTOW -output.total
         MTOW -= diff

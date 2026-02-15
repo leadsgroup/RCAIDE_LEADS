@@ -1,5 +1,4 @@
-
-# 
+# RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/General_Aviation/FLOPS/compute_wing_weight.py
 # 
 # Created:  Sep 2024, M. Clarke
 
@@ -345,12 +344,10 @@ def compute_wing_weight(vehicle, wing, WPOD, fidelity  , settings, num_main_wing
     # Composite utilization factor [0 no composite, 1 full composite]
     FCOMP   = composite_utilization_factor  
     ULF     = vehicle.flight_envelope.ultimate_load
-    if len(vehicle.fuselages) == 1:
+    if len(vehicle.fuselages) <= 1:
         CAYF    = 1  # Multiple fuselage factor [1 one fuselage, 0.5 multiple fuselages]
-    elif len(vehicle.fuselage) > 1:
-        CAYF    = 0.5
-    else:
-        raise NotImplementedError
+    elif len(vehicle.fuselages) > 1:
+        CAYF    = 0.5 
     VFACT   = 1  # Variable sweep factor, TODO: add equation to allow variable sweep penalty
     PCTL    = 1/num_main_wings  # Fraction of load carried by this wing
     W1NIR   = A[0] * BT * (1 + np.sqrt(A[1] / SPAN)) * ULF * SPAN * (1 - 0.4 * FCOMP) * (

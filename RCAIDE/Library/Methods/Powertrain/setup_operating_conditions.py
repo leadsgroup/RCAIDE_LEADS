@@ -150,12 +150,12 @@ def setup_operating_conditions(component, network, velocity_range=np.array([10])
     # append component-specific operating conditions 
     component.append_operating_conditions(segment)
     
-    if component.assigned_converters != []:
+    if component.assigned_converters != None:
         for _, item in component.assigned_converters.items():
             converter = network.converters[item[0][0]] 
             converter.append_operating_conditions(segment)
     
-    if component.assigned_modulators != []:
+    if component.assigned_modulators != None:
         for _, item in component.assigned_modulators.items():
             modulator = network.modulators[item[0][0]] 
             modulator.append_operating_conditions(segment)
