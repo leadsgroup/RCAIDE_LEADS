@@ -165,7 +165,7 @@ def vehicle_setup():
     segment.dihedral_outboard                      = 0  *  Units.degrees 
     segment.sweeps.quarter_chord                   = 10.037 *  Units.degrees
     airfoil                                        = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file                        = local_path + 's1014.dat' 
+    airfoil.coordinate_file                        = local_path + 's1014.txt' 
     segment.append_airfoil(airfoil )         
     wing.append_segment(segment)         
          
@@ -179,7 +179,7 @@ def vehicle_setup():
     segment.dihedral_outboard                      = 0 *  Units.degrees   
     segment.sweeps.quarter_chord                   = 46.9023 *  Units.degrees  
     airfoil                                        = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file                        = local_path +  's1014.dat'
+    airfoil.coordinate_file                        = local_path +  's1014.txt'
     segment.append_airfoil(airfoil )
     wing.append_segment(segment)
     
@@ -193,7 +193,7 @@ def vehicle_setup():
     segment.dihedral_outboard                      = 2 *  Units.degrees  
     segment.sweeps.quarter_chord                   = 51.027  *  Units.degrees   
     airfoil                                        = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file                        = local_path +  's1014.dat'
+    airfoil.coordinate_file                        = local_path +  's1014.txt'
     segment.append_airfoil(airfoil )         
     wing.append_segment(segment)         
          
@@ -206,7 +206,7 @@ def vehicle_setup():
     segment.dihedral_outboard                      = 12 *  Units.degrees   
     segment.sweeps.quarter_chord                   = 42.5  *  Units.degrees   
     airfoil                                        = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file                        = local_path +  's1014.dat'
+    airfoil.coordinate_file                        = local_path +  's1014.txt'
     segment.append_airfoil(airfoil )
     wing.append_segment(segment) 
 
@@ -220,7 +220,7 @@ def vehicle_setup():
     segment.dihedral_outboard                      = 5 *  Units.degrees    
     segment.sweeps.quarter_chord                   = 25*Units.degrees
     airfoil                                        = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file                        = local_path +  's1014.dat'
+    airfoil.coordinate_file                        = local_path +  's1014.txt'
     segment.append_airfoil(airfoil )
     wing.append_segment(segment)     
     
