@@ -58,6 +58,8 @@ class Network(Component):
 
     
     
+    
+    
     See Also
     --------
     RCAIDE.Library.Framework.Networks.Fuel
@@ -149,7 +151,10 @@ class Network(Component):
             conditions.energy.systems[system.tag].outputs.power.electrical = 0*state.ones_row(1)
             conditions.energy.systems[system.tag].outputs.power.chemical   = 0*state.ones_row(1)
             conditions.energy.systems[system.tag].outputs.power.thermal    = 0*state.ones_row(1)
-
+        ''' MAJOR ASSUMTION
+        
+        number of unknowns is the number of distributors 
+        '''
         # ----------------------------------------------------------
         # Propulsors
         # ----------------------------------------------------------
@@ -212,7 +217,7 @@ class Network(Component):
                                 key = ("propulsor", propulsor.tag, distributor_tag, "elec_out")
                                 if key not in unknown_cols:
                                     unknown_cols[key] = len(unknown_cols)
-                                triplets.append((t_idx,row_index, unknown_cols[key], +1.0))
+                                triplets.append((t_idx,row_index, unknown_cols[key], +1.0)) 
                             else:
                                 b_vector[t_idx,row_index,0] += val
                         elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
@@ -221,7 +226,7 @@ class Network(Component):
                                 key = ("propulsor", propulsor.tag, distributor_tag, "chem_in")
                                 if key not in unknown_cols:
                                     unknown_cols[key] = len(unknown_cols)
-                                triplets.append((t_idx,row_index, unknown_cols[key], -1.0))
+                                triplets.append((t_idx,row_index, unknown_cols[key], -1.0)) # -1 is drawing power + 1 is providing  9 each line is a dristrubutor line, each column is a component,
                             else:
                                 b_vector[t_idx,row_index,0] -= val
                     elif isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor):
@@ -257,7 +262,7 @@ class Network(Component):
                     if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
                         val = conditions.energy.converters[converter.tag].outputs.power.electrical[t_idx,0]
                         if val == 0.0:
-                            triplets.append((t_idx,row_index, unknown_cols[key], +1.0/electrical_connections))
+                            triplets.append((t_idx,row_index, unknown_cols[key], +1.0/electrical_connections)) # this assumes that the power provide to the line is split equally among all non-propulsive converters 
                         else:
                             b_vector[t_idx,row_index,0] += val
                     elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
