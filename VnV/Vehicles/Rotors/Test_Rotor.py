@@ -31,22 +31,17 @@ def Test_Rotor(new_regression=True):
     lift_rotor.hover.design_freestream_velocity            = np.sqrt(lift_rotor.hover.design_thrust/(2*1.2*np.pi*(lift_rotor.tip_radius**2)))  
     lift_rotor.oei.design_altitude                         = 40 * Units.feet  
     lift_rotor.oei.design_thrust                           = Hover_Load/7  
-    lift_rotor.oei.design_freestream_velocity              = np.sqrt(lift_rotor.oei.design_thrust/(2*1.2*np.pi*(lift_rotor.tip_radius**2)))   
-
-    ospath                                                 = os.path.abspath(__file__)
-    separator                                              = os.path.sep
-    rel_path                                               = os.path.dirname(ospath) + separator + '..'  + separator
-    
+    lift_rotor.oei.design_freestream_velocity              = np.sqrt(lift_rotor.oei.design_thrust/(2*1.2*np.pi*(lift_rotor.tip_radius**2)))    
     airfoil                                                = RCAIDE.Library.Components.Airfoils.Airfoil()   
-    airfoil.coordinate_file                                = rel_path + 'Airfoils' + separator + 'NACA_4412.txt'
-    airfoil.polar_files                                    = [rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_50000.txt' ,
-                                                             rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_100000.txt' ,
-                                                              rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_200000.txt' ,
-                                                              rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_500000.txt' ,
-                                                              rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_1000000.txt',
-                                                              rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_3500000.txt',
-                                                              rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_5000000.txt',
-                                                              rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_7500000.txt' ]
+    airfoil.coordinate_file                                = airfoil_file_path + 'NACA_4412.txt'
+    airfoil.polar_files                                    = [polar_file_path + 'NACA_4412_polar_Re_50000.txt' ,
+                                                              polar_file_path + 'NACA_4412_polar_Re_100000.txt' ,
+                                                              polar_file_path + 'NACA_4412_polar_Re_200000.txt' ,
+                                                              polar_file_path + 'NACA_4412_polar_Re_500000.txt' ,
+                                                              polar_file_path + 'NACA_4412_polar_Re_1000000.txt',
+                                                              polar_file_path + 'NACA_4412_polar_Re_3500000.txt',
+                                                              polar_file_path + 'NACA_4412_polar_Re_5000000.txt',
+                                                              polar_file_path + 'NACA_4412_polar_Re_7500000.txt' ]
     lift_rotor.append_airfoil(airfoil)                         
     lift_rotor.airfoil_polar_stations                      = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     

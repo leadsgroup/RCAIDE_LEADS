@@ -35,17 +35,14 @@ def F8745_D4_Propeller():
     prop.chord_distribution         = func_chord_distribution(new_radius_distribution)         
     prop.radius_distribution        = func_radius_distribution(new_radius_distribution)        
     prop.max_thickness_distribution = func_max_thickness_distribution(new_radius_distribution) 
-    prop.thickness_to_chord         = prop.max_thickness_distribution/prop.chord_distribution 
-    ospath    = os.path.abspath(__file__)
-    separator = os.path.sep
-    rel_path  = os.path.dirname(ospath) + separator  
+    prop.thickness_to_chord         = prop.max_thickness_distribution/prop.chord_distribution  
     airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()   
-    airfoil.coordinate_file          = rel_path +'../Airfoils/Clark_y.txt'
-    airfoil.polar_files              = [rel_path +'../Airfoils/Polars/Clark_y_polar_Re_50000.txt' ,
-                                       rel_path +'../Airfoils/Polars/Clark_y_polar_Re_100000.txt',
-                                       rel_path +'../Airfoils/Polars/Clark_y_polar_Re_200000.txt',
-                                       rel_path +'../Airfoils/Polars/Clark_y_polar_Re_500000.txt',
-                                       rel_path +'../Airfoils/Polars/Clark_y_polar_Re_1000000.txt']
+    airfoil.coordinate_file          = airfoil_file_path + 'Clark_y.txt'
+    airfoil.polar_files              = [polar_file_path + 'Clark_y_polar_Re_50000.txt' ,
+                                        polar_file_path + 'Clark_y_polar_Re_100000.txt',
+                                        polar_file_path + 'Clark_y_polar_Re_200000.txt',
+                                        polar_file_path + 'Clark_y_polar_Re_500000.txt',
+                                        polar_file_path + 'Clark_y_polar_Re_1000000.txt']
     airfoil.geometry                 = import_airfoil_geometry(airfoil.coordinate_file,airfoil.number_of_points)
     airfoil.polars                   = compute_airfoil_properties(airfoil.geometry,airfoil.polar_files)
     prop.append_airfoil(airfoil) 

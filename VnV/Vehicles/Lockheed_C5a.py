@@ -23,6 +23,15 @@ import os
 # ----------------------------------------------------------------------------------------------------------------------
 def vehicle_setup():
     # ------------------------------------------------------------------
+    #  File Paths 
+    # ------------------------------------------------------------------    
+    ospath             = os.path.abspath(__file__)
+    separator          = os.path.sep
+    rel_path           = os.path.dirname(ospath)   + separator
+    airfoil_file_path  = rel_path + separator + 'Airfoils_and_Polars'
+    polar_file_path    = rel_path + separator + 'Airfoils_and_Polars' + separator + 'Polars'
+    
+    # ------------------------------------------------------------------
     #   Initialize the Vehicle
     # ------------------------------------------------------------------
 
@@ -98,13 +107,10 @@ def vehicle_setup():
     
     segment = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                   = 'root'
-    root_airfoil                  = RCAIDE.Library.Components.Airfoils.Airfoil()
-    ospath                        = os.path.abspath(__file__)
-    separator                     = os.path.sep
-    segment.percent_span_location = 0.0
-    rel_path                      = os.path.dirname(ospath) + separator  + '..'  + separator 
+    root_airfoil                  = RCAIDE.Library.Components.Airfoils.Airfoil() 
+    segment.percent_span_location = 0.0 
     segment.twist                 = 0.0 * Units.deg
-    root_airfoil.coordinate_file  = rel_path  + 'C-5a' + separator + 'c5a.txt'
+    root_airfoil.coordinate_file  = airfoil_file_path + 'c5a.txt'
     segment.root_chord_percent    = 1.0
     segment.thickness_to_chord    = 0.131
     segment.dihedral_outboard     = -3.5 * Units.degrees
@@ -113,7 +119,7 @@ def vehicle_setup():
     
     segment = RCAIDE.Library.Components.Wings.Segments.Segment()
     Yehudi_airfoil                  = RCAIDE.Library.Components.Airfoils.Airfoil() 
-    Yehudi_airfoil.coordinate_file  = rel_path  + 'C-5a' + separator + 'c5c.txt'    
+    Yehudi_airfoil.coordinate_file  = airfoil_file_path + 'c5c.txt'    
     segment.tag                   = 'yehudi'
     segment.percent_span_location = 0.471
     segment.twist                 = 0 # (4. - segment.percent_span_location*4.) * Units.deg
@@ -125,7 +131,7 @@ def vehicle_setup():
 
     segment = RCAIDE.Library.Components.Wings.Segments.Segment()
     tip_airfoil                   =  RCAIDE.Library.Components.Airfoils.Airfoil()    
-    tip_airfoil.coordinate_file   = rel_path + 'C-5a' + separator + 'c5e.txt'
+    tip_airfoil.coordinate_file   = airfoil_file_path + 'c5e.txt'
     segment.tag                   = 'Tip'
     segment.percent_span_location = 1.
     segment.twist                 = 0#(4. - segment.percent_span_location*4.) * Units.deg

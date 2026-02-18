@@ -17,7 +17,7 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
-#sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles' + os.path.sep + 'Airfoils')) 
+#sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles' + os.path.sep + 'Airfoils_and_Polars')) 
 
 # ----------------------------------------------------------------------
 #   Main
@@ -29,16 +29,16 @@ def main():
     # ---------------------------------------------------------------------------------------------------------------- 
     separator     = os.path.sep
     if  os.path.split(sys.path[0])[1] == 'geometry':
-        airfoils_path =  os.path.split(os.path.split(sys.path[0])[0])[0] + separator +  'Vehicles' + os.path.sep + 'Airfoils' + os.path.sep
+        airfoils_file_path =  os.path.split(os.path.split(sys.path[0])[0])[0] + separator +  'Vehicles' + os.path.sep + 'Airfoils_and_Polars' + os.path.sep
     else:
-        airfoils_path = sys.path[0] + separator +  'Vehicles' + os.path.sep + 'Airfoils' + os.path.sep
+        airfoils_file_path = sys.path[0] + separator +  'Vehicles' + os.path.sep + 'Airfoils_and_Polars' + os.path.sep
     airfoil_geometry_with_selig =  [airfoils_path + 'NACA_4412.txt','airfoil_geometry_2.txt', 'airfoil_geometry_2-selig.txt']        
-    airfoil_geometry_files      = airfoils_path + 'NACA_4412.txt'
-    airfoil_polar_files         =  [airfoils_path + 'Polars' + separator + 'NACA_4412_polar_Re_50000.txt',
-                                     airfoils_path + 'Polars' + separator + 'NACA_4412_polar_Re_100000.txt',
-                                     airfoils_path + 'Polars' + separator + 'NACA_4412_polar_Re_200000.txt',
-                                     airfoils_path + 'Polars' + separator + 'NACA_4412_polar_Re_500000.txt',
-                                     airfoils_path + 'Polars' + separator + 'NACA_4412_polar_Re_1000000.txt']  
+    airfoil_geometry_files      = airfoils_file_path + 'NACA_4412.txt'
+    airfoil_polar_files         =  [ polar_file_path + 'NACA_4412_polar_Re_50000.txt',
+                                     polar_file_path + 'NACA_4412_polar_Re_100000.txt',
+                                     polar_file_path + 'NACA_4412_polar_Re_200000.txt',
+                                     polar_file_path + 'NACA_4412_polar_Re_500000.txt',
+                                     polar_file_path + 'NACA_4412_polar_Re_1000000.txt']  
     
     
 

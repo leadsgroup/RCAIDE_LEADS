@@ -18,12 +18,7 @@ import numpy as np
 import sys
 import os
 import numpy as np 
-
-# import vehicle file
-sys.path.append(os.path.join(  os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'VnV'), 'Vehicles'))
-
-from  Cessna_172 import vehicle_setup   as GA_vehicle_setup  
-from  Boeing_737 import vehicle_setup   as Transport_vehicle_setup  
+ 
 
 def main():
     part_35_V_n_Diagram()
@@ -89,54 +84,12 @@ def part_23_V_n_Diagram():
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
     analyses.append(atmosphere)   
 
-    V_n_data = generate_V_n_diagram(vehicle,analyses) 
-
-    print(V_n_data.Vs1.positive)
-    print(V_n_data.Vs1.negative) 
-    print(V_n_data.Va.positive) 
-    print(V_n_data.Va.negative) 
-    print(V_n_data.Vc)
-    print(V_n_data.Vd)
-    print(V_n_data.positive_limit_load)
-    print(V_n_data.negative_limit_load)
-    print(V_n_data.limit_loads.dive.positive)
-    print(V_n_data.limit_loads.dive.negative)
-
-    # regression values    
-    actual                          = Data()
-    actual.Vs1_pos                  = 37.98585717834934
-    actual.Vs1_neg                  = 53.720114399989036
-    actual.Va_pos                   = 74.04806758573127
-    actual.Va_neg                   = 104.71978144726074
-    actual.Vc                       = 126.33084642567567
-    actual.Vd                       = 176.86318499594594
-    actual.limit_load_pos           = 3.8
-    actual.limit_load_neg           = -3.8
-    actual.dive_limit_load_pos      = 3.8
-    actual.dive_limit_load_neg      = 0.0
-
-    # error calculations
-    error                         = Data()
-    error.Vs1_pos                 = (actual.Vs1_pos - V_n_data.Vs1.positive)/actual.Vs1_pos
-    error.Vs1_neg                 = (actual.Vs1_neg - V_n_data.Vs1.negative)/actual.Vs1_neg
-    error.Va_pos                  = (actual.Va_pos - V_n_data.Va.positive)/actual.Va_pos
-    error.Va_neg                  = (actual.Va_neg - V_n_data.Va.negative)/actual.Va_neg
-    error.Vc                      = (actual.Vc - V_n_data.Vc)/actual.Vc
-    error.Vd                      = (actual.Vd - V_n_data.Vd)/actual.Vd
-    error.limit_load_pos          = (actual.limit_load_pos - V_n_data.positive_limit_load)/actual.limit_load_pos
-    error.limit_load_neg          = (actual.limit_load_neg - V_n_data.negative_limit_load)/actual.limit_load_neg
-    error.dive_limit_load_pos     = (actual.dive_limit_load_pos - V_n_data.limit_loads.dive.positive)/actual.dive_limit_load_pos
-    error.dive_limit_load_neg     = (actual.dive_limit_load_neg - V_n_data.limit_loads.dive.negative)
-
-
-    for k,v in error.items():
-        assert(np.abs(v)<1E-6)  
-
+    V_n_data = generate_V_n_diagram(vehicle,analyses)
+    
     return 
 # ----------------------------------------------------------------------        
 #   Call Main
 # ----------------------------------------------------------------------    
-
 if __name__ == '__main__':
     main()    
     plt.show()

@@ -22,10 +22,15 @@ import os
 
 
 def vehicle_setup():
-    ospath                                = os.path.abspath(__file__)
-    separator                             = os.path.sep
-    rel_path                              = os.path.dirname(ospath) + separator + 'Airfoils'+ separator
-    
+
+    # ------------------------------------------------------------------
+    #  File Paths 
+    # ------------------------------------------------------------------    
+    ospath             = os.path.abspath(__file__)
+    separator          = os.path.sep
+    rel_path           = os.path.dirname(ospath)   + separator
+    airfoil_file_path  = rel_path + separator + 'Airfoils_and_Polars'
+    polar_file_path    = rel_path + separator + 'Airfoils_and_Polars' + separator + 'Polars' 
 
     ## ------------------------------------------------------------------
     #   Initialize the Vehicle
@@ -161,7 +166,7 @@ def vehicle_setup():
     segment.dihedral_outboard             = 2  *  Units.degrees 
     segment.sweeps.quarter_chord          = 10.037 *  Units.degrees 
     airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file               = rel_path + 's1016.txt' 
+    airfoil.coordinate_file               = airfoil_file_path + 's1016.txt' 
     segment.append_airfoil(airfoil )
     wing.append_segment(segment)
 
@@ -176,7 +181,7 @@ def vehicle_setup():
     segment.thickness_to_chord            = 0.16
     segment.sweeps.quarter_chord           = 46.9023 *  Units.degrees  
     airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file               = rel_path +  's1016.txt'
+    airfoil.coordinate_file               = airfoil_file_path +  's1016.txt'
     segment.append_airfoil(airfoil )
     wing.append_segment(segment)
     
@@ -191,7 +196,7 @@ def vehicle_setup():
     segment.thickness_to_chord            = 0.16
     segment.sweeps.quarter_chord          = 51.027  *  Units.degrees  
     airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file               = rel_path +  's1016.txt'
+    airfoil.coordinate_file               = airfoil_file_path +  's1016.txt'
     segment.append_airfoil(airfoil )
     wing.append_segment(segment)
 
@@ -205,7 +210,7 @@ def vehicle_setup():
     segment.thickness_to_chord            = 0.11
     segment.sweeps.quarter_chord          = 45  *  Units.degrees   
     airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file               = rel_path +  's1016.txt'
+    airfoil.coordinate_file               = airfoil_file_path +  's1016.txt'
     segment.append_airfoil(airfoil )
     wing.append_segment(segment) 
 
@@ -219,7 +224,7 @@ def vehicle_setup():
     segment.thickness_to_chord            = 0.1
     segment.sweeps.quarter_chord          = 25*Units.degrees  
     airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file               = rel_path +  's1016.txt'
+    airfoil.coordinate_file               = airfoil_file_path +  's1016.txt'
     segment.append_airfoil(airfoil )
     wing.append_segment(segment)       
 
@@ -233,7 +238,7 @@ def vehicle_setup():
     segment.thickness_to_chord            = 0.15
     segment.sweeps.quarter_chord          = 30.*  Units.degrees  
     airfoil                               =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file               =  rel_path + 's1016.txt'
+    airfoil.coordinate_file               =  airfoil_file_path + 's1016.txt'
     segment.append_airfoil(airfoil )
     wing.append_segment(segment)
 
@@ -249,7 +254,7 @@ def vehicle_setup():
     segment.sweeps.quarter_chord          = 30.*  Units.degrees 
     segment.chords.reference_area_root    = True
     airfoil                               =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file               =  rel_path + 's1016.txt'
+    airfoil.coordinate_file               =  airfoil_file_path + 's1016.txt'
     segment.append_airfoil(airfoil )
     wing.append_segment(segment)  
 
@@ -263,7 +268,7 @@ def vehicle_setup():
     segment.thickness_to_chord            = 0.0972 
     segment.sweeps.quarter_chord          = 55 *  Units.degrees 
     airfoil                               =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file               =  rel_path + 's1016.txt'
+    airfoil.coordinate_file               =  airfoil_file_path + 's1016.txt'
     segment.append_airfoil(airfoil )
     wing.append_segment(segment)  
 
@@ -277,7 +282,7 @@ def vehicle_setup():
     segment.thickness_to_chord            = 0.098 
     segment.sweeps.quarter_chord          = 0.0 
     airfoil                               =  RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file               =  rel_path + 's1016.txt'
+    airfoil.coordinate_file               =  airfoil_file_path + 's1016.txt'
     segment.append_airfoil(airfoil )
     wing.append_segment(segment)
 

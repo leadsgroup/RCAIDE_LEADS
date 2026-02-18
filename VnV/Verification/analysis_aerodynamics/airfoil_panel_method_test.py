@@ -178,7 +178,7 @@ def multi_airfoil():
     # ----------------------------------------------- 
     ospath                = os.path.abspath(__file__)
     separator             = os.path.sep 
-    rel_path              = ospath.split('analysis_aerodynamics' + separator + 'airfoil_panel_method_test.py')[0] + '..' + separator + 'Vehicles' + separator + 'Airfoils' + separator 
+    rel_path              = ospath.split('analysis_aerodynamics' + separator + 'airfoil_panel_method_test.py')[0] + '..' + separator + 'Vehicles' + separator + 'Airfoils_and_Polars' + separator 
     Re_vals               = np.array([[1E5, 1E5, 1E5, 1E5, 1E5, 1E5],[2E5, 2E5, 2E5, 2E5, 2E5, 2E5]])
     AoA_vals              = np.array([[0,1,2,3,4,5],[0,1,2,3,4,5]])*Units.degrees  
     airfoil_file_2        = rel_path + 'NACA_4412.txt'     

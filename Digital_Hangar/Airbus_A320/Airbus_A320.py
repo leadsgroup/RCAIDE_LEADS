@@ -34,7 +34,7 @@ def main():
     return  
 
 def vehicle_setup(): 
-    airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], '_Airfoils_and_Polars') + os.sep 
+    airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') + os.sep 
     
     vehicle = RCAIDE.Vehicle()
     vehicle.tag = 'Airbus_A320'

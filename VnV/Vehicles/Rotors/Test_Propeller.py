@@ -10,6 +10,13 @@ import os
 
 # design propeller  
 def Test_Propeller(): 
+
+    ospath             = os.path.abspath(__file__)
+    separator          = os.path.sep
+    rel_path           = os.path.dirname(ospath)   + separator
+    airfoil_file_path  = rel_path + separator + 'Airfoils_and_Polars'
+    polar_file_path    = rel_path + separator + 'Airfoils_and_Polars' + separator + 'Polars'  
+
     
     prop                                     = RCAIDE.Library.Components.Powertrain.Converters.Propeller() 
     prop.number_of_blades                    = 3
@@ -29,23 +36,23 @@ def Test_Propeller():
     rel_path                                   = os.path.dirname(ospath) + separator + '..'  + separator 
     airfoil_1                                  = RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil_1.tag                              = 'NACA_4412' 
-    airfoil_1.coordinate_file                  = rel_path + 'Airfoils' + separator + 'NACA_4412.txt'   # absolute path   
-    airfoil_1.polar_files                      =[rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_50000.txt',
-                                                 rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_100000.txt',
-                                                 rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_200000.txt',
-                                                 rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_500000.txt',
-                                                 rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_1000000.txt'] 
+    airfoil_1.coordinate_file                  = airfoil_file_path + 'NACA_4412.txt'   # absolute path   
+    airfoil_1.polar_files                      =[polar_file_path + 'NACA_4412_polar_Re_50000.txt',
+                                                 polar_file_path + 'NACA_4412_polar_Re_100000.txt',
+                                                 polar_file_path + 'NACA_4412_polar_Re_200000.txt',
+                                                 polar_file_path + 'NACA_4412_polar_Re_500000.txt',
+                                                 polar_file_path + 'NACA_4412_polar_Re_1000000.txt'] 
     prop.append_airfoil(airfoil_1)           # append first airfoil 
     
     # define  second airfoil 
     airfoil_2                                = RCAIDE.Library.Components.Airfoils.Airfoil()  
     airfoil_2.tag                            = 'Clark_Y' 
-    airfoil_2.coordinate_file                =   rel_path + 'Airfoils' + separator + 'Clark_y.txt' 
-    airfoil_2.polar_files                    = [ rel_path + 'Airfoils' + separator + 'Polars' + separator + 'Clark_y_polar_Re_50000.txt',
-                                                 rel_path + 'Airfoils' + separator + 'Polars' + separator + 'Clark_y_polar_Re_100000.txt',
-                                                 rel_path + 'Airfoils' + separator + 'Polars' + separator + 'Clark_y_polar_Re_200000.txt',
-                                                 rel_path + 'Airfoils' + separator + 'Polars' + separator + 'Clark_y_polar_Re_500000.txt',
-                                                 rel_path + 'Airfoils' + separator + 'Polars' + separator + 'Clark_y_polar_Re_1000000.txt'] 
+    airfoil_2.coordinate_file                =  airfoil_file_path + 'Clark_y.txt' 
+    airfoil_2.polar_files                    = [ polar_file_path + 'Clark_y_polar_Re_50000.txt',
+                                                 polar_file_path + 'Clark_y_polar_Re_100000.txt',
+                                                 polar_file_path + 'Clark_y_polar_Re_200000.txt',
+                                                 polar_file_path + 'Clark_y_polar_Re_500000.txt',
+                                                 polar_file_path + 'Clark_y_polar_Re_1000000.txt'] 
     prop.append_airfoil(airfoil_2)          # append second airfoil 
     
     # define polar stations on rotor 

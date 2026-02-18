@@ -19,12 +19,14 @@ import numpy as np
 from copy import deepcopy 
 
 def vehicle_setup(new_regression=True): 
-
-    ospath             = os.path.abspath(__file__) 
+    # ------------------------------------------------------------------
+    #  File Paths 
+    # ------------------------------------------------------------------    
+    ospath             = os.path.abspath(__file__)
     separator          = os.path.sep
-    local_path         = os.path.dirname(ospath) + separator   
-    airfoil_file_path = local_path + 'Airfoils' + separator
-    polar_file_path   = local_path + 'Airfoils' + separator + 'Polars' + separator     
+    rel_path           = os.path.dirname(ospath)   + separator
+    airfoil_file_path  = rel_path + separator + 'Airfoils_and_Polars'
+    polar_file_path    = rel_path + separator + 'Airfoils_and_Polars' + separator + 'Polars'     
         
     #------------------------------------------------------------------------------------------------------------------------------------
     # ################################################# Vehicle-level Properties ########################################################  

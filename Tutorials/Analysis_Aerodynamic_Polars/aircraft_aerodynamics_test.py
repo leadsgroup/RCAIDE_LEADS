@@ -1,21 +1,30 @@
 '''
 
-The script below documents how to set up and plot the results of polar analysis of full aircraft configuration 
+Title  : Aircraft Aerodynamics Test 
+Scope  : This example computes and plots the drag polars and aerodynamic coefficients vs angle of attack
 
-''' 
+Author : Matthew Clarke
+Date   : Feb 18th, 2026
+
+'''
 
 # ----------------------------------------------------------------------
 #   Imports
 # ---------------------------------------------------------------------- 
 import RCAIDE
 from RCAIDE.Framework.Core import Units , Data   
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan         import design_turbofan 
 from RCAIDE.Library.Methods.Performance                            import aircraft_aerodynamic_analysis 
 from RCAIDE.Library.Plots                                          import *   
 import numpy as np
 import matplotlib.pyplot  as plt
 import os
 import  sys
- 
+
+# python imports 
+import numpy as np   
+from copy import deepcopy
+
 # ----------------------------------------------------------------------
 #   Main
 # ---------------------------------------------------------------------- 
@@ -25,7 +34,7 @@ def main():
     configs  = configs_setup(vehicle) 
     analyses = analyses_setup(configs)  
     
-    angle_of_attack_range                 = np.atleast_2d(np.linspace(-5, 25, 18)).T*Units.degrees   
+    angle_of_attack_range                 = np.atleast_2d(np.linspace(-5, 15, 21)).T*Units.degrees   
     Mach_number_range                     = np.ones_like(angle_of_attack_range) * 0.78 
     temperatures                          = np.ones_like(angle_of_attack_range) * 340
     non_dimensional_reynolds_numbers      = np.ones_like(angle_of_attack_range) * 1E7 
@@ -40,11 +49,13 @@ def main():
     # plot results 
     plot_aircraft_aerodynamics(results, save_filename = "B737_Aircraft_Aerodynamic_Analysis")    
       
-    
     return   
  
  
 def vehicle_setup(): 
+    local_path        = sys.path[0] + os.sep
+    airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') + os.sep 
+    polar_file_path   =  os.path.join(os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') , 'Polars') + os.sep  
     
     # ------------------------------------------------------------------
     #   Initialize the Vehicle
@@ -152,7 +163,7 @@ def vehicle_setup():
 
     # Wing Segments
     root_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()    
-    root_airfoil.coordinate_file          = 'transonic_wing_root_section_airfoil.txt'
+    root_airfoil.coordinate_file          = airfoil_file_path +  'transonic_wing_root_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Root'
     segment.percent_span_location         = 0.0 
@@ -164,7 +175,7 @@ def vehicle_setup():
     wing.append_segment(segment)
 
     yehudi_airfoil                        = RCAIDE.Library.Components.Airfoils.Airfoil()
-    yehudi_airfoil.coordinate_file        = 'transonic_wing_inboard_section_airfoil.txt'
+    yehudi_airfoil.coordinate_file        = airfoil_file_path + 'transonic_wing_inboard_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Yehudi'
     segment.percent_span_location         = 0.324 
@@ -176,7 +187,7 @@ def vehicle_setup():
     wing.append_segment(segment)
 
     mid_airfoil                           = RCAIDE.Library.Components.Airfoils.Airfoil()
-    mid_airfoil.coordinate_file           = 'transonic_wing_outboard_section_airfoil.txt'
+    mid_airfoil.coordinate_file           = airfoil_file_path + 'transonic_wing_outboard_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Section_2'
     segment.percent_span_location         = 0.963 
@@ -188,7 +199,7 @@ def vehicle_setup():
     wing.append_segment(segment)
 
     tip_airfoil                           = RCAIDE.Library.Components.Airfoils.Airfoil()
-    tip_airfoil.coordinate_file           = 'transonic_wing_tip_section_airfoil.txt'
+    tip_airfoil.coordinate_file           = airfoil_file_path + 'transonic_wing_tip_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Tip'
     segment.percent_span_location         = 1. 

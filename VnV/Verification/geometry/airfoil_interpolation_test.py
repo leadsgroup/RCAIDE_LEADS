@@ -15,9 +15,9 @@ def main():
 
     separator     = os.path.sep 
     if  os.path.split(sys.path[0])[1] == 'geometry':
-        airfoils_path =  os.path.split(os.path.split(sys.path[0])[0])[0] + separator +  'Vehicles' + os.path.sep + 'Airfoils' + os.path.sep
+        airfoils_path =  os.path.split(os.path.split(sys.path[0])[0])[0] + separator +  'Vehicles' + os.path.sep + 'Airfoils_and_Polars' + os.path.sep
     else:
-        airfoils_path = sys.path[0] + separator +  'Vehicles' + os.path.sep + 'Airfoils' + os.path.sep
+        airfoils_path = sys.path[0] + separator +  'Vehicles' + os.path.sep + 'Airfoils_and_Polars' + os.path.sep
     a_labels      = ["Clark_y", "E63"]
     nairfoils     = 4   # number of total airfoils
     

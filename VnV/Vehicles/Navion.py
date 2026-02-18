@@ -21,8 +21,17 @@ import numpy as np
 #   Define the Vehicle
 # ----------------------------------------------------------------------
 
-def vehicle_setup(): 
-       # ------------------------------------------------------------------
+def vehicle_setup():
+    # ------------------------------------------------------------------
+    #  File Paths 
+    # ------------------------------------------------------------------    
+    ospath             = os.path.abspath(__file__)
+    separator          = os.path.sep
+    rel_path           = os.path.dirname(ospath)   + separator
+    airfoil_file_path  = rel_path + separator + 'Airfoils_and_Polars'
+    polar_file_path    = rel_path + separator + 'Airfoils_and_Polars' + separator + 'Polars'  
+    
+    # ------------------------------------------------------------------
     #   Initialize the Vehicle
     # ------------------------------------------------------------------ 
     vehicle     = RCAIDE.Vehicle()
@@ -104,19 +113,15 @@ def vehicle_setup():
     wing.xz_plane_symmetric               = True
     wing.high_lift                        = True 
     wing.winglet_fraction                 = 0.0  
-    wing.dynamic_pressure_ratio           = 1.0    
-
-    ospath                                = os.path.abspath(__file__)
-    separator                             = os.path.sep
-    rel_path                              = os.path.dirname(ospath) + separator  
+    wing.dynamic_pressure_ratio           = 1.0     
 
     tip_airfoil                           = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
     tip_airfoil.NACA_4_Series_code        = '6410'      
-    tip_airfoil.coordinate_file           = rel_path + 'Airfoils' + separator + 'NACA_6410.txt' 
+    tip_airfoil.coordinate_file           = airfoil_file_path + 'NACA_6410.txt' 
    
     root_airfoil                          = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
     root_airfoil.NACA_4_Series_code       = '4415'   
-    root_airfoil.coordinate_file          = rel_path + 'Airfoils' + separator + 'NACA_4415.txt' 
+    root_airfoil.coordinate_file          = airfoil_file_path + 'NACA_4415.txt' 
     
     # Wing Segments 
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()

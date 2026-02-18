@@ -17,7 +17,16 @@ import os
 # ----------------------------------------------------------------------------------------------------------------------
 #   Build the Vehicle
 # ----------------------------------------------------------------------------------------------------------------------
-def vehicle_setup(fuel_cell_model):  
+def vehicle_setup(fuel_cell_model):
+ 
+    # ------------------------------------------------------------------
+    #  File Paths 
+    # ------------------------------------------------------------------    
+    ospath             = os.path.abspath(__file__)
+    separator          = os.path.sep
+    rel_path           = os.path.dirname(ospath)   + separator
+    airfoil_file_path  = rel_path + separator + 'Airfoils_and_Polars'
+    polar_file_path    = rel_path + separator + 'Airfoils_and_Polars' + separator + 'Polars'     
 
     vehicle                       = RCAIDE.Vehicle() 
     vehicle.tag                   = 'hydrogen_fuel_cell'   
@@ -25,9 +34,8 @@ def vehicle_setup(fuel_cell_model):
   
     # mass properties
     vehicle.mass_properties.takeoff         = 1 * Units.kg 
-    vehicle.mass_properties.max_takeoff     = 1 * Units.kg 
-         
-    net                              = RCAIDE.Framework.Networks.Fuel_Cell()  
+    vehicle.mass_properties.max_takeoff     = 1 * Units.kg  
+    net                                      = RCAIDE.Framework.Networks.Fuel_Cell()  
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus and Crogenic Line 
