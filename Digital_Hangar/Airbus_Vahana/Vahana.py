@@ -18,7 +18,7 @@ import os
 #   Main
 # ----------------------------------------------------------------------
 def main():
-    redesign_rotors = True
+    redesign_rotors = False
     
     # Step 1: design a vehicle
     vehicle  = vehicle_setup(redesign_rotors)  
@@ -38,7 +38,7 @@ def main():
 def vehicle_setup(redesign_rotors=True):
     
     airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], '_Airfoils_and_Polars') + os.sep 
-    polar_file_path   =  os.path.join(os.path.join(os.path.split(sys.path[0])[0], '_Airfoils_and_Polars') , '_Polars') + os.sep  
+    polar_file_path   =  os.path.join(os.path.join(os.path.split(sys.path[0])[0], '_Airfoils_and_Polars') , 'Polars') + os.sep  
     
     #------------------------------------------------------------------------------------------------------------------------------------
     # ################################################# Vehicle-level Properties ########################################################  

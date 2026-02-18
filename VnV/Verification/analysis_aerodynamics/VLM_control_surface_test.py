@@ -141,14 +141,14 @@ def get_settings():
 #   Save/Load Utility Functions
 # ----------------------------------------------------------------------
 def load_results():
-    ospath         = os.path.abspath(__file__) 
-    separator      = os.path.sep
+    ospath           = os.path.abspath(__file__) 
+    separator        = os.path.sep
     local_path       = os.path.dirname(ospath) + separator   
     return load(os.path.join(local_path, 'control_surfaces_vlm_results.res'))
 
 def save_results(results):
-    ospath         = os.path.abspath(__file__) 
-    separator      = os.path.sep
+    ospath           = os.path.abspath(__file__) 
+    separator        = os.path.sep
     local_path       = os.path.dirname(ospath) + separator   
     print('!####! SAVING NEW REGRESSION RESULTS !####!')
     save(results,os.path.join(local_path, 'control_surfaces_vlm_results.res'))

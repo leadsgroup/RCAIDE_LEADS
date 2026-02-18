@@ -35,7 +35,9 @@ def main():
 
 def vehicle_setup(): 
 
-    local_path = sys.path[0] + os.sep
+    airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], '_Airfoils_and_Polars') + os.sep 
+    polar_file_path   =  os.path.join(os.path.join(os.path.split(sys.path[0])[0], '_Airfoils_and_Polars') , 'Polars') + os.sep
+    
     #------------------------------------------------------------------------------------------------------------------------------------
     # ################################################# Vehicle-level Properties ########################################################  
     #------------------------------------------------------------------------------------------------------------------------------------
@@ -153,7 +155,7 @@ def vehicle_setup():
     segment.sweeps.quarter_chord  = 67. * Units.deg
     segment.thickness_to_chord    = 0.03
     wing_airfoil                  = RCAIDE.Library.Components.Airfoils.Airfoil()   
-    wing_airfoil.coordinate_file  = local_path +  'NACA65_203.txt'  
+    wing_airfoil.coordinate_file  = airfoil_file_path +  'NACA65_203.txt'  
     segment.append_airfoil(wing_airfoil)
     wing.append_segment(segment)
     
@@ -167,7 +169,7 @@ def vehicle_setup():
     segment.sweeps.quarter_chord  = 48. * Units.deg
     segment.thickness_to_chord    = 0.03
     wing_airfoil                  = RCAIDE.Library.Components.Airfoils.Airfoil()   
-    wing_airfoil.coordinate_file  = local_path +  'NACA65_203.txt'
+    wing_airfoil.coordinate_file  = airfoil_file_path +  'NACA65_203.txt'
     segment.append_airfoil(wing_airfoil)
     wing.append_segment(segment)
     
@@ -182,7 +184,7 @@ def vehicle_setup():
     segment.sweeps.quarter_chord  = 71. * Units.deg 
     segment.thickness_to_chord    = 0.03
     wing_airfoil                  = RCAIDE.Library.Components.Airfoils.Airfoil()   
-    wing_airfoil.coordinate_file  = local_path +  'NACA65_203.txt'
+    wing_airfoil.coordinate_file  = airfoil_file_path +  'NACA65_203.txt'
     segment.append_airfoil(wing_airfoil)
     wing.append_segment(segment)  
     
@@ -196,7 +198,7 @@ def vehicle_setup():
     segment.sweeps.quarter_chord  = 0.
     segment.thickness_to_chord    = 0.03
     wing_airfoil                  = RCAIDE.Library.Components.Airfoils.Airfoil()   
-    wing_airfoil.coordinate_file  = local_path +  'NACA65_203.txt'
+    wing_airfoil.coordinate_file  = airfoil_file_path +  'NACA65_203.txt'
     segment.append_airfoil(wing_airfoil)
     wing.append_segment(segment)      
     
@@ -279,7 +281,7 @@ def vehicle_setup():
     segment.sweeps.quarter_chord  = 63. * Units.deg
     segment.thickness_to_chord    = 0.04
     tail_airfoil                  = RCAIDE.Library.Components.Airfoils.Airfoil() 
-    tail_airfoil.coordinate_file  =  local_path +  'supersonic_tail.txt'  
+    tail_airfoil.coordinate_file  =  airfoil_file_path +  'supersonic_tail.txt'  
     segment.append_airfoil(tail_airfoil)
     wing.append_segment(segment)
     
@@ -293,7 +295,7 @@ def vehicle_setup():
     segment.sweeps.quarter_chord  = 40. * Units.deg
     segment.thickness_to_chord    = 0.04
     tail_airfoil                  = RCAIDE.Library.Components.Airfoils.Airfoil() 
-    tail_airfoil.coordinate_file  =  local_path +  'supersonic_tail.txt'  
+    tail_airfoil.coordinate_file  =  airfoil_file_path +  'supersonic_tail.txt'  
     segment.append_airfoil(tail_airfoil)
     wing.append_segment(segment)
     
@@ -307,7 +309,7 @@ def vehicle_setup():
     segment.sweeps.quarter_chord  = 0.
     segment.thickness_to_chord    = 0.04
     tail_airfoil                  = RCAIDE.Library.Components.Airfoils.Airfoil() 
-    tail_airfoil.coordinate_file  =  local_path +  'supersonic_tail.txt'  
+    tail_airfoil.coordinate_file  =  airfoil_file_path +  'supersonic_tail.txt'  
     segment.append_airfoil(tail_airfoil)
     wing.append_segment(segment)    
 

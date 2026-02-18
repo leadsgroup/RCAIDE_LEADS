@@ -34,7 +34,9 @@ def main():
     return  
 
 def vehicle_setup(): 
-    local_path = sys.path[0] + os.sep 
+    airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], '_Airfoils_and_Polars') + os.sep 
+    polar_file_path   =  os.path.join(os.path.join(os.path.split(sys.path[0])[0], '_Airfoils_and_Polars') , 'Polars') + os.sep
+    
     # ------------------------------------------------------------------
     #   Initialize the Vehicle
     # ------------------------------------------------------------------

@@ -38,7 +38,8 @@ def main():
  
 def vehicle_setup():
 
-    local_path = sys.path[0] + os.sep  
+    airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], '_Airfoils_and_Polars') + os.sep 
+    polar_file_path   =  os.path.join(os.path.join(os.path.split(sys.path[0])[0], '_Airfoils_and_Polars') , 'Polars') + os.sep 
 
     #------------------------------------------------------------------------------------------------------------------------------------
     #   Initialize the Vehicle
@@ -109,7 +110,7 @@ def vehicle_setup():
     segment.thickness_to_chord            = 0.12
     airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil.tag                           = 'NACA_63_412.txt' 
-    airfoil.coordinate_file               = local_path + 'NACA_63_412.txt'      
+    airfoil.coordinate_file               = airfoil_file_path+ 'NACA_63_412.txt'      
     segment.append_airfoil(airfoil)
     wing.append_segment(segment)
 
@@ -123,7 +124,7 @@ def vehicle_setup():
     segment.thickness_to_chord            = 0.12 
     airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil.tag                           = 'NACA_63_412.txt' 
-    airfoil.coordinate_file               = local_path + 'NACA_63_412.txt'      
+    airfoil.coordinate_file               = airfoil_file_path+ 'NACA_63_412.txt'      
     segment.append_airfoil(airfoil)
     wing.append_segment(segment)
     

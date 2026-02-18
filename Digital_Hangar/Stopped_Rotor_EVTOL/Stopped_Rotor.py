@@ -22,7 +22,7 @@ import os
 def main():
     
     # Step 1: design a vehicle
-    redesign_rotors = True  
+    redesign_rotors = False  
     vehicle  = vehicle_setup(redesign_rotors)
 
     try:
@@ -37,9 +37,11 @@ def main():
     
     return 
  
-def vehicle_setup(redesign_rotors = False):
+def vehicle_setup(redesign_rotors = False): 
 
-    local_path = sys.path[0] + os.sep
+    local_path        = sys.path[0] + os.sep    
+    airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], '_Airfoils_and_Polars') + os.sep 
+    polar_file_path   =  os.path.join(os.path.join(os.path.split(sys.path[0])[0], '_Airfoils_and_Polars') , 'Polars') + os.sep  
 
     #------------------------------------------------------------------------------------------------------------------------------------
     # ################################################# Vehicle-level Properties ########################################################  
@@ -127,7 +129,7 @@ def vehicle_setup(redesign_rotors = False):
     segment.sweeps.quarter_chord  = 0.9  * Units.degrees 
     segment.thickness_to_chord    = 0.16  
     airfoil                       = RCAIDE.Library.Components.Airfoils.Airfoil() 
-    airfoil.coordinate_file       = local_path + 'NACA_63_412.txt'    
+    airfoil.coordinate_file       = airfoil_file_path + 'NACA_63_412.txt'    
     segment.append_airfoil(airfoil)
     wing.append_segment(segment)               
     
@@ -141,7 +143,7 @@ def vehicle_setup(redesign_rotors = False):
     segment.sweeps.quarter_chord  = 1.27273 * Units.degrees 
     segment.thickness_to_chord    = 0.16  
     airfoil                       = RCAIDE.Library.Components.Airfoils.Airfoil() 
-    airfoil.coordinate_file       = local_path + 'NACA_63_412.txt'    
+    airfoil.coordinate_file       = airfoil_file_path + 'NACA_63_412.txt'    
     segment.append_airfoil(airfoil)
     wing.append_segment(segment)               
      
@@ -155,7 +157,7 @@ def vehicle_setup(redesign_rotors = False):
     segment.sweeps.quarter_chord  = 45.000* Units.degrees 
     segment.thickness_to_chord    = 0.16  
     airfoil                       = RCAIDE.Library.Components.Airfoils.Airfoil() 
-    airfoil.coordinate_file       = local_path + 'NACA_63_412.txt'    
+    airfoil.coordinate_file       = airfoil_file_path + 'NACA_63_412.txt'    
     segment.append_airfoil(airfoil)
     wing.append_segment(segment)     
     
@@ -169,7 +171,7 @@ def vehicle_setup(redesign_rotors = False):
     segment.sweeps.quarter_chord  = 70.0 * Units.degrees 
     segment.thickness_to_chord    = 0.16  
     airfoil                       = RCAIDE.Library.Components.Airfoils.Airfoil() 
-    airfoil.coordinate_file       = local_path + 'NACA_63_412.txt'    
+    airfoil.coordinate_file       = airfoil_file_path + 'NACA_63_412.txt'    
     segment.append_airfoil(airfoil)
     wing.append_segment(segment)  
     
@@ -183,7 +185,7 @@ def vehicle_setup(redesign_rotors = False):
     segment.sweeps.quarter_chord  = 0  * Units.degrees 
     segment.thickness_to_chord    = 0.16  
     airfoil                       = RCAIDE.Library.Components.Airfoils.Airfoil() 
-    airfoil.coordinate_file       = local_path + 'NACA_63_412.txt'    
+    airfoil.coordinate_file       = airfoil_file_path + 'NACA_63_412.txt'    
     segment.append_airfoil(airfoil)
     wing.append_segment(segment)                 
     
@@ -520,15 +522,15 @@ def vehicle_setup(redesign_rotors = False):
     propeller.clockwise_rotation                           = True
     propeller.variable_pitch                               = True  
     airfoil                                                = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file                                =  local_path + 'NACA_4412.txt'
-    airfoil.polar_files                                    = [local_path + 'NACA_4412_polar_Re_50000.txt' ,
-                                                              local_path + 'NACA_4412_polar_Re_100000.txt' ,
-                                                              local_path + 'NACA_4412_polar_Re_200000.txt' ,
-                                                              local_path + 'NACA_4412_polar_Re_500000.txt' ,
-                                                              local_path + 'NACA_4412_polar_Re_1000000.txt',
-                                                              local_path + 'NACA_4412_polar_Re_3500000.txt',
-                                                              local_path + 'NACA_4412_polar_Re_5000000.txt',
-                                                              local_path + 'NACA_4412_polar_Re_7500000.txt' ]
+    airfoil.coordinate_file                                =  airfoil_file_path + 'NACA_4412.txt'
+    airfoil.polar_files                                    = [polar_file_path + 'NACA_4412_polar_Re_50000.txt' ,
+                                                              polar_file_path + 'NACA_4412_polar_Re_100000.txt' ,
+                                                              polar_file_path + 'NACA_4412_polar_Re_200000.txt' ,
+                                                              polar_file_path + 'NACA_4412_polar_Re_500000.txt' ,
+                                                              polar_file_path + 'NACA_4412_polar_Re_1000000.txt',
+                                                              polar_file_path + 'NACA_4412_polar_Re_3500000.txt',
+                                                              polar_file_path + 'NACA_4412_polar_Re_5000000.txt',
+                                                              polar_file_path + 'NACA_4412_polar_Re_7500000.txt' ]
     propeller.append_airfoil(airfoil)                     
     propeller.airfoil_polar_stations                       = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]   
     cruise_propulsor_1.rotor                               = propeller    
@@ -630,15 +632,15 @@ def vehicle_setup(redesign_rotors = False):
             
     
                
-        cruise_propulsor_1.rotor.airfoils.airfoil.coordinate_file  =   local_path + 'NACA_4412.txt'
-        cruise_propulsor_1.rotor.airfoils.airfoil.polar_files      = [ local_path  + 'NACA_4412_polar_Re_50000.txt' ,
-                                                                        local_path  + 'NACA_4412_polar_Re_100000.txt' ,
-                                                                        local_path  + 'NACA_4412_polar_Re_200000.txt' ,
-                                                                        local_path  + 'NACA_4412_polar_Re_500000.txt' ,
-                                                                        local_path  + 'NACA_4412_polar_Re_1000000.txt',
-                                                                        local_path  + 'NACA_4412_polar_Re_3500000.txt',
-                                                                        local_path  + 'NACA_4412_polar_Re_5000000.txt',
-                                                                        local_path  + 'NACA_4412_polar_Re_7500000.txt' ] 
+        cruise_propulsor_1.rotor.airfoils.airfoil.coordinate_file  =   airfoil_file_path + 'NACA_4412.txt'
+        cruise_propulsor_1.rotor.airfoils.airfoil.polar_files      = [ polar_file_path  + 'NACA_4412_polar_Re_50000.txt' ,
+                                                                       polar_file_path  + 'NACA_4412_polar_Re_100000.txt' ,
+                                                                       polar_file_path  + 'NACA_4412_polar_Re_200000.txt' ,
+                                                                       polar_file_path  + 'NACA_4412_polar_Re_500000.txt' ,
+                                                                       polar_file_path  + 'NACA_4412_polar_Re_1000000.txt',
+                                                                       polar_file_path  + 'NACA_4412_polar_Re_3500000.txt',
+                                                                       polar_file_path  + 'NACA_4412_polar_Re_5000000.txt',
+                                                                       polar_file_path  + 'NACA_4412_polar_Re_7500000.txt' ] 
             
         for key,item in cruise_propulsor_1.motor.items():
             cruise_propulsor_1.motor[key] = loaded_propulsor.motor[key]
@@ -723,15 +725,15 @@ def vehicle_setup(redesign_rotors = False):
     lift_rotor.oei.design_thrust                           = Hover_Load/7  
     lift_rotor.oei.design_freestream_velocity              = np.sqrt(lift_rotor.oei.design_thrust/(2*1.2*np.pi*(lift_rotor.tip_radius**2)))  
     airfoil                                                = RCAIDE.Library.Components.Airfoils.Airfoil()   
-    airfoil.coordinate_file                       =  local_path  + 'NACA_4412.txt'
-    airfoil.polar_files                           = [local_path  + 'NACA_4412_polar_Re_50000.txt' ,
-                                                     local_path  + 'NACA_4412_polar_Re_100000.txt' ,
-                                                     local_path  + 'NACA_4412_polar_Re_200000.txt' ,
-                                                     local_path  + 'NACA_4412_polar_Re_500000.txt' ,
-                                                     local_path  + 'NACA_4412_polar_Re_1000000.txt',
-                                                     local_path  + 'NACA_4412_polar_Re_3500000.txt',
-                                                     local_path  + 'NACA_4412_polar_Re_5000000.txt',
-                                                     local_path  + 'NACA_4412_polar_Re_7500000.txt' ]
+    airfoil.coordinate_file                       =  airfoil_file_path  + 'NACA_4412.txt'
+    airfoil.polar_files                           = [polar_file_path  + 'NACA_4412_polar_Re_50000.txt' ,
+                                                     polar_file_path  + 'NACA_4412_polar_Re_100000.txt' ,
+                                                     polar_file_path  + 'NACA_4412_polar_Re_200000.txt' ,
+                                                     polar_file_path  + 'NACA_4412_polar_Re_500000.txt' ,
+                                                     polar_file_path  + 'NACA_4412_polar_Re_1000000.txt',
+                                                     polar_file_path  + 'NACA_4412_polar_Re_3500000.txt',
+                                                     polar_file_path  + 'NACA_4412_polar_Re_5000000.txt',
+                                                     polar_file_path  + 'NACA_4412_polar_Re_7500000.txt' ]
     lift_rotor.append_airfoil(airfoil)                         
     lift_rotor.airfoil_polar_stations                      = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]   
     lift_propulsor_1.rotor =  lift_rotor          
@@ -761,11 +763,11 @@ def vehicle_setup(redesign_rotors = False):
     
     if redesign_rotors:
         design_electric_rotor(lift_propulsor_1)
-        save_propulsor(lift_propulsor_1, os.path.join(local_path, 'stopped_rotor_lift_rotor.res'))
+        save_propulsor(lift_propulsor_1, os.path.join(airfoil_file_path, 'stopped_rotor_lift_rotor.res'))
     else:
         regression_lift_propulsor = deepcopy(lift_propulsor_1)        
         design_electric_rotor(regression_lift_propulsor, iterations=2)
-        loaded_lift_propulsor = load_propulsor(os.path.join(local_path, 'stopped_rotor_lift_rotor.res'))
+        loaded_lift_propulsor = load_propulsor(os.path.join(airfoil_file_path, 'stopped_rotor_lift_rotor.res'))
         for key,item in lift_propulsor_1.rotor.items():
             lift_propulsor_1.rotor[key] = loaded_lift_propulsor.rotor[key] 
         for key,item in lift_propulsor_1.motor.items():
