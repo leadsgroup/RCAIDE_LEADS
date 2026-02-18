@@ -17,7 +17,7 @@ import sys
 import matplotlib.pyplot as plt  
 import os
 # local imports 
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+sys.path.append(os.path.join(  os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'VnV'), 'Vehicles'))
 from Embraer_190    import vehicle_setup as E190_vehicle_setup 
 from NASA_X57       import vehicle_setup as X57_vehicle_setup      
 

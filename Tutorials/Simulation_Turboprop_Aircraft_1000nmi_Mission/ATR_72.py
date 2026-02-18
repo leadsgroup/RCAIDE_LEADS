@@ -15,7 +15,8 @@ from RCAIDE.Library.Methods.Performance import *
 # python imports 
 import numpy as np  
 from   copy import deepcopy
-import matplotlib.pyplot as plt  
+import matplotlib.pyplot as plt
+
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------

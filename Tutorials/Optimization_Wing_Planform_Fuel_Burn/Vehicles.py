@@ -223,8 +223,7 @@ def vehicle_setup():
     elevator.span_fraction_start   = 0.09
     elevator.span_fraction_end     = 0.92
     elevator.deflection            = 0.0  * Units.deg
-    elevator.chord_fraction        = 0.3
-    #wing.append_control_surface(elevator)
+    elevator.chord_fraction        = 0.3 
     
     # add to vehicle
     vehicle.append_component(wing)     
@@ -259,8 +258,7 @@ def vehicle_setup():
     rudder.span_fraction_start   = 0.09
     rudder.span_fraction_end     = 0.92
     rudder.deflection            = 0.0  * Units.deg
-    rudder.chord_fraction        = 0.3
-    #wing.append_control_surface(rudder)    
+    rudder.chord_fraction        = 0.3  
     
     
     # add to vehicle

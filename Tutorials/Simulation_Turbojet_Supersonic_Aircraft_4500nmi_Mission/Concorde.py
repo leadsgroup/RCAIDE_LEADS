@@ -10,8 +10,7 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core                                             import Units , Data    
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet             import design_turbojet
-from RCAIDE.Framework.External_Interfaces.OpenVSP.export_vsp_vehicle import export_vsp_vehicle     
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet             import design_turbojet 
 from RCAIDE.Library.Plots                                   import *
 
 # python imports     
