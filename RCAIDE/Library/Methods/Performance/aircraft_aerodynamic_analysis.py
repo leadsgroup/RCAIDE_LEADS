@@ -151,7 +151,7 @@ def aircraft_aerodynamic_analysis(aerodynamics_analysis            = None,
         a              = atmo_data.speed_of_sound  
         mu             = atmo_data.dynamic_viscosity
         V              = mach_numbers * a 
-        non_dimensional_reynolds_numbers  = V * rho / mu 
+        non_dimensional_reynolds_numbers = V * rho / mu 
     
     # if non_dimensional_reynolds_numbers and temperatures are specified 
     elif non_dimensional_reynolds_numbers is not  None and temperatures is not None:  
