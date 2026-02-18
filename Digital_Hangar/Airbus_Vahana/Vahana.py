@@ -37,7 +37,8 @@ def main():
 
 def vehicle_setup(redesign_rotors=True):
     
-    local_path = sys.path[0] + os.sep  
+    airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], '_Airfoils_and_Polars') + os.sep 
+    polar_file_path   =  os.path.join(os.path.join(os.path.split(sys.path[0])[0], '_Airfoils_and_Polars') , '_Polars') + os.sep  
     
     #------------------------------------------------------------------------------------------------------------------------------------
     # ################################################# Vehicle-level Properties ########################################################  
@@ -114,7 +115,7 @@ def vehicle_setup(redesign_rotors=True):
     wing.winglet_fraction                       = 0.0 
     wing.xz_plane_symmetric                     = True 
     airfoil                                     = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file                     = local_path + 'NACA_63_412.txt' 
+    airfoil.coordinate_file                     = airfoil_file_path + 'NACA_63_412.txt' 
     wing.append_airfoil(airfoil)
                                                 
     # add to vehicle                                          
@@ -315,15 +316,15 @@ def vehicle_setup(redesign_rotors=True):
     
     
     airfoil                                             = RCAIDE.Library.Components.Airfoils.Airfoil()   
-    airfoil.coordinate_file                             =  local_path + 'NACA_4412.txt'
-    airfoil.polar_files                                 = [local_path + 'NACA_4412_polar_Re_50000.txt' ,
-                                                           local_path  + 'NACA_4412_polar_Re_100000.txt' ,
-                                                           local_path  + 'NACA_4412_polar_Re_200000.txt' ,
-                                                           local_path  + 'NACA_4412_polar_Re_500000.txt' ,
-                                                           local_path  + 'NACA_4412_polar_Re_1000000.txt',
-                                                           local_path  + 'NACA_4412_polar_Re_3500000.txt',
-                                                           local_path  + 'NACA_4412_polar_Re_5000000.txt',
-                                                           local_path  + 'NACA_4412_polar_Re_7500000.txt' ]
+    airfoil.coordinate_file                             =  airfoil_file_path + 'NACA_4412.txt'
+    airfoil.polar_files                                 = [polar_file_path + 'NACA_4412_polar_Re_50000.txt' ,
+                                                           polar_file_path  + 'NACA_4412_polar_Re_100000.txt' ,
+                                                           polar_file_path  + 'NACA_4412_polar_Re_200000.txt' ,
+                                                           polar_file_path  + 'NACA_4412_polar_Re_500000.txt' ,
+                                                           polar_file_path  + 'NACA_4412_polar_Re_1000000.txt',
+                                                           polar_file_path  + 'NACA_4412_polar_Re_3500000.txt',
+                                                           polar_file_path  + 'NACA_4412_polar_Re_5000000.txt',
+                                                           polar_file_path  + 'NACA_4412_polar_Re_7500000.txt' ]
     prop_rotor.append_airfoil(airfoil)                
     prop_rotor.airfoil_polar_stations                   = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     prop_rotor_propulsor.rotor                          =  prop_rotor
@@ -350,11 +351,11 @@ def vehicle_setup(redesign_rotors=True):
     
     if redesign_rotors:
         design_electric_rotor(prop_rotor_propulsor, print_iterations=True)
-        save_propulsor(prop_rotor_propulsor, os.path.join(local_path, 'vahana_tilt_rotor_propulsor.res'))
+        save_propulsor(prop_rotor_propulsor, os.path.join(airfoil_file_path, 'vahana_tilt_rotor_propulsor.res'))
     else:
         regression_prop_rotor_propulsor = deepcopy(prop_rotor_propulsor)        
         design_electric_rotor(regression_prop_rotor_propulsor, iterations=2)
-        loaded_propulsor = load_propulsor(os.path.join(local_path, 'vahana_tilt_rotor_propulsor.res'))  
+        loaded_propulsor = load_propulsor(os.path.join(airfoil_file_path, 'vahana_tilt_rotor_propulsor.res'))  
         for key,item in prop_rotor_propulsor.rotor.items():
             prop_rotor_propulsor.rotor[key] = loaded_propulsor.rotor[key] 
         for key,item in prop_rotor_propulsor.motor.items():

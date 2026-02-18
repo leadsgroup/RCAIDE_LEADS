@@ -34,7 +34,7 @@ def main():
     return  
 
 def vehicle_setup(): 
-    local_path = sys.path[0] + os.sep
+    airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], '_Airfoils_and_Polars') + os.sep 
     
     vehicle = RCAIDE.Vehicle()
     vehicle.tag = 'Airbus_A320'
@@ -119,7 +119,7 @@ def vehicle_setup():
     segment.twist                         = 2.5   * Units.degrees
     segment.sweeps.leading_edge           = 27.796 * Units.degrees 
     root_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()  
-    root_airfoil.coordinate_file          = local_path + 'transonic_wing_root_section_airfoil.txt'
+    root_airfoil.coordinate_file          = airfoil_file_path + 'transonic_wing_root_section_airfoil.txt'
     segment.append_airfoil(root_airfoil)
     wing.append_segment(segment)
 
@@ -131,7 +131,7 @@ def vehicle_setup():
     segment.dihedral_outboard             = 5.5 * Units.degrees
     segment.sweeps.leading_edge           = 24.857 * Units.degrees 
     yehudi_airfoil                        = RCAIDE.Library.Components.Airfoils.Airfoil()
-    yehudi_airfoil.coordinate_file        =  local_path + 'transonic_wing_inboard_section_airfoil.txt' 
+    yehudi_airfoil.coordinate_file        =  airfoil_file_path + 'transonic_wing_inboard_section_airfoil.txt' 
     segment.append_airfoil(yehudi_airfoil)
     wing.append_segment(segment)
 
@@ -143,7 +143,7 @@ def vehicle_setup():
     segment.sweeps.quarter_chord          = 0.0 * Units.degrees 
     segment.twist                         = -2 * Units.degrees
     mid_airfoil                           = RCAIDE.Library.Components.Airfoils.Airfoil()
-    mid_airfoil.coordinate_file           = local_path + 'transonic_wing_outboard_section_airfoil.txt'
+    mid_airfoil.coordinate_file           = airfoil_file_path + 'transonic_wing_outboard_section_airfoil.txt'
     segment.append_airfoil(mid_airfoil)
     wing.append_segment(segment)
     

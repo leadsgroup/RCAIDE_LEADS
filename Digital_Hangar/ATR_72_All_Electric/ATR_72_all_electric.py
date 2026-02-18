@@ -36,7 +36,8 @@ def main():
  
 def vehicle_setup():
 
-    local_path = sys.path[0] + os.sep
+    airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], '_Airfoils_and_Polars') + os.sep 
+    polar_file_path   =  os.path.join(os.path.join(os.path.split(sys.path[0])[0], '_Airfoils_and_Polars') , '_Polars') + os.sep  
     
     # ------------------------------------------------------------------
     #   Initialize the Vehicle
@@ -622,12 +623,12 @@ def vehicle_setup():
     propeller.origin                                 = [[ 9.559106394 ,4.219315295, 1.616135105]]  
     airfoil                                          = RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil.tag                                      = 'NACA_4412' 
-    airfoil.coordinate_file                          =  local_path + 'NACA_4412.txt'   # absolute path   
-    airfoil.polar_files                              =[ local_path + 'NACA_4412_polar_Re_50000.txt',
-                                                        local_path + 'NACA_4412_polar_Re_100000.txt',
-                                                        local_path + 'NACA_4412_polar_Re_200000.txt',
-                                                        local_path + 'NACA_4412_polar_Re_500000.txt',
-                                                        local_path + 'NACA_4412_polar_Re_1000000.txt']   
+    airfoil.coordinate_file                          =  airfoil_file_path + 'NACA_4412.txt'   # absolute path   
+    airfoil.polar_files                              =[ polar_file_path + 'NACA_4412_polar_Re_50000.txt',
+                                                        polar_file_path + 'NACA_4412_polar_Re_100000.txt',
+                                                        polar_file_path + 'NACA_4412_polar_Re_200000.txt',
+                                                        polar_file_path + 'NACA_4412_polar_Re_500000.txt',
+                                                        polar_file_path + 'NACA_4412_polar_Re_1000000.txt']   
     propeller.append_airfoil(airfoil)                       
     propeller.airfoil_polar_stations                 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]    
     starboard_propulsor.rotor                        = propeller
