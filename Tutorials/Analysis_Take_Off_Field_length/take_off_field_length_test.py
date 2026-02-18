@@ -1,6 +1,12 @@
-# test_take_off_field_length.py
-#
-# Created: Dec 2024, M Clarke   
+'''
+
+Title  : Takeoff Field Length Test 
+Scope  : This example computes and plots takeoff field length 
+
+Author : Matthew Clarke
+Date   : Feb 18th, 2026
+
+'''
 
 # ----------------------------------------------------------------------
 #  Imports
@@ -86,12 +92,8 @@ def main():
     plt.figure(1); 
     plt.plot(w_vec,takeoff_field_length[:,0], 'k-', label = '2 Engines')
     plt.plot(w_vec,takeoff_field_length[:,1], 'r-', label = '3 Engines')
-    plt.plot(w_vec,takeoff_field_length[:,2], 'b-', label = '4 Engines')
-
-    plt.title(title); plt.grid(True)
-    plt.plot(w_vec,truth_TOFL[:,0], 'k--o', label = '2 Engines [truth]')
-    plt.plot(w_vec,truth_TOFL[:,1], 'r--o', label = '3 Engines [truth]')
-    plt.plot(w_vec,truth_TOFL[:,2], 'b--o', label = '4 Engines [truth]')
+    plt.plot(w_vec,takeoff_field_length[:,2], 'b-', label = '4 Engines') 
+    plt.title(title); plt.grid(True) 
     legend = plt.legend(loc='lower right')
     plt.xlabel('Weight (kg)')
     plt.ylabel('Takeoff field length (m)')    
@@ -100,12 +102,8 @@ def main():
     plt.figure(2); 
     plt.plot(w_vec,second_seg_clb_grad[:,0], 'k-', label = '2 Engines')
     plt.plot(w_vec,second_seg_clb_grad[:,1], 'r-', label = '3 Engines')
-    plt.plot(w_vec,second_seg_clb_grad[:,2], 'b-', label = '4 Engines')
-
-    plt.title(title); plt.grid(True)
-    plt.plot(w_vec,truth_clb_grad[:,0], 'k--o', label = '2 Engines [truth]')
-    plt.plot(w_vec,truth_clb_grad[:,1], 'r--o', label = '3 Engines [truth]')
-    plt.plot(w_vec,truth_clb_grad[:,2], 'b--o', label = '4 Engines [truth]')
+    plt.plot(w_vec,second_seg_clb_grad[:,2], 'b-', label = '4 Engines') 
+    plt.title(title); plt.grid(True) 
     legend = plt.legend(loc='lower right')
     plt.xlabel('Weight (kg)')
     plt.ylabel('Second Segment Climb Gradient (%)')    
