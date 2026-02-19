@@ -110,8 +110,7 @@ def vehicle_setup():
     wing.origin                           = [[1.652555594, 0.,-0.6006666]]
     wing.aerodynamic_center               = [1.852555594, 0., 6006666 ] # INCORRECT 
     wing.vertical                         = False
-    wing.xz_plane_symmetric               = True
-    wing.high_lift                        = True 
+    wing.xz_plane_symmetric               = True 
     wing.winglet_fraction                 = 0.0  
     wing.dynamic_pressure_ratio           = 1.0     
 
@@ -186,8 +185,7 @@ def vehicle_setup():
     wing.origin                           = [[ 6.54518625 , 0., 0.203859697]]
     wing.aerodynamic_center               = [[ 6.545186254 + 0.25*wing.spans.projected, 0., 0.203859697]] 
     wing.vertical                         = False 
-    wing.xz_plane_symmetric               = True
-    wing.high_lift                        = False 
+    wing.xz_plane_symmetric               = True 
     wing.dynamic_pressure_ratio           = 0.9  
     
     elevator                              = RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator()
@@ -462,8 +460,7 @@ def configs_setup(vehicle):
 
     config                                                     = RCAIDE.Library.Components.Configs.Config(base_config)
     config.tag                                                 = 'landing' 
-    config.wings['main_wing'].control_surfaces.flap.deflection = 20. * Units.deg
-    config.Vref_VS_ratio                                       = 1.23
+    config.wings['main_wing'].control_surfaces.flap.deflection = 20. * Units.deg 
     config.maximum_lift_coefficient                            = 2.
                                                                
     configs.append(config) 

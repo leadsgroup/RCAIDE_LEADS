@@ -1,4 +1,4 @@
-# RCAIDE/Library/Plots/Performance/plot_V_n_Diagram.py
+# RCAIDE/Library/Plots/Performance/plot_V_n_diagram.py
 # 
 # 
 # Created: Feb 2026, M. Clarke
@@ -17,7 +17,15 @@ from matplotlib import pyplot as plt
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
 # ----------------------------------------------------------------------------------------------------------------------   
-def plot_V_n_Diagram(V_n_data, vehicle= None):
+def plot_V_n_diagram(V_n_data,
+                     vehicle         = None, 
+                     save_figure     = False,
+                     show_legend     = True,
+                     save_filename   = "V_n_Diagram",
+                     file_type       =".png",
+                     generate_report = False,
+                     width           = 8,
+                     height          = 6):    
     """ Plot graph, save the final figure, and create results output file
 
     Source:
@@ -74,8 +82,21 @@ def plot_V_n_Diagram(V_n_data, vehicle= None):
 
     #-----------------------------
     # Plotting the V-n diagram
-    #-----------------------------
-    fig, ax = plt.subplots()
+    #-----------------------------  
+    # get plotting style 
+    ps      = plot_style()  
+
+    parameters = {'axes.labelsize': ps.axis_font_size,
+                  'xtick.labelsize': ps.axis_font_size,
+                  'ytick.labelsize': ps.axis_font_size,
+                  'axes.titlesize': ps.title_font_size}
+    plt.rcParams.update(parameters)
+       
+     
+    fig   = plt.figure(save_filename)
+    fig.set_size_inches(width,height) 
+     
+    ax = fig.add_subplot(1,1,1)
     ax.fill(airspeeds_pos, load_factors_pos, c='b', alpha=0.3)
     ax.fill(airspeeds_neg, load_factors_neg, c='b', alpha=0.3)
     ax.plot(airspeeds_pos, load_factors_pos, c='b')
@@ -101,26 +122,27 @@ def plot_V_n_Diagram(V_n_data, vehicle= None):
     #---------------------------------
     # Creating results output file
     #---------------------------------
-    fres = open("V_n_diagram_results_" + vehicle.tag +".dat","w")
-    fres.write('V-n diagram summary\n')
-    fres.write('-------------------\n')
-    fres.write('Aircraft: ' + vehicle.tag + '\n')
-    fres.write('category: ' + vehicle.flight_envelope.category + '\n')
-    fres.write('FAR certification: Part ' +  vehicle.flight_envelope.FAR_part_number  + '\n')
-    fres.write('Weight = ' + str(round(weight)) + ' lb\n')
-    fres.write('Altitude = ' + str(round(altitude)) + ' ft\n')
-    fres.write('---------------------------------------------------------------\n\n')
-    fres.write('Airspeeds: \n')
-    fres.write('    Positive stall speed (Vs1)   = ' + str(round(Vs1_pos,1)) + ' KEAS\n')
-    fres.write('    Negative stall speed (Vs1)   = ' + str(round(Vs1_neg,1)) + ' KEAS\n')
-    fres.write('    Positive maneuver speed (Va) = ' + str(round(Va_pos,1))  + ' KEAS\n')
-    fres.write('    Negative maneuver speed (Va) = ' + str(round(Va_neg,1))  + ' KEAS\n')
-    fres.write('    Cruise speed (Vc)            = ' + str(round(Vc,1))      + ' KEAS\n')
-    fres.write('    Dive speed (Vd)              = ' + str(round(Vd,1))      + ' KEAS\n')
-    fres.write('Load factors: \n')
-    fres.write('    Positive limit load factor (n+) = ' + str(round(max(load_factors_pos),2)) + '\n')
-    fres.write('    Negative limit load factor (n-) = ' + str(round(min(load_factors_neg),2)) + '\n')
-    fres.write('    Positive load factor at Vd      = ' + str(round(V_n_data.limit_loads.dive.positive,2)) + '\n')
-    fres.write('    Negative load factor at Vd      = ' + str(round(V_n_data.limit_loads.dive.negative,2)) + '\n')
+    if generate_report: 
+        fres = open("V_n_diagram_results_" + vehicle.tag +".dat","w")
+        fres.write('V-n diagram summary\n')
+        fres.write('-------------------\n')
+        fres.write('Aircraft: ' + vehicle.tag + '\n')
+        fres.write('category: ' + vehicle.flight_envelope.category + '\n')
+        fres.write('FAR certification: Part ' +  vehicle.flight_envelope.FAR_part_number  + '\n')
+        fres.write('Weight = ' + str(round(weight)) + ' lb\n')
+        fres.write('Altitude = ' + str(round(altitude)) + ' ft\n')
+        fres.write('---------------------------------------------------------------\n\n')
+        fres.write('Airspeeds: \n')
+        fres.write('    Positive stall speed (Vs1)   = ' + str(round(Vs1_pos,1)) + ' KEAS\n')
+        fres.write('    Negative stall speed (Vs1)   = ' + str(round(Vs1_neg,1)) + ' KEAS\n')
+        fres.write('    Positive maneuver speed (Va) = ' + str(round(Va_pos,1))  + ' KEAS\n')
+        fres.write('    Negative maneuver speed (Va) = ' + str(round(Va_neg,1))  + ' KEAS\n')
+        fres.write('    Cruise speed (Vc)            = ' + str(round(Vc,1))      + ' KEAS\n')
+        fres.write('    Dive speed (Vd)              = ' + str(round(Vd,1))      + ' KEAS\n')
+        fres.write('Load factors: \n')
+        fres.write('    Positive limit load factor (n+) = ' + str(round(max(load_factors_pos),2)) + '\n')
+        fres.write('    Negative limit load factor (n-) = ' + str(round(min(load_factors_neg),2)) + '\n')
+        fres.write('    Positive load factor at Vd      = ' + str(round(V_n_data.limit_loads.dive.positive,2)) + '\n')
+        fres.write('    Negative load factor at Vd      = ' + str(round(V_n_data.limit_loads.dive.negative,2)) + '\n')
    
     return

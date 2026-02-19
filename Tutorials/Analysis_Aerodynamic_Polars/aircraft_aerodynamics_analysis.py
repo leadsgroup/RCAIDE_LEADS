@@ -14,15 +14,16 @@ Date   : Feb 18th, 2026
 import RCAIDE
 from RCAIDE.Framework.Core import Units , Data   
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan         import design_turbofan 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan         import design_turbofan 
 from RCAIDE.Library.Methods.Performance                            import aircraft_aerodynamic_analysis 
-from RCAIDE.Library.Plots                                          import *   
-import numpy as np
-import matplotlib.pyplot  as plt
-import os
-import  sys
+from RCAIDE.Library.Plots                                          import *
 
-# python imports 
-import numpy as np   
+# python imports      
+import os
+import sys
+import numpy as np    
+import numpy as np
+import matplotlib.pyplot as plt
 from copy import deepcopy
 
 # ----------------------------------------------------------------------
@@ -154,7 +155,6 @@ def vehicle_setup():
     wing.aerodynamic_center               = [0,0,0] 
     wing.vertical                         = False
     wing.xz_plane_symmetric               = True
-    wing.high_lift                        = True
     wing.twists.root                      = 2.5 * Units.degrees 
     wing.twists.tip                       = 3.5  * Units.degrees 
     wing.transition_x_upper               = 0.5
@@ -827,8 +827,7 @@ def configs_setup(vehicle):
     config.networks.fuel.propulsors['starboard_propulsor'].fan_nozzle.noise_speed  = 109.3
     config.networks.fuel.propulsors['port_propulsor'].fan_nozzle.noise_speed       = 109.3 
     for landing_gear in  config.landing_gears:
-        landing_gear.gear_extended = True 
-    config.Vref_VS_ratio = 1.23
+        landing_gear.gear_extended = True  
     configs.append(config)   
 
     # ------------------------------------------------------------------

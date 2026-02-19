@@ -25,4 +25,4 @@ from .plot_motor_conditions                     import plot_motor_conditions
 from .plot_altitude_sfc_weight                  import plot_altitude_sfc_weight
 from .plot_propulsor_throttles                  import plot_propulsor_throttles
 from .plot_payload_range_diagram                import plot_payload_range_diagram
-from .plot_V_n_diagram                          import plot_V_n_Diagram
+from .plot_V_n_diagram                          import plot_V_n_diagram

@@ -136,7 +136,6 @@ def vehicle_setup():
     wing.aerodynamic_center               = [0,0,0] 
     wing.vertical                         = False
     wing.xz_plane_symmetric               = True
-    wing.high_lift                        = True
     wing.twists.root                      = 2.5 * Units.degrees 
     wing.twists.tip                       = 3.5  * Units.degrees 
     wing.transition_x_upper               = 0.5

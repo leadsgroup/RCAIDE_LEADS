@@ -116,8 +116,7 @@ def vehicle_setup():
     wing.origin                           = [[5.38, 0, 1.35]] 
     wing.aerodynamic_center               = [[5.38 + 0.25 *wing.chords.root , 0, 1.35]]  
     wing.vertical                         = False
-    wing.xz_plane_symmetric               = True
-    wing.high_lift                        = True 
+    wing.xz_plane_symmetric               = True 
     wing.winglet_fraction                 = 0.0  
     wing.dynamic_pressure_ratio           = 1.0      
     cg_x                                  = wing.origin[0][0] + 0.25*wing.chords.mean_aerodynamic
@@ -196,8 +195,7 @@ def vehicle_setup():
     wing.aerodynamic_center               = [12.96 + wing.chords.root /4 , 0 , 1.25]
     wing.vertical                         = False
     wing.winglet_fraction                 = 0.0  
-    wing.xz_plane_symmetric               = True
-    wing.high_lift                        = False 
+    wing.xz_plane_symmetric               = True 
     wing.dynamic_pressure_ratio           = 0.9
 
      # Wing Segments

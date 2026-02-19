@@ -14,17 +14,18 @@ Date   : Feb 18th, 2026
 # RCAIDE Imports
 import RCAIDE
 from RCAIDE.Framework.Core   import Data,Units 
-from RCAIDE.Library.Methods.Performance       import generate_V_n_diagram
-from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
+from RCAIDE.Library.Methods.Performance       import generate_V_n_diagram 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan                  import design_turbofan 
 from RCAIDE.Library.Plots import  * 
 
-# package imports
-import numpy as np 
-import sys
+# python imports      
 import os
-import numpy as np 
+import sys
+import numpy as np    
+import numpy as np
 import matplotlib.pyplot as plt
- 
+from copy import deepcopy
+
 
 # ----------------------------------------------------------------------------------------------------------------------   
 # Part 35 V-n Diagram
@@ -41,7 +42,7 @@ def main():
     analyses = analyses_setup(configs)
     
     # Vn Diagram 
-    V_n_data = generate_V_n_diagram(vehicle,analyses)
+    V_n_data = generate_V_n_diagram(analyses=analyses.cruise)
     
     plot_V_n_diagram(V_n_data, vehicle)
     
@@ -166,7 +167,6 @@ def vehicle_setup():
     wing.origin                  = [[13.3,0,-1.]]
     wing.vertical                = False
     wing.xz_plane_symmetric      = True       
-    wing.high_lift               = True
     wing.areas.exposed           = 0.80 * wing.areas.wetted        
     wing.twists.root             = 2.0 * Units.degrees
     wing.twists.tip              = 0.0 * Units.degrees    
@@ -272,8 +272,7 @@ def vehicle_setup():
     wing.dihedral                = 8.4 * Units.degrees
     wing.origin                  = [[31,0,1.5]]
     wing.vertical                = False
-    wing.xz_plane_symmetric      = True       
-    wing.high_lift               = False   
+    wing.xz_plane_symmetric      = True          
     wing.areas.exposed           = 0.9 * wing.areas.wetted 
     wing.twists.root             = 0.0 * Units.degrees
     wing.twists.tip              = 0.0 * Units.degrees    
@@ -299,8 +298,7 @@ def vehicle_setup():
     wing.dihedral                = 0.00
     wing.origin                  = [[30.4,0,1.675]]
     wing.vertical                = True
-    wing.xz_plane_symmetric      = False       
-    wing.high_lift               = False 
+    wing.xz_plane_symmetric      = False        
     wing.areas.exposed           = 0.9 * wing.areas.wetted
     wing.twists.root             = 0.0 * Units.degrees
     wing.twists.tip              = 0.0 * Units.degrees    

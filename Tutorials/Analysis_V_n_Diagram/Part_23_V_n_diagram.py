@@ -37,7 +37,7 @@ def main():
     analyses = analyses_setup(configs)
     
     # Vn Diagram 
-    V_n_data = generate_V_n_diagram(vehicle,analyses)
+    V_n_data = generate_V_n_diagram(analyses=analyses.cruise)
     
     plot_V_n_diagram(V_n_data, vehicle)
     
@@ -54,11 +54,9 @@ def vehicle_setup():
     # ------------------------------------------------------------------
     #  File Paths 
     # ------------------------------------------------------------------    
-    ospath             = os.path.abspath(__file__)
-    separator          = os.path.sep
-    rel_path           = os.path.dirname(ospath)   + separator
-    airfoil_file_path  = rel_path + separator + 'Airfoils_and_Polars'
-    polar_file_path    = rel_path + separator + 'Airfoils_and_Polars' + separator + 'Polars'
+    local_path        =  sys.path[0] + os.sep
+    airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') + os.sep 
+    polar_file_path   =  os.path.join(os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') , 'Polars') + os.sep  
     
     #------------------------------------------------------------------------------------------------------------------------------------
     # ################################################# Vehicle-level Properties ########################################################  
@@ -141,8 +139,7 @@ def vehicle_setup():
     wing.origin                                 = [[80.* Units.inches,0,  0.820]]
     wing.aerodynamic_center                     = [22.* Units.inches,0,0]
     wing.vertical                               = False
-    wing.xz_plane_symmetric                     = True
-    wing.high_lift                              = True 
+    wing.xz_plane_symmetric                     = True 
     wing.dynamic_pressure_ratio                 = 1.0 
                                           
     # control surfaces -------------------------------------------
@@ -186,8 +183,7 @@ def vehicle_setup():
     wing.origin                                 = [[246.* Units.inches,0,0]]
     wing.aerodynamic_center                     = [20.* Units.inches,0,0]
     wing.vertical                               = False
-    wing.xz_plane_symmetric                     = True
-    wing.high_lift                              = False 
+    wing.xz_plane_symmetric                     = True 
     wing.dynamic_pressure_ratio                 = 0.9 
     wing_airfoil                                = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil() 
     wing.append_airfoil(wing_airfoil)     
@@ -492,8 +488,7 @@ def configs_setup(vehicle):
 
     config                                                     = RCAIDE.Library.Components.Configs.Config(base_config)
     config.tag                                                 = 'landing' 
-    config.wings['main_wing'].control_surfaces.flap.deflection = 20. * Units.deg
-    config.Vref_VS_ratio                                       = 1.23
+    config.wings['main_wing'].control_surfaces.flap.deflection = 20. * Units.deg 
     config.maximum_lift_coefficient                            = 2.
                                                                
     configs.append(config)
@@ -526,7 +521,7 @@ def base_analysis(vehicle):
 
      # ------------------------------------------------------------------
     #  Weights 
-    weights = RCAIDE.Framework.Analyses.Weights.Conventional_Transport()    
+    weights = RCAIDE.Framework.Analyses.Weights.Conventional_General_Aviation()    
     analyses.append(weights)
 
     # ------------------------------------------------------------------

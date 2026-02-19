@@ -91,8 +91,7 @@ def vehicle_setup():
     wing.aerodynamic_center               = [0,0,0] 
     wing.vertical                         = False
     wing.dihedral                         = 7.0 * Units.degrees 
-    wing.xz_plane_symmetric               = True 
-    wing.high_lift                        = True 
+    wing.xz_plane_symmetric               = True  
     wing.dynamic_pressure_ratio           = 1.0
     wing.twists.outwash                   = -6 * Units.degree
     wing.twists.root_twist                = 3 * Units.degree  

@@ -78,8 +78,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', number_of_passengers = 248):
     wing.aerodynamic_center               = [0,0,0] 
     wing.vertical                         = False
     wing.dihedral                         = 9.0 * Units.degrees 
-    wing.xz_plane_symmetric               = True 
-    wing.high_lift                        = True 
+    wing.xz_plane_symmetric               = True  
     wing.dynamic_pressure_ratio           = 1.0
         
     # Wing Segments
@@ -831,11 +830,9 @@ def configs_setup(vehicle):
     config.networks.fuel.propulsors['propulsor_1'].core_nozzle.exit_velocity = 92.
     config.networks.fuel.propulsors['propulsor_2'].core_nozzle.exit_velocity = 92.
     config.networks.fuel.propulsors['propulsor_1'].fan_nozzle.exit_velocity  = 109.3
-    config.networks.fuel.propulsors['propulsor_2'].fan_nozzle.exit_velocity  = 109.3 
-
+    config.networks.fuel.propulsors['propulsor_2'].fan_nozzle.exit_velocity  = 109.3  
     for landing_gear in  config.landing_gears:
-        landing_gear.gear_extended = True         
-    config.Vref_VS_ratio = 1.23
+        landing_gear.gear_extended = True     
     configs.append(config)   
 
     # ------------------------------------------------------------------

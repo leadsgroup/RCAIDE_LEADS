@@ -96,8 +96,7 @@ def vehicle_setup():
     wing.spans.projected                   = 66.3
     wing.origin                            = [[20.0,0,3.913]]
     wing.vertical                          = False
-    wing.xz_plane_symmetric                = True       
-    wing.high_lift                         = True
+    wing.xz_plane_symmetric                = True    
     wing.areas.exposed                     =  1.0* wing.areas.wetted        
     wing.twists.root                       =  0.0* Units.degrees
     wing.twists.tip                        =  0.0* Units.degrees    
@@ -191,8 +190,7 @@ def vehicle_setup():
     wing.anhedral                = 2.0 * Units.degrees
     wing.origin                  = [[64.6,0,14.783]]
     wing.vertical                = False
-    wing.xz_plane_symmetric      = True       
-    wing.high_lift               = False 
+    wing.xz_plane_symmetric      = True        
     wing.areas.exposed           = 1.0 * wing.areas.wetted 
     wing.twists.root             = 0 * Units.degrees
     wing.twists.tip              = 0 * Units.degrees    
@@ -765,8 +763,7 @@ def configs_setup(vehicle):
     config.networks.fuel.propulsors['inner_starboard_propulsor'].fan.angular_velocity =  2316 * Units.rpm
     config.networks.fuel.propulsors['inner_port_propulsor'].fan.angular_velocity      =  2316 * Units.rpm    
     for landing_gear in  config.landing_gears:
-        landing_gear.gear_extended = True 
-    config.Vref_VS_ratio = 1.3
+        landing_gear.gear_extended = True  
     configs.append(config)   
      
     # ------------------------------------------------------------------

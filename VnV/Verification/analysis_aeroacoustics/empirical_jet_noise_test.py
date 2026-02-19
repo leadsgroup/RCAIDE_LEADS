@@ -33,8 +33,7 @@ def main():
 
     # vehicle data
     vehicle                           = vehicle_setup()
-    vehicle.wings.main_wing.control_surfaces.flap.configuration_type = 'triple_slotted'  
-    vehicle.wings.main_wing.high_lift = True
+    vehicle.wings.main_wing.control_surfaces.flap.configuration_type = 'triple_slotted'   
     
     # Set up configs
     configs           = configs_setup(vehicle) 

@@ -38,10 +38,13 @@ def main():
 
     # create analyses
     analyses = analyses_setup(configs) 
-                
-    takeoff_field_length ,second_seg_clb_grad  =  estimate_take_off_field_length(configs.takeoff,analyses,compute_2nd_seg_climb = True)
+
+    takeoff_weight=vehicle.mass_properties.takeoff                
+    takeoff_field_length ,second_seg_clb_grad  =  estimate_take_off_field_length(analyses= analyses.takeoff,
+                                                                                 takeoff_weight=takeoff_weight, 
+                                                                                 compute_2nd_seg_climb = True)
          
-    print('Weight (kg): ', vehicle.mass_properties.takeoff)
+    print('Weight (kg): ',takeoff_weight)
     print('Takeoff field length (m): ', takeoff_field_length)     
     print('Second Segment Climb Gradient (%): ', second_seg_clb_grad) 
 
@@ -58,11 +61,9 @@ def vehicle_setup():
     # ------------------------------------------------------------------
     #  File Paths 
     # ------------------------------------------------------------------    
-    ospath             = os.path.abspath(__file__)
-    separator          = os.path.sep
-    rel_path           = os.path.dirname(ospath)   + separator
-    airfoil_file_path  = rel_path + separator + 'Airfoils'
-    polar_file_path    = rel_path + separator + 'Airfoils' + separator + 'Polars'
+    local_path        =  sys.path[0] + os.sep
+    airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') + os.sep 
+    polar_file_path   =  os.path.join(os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') , 'Polars') + os.sep  
     
     #------------------------------------------------------------------------------------------------------------------------------------
     # ################################################# Vehicle-level Properties ########################################################  
@@ -164,7 +165,6 @@ def vehicle_setup():
     wing.origin                  = [[13.3,0,-1.]]
     wing.vertical                = False
     wing.xz_plane_symmetric      = True       
-    wing.high_lift               = True
     wing.areas.exposed           = 0.80 * wing.areas.wetted        
     wing.twists.root             = 2.0 * Units.degrees
     wing.twists.tip              = 0.0 * Units.degrees    
@@ -270,8 +270,7 @@ def vehicle_setup():
     wing.dihedral                = 8.4 * Units.degrees
     wing.origin                  = [[31,0,1.5]]
     wing.vertical                = False
-    wing.xz_plane_symmetric      = True       
-    wing.high_lift               = False   
+    wing.xz_plane_symmetric      = True      
     wing.areas.exposed           = 0.9 * wing.areas.wetted 
     wing.twists.root             = 0.0 * Units.degrees
     wing.twists.tip              = 0.0 * Units.degrees    
@@ -297,8 +296,7 @@ def vehicle_setup():
     wing.dihedral                = 0.00
     wing.origin                  = [[30.4,0,1.675]]
     wing.vertical                = True
-    wing.xz_plane_symmetric      = False       
-    wing.high_lift               = False 
+    wing.xz_plane_symmetric      = False   
     wing.areas.exposed           = 0.9 * wing.areas.wetted
     wing.twists.root             = 0.0 * Units.degrees
     wing.twists.tip              = 0.0 * Units.degrees    

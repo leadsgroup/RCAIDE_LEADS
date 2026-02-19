@@ -68,14 +68,17 @@ def append_turboprop_conditions(propulsor, segment, energy_conditions, aeroacous
     # unpack 
     ones_row          = segment.state.ones_row
     
-    # add propulsor conditions    
+    # add propulsor conditions
+    # energy results 
     energy_conditions.propulsors[propulsor.tag]                               = Conditions()  
     energy_conditions.propulsors[propulsor.tag].throttle                      = 0. * ones_row(1)     
     energy_conditions.propulsors[propulsor.tag].commanded_thrust_vector_angle = 0. * ones_row(1)   
     energy_conditions.propulsors[propulsor.tag].power                         = 0. * ones_row(1) 
     energy_conditions.propulsors[propulsor.tag].fuel_mass_flow_rate           = 0. * ones_row(1)
     energy_conditions.propulsors[propulsor.tag].inputs                        = Conditions()
-    energy_conditions.propulsors[propulsor.tag].outputs                       = Conditions() 
+    energy_conditions.propulsors[propulsor.tag].outputs                       = Conditions()
+    
+    # noise results 
     aeroacoustics_conditions.propulsors[propulsor.tag]                        = Conditions()  
     aeroacoustics_conditions.propulsors[propulsor.tag].core_nozzle            = Conditions()
      

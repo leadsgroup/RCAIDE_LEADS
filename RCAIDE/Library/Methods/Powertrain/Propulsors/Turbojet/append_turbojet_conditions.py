@@ -63,7 +63,8 @@ def append_turbojet_conditions(propulsor, segment, energy_conditions, aeroacoust
     # unpack 
     ones_row          = segment.state.ones_row 
     
-    # add propulsor conditions                  
+    # add propulsor conditions
+    # energy results 
     energy_conditions.propulsors[propulsor.tag]                               = Conditions()  
     energy_conditions.propulsors[propulsor.tag].throttle                      = 0. * ones_row(1)     
     energy_conditions.propulsors[propulsor.tag].commanded_thrust_vector_angle = 0. * ones_row(1)    
@@ -72,10 +73,13 @@ def append_turbojet_conditions(propulsor, segment, energy_conditions, aeroacoust
     energy_conditions.propulsors[propulsor.tag].moment                        = 0. * ones_row(3) 
     energy_conditions.propulsors[propulsor.tag].fuel_mass_flow_rate           = 0. * ones_row(1)
     energy_conditions.propulsors[propulsor.tag].inputs                        = Conditions()
-    energy_conditions.propulsors[propulsor.tag].outputs                       = Conditions() 
-    aeroacoustics_conditions.propulsors[propulsor.tag]                        = Conditions()  
-    aeroacoustics_conditions.propulsors[propulsor.tag].core_nozzle            = Conditions()
+    energy_conditions.propulsors[propulsor.tag].outputs                       = Conditions()
     
+    # noise results 
+    aeroacoustics_conditions.propulsors[propulsor.tag].core_nozzle                             = Conditions() 
+    aeroacoustics_conditions.propulsors[propulsor.tag].core_nozzle.exit_velocity               = propulsor.core_nozzle.exit_velocity * ones_row(1)
+    aeroacoustics_conditions.propulsors[propulsor.tag].core_nozzle.exit_stagnation_temperature = propulsor.core_nozzle.exit_stagnation_temperature * ones_row(1)
+    aeroacoustics_conditions.propulsors[propulsor.tag].core_nozzle.exit_stagnation_pressure    = propulsor.core_nozzle.exit_stagnation_pressure    * ones_row(1)
  
     for tag, item in  propulsor.items(): 
         if issubclass(type(item), RCAIDE.Library.Components.Component):

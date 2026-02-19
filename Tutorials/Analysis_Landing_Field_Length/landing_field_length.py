@@ -15,15 +15,16 @@ Date   : Feb 18th, 2026
 # RCAIDE Imports
 import RCAIDE
 from RCAIDE.Framework.Core   import Data , Units 
-from RCAIDE.Library.Methods.Performance.estimate_landing_field_length import estimate_landing_field_length
-from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan                   import design_turbofan 
+from RCAIDE.Library.Methods.Performance.estimate_landing_field_length import estimate_landing_field_length 
 
-import numpy as np
-import pylab as plt
-import sys
+# python imports      
 import os
+import sys
+import numpy as np    
 import numpy as np
- 
+import matplotlib.pyplot as plt
+from copy import deepcopy
 
 # ----------------------------------------------------------------------
 #   Main
@@ -38,10 +39,12 @@ def main():
 
     # create analyses
     analyses = analyses_setup(configs)
-  
-    landing_field_length = estimate_landing_field_length(configs.landing,analyses) 
     
-    print('Weight (kg): ', vehicle.mass_properties.takeoff)
+    landing_weight = 40000
+    landing_field_length = estimate_landing_field_length( analyses = analyses.landing, 
+                                                          landing_weight =landing_weight) 
+    
+    print('Weight (kg): ', landing_weight)
     print('Landing Field Length (m): ',landing_field_length)
  
     return
@@ -57,12 +60,10 @@ def vehicle_setup():
 
     # ------------------------------------------------------------------
     #  File Paths 
-    # ------------------------------------------------------------------    
-    ospath             = os.path.abspath(__file__)
-    separator          = os.path.sep
-    rel_path           = os.path.dirname(ospath)   + separator
-    airfoil_file_path  = rel_path + separator + 'Airfoils'
-    polar_file_path    = rel_path + separator + 'Airfoils' + separator + 'Polars'
+    # ------------------------------------------------------------------      
+    local_path        =  sys.path[0] + os.sep
+    airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') + os.sep 
+    polar_file_path   =  os.path.join(os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') , 'Polars') + os.sep  
     
     #------------------------------------------------------------------------------------------------------------------------------------
     # ################################################# Vehicle-level Properties ########################################################  
@@ -76,8 +77,7 @@ def vehicle_setup():
     vehicle.mass_properties.max_zero_fuel             = 40900. # kg
     vehicle.mass_properties.max_fuel                  = 13100. # kg
     vehicle.mass_properties.max_payload               = 12900. # kg
-    vehicle.mass_properties.operating_empty           = 27900  #    
-
+    vehicle.mass_properties.operating_empty           = 27900  #     
 
     vehicle.mass_properties.center_of_gravity         = [[16.8, 0, 1.6]]
     vehicle.mass_properties.moments_of_inertia.tensor = [[10 ** 5, 0, 0],[0, 10 ** 6, 0,],[0,0, 10 ** 7]] 
@@ -164,7 +164,6 @@ def vehicle_setup():
     wing.origin                  = [[13.3,0,-1.]]
     wing.vertical                = False
     wing.xz_plane_symmetric      = True       
-    wing.high_lift               = True
     wing.areas.exposed           = 0.80 * wing.areas.wetted        
     wing.twists.root             = 2.0 * Units.degrees
     wing.twists.tip              = 0.0 * Units.degrees    
@@ -270,8 +269,7 @@ def vehicle_setup():
     wing.dihedral                = 8.4 * Units.degrees
     wing.origin                  = [[31,0,1.5]]
     wing.vertical                = False
-    wing.xz_plane_symmetric      = True       
-    wing.high_lift               = False   
+    wing.xz_plane_symmetric      = True          
     wing.areas.exposed           = 0.9 * wing.areas.wetted 
     wing.twists.root             = 0.0 * Units.degrees
     wing.twists.tip              = 0.0 * Units.degrees    
@@ -297,8 +295,7 @@ def vehicle_setup():
     wing.dihedral                = 0.00
     wing.origin                  = [[30.4,0,1.675]]
     wing.vertical                = True
-    wing.xz_plane_symmetric      = False       
-    wing.high_lift               = False 
+    wing.xz_plane_symmetric      = False   
     wing.areas.exposed           = 0.9 * wing.areas.wetted
     wing.twists.root             = 0.0 * Units.degrees
     wing.twists.tip              = 0.0 * Units.degrees    
@@ -722,7 +719,6 @@ def configs_setup(vehicle):
     config.tag = 'landing'
     config.wings['main_wing'].control_surfaces.flap.deflection  = 30. * Units.deg
     config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg  
-    config.Vref_VS_ratio = 1.23
     for landing_gear in  config.landing_gears:
         landing_gear.gear_extended = True 
     configs.append(config)   

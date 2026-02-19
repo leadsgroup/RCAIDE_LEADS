@@ -5,15 +5,17 @@
 #   Imports
 # ----------------------------------------------------------------------
 import RCAIDE
-from RCAIDE.Library.Methods.Performance.estimate_take_off_field_length import estimate_take_off_field_length
-from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
+from RCAIDE.Library.Methods.Performance.estimate_take_off_field_length import estimate_take_off_field_length 
+from RCAIDE.Library.Mission.Common.Pre_Process  import geometry_preprocess_routine 
 
+# package imports
 import numpy as np
+from copy import deepcopy
 
 # ----------------------------------------------------------------------
 #  Find Takeoff Weight Given TOFL
 # ----------------------------------------------------------------------
-def estimate_take_off_weight_given_TOFL(vehicle,analyses,target_tofl = None,altitude = 0, delta_isa = 0):
+def estimate_take_off_weight_given_TOFL(analyses,target_tofl = None,altitude = 0, delta_isa = 0):
     """
     Estimates the maximum allowable takeoff weight for a given takeoff field length requirement.
 
@@ -65,33 +67,29 @@ def estimate_take_off_weight_given_TOFL(vehicle,analyses,target_tofl = None,alti
     """
     if target_tofl == None:
         print('Specify target takeoff field length')
-
-    for wing in vehicle.wings: 
-        wing_planform(wing) 
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
-            vehicle.reference_area = wing.areas.reference
-            
-    #unpack
+    
+    # ============================================== 
+    # Preprocess Geometry 
+    # ============================================== 
+    geometry_preprocess_routine(analyses)
+    vehicle = deepcopy(analyses.vehicle)
+         
+    # unpack
     tow_lower = vehicle.mass_properties.operating_empty
-    tow_upper = 1.10 * vehicle.mass_properties.max_takeoff
-
-    #saving initial reference takeoff weight
-    tow_ref = vehicle.mass_properties.max_takeoff
+    tow_upper = 1.10 * vehicle.mass_properties.max_takeoff 
 
     tow_vec = np.linspace(tow_lower,tow_upper,50)
     tofl    = np.zeros_like(tow_vec)
 
-    for id,tow in enumerate(tow_vec):
-        vehicle.mass_properties.takeoff = tow
-        tofl[id], _ = estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0)
+    for id,tow in enumerate(tow_vec): 
+        tofl[id], _ = estimate_take_off_field_length(analyses = analyses,
+                                                     takeoff_weight=tow,
+                                                     altitude = 0, delta_isa = 0)
 
     target_tofl = np.atleast_1d(target_tofl)
     max_tow     = np.zeros_like(target_tofl)
 
     for id,toflid in enumerate(target_tofl):
-        max_tow[id] = np.interp(toflid,tofl,tow_vec)
+        max_tow[id] = np.interp(toflid,tofl,tow_vec) 
 
-    #reset the initial takeoff weight
-    vehicle.mass_properties.max_takeoff = tow_ref
-
-    return max_tow
+    return max_tow[0]

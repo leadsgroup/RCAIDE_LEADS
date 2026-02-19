@@ -73,8 +73,7 @@ def primary_noise_component(Velocity_primary, Temperature_primary, R_gas, theta_
     
     # Calculation of the velocity exponent 
     velocity_exponent = 1.5*np.exp(-10*(theta_p - 2.2)**2)
-    if theta_p <= 2.2: 
-        velocity_exponent = 1.56
+    velocity_exponent[theta_p <= 2.2] = 1.56
 
     # Calculation of the Source Strengh Function (FV)
     FV = Mach_primary_jet*(DVPS/sound_ambient)**0.6*((Velocity_primary+Velocity_secondary)/sound_ambient)**0.4*  (np.abs(Velocity_primary-Velocity_aircraft)/Velocity_primary)**velocity_exponent

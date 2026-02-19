@@ -109,8 +109,7 @@ def vehicle_setup(rotor_type):
     wing.origin                           = [[2.93, 0., 1.01]]
     wing.aerodynamic_center               = [3., 0., 1.01] 
     wing.vertical                         = False
-    wing.xz_plane_symmetric               = True
-    wing.high_lift                        = True 
+    wing.xz_plane_symmetric               = True 
     wing.winglet_fraction                 = 0.0  
     wing.dynamic_pressure_ratio           = 1.0   
     airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
@@ -191,8 +190,7 @@ def vehicle_setup(rotor_type):
     wing.aerodynamic_center               = [7.8, 0., 0.25] 
     wing.vertical                         = False
     wing.winglet_fraction                 = 0.0  
-    wing.xz_plane_symmetric               = True
-    wing.high_lift                        = False 
+    wing.xz_plane_symmetric               = True 
     wing.dynamic_pressure_ratio           = 0.9
 
     # add to vehicle

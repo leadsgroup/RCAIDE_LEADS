@@ -91,8 +91,7 @@ def conventional_turbofan_aircraft_geometry_test(show_figure):
     
     # conventional aircraft  
     vehicle                           = E190_vehicle_setup()
-    vehicle.wings.main_wing.control_surfaces.flap.configuration_type = 'triple_slotted'  
-    vehicle.wings.main_wing.high_lift = True 
+    vehicle.wings.main_wing.control_surfaces.flap.configuration_type = 'triple_slotted'   
     
     # plot aircraft
     plot_3d_vehicle(vehicle, 

@@ -116,8 +116,7 @@ def vehicle_setup():
     wing.origin                                 = [[80.* Units.inches,0,  0.820]]
     wing.aerodynamic_center                     = [22.* Units.inches,0,0]
     wing.vertical                               = False
-    wing.xz_plane_symmetric                     = True
-    wing.high_lift                              = True 
+    wing.xz_plane_symmetric                     = True 
     wing.dynamic_pressure_ratio                 = 1.0 
                                           
     # control surfaces -------------------------------------------
@@ -161,8 +160,7 @@ def vehicle_setup():
     wing.origin                                 = [[246.* Units.inches,0,0]]
     wing.aerodynamic_center                     = [20.* Units.inches,0,0]
     wing.vertical                               = False
-    wing.xz_plane_symmetric                     = True
-    wing.high_lift                              = False 
+    wing.xz_plane_symmetric                     = True 
     wing.dynamic_pressure_ratio                 = 0.9 
     wing_airfoil                                = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil() 
     wing.append_airfoil(wing_airfoil)    

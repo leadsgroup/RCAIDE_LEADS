@@ -10,13 +10,18 @@
 # RCAIDE Imports
 import RCAIDE
 from RCAIDE.Framework.Core import Data, Units  
+from RCAIDE.Library.Mission.Common.Pre_Process  import geometry_preprocess_routine 
 
 # package imports
-import numpy as np 
+import numpy as np
+from copy import deepcopy
+ 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Compute a V-n diagram
 # ---------------------------------------------------------------------------------------------------------------------- 
-def generate_V_n_diagram(vehicle,analyses,altitude = 0,delta_ISA = 0):
+def generate_V_n_diagram(analyses= None,
+                         altitude = 0,
+                         delta_ISA = 0):
     
     """
     Computes a V-n (velocity-load factor) diagram for an aircraft according to FAR requirements.
@@ -97,7 +102,12 @@ def generate_V_n_diagram(vehicle,analyses,altitude = 0,delta_ISA = 0):
     [2] FAR Part 25: https://www.ecfr.gov/current/title-14/part-25
     [3] Gudmundsson, S. (2022). General Aviation Aircraft Design: Applied Methods and procedures. Elsevier. 
     """
-    
+
+    # ============================================== 
+    # Preprocess Geometry 
+    # ============================================== 
+    geometry_preprocess_routine(analyses)   
+    vehicle =  deepcopy(analyses.vehicle) 
     weight =  vehicle.mass_properties.max_takeoff
  
     # ----------------------------------------------
@@ -128,7 +138,7 @@ def generate_V_n_diagram(vehicle,analyses,altitude = 0,delta_ISA = 0):
     # ------------------------------
     # Computing lift-curve slope
     # ------------------------------ 
-    results =  evalaute_aircraft(vehicle,analyses,altitude,Vc)
+    results =  evalaute_aircraft(analyses,altitude,Vc)
     CLa     =  results.segments.cruise.conditions.static_stability.derivatives.Clift_alpha[0, 0] 
 
     # -----------------------------------------------------------
@@ -408,7 +418,7 @@ def generate_V_n_diagram(vehicle,analyses,altitude = 0,delta_ISA = 0):
     return V_n_data
 
       
-def evalaute_aircraft(vehicle,analyses,altitude,Vc):
+def evalaute_aircraft(analyses,altitude,Vc):
  
     # mission analyses
     mission  = base_mission_setup(analyses,altitude,Vc) 
@@ -435,7 +445,7 @@ def base_mission_setup(analyses,altitude,Vc):
 
     #   Cruise Segment: constant Speed, constant altitude 
     segment                           = Segments.Untrimmed.Untrimmed()
-    segment.analyses.extend( analyses.base )   
+    segment.analyses.extend( analyses )   
     segment.tag                       = "cruise" 
     segment.altitude                  = altitude
     segment.air_speed                 = Vc

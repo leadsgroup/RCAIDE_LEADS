@@ -194,7 +194,6 @@ def vehicle_setup():
     wing.aerodynamic_center               = [11.52756129 + 0.25*wing.chords.root ,0,2.009316366]  
     wing.vertical                         = False   
     wing.xz_plane_symmetric               = True    
-    wing.high_lift                        = True
     wing.dynamic_pressure_ratio           = 1.0 
 
     # Wing Segments   
