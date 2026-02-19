@@ -1,12 +1,7 @@
-'''
+# test_take_off_field_length.py
+#
+# Created: Dec 2024, M Clarke   
 
-Title  : Part 33 V-n Diagram Test 
-Scope  : This example computes and plots V-n diagram for a Part-35 aircraft   
-
-Author : Matthew Clarke
-Date   : Feb 18th, 2026
-
-'''
 # ----------------------------------------------------------------------
 #  Imports
 # ----------------------------------------------------------------------
