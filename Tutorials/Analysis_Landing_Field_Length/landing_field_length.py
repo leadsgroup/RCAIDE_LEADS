@@ -38,32 +38,11 @@ def main():
 
     # create analyses
     analyses = analyses_setup(configs)
- 
- 
-    # CLmax for a given configuration may be informed by user
-    # Used defined ajust factor for maximum lift coefficient
-    analyses = base_analysis(vehicle)
-
-    # =====================================
-    # Landing field length evaluation
-    # =====================================
-    w_vec = np.linspace(20000.,44000.,10)
-    landing_field_length = np.zeros_like(w_vec)
-    for id_w,weight in enumerate(w_vec):
-        landing_config.mass_properties.landing = weight
-        landing_field_length[id_w] = estimate_landing_field_length(landing_config,analyses)
-
   
-    title = "LFL vs W"
-    plt.figure(1); 
-    plt.plot(w_vec,landing_field_length, 'k-', label = 'Landing Field Length') 
-    plt.title(title)
-    plt.grid(True)
-
-    plt.figure(1); plt.plot(w_vec,truth_LFL, label = 'Landing Field Length (true)')
-    legend = plt.legend(loc='lower right')
-    plt.xlabel('Weight (kg)')
-    plt.ylabel('Landing Field Length (m)') 
+    landing_field_length = estimate_landing_field_length(configs.landing,analyses) 
+    
+    print('Weight (kg): ', vehicle.mass_properties.takeoff)
+    print('Landing Field Length (m): ',landing_field_length)
  
     return
 

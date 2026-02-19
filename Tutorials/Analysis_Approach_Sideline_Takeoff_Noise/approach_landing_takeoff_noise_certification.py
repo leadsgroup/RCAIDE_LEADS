@@ -1,6 +1,13 @@
-# noise_certification_test.py
-#
-# Created: Apr 2025, M. Clarke  
+'''
+
+Title  : Approach, Sideline and Takeoff Noise
+Scope  : This example plots the approach, sidelien and takeoff noise levels
+
+Author : Matthew Clarke
+Date   : Feb 18th, 2026
+
+'''
+
 # ----------------------------------------------------------------------
 #   Imports
 # ----------------------------------------------------------------------

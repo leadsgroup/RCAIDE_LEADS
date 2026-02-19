@@ -37,50 +37,13 @@ def main():
     configs  = configs_setup(vehicle)
 
     # create analyses
-    analyses = analyses_setup(configs)
-    
-    w_vec                = np.linspace(40000.,52000.,10)
-    engines              = (2,3,4)
-    takeoff_field_length = np.zeros((len(w_vec),len(engines)))
-    second_seg_clb_grad  = np.zeros((len(w_vec),len(engines)))  
-              
-    
-    for id_eng,engine_number in enumerate(engines):
-        propulsor_list = []
-        # append propulsors 
-        for network in  configuration.networks:
-            for i in  range(engine_number):
-                propulsor =  deepcopy(baseline_propulsor)
-                propulsor.tag = 'propulsor_' +  str(i+1)
-                network.propulsors.append(propulsor)
-                propulsor_list.append(propulsor.tag) 
+    analyses = analyses_setup(configs) 
                 
-            for fuel_line in  network.fuel_lines:  
-                fuel_line.assigned_propulsors =  [propulsor_list]
-                
-        for id_w,weight in enumerate(w_vec):
-            configuration.mass_properties.takeoff = weight
-            takeoff_field_length[id_w,id_eng],second_seg_clb_grad[id_w,id_eng] =  estimate_take_off_field_length(configuration,analyses,compute_2nd_seg_climb = True)
-       
-    title = "TOFL vs W"
-    plt.figure(1); 
-    plt.plot(w_vec,takeoff_field_length[:,0], 'k-', label = '2 Engines')
-    plt.plot(w_vec,takeoff_field_length[:,1], 'r-', label = '3 Engines')
-    plt.plot(w_vec,takeoff_field_length[:,2], 'b-', label = '4 Engines')
-
-    plt.title(title); plt.grid(True)  
-    plt.xlabel('Weight (kg)')
-    plt.ylabel('Takeoff field length (m)')    
-    
-    title = "2nd Segment Climb Gradient vs W"
-    plt.figure(2); 
-    plt.plot(w_vec,second_seg_clb_grad[:,0], 'k-', label = '2 Engines')
-    plt.plot(w_vec,second_seg_clb_grad[:,1], 'r-', label = '3 Engines')
-    plt.plot(w_vec,second_seg_clb_grad[:,2], 'b-', label = '4 Engines')
-
-    plt.title(title); plt.grid(True)  
-    plt.xlabel('Weight (kg)')
-    plt.ylabel('Second Segment Climb Gradient (%)')     
+    takeoff_field_length ,second_seg_clb_grad  =  estimate_take_off_field_length(configs.takeoff,analyses,compute_2nd_seg_climb = True)
+         
+    print('Weight (kg): ', vehicle.mass_properties.takeoff)
+    print('Takeoff field length (m): ', takeoff_field_length)     
+    print('Second Segment Climb Gradient (%): ', second_seg_clb_grad) 
 
     return 
 

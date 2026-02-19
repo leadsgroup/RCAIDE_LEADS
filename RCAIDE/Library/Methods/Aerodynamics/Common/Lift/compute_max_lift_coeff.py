@@ -13,8 +13,7 @@ from RCAIDE.Library.Methods.Aerodynamics.Common.Lift.compute_flap_lift import co
 
 # ----------------------------------------------------------------------
 #  compute_max_lift_coeff
-# ----------------------------------------------------------------------
-
+# ---------------------------------------------------------------------- 
 def compute_max_lift_coeff(state,settings,geometry):
     """Computes the maximum lift coefficient associated with an aircraft high lift system
 
@@ -49,13 +48,11 @@ def compute_max_lift_coeff(state,settings,geometry):
 
     Properties Used:
     N/A
-    """    
-
-
+    """     
     # initializing Cl and CDi
-    Cl_max_ls = 0
-    Cd_ind    = 0
-    vehicle = geometry
+    Cl_max_ls  = 0
+    Cd_ind     = 0
+    vehicle    = geometry
     conditions = state.conditions
 
     #unpack

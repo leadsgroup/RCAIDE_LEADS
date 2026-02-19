@@ -8,10 +8,10 @@
 # RCAIDE Imports
 import RCAIDE
 from RCAIDE.Framework.Core            import Data, Units     
-from RCAIDE.Library.Methods.Aerodynamics.Common.Drag import * 
-from RCAIDE.Library.Methods.Aerodynamics.Common.Lift import *
+from RCAIDE.Library.Methods.Aerodynamics.Common.Drag  import * 
+from RCAIDE.Library.Methods.Aerodynamics.Common.Lift  import *
 from RCAIDE.Library.Mission.Common.Pre_Process.energy import energy
-from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
+from RCAIDE.Library.Methods.Geometry.Planform         import wing_planform
 
 # package imports
 import numpy as np
@@ -93,14 +93,13 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
     """        
 
     # ==============================================
-        # Unpack
+    # Preprocess geometry 
     # ============================================== 
     for wing in vehicle.wings: 
         wing_planform(wing) 
         if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
             vehicle.reference_area = wing.areas.reference
 
-    atmo            = analyses.atmosphere 
     weight          = vehicle.mass_properties.takeoff
     reference_area  = vehicle.reference_area 
     V2_VS_ratio     = vehicle.flight_envelope.V2_VS_ratio 
@@ -108,6 +107,7 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
     # ==============================================
     # Computing atmospheric conditions
     # ==============================================
+    atmo            = analyses.atmosphere 
     atmo_values       = atmo.compute_values(altitude,delta_isa)
     conditions        = RCAIDE.Framework.Mission.Common.Results() 
     p                 = atmo_values.pressure
@@ -126,8 +126,7 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
     state.conditions.freestream = Data()
     state.conditions.freestream.density           = rho
     state.conditions.freestream.velocity          = 90. * Units.knots
-    state.conditions.freestream.dynamic_viscosity = mu
-
+    state.conditions.freestream.dynamic_viscosity = mu 
     settings = analyses.aerodynamics.settings
 
     maximum_lift_coefficient, induced_drag_high_lift = compute_max_lift_coeff(state,settings,vehicle)
