@@ -9,19 +9,17 @@
 
 # RCAIDE imports
 import RCAIDE
-from RCAIDE.Framework.Core import Units , Data  
-from RCAIDE.Library.Plots.Common import set_axes, plot_style    
+from RCAIDE.Framework.Core import Units , Data    
 from RCAIDE.Library.Mission.Common.Pre_Process import mass_properties,geometry
  
 # Pacakge imports 
-import numpy as np
-from matplotlib import pyplot as plt
+import numpy as np 
 import os,sys
  
 # ----------------------------------------------------------------------
 #  Calculate vehicle Payload Range Diagram
 # ----------------------------------------------------------------------  
-def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise", fuel_reserve_percentage=0.05, plot_diagram = True, fuel_name=None, delete_training_data=True):  
+def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise", fuel_reserve_percentage=0.05,delete_training_data=True):  
     """
     Calculate and plot the payload range diagram for an aircraft by modifying the cruise segment and weights.
     
@@ -37,10 +35,7 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
         Default: 0.0
     plot_diagram : bool, optional
         Flag to generate payload-range plots
-        Default: True
-    fuel_name : str, optional
-        Name of fuel for plot title
-        Default: None
+        Default: True 
     
     Returns
     -------
@@ -112,9 +107,9 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
     file_name = [(seg.analyses.aerodynamics.tag) for seg in mission.segments][0]
     for network in vehicle.networks:
         if type(network) == RCAIDE.Framework.Networks.Fuel:  
-            payload_range  =  conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_reserve_percentage,plot_diagram,fuel_name) 
+            payload_range  =  conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_reserve_percentage) 
         else:
-            payload_range  =  electric_payload_range_diagram(vehicle,mission,cruise_segment_tag,plot_diagram)
+            payload_range  =  electric_payload_range_diagram(vehicle,mission,cruise_segment_tag)
     
     if delete_training_data:
         for fname in os.listdir(os.path.dirname(os.path.abspath(sys.argv[0]))):
@@ -152,7 +147,7 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
     print("\n===============================\n")
     return payload_range 
              
-def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_reserve_percentage,plot_diagram, fuel_name): 
+def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_reserve_percentage): 
     """Calculates and plots the payload range diagram for a fuel-bases aircraft by modifying the
     cruise segment range and weights of the aicraft .
 
@@ -292,36 +287,9 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
     payload_range.fuel                     = np.array(FUEL)
     payload_range.takeoff_weight           = np.array(TOW)
     payload_range.fuel_reserve_percentage  = fuel_reserve_percentage
-    if plot_diagram:  
-        # get plotting style 
-        ps      = plot_style()  
-    
-        parameters = {'axes.labelsize': ps.axis_font_size,
-                      'xtick.labelsize': ps.axis_font_size,
-                      'ytick.labelsize': ps.axis_font_size,
-                      'axes.titlesize': ps.title_font_size}
-        plt.rcParams.update(parameters)
-        
-        if fuel_name ==  None: 
-            fig  = plt.figure( vehicle.tag + ' Fuel_Payload_Range_Diagram')
-        else:
-            fig  = plt.figure(vehicle.tag + ' Fuel_Payload_Range_Diagram for ' + fuel_name)
-        axis_1 = fig.add_subplot(1,2,1)
-        axis_1.plot(payload_range.range /Units.nmi,payload_range.payload/Units.lbm  ,color = 'k', linewidth = ps.line_width )
-        axis_1.set_xlabel('Range (nautical miles)')
-        axis_1.set_ylabel('Payload (lbs)') 
-        set_axes(axis_1) 
-
-        axis_2 = fig.add_subplot(1,2,2)
-        axis_2.plot(payload_range.range /Units.nmi,payload_range.oew_plus_payload/Units.lbm ,color = 'k', linewidth = ps.line_width )
-        axis_2.set_xlabel('Range (nautical miles)')
-        axis_2.set_ylabel('OEW + Payload (lbs)') 
-        set_axes(axis_2) 
-        fig.tight_layout()
-
     return payload_range
  
-def electric_payload_range_diagram(vehicle,mission,cruise_segment_tag,plot_diagram):
+def electric_payload_range_diagram(vehicle,mission,cruise_segment_tag):
     """Calculates and plots the payload range diagram for an electric aircraft by modifying the
     cruise segment distance and payload weight of the aicraft .
 
@@ -385,24 +353,5 @@ def electric_payload_range_diagram(vehicle,mission,cruise_segment_tag,plot_diagr
     payload_range.range             = np.array(R)
     payload_range.payload           = np.array(PLD)
     payload_range.takeoff_weight    = np.array(TOW)
-    
-    if plot_diagram: 
-        # get plotting style 
-        ps      = plot_style()  
-    
-        parameters = {'axes.labelsize': ps.axis_font_size,
-                      'xtick.labelsize': ps.axis_font_size,
-                      'ytick.labelsize': ps.axis_font_size,
-                      'axes.titlesize': ps.title_font_size}
-        plt.rcParams.update(parameters)
-
-        fig  = plt.figure('Electric_Payload_Range_Diagram')
-        axis = fig.add_subplot(1,1,1)        
-        axis.plot(payload_range.range /Units.nmi, payload_range.payload,color = 'k', linewidth = ps.line_width )
-        axis.set_xlabel('Range (nautical miles)')
-        axis.set_ylabel('Payload (kg)')
-        axis.set_title('Payload Range Diagram')
-        set_axes(axis) 
-        fig.tight_layout()
 
     return payload_range
