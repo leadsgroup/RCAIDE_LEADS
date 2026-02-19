@@ -41,18 +41,18 @@ class Vehicle(Analysis.Container):
                 Properties Used:
                 N/A
         """
-        self.vehicle      = None
-        self.aerodynamics = None
-        self.atmosphere   = None
-        self.costs        = None
-        self.energy       = None
-        self.geometry     = None
-        self.aeroacoustics    = None
-        self.emissions    = None
-        self.planet       = None
-        self.sizing       = None
-        self.stability    = None
-        self.weights      = None
+        self.vehicle       = None
+        self.aerodynamics  = None
+        self.atmosphere    = None
+        self.costs         = None
+        self.energy        = None
+        self.geometry      = None
+        self.aeroacoustics = None
+        self.emissions     = None
+        self.planet        = None
+        self.sizing        = None
+        self.stability     = None
+        self.weights       = None
 
     def append(self,analysis):
         """This is used to add new analyses to the container.

@@ -1,59 +1,55 @@
 '''
 
-Title  : Aircraft Payload-Range Test 
-Scope  : This example computes and plots the points of the payload range diagram of an aircraft 
+Title  : Part 35 V-n Diagram 
+Scope  : This example computes and plots the V-n diagram for a Part-35 class aircraft
 
 Author : Matthew Clarke
 Date   : Feb 18th, 2026
 
 '''
+# ----------------------------------------------------------------------
+#  Imports
+# ----------------------------------------------------------------------
 
-
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------
-# RCAIDE imports  
+# RCAIDE Imports
 import RCAIDE
-from RCAIDE.Framework.Core import Units , Container
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan                   import design_turbofan 
-from RCAIDE.Library.Methods.Performance.compute_payload_range_diagram  import compute_payload_range_diagram
+from RCAIDE.Framework.Core   import Data,Units 
+from RCAIDE.Library.Methods.Performance       import generate_V_n_diagram
+from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
+from RCAIDE.Library.Plots import  * 
 
-# python imports     
-import numpy as np  
+# package imports
+import numpy as np 
 import sys
-import matplotlib.pyplot as plt  
-import os 
+import os
+import numpy as np 
+import matplotlib.pyplot as plt
+ 
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  Payload-Range test 
-# ----------------------------------------------------------------------------------------------------------------------  
-def main():
-
-    vehicle   = vehicle_setup()   
+# ----------------------------------------------------------------------------------------------------------------------   
+# Part 35 V-n Diagram
+# ----------------------------------------------------------------------------------------------------------------------   
+def main():  
+    
+    # Set up vehicle 
+    vehicle    = vehicle_setup()   
   
     # Set up vehicle configs
     configs  = configs_setup(vehicle)
 
     # create analyses
     analyses = analyses_setup(configs)
+    
+    # Vn Diagram 
+    V_n_data = generate_V_n_diagram(vehicle,analyses)
+    
+    plot_V_n_diagram(V_n_data, vehicle)
+    
+    return    
 
-    # mission analyses 
-    mission = mission_setup(analyses)
-    
-    # create mission instances (for multiple types of missions)
-    missions = missions_setup(mission)  
-        
-    # run payload range analysis 
-    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage=0.1, delete_training_data = True)
-                                
-                                
-    plot_payload_range
-    fuel_r                 = payload_range_results.range[-1]  
-    fuel_r_true            = 5593456.220678145 # Reference ( https://www.embraercommercialaviation.com/wp-content/uploads/2017/06/APM_190.pdf) is 5556000.  
-    
-    
-    return 
-    
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# ############################################################################################################################################################################
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 #   Build the Vehicle
 # ----------------------------------------------------------------------------------------------------------------------
@@ -91,6 +87,10 @@ def vehicle_setup():
     vehicle.flight_envelope.design_mach_number        = 0.78 
     vehicle.flight_envelope.design_cruise_altitude    = 35000*Units.feet
     vehicle.flight_envelope.design_range              = 2000 * Units.nmi
+    vehicle.flight_envelope.category                  = 'normal'
+    vehicle.flight_envelope.FAR_part_number           = '25' 
+    vehicle.flight_envelope.maximum_lift_coefficient  = 3
+    vehicle.flight_envelope.minimum_lift_coefficient  = -1.5 
     
     # basic parameters
     vehicle.reference_area                            = 92.
@@ -740,8 +740,8 @@ def configs_setup(vehicle):
     configs.append(config)    
 
     # done!
-    return configs 
-  
+    return configs
+
 def analyses_setup(configs):
 
     analyses = RCAIDE.Framework.Analyses.Analysis.Container()
@@ -791,65 +791,10 @@ def base_analysis(vehicle):
 
     # done!
     return analyses
-
-
-def analyses_setup(configs):
-    analyses = RCAIDE.Framework.Analyses.Analysis.Container()
-
-    # build a base analysis for each config
-    for tag,config in configs.items():
-        analysis = base_analysis(config)
-        analyses[tag] = analysis
-
-    return analyses
- 
- 
-def mission_setup(analyses): 
-    
-    # ------------------------------------------------------------------
-    #   Initialize the Mission
-    # ------------------------------------------------------------------
-
-    mission = RCAIDE.Framework.Mission.Sequential_Segments()
-    mission.tag = 'mission'
-  
-    Segments = RCAIDE.Framework.Mission.Segments 
-    base_segment = Segments.Segment()
-    base_segment.state.numerics.number_of_control_points  = 3   
-
-    # ------------------------------------------------------------------    
-    #   Cruise Segment 
-    # ------------------------------------------------------------------    
-
-    segment = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
-    segment.tag = "cruise" 
-    segment.analyses.extend( analyses.base )  
-    segment.altitude  =  35000 *  Units.ft
-    segment.air_speed =  450 * Units['knots']
-    segment.distance  =  2700 * Units.nmi
-    
-    # define flight dynamics to model 
-    segment.flight_dynamics.force_x                      = True  
-    segment.flight_dynamics.force_z                      = True     
-    
-    # define flight controls 
-    segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]   
-    segment.assigned_control_variables.body_angle.active             = True                
-    
-    mission.append_segment(segment) 
- 
-
-    return mission
-
-def missions_setup(mission): 
- 
-    missions     = RCAIDE.Framework.Mission.Missions() 
-    mission.tag  = 'base_mission'
-    missions.append(mission)
- 
-    return missions   
-
-
-if __name__ == '__main__': 
-    main()  
+     
+# ----------------------------------------------------------------------        
+#   Call Main
+# ----------------------------------------------------------------------    
+if __name__ == '__main__':
+    main()    
+    plt.show()

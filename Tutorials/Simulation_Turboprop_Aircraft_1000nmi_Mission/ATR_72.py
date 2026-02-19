@@ -16,6 +16,8 @@ from RCAIDE.Library.Methods.Performance import *
 import numpy as np  
 from   copy import deepcopy
 import matplotlib.pyplot as plt
+import os
+import sys
 
 # ----------------------------------------------------------------------
 #   Main
@@ -48,17 +50,20 @@ def main():
 def vehicle_setup():
 
     # ------------------------------------------------------------------
+    #  File Paths 
+    # ------------------------------------------------------------------    
+    ospath             = os.path.abspath(__file__)
+    separator          = os.path.sep
+    rel_path           = os.path.dirname(ospath)   + separator
+    airfoil_file_path  = rel_path + separator + 'Airfoils'
+    polar_file_path    = rel_path + separator + 'Airfoils' + separator + 'Polars'
+    
+    # ------------------------------------------------------------------
     #   Initialize the Vehicle
     # ------------------------------------------------------------------
 
     vehicle = RCAIDE.Vehicle()
-    vehicle.tag = 'ATR_72'
-
-    # ------------------------------------------------------------------
-    #   Vehicle-level Properties
-    # ------------------------------------------------------------------
-
-    # mass properties
+    vehicle.tag = 'ATR_72' 
     vehicle.mass_properties.max_takeoff               = 23000 
     vehicle.mass_properties.takeoff                   = 23000  
     vehicle.mass_properties.operating_empty           = 13010

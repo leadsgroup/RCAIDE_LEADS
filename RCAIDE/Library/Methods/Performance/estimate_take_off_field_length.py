@@ -149,8 +149,7 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
 
     # ==============================================
     # Getting engine thrust
-    # ==============================================
-
+    # ============================================== 
 
     # Step 28: Static Sea Level Thrust  
     planet                                            = RCAIDE.Library.Attributes.Planets.Earth()

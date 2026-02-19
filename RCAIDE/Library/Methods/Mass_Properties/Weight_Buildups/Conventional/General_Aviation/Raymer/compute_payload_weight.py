@@ -43,10 +43,13 @@ def compute_payload_weight(vehicle, W_passenger=195 * Units.lbs, W_baggage=30 * 
     # process
     num_pax    = vehicle.number_of_passengers
     W_pax      = W_passenger * num_pax
-    W_bag      = W_baggage * num_pax 
+    W_bag      = W_baggage * num_pax  
             
+    if vehicle.mass_properties.cargo == 0:
+        vehicle.mass_properties.cargo = W_bag 
+        
     if vehicle.mass_properties.payload == 0: 
-        vehicle.mass_properties.payload  = W_pax + W_bag + vehicle.mass_properties.cargo
+        vehicle.mass_properties.payload  = W_pax + W_bag  
         
     ##-------------------------------------------------------------------------------   
     # Cabin

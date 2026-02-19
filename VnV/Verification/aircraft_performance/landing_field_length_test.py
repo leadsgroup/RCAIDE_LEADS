@@ -8,7 +8,7 @@
 #  Imports
 # ----------------------------------------------------------------------
 
-# SUave Imports
+# RCAIDE Imports
 import RCAIDE
 from RCAIDE.Framework.Core   import Data , Units 
 from RCAIDE.Library.Methods.Performance.estimate_landing_field_length import estimate_landing_field_length

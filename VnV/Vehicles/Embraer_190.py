@@ -109,7 +109,7 @@ def vehicle_setup():
     nose_gear.wheels                         = 2   
     nose_gear.number_of_gear_types_in_tandem = 1
     nose_gear.number_of_wheels_in_gear_type  = 2   
-    nose_gear.origin                         = [[2.49, 0, 0]] 
+    nose_gear.origin                         = [[4.13, 0, 0]]
     vehicle.append_component(nose_gear)
     
 
@@ -145,7 +145,8 @@ def vehicle_setup():
     segment.root_chord_percent            = 1.
     segment.thickness_to_chord            = .11
     segment.dihedral_outboard             = 5. * Units.degrees
-    segment.sweeps.quarter_chord          = 20.6 * Units.degrees  
+    segment.sweeps.quarter_chord          = 20.6 * Units.degrees
+    segment.twist                        =  2. * Units.degrees
     root_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
     root_airfoil.coordinate_file          = airfoil_file_path + 'transonic_wing_root_section_airfoil.txt'
     segment.append_airfoil(root_airfoil)
@@ -479,13 +480,13 @@ def vehicle_setup():
     fuel_line.fuel_tanks.append(outboard_tank)    
 
     fuel_tank                                   = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank()  
-    fuel_tank.lengths.external                      = 2 
-    fuel_tank.widths.external                       = 2
+    fuel_tank.lengths.external                  = 2
+    fuel_tank.widths.external                   = 2
     fuel_tank.geometry_type                     = 'prismatic'   
-    fuel_tank.heights.external                      = 0.5
-    fuel_tank.origin                            = [[15.0,0.0, 0.0]]
+    fuel_tank.heights.external                  = 0.5
+    fuel_tank.origin                            = [[18.0,0.0, 0.0]]
     fuel_tank.fuel                              = RCAIDE.Library.Attributes.Propellants.Jet_A()
-    fuel_tank.fuel.origin                       = [[15.0,0.0, 0.0]]
+    fuel_tank.fuel.origin                       = [[18.0,0.0, 0.0]]
     fuel_line.fuel_tanks.append(fuel_tank)     
     
 

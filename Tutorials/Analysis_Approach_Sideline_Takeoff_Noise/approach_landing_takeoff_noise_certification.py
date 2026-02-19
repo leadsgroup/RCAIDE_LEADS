@@ -1,50 +1,47 @@
-'''
-
-Title  : Aircraft Load and Trim Diagram Test 
-Scope  : This example computes and plots an aircraft load and trim diagram
-
-Author : Matthew Clarke
-Date   : Feb 18th, 2026
-
-'''
-
-# ----------------------------------------------------------------------------------------------------------------------
-#  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------
-# RCAIDE imports  
+# noise_certification_test.py
+#
+# Created: Apr 2025, M. Clarke  
+# ----------------------------------------------------------------------
+#   Imports
+# ----------------------------------------------------------------------
 import RCAIDE
-from RCAIDE.Framework.Core import Units  
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan                   import design_turbofan 
-from RCAIDE.Library.Methods.Performance.compute_load_and_trim_diagram        import compute_load_and_trim_diagram
-import matplotlib.pyplot as plt
-from RCAIDE.Library.Plots import  * 
+from RCAIDE.Framework.Core import Units , Data
+from RCAIDE.Library.Plots import *
+from RCAIDE.Library.Methods.Performance.compute_noise_certification_data import  compute_noise_certification_data
 
-# python imports      
-import os
 import sys
-import numpy as np    
-import numpy as np
-import matplotlib.pyplot as plt
-from copy import deepcopy
+import matplotlib.pyplot as plt 
+import numpy as np      
+import os
+ 
 
-# ----------------------------------------------------------------------------------------------------------------------
-#  Main
-# ----------------------------------------------------------------------------------------------------------------------  
+# ----------------------------------------------------------------------
+#   Main
+# ----------------------------------------------------------------------
 def main(): 
+    # Set up vehicle 
     vehicle    = vehicle_setup()   
   
     # Set up vehicle configs
     configs  = configs_setup(vehicle)
 
     # create analyses
-    analyses = analyses_setup(configs)
-
-    # mission analyses 
-    mission  = mission_setup(analyses)
- 
-    load_data =  compute_load_and_trim_diagram( mission, cruise_segment_tag = 'cruise', discretization=  3)
+    analyses          = noise_analyses_setup(configs)
     
-    plot_load_diagram(load_data)  
+    # set up missions 
+    approach_mission  = approach_mission_setup(analyses)
+    takeoff_mission   = takeoff_mission_setup(analyses)  
+     
+    results = compute_noise_certification_data(approach_mission = approach_mission,
+                                               takeoff_mission=takeoff_mission)
+    plot_noise_certification_contour(results) 
+ 
+    return 
+ 
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# ############################################################################################################################################################################
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # ----------------------------------------------------------------------------------------------------------------------
 #   Build the Vehicle
@@ -734,48 +731,62 @@ def configs_setup(vehicle):
     # done!
     return configs 
   
-def analyses_setup(configs):
+ 
+
+# ----------------------------------------------------------------------
+#   Define the Configurations
+# ---------------------------------------------------------------------
+
+def noise_analyses_setup(configs):
+    """Set up analyses for each of the different configurations."""
 
     analyses = RCAIDE.Framework.Analyses.Analysis.Container()
 
-    # build a base analysis for each config
+    # Build a base analysis for each configuration. Here the base analysis is always used, but
+    # this can be modified if desired for other cases.
     for tag,config in configs.items():
-        analysis = base_analysis(config)
+        analysis = noise_base_analysis(config)
         analyses[tag] = analysis
 
     return analyses 
 
-def base_analysis(vehicle):
+
+def noise_base_analysis(vehicle):
+    """This is the baseline set of analyses to be used with this vehicle. Of these, the most
+    commonly changed are the weights and aerodynamics methods."""
+
     # ------------------------------------------------------------------
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
-    analyses = RCAIDE.Framework.Analyses.Vehicle() 
-    analyses.vehicle =  vehicle
-    
-    #  Geometry
-    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()   
-    analyses.append(geometry)
-
-     # ------------------------------------------------------------------
-    #  Weights 
-    weights = RCAIDE.Framework.Analyses.Weights.Conventional_Transport()    
-    analyses.append(weights)
+    analyses = RCAIDE.Framework.Analyses.Vehicle()
+    analyses.vehicle = vehicle
 
     # ------------------------------------------------------------------
-    #  Aerodynamics Analysis  
-    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    analyses.append(geometry)
+
+    # ------------------------------------------------------------------
+    #  Weights
+    weights = RCAIDE.Framework.Analyses.Weights.Conventional_Transport()
+    analyses.append(weights)
+    
+    # ------------------------------------------------------------------
+    #  Aerodynamics  
+    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
     analyses.append(aerodynamics)
 
     # ------------------------------------------------------------------
-    #  Aerodynamics Analysis  
-    stability     = RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method()   
-    analyses.append(stability)       
-
-    # ------------------------------------------------------------------
     #  Energy
-    energy          = RCAIDE.Framework.Analyses.Energy.Energy() 
+    energy = RCAIDE.Framework.Analyses.Energy.Energy() 
     analyses.append(energy)
-
+    
+    # ------------------------------------------------------------------
+    #  Noise Analysis
+    # ------------------------------------------------------------------
+    noise = RCAIDE.Framework.Analyses.Aeroacoustics.Semi_Empirical()  
+    analyses.append(noise)
+ 
     # ------------------------------------------------------------------
     #  Planet Analysis
     planet = RCAIDE.Framework.Analyses.Planets.Earth()
@@ -784,47 +795,126 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Atmosphere Analysis
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    analyses.append(atmosphere)   
+    analyses.append(atmosphere) 
+     
 
-    # done!
     return analyses
 
-def mission_setup(analyses): 
-    
+
+def approach_mission_setup(analyses):
+    """This function defines the baseline mission that will be flown by the aircraft in order
+    to compute performance."""
+
     # ------------------------------------------------------------------
     #   Initialize the Mission
     # ------------------------------------------------------------------
 
     mission = RCAIDE.Framework.Mission.Sequential_Segments()
-    mission.tag = 'mission'
-  
+    mission.tag = 'the_mission'
+
     Segments = RCAIDE.Framework.Mission.Segments 
-    base_segment = Segments.Segment()
-    base_segment.state.numerics.solver.type = 'root_finder'
+    base_segment = Segments.Segment() 
+    base_segment.state.numerics.number_of_control_points = 10 
+ 
 
-    # ------------------------------------------------------------------    
-    #   Cruise Segment 
-    # ------------------------------------------------------------------    
+    # ------------------------------------------------------------------
+    #   Third Descent Segment: Constant Speed Constant Rate  
+    # ------------------------------------------------------------------
 
-    segment = Segments.Single_Point.Set_Speed_Set_Altitude(base_segment)
-    segment.tag = "cruise" 
-    segment.analyses.extend( analyses.base )  
-    segment.altitude  =  35000 *  Units.ft
-    segment.air_speed =  450 * Units['knots'] 
-    
-    # define flight dynamics to model 
-    segment.flight_dynamics.force_x                      = True  
-    segment.flight_dynamics.force_z                      = True     
-    
+    segment = Segments.Descent.Constant_Speed_Constant_Angle(base_segment)
+    segment.tag = "final_approach"  
+    segment.analyses.extend( analyses.landing ) 
+    segment.altitude_start                                           = 120.5   
+    segment.altitude_end                                             = 10.0   * Units.ft
+    segment.air_speed                                                = 160  * Units['knots']
+    segment.descent_angle                                            = 3.  * Units.deg                               
+           
+    # define flight dynamics to model            
+    segment.flight_dynamics.force_x                                  = True  
+    segment.flight_dynamics.force_z                                  = True     
+
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]   
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
     segment.assigned_control_variables.body_angle.active             = True                
-    
-    mission.append_segment(segment) 
-  
-    return mission
+
+    mission.append_segment(segment)
  
+ 
+    return mission
+
+def takeoff_mission_setup(analyses):
+
+    # ------------------------------------------------------------------
+    #   Initialize the Mission
+    # ------------------------------------------------------------------
+
+    mission = RCAIDE.Framework.Mission.Sequential_Segments()
+    mission.tag = 'the_mission'
+
+    Segments = RCAIDE.Framework.Mission.Segments 
+    base_segment = Segments.Segment()
+    base_segment.state.numerics.number_of_control_points = 10  
+
+
+    # ------------------------------------------------------------------------------------------------------------------------------------ 
+    #   Takeoff Roll
+    # ------------------------------------------------------------------------------------------------------------------------------------ 
+
+    segment = Segments.Ground.Takeoff(base_segment)
+    segment.tag = "Takeoff_Ground_Run" 
+    segment.analyses.extend( analyses.takeoff )
+    segment.velocity_start                                           = 20.* Units.knots
+    segment.velocity_end                                             = 167.0 * Units['knots']
+    segment.friction_coefficient                                     = 0.03
+    segment.altitude                                                 = 5.0   
+    segment.throttle                                                 = 0.8
+    mission.append_segment(segment)
+
+     
+    segment = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
+    segment.tag = "Takeoff_Climb" 
+    segment.analyses.extend( analyses.takeoff ) 
+    segment.altitude_end                                             = 35 * Units['ft']
+    segment.air_speed_end                                            = 175.0 * Units['knots']
+    segment.climb_rate                                               = 1800 * Units['fpm']  
+            
+    # define flight dynamics to model             
+    segment.flight_dynamics.force_x                                  = True  
+    segment.flight_dynamics.force_z                                  = True     
+
+    # define flight controls 
+    segment.assigned_control_variables.throttle.active               = True           
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
+    segment.assigned_control_variables.body_angle.active             = True                 
+
+    mission.append_segment(segment) 
+
+    #------------------------------------------------------------------
+    #   First Climb Segment: Constant Speed Constant Rate  
+    # ------------------------------------------------------------------
+
+    segment = Segments.Climb.Constant_Speed_Constant_Rate(base_segment)
+    segment.tag = "Inital_Climb" 
+    segment.analyses.extend( analyses.cutback )  
+    segment.altitude_end                                             = 1500  * Units['feet']
+    segment.air_speed                                                = 200.0 * Units['knots']
+    segment.climb_rate                                               = 1800   * Units['fpm']  
+            
+    # define flight dynamics to model             
+    segment.flight_dynamics.force_x                                  = True  
+    segment.flight_dynamics.force_z                                  = True     
+
+    # define flight controls 
+    segment.assigned_control_variables.throttle.active               = True           
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
+    segment.assigned_control_variables.body_angle.active             = True                 
+
+    mission.append_segment(segment)
+ 
+
+    return mission
+
 if __name__ == '__main__': 
-    main()
+    main()    
     plt.show()

@@ -6,7 +6,7 @@
 #  Imports
 # ----------------------------------------------------------------------
 
-# SUave Imports
+# RCAIDE Imports
 import RCAIDE
 from RCAIDE.Framework.Core   import Data,Units 
 from RCAIDE.Library.Methods.Performance.estimate_take_off_field_length import estimate_take_off_field_length

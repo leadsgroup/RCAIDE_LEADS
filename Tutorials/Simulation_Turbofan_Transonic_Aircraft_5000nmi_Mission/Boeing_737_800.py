@@ -48,6 +48,14 @@ def main():
     
 
 def vehicle_setup(): 
+    # ------------------------------------------------------------------
+    #  File Paths 
+    # ------------------------------------------------------------------    
+    ospath             = os.path.abspath(__file__)
+    separator          = os.path.sep
+    rel_path           = os.path.dirname(ospath)   + separator
+    airfoil_file_path  = rel_path + separator + 'Airfoils'
+    polar_file_path    = rel_path + separator + 'Airfoils' + separator + 'Polars'
     
     # ------------------------------------------------------------------
     #   Initialize the Vehicle
@@ -155,7 +163,7 @@ def vehicle_setup():
 
     # Wing Segments
     root_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()    
-    root_airfoil.coordinate_file          = 'transonic_wing_root_section_airfoil.txt'
+    root_airfoil.coordinate_file          =  airfoil_file_path +'transonic_wing_root_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Root'
     segment.percent_span_location         = 0.0 
@@ -167,7 +175,7 @@ def vehicle_setup():
     wing.append_segment(segment)
 
     yehudi_airfoil                        = RCAIDE.Library.Components.Airfoils.Airfoil()
-    yehudi_airfoil.coordinate_file        = 'transonic_wing_inboard_section_airfoil.txt'
+    yehudi_airfoil.coordinate_file        =  airfoil_file_path +'transonic_wing_inboard_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Yehudi'
     segment.percent_span_location         = 0.324 
@@ -179,7 +187,7 @@ def vehicle_setup():
     wing.append_segment(segment)
 
     mid_airfoil                           = RCAIDE.Library.Components.Airfoils.Airfoil()
-    mid_airfoil.coordinate_file           = 'transonic_wing_outboard_section_airfoil.txt'
+    mid_airfoil.coordinate_file           =  airfoil_file_path +'transonic_wing_outboard_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Section_2'
     segment.percent_span_location         = 0.963 
@@ -191,7 +199,7 @@ def vehicle_setup():
     wing.append_segment(segment)
 
     tip_airfoil                           = RCAIDE.Library.Components.Airfoils.Airfoil()
-    tip_airfoil.coordinate_file           = 'transonic_wing_tip_section_airfoil.txt'
+    tip_airfoil.coordinate_file           =  airfoil_file_path +'transonic_wing_tip_section_airfoil.txt'
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Tip'
     segment.percent_span_location         = 1. 

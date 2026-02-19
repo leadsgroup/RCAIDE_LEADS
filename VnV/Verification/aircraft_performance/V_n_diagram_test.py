@@ -6,7 +6,7 @@
 #  Imports
 # ----------------------------------------------------------------------
 
-# SUave Imports
+# RCAIDE Imports
 import RCAIDE
 from RCAIDE.Framework.Core   import Data,Units 
 from RCAIDE.Library.Methods.Performance  import generate_V_n_diagram

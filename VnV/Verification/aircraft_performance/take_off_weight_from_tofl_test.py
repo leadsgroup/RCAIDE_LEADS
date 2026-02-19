@@ -6,10 +6,10 @@
 #  Imports
 # ----------------------------------------------------------------------
 
-# SUave Imports
+# RCAIDE Imports
 import RCAIDE
 from RCAIDE.Framework.Core  import Data,Units 
-from RCAIDE.Library.Methods.Performance.find_take_off_weight_given_tofl import find_take_off_weight_given_tofl
+from RCAIDE.Library.Methods.Performance.estimate_take_off_weight_given_TOFL import estimate_take_off_weight_given_TOFL
 
 # package imports
 import numpy as np
@@ -45,7 +45,7 @@ def main():
     target_tofl = 1487.92650289 
 
     # Compute take off weight given tofl
-    max_tow = find_take_off_weight_given_tofl(configuration,analyses,target_tofl)
+    max_tow = estimate_take_off_weight_given_TOFL(configuration,analyses,target_tofl)
 
     truth_max_tow = 56980.00000000001
     max_tow_error = np.max(np.abs(max_tow[0]-truth_max_tow)) 

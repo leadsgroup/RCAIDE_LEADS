@@ -1,9 +1,9 @@
-RCAIDE.Library.Methods.Performance.find_take_off_weight_given_tofl
+RCAIDE.Library.Methods.Performance.estimate_take_off_weight_given_TOFL
 
 find\_take\_off\_weight\_given\_tofl
 ====================================
 
-.. automodule:: RCAIDE.Library.Methods.Performance.find_take_off_weight_given_tofl
+.. automodule:: RCAIDE.Library.Methods.Performance.estimate_take_off_weight_given_TOFL
 
    
    
