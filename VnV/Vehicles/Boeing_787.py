@@ -27,9 +27,9 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', number_of_passengers = 248):
     # ------------------------------------------------------------------    
     ospath             = os.path.abspath(__file__)
     separator          = os.path.sep
-    rel_path           = os.path.dirname(ospath)   + separator
-    airfoil_file_path  = rel_path + separator + 'Airfoils_and_Polars'
-    polar_file_path    = rel_path + separator + 'Airfoils_and_Polars' + separator + 'Polars' 
+    local_path         = os.path.dirname(ospath)
+    airfoil_file_path  = local_path + separator + 'Airfoils_and_Polars' + separator
+    polar_file_path    = local_path + separator + 'Airfoils_and_Polars' + separator + 'Polars' + separator 
                 
     # ------------------------------------------------------------------
     #   Initialize the Vehicle
@@ -833,22 +833,7 @@ def configs_setup(vehicle):
     config.networks.fuel.propulsors['propulsor_2'].fan_nozzle.exit_velocity  = 109.3  
     for landing_gear in  config.landing_gears:
         landing_gear.gear_extended = True     
-    configs.append(config)   
-
-    # ------------------------------------------------------------------
-    #   Short Field Takeoff Configuration
-    # ------------------------------------------------------------------ 
-
-    config = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag = 'short_field_takeoff'    
-    config.wings['main_wing'].control_surfaces.flap.deflection  = 20. * Units.deg
-    config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg
-    config.networks.fuel.propulsors['propulsor_1'].fan.angular_velocity =  3470. * Units.rpm
-    config.networks.fuel.propulsors['propulsor_2'].fan.angular_velocity      =  3470. * Units.rpm 
-    config.landing_gears.main_gear.gear_extended    = True
-    config.landing_gears.nose_gear.gear_extended    = True  
-    config.V2_VS_ratio = 1.21 
-    configs.append(config)
+    configs.append(config)    
 
     # ------------------------------------------------------------------
     #   Short Field Takeoff Configuration

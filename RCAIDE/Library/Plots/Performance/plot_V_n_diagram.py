@@ -145,4 +145,8 @@ def plot_V_n_diagram(V_n_data,
         fres.write('    Positive load factor at Vd      = ' + str(round(V_n_data.limit_loads.dive.positive,2)) + '\n')
         fres.write('    Negative load factor at Vd      = ' + str(round(V_n_data.limit_loads.dive.negative,2)) + '\n')
    
-    return
+    # Adjusting the sub-plots for legend
+    fig.tight_layout()   
+    if save_figure:
+        fig.savefig(save_filename   + file_type)  
+    return fig 

@@ -50,8 +50,8 @@ def vehicle_setup():
     # ------------------------------------------------------------------    
     ospath             = os.path.abspath(__file__)
     separator          = os.path.sep
-    rel_path           = os.path.dirname(ospath)   + separator
-    airfoil_file_path  = rel_path + separator + 'Airfoils'
+    local_path         = os.path.dirname(ospath)
+    airfoil_file_path  = local_path + separator + 'Airfoils'
     polar_file_path    = rel_path + separator + 'Airfoils' + separator + 'Polars'
      
     

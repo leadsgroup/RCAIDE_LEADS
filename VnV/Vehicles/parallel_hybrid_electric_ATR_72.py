@@ -24,9 +24,9 @@ def vehicle_setup():
     # ------------------------------------------------------------------    
     ospath             = os.path.abspath(__file__)
     separator          = os.path.sep
-    rel_path           = os.path.dirname(ospath)   + separator
-    airfoil_file_path  = rel_path + separator + 'Airfoils_and_Polars'
-    polar_file_path    = rel_path + separator + 'Airfoils_and_Polars' + separator + 'Polars'
+    local_path         = os.path.dirname(ospath)
+    airfoil_file_path  = local_path + separator + 'Airfoils_and_Polars' + separator
+    polar_file_path    = local_path + separator + 'Airfoils_and_Polars' + separator + 'Polars' + separator
     
     # ------------------------------------------------------------------
     #   Initialize the Vehicle

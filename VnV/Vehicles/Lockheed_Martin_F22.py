@@ -15,16 +15,7 @@ from RCAIDE.Framework.Core import Units
 # ----------------------------------------------------------------------
 #   Define the Vehicle
 # ----------------------------------------------------------------------
-def vehicle_setup(deflection_config=None):
-
-    # ------------------------------------------------------------------
-    #  File Paths 
-    # ------------------------------------------------------------------    
-    ospath             = os.path.abspath(__file__)
-    separator          = os.path.sep
-    rel_path           = os.path.dirname(ospath)   + separator
-    airfoil_file_path  = rel_path + separator + 'Airfoils_and_Polars'
-    polar_file_path    = rel_path + separator + 'Airfoils_and_Polars' + separator + 'Polars'
+def vehicle_setup(deflection_config=None): 
     
     # ------------------------------------------------------------------
     #   Initialize the Vehicle

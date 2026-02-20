@@ -25,9 +25,9 @@ def vehicle_setup():
     # ------------------------------------------------------------------    
     ospath             = os.path.abspath(__file__)
     separator          = os.path.sep
-    rel_path           = os.path.dirname(ospath)   + separator
-    airfoil_file_path  = rel_path + separator + 'Airfoils_and_Polars'
-    polar_file_path    = rel_path + separator + 'Airfoils_and_Polars' + separator + 'Polars'
+    local_path         = os.path.dirname(ospath)
+    airfoil_file_path  = local_path + separator + 'Airfoils_and_Polars' + separator
+    polar_file_path    = local_path + separator + 'Airfoils_and_Polars' + separator + 'Polars' + separator
     
     #------------------------------------------------------------------------------------------------------------------------------------
     # ################################################# Vehicle-level Properties ########################################################  
@@ -47,6 +47,10 @@ def vehicle_setup():
     vehicle.flight_envelope.design_range             = 750 * Units.nmi 
     vehicle.flight_envelope.design_dynamic_pressure  = 2755 # max speed at 10 k feet
     vehicle.flight_envelope.design_mach_number       = 0.18745866156304694
+    vehicle.flight_envelope.category                  = 'normal'
+    vehicle.flight_envelope.FAR_part_number           = '23' 
+    vehicle.flight_envelope.maximum_lift_coefficient  = 3
+    vehicle.flight_envelope.minimum_lift_coefficient  = -1.5 
                                                 
     # basic parameters                          
     vehicle.reference_area                           = 174. * Units.feet**2       

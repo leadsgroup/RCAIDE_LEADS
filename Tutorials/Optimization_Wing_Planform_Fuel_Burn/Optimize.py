@@ -4,8 +4,8 @@
 # RCAIDE imports 
 import RCAIDE 
 from RCAIDE.Framework.Core import Units, Data
-from RCAIDE.Framework.Optimization.Common import  Nexus
-from RCAIDE.Framework.Optimization .Packages.scipy import scipy_setup
+from RCAIDE.Framework.Optimization.Common import * 
+from RCAIDE.Framework.Optimization.Packages.scipy import scipy_setup
 
 # local file imports 
 import Vehicles     # defines aircraft 
@@ -23,27 +23,42 @@ import time
 #  Main Script
 # ----------------------------------------------------------------------  
 def main():
-    # start clock 
-    ti                   = time.time()
     
     # define optmiztion problem
     problem = define_optimization_problem()
+    
+    # create carpet plot  
+    carpet_plot(problem,
+                design_input_1_index            = 0, 
+                design_input_2_index            = 1,                
+                number_of_points                = 5,
+                generate_objective_plot         = True, 
+                objective_plot_constraint_index = 0, 
+                generate_constraint_plots       = True)
+    
+    ## create line plot 
+    #line_plot(problem,
+              #design_input_1_index = 0, 
+              #number_of_points     = 3, 
+              #plot_objective       = True,
+              #plot_constraint      = True) 
      
-    # solve optimization problem
-    solution = scipy_setup.SciPy_Solve(problem,solver='SLSQP')
-    print (solution)    
+    ## start clock 
+    #ti = time.time()
     
-    # stop clock 
-    tf                   = time.time()
-    elapsed_time         = round((tf-ti)/60,2)
-    print('Simulation Time: ' + str(elapsed_time) + ' mins')    
-        
+    ## solve optimization problem
+    #solution = scipy_setup.SciPy_Solve(problem,solver='SLSQP')
+    
+    ## stop clock 
+    #tf                   = time.time()
+    #elapsed_time         = round((tf-ti)/60,2)
+    #print('Simulation Time: ' + str(elapsed_time) + ' mins')    
 
-    print('fuel burn = ', problem.summary.base_mission_fuelburn)
-    print('fuel margin = ', problem.all_constraints())
+    ## write optimization outputs     
+    #print_optimization_results(problem)  
     
-    
-    Plot_Mission.plot_mission(problem)
+    ## plot mission with optimized aircraft 
+    #Plot_Mission.plot_mission(problem)
     
     return
 
@@ -62,8 +77,7 @@ def define_optimization_problem():
     #   [ tag                   , initial,     lb , ub        , scaling , units ]
     problem.inputs = np.array([
         [ 'wing_area'           ,  92     ,    50. ,   130.    ,   100.  , 1*Units.meter**2],
-        [ 'wing_span'           ,  28.72  ,    25  ,    30.    ,   100.  , 1*Units.meter**2],
-        [ 'cruise_altitude'     ,   10    ,    8.  ,    12.    ,   10.   , 1*Units.km],
+        [ 'cruise_altitude'     ,   10    ,    6.  ,    12.    ,   10.   , 1*Units.km],
         [ 'cruise_distance'     ,  1000   ,   10.  ,   5000.   ,   1000. , 1*Units.nmi   ],
     ],dtype=object)
 
@@ -82,8 +96,8 @@ def define_optimization_problem():
     
     # [ tag, sense, edge, scaling, units ]
     problem.constraints = np.array([
-        [ 'design_range_fuel_margin' , '>', 0.   , 1E-1, 1*Units.less], # fuel margin defined here as fuel
-        [ 'design_range_residual'    , '>', 0.   , 1E-1, 1*Units.less], # 
+        [ 'fuel_margin' , '>', 0.15 , 1, 1*Units.less], # fuel margin defined here as fuel
+        [ 'range_residual'    , '>', 0.   , 1, 1*Units.less], # 
     ],dtype=object)
     
     # -------------------------------------------------------------------
@@ -92,14 +106,13 @@ def define_optimization_problem():
     
     # [ 'alias' , ['data.path1.name','data.path2.name'] ] 
     problem.aliases = [
-        [ 'wing_area'                ,  ['vehicle_configurations.*.wings.main_wing.areas.reference','vehicle_configurations.*.reference_area' ]  ],
-        [ 'wing_span'                ,  'vehicle_configurations.*.wings.main_wing.spans.projected'                                               ],
+        [ 'wing_area'                ,  ['vehicle_configurations.*.wings.main_wing.areas.reference','vehicle_configurations.*.reference_area' ]  ], 
         [ 'cruise_altitude'          ,  ['missions.base_mission.segments.climb_3.altitude_end', 'missions.base_mission.segments.cruise.altitude']],
         [ 'cruise_distance'          ,  'missions.base_mission.segments.cruise.distance'                                                         ],
-        [ 'fuel_burn'                ,  'summary.base_mission_fuelburn'                                                                          ],
-        [ 'design_range_residual'    ,  'summary.design_range_residual'                                                                          ],
-        [ 'design_range_fuel_margin' ,  'summary.max_zero_fuel_margin'                                                                           ],
-    ]    
+        [ 'fuel_burn'                ,  'summary.fuel_burn'                                                                                      ],
+        [ 'range_residual'           ,  'summary.range_residual'                                                                                 ],
+        [ 'fuel_margin'              ,  'summary.fuel_margin'                                                                                    ],
+    ]     
     
     # -------------------------------------------------------------------
     #  Vehicles

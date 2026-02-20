@@ -25,9 +25,9 @@ def vehicle_setup():
     # ------------------------------------------------------------------    
     ospath             = os.path.abspath(__file__)
     separator          = os.path.sep
-    rel_path           = os.path.dirname(ospath)   + separator
-    airfoil_file_path  = rel_path + separator + 'Airfoils_and_Polars'
-    polar_file_path    = rel_path + separator + 'Airfoils_and_Polars' + separator + 'Polars' 
+    local_path         = os.path.dirname(ospath)
+    airfoil_file_path  = local_path + separator + 'Airfoils_and_Polars' + separator
+    polar_file_path    = local_path + separator + 'Airfoils_and_Polars' + separator + 'Polars' + separator 
 
     # ------------------------------------------------------------------
     #   Initialize the Vehicle
@@ -51,6 +51,10 @@ def vehicle_setup():
     vehicle.flight_envelope.design_cruise_altitude    = 35000*Units.feet
     vehicle.flight_envelope.design_range              = 3500 * Units.nmi
     vehicle.flight_envelope.design_dynamic_pressure   = 293.46
+    vehicle.flight_envelope.category                  = 'normal'
+    vehicle.flight_envelope.FAR_part_number           = '25' 
+    vehicle.flight_envelope.maximum_lift_coefficient  = 3
+    vehicle.flight_envelope.minimum_lift_coefficient  = -1.5 
     vehicle.reference_area                            = 124.862 * Units['meters**2']   
     vehicle.number_of_passengers                      = 170
     vehicle.systems.control                           = "fully powered" 
@@ -756,21 +760,7 @@ def configs_setup(vehicle):
     config.networks.fuel.propulsors['propulsor_2'].fan.angular_velocity      =  2030. * Units.rpm
     for landing_gear in  config.landing_gears:
         landing_gear.gear_extended = True
-    configs.append(config)   
-     
-    # ------------------------------------------------------------------
-    #   Short Field Takeoff Configuration
-    # ------------------------------------------------------------------ 
-
-    config = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag = 'short_field_takeoff'    
-    config.wings['main_wing'].control_surfaces.flap.deflection  = 20. * Units.deg
-    config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg
-    config.networks.fuel.propulsors['propulsor_1'].fan.angular_velocity =  3470. * Units.rpm
-    config.networks.fuel.propulsors['propulsor_2'].fan.angular_velocity      =  3470. * Units.rpm 
-    for landing_gear in  config.landing_gears:
-        landing_gear.gear_extended = True 
-    configs.append(config)
+    configs.append(config)    
     
     # ------------------------------------------------------------------
     #   Short Field Takeoff Configuration

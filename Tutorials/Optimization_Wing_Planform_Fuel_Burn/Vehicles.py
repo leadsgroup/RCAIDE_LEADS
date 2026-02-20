@@ -32,12 +32,9 @@ def vehicle_setup():
     # ------------------------------------------------------------------
     #  File Paths 
     # ------------------------------------------------------------------    
-    ospath             = os.path.abspath(__file__)
-    separator          = os.path.sep
-    rel_path           = os.path.dirname(ospath)   + separator
-    airfoil_file_path  = rel_path + separator + 'Airfoils'
-    polar_file_path    = rel_path + separator + 'Airfoils' + separator + 'Polars'
-    
+    local_path        =  sys.path[0] + os.sep
+    airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') + os.sep 
+    polar_file_path   =  os.path.join(os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') , 'Polars') + os.sep  
         
     #------------------------------------------------------------------------------------------------------------------------------------
     # ################################################# Vehicle-level Properties ########################################################  

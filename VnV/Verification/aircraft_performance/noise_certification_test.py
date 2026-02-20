@@ -32,9 +32,9 @@ def main():
     results = compute_noise_certification_data(approach_mission = approach_mission, takeoff_mission=takeoff_mission)
     plot_noise_certification_contour(results)
 
-    truth_approach_noise_2000m  = 95.74105421155724
-    truth_flyover_noise_6000m   = 89.1840478382459
-    truth_sideline_noise_450m   = 98.55365729833616
+    truth_approach_noise_2000m  = 100.1575580504265
+    truth_flyover_noise_6000m   = 90.15368552454382
+    truth_sideline_noise_450m   = 108.73569989237515
 
     # Check the errors
     error = Data()

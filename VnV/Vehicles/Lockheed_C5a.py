@@ -27,9 +27,9 @@ def vehicle_setup():
     # ------------------------------------------------------------------    
     ospath             = os.path.abspath(__file__)
     separator          = os.path.sep
-    rel_path           = os.path.dirname(ospath)   + separator
-    airfoil_file_path  = rel_path + separator + 'Airfoils_and_Polars'
-    polar_file_path    = rel_path + separator + 'Airfoils_and_Polars' + separator + 'Polars'
+    local_path         = os.path.dirname(ospath)
+    airfoil_file_path  = local_path + separator + 'Airfoils_and_Polars' + separator
+    polar_file_path    = local_path + separator + 'Airfoils_and_Polars' + separator + 'Polars' + separator
     
     # ------------------------------------------------------------------
     #   Initialize the Vehicle
@@ -765,23 +765,7 @@ def configs_setup(vehicle):
     for landing_gear in  config.landing_gears:
         landing_gear.gear_extended = True  
     configs.append(config)   
-     
-    # ------------------------------------------------------------------
-    #   Short Field Takeoff Configuration
-    # ------------------------------------------------------------------ 
-
-    config = RCAIDE.Library.Components.Configs.Config(base_config)
-    config.tag = 'short_field_takeoff'    
-    config.wings['main_wing'].control_surfaces.flap.deflection  =  16* Units.deg
-    config.wings['main_wing'].control_surfaces.slat.deflection  =  16* Units.deg
-    config.networks.fuel.propulsors['outer_starboard_propulsor'].fan.angular_velocity =   4091* Units.rpm
-    config.networks.fuel.propulsors['outer_port_propulsor'].fan.angular_velocity      =   4091* Units.rpm
-    config.networks.fuel.propulsors['inner_starboard_propulsor'].fan.angular_velocity =   4091* Units.rpm
-    config.networks.fuel.propulsors['inner_port_propulsor'].fan.angular_velocity      =   4091* Units.rpm    
-    for landing_gear in  config.landing_gears:
-        landing_gear.gear_extended = True 
-    configs.append(config)    
-
+      
     # done!
     return configs
 

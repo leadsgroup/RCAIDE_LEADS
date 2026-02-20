@@ -40,8 +40,8 @@ def update_aircraft(nexus):
     configs = nexus.vehicle_configurations 
     
     for config in configs:
-        # update wing aspect ratio  
-        config.wings.main_wing.aspect_ratio = (config.wings.main_wing.spans.projected **2)/ config.wings.main_wing.areas.reference  
+        # the wing span (remember in RCAIDE, wing segments are scaled based on span and root chord)
+        config.wings.main_wing.spans.projected = np.sqrt(config.wings.main_wing.aspect_ratio * config.wings.main_wing.areas.reference)  
         
         # resize engine 
         for network in  config.networks: 
@@ -89,28 +89,25 @@ def post_process(nexus):
     summary                           = nexus.summary
     nexus.total_number_of_iterations +=1
     
-    ##throttle in design mission
-    #max_throttle = 0 
-    #for i in range(len(results.base.segments)):              
-        #for network in results.base.segments[i].analyses.energy.vehicle.networks: 
-            #for j ,  propulsor in enumerate(network.propulsors):
-                #max_segment_throttle = np.max(results.base.segments[i].conditions.energy[propulsor.tag].throttle[:,0])
-                #if max_segment_throttle > max_throttle:
-                    #max_throttle = max_segment_throttle
-                 
-    #summary.max_throttle = max_throttle
+    # throttle in design mission
+    max_throttle = 0 
+    for i in range(len(results.base_mission.segments)):              
+        for network in results.base_mission.segments[i].analyses.vehicle.networks: 
+            for j ,  propulsor in enumerate(network.propulsors):
+                max_throttle = np.maximum(max_throttle, np.max(results.base_mission.segments[i].conditions.energy.propulsors[propulsor.tag].throttle[:,0]))  
     
-    # get vehicle 
+    # Vehicle
     vehicle                  = results.base_mission.segments['takeoff'].analyses.vehicle
     
-    # Fuel margin and base fuel calculations
-    design_landing_weight    = results.base_mission.segments['landing'].conditions.weights.vehicle.mass[-1,0] 
+    # Fuel margin and base fuel calculations 
     design_takeoff_weight    = vehicle.mass_properties.takeoff
-    zero_fuel_weight         = vehicle.mass_properties.weight_breakdown.zero_fuel_weight
+    max_fuel                 = vehicle.mass_properties.max_fuel
+    fuel_burnt               = design_takeoff_weight - results.base_mission.segments['landing'].conditions.weights.vehicle.mass[-1,0]
     
     # store variables for optimizer 
-    summary.max_zero_fuel_margin  = abs(design_landing_weight - zero_fuel_weight)/zero_fuel_weight
-    summary.base_mission_fuelburn = design_takeoff_weight  - results.base_mission.segments['landing'].conditions.weights.vehicle.mass[-1,0]
-    summary.design_range_residual = abs(results.base_mission.design_range -  results.base_mission.segments['landing'].conditions.frames.inertial.aircraft_range[-1,0])
+    summary.fuel_margin           = (max_fuel - fuel_burnt)/max_fuel
+    summary.fuel_burn             = fuel_burnt
+    summary.range_residual        = results.base_mission.design_range -  results.base_mission.segments['landing'].conditions.frames.inertial.aircraft_range[-1,0]
+    summary.max_throttle          = max_throttle
     
     return nexus    
