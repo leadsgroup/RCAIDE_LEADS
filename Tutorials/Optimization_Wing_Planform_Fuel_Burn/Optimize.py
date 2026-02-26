@@ -36,29 +36,29 @@ def main():
                 objective_plot_constraint_index = 0, 
                 generate_constraint_plots       = True)
     
-    ## create line plot 
-    #line_plot(problem,
-              #design_input_1_index = 0, 
-              #number_of_points     = 3, 
-              #plot_objective       = True,
-              #plot_constraint      = True) 
+    # create line plot 
+    line_plot(problem,
+              design_input_1_index = 0, 
+              number_of_points     = 3, 
+              plot_objective       = True,
+              plot_constraint      = True) 
      
-    ## start clock 
-    #ti = time.time()
+    # start clock 
+    ti = time.time()
     
-    ## solve optimization problem
-    #solution = scipy_setup.SciPy_Solve(problem,solver='SLSQP')
+    # solve optimization problem
+    solution = scipy_setup.SciPy_Solve(problem,solver='SLSQP')
     
-    ## stop clock 
-    #tf                   = time.time()
-    #elapsed_time         = round((tf-ti)/60,2)
-    #print('Simulation Time: ' + str(elapsed_time) + ' mins')    
+    # stop clock 
+    tf                   = time.time()
+    elapsed_time         = round((tf-ti)/60,2)
+    print('Simulation Time: ' + str(elapsed_time) + ' mins')    
 
-    ## write optimization outputs     
-    #print_optimization_results(problem)  
+    # write optimization outputs     
+    print_optimization_results(problem)  
     
-    ## plot mission with optimized aircraft 
-    #Plot_Mission.plot_mission(problem)
+    # plot mission with optimized aircraft 
+    Plot_Mission.plot_mission(problem)
     
     return
 
