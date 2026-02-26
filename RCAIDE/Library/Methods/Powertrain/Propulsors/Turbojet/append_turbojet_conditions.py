@@ -75,7 +75,8 @@ def append_turbojet_conditions(propulsor, segment, energy_conditions, aeroacoust
     energy_conditions.propulsors[propulsor.tag].inputs                        = Conditions()
     energy_conditions.propulsors[propulsor.tag].outputs                       = Conditions()
     
-    # noise results 
+    # noise results
+    aeroacoustics_conditions.propulsors[propulsor.tag]                                         = Conditions() 
     aeroacoustics_conditions.propulsors[propulsor.tag].core_nozzle                             = Conditions() 
     aeroacoustics_conditions.propulsors[propulsor.tag].core_nozzle.exit_velocity               = propulsor.core_nozzle.exit_velocity * ones_row(1)
     aeroacoustics_conditions.propulsors[propulsor.tag].core_nozzle.exit_stagnation_temperature = propulsor.core_nozzle.exit_stagnation_temperature * ones_row(1)

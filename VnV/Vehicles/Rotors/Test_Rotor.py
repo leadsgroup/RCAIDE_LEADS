@@ -15,6 +15,16 @@ from copy import deepcopy
 
 # design rotor  
 def Test_Rotor(new_regression=True):
+
+
+    # ------------------------------------------------------------------
+    #  File Paths 
+    # ------------------------------------------------------------------    
+    ospath             = os.path.abspath(__file__)
+    separator          = os.path.sep
+    local_path         = os.path.dirname(ospath) + separator  +  '..'
+    airfoil_file_path  = local_path + separator + 'Airfoils_and_Polars' + separator
+    polar_file_path    = local_path + separator + 'Airfoils_and_Polars' + separator + 'Polars' + separator    
     
     Hover_Load = 26487.0*1.1
     

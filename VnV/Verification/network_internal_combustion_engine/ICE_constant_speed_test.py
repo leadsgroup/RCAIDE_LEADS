@@ -66,6 +66,17 @@ def main():
 
 
 def ICE_CS(vehicle):
+
+
+    # ------------------------------------------------------------------
+    #  File Paths 
+    # ------------------------------------------------------------------    
+    ospath             = os.path.abspath(__file__)
+    separator          = os.path.sep
+    local_path         = os.path.dirname(ospath) + separator +  '..' + separator +  '..'
+    airfoil_file_path  = local_path + separator + 'Vehicles' + separator + 'Airfoils_and_Polars' + separator
+    polar_file_path    = local_path + separator + 'Vehicles' + separator + 'Airfoils_and_Polars' + separator + 'Polars' + separator
+    
     
     # Replace the C172 engine and propeller with a constant speed propeller  
     vehicle.networks.pop('fuel')

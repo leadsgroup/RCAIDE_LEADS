@@ -23,7 +23,17 @@ import matplotlib.pyplot as plt
 #   Main
 # ----------------------------------------------------------------------
 
-def main():    
+def main():
+
+    # ------------------------------------------------------------------
+    #  File Paths 
+    # ------------------------------------------------------------------    
+    ospath             = os.path.abspath(__file__)
+    separator          = os.path.sep
+    local_path         = os.path.dirname(ospath) + separator  +  '..' + separator  +  '..'
+    airfoil_file_path  = local_path  + separator + 'Vehicles' + separator  + 'Airfoils_and_Polars' + separator
+    polar_file_path    = local_path  + separator + 'Vehicles' + separator  + 'Airfoils_and_Polars' + separator + 'Polars' + separator
+    
     # ----------------------------------------------------------------------------------------------------------------
     #  Define airfoil geometry and polar files 
     # ---------------------------------------------------------------------------------------------------------------- 
@@ -32,7 +42,7 @@ def main():
         airfoils_file_path =  os.path.split(os.path.split(sys.path[0])[0])[0] + separator +  'Vehicles' + os.path.sep + 'Airfoils_and_Polars' + os.path.sep
     else:
         airfoils_file_path = sys.path[0] + separator +  'Vehicles' + os.path.sep + 'Airfoils_and_Polars' + os.path.sep
-    airfoil_geometry_with_selig =  [airfoils_path + 'NACA_4412.txt','airfoil_geometry_2.txt', 'airfoil_geometry_2-selig.txt']        
+    airfoil_geometry_with_selig =  [airfoil_file_path + 'NACA_4412.txt','airfoil_geometry_2.txt', 'airfoil_geometry_2-selig.txt']        
     airfoil_geometry_files      = airfoils_file_path + 'NACA_4412.txt'
     airfoil_polar_files         =  [ polar_file_path + 'NACA_4412_polar_Re_50000.txt',
                                      polar_file_path + 'NACA_4412_polar_Re_100000.txt',

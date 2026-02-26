@@ -11,11 +11,14 @@ import os
 # design propeller  
 def Test_Propeller(): 
 
+    # ------------------------------------------------------------------
+    #  File Paths 
+    # ------------------------------------------------------------------    
     ospath             = os.path.abspath(__file__)
     separator          = os.path.sep
-    local_path         = os.path.dirname(ospath)
+    local_path         = os.path.dirname(ospath) + separator  +  '..'
     airfoil_file_path  = local_path + separator + 'Airfoils_and_Polars' + separator
-    polar_file_path    = local_path + separator + 'Airfoils_and_Polars' + separator + 'Polars' + separator  
+    polar_file_path    = local_path + separator + 'Airfoils_and_Polars' + separator + 'Polars' + separator
 
     
     prop                                     = RCAIDE.Library.Components.Powertrain.Converters.Propeller() 

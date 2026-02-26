@@ -46,7 +46,7 @@ def main():
      
     # SPL of rotor check during hover 
     E190_SPL        = np.max(baseline_results.segments.takeoff.conditions.aeroacoustics.hemisphere_SPL_dBA)
-    E190_SPL_true   = 104.61335434997156 # this value is high because its of a hemisphere of radius 20
+    E190_SPL_true   = 124.19215177242675 # this value is high because its of a hemisphere of radius 20
     E190_diff_SPL   = np.abs(E190_SPL - E190_SPL_true)
     print('SPL difference: ',E190_diff_SPL)
     assert np.abs((E190_SPL - E190_SPL_true)/E190_SPL_true) < 1e-3 

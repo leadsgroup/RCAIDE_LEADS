@@ -12,7 +12,9 @@ from RCAIDE.Library.Plots                                                   impo
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan       import design_electric_ducted_fan
 
 # python imports  
-from copy import deepcopy  
+from copy import deepcopy
+import os
+import sys
 
 # ----------------------------------------------------------------------
 #   Define the Vehicle
