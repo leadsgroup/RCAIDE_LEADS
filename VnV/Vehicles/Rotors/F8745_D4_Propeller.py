@@ -12,7 +12,17 @@ import os
 import numpy as np   
 
 # design propeller                                       
-def F8745_D4_Propeller():  
+def F8745_D4_Propeller():
+ 
+    # ------------------------------------------------------------------
+    #  File Paths 
+    # ------------------------------------------------------------------    
+    ospath             = os.path.abspath(__file__)
+    separator          = os.path.sep
+    local_path         = os.path.dirname(ospath) + separator  +  '..'
+    airfoil_file_path  = local_path + separator + 'Airfoils_and_Polars' + separator
+    polar_file_path    = local_path + separator + 'Airfoils_and_Polars' + separator + 'Polars' + separator
+    
     prop                            = RCAIDE.Library.Components.Powertrain.Converters.Propeller()
     prop.inputs                     = Data()
     prop.inputs.blade_pitch_command = 0 
