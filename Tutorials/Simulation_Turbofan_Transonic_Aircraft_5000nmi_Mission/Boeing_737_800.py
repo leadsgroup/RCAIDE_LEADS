@@ -19,6 +19,8 @@ import numpy as np
 import matplotlib.cm as cm
 from copy import deepcopy
 import matplotlib.pyplot as plt  
+import os
+import sys
 
 # ----------------------------------------------------------------------
 #   Main
@@ -50,12 +52,8 @@ def main():
 def vehicle_setup(): 
     # ------------------------------------------------------------------
     #  File Paths 
-    # ------------------------------------------------------------------    
-    ospath             = os.path.abspath(__file__)
-    separator          = os.path.sep
-    local_path         = os.path.dirname(ospath)
-    airfoil_file_path  = local_path + separator + 'Airfoils'
-    polar_file_path    = rel_path + separator + 'Airfoils' + separator + 'Polars'
+    # ------------------------------------------------------------------     
+    airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') + os.sep   
     
     # ------------------------------------------------------------------
     #   Initialize the Vehicle
