@@ -1,22 +1,22 @@
-# RCAIDE/Library/Components/Powertrain/Systems/Environmental_Controls.py
+# RCAIDE/Library/Components/Powertrain/Systems/Environmental_Control_System.py
 # 
-# Created:  Jan 2026, M. Clarke 
+# Created:  Oct 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------   
 # RCAIDE imports  
-from .Systems import Systems
+from .Systems import Systems 
  
 # ----------------------------------------------------------------------------------------------------------------------
-#  Environmental_Controls
+# Environmental Control System
 # ----------------------------------------------------------------------------------------------------------------------            
 class Environmental_Controls(Systems):
     """
-    A class representing environmental control systems and their power requirements. 
-    """        
-    def __defaults__(self):
+
+    """  
+    def __defaults__(self): 
         """
-        Sets default values for the environmental control system attributes.
-        """                  
-        self.tag        = 'environmental_controls' 
+        Sets default values for the system attributes.
+        """        
+        self.tag                   = 'environmental_control_system'  

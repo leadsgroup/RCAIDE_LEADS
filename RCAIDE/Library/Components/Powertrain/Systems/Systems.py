@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Powertrain/Systems/System
+# RCAIDE/Library/Components/Powertrain/Systems/Systems.py
 # 
 # Created:  Mar 2024, M. Clarke 
 # Modified: Sep 2025, M. Guidotti
@@ -7,8 +7,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------   
 # RCAIDE imports  
-from RCAIDE.Framework.Core import Data
-from RCAIDE.Library.Components.Component import Container
+from RCAIDE.Framework.Core import Data 
 from RCAIDE.Library.Components import Component
 from RCAIDE.Library.Methods.Powertrain.Systems.compute_systems_power_draw import compute_systems_power_draw
 from RCAIDE.Library.Methods.Powertrain.Systems.append_systems_conditions import append_systems_conditions
@@ -16,7 +15,7 @@ from RCAIDE.Library.Methods.Powertrain.Systems.append_systems_conditions import 
 # ----------------------------------------------------------------------------------------------------------------------
 # System
 # ----------------------------------------------------------------------------------------------------------------------            
-class System(Component):
+class Systems(Component):
     """
     Base class for aircraft systems providing core functionality for modeling 
     onboard equipment and subsystems.
@@ -67,9 +66,7 @@ class System(Component):
         """
         Sets default values for the system attributes.
         """        
-        self.tag                          = 'system' 
-        self.control                      = None
-        self.accessories                  = None
+        self.tag                          = 'System'  
         self.power_draw                   = 0.0
         self.assigned_distributors        = None
         self.efficiency                   = Data()
@@ -80,3 +77,24 @@ class System(Component):
         self.efficiency.chemical          = 1.0
         self.efficiency.hydraulic         = 1.0
         self.efficiency.pneumatic         = 1.0
+                
+
+    def append_operating_conditions(self, segment): 
+        """
+        Adds operating conditions for the avionics system to a mission segment.
+
+        Parameters
+        ----------
+        segment : Data
+            Mission segment to which conditions are being added
+        bus : Data
+            Electrical bus supplying power to the avionics
+        """
+        append_systems_conditions(self, segment)
+        return
+    
+    def compute_performance(self, state):
+
+        Power = compute_systems_power_draw(self, state)
+
+        return Power

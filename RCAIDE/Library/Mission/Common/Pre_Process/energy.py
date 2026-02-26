@@ -15,45 +15,26 @@ def energy(mission):
     """ 
     idx = 0      
     for segment in mission.segments: 
-        for network in segment.analyses.vehicle.networks:
+        for network in segment.analyses.vehicle.networks:  
+            
+            #'''not sure I want to keep this but this basically is where matteo assigns the voltage of the bus a compoment is on may not need '''
+            #for converter in network.converters:  
+                #for distributor_tag in converter.assigned_distributors:
+                    #if isinstance(network.distributors[distributor_tag[0]], RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
+                        #converter.bus_voltage = network.distributors[distributor_tag[0]].voltage
 
-            # determine bus properties 
-            network.initialize_bus_properties()      
+            #for modulator in network.modulators:
+                #for distributor_tag in modulator.assigned_distributors:
+                    #if isinstance(network.distributors[distributor_tag[0]], RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
+                        #modulator.bus_voltage = network.distributors[distributor_tag[0]].voltage
 
-            # design propulsor 
-            propulsive_converters = []
-            for propulsor in network.propulsors:
-                propulsor.intialize_propulsor_design(network)  
-                for tag, item in propulsor.assigned_converters.items():
-                    propulsive_converters.append(item[0][0])
-
-            # update bus voltage on each electrical component
-            convertive_converters = []
-            for converter in network.converters:
-                if converter.assigned_converters != []:
-                    for tag, item in converter.assigned_converters.items():
-                        convertive_converters.append(item[0][0])
-
-            for converter in network.converters:
-                if converter.tag not in propulsive_converters and converter.tag not in convertive_converters:
-                    if idx == 0:
-                        network.non_propulsive_converters.append(converter)
-                    for distributor_tag in converter.assigned_distributors:
-                        if isinstance(network.distributors[distributor_tag[0]], RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
-                            converter.bus_voltage = network.distributors[distributor_tag[0]].voltage
-
-            for modulator in network.modulators:
-                for distributor_tag in modulator.assigned_distributors:
-                    if isinstance(network.distributors[distributor_tag[0]], RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
-                        modulator.bus_voltage = network.distributors[distributor_tag[0]].voltage
-
-            for system in network.systems:
-                for distributor_tag in system.assigned_distributors:
-                    if isinstance(network.distributors[distributor_tag[0]], RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
-                        system.bus_voltage = network.distributors[distributor_tag[0]]               
+            #for system in network.systems:
+                #for distributor_tag in system.assigned_distributors:
+                    #if isinstance(network.distributors[distributor_tag[0]], RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
+                        #system.bus_voltage = network.distributors[distributor_tag[0]].voltage               
                            
             if segment.hybrid_power_split_ratio == None:                
-                segment.hybrid_power_split_ratio = 0.0
+                segment.hybrid_power_split_ratio            = 0.0
                 segment.battery_fuel_cell_power_split_ratio = 0.0              
 
             segment.state.conditions.energy.hybrid_power_split_ratio            = segment.hybrid_power_split_ratio * segment.state.ones_row(1)  

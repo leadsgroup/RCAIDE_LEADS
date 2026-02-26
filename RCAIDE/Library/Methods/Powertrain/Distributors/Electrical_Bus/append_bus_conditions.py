@@ -131,6 +131,7 @@ def append_bus_segment_conditions(bus,segment):
     segment.state.conditions.energy.distributors[bus.tag].net_thermal_power       = 0 * ones_row(1)
 
     
+    '''NEED TO FIX MATTHEW '''
     # Thermal power draw
     if segment.state.initials:
         for network in segment.analyses.vehicle.networks:

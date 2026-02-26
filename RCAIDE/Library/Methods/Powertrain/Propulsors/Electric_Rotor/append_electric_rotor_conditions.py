@@ -77,5 +77,5 @@ def append_electric_rotor_conditions(propulsor, segment, energy_conditions, nois
     # parse propulsor for comoonent and append 
     for tag, item in  propulsor.items(): 
         if issubclass(type(item), RCAIDE.Library.Components.Component):
-            item.append_operating_conditions(segment,energy_conditions,noise_conditions)
+            item.append_operating_conditions(segment)
     return

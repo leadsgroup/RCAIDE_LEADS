@@ -7,14 +7,14 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
-from RCAIDE.Library.Components import Component  
+from .Converter  import Converter 
 from RCAIDE.Library.Methods.Thermal_Management.Batteries.Air_Cooled import append_air_cooled_conditions, air_cooled_performance, append_air_cooled_segment_conditions
 from RCAIDE.Library.Plots.Thermal_Management.plot_air_cooled_conditions import plot_air_cooled_conditions
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  Air_Cooled
+#  Air_Cooled_Heat_Aquisition_System
 # ----------------------------------------------------------------------------------------------------------------------
-class Air_Cooled(Component):
+class Air_Cooled_Heat_Aquisition_System(Converter):
     """
     A class representing an air-cooled thermal management system for battery packs using 
     direct convection cooling.

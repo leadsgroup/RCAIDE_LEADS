@@ -115,14 +115,7 @@ class Turboprop(Propulsor):
         self.design_freestream_velocity                 = None
         self.compressor_nondimensional_massflow         = 0.0 
         self.reference_temperature                      = 288.15
-        self.reference_pressure                         = 1.01325*10**5  
-
-    def intialize_propulsor_design(self,network):
-        """
-        Designs the propulsor.
-        """          
-        design_turboprop(self,network)
-        return
+        self.reference_pressure                         = 1.01325*10**5   
     
     def append_operating_conditions(self,segment):
         """

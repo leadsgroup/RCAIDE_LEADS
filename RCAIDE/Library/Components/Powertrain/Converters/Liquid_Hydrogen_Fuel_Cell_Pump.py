@@ -32,7 +32,7 @@ class Liquid_Hydrogen_Fuel_Cell_Pump(Pump):
         P_mech,P_elec,stored_results_flag,stored_propulsor_tag =  compute_pump_performance(self,state,fuel_line, bus)
         return P_mech,P_elec,stored_results_flag,stored_propulsor_tag 
     
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None): 
+    def append_operating_conditions(self,segment): 
         """
         Adds operating conditions for the avionics system to a mission segment.
 
@@ -43,5 +43,5 @@ class Liquid_Hydrogen_Fuel_Cell_Pump(Pump):
         bus : Data
             Electrical bus supplying power to the avionics
         """
-        append_pump_conditions(self,segment,energy_conditions) 
+        append_pump_conditions(self,segment) 
         return 

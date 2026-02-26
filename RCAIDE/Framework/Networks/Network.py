@@ -10,8 +10,7 @@ import  RCAIDE
 from RCAIDE.Framework.Mission.Common     import Residuals, Conditions
 from RCAIDE.Library.Mission.Common.Unpack_Unknowns.energy import unknowns 
 from RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance         import *
-from RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance import *
-from RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.initialize_bus_properties import initialize_bus_properties
+from RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance import * 
 from RCAIDE.Library.Components import Component
 
 # python imports 
@@ -82,16 +81,7 @@ class Network(Component):
         self.distributors                 = Container()
         self.sources                      = Container()
         self.systems                      = Container()
-        
-    def initialize_bus_properties(self):
-        """
-        Initialize electrical bus properties
-        
-        Sets up initial values for bus voltage, capacity, and other electrical
-        properties based on connected components.
-        """
-        initialize_bus_properties(self)
-        return 
+         
 
     def evaluate(network,state,center_of_gravity):
         """ Computes the performance of the network.
@@ -115,42 +105,7 @@ class Network(Component):
         total_moment            = 0. * state.ones_row(3)
         total_mdot              = 0. * state.ones_row(1)
         total_propulsive_power  = 0. * state.ones_row(1)
-
-        for propulsor in propulsors:
-            conditions.energy.propulsors[propulsor.tag].inputs.power.electrical  = 0*state.ones_row(1)
-            conditions.energy.propulsors[propulsor.tag].inputs.power.chemical    = 0*state.ones_row(1)
-            conditions.energy.propulsors[propulsor.tag].inputs.power.thermal     = 0*state.ones_row(1)
-            conditions.energy.propulsors[propulsor.tag].outputs.power.electrical = 0*state.ones_row(1)
-            conditions.energy.propulsors[propulsor.tag].outputs.power.chemical   = 0*state.ones_row(1)
-            conditions.energy.propulsors[propulsor.tag].outputs.power.thermal    = 0*state.ones_row(1)
-        for converter in network.non_propulsive_converters:
-            conditions.energy.converters[converter.tag].inputs.power.electrical = 0*state.ones_row(1)
-            conditions.energy.converters[converter.tag].inputs.power.chemical = 0*state.ones_row(1)
-            conditions.energy.converters[converter.tag].inputs.power.thermal = 0*state.ones_row(1)
-            conditions.energy.converters[converter.tag].outputs.power.electrical = 0*state.ones_row(1)
-            conditions.energy.converters[converter.tag].outputs.power.chemical = 0*state.ones_row(1)
-            conditions.energy.converters[converter.tag].outputs.power.thermal = 0*state.ones_row(1)
-        for modulator in modulators:
-            conditions.energy.modulators[modulator.tag].inputs.power.electrical = 0*state.ones_row(1)
-            conditions.energy.modulators[modulator.tag].inputs.power.chemical = 0*state.ones_row(1)
-            conditions.energy.modulators[modulator.tag].inputs.power.thermal = 0*state.ones_row(1)
-            conditions.energy.modulators[modulator.tag].outputs.power.electrical = 0*state.ones_row(1)
-            conditions.energy.modulators[modulator.tag].outputs.power.chemical = 0*state.ones_row(1)
-            conditions.energy.modulators[modulator.tag].outputs.power.thermal = 0*state.ones_row(1)
-        for source in sources:
-            conditions.energy.sources[source.tag].inputs.power.electrical  = 0*state.ones_row(1)
-            conditions.energy.sources[source.tag].inputs.power.chemical    = 0*state.ones_row(1)
-            conditions.energy.sources[source.tag].inputs.power.thermal     = 0*state.ones_row(1)
-            conditions.energy.sources[source.tag].outputs.power.electrical = 0*state.ones_row(1)
-            conditions.energy.sources[source.tag].outputs.power.chemical   = 0*state.ones_row(1)
-            conditions.energy.sources[source.tag].outputs.power.thermal    = 0*state.ones_row(1)
-        for system in systems:
-            conditions.energy.systems[system.tag].inputs.power.electrical  = 0*state.ones_row(1)
-            conditions.energy.systems[system.tag].inputs.power.chemical    = 0*state.ones_row(1)
-            conditions.energy.systems[system.tag].inputs.power.thermal     = 0*state.ones_row(1)
-            conditions.energy.systems[system.tag].outputs.power.electrical = 0*state.ones_row(1)
-            conditions.energy.systems[system.tag].outputs.power.chemical   = 0*state.ones_row(1)
-            conditions.energy.systems[system.tag].outputs.power.thermal    = 0*state.ones_row(1)
+        
         ''' MAJOR ASSUMTION
         
         number of unknowns is the number of distributors 
@@ -226,7 +181,7 @@ class Network(Component):
                                 key = ("propulsor", propulsor.tag, distributor_tag, "chem_in")
                                 if key not in unknown_cols:
                                     unknown_cols[key] = len(unknown_cols)
-                                triplets.append((t_idx,row_index, unknown_cols[key], -1.0)) # -1 is drawing power + 1 is providing  9 each line is a dristrubutor line, each column is a component,
+                                triplets.append((t_idx,row_index, unknown_cols[key], -1.0)) # -1 is drawing power + 1 is providing  , each line is a dristrubutor line, each column is a component,
                             else:
                                 b_vector[t_idx,row_index,0] -= val
                     elif isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor):

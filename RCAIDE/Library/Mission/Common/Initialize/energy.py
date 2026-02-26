@@ -72,61 +72,59 @@ def energy(segment):
     RCAIDE.Framework.Mission.Segments
     """ 
 
-    conditions = segment.state.conditions.energy
-    vehicle    = segment.analyses.vehicle
-
-    # loop through battery modules in networks
+    energy_conditions  = segment.state.conditions.energy
+    initial_conditions = initial_conditions
+    vehicle            = segment.analyses.vehicle
+    ones_row           = segment.state.ones_row  
+ 
     for network in vehicle.networks:
-        # if network has busses  
-        for distributor in network.distributors:
-            if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
-                distributor.append_segment_conditions(segment)
-                # iterate all sources; pick battery modules assigned to this electrical bus
-                for source in network.sources:
-                    # flatten assigned distributor TAGs
-                    assigned_tags = []
-                    for grp in source.assigned_distributors:
-                        if isinstance(grp, (list, tuple, set)):
-                            assigned_tags.extend(list(grp))
-                        else:
-                            assigned_tags.append(grp)
-                    # if this source is connected to the current bus and is a battery module, append its conditions
-                    if distributor.tag in assigned_tags and issubclass(type(source), RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module):
-                        battery_module = vehicle.networks[network.tag].sources[source.tag]
-                        battery_module.append_battery_segment_conditions(segment)
-                
-                # coolant line components 
-                for coolant_line in network.distributors:
-                    if isinstance(coolant_line, RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line):
-                        for tag, item in coolant_line.items(): 
-                            if tag == 'battery_modules':
-                                for battery in item:
-                                    for btms in battery:
-                                        btms.append_segment_conditions(segment, coolant_line)
-                            if tag == 'heat_exchangers':
-                                for heat_exchanger in item:
-                                    heat_exchanger.append_segment_conditions(segment, distributor, coolant_line)
-                            if tag == 'reservoirs':
-                                for reservoir in item:
-                                    reservoir.append_segment_conditions(segment, coolant_line)
         
-            elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
-                
-                distributor.append_segment_conditions(segment)
-                # iterate all sources; pick fuel tanks assigned to this fuel line
-                for source in network.sources:
-                    # flatten assigned distributor TAGs
-                    assigned_tags = []
-                    for grp in source.assigned_distributors:
-                        if isinstance(grp, (list, tuple, set)):
-                            assigned_tags.extend(list(grp))
-                        else:
-                            assigned_tags.append(grp)
-                    # if this source is connected to the current fuel line and is a fuel tank, initialize fuel mass
-                    if distributor.tag in assigned_tags and issubclass(type(source), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
-                        src_tag = source.tag
-                        if segment.state.initials:
-                            fuel_tank_initials = segment.state.initials.conditions.energy.sources[src_tag]
-                            conditions.sources[src_tag].fuel_mass[:,0] = fuel_tank_initials.fuel_mass[-1,0]
-                        elif vehicle.networks[network.tag].sources[src_tag].fuel is not None:
-                            conditions.sources[src_tag].fuel_mass[:,0] = vehicle.networks[network.tag].sources[src_tag].fuel.mass_properties.mass
+        # resets the conditions of components each iteration if the mission solver
+        for propulsor in  network.propulsors: 
+            propulsor.append_segment_conditions(segment)
+            energy_conditions.propulsors[propulsor.tag].inputs.power.electrical[0,:]  = 0  # initial_conditions.propulsors[propulsor.tag].inputs.power.electrical[-1,0] 
+            energy_conditions.propulsors[propulsor.tag].inputs.power.chemical[0,:]    = 0  # initial_conditions.propulsors[propulsor.tag].inputs.power.chemical[-1,0]   
+            energy_conditions.propulsors[propulsor.tag].inputs.power.thermal[0,:]     = 0  # initial_conditions.propulsors[propulsor.tag].inputs.power.thermal[-1,0]    
+            energy_conditions.propulsors[propulsor.tag].outputs.power.electrical[0,:] = 0  # initial_conditions.propulsors[propulsor.tag].outputs.power.electrical[-1,0]
+            energy_conditions.propulsors[propulsor.tag].outputs.power.chemical[0,:]   = 0  # initial_conditions.propulsors[propulsor.tag].outputs.power.chemical[-1,0]  
+            energy_conditions.propulsors[propulsor.tag].outputs.power.thermal[0,:]    = 0  # initial_conditions.propulsors[propulsor.tag].outputs.power.thermal[-1,0]   
+         
+        for converter in network.non_propulsive_converters:
+            converter.append_segment_conditions(segment)
+            energy_conditions.converters[converter.tag].inputs.power.electrical[0,:]  = 0  #initial_conditions.converters[converter.tag].inputs.power.electrical[-1,0]  
+            energy_conditions.converters[converter.tag].inputs.power.chemical[0,:]    = 0  #initial_conditions.converters[converter.tag].inputs.power.chemical[-1,0]    
+            energy_conditions.converters[converter.tag].inputs.power.thermal[0,:]     = 0  #initial_conditions.converters[converter.tag].inputs.power.thermal[-1,0]     
+            energy_conditions.converters[converter.tag].outputs.power.electrical[0,:] = 0  #initial_conditions.converters[converter.tag].outputs.power.electrical[-1,0] 
+            energy_conditions.converters[converter.tag].outputs.power.chemical[0,:]   = 0  #initial_conditions.converters[converter.tag].outputs.power.chemical[-1,0]   
+            energy_conditions.converters[converter.tag].outputs.power.thermal[0,:]    = 0  #initial_conditions.converters[converter.tag].outputs.power.thermal[-1,0]              
+        
+    
+        for modulator in network.modulators:
+            modulator.append_segment_conditions(segment)
+            energy_conditions.modulators[modulator.tag].inputs.power.electrical[0,:]  = 0  #initial_conditions.modulators[modulator.tag].inputs.power.electrical[-1,0] 
+            energy_conditions.modulators[modulator.tag].inputs.power.chemical[0,:]    = 0  #initial_conditions.modulators[modulator.tag].inputs.power.chemical[-1,0]   
+            energy_conditions.modulators[modulator.tag].inputs.power.thermal[0,:]     = 0  #initial_conditions.modulators[modulator.tag].inputs.power.thermal[-1,0]    
+            energy_conditions.modulators[modulator.tag].outputs.power.electrical[0,:] = 0  #initial_conditions.modulators[modulator.tag].outputs.power.electrical[-1,0]
+            energy_conditions.modulators[modulator.tag].outputs.power.chemical[0,:]   = 0  #initial_conditions.modulators[modulator.tag].outputs.power.chemical[-1,0]  
+            energy_conditions.modulators[modulator.tag].outputs.power.thermal[0,:]    = 0  #initial_conditions.modulators[modulator.tag].outputs.power.thermal[-1,0]           
+        
+        for source in network.sources:
+            source.append_segment_conditions(segment)
+            energy_conditions.sources[source.tag].inputs.power.electrical[0,:]   = 0
+            energy_conditions.sources[source.tag].inputs.power.chemical[0,:]     = 0
+            energy_conditions.sources[source.tag].inputs.power.thermal[0,:]      = 0
+            energy_conditions.sources[source.tag].outputs.power.electrical[0,:]  = 0
+            energy_conditions.sources[source.tag].outputs.power.chemical[0,:]    = 0
+            energy_conditions.sources[source.tag].outputs.power.thermal[0,:]     = 0
+            
+        for system in network.systems:
+            energy_conditions.systems[system.tag].inputs.power.electrical[0,:]  = 0
+            energy_conditions.systems[system.tag].inputs.power.chemical[0,:]    = 0
+            energy_conditions.systems[system.tag].inputs.power.thermal[0,:]     = 0
+            energy_conditions.systems[system.tag].outputs.power.electrica[0,:]  = 0
+            energy_conditions.systems[system.tag].outputs.power.chemical[0,:]   = 0
+            energy_conditions.systems[system.tag].outputs.power.therma[0,:]     = 0
+        
+        for distributor in network.distributors:
+            distributor.append_segment_conditions(segment)
+            

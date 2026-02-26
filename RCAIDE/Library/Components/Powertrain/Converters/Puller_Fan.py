@@ -6,12 +6,12 @@
 # ----------------------------------------------------------------------
 #  Imports
 # ----------------------------------------------------------------------
-from RCAIDE.Framework.Core import Data
+from .Converter  import Converter
 
 # ----------------------------------------------------------------------
 #  Fan
 # ----------------------------------------------------------------------
-class Fan(Data):
+class Puller_Fan(Converter):
     """
     A class representing a cooling fan for thermal management systems.
 

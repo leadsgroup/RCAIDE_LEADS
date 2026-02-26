@@ -108,8 +108,8 @@ class DC_Motor(Converter):
         self.inverse_calculation     = False
         self.interpolated_func       = None
         
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None): 
-        append_motor_conditions(self,segment,energy_conditions)
+    def append_operating_conditions(self,segment): 
+        append_motor_conditions(self,segment)
         return 
 
     def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 

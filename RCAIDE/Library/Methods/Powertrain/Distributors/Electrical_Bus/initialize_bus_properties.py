@@ -11,7 +11,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common      import 
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHODS
 # ---------------------------------------------------------------------------------------------------------------------- 
-def initialize_bus_properties(network): 
+def initialize_bus_properties(bus,network): 
     """
     Initializes the bus electrical properties based on what is appended onto the bus.
     
@@ -70,14 +70,9 @@ def initialize_bus_properties(network):
             if bus.battery_module_electric_configuration == 'Series':
                 compute_module_properties(source) 
                 bus.voltage         +=  battery_module.voltage
-                #bus.maximum_energy  +=  battery_module.maximum_energy
-                #bus.nominal_capacity =  max(battery_module.nominal_capacity, bus.nominal_capacity)  
             elif bus.battery_module_electric_configuration == 'Parallel': 
                 compute_module_properties(battery_module)        
                 bus.voltage           =  max(battery_module.voltage, bus.voltage)
-                #bus.nominal_capacity +=  battery_module.nominal_capacity        
-                #bus.maximum_energy  +=  battery_module.initial_maximum_energy            
-            
         elif isinstance(source, RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack): 
             fuel_cell_stack =  source 
             bus             = network.distributors[source.assigned_distributors[0][0]] 

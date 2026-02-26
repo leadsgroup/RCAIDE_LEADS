@@ -4,6 +4,7 @@
 # Created:  Jul 2024, M. Clarke 
 # Modified: Aug 2025, S. Shekar 
 
+import RCAIDE
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_fuel_volume 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -67,11 +68,10 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = False, update_max_fuel = 
     fuselages         = vehicle.fuselages 
     total_fuel_volume = 0
     total_fuel_mass   = 0
-    for network in vehicle.networks: 
-        for fuel_line in network.fuel_lines:
-            fuel_tanks = fuel_line.fuel_tanks
-            for fuel_tank in fuel_tanks:
-            
+    for network in vehicle.networks:
+        for source in  network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                fuel_tank =  source           
                 # update fuel tag to ensure no overwriting of mass 
                 fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag
                                 
@@ -83,27 +83,7 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = False, update_max_fuel = 
                 else:
                     # if no error getting the method, run it normally
                     if compute_fuel_volume:
-                        compute_fuel_tank_volume(wings, fuselages, fuel_tanks) 
-                        fuel_tank.fuel.volume_properties.net_volume = fuel_tank.fuel.mass_properties.mass / fuel_tank.fuel.density
-                    total_fuel_volume += fuel_tank.fuel.volume_properties.net_volume 
-                    total_fuel_mass   += fuel_tank.fuel.mass_properties.mass
-                    
-        for bus in network.busses:
-            fuel_tanks= bus.fuel_tanks
-            for fuel_tank in fuel_tanks:
-
-                # update fuel tag to ensure no overwriting of mass 
-                fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag
-                
-                try:
-                    compute_fuel_tank_volume = fuel_tank.compute_volume
-                except Exception as e:
-                    total_fuel_volume += getattr(fuel_tank.fuel.volume_properties, "net_volume", None)
-                    total_fuel_mass   += getattr(fuel_tank.fuel.mass_properties, "mass", None)
-                else:
-                    # if no error getting the method, run it normally
-                    if compute_fuel_volume:
-                        compute_fuel_tank_volume(wings, fuselages, fuel_tanks) 
+                        compute_fuel_tank_volume(wings, fuselages, network.sources) 
                         fuel_tank.fuel.volume_properties.net_volume = fuel_tank.fuel.mass_properties.mass / fuel_tank.fuel.density
                     total_fuel_volume += fuel_tank.fuel.volume_properties.net_volume 
                     total_fuel_mass   += fuel_tank.fuel.mass_properties.mass 

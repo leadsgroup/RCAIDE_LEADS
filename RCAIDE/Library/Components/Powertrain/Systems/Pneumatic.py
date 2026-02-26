@@ -1,23 +1,22 @@
-# RCAIDE/Library/Components/Powertrain/Systems/Electrical.py
+# RCAIDE/Library/Components/Powertrain/Systems/Pneumatic_System.py
 # 
-# Created:  Jan 2026, M. Clarke 
+# Created:  Oct 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------   
 # RCAIDE imports  
-from .Systems import Systems
+from .Systems     import Systems 
  
 # ----------------------------------------------------------------------------------------------------------------------
-#  Electrical
+# Pneumatic System
 # ----------------------------------------------------------------------------------------------------------------------            
-class Electrical(Systems):
+class Pneumatic(Systems):
     """
-    A class representing electrical control systems and their power requirements. 
-    """        
-    def __defaults__(self):
+
+    """  
+    def __defaults__(self): 
         """
-        Sets default values for the electrical system attributes.
-        """                  
-        self.tag        = 'electrical'
-        self.power_draw = 0 
+        Sets default values for the system attributes.
+        """        
+        self.tag                   = 'pneumatic_system'  

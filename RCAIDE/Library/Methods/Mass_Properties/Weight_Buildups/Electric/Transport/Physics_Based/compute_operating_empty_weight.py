@@ -12,33 +12,33 @@ import RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Gener
 # python imports 
 import numpy as np
 
-# loop over batteries and create lines 
-for battery_module in bus.battery_modules:
-    electrical_line       = Electrical_Line()
-    electrical_line.to    = battery_module.tag
-    electrical_line.from_ = bus.tag
-    self.electrical_lines.append(electrical_line) 
+## loop over batteries and create lines 
+#for battery_module in bus.battery_modules:
+    #electrical_line       = Electrical_Line()
+    #electrical_line.to    = battery_module.tag
+    #electrical_line.from_ = bus.tag
+    #self.electrical_lines.append(electrical_line) 
 
-# loop over fuel_cell and create lines
-for fuel_cell_stack in bus.fuel_cell_stacks:
-    electrical_line       = Electrical_Line()
-    electrical_line.to    = fuel_cell_stack.tag
-    electrical_line.from_ = bus.tag
-    self.electrical_lines.append(electrical_line) 
+## loop over fuel_cell and create lines
+#for fuel_cell_stack in bus.fuel_cell_stacks:
+    #electrical_line       = Electrical_Line()
+    #electrical_line.to    = fuel_cell_stack.tag
+    #electrical_line.from_ = bus.tag
+    #self.electrical_lines.append(electrical_line) 
 
-# loop over propulsors and create lines 
-for propulsor_tag in bus.assigned_propulsors:
-    electrical_line       = Electrical_Line()
-    electrical_line.to    = propulsor_tag
-    electrical_line.from_ = bus.tag
-    self.electrical_lines.append(electrical_line) 
+## loop over propulsors and create lines 
+#for propulsor_tag in bus.assigned_propulsors:
+    #electrical_line       = Electrical_Line()
+    #electrical_line.to    = propulsor_tag
+    #electrical_line.from_ = bus.tag
+    #self.electrical_lines.append(electrical_line) 
 
-# loop over converters  and create lines
-for converter_tag in bus.assigned_converters:
-    electrical_line       = Electrical_Line()
-    electrical_line.to    = converter_tag
-    electrical_line.from_ = bus.tag
-    self.electrical_lines.append(electrical_line) 
+## loop over converters  and create lines
+#for converter_tag in bus.assigned_converters:
+    #electrical_line       = Electrical_Line()
+    #electrical_line.to    = converter_tag
+    #electrical_line.from_ = bus.tag
+    #self.electrical_lines.append(electrical_line) 
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 # Operating Empty Weight 

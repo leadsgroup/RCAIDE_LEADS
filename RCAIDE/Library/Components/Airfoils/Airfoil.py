@@ -80,7 +80,7 @@ class Airfoil(Component):
         self.number_of_points           = 201
         
 
-    def append_operating_conditions(self, segment, energy_conditions): 
+    def append_operating_conditions(self, segment): 
         """
         Placeholder for adding operating conditions of the airfoil.
 

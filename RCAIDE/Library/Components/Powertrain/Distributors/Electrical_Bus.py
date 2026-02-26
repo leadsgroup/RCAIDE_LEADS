@@ -95,8 +95,7 @@ class Electrical_Bus(Distributor):
         self.type                                   = 'DC'
         self.electrical_line                        = Electrical_Line()
         self.battery_modules                        = Container()
-        self.fuel_cell_stacks                       = Container()
-        self.systems                                = RCAIDE.Library.Components.Powertrain.Systems.System()
+        self.fuel_cell_stacks                       = Container() 
         self.identical_battery_modules              = True      
         self.identical_fuel_cell_stacks             = True  
         self.active                                 = True
@@ -150,28 +149,40 @@ class Electrical_Bus(Distributor):
             Time step
         """
         compute_bus_conditions(self, source, state,t_idx, delta_t)
-        return    
+        return
+
+    def initialize_bus_properties(self,network):
+        """
+        Initialize electrical bus properties
+        
+        Sets up initial values for bus voltage, capacity, and other electrical
+        properties based on connected components.
+        """
+        initialize_bus_properties(self,network)
+        return
+        
     
-    def compute_performance(self, state):
+    #def compute_performance(self, state):
 
-        inputs = Data()
-        outputs = Data()
+        #inputs = Data()
+        #outputs = Data()
 
-        inputs.power.mechanical  = state.conditions.energy.distributors[self.tag].inputs.power.mechanical
-        inputs.power.electrical  = state.conditions.energy.distributors[self.tag].inputs.power.electrical
-        inputs.power.chemical    = state.conditions.energy.distributors[self.tag].inputs.power.chemical  
-        inputs.power.pneumatic   = state.conditions.energy.distributors[self.tag].inputs.power.pneumatic 
-        inputs.power.hydraulic   = state.conditions.energy.distributors[self.tag].inputs.power.hydraulic 
-        inputs.power.thermal     = state.conditions.energy.distributors[self.tag].inputs.power.thermal  
+        #inputs.power.mechanical  = state.conditions.energy.distributors[self.tag].inputs.power.mechanical
+        #inputs.power.electrical  = state.conditions.energy.distributors[self.tag].inputs.power.electrical
+        #inputs.power.chemical    = state.conditions.energy.distributors[self.tag].inputs.power.chemical  
+        #inputs.power.pneumatic   = state.conditions.energy.distributors[self.tag].inputs.power.pneumatic 
+        #inputs.power.hydraulic   = state.conditions.energy.distributors[self.tag].inputs.power.hydraulic 
+        #inputs.power.thermal     = state.conditions.energy.distributors[self.tag].inputs.power.thermal  
 
-        outputs.power.mechanical = state.conditions.energy.distributors[self.tag].outputs.power.mechanical
-        outputs.power.electrical = state.conditions.energy.distributors[self.tag].outputs.power.electrical
-        outputs.power.chemical   = state.conditions.energy.distributors[self.tag].outputs.power.chemical  
-        outputs.power.pneumatic  = state.conditions.energy.distributors[self.tag].outputs.power.pneumatic 
-        outputs.power.hydraulic  = state.conditions.energy.distributors[self.tag].outputs.power.hydraulic 
-        outputs.power.thermal    = state.conditions.energy.distributors[self.tag].outputs.power.thermal  
+        #outputs.power.mechanical = state.conditions.energy.distributors[self.tag].outputs.power.mechanical
+        #outputs.power.electrical = state.conditions.energy.distributors[self.tag].outputs.power.electrical
+        #outputs.power.chemical   = state.conditions.energy.distributors[self.tag].outputs.power.chemical  
+        #outputs.power.pneumatic  = state.conditions.energy.distributors[self.tag].outputs.power.pneumatic 
+        #outputs.power.hydraulic  = state.conditions.energy.distributors[self.tag].outputs.power.hydraulic 
+        #outputs.power.thermal    = state.conditions.energy.distributors[self.tag].outputs.power.thermal  
 
-        return inputs, outputs
+        #return inputs, outputs
+    
 class Electrical_Line(Distributor):
     def __defaults__(self):
         self.tag                               = 'electrical_line'
