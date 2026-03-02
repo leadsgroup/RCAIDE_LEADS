@@ -75,9 +75,10 @@ def compute_propulsion_system_weight(vehicle,ref_propulsor, settings):
                 ref_propulsor = propulsor  
                 NENG  += 1  
             if propulsor.nacelle !=  None:                
-                ref_nacelle =  propulsor.nacelle   
-        for fuel_line in network.fuel_lines:
-            for _ in fuel_line.fuel_tanks:
+                ref_nacelle =  propulsor.nacelle
+        
+        for source in  network.sources: 
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):   
                 number_of_tanks +=  1
                   
     if ref_nacelle is not None:

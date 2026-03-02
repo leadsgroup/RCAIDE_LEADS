@@ -132,7 +132,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
         if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls:
             if system.mass_properties.mass == 0:
                 system.mass_properties.mass = W_systems.W_flight_control 
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit: 
+        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit: 
             if system.mass_properties.mass == 0:
                 system.mass_properties.mass = W_systems.W_apu 
         if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Electrical: 
@@ -194,17 +194,19 @@ def compute_operating_empty_weight(vehicle, settings=None):
                                             +W_energy_network.W_engine_controls / number_of_engines
             propulsor.nacelle.mass_properties.mass = W_energy_network.W_nacelle / number_of_engines
         
-        # Electric-Powered Propulsors  
-        for bus in network.busses: 
-            # electrical payload 
-            W_systems.W_electrical  += bus.systems.mass_properties.mass * Units.kg
-     
-            # Avionics Weight 
-            W_systems.W_avionics  += bus.avionics.mass_properties.mass      
-    
-            for battery in bus.battery_modules: 
-                W_energy_network_total  += battery.mass_properties.mass * Units.kg
-                W_energy_network.W_battery = battery.mass_properties.mass * Units.kg
+        for system in network.systems:
+            if isinstance(system, RCAIDE.Library.Components.Powertrain.Systems.Electrical): 
+                # electrical payload 
+                W_systems.W_electrical  += system.mass_properties.mass 
+                
+            elif isinstance(system, RCAIDE.Library.Components.Powertrain.Systems.Avionics):
+                # Avionics Weight 
+                W_systems.W_avionics  += system.mass_properties.mass  
+                
+        for source in network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module): 
+                W_energy_network_total  += source.mass_properties.mass * Units.kg
+                W_energy_network.W_battery = source.mass_properties.mass * Units.kg
                 
         for propulsor in network.propulsors:
             if 'motor' in propulsor:                           

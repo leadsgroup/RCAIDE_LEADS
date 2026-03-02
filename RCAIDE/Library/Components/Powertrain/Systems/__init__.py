@@ -16,7 +16,9 @@ for avionics and other aircraft systems.
 from .Systems                 import Systems  
 from .Avionics                import Avionics
 from .Environmental_Controls  import Environmental_Controls 
-from .Flight_Controls         import Flight_Controls 
+from .Flight_Controls         import Flight_Controls
+from .Electrical              import Electrical
 from .Hydraulics              import Hydraulics 
 from .Instruments             import Instruments 
 from .Pneumatic               import Pneumatic
+from .Auxiliary_Power_Unit    import Auxiliary_Power_Unit

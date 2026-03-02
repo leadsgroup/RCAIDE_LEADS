@@ -184,19 +184,20 @@ def compute_operating_empty_weight(vehicle, settings=None):
     for network in vehicle.networks: 
         W_energy_network_total   = 0 
     
-        # Electric-Powered Propulsors  
-        for bus in network.busses: 
-            # electrical payload 
-            try: W_systems.W_electrical  += bus.systems.mass_properties.mass * Units.kg
-            except: pass
-     
-            # Avionics Weight 
-            W_systems.W_avionics  += bus.avionics.mass_properties.mass      
-    
-            for battery in bus.battery_modules: 
-                W_energy_network_total  += battery.mass_properties.mass * Units.kg
-                W_energy_network.W_battery = battery.mass_properties.mass * Units.kg
+        for system in network.systems:
+            if isinstance(system, RCAIDE.Library.Components.Powertrain.Systems.Electrical): 
+                # electrical payload 
+                W_systems.W_electrical  += system.mass_properties.mass 
                 
+            elif isinstance(system, RCAIDE.Library.Components.Powertrain.Systems.Avionics):
+                # Avionics Weight 
+                W_systems.W_avionics  += system.mass_properties.mass      
+    
+        for source in network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module):
+                W_energy_network_total    += source.mass_properties.mass * Units.kg
+                W_energy_network.W_battery = source.mass_properties.mass * Units.kg
+                    
         for propulsor in network.propulsors:
             if 'motor' in propulsor:                           
                 W_energy_network.W_motor +=  propulsor.motor.mass_properties.mass
@@ -238,24 +239,15 @@ def compute_operating_empty_weight(vehicle, settings=None):
     # Thermal Management System Weight
     #-------------------------------------------------------------------------------
     tms_weight = 0.0 
-    for coolant_line in network.coolant_lines:
-        W_energy_network.W_TMS.battery_module = Data()  # Add container for battery module
-        for i, battery_module in enumerate(coolant_line.battery_modules):
-            module_key = f'module_{i+1}'  # Create unique key for each module
-            W_energy_network.W_TMS.battery_module[module_key] = 0.0  # Initialize weight
-            for HAS in battery_module:
-                W_energy_network.W_TMS.battery_module[module_key] = HAS.mass_properties.mass
-                tms_weight +=  HAS.mass_properties.mass
-
-        for tag, item in coolant_line.items():
-            if tag == 'heat_exchangers':
-                for heat_exchanger in item:
-                    W_energy_network.W_TMS[heat_exchanger.tag] = heat_exchanger.mass_properties.mass
-                    tms_weight +=  heat_exchanger.mass_properties.mass
-            if tag == 'reservoirs':
-                for reservoir in item:
-                    W_energy_network.W_TMS[reservoir.tag] = reservoir.mass_properties.mass
-                    tms_weight +=  reservoir.mass_properties.mass
+    for source in network.sources:
+        if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Reservoirs.Reservoir):
+            tms_weight +=  source.mass_properties.mass 
+        
+    for converter in network.converters:
+        if isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Liquid_Cooled_Wavy_Channel) or \
+           isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Air_Cooled_Heat_Aquisition_System) or \
+           isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Cross_Flow_Heat_Exchanger): 
+            tms_weight +=  converter.mass_properties.mass            
 
     ##-------------------------------------------------------------------------------                 
     # Wing Weight 

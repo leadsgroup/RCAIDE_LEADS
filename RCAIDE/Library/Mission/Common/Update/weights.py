@@ -62,11 +62,11 @@ def weights(segment):
         # --------------------------------------------------------------------------  
         if segment.analyses.weights.settings.run_center_of_gravity_analysis:
             # loop through battery modules in networks 
-            for network in vehicle.networks:
-                for fuel_line in  network.fuel_lines: 
-                    for fuel_tank in fuel_line.fuel_tanks:
-                        fuel =  fuel_tank.fuel
-                        mass_flow_rate = conditions.energy.fuel_lines[fuel_line.tag].fuel_tanks[fuel_tank.tag].mass_flow_rate              
+            for network in vehicle.networks: 
+                for source in  network.sources: 
+                    if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):   
+                        fuel =  source.fuel
+                        mass_flow_rate = conditions.energy.sources[source.tag].mass_flow_rate              
                         m_0_fuel       = conditions.weights.components.mass[fuel.tag][0,0]     
                         conditions.weights.components.mass[fuel.tag][:,0]  = m_0_fuel +  np.dot(I, -mass_flow_rate).flatten() 
                 

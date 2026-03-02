@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
-
+import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Plots.Common import set_axes, plot_style
 import matplotlib.pyplot as plt
@@ -45,18 +45,18 @@ def plot_fuel_tank_conditions(results,
     axis_3 = plt.subplot(2,2,3) 
     axis_4 = plt.subplot(2,2,4) 
      
-    for network in results.segments[0].analyses.vehicle.networks:  
-        for fuel_line in network.fuel_lines:
-            for t_i,  fuel_tank in enumerate(fuel_line.fuel_tanks): 
+    for network in results.segments[0].analyses.vehicle.networks: 
+        for  t_i,  source in enumerate(network.sources): 
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
                 for i in range(len(results.segments)):  
                     time    = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min    
-                    tank_conditions    = results.segments[i].conditions.energy.fuel_lines[fuel_line.tag].fuel_tanks[fuel_tank.tag]
+                    tank_conditions    = results.segments[i].conditions.energy.sources[source.tag]
                     
                     fsr                = tank_conditions.fuel_selector_ratio[:,0]
                     m_dot              = tank_conditions.mass_flow_rate[:,0]
                     sm_dot             = tank_conditions.secondary_mass_flow_rate[:,0] 
-                    tank_mass          = results.segments[i].conditions.weights.components.mass[fuel_tank.tag]
-                    fuel_mass          = results.segments[i].conditions.weights.components.mass[fuel_tank.fuel.tag]
+                    tank_mass          = results.segments[i].conditions.weights.components.mass[source.tag]
+                    fuel_mass          = results.segments[i].conditions.weights.components.mass[source.fuel.tag]
                     total_mass         = tank_mass + fuel_mass  
                 
                     if i ==0:                             

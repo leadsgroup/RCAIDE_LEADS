@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
-
+import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Plots.Common import set_axes, plot_style
 import matplotlib.pyplot as plt
@@ -54,10 +54,9 @@ def plot_liquid_hydrogen_tank_properties(results,
         time = segment.conditions.frames.inertial.time[:, 0] / Units.min 
 
         for network in segment.analyses.vehicle.networks: 
-            for fuel_line in network.fuel_lines:
-                for fuel_tank in fuel_line.fuel_tanks:
-
-                    tank_conditions = segment.conditions.energy.fuel_lines[fuel_line.tag].fuel_tanks[fuel_tank.tag]
+            for source in  network.sources: 
+                if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
+                    tank_conditions = segment.conditions.energy.sources[source.tag]
 
                     # Extract variables
                     tank_fuel_mass     = tank_conditions.fuel_mass[:, 0]

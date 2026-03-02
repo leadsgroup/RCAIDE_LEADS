@@ -199,9 +199,7 @@ def use_previous_segment_pre_processed_data(mission,segment,i):
     for landing_gear in segment.analyses.vehicle.landing_gears:
         landing_gear.gear_extended = vehicle_0.landing_gears[landing_gear.tag].gear_extended
     
-    for network in segment.analyses.vehicle.networks: 
-        for bus in network.busses:
-            bus.active = vehicle_0.networks[network.tag].busses[bus.tag].active
+    for network in segment.analyses.vehicle.networks:
         for propulsor in network.propulsors:
             if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan):
                 propulsor_0 =  vehicle_0.networks[network.tag].propulsors[propulsor.tag]
@@ -277,26 +275,24 @@ def write_geometry_to_excel(vehicle):
                 "TSFC [lb/lbf-hr]"      : getattr(propulsor, "TSFC", None)[0][0]
             })
             
-        for fuel_line in network.fuel_lines:
-            container_tag = getattr(fuel_line, "tag", None)
-            for fuel_tank in fuel_line.fuel_tanks:
+        for source in network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
                 fuel_rows.append({
                     "Network Tag"                  : network_tag,
-                    "Tank Type"                    : str(type(fuel_tank)[0]).split('.')[-1],
-                    "Container Type"               : "fuel_line",
-                    "Container Tag"                : container_tag,
-                    "Fuel Tank Tag"                : fuel_tank.tag,
-                    "Wing Tag"                     : getattr(fuel_tank, "wing_tag", None),
-                    "Fuselage Tag"                 : getattr(fuel_tank, "fuselage_tag", None),
-                    "Percent Span Location"        : getattr(fuel_tank, "percent_span_location", None),
-                    "Segments Bounding Tank"       : getattr(fuel_tank, "segments_bounding_tank", None),
-                    "Segments % Chord Start"       : getattr(fuel_tank, "segments_percent_chord_start", None),
-                    "Segments % Chord End"         : getattr(fuel_tank, "segments_percent_chord_end", None),
-                    "BWB Aft Tank"                 : getattr(fuel_tank, "bwb_aft_tank", None),
-                    "XZ Plane Symmetric"           : getattr(fuel_tank, "xz_plane_symmetric", None),
-                    "Fuel Net Volume (m^3)"        : getattr(getattr(fuel_tank.fuel, "volume_properties", None), "net_volume", None) if fuel_tank.fuel else None,
-                    "Fuel Gross Volume (m^3)"      : getattr(getattr(fuel_tank, "volume_properties", None), "gross_volume", None) if fuel_tank.fuel else None,
-                    "Fuel Mass (kg)"               : getattr(getattr(fuel_tank.fuel, "mass_properties", None), "mass", None) if fuel_tank.fuel else None,
+                    "Tank Type"                    : str(type(source)[0]).split('.')[-1],
+                    "Container Type"               : "fuel_line", 
+                    "Fuel Tank Tag"                : source.tag,
+                    "Wing Tag"                     : getattr(source, "wing_tag", None),
+                    "Fuselage Tag"                 : getattr(source, "fuselage_tag", None),
+                    "Percent Span Location"        : getattr(source, "percent_span_location", None),
+                    "Segments Bounding Tank"       : getattr(source, "segments_bounding_tank", None),
+                    "Segments % Chord Start"       : getattr(source, "segments_percent_chord_start", None),
+                    "Segments % Chord End"         : getattr(source, "segments_percent_chord_end", None),
+                    "BWB Aft Tank"                 : getattr(source, "bwb_aft_tank", None),
+                    "XZ Plane Symmetric"           : getattr(source, "xz_plane_symmetric", None),
+                    "Fuel Net Volume (m^3)"        : getattr(getattr(source.fuel, "volume_properties", None), "net_volume", None) if source.fuel else None,
+                    "Fuel Gross Volume (m^3)"      : getattr(getattr(source, "volume_properties", None), "gross_volume", None) if source.fuel else None,
+                    "Fuel Mass (kg)"               : getattr(getattr(source.fuel, "mass_properties", None), "mass", None) if source.fuel else None,
                 })
 
     # Write to Excel with separate sheets for wings and segments

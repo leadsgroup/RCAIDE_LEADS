@@ -16,7 +16,6 @@ RCAIDE.Library.Components.Powertrain.Propulsors
 # ----------------------------------------------------------------------------------------------------------------------
 
 from .Converter                                  import Converter
-from  .Auxiliary_Power_Unit                      import Auxiliary_Power_Unit
 from .Air_Cooled_Heat_Aquisition_System          import Air_Cooled_Heat_Aquisition_System
 from .Combustor                                  import Combustor
 from .Compressor                                 import Compressor

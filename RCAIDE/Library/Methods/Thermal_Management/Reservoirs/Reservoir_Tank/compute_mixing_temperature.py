@@ -65,21 +65,21 @@ def compute_mixing_temperature(reservoir, state, coolant_line, delta_t, t_idx):
 
     for battery in coolant_line.battery_modules:
         for HAS in battery:
-            if isinstance(HAS, RCAIDE.Library.Components.Thermal_Management.Batteries.Liquid_Cooled_Wavy_Channel):
-                mass_flow_HAS.append(state.conditions.energy.coolant_lines[coolant_line.tag][HAS.tag].coolant_mass_flow_rate[t_idx + 1])
-                T_outlet_HAS.append(state.conditions.energy.coolant_lines[coolant_line.tag][HAS.tag].outlet_coolant_temperature[t_idx + 1])
+            if isinstance(HAS, RCAIDE.Library.Components.Powertrain.Converters.Liquid_Cooled_Wavy_Channel):
+                mass_flow_HAS.append(state.conditions.energy.converters[HAS.tag].coolant_mass_flow_rate[t_idx + 1])
+                T_outlet_HAS.append(state.conditions.energy.converters[HAS.tag].outlet_coolant_temperature[t_idx + 1])
                 Cp_HAS.append(coolant.compute_cp(T_outlet_HAS[-1]))
 
     for HEX in coolant_line.heat_exchangers:
-        mass_flow_HEX.append(state.conditions.energy.coolant_lines[coolant_line.tag][HEX.tag].coolant_mass_flow_rate[t_idx + 1])
-        T_outlet_HEX.append(state.conditions.energy.coolant_lines[coolant_line.tag][HEX.tag].outlet_coolant_temperature[t_idx + 1])
+        mass_flow_HEX.append(state.conditions.energy.converters[HEX.tag].coolant_mass_flow_rate[t_idx + 1])
+        T_outlet_HEX.append(state.conditions.energy.converters[HEX.tag].outlet_coolant_temperature[t_idx + 1])
         Cp_HEX.append(coolant.compute_cp(T_outlet_HEX[-1]))
 
         # Solve for T_final using fsolve
         T_final = fsolve(energy_balance, T_current, args=(T_current, delta_t, mass_coolant, Cp_RES, Cp_HAS, Cp_HEX, mass_flow_HAS, T_outlet_HAS, mass_flow_HEX, T_outlet_HEX, reservoir, state, t_idx))[0]
 
     # Update the reservoir temperature
-    state.conditions.energy.coolant_lines[coolant_line.tag][reservoir.tag].coolant_temperature[t_idx + 1, 0] = T_final
+    state.conditions.energy.sources[reservoir.tag].coolant_temperature[t_idx + 1, 0] = T_final
     return
 
 def compute_heat_loss_to_environment(T_final, T_ambient, reservoir):

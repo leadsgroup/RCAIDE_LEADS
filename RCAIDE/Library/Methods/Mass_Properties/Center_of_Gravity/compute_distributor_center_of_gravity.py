@@ -65,13 +65,13 @@ def compute_distributor_center_of_gravity(component,vehicle, length=0):
             c_symm.append(propulsor.xz_plane_symmetric) 
             c_loc  = np.array(propulsor.origin) + np.array(propulsor.mass_properties.center_of_gravity)
             c_locs =  np.concatenate((c_locs,c_loc), axis=0)
-         
-        for fuel_line in network.fuel_lines:
-            for fuel_tank in fuel_line.fuel_tanks: 
-                    c_list.append(fuel_tank.tag)
-                    c_symm.append(fuel_tank.xz_plane_symmetric)
-                    c_loc  = np.array(fuel_tank.origin) + np.array(fuel_tank.mass_properties.center_of_gravity)
-                    c_locs =  np.concatenate((c_locs,c_loc), axis=0)  
+
+        for source in  network.sources: 
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):   
+                c_list.append(source.tag)
+                c_symm.append(source.xz_plane_symmetric)
+                c_loc  = np.array(source.origin) + np.array(source.mass_properties.center_of_gravity)
+                c_locs =  np.concatenate((c_locs,c_loc), axis=0)  
     
     # lateral lines running from center of aircraft to sources (fuel tanks. batteries etc) t
     for i in range(len(c_list)):   
@@ -139,8 +139,8 @@ def compute_distributor_center_of_gravity(component,vehicle, length=0):
      
     # distributor distances  
     for network in  vehicle.networks: 
-        for fuel_line in network.fuel_lines:
-            vent_line_length     = fuel_line.venting_system_length
+        for distributor in network.distributor: 
+            vent_line_length     = distributor.venting_system_length
             vent_line_centroid   = (max_c_loc[0] + min_c_loc[0] )/2
             
             if insulation_cross_sectional_area == 0.0:

@@ -10,7 +10,7 @@
 
 # RCAIDE imports 
 from RCAIDE.Framework.Core import Data
-from RCAIDE.Library.Components          import Component
+from RCAIDE.Library.Components.Powertrain.Sources.Source    import Source   
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks  import * 
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions import append_fuel_tank_conditions 
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_non_integral_tank_volume import *
@@ -20,7 +20,7 @@ from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_cu
 # ----------------------------------------------------------------------------------------------------------------------
 #  Fuel Tank
 # ---------------------------------------------------------------------------------------------------------------------     
-class Fuel_Tank(Component):
+class Fuel_Tank(Source):
     """
     Base class for aircraft fuel tank implementations
     

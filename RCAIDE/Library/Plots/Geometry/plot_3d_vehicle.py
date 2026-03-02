@@ -274,13 +274,13 @@ def plot_3d_vehicle(vehicle,
                         vtk_data     = actor.GetMapper().GetInput() 
                         pyvista_mesh = pv.wrap(vtk_data)                      
                         plotter.add_mesh(pyvista_mesh,color= rotor_rgb_color,opacity= rotor_opacity)                           
-
-        for fuel_line in network.fuel_lines:        
-            for fuel_tank in fuel_line.fuel_tanks:   
-                if fuel_tank.wing_tag != None:
-                    wing = geometry.wings[fuel_tank.wing_tag]
-                    if issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
-                        GEOM  = generate_non_integral_fuel_tank_points(fuel_tank,tessellation )  
+                
+        for source in  network.sources: 
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):  
+                if source.wing_tag != None:
+                    wing = geometry.wings[source.wing_tag]
+                    if issubclass(type(source), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
+                        GEOM  = generate_non_integral_fuel_tank_points(source,tessellation )  
                         actor        = generate_vtk_object(GEOM.PTS) 
                         vtk_data     = actor.GetMapper().GetInput() 
                         pyvista_mesh = pv.wrap(vtk_data)                      
@@ -293,9 +293,9 @@ def plot_3d_vehicle(vehicle,
                             pyvista_mesh = pv.wrap(vtk_data)                      
                             plotter.add_mesh(pyvista_mesh,color= fuel_tank_rgb_color,opacity= fuel_tank_opacity)   
 
-                    if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank:  
-                        seg_bounds   = fuel_tank.segments_bounding_tank   
-                        GEOM         = generate_integral_wing_tank_points(wing,5,seg_bounds,fuel_tank)
+                    if type(source) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank:  
+                        seg_bounds   = source.segments_bounding_tank   
+                        GEOM         = generate_integral_wing_tank_points(wing,5,seg_bounds,source)
                         actor        = generate_vtk_object(GEOM.PTS) 
                         vtk_data     = actor.GetMapper().GetInput() 
                         pyvista_mesh = pv.wrap(vtk_data)                      
@@ -307,18 +307,18 @@ def plot_3d_vehicle(vehicle,
                             pyvista_mesh = pv.wrap(vtk_data)                      
                             plotter.add_mesh(pyvista_mesh,color= fuel_tank_rgb_color,opacity= fuel_tank_opacity)                               
 
-                elif fuel_tank.fuselage_tag != None:
-                    fuselage = geometry.fuselages[fuel_tank.fuselage_tag]
-                    if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank:  
-                        seg_bounds  = fuel_tank.segments_bounding_tank  
-                        GEOM        = generate_integral_fuel_tank_points(fuselage,fuel_tank, seg_bounds,tessellation )
+                elif source.fuselage_tag != None:
+                    fuselage = geometry.fuselages[source.fuselage_tag]
+                    if type(source) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank:  
+                        seg_bounds   = source.segments_bounding_tank  
+                        GEOM         = generate_integral_fuel_tank_points(fuselage,source, seg_bounds,tessellation )
                         actor        = generate_vtk_object(GEOM.PTS) 
                         vtk_data     = actor.GetMapper().GetInput() 
                         pyvista_mesh = pv.wrap(vtk_data)                      
                         plotter.add_mesh(pyvista_mesh,color= fuel_tank_rgb_color,opacity= fuel_tank_opacity)   
 
-                elif issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
-                    GEOM  = generate_non_integral_fuel_tank_points(fuel_tank,tessellation )  
+                elif issubclass(type(source), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
+                    GEOM  = generate_non_integral_fuel_tank_points(source,tessellation )  
                     actor        = generate_vtk_object(GEOM.PTS) 
                     vtk_data     = actor.GetMapper().GetInput() 
                     pyvista_mesh = pv.wrap(vtk_data)                      

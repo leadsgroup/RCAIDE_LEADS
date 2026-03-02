@@ -58,8 +58,8 @@ def main():
             # delete propulsor 
             del network.propulsors[propulsor.tag] 
 
-        for fuel_line in  network.fuel_lines: 
-            fuel_line.assigned_propulsors = []           
+        for distributor in  network.distributors: 
+            distributor.assigned_propulsors = []           
     
     for id_eng,engine_number in enumerate(engines):
         propulsor_list = []
@@ -70,9 +70,9 @@ def main():
                 propulsor.tag = 'propulsor_' +  str(i+1)
                 network.propulsors.append(propulsor)
                 propulsor_list.append(propulsor.tag) 
-                
-            for fuel_line in  network.fuel_lines:  
-                fuel_line.assigned_propulsors =  [propulsor_list]
+        
+            for distributor in  network.distributors: 
+                distributor.assigned_propulsors = [propulsor_list]       
                 
         for id_w,weight in enumerate(w_vec):
             configuration.mass_properties.takeoff = weight
@@ -83,8 +83,9 @@ def main():
             baseline_propulsor = deepcopy(propulsor) 
             del network.propulsors[propulsor.tag] 
     
-        for fuel_line in  network.fuel_lines: 
-            fuel_line.assigned_propulsors = []                       
+    
+        for distributor in  network.distributors: 
+            distributor.assigned_propulsors = []                       
         
     truth_TOFL =  np.array([[ 794.60424913,  533.36112737,  387.47202765],
                             [ 832.17783845,  556.13537318,  403.85945168],

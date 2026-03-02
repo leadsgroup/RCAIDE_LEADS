@@ -74,9 +74,10 @@ def compute_propulsion_system_weight(vehicle,ref_propulsor, settings):
                 ref_propulsor = propulsor  
                 NENG  += 1 
             if propulsor.nacelle !=  None:          
-                ref_nacelle =  propulsor.nacelle   
-        for fuel_line in network.fuel_lines:
-            for _ in fuel_line.fuel_tanks:
+                ref_nacelle =  propulsor.nacelle 
+                
+        for source in  network.sources: 
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
                 number_of_tanks +=  1
                   
     if ref_nacelle is not None:
@@ -222,9 +223,9 @@ def compute_fuel_system_weight(vehicle, NENG, settings):
     
     WFSYS = 0
     for network in vehicle.networks:
-        for fuel_line in network.fuel_lines:
-            for fuel_tank in fuel_line.fuel_tanks:
-                WFSYS+=  fuel_tank.fuel.mass_properties.mass * (1/fuel_tank.fuel.gravimetric_efficiency -1) 
+        for source in  network.sources: 
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
+                WFSYS+=  source.fuel.mass_properties.mass * (1/source.fuel.gravimetric_efficiency -1) 
         
     return WFSYS 
 

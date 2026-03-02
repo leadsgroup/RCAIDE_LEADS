@@ -100,14 +100,14 @@ class Coolant_Line(Distributor):
         """               
         self.active                        = True 
         self.efficiency                    = 1.0
-        if distributor is not None:
-            for tag, item in  distributor.items():
-                self.identical_battery_modules  =  distributor.identical_battery_modules
-                if tag == 'battery_modules':
-                    if not hasattr(self, 'battery_modules'):
-                        self.battery_modules = Container()
-                    for battery in item:
-                        self.battery_modules[battery.tag] = Container()
+        #if distributor is not None:
+            #for tag, item in  distributor.items():
+                #self.identical_battery_modules  =  distributor.identical_battery_modules
+                #if tag == 'battery_modules':
+                    #if not hasattr(self, 'battery_modules'):
+                        #self.battery_modules = Container()
+                    #for battery in item:
+                        #self.battery_modules[battery.tag] = Container()
 
     def compute_performance(self, state):
 

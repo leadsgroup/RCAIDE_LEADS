@@ -79,36 +79,35 @@ def initialize_conditions(segment):
     vehicle = segment.analyses.vehicle
 
     for network in vehicle.networks:
-        for bus in  network.busses:
-            bus.append_operating_conditions(segment)
-            for battery_module in  bus.battery_modules:
-                battery_module.append_operating_conditions(segment,bus)
-
-            for fuel_cell_stack in  bus.fuel_cell_stacks:
-                fuel_cell_stack.append_operating_conditions(segment,bus)
-
-            for tag, bus_item in bus.items():
+        for distributor in network.distrubutor:
+            if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
+                distributor.append_operating_conditions(segment)
+            for tag, bus_item in distributor.items():
                 if issubclass(type(bus_item), RCAIDE.Library.Components.Component):
-                    bus_item.append_operating_conditions(segment,bus)
+                    bus_item.append_operating_conditions(segment,distributor) 
+        
+        #for fuel_cell_stack in  bus.fuel_cell_stacks:
+            #fuel_cell_stack.append_operating_conditions(segment,bus)
 
-            for fuel_tank in  bus.fuel_tanks:
-                fuel_tank.append_operating_conditions(segment,bus)
+        for source in  network.sources:
+            source.append_operating_conditions(segment)
 
     if isinstance(segment, RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge):
         for network in vehicle.networks:
-            time =  []
-            for bus in  network.busses:
-                t=0
-                if segment.state.initials.keys():
-                    end_of_flight_soc = 1
-                    for battery_module in segment.state.conditions.energy.busses[bus.tag].battery_modules:
-                        end_of_flight_soc = min(end_of_flight_soc,battery_module.cell.state_of_charge[-1])
-                else:
-                    end_of_flight_soc =  segment.initial_battery_state_of_charge
-                
-                t           =  max(((segment.cutoff_SOC-end_of_flight_soc) / bus.charging_c_rate )*Units.hrs  , t) 
-                t           += segment.cooling_time
-                time.append(t)
+            time =  [] 
+            for distributor in network.distrubutor:
+                if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus): 
+                    t=0
+                    if segment.state.initials.keys():
+                        end_of_flight_soc = 1
+                        for source in segment.state.conditions.energy.sources:
+                            end_of_flight_soc = min(end_of_flight_soc,source.cell.state_of_charge[-1])
+                    else:
+                        end_of_flight_soc =  segment.initial_battery_state_of_charge
+                    
+                    t           =  max(((segment.cutoff_SOC-end_of_flight_soc) / distributor.charging_c_rate )*Units.hrs  , t) 
+                    t           += segment.cooling_time
+                    time.append(t)
             t_initial = segment.state.conditions.frames.inertial.time[0,0]
             t_nondim  = segment.state.numerics.dimensionless.control_points
             time      = np.max(time)

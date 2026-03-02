@@ -24,7 +24,7 @@ def forces(segment):
         Inputs:
             segment.state.conditions.:
                 frames.wind.force_vector               [N]
-                frames.body.thrust_force_vector        [N]
+                frames.body.total_force_vector        [N]
                 frames.inertial.gravity_force_vector   [N]
         Outputs:
             segment.conditions
@@ -39,7 +39,7 @@ def forces(segment):
     # unpack 
     conditions      = segment.state.conditions 
     F_aero_w        = conditions.frames.wind.force_vector
-    F_thrust_body   = conditions.frames.body.thrust_force_vector
+    F_thrust_body   = conditions.frames.body.total_force_vector
     F_weight_i      = conditions.frames.inertial.gravity_force_vector
 
     # unpack transformation matrices

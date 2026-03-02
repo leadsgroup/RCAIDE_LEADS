@@ -77,8 +77,8 @@ def compute_operating_items_weight(vehicle):
     VMAX            = vehicle.flight_envelope.design_mach_number   
     number_of_tanks = 0  
     for network in  vehicle.networks:
-        for fuel_line in network.fuel_lines:
-            for _ in fuel_line.fuel_tanks:
+        for source in  network.sources: 
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
                 number_of_tanks += 1  
     
     WUF             = 11.5 * NENG * THRUST ** 0.2 + 0.07 * SW + 1.6 * number_of_tanks * FMXTOT ** 0.28  # unusable fuel weight

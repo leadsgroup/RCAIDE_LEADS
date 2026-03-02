@@ -5,7 +5,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-from RCAIDE.Library.Components                                                      import Component 
+from RCAIDE.Library.Components.Powertrain.Sources.Source                            import Source   
 from RCAIDE.Library.Attributes.Coolants.Glycol_Water                                import Glycol_Water
 from RCAIDE.Library.Attributes.Materials.Polyetherimide                             import Polyetherimide
 from RCAIDE.Library.Methods.Thermal_Management.Reservoirs.Reservoir_Tank            import compute_mixing_temperature, append_reservoir_conditions, append_reservoir_segment_conditions
@@ -14,7 +14,7 @@ from RCAIDE.Library.Plots.Thermal_Management.plot_reservoir_conditions          
 # ----------------------------------------------------------------------
 #  Reservoir
 # ---------------------------------------------------------------------- 
-class Reservoir(Component):
+class Reservoir(Source):
     """
     A class representing a coolant storage reservoir for thermal management systems.
 

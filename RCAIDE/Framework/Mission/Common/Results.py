@@ -94,10 +94,10 @@ class Results(Conditions):
         # body conditions                                                      
         self.frames.body                                                       = Conditions()        
         self.frames.body.inertial_rotations                                    = ones_3col * 0
-        self.frames.body.thrust_force_vector                                   = ones_3col * 0
+        self.frames.body.total_force_vector                                   = ones_3col * 0
         self.frames.body.moment_vector                                         = ones_3col * 0
         self.frames.body.velocity_vector                                       = ones_3col * 0
-        self.frames.body.thrust_moment_vector                                  = ones_3col * 0 
+        self.frames.body.total_moment_vector                                  = ones_3col * 0 
         self.frames.body.transform_to_inertial                                 = np.empty([0,0,0])
                                                                                
         # wind frame conditions                                                
@@ -426,9 +426,9 @@ class Results(Conditions):
         self.energy.sources                                   = Conditions()
         self.energy.distributors                              = Conditions()
         self.energy.systems                                   = Conditions()
-        self.energy.thrust_force_vector                       = ones_3col * 0
-        self.energy.thrust_moment_vector                      = ones_3col * 0
-        self.energy.net_power                                 = Conditions()
+        self.energy.total_force_vector                        = ones_3col * 0
+        self.energy.total_moment_vector                       = ones_3col * 0
+        self.energy.total_propulsive_power                                 = Conditions()
         self.energy.fuel_consumption                          = ones_1col * 0
         self.energy.cumulative_fuel_consumption               = ones_1col * 0
         self.energy.hybrid_power_split_ratio                  = ones_1col * 0 

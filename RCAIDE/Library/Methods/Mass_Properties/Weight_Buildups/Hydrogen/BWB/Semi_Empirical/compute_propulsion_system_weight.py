@@ -82,8 +82,9 @@ def compute_propulsion_system_weight(vehicle,ref_propulsor, settings):
             if propulsor.nacelle !=  None:          
                 if propulsor.nacelle !=  None:                
                     ref_nacelle =  propulsor.nacelle   
-        for fuel_line in network.fuel_lines:
-            for _ in fuel_line.fuel_tanks:
+            
+        for source in  network.sources: 
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):                    
                 number_of_tanks +=  1
                   
     if ref_nacelle is not None:
@@ -130,31 +131,11 @@ def compute_fuel_system_weight(vehicle, NENG,settings):
     WPUMP = 0
  
     #if settings.physics_based_distributor_estimation: 
-    for network in vehicle.networks:
-        for fuel_line in network.fuel_lines:
-            for fuel_tank in fuel_line.fuel_tanks: 
-                WTANK += fuel_tank.tank_accesories_weight_factor * (fuel_tank.mass_properties.insulation_mass + fuel_tank.mass_properties.structural_mass) # The factor 0.5 covers all the other tank adjustments
-                    
-            # # Step 1.1 create a copy of the transfer lines and use a physics based approach to estimate line weight 
-            # fuel_line_jet_A = deepcopy(fuel_line) 
-            # fuel_line_jet_A.pipe.rigid_material                  = RCAIDE.Library.Attributes.Materials.Aluminum()
-            # fuel_line_jet_A.pipe.flexible_material               = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304()
-            # fuel_line_jet_A.pipe.flexible_material_ratio         = 0.25
-            # fuel_line_jet_A.pipe.diameters                       = Data()
-            # fuel_line_jet_A.pipe.diameters.external              = 0.625 *  Units.inches 
-            # fuel_line_jet_A.pipe.diameters.internal              = 0.625 *  Units.inches -  (2 * 0.035)*  Units.inches
-            # fuel_line_jet_A.insulation                           = Data()
-            # fuel_line_jet_A.insulation.rigid_material            = RCAIDE.Library.Attributes.Materials.Aluminum() 
-            # fuel_line_jet_A.insulation.flexible_material         = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304() 
-            # fuel_line_jet_A.insulation.flexible_material_ratio   = 0.25
-            # fuel_line_jet_A.insulation.diameters                 = Data()
-            # fuel_line_jet_A.insulation.diameters.external        = 0.0
-            # fuel_line_jet_A.insulation.diameters.internal        = 0.0 
-            
-            # # Step 1.2 compute transfer line weight 
-            # _ =  compute_distributor_center_of_gravity(fuel_line_jet_A,vehicle, length=0)
-            # W_SYS_Jet_A = fuel_line_jet_A.mass_properties.mass
-            
+    for network in vehicle.networks: 
+        for source in  network.sources: 
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
+                WTANK += source.tank_accesories_weight_factor * (source.mass_properties.insulation_mass + source.mass_properties.structural_mass) # The factor 0.5 covers all the other tank adjustments
+             
             # Step 2 estimate line weight of true transfer line
             compute_distributor_center_of_gravity(fuel_line,vehicle, length=0)
             WLINE = fuel_line.mass_properties.mass
