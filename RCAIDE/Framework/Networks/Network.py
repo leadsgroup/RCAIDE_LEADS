@@ -127,17 +127,8 @@ class Network(Component):
 
                 total_thrust           += outputs.thrust
                 total_moment           += outputs.moment
-                total_propulsive_power += outputs.power.propulsive
-                
-                
-                
-                # DONT THINK WE NEED THIS STATEMENT BELOW, JUST SET MDOT OF ELECTRICAL PROPULSOR TO ZERO
-                if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or \
-                   isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet) or \
-                   isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop) or \
-                   isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Internal_Combustion_Engine) or \
-                   isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine):
-                    total_mdot += inputs.mdot_fuel
+                total_propulsive_power += outputs.power.propulsive 
+                total_mdot             += inputs.mdot_fuel
 
         # ----------------------------------------------------------
         # Systems
@@ -151,200 +142,233 @@ class Network(Component):
 
         n_rows  = len(distributors)
         n_cpts = state.numerics.number_of_control_points
+        A_matrix2 = np.zeros((n_cpts,n_rows,0))
 
         distributor_tags = []
         for dist in distributors:
-            distributor_tags.append(dist.tag)
-        
-        for t_idx in range(n_cpts): # NEED TO REMOVE THIS LOOP
+            distributor_tags.append(dist.tag) 
 
-            b_vector = np.zeros((n_cpts,n_rows,1))
+        b_vector = np.zeros((n_cpts,n_rows,1))
 
-            unknown_cols = {}   # maps a key -> column index
-            triplets = []       # (row, col, coeff) to populate A
+        unknown_cols = {}   # maps a key -> column index
+        triplets = []       # (row, col, coeff) to populate A
 
-            # propulsors
-            for propulsor in propulsors:
-                if propulsor.assigned_distributors != None: 
-                    for distributor_tag in propulsor.assigned_distributors[0]: 
-                        row_index   = distributor_tags.index(distributor_tag) 
-                        distributor = distributors[distributor_tag]
-                        if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan):
-                            if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
-                                val = conditions.energy.propulsors[propulsor.tag].outputs.power.electrical[:,0]
-                                if np.all(val == 0.0):
-                                    key = ("propulsor", propulsor.tag, distributor_tag, "elec_out")
-                                    if key not in unknown_cols:
-                                        unknown_cols[key] = len(unknown_cols)
-                                    triplets.append((t_idx,row_index, unknown_cols[key], +1.0)) 
-                                else:
-                                    b_vector[:,row_index,0] += val
-                            elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
-                                val = conditions.energy.propulsors[propulsor.tag].inputs.power.chemical[:,0]
-                                if np.all(val == 0.0):
-                                    key = ("propulsor", propulsor.tag, distributor_tag, "chem_in")
-                                    if key not in unknown_cols:
-                                        unknown_cols[key] = len(unknown_cols)
-                                    triplets.append((t_idx,row_index, unknown_cols[key], -1.0)) # -1 is drawing power + 1 is providing  , each line is a dristrubutor line, each column is a component,
-                                else:
-                                    b_vector[:,row_index,0] -= val
-                        elif isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor): # DO NOT LIKE THIS, SHOULD BE PROPULSOR AGNOSTIC
-                            if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
-                                val = conditions.energy.propulsors[propulsor.tag].inputs.power.electrical[:,0]
-                                if np.all(val == 0.0):
-                                    key = ("propulsor", propulsor.tag, distributor_tag, "elec_in")
-                                    if key not in unknown_cols:
-                                        unknown_cols[key] = len(unknown_cols)
-                                    triplets.append((t_idx,row_index, unknown_cols[key], -1.0))
-                                else:
-                                    b_vector[:,row_index,0] -= val
-                
-            for converter in network.non_propulsive_converters:
-                electrical_connections = 0
-                chemical_connections   = 0
-                if converter.assigned_distributors != None: 
-                    for distributors_tag in converter.assigned_distributors[0]:
-                        for distributor_tag in distributors_tag:
-                            distributor = distributors[distributor_tag]
-                            if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
-                                electrical_connections += 1
-                            elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
-                                chemical_connections   += 1
-
-            # converters (non-propulsive) 
-            for converter in network.non_propulsive_converters:
-                if converter.assigned_distributors != None: 
-                    for distributor_tag in converter.assigned_distributors[0]: 
-                        row_index = distributor_tags.index(distributor_tag) 
-                        distributor = distributors[distributor_tag]
-                        key = ("converter", converter.tag, "P")
-                        if key not in unknown_cols:
-                            unknown_cols[key] = len(unknown_cols)
+        # propulsors
+        for propulsor in propulsors:
+            if propulsor.assigned_distributors != None: 
+                for distributor_tag in propulsor.assigned_distributors[0]: 
+                    row_index   = distributor_tags.index(distributor_tag) 
+                    distributor = distributors[distributor_tag]
+                    if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan):
                         if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
-                            val = conditions.energy.converters[converter.tag].outputs.power.electrical[:,0]
-                            if np.all(val == 0.0): # NEED TO MAKE USE NP.ALL ? 
-                                triplets.append((t_idx,row_index, unknown_cols[key], +1.0/electrical_connections)) # this assumes that the power provide to the line is split equally among all non-propulsive converters 
+                            val = conditions.energy.propulsors[propulsor.tag].outputs.power.electrical[:,0]
+                            if np.all(val == 0.0):
+                                key = ("propulsor", propulsor.tag, distributor_tag, "elec_out")
+                                if key not in unknown_cols:
+                                    unknown_cols[key] = len(unknown_cols) # add key to list 
+                                    #A_matrix2[:,row_index,unknown_cols[key]] += 1
+                                    vector    =  np.ones(n_cpts)[:,None]
+                                    A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2) 
+                                else:
+                                    A_matrix2[:,row_index,unknown_cols[key]] += 1
+                                    
+                                for t_idx in range(n_cpts):
+                                    triplets.append((t_idx,row_index, unknown_cols[key], +1.0)   )
+                                
+                                #vector    =  np.ones(n_cpts)[:, None,None]
+                                #A_matrix2 =  np.concatenate((A_matrix2,vector), axis=row_index) 
                             else:
                                 b_vector[:,row_index,0] += val
                         elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
-                            val = conditions.energy.converters[converter.tag].inputs.power.chemical[:,0]
-                            if np.all(val == 0.0): # NEED TO MAKE USE NP.ALL ? 
-                                triplets.append((t_idx,row_index, unknown_cols[key], -1.0/chemical_connections))
+                            val = conditions.energy.propulsors[propulsor.tag].inputs.power.chemical[:,0]
+                            if np.all(val == 0.0):
+                                key = ("propulsor", propulsor.tag, distributor_tag, "chem_in")
+                                if key not in unknown_cols:
+                                    unknown_cols[key] = len(unknown_cols)
+                                    
+                                for t_idx in range(n_cpts):
+                                    triplets.append((t_idx,row_index, unknown_cols[key], -1.0)) # -1 is drawing power + 1 is providing  , each line is a dristrubutor line, each column is a component,
+                                    
+                                #A_matrix2[:,row_index, unknown_cols[key]] -= 1.0                                    
                             else:
                                 b_vector[:,row_index,0] -= val
-
-            # modulators
-            for modulator in modulators:
-                if modulator.assigned_distributors != None: 
-                    for distributor_tag in modulator.assigned_distributors[0]: 
-                        row_index = distributor_tags.index(distributor_tag) 
-                        distributor = distributors[distributor_tag]
-                        if isinstance(modulator, RCAIDE.Library.Components.Powertrain.Modulators.Transformer_Rectifier_Unit):
-                            eff = modulator.efficiency.electrical
-                            vin  = conditions.energy.modulators[modulator.tag].inputs.power.electrical[:,0]  # MATTEO, wont this always be zero ? 
-                            vout = conditions.energy.modulators[modulator.tag].outputs.power.electrical[:,0] # MATTEO, wont this always be zero ? 
-                            if np.all(vin != 0.0) and np.all(vout == 0.0): # NEED TO MAKE USE NP.ALL ? 
-                                conditions.energy.modulators[modulator.tag].outputs.power.electrical[:,0] = vin * eff
-                                vout = conditions.energy.modulators[modulator.tag].outputs.power.electrical[:,0]
-                            elif np.all(vout != 0.0) and np.all(vin == 0.0): # NEED TO MAKE USE NP.ALL ? 
-                                conditions.energy.modulators[modulator.tag].inputs.power.electrical[:,0]  = vout / eff
-                                vin  = conditions.energy.modulators[modulator.tag].inputs.power.electrical[:,0]
-                            elif np.all(vin != 0.0) and np.all(vout != 0.0): # NEED TO MAKE USE NP.ALL ? 
-                                conditions.energy.modulators[modulator.tag].outputs.power.electrical[:,0] = vin * eff
-                                vout = conditions.energy.modulators[modulator.tag].outputs.power.electrical[:,0]
-                            key = ("modulator", modulator.tag, "P")
-                            if key not in unknown_cols:
-                                unknown_cols[key] = len(unknown_cols)
-                            col = unknown_cols[key]
-                            if distributor.type == 'AC':
-                                if vin == 0.0: # NEED TO MAKE USE NP.ALL ? 
-                                    triplets.append((t_idx,row_index, col, -1.0))
-                                else:
-                                    b_vector[:,row_index,0] -= vin
-                            elif distributor.type == 'DC':
-                                # Mirror link behavior: always add +eff to DC row when the DC side is unknown
-                                if vout == 0.0: # NEED TO MAKE USE NP.ALL ? 
-                                    triplets.append((t_idx,row_index, col, +eff))
-                                else:
-                                    b_vector[:,row_index,0] += vout
-
-            # sources 
-            for source in sources:
-                if source.assigned_distributors != None: 
-                    for distributor_tag in source.assigned_distributors[0]: 
-                        row_index = distributor_tags.index(distributor_tag) 
+                    elif isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor): # DO NOT LIKE THIS, SHOULD BE PROPULSOR AGNOSTIC
+                        if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
+                            val = conditions.energy.propulsors[propulsor.tag].inputs.power.electrical[:,0]
+                            if np.all(val == 0.0):
+                                key = ("propulsor", propulsor.tag, distributor_tag, "elec_in")
+                                if key not in unknown_cols:
+                                    unknown_cols[key] = len(unknown_cols)
+                                    
+                                for t_idx in range(n_cpts):
+                                    triplets.append((t_idx,row_index, unknown_cols[key], -1.0))
+                                #A_matrix2[:,row_index, unknown_cols[key]] -= 1.0   
+                            else:
+                                b_vector[:,row_index,0] -= val
+            
+        for converter in network.non_propulsive_converters:
+            electrical_connections = 0
+            chemical_connections   = 0
+            if converter.assigned_distributors != None: 
+                for distributors_tag in converter.assigned_distributors[0]:
+                    for distributor_tag in distributors_tag:
                         distributor = distributors[distributor_tag]
                         if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
-                            val = conditions.energy.sources[source.tag].outputs.power.electrical[:,0] # so you dont know how much power the battery is producing 
-                            if np.all(val == 0.0):# NEED TO MAKE USE NP.ALL ? 
-                                key = ("source", source.tag, distributor_tag, "elec_out")
-                                if key not in unknown_cols:
-                                    unknown_cols[key] = len(unknown_cols)
-                                triplets.append((t_idx,row_index, unknown_cols[key], +1.0))
-                            else: # if you do know how much the battery is producing, assign it as a known value on the vector 
-                                b_vector[:,row_index,0] += val
+                            electrical_connections += 1
                         elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
-                            val = conditions.energy.sources[source.tag].outputs.power.chemical[:,0]
-                            if np.all(val == 0.0): # NEED TO MAKE USE NP.ALL ? 
-                                key = ("system", system.tag, distributor_tag, "elec_in")
-                                if key not in unknown_cols:
-                                    unknown_cols[key] = len(unknown_cols)
-                            else:
-                                b_vector[:,row_index,0] += val
+                            chemical_connections   += 1
 
-            # systems 
-            for system in systems:
-                if propulsor.assigned_distributors != None:
-                    for distributor_tag in propulsor.assigned_distributors[0]: 
-                        row_index = distributor_tags.index(distributor_tag) 
-                        val = conditions.energy.systems[system.tag].inputs.power.electrical[:v,0]
+        # converters (non-propulsive) 
+        for converter in network.non_propulsive_converters:
+            if converter.assigned_distributors != None: 
+                for distributor_tag in converter.assigned_distributors[0]: 
+                    row_index = distributor_tags.index(distributor_tag) 
+                    distributor = distributors[distributor_tag]
+                    key = ("converter", converter.tag, "P")
+                    if key not in unknown_cols:
+                        unknown_cols[key] = len(unknown_cols)
+                    if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
+                        val = conditions.energy.converters[converter.tag].outputs.power.electrical[:,0]
+                        if np.all(val == 0.0): # NEED TO MAKE USE NP.ALL ?
+                            for t_idx in range(n_cpts):
+                                triplets.append((t_idx,row_index, unknown_cols[key], +1.0/electrical_connections)) # this assumes that the power provide to the line is split equally among all non-propulsive converters 
+                            #A_matrix2[:,row_index, unknown_cols[key]] += 1.0/electrical_connections
+                        else:
+                            b_vector[:,row_index,0] += val
+                    elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
+                        val = conditions.energy.converters[converter.tag].inputs.power.chemical[:,0]
+                        if np.all(val == 0.0): # NEED TO MAKE USE NP.ALL ?
+                            for t_idx in range(n_cpts):
+                                triplets.append((t_idx,row_index, unknown_cols[key], -1.0/chemical_connections))
+                            #A_matrix2[:,row_index, unknown_cols[key]] -= 1.0/chemical_connections
+                        else:
+                            b_vector[:,row_index,0] -= val
+
+        # modulators
+        for modulator in modulators:
+            if modulator.assigned_distributors != None: 
+                for distributor_tag in modulator.assigned_distributors[0]: 
+                    row_index = distributor_tags.index(distributor_tag) 
+                    distributor = distributors[distributor_tag]
+                    if isinstance(modulator, RCAIDE.Library.Components.Powertrain.Modulators.Transformer_Rectifier_Unit):
+                        eff = modulator.efficiency.electrical
+                        vin  = conditions.energy.modulators[modulator.tag].inputs.power.electrical[:,0]  # MATTEO, wont this always be zero ? 
+                        vout = conditions.energy.modulators[modulator.tag].outputs.power.electrical[:,0] # MATTEO, wont this always be zero ? 
+                        if np.all(vin != 0.0) and np.all(vout == 0.0): # NEED TO MAKE USE NP.ALL ? 
+                            conditions.energy.modulators[modulator.tag].outputs.power.electrical[:,0] = vin * eff
+                            vout = conditions.energy.modulators[modulator.tag].outputs.power.electrical[:,0]
+                        elif np.all(vout != 0.0) and np.all(vin == 0.0): # NEED TO MAKE USE NP.ALL ? 
+                            conditions.energy.modulators[modulator.tag].inputs.power.electrical[:,0]  = vout / eff
+                            vin  = conditions.energy.modulators[modulator.tag].inputs.power.electrical[:,0]
+                        elif np.all(vin != 0.0) and np.all(vout != 0.0): # NEED TO MAKE USE NP.ALL ? 
+                            conditions.energy.modulators[modulator.tag].outputs.power.electrical[:,0] = vin * eff
+                            vout = conditions.energy.modulators[modulator.tag].outputs.power.electrical[:,0]
+                        key = ("modulator", modulator.tag, "P")
+                        if key not in unknown_cols:
+                            unknown_cols[key] = len(unknown_cols)
+                        col = unknown_cols[key]
+                        if distributor.type == 'AC':
+                            if np.all(vin == 0.0): # NEED TO MAKE USE NP.ALL ?
+                                for t_idx in range(n_cpts):
+                                    triplets.append((t_idx,row_index, col, -1.0))
+                                #A_matrix2[:,row_index, col] -= 1.0
+                            else:
+                                b_vector[:,row_index,0] -= vin
+                        elif distributor.type == 'DC':
+                            # Mirror link behavior: always add +eff to DC row when the DC side is unknown
+                            if np.all(vout == 0.0): # NEED TO MAKE USE NP.ALL ?
+                                for t_idx in range(n_cpts):
+                                    triplets.append((t_idx,row_index, col, +eff)) 
+                                #A_matrix2[:,row_index, col] += eff
+                            else:
+                                b_vector[:,row_index,0] += vout
+
+        # sources 
+        for source in sources:
+            if source.assigned_distributors != None: 
+                for distributor_tag in source.assigned_distributors[0]: 
+                    row_index = distributor_tags.index(distributor_tag) 
+                    distributor = distributors[distributor_tag]
+                    if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
+                        val = conditions.energy.sources[source.tag].outputs.power.electrical[:,0] # so you dont know how much power the battery is producing 
+                        if np.all(val == 0.0):# NEED TO MAKE USE NP.ALL ? 
+                            key = ("source", source.tag, distributor_tag, "elec_out")
+                            if key not in unknown_cols:
+                                unknown_cols[key] = len(unknown_cols)
+                            for t_idx in range(n_cpts):
+                                triplets.append((t_idx,row_index, unknown_cols[key], +1.0))
+                            #A_matrix2[:,row_index, unknown_cols[key]] += 1.0
+                        else: # if you do know how much the battery is producing, assign it as a known value on the vector 
+                            b_vector[:,row_index,0] += val
+                    elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
+                        val = conditions.energy.sources[source.tag].outputs.power.chemical[:,0]
                         if np.all(val == 0.0): # NEED TO MAKE USE NP.ALL ? 
                             key = ("system", system.tag, distributor_tag, "elec_in")
                             if key not in unknown_cols:
                                 unknown_cols[key] = len(unknown_cols)
-                            triplets.append((t_idx,row_index, unknown_cols[key], -1.0))
                         else:
-                            b_vector[:,row_index,0] -= val
+                            b_vector[:,row_index,0] += val
 
-            # distributor ↔ distributor links 
-            for dist_a in distributors:
-                if dist_a.assigned_distributors != None:
-                    for distributor_tag in dist_a.assigned_distributors[0]:  
-                        name_a = dist_a.tag
-                        name_b = distributor_tag
-    
-                        # A -> B
-                        if name_b not in state.conditions.energy.distributors[name_a].links:
-                            linkAB                  = Conditions()
-                            linkAB.power            = Conditions()
-                            linkAB.power.electrical = 0 * state.ones_row(1)
-                            linkAB.power.chemical   = 0 * state.ones_row(1)
-                            state.conditions.energy.distributors[name_a].links[name_b] = linkAB
-    
-                        # B -> A
-                        if name_a not in state.conditions.energy.distributors[name_b].links:
-                            linkBA                  = Conditions()
-                            linkBA.power            = Conditions()
-                            linkBA.power.electrical = 0 * state.ones_row(1)
-                            linkBA.power.chemical   = 0 * state.ones_row(1)
-                            state.conditions.energy.distributors[name_b].links[name_a] = linkBA
-    
-                        if name_a < name_b:
-                            row_a = 0
-                            row_b = 0
-                            for i in range(n_rows):
-                                if distributor_tags[i] == name_a:
-                                    row_a = i
-                                if distributor_tags[i] == name_b:
-                                    row_b = i
-                            key = ("link", name_a, name_b)
-                            if key not in unknown_cols:
-                                unknown_cols[key] = len(unknown_cols)
-                            col = unknown_cols[key]
+        # systems 
+        for system in systems:
+            if propulsor.assigned_distributors != None:
+                for distributor_tag in propulsor.assigned_distributors[0]: 
+                    row_index = distributor_tags.index(distributor_tag) 
+                    val = conditions.energy.systems[system.tag].inputs.power.electrical[:v,0]
+                    if np.all(val == 0.0): # NEED TO MAKE USE NP.ALL ? 
+                        key = ("system", system.tag, distributor_tag, "elec_in")
+                        if key not in unknown_cols:
+                            unknown_cols[key] = len(unknown_cols)
+                        for t_idx in range(n_cpts):
+                            triplets.append((t_idx,row_index, unknown_cols[key], -1.0))
+                        #A_matrix2[:,row_index, unknown_cols[key]] -= 1.0
+                    else:
+                        b_vector[:,row_index,0] -= val
+
+        # distributor ↔ distributor links 
+        for dist_a in distributors:
+            if dist_a.assigned_distributors != None:
+                for distributor_tag in dist_a.assigned_distributors[0]:  
+                    name_a = dist_a.tag
+                    name_b = distributor_tag
+
+                    # A -> B
+                    if name_b not in state.conditions.energy.distributors[name_a].links:
+                        linkAB                  = Conditions()
+                        linkAB.power            = Conditions()
+                        linkAB.power.electrical = 0 * state.ones_row(1)
+                        linkAB.power.chemical   = 0 * state.ones_row(1)
+                        state.conditions.energy.distributors[name_a].links[name_b] = linkAB
+
+                    # B -> A
+                    if name_a not in state.conditions.energy.distributors[name_b].links:
+                        linkBA                  = Conditions()
+                        linkBA.power            = Conditions()
+                        linkBA.power.electrical = 0 * state.ones_row(1)
+                        linkBA.power.chemical   = 0 * state.ones_row(1)
+                        state.conditions.energy.distributors[name_b].links[name_a] = linkBA
+
+                    if name_a < name_b:
+                        row_a = 0
+                        row_b = 0
+                        for i in range(n_rows):
+                            if distributor_tags[i] == name_a:
+                                row_a = i
+                            if distributor_tags[i] == name_b:
+                                row_b = i
+                        key = ("link", name_a, name_b)
+                        if key not in unknown_cols:
+                            unknown_cols[key] = len(unknown_cols)
+                        col = unknown_cols[key]
+                        
+                        for t_idx in range(n_cpts):
                             triplets.append((t_idx,row_a, col, -1.0))
                             triplets.append((t_idx,row_b, col, +1.0))
+                        
+                        #A_matrix2[:,row_index, row_a] -= 1.0
+                        #A_matrix2[:,row_index, row_b] += 1.0
 
-            n_unknowns = len(unknown_cols)
+        n_unknowns = len(unknown_cols)
             
     
         # ----------------------------------------------------------

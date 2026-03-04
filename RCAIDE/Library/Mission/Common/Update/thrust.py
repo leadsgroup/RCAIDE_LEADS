@@ -43,7 +43,6 @@ def thrust(segment):
         pass
     else: 
         I = segment.state.numerics.time.integrate         
-        conditions.energy.fuel_consumption            = np.dot(I,conditions.weights.vehicle.mass_rate)
-        conditions.energy.cumulative_fuel_consumption =  conditions.energy.fuel_consumption
+        conditions.energy.cumulative_fuel_consumption = np.dot(I,conditions.weights.vehicle.mass_rate)
         if segment.state.initials:  
             conditions.energy.cumulative_fuel_consumption += segment.state.initials.conditions.energy.cumulative_fuel_consumption[-1]
