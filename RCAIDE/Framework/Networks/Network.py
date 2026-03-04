@@ -165,18 +165,16 @@ class Network(Component):
                             if np.all(val == 0.0):
                                 key = ("propulsor", propulsor.tag, distributor_tag, "elec_out")
                                 if key not in unknown_cols:
-                                    unknown_cols[key] = len(unknown_cols) # add key to list 
-                                    #A_matrix2[:,row_index,unknown_cols[key]] += 1
-                                    vector    =  np.ones(n_cpts)[:,None]
+                                    unknown_cols[key] = len(unknown_cols)  
+                                    vector    =  np.zeros((n_cpts,n_rows,1))
+                                    vector[:,row_index,0] = 1
                                     A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2) 
                                 else:
                                     A_matrix2[:,row_index,unknown_cols[key]] += 1
                                     
                                 for t_idx in range(n_cpts):
-                                    triplets.append((t_idx,row_index, unknown_cols[key], +1.0)   )
-                                
-                                #vector    =  np.ones(n_cpts)[:, None,None]
-                                #A_matrix2 =  np.concatenate((A_matrix2,vector), axis=row_index) 
+                                    triplets.append((t_idx,row_index, unknown_cols[key], +1.0))
+                                 
                             else:
                                 b_vector[:,row_index,0] += val
                         elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
@@ -185,11 +183,15 @@ class Network(Component):
                                 key = ("propulsor", propulsor.tag, distributor_tag, "chem_in")
                                 if key not in unknown_cols:
                                     unknown_cols[key] = len(unknown_cols)
+                                    vector    =  np.zeros((n_cpts,n_rows,1))
+                                    vector[:,row_index,0] = -1
+                                    A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2) 
+                                else:
+                                    A_matrix2[:,row_index,unknown_cols[key]] -= 1
                                     
                                 for t_idx in range(n_cpts):
                                     triplets.append((t_idx,row_index, unknown_cols[key], -1.0)) # -1 is drawing power + 1 is providing  , each line is a dristrubutor line, each column is a component,
-                                    
-                                #A_matrix2[:,row_index, unknown_cols[key]] -= 1.0                                    
+                                                                      
                             else:
                                 b_vector[:,row_index,0] -= val
                     elif isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor): # DO NOT LIKE THIS, SHOULD BE PROPULSOR AGNOSTIC
