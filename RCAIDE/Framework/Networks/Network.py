@@ -172,8 +172,11 @@ class Network(Component):
                                 else:
                                     A_matrix2[:,row_index,unknown_cols[key]] += 1
                                     
+                                    
+                                # TO REMOVE ------
                                 for t_idx in range(n_cpts):
                                     triplets.append((t_idx,row_index, unknown_cols[key], +1.0))
+                                # TO REMOVE ------
                                  
                             else:
                                 b_vector[:,row_index,0] += val
@@ -188,9 +191,11 @@ class Network(Component):
                                     A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2) 
                                 else:
                                     A_matrix2[:,row_index,unknown_cols[key]] -= 1
-                                    
+    
+                                # TO REMOVE ------                                    
                                 for t_idx in range(n_cpts):
-                                    triplets.append((t_idx,row_index, unknown_cols[key], -1.0)) # -1 is drawing power + 1 is providing  , each line is a dristrubutor line, each column is a component,
+                                    triplets.append((t_idx,row_index, unknown_cols[key], -1.0)) # -1 is drawing power + 1 is providing  , each line is a dristrubutor line, each column is a component, 
+                                # TO REMOVE ------                                    
                                                                       
                             else:
                                 b_vector[:,row_index,0] -= val
@@ -201,10 +206,17 @@ class Network(Component):
                                 key = ("propulsor", propulsor.tag, distributor_tag, "elec_in")
                                 if key not in unknown_cols:
                                     unknown_cols[key] = len(unknown_cols)
-                                    
+                                    vector    =  np.zeros((n_cpts,n_rows,1))
+                                    vector[:,row_index,0] = -1
+                                    A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2) 
+                                else:
+                                    A_matrix2[:,row_index,unknown_cols[key]] -= 1
+    
+                                # TO REMOVE ------                                    
                                 for t_idx in range(n_cpts):
-                                    triplets.append((t_idx,row_index, unknown_cols[key], -1.0))
-                                #A_matrix2[:,row_index, unknown_cols[key]] -= 1.0   
+                                    triplets.append((t_idx,row_index, unknown_cols[key], -1.0)) 
+                                # TO REMOVE ------
+                                
                             else:
                                 b_vector[:,row_index,0] -= val
             
@@ -232,17 +244,25 @@ class Network(Component):
                     if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
                         val = conditions.energy.converters[converter.tag].outputs.power.electrical[:,0]
                         if np.all(val == 0.0): # NEED TO MAKE USE NP.ALL ?
+                            
+                            A_matrix2[:,row_index,unknown_cols[key]] += 1.0/electrical_connections
+                            # TO REMOVE ------                            
                             for t_idx in range(n_cpts):
                                 triplets.append((t_idx,row_index, unknown_cols[key], +1.0/electrical_connections)) # this assumes that the power provide to the line is split equally among all non-propulsive converters 
-                            #A_matrix2[:,row_index, unknown_cols[key]] += 1.0/electrical_connections
+                            # TO REMOVE ------
+                             
                         else:
                             b_vector[:,row_index,0] += val
                     elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
                         val = conditions.energy.converters[converter.tag].inputs.power.chemical[:,0]
-                        if np.all(val == 0.0): # NEED TO MAKE USE NP.ALL ?
+                        if np.all(val == 0.0): # NEED TO MAKE USE NP.ALL ? 
+
+                            A_matrix2[:,row_index,unknown_cols[key]] -= 1.0/chemical_connections
+                            
+                            # TO REMOVE ------        
                             for t_idx in range(n_cpts):
                                 triplets.append((t_idx,row_index, unknown_cols[key], -1.0/chemical_connections))
-                            #A_matrix2[:,row_index, unknown_cols[key]] -= 1.0/chemical_connections
+                            # TO REMOVE ------         
                         else:
                             b_vector[:,row_index,0] -= val
 
@@ -268,22 +288,68 @@ class Network(Component):
                         key = ("modulator", modulator.tag, "P")
                         if key not in unknown_cols:
                             unknown_cols[key] = len(unknown_cols)
-                        col = unknown_cols[key]
-                        if distributor.type == 'AC':
-                            if np.all(vin == 0.0): # NEED TO MAKE USE NP.ALL ?
-                                for t_idx in range(n_cpts):
-                                    triplets.append((t_idx,row_index, col, -1.0))
-                                #A_matrix2[:,row_index, col] -= 1.0
-                            else:
-                                b_vector[:,row_index,0] -= vin
-                        elif distributor.type == 'DC':
-                            # Mirror link behavior: always add +eff to DC row when the DC side is unknown
-                            if np.all(vout == 0.0): # NEED TO MAKE USE NP.ALL ?
-                                for t_idx in range(n_cpts):
-                                    triplets.append((t_idx,row_index, col, +eff)) 
-                                #A_matrix2[:,row_index, col] += eff
-                            else:
-                                b_vector[:,row_index,0] += vout
+                            
+
+                            col = unknown_cols[key]                              
+
+                            if distributor.type == 'AC':
+                                if np.all(vin == 0.0): 
+                                    vector    =  np.zeros((n_cpts,n_rows,1))
+                                    vector[:,row_index,0] = -1
+                                    A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2)
+                                    
+  
+                                    # TO REMOVE ------                                   
+                                    for t_idx in range(n_cpts):
+                                        triplets.append((t_idx,row_index, col, -1.0)) 
+                                    # TO REMOVE ------
+                                        
+                                else:
+                                    b_vector[:,row_index,0] -= vin 
+                            elif distributor.type == 'DC':
+                                # Mirror link behavior: always add +eff to DC row when the DC side is unknown
+                                if np.all(vout == 0.0): # NEED TO MAKE USE NP.ALL ? 
+                                    vector    =  np.zeros((n_cpts,n_rows,1))
+                                    vector[:,row_index,0] = eff
+                                    A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2)
+                                    
+
+                                    # TO REMOVE ------
+                                    for t_idx in range(n_cpts):
+                                        triplets.append((t_idx,row_index, col, +eff))
+                                    # TO REMOVE ------
+                                    
+                                else:
+                                    b_vector[:,row_index,0] += vout                                    
+                            
+                        else:
+                            
+                            col = unknown_cols[key]  
+                            
+                            if distributor.type == 'AC':
+                                if np.all(vin == 0.0): # NEED TO MAKE USE NP.ALL ?
+                                    
+                                    A_matrix2[:,row_index,col] -= 1.0
+                                    # TO REMOVE ------                                   
+                                    for t_idx in range(n_cpts):
+                                        triplets.append((t_idx,row_index, col, -1.0)) 
+                                    # TO REMOVE ------
+                                     
+                                else:
+                                    b_vector[:,row_index,0] -= vin
+                            elif distributor.type == 'DC':
+                                # Mirror link behavior: always add +eff to DC row when the DC side is unknown
+                                if np.all(vout == 0.0): # NEED TO MAKE USE NP.ALL ?
+    
+                                    A_matrix2[:,row_index,col] += eff
+                                    # TO REMOVE ------
+                                    for t_idx in range(n_cpts):
+                                        triplets.append((t_idx,row_index, col, +eff))
+                                    # TO REMOVE ------
+                                        
+                                else:
+                                    b_vector[:,row_index,0] += vout
+                            
 
         # sources 
         for source in sources:
@@ -296,10 +362,18 @@ class Network(Component):
                         if np.all(val == 0.0):# NEED TO MAKE USE NP.ALL ? 
                             key = ("source", source.tag, distributor_tag, "elec_out")
                             if key not in unknown_cols:
-                                unknown_cols[key] = len(unknown_cols)
+                                unknown_cols[key] = len(unknown_cols) 
+                                vector    =  np.zeros((n_cpts,n_rows,1))
+                                vector[:,row_index,0] = 1
+                                A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2) 
+                            else:
+                                A_matrix2[:,row_index,unknown_cols[key]] += 1                                
+
+                            # TO REMOVE ------                                
                             for t_idx in range(n_cpts):
-                                triplets.append((t_idx,row_index, unknown_cols[key], +1.0))
-                            #A_matrix2[:,row_index, unknown_cols[key]] += 1.0
+                                triplets.append((t_idx,row_index, unknown_cols[key], +1.0)) 
+                            # TO REMOVE ------
+                             
                         else: # if you do know how much the battery is producing, assign it as a known value on the vector 
                             b_vector[:,row_index,0] += val
                     elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
@@ -316,14 +390,22 @@ class Network(Component):
             if propulsor.assigned_distributors != None:
                 for distributor_tag in propulsor.assigned_distributors[0]: 
                     row_index = distributor_tags.index(distributor_tag) 
-                    val = conditions.energy.systems[system.tag].inputs.power.electrical[:v,0]
+                    val = conditions.energy.systems[system.tag].inputs.power.electrical[:,0]
                     if np.all(val == 0.0): # NEED TO MAKE USE NP.ALL ? 
                         key = ("system", system.tag, distributor_tag, "elec_in")
                         if key not in unknown_cols:
                             unknown_cols[key] = len(unknown_cols)
+                            vector    =  np.zeros((n_cpts,n_rows,1))
+                            vector[:,row_index,0] = -1
+                            A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2) 
+                        else:
+                            A_matrix2[:,row_index,unknown_cols[key]] -= 1
+                        
+                        # TO REMOVE --------
                         for t_idx in range(n_cpts):
                             triplets.append((t_idx,row_index, unknown_cols[key], -1.0))
-                        #A_matrix2[:,row_index, unknown_cols[key]] -= 1.0
+                        # TO REMOVE --------
+                        
                     else:
                         b_vector[:,row_index,0] -= val
 
@@ -360,15 +442,29 @@ class Network(Component):
                                 row_b = i
                         key = ("link", name_a, name_b)
                         if key not in unknown_cols:
-                            unknown_cols[key] = len(unknown_cols)
-                        col = unknown_cols[key]
-                        
-                        for t_idx in range(n_cpts):
-                            triplets.append((t_idx,row_a, col, -1.0))
-                            triplets.append((t_idx,row_b, col, +1.0))
-                        
-                        #A_matrix2[:,row_index, row_a] -= 1.0
-                        #A_matrix2[:,row_index, row_b] += 1.0
+                            unknown_cols[key] = len(unknown_cols) 
+                            vector    =  np.zeros((n_cpts,n_rows,1))
+                            vector[:,row_a,0] = -1.0
+                            vector[:,row_b,0] = 1.0
+                            A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2)                               
+                            
+                            # to remove -------
+                            col = unknown_cols[key] 
+                            for t_idx in range(n_cpts):
+                                triplets.append((t_idx,row_a, col, -1.0))
+                                triplets.append((t_idx,row_b, col, +1.0))
+                                
+                            # to remove -------
+                            
+                            
+                        else:
+                            col = unknown_cols[key] 
+                            for t_idx in range(n_cpts):
+                                triplets.append((t_idx,row_a, col, -1.0))
+                                triplets.append((t_idx,row_b, col, +1.0))
+                            
+                            A_matrix2[:,row_a, col] -= 1.0
+                            A_matrix2[:,row_b, col] += 1.0
 
         n_unknowns = len(unknown_cols)
             
