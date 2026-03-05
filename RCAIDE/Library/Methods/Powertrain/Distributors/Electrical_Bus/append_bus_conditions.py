@@ -69,7 +69,22 @@ def append_bus_conditions(bus,segment):
     segment.state.conditions.energy.distributors[bus.tag].energy                              = 0 * ones_row(1)
     segment.state.conditions.energy.distributors[bus.tag].regenerative_power                  = 0 * ones_row(1) 
     segment.state.conditions.energy.distributors[bus.tag].fuel_mass_flow_rate                 = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[bus.tag].links                               = Conditions()
+    segment.state.conditions.energy.distributors[bus.tag].power                               = Conditions() 
+    segment.state.conditions.energy.distributors[bus.tag].power.propulsive                    = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].power.mechanical                    = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[bus.tag].power.electrical                    = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].power.chemical                      = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].power.pneumatic                     = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].power.hydraulic                     = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].power.thermal                       = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].links                               = Conditions() 
+
+    if bus.assigned_distributors != None:
+        for distributor_tag in bus.assigned_distributors[0]:    
+            link                  = Conditions()
+            link.power            = Conditions()
+            link.power.electrical = 0 * ones_row(1) 
+            segment.state.conditions.energy.distributors[bus.tag].links[distributor_tag] = link     
 
     return
 
@@ -112,24 +127,18 @@ def append_bus_segment_conditions(bus,segment):
     RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_conditions
     RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_conditions
     """    
-    bus_conditions                                                                = segment.state.conditions.energy.distributors[bus.tag]
-    ones_row                                                                      = segment.state.ones_row
-    segment.state.conditions.energy.distributors[bus.tag].power                   = Conditions()
-    segment.state.conditions.energy.distributors[bus.tag].power.propulsive        = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[bus.tag].power.mechanical        = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[bus.tag].power.electrical        = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[bus.tag].power.chemical          = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[bus.tag].power.pneumatic         = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[bus.tag].power.hydraulic         = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[bus.tag].power.thermal           = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[bus.tag].net_propulsive_power    = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[bus.tag].net_mechanical_power    = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[bus.tag].net_electrical_power    = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[bus.tag].net_chemical_power      = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[bus.tag].net_pneumatic_power     = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[bus.tag].net_hydraulic_power     = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[bus.tag].net_thermal_power       = 0 * ones_row(1)
+    bus_conditions   = segment.state.conditions.energy.distributors[bus.tag]  
+    bus_conditions.power.propulsive[:,0]     = 0.0  
+    bus_conditions.power.mechanical[:,0]     = 0.0  
+    bus_conditions.power.electrical[:,0]     = 0.0  
+    bus_conditions.power.chemical[:,0]       = 0.0  
+    bus_conditions.power.pneumatic[:,0]      = 0.0  
+    bus_conditions.power.hydraulic[:,0]      = 0.0  
+    bus_conditions.power.thermal[:,0]        = 0.0    
 
+    if bus.assigned_distributors != None:
+        for distributor_tag in bus.assigned_distributors[0]:     
+            bus_conditions.links[distributor_tag].power.electrical[:,0] = 0.0  
     
     '''NEED TO FIX MATTHEW '''
     # Thermal power draw

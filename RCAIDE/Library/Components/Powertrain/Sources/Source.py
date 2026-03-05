@@ -50,9 +50,9 @@ class Source(Component):
 
     def append_segment_conditions(self,segment): 
         energy_conditions  = segment.state.conditions.energy    
-        energy_conditions.sources[self.tag].inputs.power.electrical[0,:]  = 0  # initial_conditions.propulsors[propulsor.tag].inputs.power.electrical[-1,0] 
-        energy_conditions.sources[self.tag].inputs.power.chemical[0,:]    = 0  # initial_conditions.propulsors[propulsor.tag].inputs.power.chemical[-1,0]   
-        energy_conditions.sources[self.tag].inputs.power.thermal[0,:]     = 0  # initial_conditions.propulsors[propulsor.tag].inputs.power.thermal[-1,0]    
-        energy_conditions.sources[self.tag].outputs.power.electrical[0,:] = 0  # initial_conditions.propulsors[propulsor.tag].outputs.power.electrical[-1,0]
-        energy_conditions.sources[self.tag].outputs.power.chemical[0,:]   = 0  # initial_conditions.propulsors[propulsor.tag].outputs.power.chemical[-1,0]  
-        energy_conditions.sources[self.tag].outputs.power.thermal[0,:]    = 0  # initial_conditions.propulsors[propulsor.tag].outputs.power.thermal[-1,0]                                 
+        energy_conditions.sources[self.tag].inputs.power.electrical[:,0]  = 0.0   
+        energy_conditions.sources[self.tag].inputs.power.chemical[:,0]    = 0.0   
+        energy_conditions.sources[self.tag].inputs.power.thermal[:,0]     = 0.0   
+        energy_conditions.sources[self.tag].outputs.power.electrical[:,0] = 0.0   
+        energy_conditions.sources[self.tag].outputs.power.chemical[:,0]   = 0.0   
+        energy_conditions.sources[self.tag].outputs.power.thermal[:,0]    = 0.0   
