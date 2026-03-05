@@ -75,8 +75,7 @@ class Network(Component):
         """        
         self.tag                          = 'network'
         self.propulsors                   = Container() 
-        self.converters                   = Container()
-        self.non_propulsive_converters    = Container()
+        self.converters                   = Container() 
         self.nacelles                     = Container()
         self.modulators                   = Container()
         self.distributors                 = Container()
@@ -94,13 +93,13 @@ class Network(Component):
         """
 
         # unpack
-        conditions                  = state.conditions
-        propulsors                  = network.propulsors
-        non_propulsive_converters   = network.non_propulsive_converters  
-        distributors                = network.distributors
-        modulators                  = network.modulators
-        sources                     = network.sources
-        systems                     = network.systems
+        conditions    = state.conditions
+        propulsors    = network.propulsors
+        converters    = network.converters  
+        distributors  = network.distributors
+        modulators    = network.modulators
+        sources       = network.sources
+        systems       = network.systems
 
         total_thrust            = 0. * state.ones_row(3)
         total_moment            = 0. * state.ones_row(3)
@@ -235,41 +234,42 @@ class Network(Component):
                             b_vector[:,row_index,0] -= val
 
         # converters (non-propulsive) 
-        for converter in non_propulsive_converters: 
-            if converter.assigned_distributors != None: 
-                for distributor_tag in converter.assigned_distributors[0]: 
-                    row_index   = distributor_tags.index(distributor_tag) 
-                    distributor = distributors[distributor_tag]
-                     
-                    # loop through outputs
-                    for output_power_key in conditions.energy.converters[converter.tag].outputs.power.keys(): 
-                        val = conditions.energy.converters[converter.tag].outputs.power[output_power_key][:,0] 
-                        if np.all(val == 0.0):
-                            key = ("converter", converter.tag, distributor_tag, output_power_key)
-                            if key not in unknown_cols:
-                                unknown_cols[key] = len(unknown_cols)  
-                                vector    =  np.zeros((n_cpts,n_rows,1))
-                                vector[:,row_index,0] = 1
-                                A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2) 
+        for converter in converters:
+            if converter.propulsor_integrated == False:
+                if converter.assigned_distributors != None: 
+                    for distributor_tag in converter.assigned_distributors[0]: 
+                        row_index   = distributor_tags.index(distributor_tag) 
+                        distributor = distributors[distributor_tag]
+                         
+                        # loop through outputs
+                        for output_power_key in conditions.energy.converters[converter.tag].outputs.power.keys(): 
+                            val = conditions.energy.converters[converter.tag].outputs.power[output_power_key][:,0] 
+                            if np.all(val == 0.0):
+                                key = ("converter", converter.tag, distributor_tag, output_power_key)
+                                if key not in unknown_cols:
+                                    unknown_cols[key] = len(unknown_cols)  
+                                    vector    =  np.zeros((n_cpts,n_rows,1))
+                                    vector[:,row_index,0] = 1
+                                    A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2) 
+                                else:
+                                    A_matrix2[:,row_index,unknown_cols[key]] += 1 
                             else:
-                                A_matrix2[:,row_index,unknown_cols[key]] += 1 
-                        else:
-                            b_vector[:,row_index,0] += val
-                            
-                    # loop through inputs          
-                    for input_power_key in conditions.energy.converters[converter.tag].inputs.power.keys(): 
-                        val = conditions.energy.converters[converter.tag].inputs.power[input_power_key][:,0] 
-                        if np.all(val == 0.0):
-                            key = ("converter", converter.tag, distributor_tag, input_power_key)
-                            if key not in unknown_cols:
-                                unknown_cols[key] = len(unknown_cols)  
-                                vector    =  np.zeros((n_cpts,n_rows,1))
-                                vector[:,row_index,0] = -1
-                                A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2) 
+                                b_vector[:,row_index,0] += val
+                                
+                        # loop through inputs          
+                        for input_power_key in conditions.energy.converters[converter.tag].inputs.power.keys(): 
+                            val = conditions.energy.converters[converter.tag].inputs.power[input_power_key][:,0] 
+                            if np.all(val == 0.0):
+                                key = ("converter", converter.tag, distributor_tag, input_power_key)
+                                if key not in unknown_cols:
+                                    unknown_cols[key] = len(unknown_cols)  
+                                    vector    =  np.zeros((n_cpts,n_rows,1))
+                                    vector[:,row_index,0] = -1
+                                    A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2) 
+                                else:
+                                    A_matrix2[:,row_index,unknown_cols[key]] -= 1 
                             else:
-                                A_matrix2[:,row_index,unknown_cols[key]] -= 1 
-                        else:
-                            b_vector[:,row_index,0] -= val 
+                                b_vector[:,row_index,0] -= val 
                     
                     
         
@@ -555,19 +555,20 @@ class Network(Component):
                         conditions.energy.propulsors[component_tag].inputs.power.chemical[pos_sign,0] = val[pos_sign]
 
             elif key[0] == "converter": 
-                for distributors_tag in network.non_propulsive_converters[component_tag].assigned_distributors:
-                    for distributor_tag in distributors_tag:
-                        distributor = distributors[distributor_tag]
-                        if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus): 
-                            if np.all(conditions.energy.converters[component_tag].outputs.power.electrical[:,0] == 0.0):
-                                conditions.energy.converters[component_tag].outputs.power.electrical[neg_sign,0] = -val[neg_sign]   # MATEO WHY ARE THE SIGNED FLIPPED 
-                            if np.all(conditions.energy.converters[component_tag].inputs.power.electrical[:,0] == 0.0):
-                                conditions.energy.converters[component_tag].inputs.power.electrical[pos_sign,0] = val[pos_sign]
-                        elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line): 
-                            if np.all(conditions.energy.converters[component_tag].outputs.power.chemical[:,0] == 0.0):
-                                conditions.energy.converters[component_tag].outputs.power.chemical[pos_sign,0] = val[pos_sign] 
-                            if np.all(conditions.energy.converters[component_tag].inputs.power.chemical[:,0] == 0.0):
-                                conditions.energy.converters[component_tag].inputs.power.chemical[neg_sign,0] = -val[neg_sign] 
+                if converter.propulsor_integrated == False:                
+                    for distributors_tag in network.converter[component_tag].assigned_distributors:
+                        for distributor_tag in distributors_tag:
+                            distributor = distributors[distributor_tag]
+                            if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus): 
+                                if np.all(conditions.energy.converters[component_tag].outputs.power.electrical[:,0] == 0.0):
+                                    conditions.energy.converters[component_tag].outputs.power.electrical[neg_sign,0] = -val[neg_sign]   # MATEO WHY ARE THE SIGNED FLIPPED 
+                                if np.all(conditions.energy.converters[component_tag].inputs.power.electrical[:,0] == 0.0):
+                                    conditions.energy.converters[component_tag].inputs.power.electrical[pos_sign,0] = val[pos_sign]
+                            elif isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line): 
+                                if np.all(conditions.energy.converters[component_tag].outputs.power.chemical[:,0] == 0.0):
+                                    conditions.energy.converters[component_tag].outputs.power.chemical[pos_sign,0] = val[pos_sign] 
+                                if np.all(conditions.energy.converters[component_tag].inputs.power.chemical[:,0] == 0.0):
+                                    conditions.energy.converters[component_tag].inputs.power.chemical[neg_sign,0] = -val[neg_sign] 
 
             elif key[0] == "modulator": 
                 eff = modulators[component_tag].efficiency.electrical 

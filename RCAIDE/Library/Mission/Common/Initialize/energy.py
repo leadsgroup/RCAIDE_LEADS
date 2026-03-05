@@ -82,7 +82,7 @@ def energy(segment):
         for propulsor in  network.propulsors: 
             propulsor.append_segment_conditions(segment) 
          
-        for converter in network.non_propulsive_converters:
+        for converter in network.converters:
             converter.append_segment_conditions(segment) 
     
         for modulator in network.modulators:

@@ -420,7 +420,7 @@ class Results(Conditions):
         # Energy
         # ---------------------------------------------------------------------------------------------------------------------- 
         self.energy                                           = Conditions()  
-        self.energy.converters                                = Conditions()
+        self.energy.converters                                = Conditions() 
         self.energy.propulsors                                = Conditions()
         self.energy.modulators                                = Conditions()
         self.energy.sources                                   = Conditions()
