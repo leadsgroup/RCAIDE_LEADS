@@ -142,7 +142,7 @@ class Network(Component):
 
         n_rows  = len(distributors)
         n_cpts = state.numerics.number_of_control_points
-        A_matrix2 = np.zeros((n_cpts,n_rows,0))
+        A_matrix = np.zeros((n_cpts,n_rows,0))
 
         distributor_tags = []
         for dist in distributors:
@@ -150,7 +150,6 @@ class Network(Component):
 
         b_vector     = np.zeros((n_cpts,n_rows,1)) 
         unknown_cols = {}   # maps a key -> column index
-        triplets     = []   # (row, col, coeff) to populate A
 
         # propulsors
         for propulsor in propulsors:
@@ -170,9 +169,9 @@ class Network(Component):
                                 #unknown_cols[key] = len(unknown_cols)  
                                 #vector    =  np.zeros((n_cpts,n_rows,1))
                                 #vector[:,row_index,0] = 1
-                                #A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2) 
+                                #A_matrix =  np.concatenate((A_matrix,vector), axis=2) 
                             #else:
-                                #A_matrix2[:,row_index,unknown_cols[key]] += 1 
+                                #A_matrix[:,row_index,unknown_cols[key]] += 1 
                         #else:
                             #b_vector[:,row_index,0] += val
                             
@@ -185,9 +184,9 @@ class Network(Component):
                                 #unknown_cols[key] = len(unknown_cols)  
                                 #vector    =  np.zeros((n_cpts,n_rows,1))
                                 #vector[:,row_index,0] = -1
-                                #A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2) 
+                                #A_matrix =  np.concatenate((A_matrix,vector), axis=2) 
                             #else:
-                                #A_matrix2[:,row_index,unknown_cols[key]] -= 1 
+                                #A_matrix[:,row_index,unknown_cols[key]] -= 1 
                         #else:
                             #b_vector[:,row_index,0] -= val                            
                             
@@ -202,14 +201,9 @@ class Network(Component):
                                 unknown_cols[key] = len(unknown_cols)  
                                 vector    =  np.zeros((n_cpts,n_rows,1))
                                 vector[:,row_index,0] = 1
-                                A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2) 
+                                A_matrix =  np.concatenate((A_matrix,vector), axis=2) 
                             else:
-                                A_matrix2[:,row_index,unknown_cols[key]] += 1
-                                
-                            # TO REMOVE ------
-                            for t_idx in range(n_cpts):
-                                triplets.append((t_idx,row_index, unknown_cols[key], +1.0))
-                            # TO REMOVE ------
+                                A_matrix[:,row_index,unknown_cols[key]] += 1
                         else:
                             b_vector[:,row_index,0] += val
                             
@@ -222,22 +216,11 @@ class Network(Component):
                                 unknown_cols[key] = len(unknown_cols)
                                 vector    =  np.zeros((n_cpts,n_rows,1))
                                 vector[:,row_index,0] = -1
-                                A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2) 
+                                A_matrix =  np.concatenate((A_matrix,vector), axis=2) 
                             else:
-                                A_matrix2[:,row_index,unknown_cols[key]] -= 1
-
-                            # TO REMOVE ------                                    
-                            for t_idx in range(n_cpts):
-                                triplets.append((t_idx,row_index, unknown_cols[key], -1.0)) # -1 is drawing power + 1 is providing  , each line is a dristrubutor line, each column is a component, 
-                            # TO REMOVE ------                    
+                                A_matrix[:,row_index,unknown_cols[key]] -= 1
                         else:
-                            b_vector[:,row_index,0] -= val
-                            
-                    
-        n_unknowns = len(unknown_cols)                     
-        A_matrix = np.zeros((n_cpts,n_rows,n_unknowns))
-        for t, r, c, coeff in triplets:
-            A_matrix[t,  r, c] += coeff                            
+                            b_vector[:,row_index,0] -= val                         
 
         # converters (non-propulsive) 
         for converter in converters:
@@ -256,9 +239,9 @@ class Network(Component):
                                     unknown_cols[key] = len(unknown_cols)  
                                     vector    =  np.zeros((n_cpts,n_rows,1))
                                     vector[:,row_index,0] = 1
-                                    A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2) 
+                                    A_matrix =  np.concatenate((A_matrix,vector), axis=2) 
                                 else:
-                                    A_matrix2[:,row_index,unknown_cols[key]] += 1 
+                                    A_matrix[:,row_index,unknown_cols[key]] += 1 
                             else:
                                 b_vector[:,row_index,0] += val
                                 
@@ -271,19 +254,12 @@ class Network(Component):
                                     unknown_cols[key] = len(unknown_cols)  
                                     vector    =  np.zeros((n_cpts,n_rows,1))
                                     vector[:,row_index,0] = -1
-                                    A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2) 
+                                    A_matrix =  np.concatenate((A_matrix,vector), axis=2) 
                                 else:
-                                    A_matrix2[:,row_index,unknown_cols[key]] -= 1 
+                                    A_matrix[:,row_index,unknown_cols[key]] -= 1 
                             else:
                                 b_vector[:,row_index,0] -= val 
                     
-                    
-                        
-        n_unknowns = len(unknown_cols)                     
-        A_matrix = np.zeros((n_cpts,n_rows,n_unknowns))
-        for t, r, c, coeff in triplets:
-            A_matrix[t,  r, c] += coeff
-            
             
         # modulators
         for modulator in modulators:
@@ -319,15 +295,9 @@ class Network(Component):
                                 unknown_cols[key] = len(unknown_cols) 
                                 vector    =  np.zeros((n_cpts,n_rows,1))
                                 vector[:,row_index,0] = -1
-                                A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2) 
+                                A_matrix =  np.concatenate((A_matrix,vector), axis=2) 
                             else:
-                                A_matrix2[:,row_index,unknown_cols[key]] -= 1
-
-                            # TO REMOVE ------                                    
-                            for t_idx in range(n_cpts):
-                                triplets.append((t_idx,row_index, unknown_cols[key], -1.0)) # -1 is drawing power + 1 is providing  , each line is a dristrubutor line, each column is a component, 
-                            # TO REMOVE ------  
-                            
+                                A_matrix[:,row_index,unknown_cols[key]] -= 1
                         else:
                             b_vector[:,row_index,0] -= vin 
                             
@@ -336,26 +306,13 @@ class Network(Component):
                         if np.all(vout == 0.0):
                             if key not in unknown_cols:
                                 unknown_cols[key] = len(unknown_cols)
-
                                 vector    =  np.zeros((n_cpts,n_rows,1))
                                 vector[:,row_index,0] = +eff
-                                A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2) 
+                                A_matrix =  np.concatenate((A_matrix,vector), axis=2) 
                             else:
-                                A_matrix2[:,row_index,unknown_cols[key]] =+eff
-
-                            # TO REMOVE ------                                    
-                            for t_idx in range(n_cpts):
-                                triplets.append((t_idx,row_index, unknown_cols[key], +eff)) # -1 is drawing power + 1 is providing  , each line is a dristrubutor line, each column is a component, 
-                            # TO REMOVE ------ 
+                                A_matrix[:,row_index,unknown_cols[key]] =+eff
                         else:
-                            b_vector[:,row_index,0] += vout        
-                            
-                            
-
-        n_unknowns = len(unknown_cols)                     
-        A_matrix = np.zeros((n_cpts,n_rows,n_unknowns))
-        for t, r, c, coeff in triplets:
-            A_matrix[t,  r, c] += coeff
+                            b_vector[:,row_index,0] += vout  
             
         # sources 
         for source in sources:
@@ -373,9 +330,9 @@ class Network(Component):
                             #unknown_cols[key] = len(unknown_cols) 
                             #vector    =  np.zeros((n_cpts,n_rows,1))
                             #vector[:,row_index,0] = 1
-                            #A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2) 
+                            #A_matrix =  np.concatenate((A_matrix,vector), axis=2) 
                         #else:
-                            #A_matrix2[:,row_index,unknown_cols[key]] += 1                                
+                            #A_matrix[:,row_index,unknown_cols[key]] += 1                                
     
                         ## TO REMOVE ------                                
                         #for t_idx in range(n_cpts):
@@ -395,14 +352,9 @@ class Network(Component):
                                 unknown_cols[key] = len(unknown_cols) 
                                 vector    =  np.zeros((n_cpts,n_rows,1))
                                 vector[:,row_index,0] = 1
-                                A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2) 
+                                A_matrix =  np.concatenate((A_matrix,vector), axis=2) 
                             else:
-                                A_matrix2[:,row_index,unknown_cols[key]] += 1                                
-
-                            # TO REMOVE ------                                
-                            for t_idx in range(n_cpts):
-                                triplets.append((t_idx,row_index, unknown_cols[key], +1.0)) 
-                            # TO REMOVE ------
+                                A_matrix[:,row_index,unknown_cols[key]] += 1                       
                              
                         else: # if you do know how much the battery is producing, assign it as a known value on the vector 
                             b_vector[:,row_index,0] += val
@@ -414,23 +366,12 @@ class Network(Component):
                                 unknown_cols[key] = len(unknown_cols) 
                                 vector    =  np.zeros((n_cpts,n_rows,1))
                                 vector[:,row_index,0] = 1
-                                A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2) 
+                                A_matrix =  np.concatenate((A_matrix,vector), axis=2) 
                             else:
-                                A_matrix2[:,row_index,unknown_cols[key]] += 1                                
-
-                            # TO REMOVE ------                                
-                            for t_idx in range(n_cpts):
-                                triplets.append((t_idx,row_index, unknown_cols[key], +1.0)) 
-                            # TO REMOVE ------
-                             
+                                A_matrix[:,row_index,unknown_cols[key]] += 1  
                         else: # if you do know how much the battery is producing, assign it as a known value on the vector 
                             b_vector[:,row_index,0] += val
-                        
-                    
-        n_unknowns = len(unknown_cols)                     
-        A_matrix = np.zeros((n_cpts,n_rows,n_unknowns))
-        for t, r, c, coeff in triplets:
-            A_matrix[t,  r, c] += coeff                        
+                                 
         # systems 
         for system in systems:
             if propulsor.assigned_distributors != None:
@@ -445,15 +386,9 @@ class Network(Component):
                                 #unknown_cols[key] = len(unknown_cols) 
                                 #vector    =  np.zeros((n_cpts,n_rows,1))
                                 #vector[:,row_index,0] = -1
-                                #A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2) 
+                                #A_matrix =  np.concatenate((A_matrix,vector), axis=2) 
                             #else:
-                                #A_matrix2[:,row_index,unknown_cols[key]] -= 1                                
-
-                            ## TO REMOVE ------                                
-                            #for t_idx in range(n_cpts):
-                                #triplets.append((t_idx,row_index, unknown_cols[key], -1.0)) 
-                            ## TO REMOVE ------
-                             
+                                #A_matrix[:,row_index,unknown_cols[key]] -= 1            
                         #else:  
                             #b_vector[:,row_index,0] -= val
                             
@@ -465,24 +400,11 @@ class Network(Component):
                             unknown_cols[key] = len(unknown_cols) 
                             vector    =  np.zeros((n_cpts,n_rows,1))
                             vector[:,row_index,0] = -1
-                            A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2) 
+                            A_matrix =  np.concatenate((A_matrix,vector), axis=2) 
                         else:
-                            A_matrix2[:,row_index,unknown_cols[key]] -= 1                                
-
-                        # TO REMOVE ------                                
-                        for t_idx in range(n_cpts):
-                            triplets.append((t_idx,row_index, unknown_cols[key], -1.0)) 
-                        # TO REMOVE ------
-                         
+                            A_matrix[:,row_index,unknown_cols[key]] -= 1          
                     else:  
-                        b_vector[:,row_index,0] -= val                             
-
-
-                
-        n_unknowns = len(unknown_cols)                     
-        A_matrix = np.zeros((n_cpts,n_rows,n_unknowns))
-        for t, r, c, coeff in triplets:
-            A_matrix[t,  r, c] += coeff                        
+                        b_vector[:,row_index,0] -= val                                       
 
         # distributor ↔ distributor links 
         for distributor in distributors:
@@ -498,42 +420,17 @@ class Network(Component):
                                 vector    =  np.zeros((n_cpts,n_rows,1))
                                 vector[:,row_a,0] = -1.0
                                 vector[:,row_b,0] = 1.0
-                                A_matrix2 =  np.concatenate((A_matrix2,vector), axis=2)                               
-                                
-                                # to remove -------
-                                col = unknown_cols[key] 
-                                for t_idx in range(n_cpts):
-                                    triplets.append((t_idx,row_a, col, -1.0))
-                                    triplets.append((t_idx,row_b, col, +1.0))
-                                    
-                                # to remove -------
-                                
-                                
+                                A_matrix =  np.concatenate((A_matrix,vector), axis=2)    
                             else:
-    
-                                # to remove -------                            
-                                col = unknown_cols[key] 
-                                for t_idx in range(n_cpts):
-                                    triplets.append((t_idx,row_a, col, -1.0))
-                                    triplets.append((t_idx,row_b, col, +1.0))
-        
-                                # to remove -------
-                                    
-                                A_matrix2[:,row_a, col] -= 1.0
-                                A_matrix2[:,row_b, col] += 1.0
+                                A_matrix[:,row_a, col] -= 1.0
+                                A_matrix[:,row_b, col] += 1.0
 
-        n_unknowns = len(unknown_cols) 
-        
-        A_matrix = np.zeros((n_cpts,n_rows,n_unknowns))
-        for t, r, c, coeff in triplets:
-            A_matrix[t,  r, c] += coeff
 
         # ----------------------------------------------------------
         # Solve Power Balance System
-        # ----------------------------------------------------------
-        #x_solution = np.linalg.solve(A_matrix, b_vector)     
+        # ---------------------------------------------------------- 
         
-        x_solution = np.zeros((n_cpts,n_unknowns))
+        x_solution = np.zeros((n_cpts,len(A_matrix[0, 0, :])))
         for t_idx in range(n_cpts):  # LOOP CAN BE REMOVED 
             x_solution_t, _, _, _ = np.linalg.lstsq(A_matrix[t_idx], b_vector[t_idx], rcond=None) 
             x_solution[t_idx] = x_solution_t[:,0] 
