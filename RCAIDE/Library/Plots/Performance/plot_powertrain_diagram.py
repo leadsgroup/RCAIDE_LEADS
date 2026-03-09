@@ -444,7 +444,7 @@ def create_network_diagram(vehicle):
     def is_tru(obj):
         cls = type(obj).__name__.lower()
         tag = str(getattr(obj, "tag", "")).lower()
-        return ("transformer" in cls and "rectifier" in cls) or tag.startswith("tru")
+        return ("transformer" in cls and "rectifier" in cls) or tag.startswith("TRU")
 
     def conn_dir_for(component_tag, bus_tag):
         """

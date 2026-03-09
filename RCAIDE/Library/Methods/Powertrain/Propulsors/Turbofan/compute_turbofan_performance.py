@@ -513,7 +513,10 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
    
     conditions.energy.propulsors[turbofan.tag].outputs.moment = moment
     conditions.energy.propulsors[turbofan.tag].inputs.fuel_mass_flow_rate = conditions.energy.propulsors[stored_propulsor_tag].fuel_mass_flow_rate    
-     
+    conditions.energy.propulsors[turbofan.tag].outputs.power.propulsive   = conditions.energy.propulsors[stored_propulsor_tag].outputs.power.propulsive
+    conditions.energy.propulsors[turbofan.tag].inputs.power.chemical      = conditions.energy.propulsors[stored_propulsor_tag].inputs.power.chemical    
+    
+    
     if low_pressure_compressor.motor != None and  len(state.numerics.time.differentiate) > 0:
         conditions.energy.converters[low_pressure_compressor.motor.tag] = deepcopy(conditions.energy.converters[low_pressure_compressor_0.motor.tag]) 
         conditions.energy.propulsors[turbofan.tag].inputs.power.electrical = conditions.energy.converters[low_pressure_compressor.motor.tag].inputs.power 

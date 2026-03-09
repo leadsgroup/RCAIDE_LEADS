@@ -10,5 +10,5 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-from .append_tru_conditions  import  append_tru_conditions
-from .compute_tru_performance import compute_tru_performance
+from .append_TRU_conditions  import  append_TRU_conditions
+from .compute_TRU_performance import compute_TRU_performance

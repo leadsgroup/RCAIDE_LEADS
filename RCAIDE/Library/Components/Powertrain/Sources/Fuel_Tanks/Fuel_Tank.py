@@ -12,7 +12,7 @@
 from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Components.Powertrain.Sources.Source    import Source   
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks  import * 
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions import append_fuel_tank_conditions 
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions import *
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_non_integral_tank_volume import *
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_cuboid_moment_of_inertia
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_cuboid_center_of_gravity
@@ -100,10 +100,10 @@ class Fuel_Tank(Source):
         append_fuel_tank_conditions(self,segment)  
         return
     
-    def compute_tank_properties(self,state,fuel_line):
-        compute_fuel_tank_properties(self,state,fuel_line)
+    def append_segment_conditions(self, segment):
+        append_fuel_tank_segment_conditions(self, segment)
         return
-    
+     
     def compute_volume(self, wings, fuselages,fuel_tanks):
         """
         Compute the volume of the non-integral fuel tank based on its attachment location.

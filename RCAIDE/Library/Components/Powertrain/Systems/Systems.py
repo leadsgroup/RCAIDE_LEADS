@@ -10,7 +10,7 @@
 from RCAIDE.Framework.Core import Data 
 from RCAIDE.Library.Components import Component
 from RCAIDE.Library.Methods.Powertrain.Systems.compute_systems_power_draw import compute_systems_power_draw
-from RCAIDE.Library.Methods.Powertrain.Systems.append_systems_conditions import append_systems_conditions
+from RCAIDE.Library.Methods.Powertrain.Systems.append_systems_conditions import *
  
 # ----------------------------------------------------------------------------------------------------------------------
 # System
@@ -100,11 +100,6 @@ class Systems(Component):
         return Power
     
 
-    def append_segment_conditions(self,segment): 
-        energy_conditions  = segment.state.conditions.energy    
-        energy_conditions.systems[self.tag].inputs.power.electrical[:,0]  = 0.0
-        energy_conditions.systems[self.tag].inputs.power.chemical[:,0]    = 0.0
-        energy_conditions.systems[self.tag].inputs.power.thermal[:,0]     = 0.0
-        energy_conditions.systems[self.tag].outputs.power.electrical[:,0] = 0.0
-        energy_conditions.systems[self.tag].outputs.power.chemical[:,0]   = 0.0
-        energy_conditions.systems[self.tag].outputs.power.thermal[:,0]    = 0.0
+    def append_segment_conditions(self,segment):
+        append_system_segment_conditions(self, segment)
+        

@@ -1,17 +1,17 @@
-# RCAIDE/Library/Methods/Powertrain/Modulators/tru/compute_tru_performance.py
+# RCAIDE/Library/Methods/Powertrain/Modulators/TRU/compute_TRU_performance.py
 # 
 # 
 # Created:  Sep 2025, M. Guidotti
 
 import numpy as np
 
-def compute_tru_performance(tru, network, state):
+def compute_TRU_performance(TRU, network, state):
 
     """
    
     """
     conditions     = state.conditions
-    tru_conditions = conditions.energy.modulators[tru.tag]
+    tru_conditions = conditions.energy.modulators[TRU.tag]
 
     # -------------------------------------------------
     # Read buses (AC power in, AC LL voltage, DC bus V)
@@ -20,7 +20,7 @@ def compute_tru_performance(tru, network, state):
     Vll  = 0.0                       # [V_rms] AC line-line
     Vdc  = 0.0                       # [V] DC bus
 
-    for distributor_tag in tru.assigned_distributors[0]:
+    for distributor_tag in TRU.assigned_distributors[0]:
         dist = network.distributors[distributor_tag]
         if dist.bus_type == 'AC':
             P_in += conditions.energy.distributors[distributor_tag].inputs.power.electrical
@@ -31,11 +31,11 @@ def compute_tru_performance(tru, network, state):
     # -------------------------------------------------
     # TRU parameters (keep it simple)
     # -------------------------------------------------
-    eta        = tru.electrical_efficiency
-    turns      = tru.turns_ratio
-    diode_drop = tru.diode_drop
-    R_load     = tru.R_load
-    Idc_set    = tru.Idc_set
+    eta        = TRU.electrical_efficiency
+    turns      = TRU.turns_ratio
+    diode_drop = TRU.diode_drop
+    R_load     = TRU.R_load
+    Idc_set    = TRU.Idc_set
 
     # -------------------------------------------------
     # Voltages (estimate DC if no DC bus voltage given)
@@ -80,6 +80,6 @@ def compute_tru_performance(tru, network, state):
     # -------------------------------------------------
 
     stored_results_flag            = True
-    stored_modulator_tag           = tru.tag  
+    stored_modulator_tag           = TRU.tag  
 
     return  tru_conditions.inputs, tru_conditions.outputs, stored_results_flag, stored_modulator_tag

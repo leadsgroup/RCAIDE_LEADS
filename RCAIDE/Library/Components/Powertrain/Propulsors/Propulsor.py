@@ -126,13 +126,3 @@ class Propulsor(Component):
 
         _, _ =  compute_cylinder_moment_of_inertia(self, self.length, self.diameter/2, 0, 0, center_of_gravity=center_of_gravity)  
         return
-    
-    
-    def append_segment_conditions(self,segment): 
-        energy_conditions  = segment.state.conditions.energy    
-        energy_conditions.propulsors[self.tag].inputs.power.electrical[:,0]  = 0.0
-        energy_conditions.propulsors[self.tag].inputs.power.chemical[:,0]    = 0.0
-        energy_conditions.propulsors[self.tag].inputs.power.thermal[:,0]     = 0.0
-        energy_conditions.propulsors[self.tag].outputs.power.electrical[:,0] = 0.0
-        energy_conditions.propulsors[self.tag].outputs.power.chemical[:,0]   = 0.0
-        energy_conditions.propulsors[self.tag].outputs.power.thermal[:,0]    = 0.0      

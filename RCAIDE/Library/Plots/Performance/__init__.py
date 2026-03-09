@@ -27,4 +27,4 @@ from .plot_altitude_sfc_weight                  import plot_altitude_sfc_weight
 from .plot_propulsor_throttles                  import plot_propulsor_throttles               
 from .plot_fuel_flow_rates                      import plot_fuel_flow_rates
 from .plot_powertrain_diagram                   import plot_powertrain_diagram
-from .plot_powertrain_power_consumption         import plot_powertrain_power_consumption
+from .plot_powertrain_conditions                import plot_powertrain_conditions
