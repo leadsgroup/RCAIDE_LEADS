@@ -272,23 +272,9 @@ class Network(Component):
                     #for input_power_key in conditions.energy.modulators[modulator.tag].inputs.power.keys():
                     input_power_key = 'electrical'
                     eff  = modulator.efficiency.electrical
-                    
-                    
-                    # these may actually be all zero there so might be able to remove 
                     vin  = conditions.energy.modulators[modulator.tag].inputs.power[input_power_key][:,0]   
-                    vout = conditions.energy.modulators[modulator.tag].outputs.power[input_power_key][:,0]  
-                    if np.all(vin != 0.0) and np.all(vout == 0.0): # NEED TO MAKE USE NP.ALL ? 
-                        conditions.energy.modulators[modulator.tag].outputs.power[input_power_key][:,0] = vin * eff
-                        vout = conditions.energy.modulators[modulator.tag].outputs.power[input_power_key][:,0]
-                    elif np.all(vout != 0.0) and np.all(vin == 0.0): # NEED TO MAKE USE NP.ALL ? 
-                        conditions.energy.modulators[modulator.tag].inputs.power[input_power_key][:,0]  = vout / eff
-                        vin  = conditions.energy.modulators[modulator.tag].inputs.power[input_power_key][:,0]
-                    elif np.all(vin != 0.0) and np.all(vout != 0.0): # NEED TO MAKE USE NP.ALL ? 
-                        conditions.energy.modulators[modulator.tag].outputs.power[input_power_key][:,0] = vin * eff
-                        vout = conditions.energy.modulators[modulator.tag].outputs.power[input_power_key][:,0]
-                        
-                    #key = ("modulators", modulator.tag, distributor_tag, input_power_key+"_in")
-                    key = ("modulators", modulator.tag, "power", input_power_key+"_in")
+                    vout = conditions.energy.modulators[modulator.tag].outputs.power[input_power_key][:,0]   
+                    key  = ("modulators", modulator.tag, "power", input_power_key+"_in")
                     if distributor.type == 'AC':
                         if np.all(vin == 0.0):
                             if key not in unknown_cols:
