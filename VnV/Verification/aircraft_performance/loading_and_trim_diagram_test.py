@@ -90,9 +90,9 @@ def blended_wing_body_load_trim_test():
     
     save_results(load_data,'bwb_loading_results')
  
-    CG_Percent_of_LEMAC_truth = np.array([[-1.18438934e-03,  8.63261033e-01,  1.72770646e+00],
-                                          [-1.18438934e-03,  8.63261033e-01,  1.72770646e+00],
-                                          [-1.18438934e-03,  8.63261033e-01,  1.72770646e+00]])
+    LEMAC_truth = np.array([[15.30488839, 31.62418592, 47.94348346],
+                            [15.30488839, 31.62418592, 47.94348346],
+                            [15.30488839, 31.62418592, 47.94348346]])
     plot_load_diagram(load_data,save_filename  = "BWB_Aircraft_Loading_Trim_Dragram") 
 
     LEMAC_error = np.max(abs((load_data.trim_results.CG_percent_of_LEMAC_location - CG_Percent_of_LEMAC_truth)/CG_Percent_of_LEMAC_truth))

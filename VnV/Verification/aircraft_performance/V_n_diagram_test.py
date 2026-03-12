@@ -110,10 +110,10 @@ def part_23_V_n_Diagram():
     actual.Va_neg                   = 104.71978144726074
     actual.Vc                       = 126.33084642567567
     actual.Vd                       = 176.86318499594594
-    actual.limit_load_pos           = 3.8
+    actual.limit_load_pos           = 4.702338496897422
     actual.limit_load_neg           = -3.8
     actual.dive_limit_load_pos      = 3.8
-    actual.dive_limit_load_neg      = 0.0
+    actual.dive_limit_load_neg      = -1.5916369478281958
 
     # error calculations
     error                         = Data()

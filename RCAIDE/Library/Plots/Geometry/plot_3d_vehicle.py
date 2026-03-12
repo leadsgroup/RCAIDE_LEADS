@@ -15,7 +15,7 @@ from RCAIDE.Library.Plots.Geometry.plot_3d_rotor                import generate_
 from RCAIDE.Library.Plots.Geometry.generate_3d_nacelle_points   import *
 from RCAIDE.Library.Plots.Geometry.generate_3d_lopa_points      import generate_3d_lopa_points
 from RCAIDE.Library.Plots.Geometry.generate_3d_cargo_bay_points import generate_3d_cargo_bay_points
-from RCAIDE.Library.Methods.Geometry.Planform                   import fuselage_planform, wing_planform, bwb_wing_planform , compute_fuel_volume  
+from RCAIDE.Library.Methods.Geometry.Planform                   import fuselage_planform, wing_planform , compute_fuel_volume  
 from RCAIDE.Library.Methods.Geometry.LOPA                       import compute_layout_of_passenger_accommodations  
 
 # python imports 
@@ -138,14 +138,11 @@ def plot_3d_vehicle(vehicle,
     # -------------------------------------------------------------------------
     L = 0
     geometry =  deepcopy(vehicle)  
-    for wing in geometry.wings:  
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
-            if overwrite_geometry: 
-                bwb_wing_planform(wing) 
-                compute_layout_of_passenger_accommodations(wing)
-        else:
-            if overwrite_geometry:
-                wing_planform(wing)
+    for wing in geometry.wings: 
+        if overwrite_geometry:
+            wing_planform(wing) 
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body): 
+            compute_layout_of_passenger_accommodations(wing) 
                 
         L = np.maximum(L, wing.spans.projected)
                      

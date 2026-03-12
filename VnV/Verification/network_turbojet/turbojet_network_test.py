@@ -163,7 +163,9 @@ def plot_mission(results):
  
     plot_emissions(results) 
   
-    plot_aerodynamic_forces(results) 
+    plot_aerodynamic_forces(results)
+    
+    plot_control_surface_conditions(results)
         
     return 
 
