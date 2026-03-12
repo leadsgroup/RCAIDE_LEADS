@@ -92,23 +92,23 @@ def append_battery_conditions(battery,segment):
      
     segment.state.conditions.energy.sources[battery.tag].inputs                          = Conditions()
     segment.state.conditions.energy.sources[battery.tag].inputs.power                    = Conditions() 
-    segment.state.conditions.energy.sources[battery.tag].inputs.power.propulsive         = 0 * ones_row(1)
-    segment.state.conditions.energy.sources[battery.tag].inputs.power.mechanical         = 0 * ones_row(1)
+    #segment.state.conditions.energy.sources[battery.tag].inputs.power.propulsive         = 0 * ones_row(1)
+    #segment.state.conditions.energy.sources[battery.tag].inputs.power.mechanical         = 0 * ones_row(1)
     segment.state.conditions.energy.sources[battery.tag].inputs.power.electrical         = 0 * ones_row(1)
-    segment.state.conditions.energy.sources[battery.tag].inputs.power.chemical           = 0 * ones_row(1)
-    segment.state.conditions.energy.sources[battery.tag].inputs.power.pneumatic          = 0 * ones_row(1)
-    segment.state.conditions.energy.sources[battery.tag].inputs.power.hydraulic          = 0 * ones_row(1)
-    segment.state.conditions.energy.sources[battery.tag].inputs.power.thermal            = 0 * ones_row(1)
+    #segment.state.conditions.energy.sources[battery.tag].inputs.power.chemical           = 0 * ones_row(1)
+    #segment.state.conditions.energy.sources[battery.tag].inputs.power.pneumatic          = 0 * ones_row(1)
+    #segment.state.conditions.energy.sources[battery.tag].inputs.power.hydraulic          = 0 * ones_row(1)
+    #segment.state.conditions.energy.sources[battery.tag].inputs.power.thermal            = 0 * ones_row(1)
            
     segment.state.conditions.energy.sources[battery.tag].outputs                         = Conditions()  
     segment.state.conditions.energy.sources[battery.tag].outputs.power                   = Conditions() 
-    segment.state.conditions.energy.sources[battery.tag].outputs.power.propulsive        = 0 * ones_row(1)
-    segment.state.conditions.energy.sources[battery.tag].outputs.power.mechanical        = 0 * ones_row(1)
+    #segment.state.conditions.energy.sources[battery.tag].outputs.power.propulsive        = 0 * ones_row(1)
+    #segment.state.conditions.energy.sources[battery.tag].outputs.power.mechanical        = 0 * ones_row(1)
     segment.state.conditions.energy.sources[battery.tag].outputs.power.electrical        = 0 * ones_row(1)
-    segment.state.conditions.energy.sources[battery.tag].outputs.power.chemical          = 0 * ones_row(1)
-    segment.state.conditions.energy.sources[battery.tag].outputs.power.pneumatic         = 0 * ones_row(1)
-    segment.state.conditions.energy.sources[battery.tag].outputs.power.hydraulic         = 0 * ones_row(1)
-    segment.state.conditions.energy.sources[battery.tag].outputs.power.thermal           = 0 * ones_row(1) 
+    #segment.state.conditions.energy.sources[battery.tag].outputs.power.chemical          = 0 * ones_row(1)
+    #segment.state.conditions.energy.sources[battery.tag].outputs.power.pneumatic         = 0 * ones_row(1)
+    #segment.state.conditions.energy.sources[battery.tag].outputs.power.hydraulic         = 0 * ones_row(1)
+    #segment.state.conditions.energy.sources[battery.tag].outputs.power.thermal           = 0 * ones_row(1) 
     
     # Conditions for recharging battery module
     if isinstance(segment,RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge):
@@ -192,20 +192,20 @@ def append_battery_segment_conditions(battery, segment):
     """
 
     module_conditions = segment.state.conditions.energy.sources[battery.tag]   
-    module_conditions.inputs.power.propulsive[:,0]    = 0.0
-    module_conditions.inputs.power.mechanical[:,0]    = 0.0 
+    #module_conditions.inputs.power.propulsive[:,0]    = 0.0
+    #module_conditions.inputs.power.mechanical[:,0]    = 0.0 
     module_conditions.inputs.power.electrical[:,0]    = 0.0 
-    module_conditions.inputs.power.chemical[:,0]      = 0.0
-    module_conditions.inputs.power.pneumatic[:,0]     = 0.0 
-    module_conditions.inputs.power.hydraulic[:,0]     = 0.0 
-    module_conditions.inputs.power.thermal[:,0]       = 0.0 
-    module_conditions.outputs.power.propulsive[:,0]   = 0.0
-    module_conditions.outputs.power.mechanical[:,0]   = 0.0   
+    #module_conditions.inputs.power.chemical[:,0]      = 0.0
+    #module_conditions.inputs.power.pneumatic[:,0]     = 0.0 
+    #module_conditions.inputs.power.hydraulic[:,0]     = 0.0 
+    #module_conditions.inputs.power.thermal[:,0]       = 0.0 
+    #module_conditions.outputs.power.propulsive[:,0]   = 0.0
+    #module_conditions.outputs.power.mechanical[:,0]   = 0.0   
     module_conditions.outputs.power.electrical[:,0]   = 0.0 
-    module_conditions.outputs.power.chemical[:,0]     = 0.0
-    module_conditions.outputs.power.pneumatic[:,0]    = 0.0   
-    module_conditions.outputs.power.hydraulic[:,0]    = 0.0   
-    module_conditions.outputs.power.thermal[:,0]      = 0.0 
+    #module_conditions.outputs.power.chemical[:,0]     = 0.0
+    #module_conditions.outputs.power.pneumatic[:,0]    = 0.0   
+    #module_conditions.outputs.power.hydraulic[:,0]    = 0.0   
+    #module_conditions.outputs.power.thermal[:,0]      = 0.0 
     
     if segment.state.initials:   
         battery_initials                                        = segment.state.initials.conditions.energy.sources[battery.tag]   

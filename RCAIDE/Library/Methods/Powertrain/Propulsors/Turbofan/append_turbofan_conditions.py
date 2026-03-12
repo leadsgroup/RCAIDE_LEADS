@@ -8,6 +8,7 @@
 # RCAIDE imports  
 import RCAIDE
 from RCAIDE.Framework.Mission.Common     import   Conditions
+import numpy as np
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_propulsor_conditions
@@ -84,20 +85,20 @@ def append_turbofan_conditions(propulsor, segment):
     segment.state.conditions.energy.propulsors[propulsor.tag].outputs                       = Conditions() 
     segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power                  = Conditions()
     segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power                 = Conditions()
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.propulsive       = 0 * ones_row(1)  
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.mechanical       = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.electrical       = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.chemical         = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.pneumatic        = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.hydraulic        = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.thermal          = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.propulsive      = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.mechanical      = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.electrical      = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.chemical        = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.pneumatic       = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.hydraulic       = 0 * ones_row(1)
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.thermal         = 0 * ones_row(1)  
+    #segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.propulsive       = 0. * ones_row(1)  
+    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.mechanical       = 0. * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.electrical       = 0. * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.chemical         = 0. * ones_row(1)
+    #segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.pneumatic        = 0. * ones_row(1)
+    #segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.hydraulic        = 0. * ones_row(1)
+    #segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.thermal          = 0. * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.propulsive      = 0. * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.mechanical      = 0. * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.electrical      = 0. * ones_row(1)
+    #segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.chemical        = 0. * ones_row(1)
+    #segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.pneumatic       = 0. * ones_row(1)
+    #segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.hydraulic       = 0. * ones_row(1)
+    #segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.thermal         = 0. * ones_row(1)  
     segment.state.conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate           = 0. * ones_row(1)
     segment.state.conditions.noise.propulsors[propulsor.tag]                                = Conditions()  
     segment.state.conditions.noise.propulsors[propulsor.tag].core_nozzle                    = Conditions() 
@@ -115,17 +116,17 @@ def append_turbofan_conditions(propulsor, segment):
 
 def append_turbofan_segment_conditions(self,segment): 
     energy_conditions  = segment.state.conditions.energy    
-    energy_conditions.propulsors[self.tag].inputs.power.propulsive[:,0]    = 0.0
+    #energy_conditions.propulsors[self.tag].inputs.power.propulsive[:,0]    = 0.0
     energy_conditions.propulsors[self.tag].inputs.power.mechanical[:,0]    = 0.0 
     energy_conditions.propulsors[self.tag].inputs.power.electrical[:,0]    = 0.0 
     energy_conditions.propulsors[self.tag].inputs.power.chemical[:,0]      = 0.0
-    energy_conditions.propulsors[self.tag].inputs.power.pneumatic[:,0]     = 0.0 
-    energy_conditions.propulsors[self.tag].inputs.power.hydraulic[:,0]     = 0.0 
-    energy_conditions.propulsors[self.tag].inputs.power.thermal[:,0]       = 0.0 
+    #energy_conditions.propulsors[self.tag].inputs.power.pneumatic[:,0]     = 0.0 
+    #energy_conditions.propulsors[self.tag].inputs.power.hydraulic[:,0]     = 0.0 
+    #energy_conditions.propulsors[self.tag].inputs.power.thermal[:,0]       = 0.0 
     energy_conditions.propulsors[self.tag].outputs.power.propulsive[:,0]   = 0.0
     energy_conditions.propulsors[self.tag].outputs.power.mechanical[:,0]   = 0.0   
     energy_conditions.propulsors[self.tag].outputs.power.electrical[:,0]   = 0.0 
-    energy_conditions.propulsors[self.tag].outputs.power.chemical[:,0]     = 0.0
-    energy_conditions.propulsors[self.tag].outputs.power.pneumatic[:,0]    = 0.0   
-    energy_conditions.propulsors[self.tag].outputs.power.hydraulic[:,0]    = 0.0   
-    energy_conditions.propulsors[self.tag].outputs.power.thermal[:,0]      = 0.0  
+    #energy_conditions.propulsors[self.tag].outputs.power.chemical[:,0]     = 0.0
+    #energy_conditions.propulsors[self.tag].outputs.power.pneumatic[:,0]    = 0.0   
+    #energy_conditions.propulsors[self.tag].outputs.power.hydraulic[:,0]    = 0.0   
+    #energy_conditions.propulsors[self.tag].outputs.power.thermal[:,0]      = 0.0  

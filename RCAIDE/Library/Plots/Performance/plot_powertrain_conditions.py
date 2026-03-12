@@ -127,35 +127,45 @@ def plot_powertrain_conditions(results,
 
         for network in  results.segments[i].analyses.vehicle.networks: 
             for p_o, power_type in enumerate(power_types):
-                for p_i,propulsor in enumerate(network.propulsors): 
-                    input_power  = energy_conditions.propulsors[propulsor.tag].inputs.power[power_type][:,0]
-                    plot_power(propulsor, time,input_power,power_type,axes[p_o][0],ps,line_colors,0,i)  
-                    output_power = energy_conditions.propulsors[propulsor.tag].outputs.power[power_type][:,0]
-                    plot_power(propulsor,time,output_power,power_type,axes[p_o][1],ps,line_colors,0,i) 
+                for p_i,propulsor in enumerate(network.propulsors):
+                    for input_power_key in energy_conditions.propulsors[propulsor.tag].inputs.power.keys():
+                        input_power  = energy_conditions.propulsors[propulsor.tag].inputs.power[input_power_key][:,0]
+                        plot_power(propulsor, time,input_power,input_power_key,axes[p_o][0],ps,line_colors,0,i)
+                    for output_power_key in energy_conditions.propulsors[propulsor.tag].outputs.power.keys():
+                        output_power = energy_conditions.propulsors[propulsor.tag].outputs.power[output_power_key][:,0]
+                        plot_power(propulsor,time,output_power,output_power_key,axes[p_o][1],ps,line_colors,0,i) 
             
-                for c_i,converter in enumerate(network.converters):         
-                    input_power = energy_conditions.converters[converter.tag].inputs.power[power_type][:,0]
-                    plot_power(converter, time,input_power,power_type,axes[p_o][0],ps,line_colors,1,i)  
-                    output_power = energy_conditions.converters[converter.tag].outputs.power[power_type][:,0]
-                    plot_power(converter,time,output_power,power_type,axes[p_o][1],ps,line_colors,1,i) 
+                for c_i,converter in enumerate(network.converters):
+                    for input_power_key in energy_conditions.converters[converter.tag].inputs.power.keys():
+                        input_power = energy_conditions.converters[converter.tag].inputs.power[input_power_key][:,0]
+                        plot_power(converter, time,input_power,input_power_key,axes[p_o][0],ps,line_colors,1,i)
+                    for output_power_key in energy_conditions.converters[converter.tag].outputs.power.keys():
+                        output_power = energy_conditions.converters[converter.tag].outputs.power[output_power_key][:,0]
+                        plot_power(converter,time,output_power,output_power_key,axes[p_o][1],ps,line_colors,1,i) 
         
                 for m_i,modulator in enumerate(network.modulators):       
-                    input_power = energy_conditions.modulators[modulator.tag].inputs.power[power_type][:,0]
-                    plot_power(modulator, time,input_power,power_type,axes[p_o][0],ps,line_colors,2,i)  
-                    output_power = energy_conditions.modulators[modulator.tag].outputs.power[power_type][:,0]
-                    plot_power(modulator,time,output_power,power_type,axes[p_o][1],ps,line_colors,2,i)  
+                    for input_power_key in energy_conditions.modulators[modulator.tag].inputs.power.keys():
+                        input_power = energy_conditions.modulators[modulator.tag].inputs.power[input_power_key][:,0]
+                        plot_power(modulator, time,input_power,input_power_key,axes[p_o][0],ps,line_colors,2,i)
+                    for output_power_key in energy_conditions.modulators[modulator.tag].outputs.power.keys():
+                        output_power = energy_conditions.modulators[modulator.tag].outputs.power[output_power_key][:,0]
+                        plot_power(modulator,time,output_power,output_power_key,axes[p_o][1],ps,line_colors,2,i)  
         
                 for s_i,source in enumerate(network.sources):       
-                    input_power = energy_conditions.sources[source.tag].inputs.power[power_type][:,0]
-                    plot_power(source, time,input_power,power_type,axes[p_o][0],ps,line_colors,3,i)  
-                    output_power = energy_conditions.sources[source.tag].outputs.power[power_type][:,0]
-                    plot_power(source,time,output_power,power_type,axes[p_o][1],ps,line_colors,3,i)   
+                    for input_power_key in energy_conditions.sources[source.tag].inputs.power.keys():
+                        input_power = energy_conditions.sources[source.tag].inputs.power[input_power_key][:,0]
+                        plot_power(source, time,input_power,input_power_key,axes[p_o][0],ps,line_colors,3,i) 
+                    for output_power_key in energy_conditions.sources[source.tag].outputs.power.keys(): 
+                        output_power = energy_conditions.sources[source.tag].outputs.power[output_power_key][:,0]
+                        plot_power(source,time,output_power,output_power_key,axes[p_o][1],ps,line_colors,3,i)   
         
                 for sy_i, system in enumerate(network.systems):     
-                    input_power = energy_conditions.systems[system.tag].inputs.power[power_type][:,0]
-                    plot_power(system, time,input_power,power_type,axes[p_o][0],ps,line_colors,4,i)  
-                    output_power = energy_conditions.systems[system.tag].outputs.power[power_type][:,0]
-                    plot_power(system,time,output_power,power_type,axes[p_o][1],ps,line_colors,4,i)                      
+                    for input_power_key in energy_conditions.systems[system.tag].inputs.power.keys():
+                        input_power = energy_conditions.systems[system.tag].inputs.power[input_power_key][:,0]
+                        plot_power(system, time,input_power,input_power_key,axes[p_o][0],ps,line_colors,4,i) 
+                    for output_power_key in energy_conditions.systems[system.tag].outputs.power.keys():  
+                        output_power = energy_conditions.systems[system.tag].outputs.power[output_power_key][:,0]
+                        plot_power(system,time,output_power,output_power_key,axes[p_o][1],ps,line_colors,4,i)                      
                    
                 
     for ax_i in range(len(axes)):

@@ -69,14 +69,7 @@ class Systems(Component):
         self.tag                          = 'System'  
         self.power_draw                   = 0.0
         self.assigned_distributors        = None
-        self.efficiency                   = Data()
-        self.efficiency.propulsive        = 1.0
-        self.efficiency.electrical        = 1.0
-        self.efficiency.mechanical        = 1.0
-        self.efficiency.thermal           = 1.0
-        self.efficiency.chemical          = 1.0
-        self.efficiency.hydraulic         = 1.0
-        self.efficiency.pneumatic         = 1.0
+        self.efficiency                   = 0.0
                 
 
     def append_operating_conditions(self, segment): 
