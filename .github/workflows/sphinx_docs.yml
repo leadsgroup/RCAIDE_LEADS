@@ -43,33 +43,52 @@ jobs:
           python3 -m pip install pydata-sphinx-theme
        
           
-      - name: Execute Notebooks
+      - name: Execute Tutorial Files
         run: |
-          for notebook in Tutorials/*/*.ipynb; do
-            echo "Running $notebook"
-            if [ -f "$notebook" ]; then
-              # Create temporary directory for execution
-              tmp_dir=$(mktemp -d)
-              
-              # Get the notebook name without path
-              notebook_name=$(basename "$notebook")
-              
-              # Execute notebook and save to temporary location
-              jupyter nbconvert --to notebook --execute "$notebook" \
-                --output "$tmp_dir/$notebook_name" \
-                --ExecutePreprocessor.timeout=2400 \
-                || { echo "Error executing notebook $notebook"; exit 1; }
-              
-              # If execution succeeded, move the executed notebook back
-              mv "$tmp_dir/$notebook_name" "$notebook" \
-                || { echo "Error moving executed notebook $notebook"; exit 1; }
-              
-              # Clean up
-              rm -rf "$tmp_dir"
-            else
-              echo "Notebook $notebook not found."
-            fi
+          set -u
+          failed=0
+
+          mapfile -d '' tutorial_files < <(find Tutorials -type f \( -name '*.py' -o -name '*.ipynb' \) -print0 | sort -z)
+
+          if [ "${#tutorial_files[@]}" -eq 0 ]; then
+            echo "No tutorial files (.py/.ipynb) found under Tutorials/"
+            exit 0
+          fi
+
+          for file in "${tutorial_files[@]}"; do
+            file_dir="$(dirname "$file")"
+            file_name="$(basename "$file")"
+            echo "Running $file"
+
+            case "$file" in
+              *.py)
+                if ! (cd "$file_dir" && python3 "$file_name"); then
+                  echo "::error file=$file::Error executing Python file $file"
+                  failed=1
+                fi
+                ;;
+              *.ipynb)
+                tmp_dir="$(mktemp -d)"
+                if ! (cd "$file_dir" && jupyter nbconvert --to notebook --execute "$file_name" \
+                  --output "$tmp_dir/$file_name" \
+                  --ExecutePreprocessor.timeout=2400); then
+                  echo "::error file=$file::Error executing notebook $file"
+                  failed=1
+                else
+                  mv "$tmp_dir/$file_name" "$file" || {
+                    echo "::error file=$file::Error replacing executed notebook $file"
+                    failed=1
+                  }
+                fi
+                rm -rf "$tmp_dir"
+                ;;
+            esac
           done
+
+          if [ "$failed" -ne 0 ]; then
+            echo "One or more tutorial files failed."
+            exit 1
+          fi
         
       - name: Clean Old Docs
         run: |
