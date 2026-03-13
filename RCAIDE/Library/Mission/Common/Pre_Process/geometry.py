@@ -8,7 +8,7 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 import RCAIDE
 from RCAIDE.Library.Methods.Geometry.LOPA      import  compute_layout_of_passenger_accommodations
-from RCAIDE.Library.Methods.Geometry.Planform  import  fuselage_planform, wing_planform, bwb_wing_planform , compute_fuel_volume
+from RCAIDE.Library.Methods.Geometry.Planform  import  fuselage_planform, wing_planform , compute_fuel_volume
 from RCAIDE.Library.Mission.Common.Pre_Process.use_previous_segment_pre_processed_data import use_previous_segment_pre_processed_data
 
 # python imports 
@@ -114,7 +114,7 @@ def geometry_preprocess_routine(analyses):
         # --------------------------------------------------------------------------------------------------------------------
         if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):            
             # compute planform properties 
-            bwb_wing_planform(wing)
+            wing_planform(wing)
             compute_layout_of_passenger_accommodations(wing)
             
             # update reference properties 

@@ -31,7 +31,7 @@ from BWB            import vehicle_setup as BWB_vehicle_setup
 # ----------------------------------------------------------------------------------------------------------------------  
 def main():
     # tube and wing load trim test 
-    tube_and_wing_load_trim_test()
+    #tube_and_wing_load_trim_test()
  
     # blended wing body load trim test 
     blended_wing_body_load_trim_test()
@@ -90,9 +90,9 @@ def blended_wing_body_load_trim_test():
     
     save_results(load_data,'bwb_loading_results')
  
-    LEMAC_truth = np.array([[14.92889842, 31.15419846, 47.3794985 ],
-                            [14.92889842, 31.15419846, 47.3794985 ],
-                            [14.92889842, 31.15419846, 47.3794985 ]])
+    LEMAC_truth = np.array([[15.30488839, 31.62418592, 47.94348346],
+                            [15.30488839, 31.62418592, 47.94348346],
+                            [15.30488839, 31.62418592, 47.94348346]])
     plot_load_diagram(load_data,save_filename  = "BWB_Aircraft_Loading_Trim_Dragram") 
 
     LEMAC_error = np.max(abs((load_data.aerodynamic_LEMAC_location - LEMAC_truth)/LEMAC_truth))

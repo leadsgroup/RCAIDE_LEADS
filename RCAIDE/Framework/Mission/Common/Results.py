@@ -88,6 +88,7 @@ class Results(Conditions):
         self.frames.inertial.total_force_vector                                = ones_3col * 0
         self.frames.inertial.total_moment_vector                               = ones_3col * 0
         self.frames.inertial.time                                              = ones_1col * 0
+        self.frames.inertial.climb_rate                                        = ones_1col * 0
         self.frames.inertial.aircraft_range                                    = ones_1col * 0
 
                                                                                

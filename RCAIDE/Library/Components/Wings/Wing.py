@@ -179,6 +179,7 @@ class Wing(Component):
         self.areas.exposed                          = 0.0
         self.areas.affected                         = 0.0
         self.areas.wetted                           = 0.0
+        self.areas.planform                         = 0.0
                                                     
         self.chords                                 = Data()
         self.chords.mean_aerodynamic                = 0.0
