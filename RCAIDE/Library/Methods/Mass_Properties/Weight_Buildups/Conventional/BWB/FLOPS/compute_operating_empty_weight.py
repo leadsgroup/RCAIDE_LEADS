@@ -14,7 +14,7 @@ from .compute_bwb_wing_weight import compute_wing_weight
 from .compute_operating_items_weight import compute_operating_items_weight
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common import compute_payload_weight
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport import FLOPS 
-from RCAIDE.Library.Methods.Geometry.Planform                          import segment_properties  
+from RCAIDE.Library.Methods.Geometry.Planform                          import segment_properties, wing_planform
  
 from copy import deepcopy
 import numpy as np
@@ -384,8 +384,8 @@ def generate_represenative_main_wing(wing, vehicle):
     for segment in bwb_vehicle.wings[wing.tag].segments:
         segment.percent_span_location = (segment.percent_span_location - starting_span_percentage) / (last_percentage - starting_span_percentage)
         segment.root_chord_percent    = (vehicle.wings[wing.tag].segments[segment.tag].root_chord_percent * vehicle.wings[wing.tag].chords.root ) / bwb_vehicle.wings[wing.tag].chords.root
+        segment.chords.reference_area_root = False
         
-        
-    bwb_wing = segment_properties(bwb_vehicle.wings[wing.tag]) 
+    bwb_wing = wing_planform(bwb_vehicle.wings[wing.tag]) 
         
     return bwb_wing

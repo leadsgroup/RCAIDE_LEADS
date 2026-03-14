@@ -227,7 +227,7 @@ def wing_planform(wing):
                 trailing_edge_sweep = convert_sweep_segments(segment.sweeps.quarter_chord, segment, next_seg, wing, old_ref_chord_fraction=0.25, new_ref_chord_fraction=1.0) 
                 leading_edge_sweep  = convert_sweep_segments(segment.sweeps.quarter_chord, segment, next_seg, wing, old_ref_chord_fraction=0.25, new_ref_chord_fraction=0.0) 
     
-                projected_root_chord = segment_root_chord + segnent_start_span * (np.tan(leading_edge_sweep) - np.tan(trailing_edge_sweep))
+                projected_root_chord = segment_root_chord + 0.5 * segnent_start_span * (np.tan(leading_edge_sweep) - np.tan(trailing_edge_sweep))
                 wing.areas.reference = (projected_root_chord + segment_tip_chord)/2 * reference_wing_span        
         
     else: 
