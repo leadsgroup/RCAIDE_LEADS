@@ -168,13 +168,7 @@ class Turbojet(Propulsor):
         return
      
     def append_segment_conditions(self,segment): 
-        energy_conditions  = segment.state.conditions.energy    
-        energy_conditions.propulsors[self.tag].inputs.power.electrical[:,0]    = 0.0
-        energy_conditions.propulsors[self.tag].inputs.power.chemical[:,0]      = 0.0 
-        energy_conditions.propulsors[self.tag].inputs.power.mechanical[:,0]    = 0.0 
-        energy_conditions.propulsors[self.tag].outputs.power.electrical[:,0]   = 0.0
-        energy_conditions.propulsors[self.tag].outputs.power.propulsive[:,0]   = 0.0   
-        energy_conditions.propulsors[self.tag].outputs.power.thermal[:,0]      = 0.0         
+        return 
 
     def unpack_propulsor_unknowns(self,segment):   
         return 

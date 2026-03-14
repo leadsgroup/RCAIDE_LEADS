@@ -14,7 +14,7 @@ import scipy as sp
 # ----------------------------------------------------------------------
 #  Larminie Model to Compute Fuel Cell Performance
 # ---------------------------------------------------------------------- 
-def compute_fuel_cell_performance(fuel_cell_stack, state, bus, coolant_lines, t_idx, delta_t):
+def compute_fuel_cell_performance(fuel_cell_stack, state):
     """
     Computes the performance of a fuel cell stack using the Larminie-Dicks model.
     

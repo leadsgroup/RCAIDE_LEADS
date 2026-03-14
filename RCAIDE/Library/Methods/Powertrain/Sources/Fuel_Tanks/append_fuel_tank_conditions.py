@@ -63,7 +63,7 @@ def append_fuel_tank_conditions(tank, segment):
     #segment.state.conditions.energy.sources[tank.tag].inputs.power.propulsive    = 0 * ones_row(1)
     #segment.state.conditions.energy.sources[tank.tag].inputs.power.mechanical    = 0 * ones_row(1)
     #segment.state.conditions.energy.sources[tank.tag].inputs.power.electrical    = 0 * ones_row(1)
-    #segment.state.conditions.energy.sources[tank.tag].inputs.power.chemical      = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[tank.tag].inputs.power.chemical      = 0 * ones_row(1)
     #segment.state.conditions.energy.sources[tank.tag].inputs.power.pneumatic     = 0 * ones_row(1)
     #segment.state.conditions.energy.sources[tank.tag].inputs.power.hydraulic     = 0 * ones_row(1)
     #segment.state.conditions.energy.sources[tank.tag].inputs.power.thermal       = 0 * ones_row(1) 
@@ -85,7 +85,7 @@ def append_fuel_tank_segment_conditions(tank, segment):
     #energy_conditions.sources[tank.tag].inputs.power.propulsive[:,0]    = 0.0
     #energy_conditions.sources[tank.tag].inputs.power.mechanical[:,0]    = 0.0 
     #energy_conditions.sources[tank.tag].inputs.power.electrical[:,0]    = 0.0 
-    #energy_conditions.sources[tank.tag].inputs.power.chemical[:,0]      = 0.0
+    energy_conditions.sources[tank.tag].inputs.power.chemical[:,0]      = 0.0
     #energy_conditions.sources[tank.tag].inputs.power.pneumatic[:,0]     = 0.0 
     #energy_conditions.sources[tank.tag].inputs.power.hydraulic[:,0]     = 0.0 
     #energy_conditions.sources[tank.tag].inputs.power.thermal[:,0]       = 0.0 

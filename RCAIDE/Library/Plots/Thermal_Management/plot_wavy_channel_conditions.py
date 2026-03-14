@@ -120,7 +120,7 @@ def plot_wavy_channel_conditions(wavy_channel, results, coolant_line,
         busses  = network.busses 
         for bus in busses:
             for b_i, battery in enumerate(bus.battery_modules):
-                if b_i == 0 or bus.identical_battery_modules == False:
+                if b_i == 0 or bus.identical_sources == False:
                     for i in range(len(results.segments)): 
                         time                            = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min    
                         wavy_channel_conditions         = results.segments[i].conditions.energy.coolant_lines[coolant_line.tag][wavy_channel.tag]

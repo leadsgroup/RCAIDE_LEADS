@@ -11,7 +11,7 @@ from scipy.optimize import minimize_scalar
 # ----------------------------------------------------------------------------------------------------------------------
 #  Model to Compute Fuel Cell Performance
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_fuel_cell_performance(fuel_cell_stack, state, bus, coolant_lines, t_idx, delta_t):
+def compute_fuel_cell_performance(fuel_cell_stack, state, bus, coolant_lines):
     """
     Computes the performance of a PEM fuel cell stack.
     

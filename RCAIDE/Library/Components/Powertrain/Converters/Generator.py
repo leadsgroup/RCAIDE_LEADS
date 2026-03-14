@@ -38,10 +38,7 @@ class Generator(Converter):
         Overall generator efficiency. Default is 1.0.
         
     gearbox.gear_ratio : float
-        Ratio of output shaft speed to generator speed. Default is 1.0. 
-        
-    power_split_ratio : float
-        Ratio of power distribution when generator drives multiple loads. Default is 0.0.
+        Ratio of output shaft speed to generator speed. Default is 1.0.  
         
     design_torque : float
         Design point torque output [N·m]. Default is 0.0.

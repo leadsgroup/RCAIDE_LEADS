@@ -40,6 +40,7 @@ class Source(Component):
         self.active                       = True 
         self.assigned_distributors        = None
         self.efficiency                   = 0.0
+        self.power_split_ratio            = 1.0
 
     #def append_segment_conditions(self,segment): 
         #energy_conditions  = segment.state.conditions.energy    

@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Powertrain/Sources/Fuel_Tanks/compute_fuel_tank_properties.py
+# RCAIDE/Methods/Powertrain/Sources/Fuel_Tanks/compute_fuel_tank_performance.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke
@@ -14,20 +14,14 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHOD
 # ----------------------------------------------------------------------------------------------------------------------  
-def compute_fuel_tank_properties(tank,state,distributor):
+def compute_fuel_tank_performance(tank,state):
     """ Computes fuel comsumtion of tanks
     """
     # unpack  
     I    = state.numerics.time.integrate
     fuel = tank.fuel
-    
-    # pull out distributor
-    if type(distributor) == RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus:
-        distributor_conditions = state.conditions.energy.busses[distributor.tag] 
-    elif  type(distributor) == RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line: 
-        distributor_conditions = state.conditions.energy.fuel_lines[distributor.tag]         
-    
-    tank_conditions = distributor_conditions.fuel_tanks[tank.tag]      
+     
+    tank_conditions = state.conditions.sources[tank.tag]      
     if type(tank.fuel) == RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen:
         '''needs updating'''
         # unpack
@@ -50,11 +44,13 @@ def compute_fuel_tank_properties(tank,state,distributor):
          
         tank_conditions.boil_off_flow_rate =  m_dot_boil_off 
      
-    #m_0_fuel                                       = state.conditions.weights.components.mass[fuel.tag][0,0] 
-    mass_flow_rate                                 = tank.fuel_selector_ratio*distributor_conditions.fuel_mass_flow_rate +  tank_conditions.secondary_mass_flow_rate #tank_conditions.boil_off_flow_rate 
-    tank_conditions.mass_flow_rate                 = mass_flow_rate
-    #if len(mass_flow_rate) > 1:
+    net_chemical_flow_rate          = tank_conditions.outputs.power.chemical +  tank_conditions.inputs.power.chemical
+    net_fuel_mass_flow_rate         = net_chemical_flow_rate /  fuel.lower_heating_value 
+    m_0_fuel                        = state.conditions.weights.components.mass[fuel.tag][0,0] 
+    mass_flow_rate                  = net_fuel_mass_flow_rate +  tank_conditions.secondary_mass_flow_rate +  tank_conditions.boil_off_flow_rate 
+    tank_conditions.mass_flow_rate  = mass_flow_rate
+    if len(mass_flow_rate) > 1:
         # update mass 
-        #state.conditions.weights.components.mass[fuel.tag][:,0]  = m_0_fuel +  np.dot(I, -mass_flow_rate).flatten()
+        state.conditions.weights.components.mass[fuel.tag][:,0]  = m_0_fuel +  np.dot(I, -mass_flow_rate).flatten()
          
     return 

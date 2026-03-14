@@ -14,7 +14,7 @@ from copy import deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_lfp_cell_performance
 # ----------------------------------------------------------------------------------------------------------------------  
-def compute_lfp_cell_performance(battery_module, state, bus, network, t_idx, delta_t):
+def compute_lfp_cell_performance(battery_module, state, bus, network):
     """
     Computes the performance of lithium iron phosphate (LFP) battery cells.
     

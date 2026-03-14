@@ -9,10 +9,8 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 
 # RCAIDE imports  
-import RCAIDE 
-from RCAIDE.Framework.Core                                         import Data
-from .Distributor                                                  import Distributor
-from RCAIDE.Library.Components.Component                           import Container
+import RCAIDE  
+from .Distributor                                                  import Distributor 
 from RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus import *
 from RCAIDE.Library.Attributes.Materials                           import Copper, Polyimide
 
@@ -37,7 +35,7 @@ class Electrical_Bus(Distributor):
     avionics : Component
         Aircraft avionics system 
         
-    identical_battery_modules : bool
+    identical_sources : bool
         Flag indicating if all battery modules are identical (default: True)
         
     active : bool
@@ -47,10 +45,7 @@ class Electrical_Bus(Distributor):
         Power distribution efficiency (default: 1.0)
         
     voltage : float
-        Bus voltage in volts (default: 0.0)
-        
-    power_split_ratio : float
-        Ratio of power distribution between multiple buses (default: 1.0)
+        Bus voltage in volts (default: 0.0) 
         
     nominal_capacity : float
         Total capacity of connected batteries (default: 0.0)
@@ -92,20 +87,16 @@ class Electrical_Bus(Distributor):
         """                
         self.tag                                    = 'electrical_line' 
         self.domain                                 = 'electrical'
-        self.type                                   = 'DC'
         self.electrical_line                        = Electrical_Line()
-        self.battery_modules                        = Container()
-        self.fuel_cell_stacks                       = Container() 
-        self.identical_battery_modules              = True      
-        self.identical_fuel_cell_stacks             = True  
+        self.battery_modules                        = Container() 
+        self.type                                   = 'DC'  
         self.active                                 = True
         self.voltage                                = 0.0 
         self.voltage_phase_to_neutral               = 115.0 
         self.voltage_phase_to_phase                 = 200.0
-        self.frequency                              = 0.0
-        self.power_split_ratio                      = 1.0
+        self.frequency                              = 0.0 
         self.nominal_capacity                       = 0.0
-        self.charging_c_rate                        = 1.0 
+        self.charging_c_rate                        = 1.0
         self.battery_module_electric_configuration  = "Series"
         self.fuel_cell_stack_electric_configuration = "Series"
         
@@ -151,7 +142,7 @@ class Electrical_Bus(Distributor):
         compute_bus_conditions(self, source, state,t_idx, delta_t)
         return
 
-    def initialize_bus_properties(self,network):
+    def initialize(self,network):
         """
         Initialize electrical bus properties
         

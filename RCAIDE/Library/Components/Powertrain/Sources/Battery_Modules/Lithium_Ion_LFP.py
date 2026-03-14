@@ -28,10 +28,7 @@ class Lithium_Ion_LFP(Generic_Battery_Module):
     Attributes
     ----------
     tag : str
-        Identifier for the battery module (default: 'lithium_ion_lfp')
-        
-    power_split_ratio : float, optional
-        Power distribution ratio for multiple battery systems
+        Identifier for the battery module (default: 'lithium_ion_lfp') 
         
     number_of_cells : int
         Number of cells in the module (default: 1)
@@ -106,8 +103,7 @@ class Lithium_Ion_LFP(Generic_Battery_Module):
         # ----------------------------------------------------------------------------------------------------------------------
         #  Module Level Properties
         # ----------------------------------------------------------------------------------------------------------------------        
-        self.tag                              = 'lithium_ion_lfp' 
-        self.power_split_ratio                = None
+        self.tag                              = 'lithium_ion_lfp'  
         self.number_of_cells                  = 1
         self.maximum_energy                   = 0.0
         self.maximum_power                    = 0.0
@@ -145,7 +141,7 @@ class Lithium_Ion_LFP(Generic_Battery_Module):
 
         return                                     
 
-    def compute_performance(self,state,bus,network, t_idx, delta_t): 
+    def compute_performance(self,state,bus,network): 
         """
         Computes the state of the LFP battery cell
         
@@ -169,11 +165,11 @@ class Lithium_Ion_LFP(Generic_Battery_Module):
         stored_battery_tag : str
             Identifier for stored results
         """      
-        inputs, outputs, stored_results_flag, stored_source_tag =  compute_lfp_cell_performance(self,state,bus,network, t_idx,delta_t) 
+        inputs, outputs, stored_results_flag, stored_source_tag =  compute_lfp_cell_performance(self,state,bus,network) 
                         
         return inputs, outputs, stored_results_flag, stored_source_tag
     
-    def reuse_stored_data(self,state,bus,stored_results_flag, stored_battery_tag):
+    def reuse_stored_data(self,state,network,stored_results_flag, stored_battery_tag):
         """
         Reuses previously stored battery performance data
         
@@ -194,10 +190,10 @@ class Lithium_Ion_LFP(Generic_Battery_Module):
         stored_battery_tag : str
             Identifier for stored results
         """
-        inputs, outputs = reuse_stored_lfp_cell_data(self,state,bus,stored_results_flag, stored_battery_tag)
+        inputs, outputs = reuse_stored_lfp_cell_data(self,state,network,stored_results_flag,stored_battery_tag)
         return inputs, outputs
       
-    def update_battery_age(self,segment, battery_conditions,increment_battery_age_by_one_day): 
+    def update_battery_age(self,segment,battery_conditions,increment_battery_age_by_one_day): 
         """
         Updates battery age and degradation parameters
         
@@ -210,7 +206,7 @@ class Lithium_Ion_LFP(Generic_Battery_Module):
         increment_battery_age_by_one_day : bool
             Flag to increment battery age
         """
-        update_lfp_cell_age(self,segment, battery_conditions,increment_battery_age_by_one_day)
+        update_lfp_cell_age(self,segment,battery_conditions,increment_battery_age_by_one_day)
         return 
     
 def create_discharge_performance_map(raw_data):

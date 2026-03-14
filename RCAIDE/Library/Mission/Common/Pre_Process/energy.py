@@ -15,7 +15,11 @@ def energy(mission):
     """ 
     idx = 0      
     for segment in mission.segments: 
-        for network in segment.analyses.vehicle.networks:  
+        for network in segment.analyses.vehicle.networks:
+        
+            
+            for distributor in network.distributors:
+                distributor.initialize(network)
             
             #'''not sure I want to keep this but this basically is where matteo assigns the voltage of the bus a compoment is on may not need '''
             #for converter in network.converters:  

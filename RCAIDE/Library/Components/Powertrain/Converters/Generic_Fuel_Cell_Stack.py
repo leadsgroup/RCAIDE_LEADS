@@ -98,7 +98,7 @@ class Generic_Fuel_Cell_Stack(Converter):
         self.geometrtic_configuration.stacking_rows     = 3
         self.geometrtic_configuration.parallel_spacing  = 0.02     
           
-    def compute_performance(self,state,bus,network, t_idx, delta_t):  
+    def compute_performance(self,state,network):  
         """Computes the state of the NMC battery cell.
            
         Assumptions:

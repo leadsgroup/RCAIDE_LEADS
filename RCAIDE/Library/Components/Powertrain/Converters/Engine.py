@@ -29,10 +29,7 @@ class Engine(Converter):
         Altitude up to which engine maintains sea level power [m]. Default is 0.0.
         
     rated_speed : float
-        Engine speed at rated power [rad/s]. Default is 0.0.
-        
-    power_split_ratio : float
-        Ratio of power distribution when engine drives multiple loads. Default is 0.0.
+        Engine speed at rated power [rad/s]. Default is 0.0. 
         
     power_specific_fuel_consumption : float
         Fuel consumption per unit power output [kg/W/s]. Default is 0.36.
@@ -79,8 +76,7 @@ class Engine(Converter):
         self.tag                             = 'internal_combustion_engine' 
         self.sea_level_power                 = 0.0
         self.flat_rate_altitude              = 0.0
-        self.rated_speed                     = 0.0  
-        self.power_split_ratio               = 0.0
+        self.rated_speed                     = 0.0   
         self.power_specific_fuel_consumption = 0.36
 
     def append_operating_conditions(self,segment):   

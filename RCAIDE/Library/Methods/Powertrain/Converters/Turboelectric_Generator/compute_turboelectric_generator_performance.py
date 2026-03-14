@@ -127,7 +127,7 @@ def compute_turboelectric_generator_performance(turboelectric_generator, state, 
 
     return  turboelectric_generator_conditions.power, stored_results_flag, stored_converter_tag
 
-def reuse_stored_turboelectric_generator_data(turboelectric_generator, state, network,stored_converter_tag,fuel_line=None, bus=None):
+def reuse_stored_turboelectric_generator_data(turboelectric_generator,state,network,stored_converter_tag,fuel_line=None, bus=None):
     '''Reuses results from one turboelectric_generator for identical propulsors
     
     Assumptions: 

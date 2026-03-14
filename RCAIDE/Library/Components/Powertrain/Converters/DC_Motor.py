@@ -38,10 +38,7 @@ class DC_Motor(Converter):
         Overall motor efficiency. Default is 1.0.
         
     gearbox.gear_ratio : float
-        Ratio of output shaft speed to motor speed. Default is 1.0. 
-          
-    power_split_ratio : float
-        Ratio of power distribution when motor drives multiple loads. Default is 0.0.
+        Ratio of output shaft speed to motor speed. Default is 1.0.  
         
     design_torque : float
         Design point torque output [N·m]. Default is 0.0.

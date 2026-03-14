@@ -35,8 +35,7 @@ class Converter(Component):
         self.efficiency.electrical    = 1.0
         self.efficiency.mechanical    = 1.0
         self.efficiency.chemical      = 1.0
-        self.efficiency.hydraulic     = 1.0
-        self.efficiency.pneumatic     = 1.0
+        self.efficiency.hydraulic     = 1.0 
         self.efficiency.thermal       = 1.0
 
     def append_segment_conditions(self,segment): 

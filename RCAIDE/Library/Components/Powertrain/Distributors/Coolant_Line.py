@@ -39,10 +39,7 @@ class Coolant_Line(Distributor):
         Distribution efficiency of the coolant line (default: 1.0)
         
     battery_modules : Container, optional
-        Collection of battery cooling systems, created when batteries are present
-        
-    identical_battery_modules : bool, optional
-        Flag indicating if all battery modules use identical cooling systems
+        Collection of battery cooling systems, created when batteries are present 
 
     Notes
     -----
@@ -78,8 +75,7 @@ class Coolant_Line(Distributor):
         self.tag                            = 'coolant_line' 
         self.domain                         = 'thermal'
         self.heat_exchangers                = Container()
-        self.reservoirs                     = Container() 
-        self.power_split_ratio              = 1.0
+        self.reservoirs                     = Container()  
 
     def __init__ (self, distributor=None):
         """
@@ -102,7 +98,7 @@ class Coolant_Line(Distributor):
         self.efficiency                    = 1.0
         #if distributor is not None:
             #for tag, item in  distributor.items():
-                #self.identical_battery_modules  =  distributor.identical_battery_modules
+                #self.identical_sources  =  distributor.identical_sources
                 #if tag == 'battery_modules':
                     #if not hasattr(self, 'battery_modules'):
                         #self.battery_modules = Container()
@@ -116,15 +112,13 @@ class Coolant_Line(Distributor):
 
         inputs.power.mechanical  = state.conditions.energy.distributors[self.tag].inputs.power.mechanical
         inputs.power.electrical  = state.conditions.energy.distributors[self.tag].inputs.power.electrical
-        inputs.power.chemical    = state.conditions.energy.distributors[self.tag].inputs.power.chemical  
-        inputs.power.pneumatic   = state.conditions.energy.distributors[self.tag].inputs.power.pneumatic 
+        inputs.power.chemical    = state.conditions.energy.distributors[self.tag].inputs.power.chemical   
         inputs.power.hydraulic   = state.conditions.energy.distributors[self.tag].inputs.power.hydraulic 
         inputs.power.thermal     = state.conditions.energy.distributors[self.tag].inputs.power.thermal  
 
         outputs.power.mechanical = state.conditions.energy.distributors[self.tag].outputs.power.mechanical
         outputs.power.electrical = state.conditions.energy.distributors[self.tag].outputs.power.electrical
-        outputs.power.chemical   = state.conditions.energy.distributors[self.tag].outputs.power.chemical  
-        outputs.power.pneumatic  = state.conditions.energy.distributors[self.tag].outputs.power.pneumatic 
+        outputs.power.chemical   = state.conditions.energy.distributors[self.tag].outputs.power.chemical   
         outputs.power.hydraulic  = state.conditions.energy.distributors[self.tag].outputs.power.hydraulic 
         outputs.power.thermal    = state.conditions.energy.distributors[self.tag].outputs.power.thermal  
 

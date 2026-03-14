@@ -66,8 +66,7 @@ class Fuel_Line(Distributor):
         self.efficiency                    = 1.0
         self.inner_diameter                = 0.03
         self.outer_diameter                = 0.05
-        self.length                        = 1 
-        self.power_split_ratio             = 1.0
+        self.length                        = 1  
         self.pressure                      = 150000.0  # Pa
         
     def append_operating_conditions(self, segment):

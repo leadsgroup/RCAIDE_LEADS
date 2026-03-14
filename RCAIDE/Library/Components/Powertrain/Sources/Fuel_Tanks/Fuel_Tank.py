@@ -11,7 +11,7 @@
 # RCAIDE imports 
 from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Components.Powertrain.Sources.Source    import Source   
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks  import * 
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks   import * 
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions import *
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_non_integral_tank_volume import *
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_cuboid_moment_of_inertia
@@ -167,7 +167,10 @@ class Fuel_Tank(Source):
                 
         return
     
-
+    def compute_performance(self,state):
+        compute_fuel_tank_performance(self, state)
+        return
+    
     def compute_center_of_gravity(self,vehicle): 
         """
         Computes the center of gravity for a fuel tank.

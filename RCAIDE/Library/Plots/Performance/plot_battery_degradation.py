@@ -91,7 +91,7 @@ def plot_battery_degradation(results,
     for network in results.segments[0].analyses.vehicle.networks: 
         busses  = network.busses
         for bus in busses:
-            if bus.identical_battery_modules:
+            if bus.identical_sources:
                 for i, battery in enumerate(bus.battery_modules):
                     if i == 0:
                         fig = plt.figure(save_filename + '_' + battery.tag)

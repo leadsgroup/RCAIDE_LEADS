@@ -98,7 +98,7 @@ def plot_battery_temperature(results,
         busses  = network.busses 
         for  bus_i, bus in enumerate(busses):
             for b_i, battery in enumerate(bus.battery_modules):
-                if b_i == 0 or bus.identical_battery_modules == False:
+                if b_i == 0 or bus.identical_sources == False:
                     for i in range(len(results.segments)): 
                         bus_results         = results.segments[i].conditions.energy.busses[bus.tag]
                         time                = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min                      

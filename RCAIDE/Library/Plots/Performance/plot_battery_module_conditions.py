@@ -106,7 +106,7 @@ def plot_battery_module_conditions(results,
         busses  = network.busses 
         for bus in busses:
             for b_i, battery in enumerate(bus.battery_modules):
-                if b_i == 0 or bus.identical_battery_modules == False:
+                if b_i == 0 or bus.identical_sources == False:
                     for i in range(len(results.segments)):  
                         time    = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min    
                         battery_conditions  = results.segments[i].conditions.energy.busses[bus.tag].battery_modules[battery.tag]

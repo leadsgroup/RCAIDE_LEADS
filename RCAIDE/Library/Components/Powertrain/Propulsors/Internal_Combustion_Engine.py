@@ -112,7 +112,7 @@ class Internal_Combustion_Engine(Propulsor):
         inputs, outputs, stored_results_flag, stored_propulsor_tag =  compute_internal_combustion_engine_performance(self,state,center_of_gravity)
         return inputs, outputs, stored_results_flag, stored_propulsor_tag
     
-    def reuse_stored_data(ICE_prop, state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
+    def reuse_stored_data(ICE_prop,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
         """
         Reuses stored propulsor data for performance calculations.
         """

@@ -23,7 +23,7 @@ from copy import  deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_performance
 # ----------------------------------------------------------------------------------------------------------------------   
-def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 0.0]]):
+def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[[0.0, 0.0, 0.0]]):
     """
     Computes the performance of a turbofan engine by analyzing the thermodynamic cycle.
     

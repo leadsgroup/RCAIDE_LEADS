@@ -90,6 +90,7 @@ def append_battery_conditions(battery,segment):
     segment.state.conditions.energy.sources[battery.tag].cell.resistance_growth_factor   = 1.
     segment.state.conditions.energy.sources[battery.tag].cell.capacity_fade_factor       = 1. 
      
+    segment.state.conditions.energy.sources[battery.tag].power_split_ratio               = battery.power_split_ratio  
     segment.state.conditions.energy.sources[battery.tag].inputs                          = Conditions()
     segment.state.conditions.energy.sources[battery.tag].inputs.power                    = Conditions() 
     #segment.state.conditions.energy.sources[battery.tag].inputs.power.propulsive         = 0 * ones_row(1)

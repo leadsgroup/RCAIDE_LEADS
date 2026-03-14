@@ -170,7 +170,7 @@ class Lithium_Ion_NMC(Generic_Battery_Module):
         self.cell.discharge_performance_map   = create_discharge_performance_map(battery_raw_data)  
         return  
     
-    def compute_performance(self,state,bus,network, t_idx, delta_t): 
+    def compute_performance(self,state,network): 
         """
         Computes the state of the NMC battery cell
         
@@ -220,12 +220,12 @@ class Lithium_Ion_NMC(Generic_Battery_Module):
         - Thermal distribution with cooling effects
         - State of charge tracking
         """        
-        inputs, outputs, stored_results_flag, stored_source_tag = compute_nmc_cell_performance(self,state,bus,network, t_idx,delta_t) 
+        inputs, outputs, stored_results_flag, stored_source_tag = compute_nmc_cell_performance(self,state,network) 
         
         return inputs, outputs, stored_results_flag, stored_source_tag
     
-    def reuse_stored_data(self,state,stored_battery_tag):
-        inputs, outputs = reuse_stored_nmc_cell_data(self,state,stored_battery_tag)
+    def reuse_stored_data(self,state,network,stored_battery_tag):
+        inputs, outputs = reuse_stored_nmc_cell_data(self,state,network,stored_battery_tag)
         return inputs, outputs
      
     

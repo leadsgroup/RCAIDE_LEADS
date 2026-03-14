@@ -127,7 +127,7 @@ def plot_cross_flow_heat_exchanger_conditions(cross_flow_hex, results, coolant_l
         busses  = network.busses 
         for bus in busses:
             for b_i, battery in enumerate(bus.battery_modules):
-                if b_i == 0 or bus.identical_battery_modules == False:
+                if b_i == 0 or bus.identical_sources == False:
                     for i in range(len(results.segments)): 
                         time    = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min    
                         cross_flow_hex_conditions  = results.segments[i].conditions.energy.coolant_lines[coolant_line.tag][cross_flow_hex.tag]

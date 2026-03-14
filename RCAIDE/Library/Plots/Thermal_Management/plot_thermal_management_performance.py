@@ -28,7 +28,7 @@ def plot_thermal_management_performance(results,
                                 List of heat exchanger components
                             - reservoirs
                                 List of thermal reservoir components
-                            - identical_battery_modules : bool
+                            - identical_sources : bool
                                 Flag indicating if batteries are identical
                             
     save_figure : bool, optional
@@ -86,7 +86,7 @@ def plot_thermal_management_performance(results,
     for network in  results.segments[0].analyses.vehicle.networks:
         for coolant_line in  network.coolant_lines:
             for tag, item in  coolant_line.items():
-                if coolant_line.identical_battery_modules:
+                if coolant_line.identical_sources:
                     if tag == 'battery_modules':
                             for i, battery in enumerate(item):
                                 for btms in  (battery):

@@ -44,10 +44,7 @@ class Motor(Converter):
         Container for gearbox properties.
 
     gearbox.gear_ratio : float
-        Ratio of output shaft speed to motor speed [-].
-
-    power_split_ratio : float
-        Ratio of power distribution when driving multiple loads [-].
+        Ratio of output shaft speed to motor speed [-]. 
 
     design_angular_velocity : float
         Design point angular velocity [rad/s].
@@ -99,8 +96,7 @@ class Motor(Converter):
         # Always set a tag
         self.tag                           = "motor"
         self.gearbox                       = Data()
-        self.gearbox.gear_ratio            = 1.0  # default unity ratio
-        self.power_split_ratio             = 0.0
+        self.gearbox.gear_ratio            = 1.0  # default unity ratio 
         self.interpolated_func             = None
         self.type                          = "DC"
         self.interpolated_func             = None
