@@ -20,7 +20,14 @@ import os
 import matplotlib.pyplot as plt  
 
 
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
 from BWB         import vehicle_setup as BWB_vehicle_setup
 from Boeing_737  import vehicle_setup as B737_vehicle_setup
 from Navion      import vehicle_setup as Nav_vehicle_setup

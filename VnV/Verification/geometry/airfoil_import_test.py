@@ -13,42 +13,28 @@ from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry, com
 from RCAIDE.Library.Plots import *
 
 import os
-import sys
 import numpy as np
 import matplotlib.pyplot as plt
-
-#sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles' + os.path.sep + 'Airfoils_and_Polars')) 
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 
-def main():
-
-    # ------------------------------------------------------------------
-    #  File Paths 
-    # ------------------------------------------------------------------    
-    ospath             = os.path.abspath(__file__)
-    separator          = os.path.sep
-    local_path         = os.path.dirname(ospath) + separator  +  '..' + separator  +  '..'
-    airfoil_file_path  = local_path  + separator + 'Vehicles' + separator  + 'Airfoils_and_Polars' + separator
-    polar_file_path    = local_path  + separator + 'Vehicles' + separator  + 'Airfoils_and_Polars' + separator + 'Polars' + separator
-    
+def main():    
     # ----------------------------------------------------------------------------------------------------------------
     #  Define airfoil geometry and polar files 
     # ---------------------------------------------------------------------------------------------------------------- 
     separator     = os.path.sep
-    if  os.path.split(sys.path[0])[1] == 'geometry':
-        airfoils_file_path =  os.path.split(os.path.split(sys.path[0])[0])[0] + separator +  'Vehicles' + os.path.sep + 'Airfoils_and_Polars' + os.path.sep
-    else:
-        airfoils_file_path = sys.path[0] + separator +  'Vehicles' + os.path.sep + 'Airfoils_and_Polars' + os.path.sep
-    airfoil_geometry_with_selig =  [airfoil_file_path + 'NACA_4412.txt','airfoil_geometry_2.txt', 'airfoil_geometry_2-selig.txt']        
-    airfoil_geometry_files      = airfoils_file_path + 'NACA_4412.txt'
-    airfoil_polar_files         =  [ polar_file_path + 'NACA_4412_polar_Re_50000.txt',
-                                     polar_file_path + 'NACA_4412_polar_Re_100000.txt',
-                                     polar_file_path + 'NACA_4412_polar_Re_200000.txt',
-                                     polar_file_path + 'NACA_4412_polar_Re_500000.txt',
-                                     polar_file_path + 'NACA_4412_polar_Re_1000000.txt']  
+    airfoils_path = os.path.abspath(
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "Vehicles", "Airfoils")
+    ) + separator
+    airfoil_geometry_with_selig =  [airfoils_path + 'NACA_4412.txt','airfoil_geometry_2.txt', 'airfoil_geometry_2-selig.txt']        
+    airfoil_geometry_files      = airfoils_path + 'NACA_4412.txt'
+    airfoil_polar_files         =  [airfoils_path + 'Polars' + separator + 'NACA_4412_polar_Re_50000.txt',
+                                     airfoils_path + 'Polars' + separator + 'NACA_4412_polar_Re_100000.txt',
+                                     airfoils_path + 'Polars' + separator + 'NACA_4412_polar_Re_200000.txt',
+                                     airfoils_path + 'Polars' + separator + 'NACA_4412_polar_Re_500000.txt',
+                                     airfoils_path + 'Polars' + separator + 'NACA_4412_polar_Re_1000000.txt']  
     
     
 
