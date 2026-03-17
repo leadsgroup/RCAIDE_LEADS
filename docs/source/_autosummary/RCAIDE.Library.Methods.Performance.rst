@@ -31,6 +31,7 @@ Performance
    :recursive:
 
    aircraft_aerodynamic_analysis
+   compute_load_and_trim_diagram
    compute_noise_certification_data
    compute_payload_range_diagram
    estimate_landing_field_length

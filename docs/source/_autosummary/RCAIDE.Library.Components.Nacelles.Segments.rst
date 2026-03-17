@@ -30,5 +30,9 @@ Segments
    :template: custom-module-template.rst
    :recursive:
 
+   Circle_Segment
+   Ellipse_Segment
+   Rounded_Rectangle_Segment
    Segment
+   Super_Ellipse_Segment
 

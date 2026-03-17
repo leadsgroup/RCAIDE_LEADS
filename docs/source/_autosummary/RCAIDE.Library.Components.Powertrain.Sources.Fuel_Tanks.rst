@@ -32,5 +32,6 @@ Fuel\_Tanks
 
    Fuel_Tank
    Integral_Tank
+   Liquid_Hydrogen_Tank
    Non_Integral_Tank
 
