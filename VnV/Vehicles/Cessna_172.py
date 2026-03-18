@@ -32,12 +32,16 @@ def vehicle_setup():
     vehicle.mass_properties.cargo                    = 0. 
                                                
     # envelope properties                       
-    vehicle.flight_envelope.ultimate_load            = 5.7 
-    vehicle.flight_envelope.positive_limit_load      = 3.8  
-    vehicle.flight_envelope.design_range             = 750 * Units.nmi 
-    vehicle.flight_envelope.design_dynamic_pressure  = 2755 # max speed at 10 k feet
-    vehicle.flight_envelope.design_mach_number       = 0.18745866156304694
-                                                
+    vehicle.flight_envelope.ultimate_load             = 5.7 
+    vehicle.flight_envelope.positive_limit_load       = 3.8  
+    vehicle.flight_envelope.design_range              = 750 * Units.nmi 
+    vehicle.flight_envelope.design_dynamic_pressure   = 2755 # max speed at 10 k feet
+    vehicle.flight_envelope.design_mach_number        = 0.18745866156304694
+    vehicle.flight_envelope.category                  = 'normal'
+    vehicle.flight_envelope.FAR_part_number           = '23' 
+    vehicle.flight_envelope.maximum_lift_coefficient  = 3
+    vehicle.flight_envelope.minimum_lift_coefficient  = -1.5  
+
     # basic parameters                          
     vehicle.reference_area                           = 174. * Units.feet**2       
     vehicle.number_of_passengers                     = 4

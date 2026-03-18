@@ -89,7 +89,7 @@ def compute_operating_items_weight(vehicle):
     W_cargo = 0
     WCON    = 0
     for cargo_bay in vehicle.cargo_bays:
-        W_cargo     =  int(cargo_bay.cargo.mass_properties.mass)
+        W_cargo     =  int(cargo_bay.mass_properties.mass)
         W_container = 175 * np.ceil(W_cargo/ Units.lbs * 1. / 950)  # cargo container weight
         cargo_bay.container.mass_properties.mass = W_container
         WCON        += W_container

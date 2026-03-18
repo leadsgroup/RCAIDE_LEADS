@@ -94,7 +94,7 @@ def compute_load_and_trim_diagram(mission = None, cruise_segment_tag = "cruise",
     else:
         MLW =  estimate_maximum_landing_weight(MTOW)
     W_CARGO = 0
-    m_c  = []
+    m_c     = []
     for cargo_bay in vehicle_0.cargo_bays:  
         W_CARGO += cargo_bay.mass_properties.mass
         m_c.append(cargo_bay.mass_properties.mass) 
