@@ -14,12 +14,15 @@ import matplotlib.pyplot as plt
 #  PLOTS
 # ----------------------------------------------------------------------------------------------------------------------   
 def plot_aircraft_aerodynamics(results,
-                            save_figure = False,
-                            line_color = 'bo-',
-                            line_color2 = 'rs--',
-                            save_filename = "Aircraft_Aerodynamic_Analysis",
-                            file_type = ".png",
-                            width = 11, height = 7):
+                            save_figure   = False, 
+                            line_style    = '--',
+                            line_color    = 'black',
+                            line_marker   = 'o',
+                            line_width    = 2,
+                            save_filename = "aircraft",
+                            file_type     = ".png",
+                            width         = 8,
+                            height        = 6):
     """
     Creates 3D surface plots of aircraft lift and drag coefficients as functions of 
     Mach number and angle of attack.
@@ -116,25 +119,37 @@ def plot_aircraft_aerodynamics(results,
     #------------------------------------------------------------------------
     # setup figures
     #------------------------------------------------------------------------
-    fig = plt.figure()  
-    fig.set_size_inches(12,6) 
-    axis_1 = fig.add_subplot(1, 2, 1)
-    axis_2 = fig.add_subplot(1, 2, 2) 
+    fig_1 = plt.figure()  
+    fig_1.set_size_inches(width,height) 
+    fig_2 = plt.figure()  
+    fig_2.set_size_inches(width,height) 
+    fig_3 = plt.figure()  
+    fig_3.set_size_inches(width,height)
+    
+    axis_1 = fig_1.add_subplot(1, 1, 1)
+    axis_2 = fig_2.add_subplot(1, 1, 1) 
+    axis_3 = fig_3.add_subplot(1, 1, 1) 
   
-    axis_1.plot( results.alpha/Units.degree, results.lift_coefficient) 
-    axis_2.plot( results.alpha/Units.degree, results.drag_coefficient) 
+    axis_1.plot(results.alpha/Units.degree, results.lift_coefficient, color= line_color, marker = line_marker, linewidth = line_width) 
+    axis_2.plot(results.alpha/Units.degree, results.drag_coefficient, color= line_color, marker = line_marker, linewidth = line_width ) 
+    axis_3.plot(results.drag_coefficient,  results.lift_coefficient , color= line_color, marker = line_marker, linewidth = line_width) 
             
     axis_1.set_xlabel('AoA') 
     axis_2.set_xlabel('AoA')  
+    axis_3.set_xlabel('$C_D$') 
     axis_1.set_ylabel('$C_L$') 
     axis_2.set_ylabel('$C_D$')
+    axis_3.set_ylabel('$C_L$') 
     
     set_axes(axis_1)
     set_axes(axis_2)
+    set_axes(axis_3)
     
     plt.tight_layout()    
     if save_figure:    
-        fig.savefig(save_filename + file_type) 
+        fig_1.savefig(save_filename + 'CD_vs_AoA' + file_type) 
+        fig_2.savefig(save_filename + 'CL_vs_AoA' + file_type) 
+        fig_3.savefig(save_filename + 'CL_vs_CD' + file_type) 
     
     plt.tight_layout()
     return

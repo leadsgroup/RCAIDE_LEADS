@@ -198,7 +198,7 @@ class Rotor(Component):
         self.cruise.design_power_coefficient   = 0.01 
         self.cruise.design_thrust_coefficient  = 0.01
         self.cruise.design_torque_coefficient  = 0.005
-        self.cruise.design_Cl                  = 0.7 
+        self.cruise.design_lift_coefficient    = 0.7
         self.cruise.design_efficiency          = 0.86  
         self.cruise.design_angular_velocity    = None
         self.cruise.design_tip_mach            = None

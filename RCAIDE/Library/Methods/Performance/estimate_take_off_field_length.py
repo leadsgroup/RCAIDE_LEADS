@@ -8,18 +8,24 @@
 # RCAIDE Imports
 import RCAIDE
 from RCAIDE.Framework.Core            import Data, Units     
-from RCAIDE.Library.Methods.Aerodynamics.Common.Drag import * 
-from RCAIDE.Library.Methods.Aerodynamics.Common.Lift import *
-from RCAIDE.Library.Mission.Common.Pre_Process.energy import energy
-from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
+from RCAIDE.Library.Methods.Aerodynamics.Common.Drag  import * 
+from RCAIDE.Library.Methods.Aerodynamics.Common.Lift  import *
+from RCAIDE.Library.Mission.Common.Pre_Process.energy import energy 
+from RCAIDE.Library.Mission.Common.Pre_Process  import geometry_preprocess_routine 
 
 # package imports
 import numpy as np
+from copy import deepcopy
 
 # ----------------------------------------------------------------------
 #  Compute field length required for takeoff
 # ----------------------------------------------------------------------
-def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0, compute_2nd_seg_climb = False):
+def estimate_take_off_field_length(analyses       = None,
+                                   takeoff_weight = None, 
+                                   altitude       = 0,
+                                   delta_isa      = 0,
+                                   Vref_VS_ratio  = 1.23,
+                                   compute_2nd_seg_climb = False):
     """
     Computes the takeoff field length and optionally the second segment climb gradient for a given vehicle configuration.
 
@@ -92,22 +98,19 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
     RCAIDE.Library.Methods.Aerodynamics.Common.Drag.asymmetry_drag
     """        
 
-    # ==============================================
-        # Unpack
     # ============================================== 
-    for wing in vehicle.wings: 
-        wing_planform(wing) 
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
-            vehicle.reference_area = wing.areas.reference
-
-    atmo            = analyses.atmosphere 
-    weight          = vehicle.mass_properties.takeoff
+    # Preprocess Geometry 
+    # ============================================== 
+    geometry_preprocess_routine(analyses)   
+    vehicle =  deepcopy(analyses.vehicle)
+    
     reference_area  = vehicle.reference_area 
     V2_VS_ratio     = vehicle.flight_envelope.V2_VS_ratio 
 
     # ==============================================
     # Computing atmospheric conditions
     # ==============================================
+    atmo              = analyses.atmosphere 
     atmo_values       = atmo.compute_values(altitude,delta_isa)
     conditions        = RCAIDE.Framework.Mission.Common.Results() 
     p                 = atmo_values.pressure
@@ -126,8 +129,7 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
     state.conditions.freestream = Data()
     state.conditions.freestream.density           = rho
     state.conditions.freestream.velocity          = 90. * Units.knots
-    state.conditions.freestream.dynamic_viscosity = mu
-
+    state.conditions.freestream.dynamic_viscosity = mu 
     settings = analyses.aerodynamics.settings
 
     maximum_lift_coefficient, induced_drag_high_lift = compute_max_lift_coeff(state,settings,vehicle)
@@ -135,7 +137,7 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
     # ==============================================
     # Computing speeds (Vs, V2, 0.7*V2)
     # ==============================================
-    stall_speed       = (2 * weight * sea_level_gravity / (rho * reference_area * maximum_lift_coefficient)) ** 0.5
+    stall_speed       = (2 * takeoff_weight * sea_level_gravity / (rho * reference_area * maximum_lift_coefficient)) ** 0.5
     V2_speed          = V2_VS_ratio * stall_speed
 
     # ==============================================
@@ -149,8 +151,7 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
 
     # ==============================================
     # Getting engine thrust
-    # ==============================================
-
+    # ============================================== 
 
     # Step 28: Static Sea Level Thrust  
     planet                                            = RCAIDE.Library.Attributes.Planets.Earth()
@@ -234,7 +235,7 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
         print('Incorrect number of engines: {0:.1f}. Using twin engine correlation.'.format(engine_number))
 
     # Define takeoff index   (V2^2 / (T/W)
-    takeoff_index = V2_speed**2. / (thrust[0][0] / weight)
+    takeoff_index = V2_speed**2. / (thrust[0][0] / takeoff_weight)
 
     # Calculating takeoff field length
     takeoff_field_length = 0.
@@ -277,7 +278,7 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
         l_over_d_v2     = clv2 / cdv2
 
         # Compute 2nd segment climb gradient
-        second_seg_climb_gradient = thrust / (weight*sea_level_gravity) - 1. / l_over_d_v2
+        second_seg_climb_gradient = thrust / (takeoff_weight*sea_level_gravity) - 1. / l_over_d_v2
 
         return takeoff_field_length[0][0], second_seg_climb_gradient[0][0]
 

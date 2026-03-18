@@ -114,7 +114,7 @@ def plot_battery_degradation(results,
                         axis_1 = plt.subplot(3,2,1)
                         axis_1.plot(charge_throughput, capacity_fade, color = ps.color , marker = ps.markers[0], linewidth = ps.line_width ) 
                         axis_1.set_ylabel('$E/E_0$')
-                        axis_1.set_xlabel('Ah')
+                        axis_1.set_xlabel('Amp-Hours')
                         set_axes(axis_1)      
                     
                         axis_2 = plt.subplot(3,2,3)
@@ -132,7 +132,7 @@ def plot_battery_degradation(results,
                         axis_4 = plt.subplot(3,2,2) 
                         axis_4.plot(charge_throughput, resistance_growth, color = ps.color, marker = ps.markers[0], linewidth = ps.line_width )
                         axis_4.set_ylabel('$R/R_0$')
-                        axis_4.set_xlabel('Ah')
+                        axis_4.set_xlabel('Amp-Hours')
                         set_axes(axis_4)      
                     
                         axis_5 = plt.subplot(3,2,4) 

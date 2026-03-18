@@ -204,15 +204,22 @@ def plot_propulsor_data(results, propulsor, axis_1_1, axis_1_2, axis_1_3, axis_1
     --------
     RCAIDE.Library.Plots.Aerodynamics.plot_rotor_conditions : Main plotting function
     """
+    use_figure_of_merit = False
     if 'rotor' in  propulsor:
         thrustor = propulsor.rotor
+        use_figure_of_merit = True
     elif 'propeller' in  propulsor:
-        thrustor = propulsor.propeller
+        thrustor = propulsor.propeller 
         
     for i in range(len(results.segments)):  
         time         =  results.segments[i].conditions.frames.inertial.time[:,0] / Units.min   
         rpm          =  results.segments[i].conditions.energy.converters[thrustor.tag].rpm[:,0]
-        eta          =  results.segments[i].conditions.energy.converters[thrustor.tag].efficiency[:,0]
+        
+        if use_figure_of_merit:
+            eta           =  results.segments[i].conditions.energy.converters[thrustor.tag].figure_of_merit[:,0]
+        else:
+            eta          =  results.segments[i].conditions.energy.converters[thrustor.tag].efficiency[:,0]
+        
         angle        =  results.segments[i].conditions.energy.converters[thrustor.tag].commanded_thrust_vector_angle[:,0]
         beta         =  results.segments[i].conditions.energy.converters[thrustor.tag].blade_pitch_command[:,0] 
         DL           =  results.segments[i].conditions.energy.converters[thrustor.tag].disc_loading[:,0]
@@ -237,11 +244,13 @@ def plot_propulsor_data(results, propulsor, axis_1_1, axis_1_2, axis_1_3, axis_1
         set_axes(axis_1_2) 
  
         axis_1_3.plot(time,thrust, color = line_colors[i], marker = ps.markers[p_i] , linewidth = ps.line_width)
-        axis_1_3.set_ylabel(r'Thrust (N)')
+        axis_1_3.set_ylabel(r'Thrust (N)') 
+        axis_1_3.set_xlabel('Time (mins)')        
         set_axes(axis_1_3) 
          
         axis_1_4.plot(time,torque, color = line_colors[i], marker = ps.markers[p_i] , linewidth = ps.line_width)
         axis_1_4.set_ylabel(r'Torque (N-m)')
+        axis_1_4.set_xlabel('Time (mins)')       
         set_axes(axis_1_4)
  
         axis_2_2.plot(time, angle/Units.degrees, color = line_colors[i], marker = ps.markers[p_i]  , linewidth = ps.line_width) 
@@ -250,10 +259,15 @@ def plot_propulsor_data(results, propulsor, axis_1_1, axis_1_2, axis_1_3, axis_1
 
         axis_2_3.plot(time,beta/Units.degrees, color = line_colors[i], marker = ps.markers[p_i] , linewidth = ps.line_width)
         axis_2_3.set_ylabel(r'Pitch Command  (deg)')
+        axis_2_3.set_xlabel('Time (mins)')
         set_axes(axis_2_3)
 
         axis_2_4.plot(time,eta, color = line_colors[i], marker = ps.markers[p_i] , linewidth = ps.line_width)
-        axis_2_4.set_ylabel(r'Efficiency')
+        if use_figure_of_merit:
+            axis_2_4.set_ylabel(r'Figure of Merit')
+        else:
+            axis_2_4.set_ylabel(r'Efficency')
+        axis_2_4.set_xlabel('Time (mins)')
         set_axes(axis_2_4)
                 
     return 

@@ -88,9 +88,9 @@ def plot_center_of_gravity_drift(results,
         CG_y      = results.segments[i].conditions.weights.vehicle.global_center_of_gravity[:, 1]  
         CG_z      = results.segments[i].conditions.weights.vehicle.global_center_of_gravity[:, 2]  
         
-        axis_1.set_ylabel(r'C.G._x (m)')  
-        axis_2.set_ylabel(r'C.G._y (m)')
-        axis_3.set_ylabel(r'C.G._z (m)')   
+        axis_1.set_ylabel(r'$C.G._x$ (m)')  
+        axis_2.set_ylabel(r'$C.G._y$ (m)')
+        axis_3.set_ylabel(r'$C.G._z$ (m)')   
 
         segment_tag  =  results.segments[i].tag
         segment_name = segment_tag.replace('_', ' ')       

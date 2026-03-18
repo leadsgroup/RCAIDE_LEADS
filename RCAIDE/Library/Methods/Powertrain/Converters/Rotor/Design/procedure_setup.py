@@ -254,7 +254,7 @@ def run_rotor_hover(nexus):
     nexus.results.hover.thurst_c                     = segment.state.conditions.energy.converters[rotor.tag].thrust_coefficient[0][0]
     nexus.results.hover.omega                        = segment.state.conditions.energy.converters[rotor.tag].omega[0][0]
     nexus.results.hover.max_sectional_cl             = np.max(segment.state.conditions.energy.converters[rotor.tag].lift_coefficient[0]) 
-    nexus.results.hover.mean_CL                      = np.mean(segment.state.conditions.energy.converters[rotor.tag].lift_coefficient[0]) 
+    nexus.results.hover.mean_lift_coefficient        = np.mean(segment.state.conditions.energy.converters[rotor.tag].lift_coefficient[0]) 
     nexus.results.hover.figure_of_merit              = segment.state.conditions.energy.converters[rotor.tag].figure_of_merit[0][0]  
     nexus.results.hover.efficiency                   = segment.state.conditions.energy.converters[rotor.tag].efficiency[0][0] 
     nexus.results.hover.conditions                   = conditions  
@@ -372,7 +372,7 @@ def run_rotor_cruise(nexus):
         nexus.results.cruise.omega                       = segment.state.conditions.energy.converters[rotor.tag].omega[0][0]
         nexus.results.cruise.thurst_c                    = segment.state.conditions.energy.converters[rotor.tag].thrust_coefficient[0][0]
         nexus.results.cruise.max_sectional_cl            = np.max(segment.state.conditions.energy.converters[rotor.tag].lift_coefficient[0]) 
-        nexus.results.cruise.mean_CL                     = np.mean(segment.state.conditions.energy.converters[rotor.tag].lift_coefficient[0])  
+        nexus.results.cruise.mean_lift_coefficient       = np.mean(segment.state.conditions.energy.converters[rotor.tag].lift_coefficient[0])
         nexus.results.cruise.efficiency                  = segment.state.conditions.energy.converters[rotor.tag].efficiency[0][0]
         nexus.results.cruise.conditions                  = conditions  
                     
@@ -400,17 +400,17 @@ def run_rotor_cruise(nexus):
             nexus.results.cruise.mean_SPL   = 0  
             
     else:     
-        nexus.results.cruise.thrust           = 0.0
-        nexus.results.cruise.torque           = 0.0
-        nexus.results.cruise.power            = 0.0
-        nexus.results.cruise.power_c          = 0.0
-        nexus.results.cruise.thurst_c         = 0.0
-        nexus.results.cruise.omega            = 0.0
-        nexus.results.cruise.max_sectional_cl = 0.0
-        nexus.results.cruise.mean_CL          = 0.0
-        nexus.results.cruise.efficiency       = 0.0  
-        nexus.results.cruise.mean_SPL         = 0.0
-        nexus.results.cruise.noise_data       = None   
+        nexus.results.cruise.thrust                = 0.0
+        nexus.results.cruise.torque                = 0.0
+        nexus.results.cruise.power                 = 0.0
+        nexus.results.cruise.power_c               = 0.0
+        nexus.results.cruise.thurst_c              = 0.0
+        nexus.results.cruise.omega                 = 0.0
+        nexus.results.cruise.max_sectional_cl      = 0.0
+        nexus.results.cruise.mean_lift_coefficient = 0.0
+        nexus.results.cruise.efficiency            = 0.0  
+        nexus.results.cruise.mean_SPL              = 0.0
+        nexus.results.cruise.noise_data            = None   
 
     return nexus
    
@@ -429,7 +429,7 @@ def post_process(nexus):
     ideal_efficiency                = rotor.optimization_parameters.ideal_efficiency      
     ideal_FoM                       = rotor.optimization_parameters.ideal_figure_of_merit
     print_iter                      = nexus.print_iterations  
-    mean_CL_hover                   = nexus.results.hover.mean_CL
+    mean_lift_coefficient_hover     = nexus.results.hover.mean_lift_coefficient
     omega_hover                     = nexus.results.hover.omega
     FM_hover                        = np.nan_to_num(nexus.results.hover.figure_of_merit)  
     
@@ -498,7 +498,7 @@ def post_process(nexus):
         print("Hover Tip Mach               : " + str(rotor.hover.design_tip_mach))  
         print("Hover Figure of Merit        : " + str(FM_hover))  
         print("Hover Max Sectional Cl       : " + str(summary.max_sectional_cl_hover)) 
-        print("Hover Blade CL               : " + str(mean_CL_hover))    
+        print("Hover Blade CL               : " + str(mean_lift_coefficient_hover))
         print("OEI Thrust Actual            : " + str(nexus.results.oei.thrust))  
         print("OEI Thrust Design            : " + str(rotor.oei.design_thrust))  
         print("OEI Tip Mach                 : " + str(rotor_oei.oei.design_tip_mach))  
@@ -516,7 +516,7 @@ def post_process(nexus):
             print("Cruise Tip Mach              : " + str(rotor_cru.cruise.design_tip_mach))   
             print("Cruise Efficiency            : " + str(nexus.results.cruise.efficiency)) 
             print("Cruise Max Sectional Cl      : " + str(summary.max_sectional_cl_cruise))  
-            print("Cruise Blade CL              : " + str(nexus.results.cruise.mean_CL))  
+            print("Cruise Blade CL              : " + str(nexus.results.cruise.mean_lift_coefficient))
         print("\n\n") 
 
    

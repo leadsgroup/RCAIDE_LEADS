@@ -40,7 +40,7 @@ def design_propeller(prop, number_of_stations=20):
                         Rotation rate [rad/s]
                     - design_freestream_velocity : float
                         Freestream velocity [m/s]
-                    - design_Cl : float
+                    - design_lift_coefficient : float
                         Design lift coefficient
                     - design_altitude : float
                         Design altitude [m]
@@ -141,7 +141,7 @@ def design_propeller(prop, number_of_stations=20):
         Rh           = prop.hub_radius
         omega        = prop.cruise.design_angular_velocity    # Rotation Rate in rad/s
         V            = prop.cruise.design_freestream_velocity # Freestream Velocity
-        Cl           = prop.cruise.design_Cl                  # Design Lift Coefficient
+        Cl           = prop.cruise.design_lift_coefficient                  # Design Lift Coefficient
         alt          = prop.cruise.design_altitude
         Thrust       = prop.cruise.design_thrust
         Power        = prop.cruise.design_power

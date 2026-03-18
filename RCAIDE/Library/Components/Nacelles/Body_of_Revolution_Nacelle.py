@@ -64,7 +64,7 @@ class Body_of_Revolution_Nacelle(Nacelle):
         Sets default values for the body of revolution nacelle attributes.
         """      
         self.tag     = 'body_of_revolution_nacelle' 
-        self.Airfoil = None
+        self.airfoil = None
     
     def append_airfoil(self, airfoil):
         """

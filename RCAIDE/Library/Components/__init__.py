@@ -25,8 +25,8 @@ from . import Booms
 from . import Configs
 from . import Fuselages
 from . import Landing_Gear
-from . import Nacelles
 from . import Cargo_Bays
+from . import Nacelles
 from . import Powertrain
 from . import Thermal_Management 
 from . import Wings

@@ -6,10 +6,10 @@
 #  Imports
 # ----------------------------------------------------------------------
 
-# SUave Imports
+# RCAIDE Imports
 import RCAIDE
 from RCAIDE.Framework.Core  import Data,Units 
-from RCAIDE.Library.Methods.Performance.find_take_off_weight_given_tofl import find_take_off_weight_given_tofl
+from RCAIDE.Library.Methods.Performance.estimate_take_off_weight_given_TOFL import estimate_take_off_weight_given_TOFL
 
 # package imports
 import numpy as np
@@ -35,67 +35,83 @@ from Embraer_190 import vehicle_setup, configs_setup
 # ----------------------------------------------------------------------
 
 def main():   
-    vehicle = vehicle_setup()
-    configs = configs_setup(vehicle)
+    # define vehicle 
+    vehicle   = vehicle_setup()   
+  
+    # Set up vehicle configs
+    configs  = configs_setup(vehicle)
 
-    # --- Takeoff Configuration ---
-    configuration                                = configs.takeoff
-    configuration.wings['main_wing'].flaps_angle = 20. * Units.deg
-    configuration.wings['main_wing'].slats_angle = 25. * Units.deg 
-    configuration.V2_VS_ratio                    = 1.21
-
-    analyses                                     = RCAIDE.Framework.Analyses.Analysis.Container()
-    analyses                                     = base_analysis(configuration)
-    analyses.aerodynamics.settings.maximum_lift_coefficient_factor = 0.90
-
-    # Set Tofl 
-    target_tofl = 1487.92650289 
-
+    # create analyses
+    analyses = analyses_setup(configs)
+    
+    # specify target TOFL
+    target_tofl= 1500
+ 
     # Compute take off weight given tofl
-    max_tow = find_take_off_weight_given_tofl(configuration,analyses,target_tofl)
-
-    truth_max_tow = 56980.00000000001
-    max_tow_error = np.max(np.abs(max_tow[0]-truth_max_tow)) 
-    print('Range Error = %.4e' % max_tow_error)
-    assert(max_tow_error   < 1e-6 )
+    MTOW = estimate_take_off_weight_given_TOFL(analyses = analyses.takeoff, 
+                                               target_tofl= target_tofl )
+    
+    print('MTOW for Target TOFL of ', target_tofl, 'is ', MTOW, 'kg')
+    
+    truth_MTOW = 56980
+    MTOW_error = np.max(np.abs(MTOW-truth_MTOW))
+    assert(MTOW_error<1e-6)    
 
     return  
 
+
+
+def analyses_setup(configs):
+
+    analyses = RCAIDE.Framework.Analyses.Analysis.Container()
+
+    # build a base analysis for each config
+    for tag,config in configs.items():
+        analysis = base_analysis(config)
+        analyses[tag] = analysis
+
+    return analyses 
 
 def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
-    analyses = RCAIDE.Framework.Analyses.Vehicle()  
-    analyses.vehicle = vehicle
-
-    # ------------------------------------------------------------------
-    #  Aerodynamics Analysis
-    aerodynamics         = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    analyses.append(aerodynamics)
+    analyses = RCAIDE.Framework.Analyses.Vehicle() 
+    analyses.vehicle =  vehicle
     
-    # ------------------------------------------------------------------
-    #  Weights Analysis
-    weights         = RCAIDE.Framework.Analyses.Weights.Conventional_Transport() 
-    analyses.append(weights)    
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()   
+    analyses.append(geometry)
+
+     # ------------------------------------------------------------------
+    #  Weights 
+    weights = RCAIDE.Framework.Analyses.Weights.Conventional_Transport()    
+    analyses.append(weights)
 
     # ------------------------------------------------------------------
-    #  Energy Analysis
-    energy         = RCAIDE.Framework.Analyses.Energy.Energy() 
+    #  Aerodynamics Analysis  
+    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
+    aerodynamics.settings.maximum_lift_coefficient_factor = 0.90
+    analyses.append(aerodynamics) 
+
+    # ------------------------------------------------------------------
+    #  Energy
+    energy          = RCAIDE.Framework.Analyses.Energy.Energy() 
     analyses.append(energy)
 
     # ------------------------------------------------------------------
     #  Planet Analysis
     planet = RCAIDE.Framework.Analyses.Planets.Earth()
-    analyses.append(planet)    
+    analyses.append(planet)
 
     # ------------------------------------------------------------------
     #  Atmosphere Analysis
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    analyses.append(atmosphere)     
+    analyses.append(atmosphere)   
 
     # done!
-    return analyses    
+    return analyses 
+  
 
 # ----------------------------------------------------------------------        
 #   Call Main

@@ -12,13 +12,19 @@
 import  RCAIDE
 from   RCAIDE.Framework.Core import Data, Units
 from   RCAIDE.Library.Methods.Aerodynamics.Common.Lift.compute_max_lift_coeff import compute_max_lift_coeff
+from RCAIDE.Library.Mission.Common.Pre_Process  import geometry_preprocess_routine 
 
 import numpy as np
+from copy import deepcopy
 
 # ----------------------------------------------------------------------
 #  Compute field length required for landing
 # ----------------------------------------------------------------------
-def estimate_landing_field_length(vehicle,analyses, altitude=0, delta_isa=0):
+def estimate_landing_field_length(analyses       = None,
+                                  landing_weight = None, 
+                                  altitude       = 0,
+                                  Vref_VS_ratio  = 1.23, 
+                                  delta_isa      = 0 ):
     """
     Computes the landing field length required for a given vehicle configuration at specified airport conditions.
 
@@ -79,28 +85,25 @@ def estimate_landing_field_length(vehicle,analyses, altitude=0, delta_isa=0):
     RCAIDE.Library.Methods.Aerodynamics.Common.Lift.compute_max_lift_coeff
     """            
    
+    # ============================================== 
+    # Preprocess Geometry 
+    # ============================================== 
+    geometry_preprocess_routine(analyses)
+    vehicle = deepcopy(analyses.vehicle)
+    
     # ==============================================
     # Unpack
     # ============================================== 
     altitude        = altitude * Units.ft
-    delta_isa       = delta_isa
-    weight          = vehicle.mass_properties.landing
+    delta_isa       = delta_isa 
     reference_area  = vehicle.reference_area
-    try:
-        Vref_VS_ratio = vehicle.Vref_VS_ratio
-    except:
-        Vref_VS_ratio = 1.23
-        
+     
     # ==============================================
     # Computing atmospheric conditions
     # ==============================================
-    atmo            = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmo_values     = atmo.compute_values(altitude,delta_isa)
-    
-    p                 = atmo_values.pressure
-    T                 = atmo_values.temperature
-    rho               = atmo_values.density
-    a                 = atmo_values.speed_of_sound
+    atmo              = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
+    atmo_values       = atmo.compute_values(altitude,delta_isa) 
+    rho               = atmo_values.density 
     mu                = atmo_values.dynamic_viscosity
     sea_level_gravity = atmo.planet.sea_level_gravity
    
@@ -122,7 +125,7 @@ def estimate_landing_field_length(vehicle,analyses, altitude=0, delta_isa=0):
     # ==============================================
     # Computing speeds (Vs, Vref)
     # ==============================================
-    stall_speed  = (2 * weight * sea_level_gravity / (rho * reference_area * maximum_lift_coefficient)) ** 0.5
+    stall_speed  = (2 * landing_weight * sea_level_gravity / (rho * reference_area * maximum_lift_coefficient)) ** 0.5
     Vref         = stall_speed * Vref_VS_ratio
     
     # ========================================================================================

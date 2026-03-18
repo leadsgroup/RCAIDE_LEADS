@@ -101,15 +101,15 @@ def plot_moment_of_intertia_drift(results,
         I_zz = results.segments[i].conditions.weights.vehicle.moments_of_inertia_Izz[:,0]            
         
       
-        axis_1.set_ylabel(r'I_{xx}')
-        axis_2.set_ylabel(r'I_{xy}')
-        axis_3.set_ylabel(r'I_{xz}')   
-        axis_4.set_ylabel(r'I_{yx}')
-        axis_5.set_ylabel(r'I_{yy}')
-        axis_6.set_ylabel(r'I_{yz}')   
-        axis_7.set_ylabel(r'I_{zx}')
-        axis_8.set_ylabel(r'I_{zy}')
-        axis_9.set_ylabel(r'I_{zz}')   
+        axis_1.set_ylabel(r'$I_{xx}$')
+        axis_2.set_ylabel(r'$I_{xy}$')
+        axis_3.set_ylabel(r'$I_{xz}$')   
+        axis_4.set_ylabel(r'$I_{yx}$')
+        axis_5.set_ylabel(r'$I_{yy}$')
+        axis_6.set_ylabel(r'$I_{yz}$')   
+        axis_7.set_ylabel(r'$I_{zx}$')
+        axis_8.set_ylabel(r'$I_{zy}$')
+        axis_9.set_ylabel(r'$I_{zz}$')   
 
         segment_tag  =  results.segments[i].tag
         segment_name = segment_tag.replace('_', ' ')       
