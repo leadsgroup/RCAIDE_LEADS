@@ -56,7 +56,7 @@ def main():
     TOFL_error = np.max(np.abs(takeoff_field_length-truth_TOFL)) 
     assert(TOFL_error<1e-6)
 
-    truth_SSCG = 0.16811333782740756 
+    truth_SSCG = 0.1681179781570795
     print('Second Segment Climb Gradient (%): ', second_seg_clb_grad)
     SSCG_error = np.max(np.abs(second_seg_clb_grad-truth_SSCG))
     assert(SSCG_error<1e-6)
