@@ -53,46 +53,19 @@ def geometry(mission):
     RCAIDE.Library.Methods.Geometry.Planform
     RCAIDE.Framework.Mission.Segments
     """
-
-    config_tags  = []
-    segment_idxs = []
-    
-    # preprocess geometry of aircraft planform 
-    for i, segment in enumerate(mission.segments):
-        config_tag = segment.analyses.vehicle.tag 
+    for i ,  segment in enumerate(mission.segments): 
+        # --------------------------------------------------------------------------------------------------------------------        
+        # check if geometry analysis is defined 
+        # --------------------------------------------------------------------------------------------------------------------
         if segment.analyses.geometry is None: 
             raise AssertionError('Geometry Analyses not defined') 
-        if config_tag not in config_tags: 
-            planform_preprocess_routine(segment.analyses)
-            config_tags.append(config_tag)
-            segment_idxs.append(i) 
-        else:   
-            list_idx    = config_tags.index(config_tag)
-            segment_idx = segment_idxs[list_idx]
-            segment.analyses.vehicle = deepcopy(mission.segments[segment_idx].analyses.vehicle)
-            
-    # preprocess geometry of fuel tanks, since liquid hydrogen tank sizing take a while, we will only preprocess them once (i.e. the first segment)      
-    for i, segment in enumerate(mission.segments):
-        if i == 0: 
-            powertrain_preprocess_routine(segment.analyses)
+        if i == 0 or segment.analyses.geometry.settings.unique_geometry: 
+            geometry_preprocess_routine(segment.analyses) 
         else:
-            for network in segment.analyses.vehicle.networks:
-                for fuel_line in network.fuel_lines:
-                    for fuel_tank in fuel_line.fuel_tanks: 
-                        segment.analyses.vehicle.networks[network.tag].fuel_lines[fuel_line.tag].fuel_tanks[fuel_tank.tag] = deepcopy(mission.segments[0].analyses.vehicle.networks[network.tag].fuel_lines[fuel_line.tag].fuel_tanks[fuel_tank.tag])
-                
+            use_previous_segment_pre_processed_data(mission,segment,i)   
+    return 
         
-    return
-
-def powertrain_preprocess_routine(analyses):
-
-    settings = analyses.geometry.settings
-    vehicle  = analyses.vehicle        
-    compute_fuel_volume(vehicle,compute_fuel_volume = settings.compute_fuel_volume, update_max_fuel=settings.update_max_fuel)
-    
-    return     
-            
-def planform_preprocess_routine(analyses):
+def geometry_preprocess_routine(analyses):
     settings = analyses.geometry.settings
     vehicle  = analyses.vehicle
     
@@ -189,6 +162,7 @@ def planform_preprocess_routine(analyses):
     # --------------------------------------------------------------------------------------------------------------------
     # Update passenger imformation 
     # --------------------------------------------------------------------------------------------------------------------
+  
     if  vehicle.number_of_passengers == 0:
         pass 
     else:   
