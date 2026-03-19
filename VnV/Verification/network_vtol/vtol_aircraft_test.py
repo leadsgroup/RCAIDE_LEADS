@@ -296,6 +296,7 @@ def TW_base_analysis(vehicle):
 
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.settings.unique_geometry = True
     analyses.append(geometry)
     
     # ------------------------------------------------------------------
@@ -340,6 +341,7 @@ def SR_base_analysis(vehicle):
     
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
+    geometry.settings.unique_geometry = True
     analyses.append(geometry)
     
     # ------------------------------------------------------------------

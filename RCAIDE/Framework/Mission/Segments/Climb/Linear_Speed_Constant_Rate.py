@@ -8,9 +8,9 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE imports 
-from RCAIDE.Framework.Core                            import Units 
+from RCAIDE.Framework.Core                                     import Units 
 from RCAIDE.Framework.Mission.Segments.Evaluate       import Evaluate
-from RCAIDE.Library.Mission                           import Common,Segments
+from RCAIDE.Library.Mission                          import Common,Segments
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Linear_Speed_Constant_Rate
@@ -62,6 +62,7 @@ class Linear_Speed_Constant_Rate(Evaluate):
         initialize.conditions              = Segments.Climb.Linear_Speed_Constant_Rate.initialize_conditions  
         iterate                            = self.process.iterate
         iterate.unknowns.mission           = Common.Unpack_Unknowns.orientation
+        iterate.unknowns.controls          = Common.Unpack_Unknowns.control_surfaces
         iterate.residuals.flight_dynamics  = Common.Residuals.flight_dynamics
         return
 

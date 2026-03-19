@@ -9,7 +9,7 @@
 # ----------------------------------------------------------------------------------------------------------------------- 
    
 from .aerodynamics                            import aerodynamics
-from .geometry                                import geometry, planform_preprocess_routine
+from .geometry                                import geometry, geometry_preprocess_routine
 from .stability                               import stability
 from .energy                                  import energy
 from .emissions                               import emissions

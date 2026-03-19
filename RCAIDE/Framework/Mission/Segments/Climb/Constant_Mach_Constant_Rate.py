@@ -61,6 +61,7 @@ class Constant_Mach_Constant_Rate(Evaluate):
         initialize.conditions              = Segments.Climb.Constant_Mach_Constant_Rate.initialize_conditions  
         iterate                            = self.process.iterate
         iterate.unknowns.mission           = Common.Unpack_Unknowns.orientation
+        iterate.unknowns.controls          = Common.Unpack_Unknowns.control_surfaces
         iterate.residuals.flight_dynamics  = Common.Residuals.flight_dynamics
 
         return
