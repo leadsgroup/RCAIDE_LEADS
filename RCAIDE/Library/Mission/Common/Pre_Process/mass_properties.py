@@ -150,8 +150,6 @@ def mass_properties_preprocess_routine(segment, i = 0):
             diff = 999
             max_iterations = 1000
             mtow_iterations = 0 
-            max_zero_fuel_flag = False
-            compute_max_fuel = False
             while abs(diff)>0.00005 and mtow_iterations<max_iterations:
                 if analyses.vehicle.mass_properties.max_zero_fuel == None:
                     max_zero_fuel_flag = True
