@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------  
 # RCAIDE imports    
 from RCAIDE.Library.Mission.Common.Segments    import sequential_segments
-from RCAIDE.Library.Mission.Common.Pre_Process import geometry, aerodynamics,stability, energy,emissions,mass_properties, set_residuals_and_unknowns
+from RCAIDE.Library.Mission.Common.Pre_Process import geometry, aerodynamics,stability, energy,emissions,mass_properties, set_residuals_and_unknowns, set_network_residuals_and_unknowns
 from RCAIDE.Framework.Core                     import Container as ContainerBase
 from RCAIDE.Framework.Analyses                 import Process 
 from . import Segments
@@ -48,14 +48,15 @@ class Sequential_Segments(Segments.Segment.Container):
         self.tag = 'mission'
         
         #   Initialize   
-        self.process.initialize                                = Process()
-        self.process.initialize.energy                         = energy
-        self.process.initialize.geometry                       = geometry 
-        self.process.initialize.mass_properties                = mass_properties 
-        self.process.initialize.aero                           = aerodynamics
-        self.process.initialize.stability                      = stability
-        self.process.initialize.emissions                      = emissions
-        self.process.initialize.set_residuals_and_unknowns     = set_residuals_and_unknowns
+        self.process.initialize                                      = Process()
+        self.process.initialize.energy                               = energy
+        self.process.initialize.geometry                             = geometry 
+        self.process.initialize.mass_properties                      = mass_properties 
+        self.process.initialize.aero                                 = aerodynamics
+        self.process.initialize.stability                            = stability
+        self.process.initialize.emissions                            = emissions
+        self.process.initialize.set_residuals_and_unknowns           = set_residuals_and_unknowns
+        self.process.initialize.set_network_residuals_and_unknowns   = set_network_residuals_and_unknowns
  
         #   Converge 
         self.process.converge    = sequential_segments

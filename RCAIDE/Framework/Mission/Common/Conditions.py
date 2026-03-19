@@ -194,7 +194,7 @@ class expanded_array(Data):
             N/A
         """   
         # unpack
-        adjustment = self._adjustment
+        adjustment = int(self._adjustment)
         
         # pack
         self._size = rows

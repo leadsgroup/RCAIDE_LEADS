@@ -59,8 +59,8 @@ def ground(segment):
     """       
     
     # unpack unknowns 
-    ground_velocity = segment.state.unknowns.ground_velocity
-    time            = segment.state.unknowns.elapsed_time
+    ground_velocity = segment.state.unknowns.mission.ground_velocity
+    time            = segment.state.unknowns.mission.elapsed_time
     
     # unpack givens
     v0         = segment.air_speed_start  

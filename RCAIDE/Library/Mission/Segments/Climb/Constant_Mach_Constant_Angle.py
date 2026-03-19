@@ -121,10 +121,10 @@ def initialize_conditions(segment):
 def residual_altitude(segment):
     
     # Unpack results    
-    alt_in  = segment.state.unknowns.altitude[:,0] 
+    alt_in  = segment.state.unknowns.mission.altitude[:,0]
     alt_out = segment.state.conditions.freestream.altitude[:,0]
     
-    segment.state.residuals.altitude[:,0] = (alt_in - alt_out)/alt_out[-1]
+    segment.state.residuals.mission.altitude[:,0] = (alt_in - alt_out)/alt_out[-1]
 
     return    
 

@@ -55,8 +55,8 @@ class Test_Stand(Evaluate):
         #  Mission Unknowns and Residuals
         # -------------------------------------------------------------------------------------------------------------- 
         ones_row                                  = self.state.ones_row
-        self.state.residuals.final_velocity_error = ones_row(1) * 0  
-        self.state.unknowns.ground_velocity       = ones_row(1) * 0   
+        self.state.residuals.mission.final_velocity_error = ones_row(1) * 0  
+        self.state.unknowns.mission.ground_velocity       = ones_row(1) * 0   
 
         # -------------------------------------------------------------------------------------------------------------- 
         #  Mission specific processes 
@@ -66,7 +66,7 @@ class Test_Stand(Evaluate):
         converge                           = self.process.converge 
         converge.solver                    = skip 
         iterate                            = self.process.iterate 
-        iterate.unknowns.mission           = skip
+        iterate.unknowns.mission.mission           = skip
         iterate.conditions.aerodynamics    = skip
         iterate.conditions.stability       = skip  
         post_process                       = self.process.post_process  

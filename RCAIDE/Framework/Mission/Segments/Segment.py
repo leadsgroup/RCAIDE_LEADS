@@ -43,13 +43,17 @@ class Segment(Analysis):
         self.process                       = Process() 
         self.process.initialize            = Process()
           
-        self.process.converge              = Process()
-        self.process.iterate               = Process()
-        self.process.iterate.unknowns      = Process()
-        self.process.iterate.initials      = Process()
-        self.process.iterate.conditions    = Process()
-        self.process.iterate.residuals     = Process()
-        self.process.post_process          = Process()  
+        self.process.converge                       = Process()
+        self.process.iterate                        = Process()
+        self.process.iterate.unknowns               = Process()
+        self.process.iterate.unknowns.network       = Process()
+        self.process.iterate.unknowns.mission       = Process()
+        self.process.iterate.initials               = Process()
+        self.process.iterate.conditions             = Process()
+        self.process.iterate.residuals              = Process()
+        self.process.iterate.residuals.network      = Process()
+        self.process.iterate.residuals.mission      = Process()
+        self.process.post_process                   = Process()
         
         self.conditions = self.state.conditions 
         

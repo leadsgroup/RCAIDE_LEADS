@@ -93,7 +93,7 @@ def initialize_conditions(segment):
     roll_rate               = segment.roll_rate
     pitch_rate              = segment.pitch_rate
     yaw_rate                = segment.yaw_rate
-    acceleration            = segment.state.unknowns.acceleration[0][0]
+    acceleration            = segment.state.unknowns.mission.acceleration[0][0]
     
     # check for initial altitude
     if alt is None:
@@ -139,5 +139,5 @@ def unpack_unknowns(segment):
     """      
     
     # unpack unknowns  
-    acceleration  = segment.state.unknowns.acceleration 
-    segment.state.conditions.frames.inertial.acceleration_vector[:,0] = acceleration[:,0]     
+    acceleration  = segment.state.unknowns.mission.acceleration
+    segment.state.conditions.frames.inertial.acceleration_vector[0,0] = acceleration

@@ -100,8 +100,7 @@ class Set_Speed_Set_Altitude_AVL_Trimmed(Segment):
         
         
         # Unpack Unknowns
-        iterate.unknowns                   = Process()
-        iterate.unknowns.mission           = Common.Unpack_Unknowns.orientation  
+        iterate.unknowns.mission.mission         = Process() 
         
         # Update Conditions
         iterate.conditions = Process()
@@ -122,7 +121,7 @@ class Set_Speed_Set_Altitude_AVL_Trimmed(Segment):
         iterate.conditions.planet_position       = skip
 
         # Solve Residuals  
-        iterate.residuals.flight_dynamics        = Common.Residuals.flight_dynamics
+        iterate.residuals.mission.flight_dynamics        = Common.Residuals.flight_dynamics
 
         # --------------------------------------------------------------  
         #  Post Process   
