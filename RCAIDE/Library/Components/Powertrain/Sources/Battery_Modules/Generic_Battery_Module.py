@@ -11,6 +11,7 @@
 from RCAIDE.Framework.Core        import Data
 from RCAIDE.Library.Components.Powertrain.Sources.Source    import Source   
 from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_conditions import append_battery_conditions, append_battery_segment_conditions
+from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_unknown_and_residual import append_battery_unknown_and_residual
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Battery
@@ -168,3 +169,22 @@ class Generic_Battery_Module(Source):
         """
         append_battery_segment_conditions(self,segment)
         return
+
+    def append_unknowns_and_residuals(self,segment):
+
+        """
+        Append battery unknowns and residuals  flight segment
+        
+        Parameters
+        ----------
+        segment : Segment
+            Flight segment containing state conditions
+        bus : Component
+            Electrical bus connected to this battery
+        network: 
+
+        """
+        append_battery_unknown_and_residual(self,segment)  
+        
+        return
+    
