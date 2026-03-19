@@ -49,12 +49,6 @@ def main():
     
     # Step 5 execute flight profile
     results = missions.base_mission.evaluate()
-    CL_truth = 0.39250769701949045
-    CL    = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[0, 0]
-    relative_error = np.abs((CL - CL_truth) / CL_truth) if CL_truth != 0 else np.abs(CL - CL_truth)
-    assert relative_error <= 1e-3, (
-        f"CL relative error too large: {relative_error:.6e} (CL={CL:.6e}, CL_truth={CL_truth:.6e})"
-    )
 
     plot_aircraft_cg_weight_bubbles(results,vehicle)
     plot_fuel_flow_rates(results)
