@@ -61,8 +61,7 @@ class Constant_Mach_Linear_Altitude(Evaluate):
         initialize.differentials_altitude  = Common.Initialize.differentials_altitude
         initialize.conditions              = Segments.Climb.Constant_Mach_Linear_Altitude.initialize_conditions  
         iterate                            = self.process.iterate
-        iterate.unknowns.mission           = Common.Unpack_Unknowns.orientation   
-        iterate.unknowns.controls          = Common.Unpack_Unknowns.control_surfaces
+        iterate.unknowns.mission           = Common.Unpack_Unknowns.orientation
         iterate.residuals.flight_dynamics  = Common.Residuals.flight_dynamics
 
 
