@@ -483,7 +483,7 @@ def segment_post_process(nexus):
     SPS        =  RCAIDE.Framework.Mission.Segments.Single_Point
 
     # compute max power of segment 
-    max_power  = np.max(nexus.segment.state.conditions.energy.power)
+    max_power  = np.max(nexus.segment.state.conditions.energy.total_propulsive_power)
     
     # compute total energy consumed 
     if (type(nexus.segment) == SPS.Set_Speed_Set_Altitude) or\

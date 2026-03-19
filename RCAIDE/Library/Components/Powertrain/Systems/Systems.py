@@ -70,7 +70,15 @@ class Systems(Component):
         self.power_draw                   = 0.0
         self.assigned_distributors        = None
         self.efficiency                   = 0.0
-                
+
+    def unpack_unknowns(self,segment):
+        return 
+
+    def pack_residuals(self,segment): 
+        return        
+
+    def append_unknowns_and_residuals(self,segment):
+        return                
 
     def append_operating_conditions(self, segment): 
         """

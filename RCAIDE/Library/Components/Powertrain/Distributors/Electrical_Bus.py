@@ -99,7 +99,16 @@ class Electrical_Bus(Distributor):
         self.charging_c_rate                        = 1.0
         self.battery_module_electric_configuration  = "Series"
         self.fuel_cell_stack_electric_configuration = "Series"
-        
+
+    def unpack_unknowns(self,segment):
+        return 
+
+    def pack_residuals(self,segment): 
+        return        
+
+    def append_unknowns_and_residuals(self,segment):
+        return
+    
     def append_operating_conditions(self, segment):
         """
         Append operating conditions for a flight segment

@@ -35,7 +35,16 @@ class Cryogenic_Fuel_Line(Distributor):
         self.efficiency                    = 1.0
         self.inner_diameter                = 0.015
         self.pressure                      = 150000.0  # Pa
-        
+
+    def unpack_unknowns(self,segment):
+        return 
+
+    def pack_residuals(self,segment): 
+        return        
+
+    def append_unknowns_and_residuals(self,segment):
+        return
+    
     def append_operating_conditions(self, segment):
         """
         Append operating conditions for a flight segment

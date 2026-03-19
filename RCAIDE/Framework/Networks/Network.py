@@ -494,7 +494,15 @@ class Network(Component):
         unknowns(segment)  
         for network in segment.analyses.vehicle.networks:
             for propulsor in network.propulsors:
-                propulsor.unpack_propulsor_unknowns(segment, network) 
+                propulsor.unpack_unknowns(segment) 
+            #for source in network.sources:
+                #source.unpack_unknowns(segment) 
+            #for modulator in network.modulators:
+                #modulator.unpack_unknowns(segment) 
+            #for distributor in network.distributors:
+                #distributor.unpack_unknowns(segment) 
+            #for system in network.systems:
+                #system.unpack_unknowns(segment) 
         return    
      
     def residuals(self,segment):
@@ -522,7 +530,15 @@ class Network(Component):
             for propulsor_i, propulsor in enumerate(network.propulsors):    
                 if propulsor.active:
                     propulsor =  network.propulsors[propulsor.tag]
-                    propulsor.pack_propulsor_residuals(segment, network) 
+                    propulsor.pack_residuals(segment) 
+            #for source in network.sources:
+                #source.pack_residuals(segment) 
+            #for modulator in network.modulators:
+                #modulator.pack_residuals(segment) 
+            #for distributor in network.distributors:
+                #distributor.pack_residuals(segment) 
+            #for system in network.systems:
+                #system.pack_residuals(segment) 
         return      
     
     def add_unknowns_and_residuals_to_segment(self, segment):
@@ -550,8 +566,7 @@ class Network(Component):
         for network in segment.analyses.vehicle.networks:
             
             for propulsor in network.propulsors: 
-                propulsor.append_operating_conditions(segment)  
-                propulsor.append_propulsor_unknowns_and_residuals(segment, network)   
+                propulsor.append_operating_conditions(segment)
     
             for converter in network.converters: 
                 converter.append_operating_conditions(segment)  
@@ -565,7 +580,7 @@ class Network(Component):
             for system in network.systems:
                 system.append_operating_conditions(segment)             
     
-            for distributor_i, distributor in enumerate(network.distributors):
+            for distributor in network.distributors:
                 distributor.append_operating_conditions(segment)                                         
     
         # Ensure the mission knows how to pack and unpack the unknowns and residuals
@@ -589,9 +604,10 @@ class Container(Component.Container):
             Source:
                 None 
         """ 
-        for net in self.values():             
-            net.evaluate(state,center_of_gravity)  
-        return   
+
+        self.evaluate(state,center_of_gravity)
+
+
 
 # ----------------------------------------------------------------------
 #  Handle Linking

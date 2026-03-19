@@ -124,13 +124,13 @@ class Turboprop(Propulsor):
         append_turboprop_conditions(self,segment)
         return
 
-    def unpack_propulsor_unknowns(self,segment):   
+    def unpack_unknowns(self,segment):
         return 
 
-    def pack_propulsor_residuals(self,segment): 
+    def pack_residuals(self,segment): 
         return
 
-    def append_propulsor_unknowns_and_residuals(self,segment): 
+    def append_unknowns_and_residuals(self,segment):
         return    
     
     def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):

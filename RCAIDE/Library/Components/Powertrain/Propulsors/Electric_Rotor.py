@@ -89,7 +89,7 @@ class Electric_Rotor(Propulsor):
         append_electric_rotor_conditions(self,segment)
         return
     
-    def append_propulsor_unknowns_and_residuals(self,segment, network):
+    def append_unknowns_and_residuals(self,segment):
         """
         Appends propulsor unknowns and residuals to the segment.
         """ 
@@ -97,7 +97,7 @@ class Electric_Rotor(Propulsor):
             append_electric_rotor_residual_and_unknown(self,segment, network)
         return
 
-    def unpack_propulsor_unknowns(self,segment, network):  
+    def unpack_unknowns(self,segment):
         """
         Unpacks propulsor unknowns from the segment.
         """ 
@@ -105,7 +105,7 @@ class Electric_Rotor(Propulsor):
             unpack_electric_rotor_unknowns(self,segment, network)
         return 
 
-    def pack_propulsor_residuals(self,segment, network): 
+    def pack_residuals(self,segment):
         """
         Packs propulsor residuals into the segment.
         """

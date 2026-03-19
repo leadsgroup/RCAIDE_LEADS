@@ -189,17 +189,17 @@ class Turbofan(Propulsor):
         append_turbofan_conditions(self, segment)
         return
 
-    def unpack_propulsor_unknowns(self,segment, network):   
+    def unpack_unknowns(self,segment):
         return 
 
-    def pack_propulsor_residuals(self,segment, network): 
-        return
+    def pack_residuals(self,segment): 
+        return        
+
+    def append_unknowns_and_residuals(self,segment):
+        return 
 
     def append_segment_conditions(self,segment): 
-        append_turbofan_segment_conditions(self,segment)  
-
-    def append_propulsor_unknowns_and_residuals(self,segment, network): 
-        return
+        append_turbofan_segment_conditions(self,segment)   
     
     def compute_performance(self,state,network=None,center_of_gravity = [[0, 0, 0]]):
         """

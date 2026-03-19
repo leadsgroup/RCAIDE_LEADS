@@ -68,7 +68,16 @@ class Fuel_Line(Distributor):
         self.outer_diameter                = 0.05
         self.length                        = 1  
         self.pressure                      = 150000.0  # Pa
-        
+
+    def unpack_unknowns(self,segment):
+        return 
+
+    def pack_residuals(self,segment): 
+        return        
+
+    def append_unknowns_and_residuals(self,segment):
+        return
+    
     def append_operating_conditions(self, segment):
         """
         Append operating conditions for a flight segment

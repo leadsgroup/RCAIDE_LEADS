@@ -81,7 +81,7 @@ class Internal_Combustion_Engine(Propulsor):
         append_internal_combustion_engine_conditions(self,segment)
         return
 
-    def unpack_propulsor_unknowns(self,segment):  
+    def unpack_unknowns(self,segment):
         """
         Unpacks propulsor unknowns from the segment.
         """
@@ -89,7 +89,7 @@ class Internal_Combustion_Engine(Propulsor):
             unpack_internal_combustion_engine_unknowns(self,segment)
         return 
 
-    def pack_propulsor_residuals(self,segment): 
+    def pack_residuals(self,segment): 
         """
         Packs propulsor residuals into the segment.
         """
@@ -97,7 +97,7 @@ class Internal_Combustion_Engine(Propulsor):
             pack_internal_combustion_engine_residuals(self,segment)
         return
 
-    def append_propulsor_unknowns_and_residuals(self,segment):
+    def append_unknowns_and_residuals(self,segment):
         """
         Appends propulsor unknowns and residuals to the segment.
         """

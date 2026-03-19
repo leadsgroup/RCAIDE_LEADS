@@ -29,3 +29,12 @@ class Modulator(Component):
         self.active                   = True
         self.assigned_distributors    = None 
         self.efficiency               = 1.0 
+
+    def unpack_unknowns(self,segment):
+        return 
+
+    def pack_residuals(self,segment): 
+        return        
+
+    def append_unknowns_and_residuals(self,segment):
+        return

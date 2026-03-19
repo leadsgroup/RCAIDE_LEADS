@@ -9,6 +9,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 from .Conditions   import Conditions
+from .Conditions   import expanded_array
 from .Numerics     import Numerics
 from .Residuals    import Residuals
 from .Results      import Results
