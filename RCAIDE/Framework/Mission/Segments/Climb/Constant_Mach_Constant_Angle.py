@@ -69,7 +69,6 @@ class Constant_Mach_Constant_Angle(Evaluate):
         iterate.residuals.flight_dynamics  = Common.Residuals.flight_dynamics  
         iterate.conditions.differentials   = Segments.Climb.Constant_Mach_Constant_Angle.update_differentials 
         iterate.unknowns.mission           = Common.Unpack_Unknowns.orientation
-        iterate.unknowns.controls          = Common.Unpack_Unknowns.control_surfaces
         iterate.unknowns.kinematics        = Segments.Climb.Constant_Mach_Constant_Angle.initialize_conditions
         iterate.residuals.altitude         = Segments.Climb.Constant_Mach_Constant_Angle.residual_altitude
           

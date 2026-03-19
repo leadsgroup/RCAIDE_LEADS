@@ -10,7 +10,7 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core import  Data  
-from RCAIDE.Library.Mission.Common.Pre_Process  import geometry_preprocess_routine 
+from RCAIDE.Library.Mission.Common.Pre_Process  import planform_preprocess_routine 
  
 # Pacakge imports 
 import numpy as np  
@@ -77,7 +77,7 @@ def aircraft_aerodynamic_analysis(analyses                         = None,
     #------------------------------------------------------------------------   
     # Preprocess Geometry 
     #------------------------------------------------------------------------ 
-    geometry_preprocess_routine(analyses)
+    planform_preprocess_routine(analyses)
     
     #------------------------------------------------------------------------  
     # Check size of arrays 

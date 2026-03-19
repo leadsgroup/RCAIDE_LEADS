@@ -8,11 +8,11 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 import RCAIDE
 from RCAIDE.Library.Methods.Geometry.LOPA      import  compute_layout_of_passenger_accommodations
-from RCAIDE.Library.Methods.Geometry.Planform  import  fuselage_planform, wing_planform , compute_fuel_volume
-from RCAIDE.Library.Mission.Common.Pre_Process.use_previous_segment_pre_processed_data import use_previous_segment_pre_processed_data
+from RCAIDE.Library.Methods.Geometry.Planform  import  fuselage_planform, wing_planform , compute_fuel_volume 
 
 # python imports 
-import  numpy as  np 
+import  numpy as  np
+from copy import  deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 #  geometry
 # ----------------------------------------------------------------------------------------------------------------------  
@@ -50,19 +50,46 @@ def geometry(mission):
     RCAIDE.Library.Methods.Geometry.Planform
     RCAIDE.Framework.Mission.Segments
     """
-    for i ,  segment in enumerate(mission.segments): 
-        # --------------------------------------------------------------------------------------------------------------------        
-        # check if geometry analysis is defined 
-        # --------------------------------------------------------------------------------------------------------------------
+
+    config_tags  = []
+    segment_idxs = []
+    
+    # preprocess geometry of aircraft planform 
+    for i, segment in enumerate(mission.segments):
+        config_tag = segment.analyses.vehicle.tag 
         if segment.analyses.geometry is None: 
             raise AssertionError('Geometry Analyses not defined') 
-        if i == 0 or segment.analyses.geometry.settings.unique_geometry: 
-            geometry_preprocess_routine(segment.analyses) 
+        if config_tag not in config_tags: 
+            planform_preprocess_routine(segment.analyses)
+            config_tags.append(config_tag)
+            segment_idxs.append(i) 
+        else:   
+            list_idx    = config_tags.index(config_tag)
+            segment_idx = segment_idxs[list_idx]
+            segment.analyses.vehicle = deepcopy(mission.segments[segment_idx].analyses.vehicle)
+            
+    # preprocess geometry of fuel tanks, since liquid hydrogen tank sizing take a while, we will only preprocess them once (i.e. the first segment)      
+    for i, segment in enumerate(mission.segments):
+        if i == 0: 
+            powertrain_preprocess_routine(segment.analyses)
         else:
-            use_previous_segment_pre_processed_data(mission,segment,i)   
-    return 
+            for network in segment.analyses.vehicle.networks:
+                for fuel_line in network.fuel_lines:
+                    for fuel_tank in fuel_line.fuel_tanks: 
+                        segment.analyses.vehicle.networks[network.tag].fuel_lines[fuel_line.tag].fuel_tanks[fuel_tank.tag] = deepcopy(mission.segments[0].analyses.vehicle.networks[network.tag].fuel_lines[fuel_line.tag].fuel_tanks[fuel_tank.tag])
+                
         
-def geometry_preprocess_routine(analyses):
+    return
+
+def powertrain_preprocess_routine(analyses):
+
+    settings = analyses.geometry.settings
+    vehicle  = analyses.vehicle        
+    compute_fuel_volume(vehicle,compute_fuel_volume = settings.compute_fuel_volume, update_max_fuel=settings.update_max_fuel)
+    
+    return     
+            
+def planform_preprocess_routine(analyses):
     settings = analyses.geometry.settings
     vehicle  = analyses.vehicle
     
@@ -161,7 +188,6 @@ def geometry_preprocess_routine(analyses):
     # --------------------------------------------------------------------------------------------------------------------
     # Update passenger imformation 
     # --------------------------------------------------------------------------------------------------------------------
-  
     if  vehicle.number_of_passengers == 0:
         pass 
     else:   
@@ -173,10 +199,4 @@ def geometry_preprocess_routine(analyses):
             vehicle.number_of_first_class_seats    = vehicle.number_of_passengers / 20.
             vehicle.number_of_business_class_seats = vehicle.number_of_passengers / 10.
             vehicle.number_of_economy_class_seats  = vehicle.number_of_passengers - NPF - NPB 
-     
-    # --------------------------------------------------------------------------------------------------------------------
-    # Compute fuel volume  
-    # -------------------------------------------------------------------------------------------------------------------- 
-    compute_fuel_volume(vehicle,compute_fuel_volume = settings.compute_fuel_volume, update_max_fuel=settings.update_max_fuel)
-               
     return 

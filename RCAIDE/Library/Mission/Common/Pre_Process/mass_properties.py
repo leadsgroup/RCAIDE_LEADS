@@ -10,7 +10,6 @@
 import RCAIDE 
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_vehicle_moment_of_inertia
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_vehicle_center_of_gravity
-from RCAIDE.Library.Mission.Common.Pre_Process.use_previous_segment_pre_processed_data import use_previous_segment_pre_processed_data
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  mass_properties
@@ -105,7 +104,7 @@ def mass_properties(mission):
         if segment.analyses.weights == None:
             raise AssertionError('Define weights analysis method')
         else: 
-            mass_properties_preprocess_routine(segment) 
+            mass_properties_preprocess_routine(segment)
     return 
 
 def mass_properties_preprocess_routine(segment):
