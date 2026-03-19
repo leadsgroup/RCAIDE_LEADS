@@ -11,7 +11,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Compute Net Convected Heat 
 # ---------------------------------------------------------------------------------------------------------------------- 
-def air_cooled_performance(HAS,battery,bus,coolant_line, Q_heat_gen,T_cell,state,delta_t,t_idx):
+def air_cooled_performance(HAS,battery,coolant_line, Q_heat_gen,T_cell,state):
     '''Computes the net heat removed by direct air heat acquisition system.
 
     Assumptions:
@@ -54,7 +54,7 @@ def air_cooled_performance(HAS,battery,bus,coolant_line, Q_heat_gen,T_cell,state
     n_total_module           = Nn*Np  
     h                        = HAS.convective_heat_transfer_coefficient 
     heat_transfer_efficiency = HAS.heat_transfer_efficiency   
-    T_ambient                = state.conditions.freestream.temperature[t_idx,:] 
+    T_ambient                = state.conditions.freestream.temperature
     
     if n_total_module == 1: 
         # Using lumped model   
@@ -62,12 +62,12 @@ def air_cooled_performance(HAS,battery,bus,coolant_line, Q_heat_gen,T_cell,state
         Q_heat_gen_tot = Q_heat_gen 
 
     else:   
-        K_coolant                    = state.conditions.freestream.thermal_conductivity[t_idx,:]
-        nu_coolant                   = state.conditions.freestream.kinematic_viscosity[t_idx,:]
-        Pr_coolant                   = state.conditions.freestream.prandtl_number[t_idx,:]
-        rho_coolant                  = state.conditions.freestream.density[t_idx,:]    
-        Cp_coolant                   = HAS.cooling_fluid.compute_cp(state.conditions.freestream.temperature[t_idx,:],state.conditions.freestream.pressure[t_idx,:] )
-        V_coolant                    = state.conditions.freestream.velocity[t_idx,:]
+        K_coolant                    = state.conditions.freestream.thermal_conductivity
+        nu_coolant                   = state.conditions.freestream.kinematic_viscosity
+        Pr_coolant                   = state.conditions.freestream.prandtl_number
+        rho_coolant                  = state.conditions.freestream.density    
+        Cp_coolant                   = HAS.cooling_fluid.compute_cp(state.conditions.freestream.temperature,state.conditions.freestream.pressure )
+        V_coolant                    = state.conditions.freestream.velocity
         
         # Chapter 7 pg 437-446 of Fundamentals of heat and mass transfer 
         S_T             = battery.geometrtic_configuration.normal_spacing          

@@ -100,7 +100,7 @@ class Air_Cooled_Heat_Aquisition_System(Converter):
         append_air_cooled_segment_conditions(self, segment, coolant_line)
         return
     
-    def compute_thermal_performance(self, battery, bus, coolant_line, Q_heat_gen, T_cell, state, delta_t, t_idx): 
+    def compute_thermal_performance(self, battery,coolant_line, Q_heat_gen, T_cell, state): 
         """
         Calculates thermal performance of the air cooling system.
 
@@ -128,8 +128,7 @@ class Air_Cooled_Heat_Aquisition_System(Converter):
         float
             Updated battery temperature
         """
-        T_battery_current = air_cooled_performance(self, battery, bus, coolant_line, 
-                                                 Q_heat_gen, T_cell, state, delta_t, t_idx)
+        T_battery_current = air_cooled_performance(self, battery,coolant_line,Q_heat_gen,T_cell,state)
         return T_battery_current
 
     def plot_operating_conditions(self, results, coolant_line, save_filename, save_figure, 
