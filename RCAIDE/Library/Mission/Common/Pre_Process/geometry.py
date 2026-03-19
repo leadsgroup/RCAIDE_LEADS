@@ -53,19 +53,46 @@ def geometry(mission):
     RCAIDE.Library.Methods.Geometry.Planform
     RCAIDE.Framework.Mission.Segments
     """
-    for i ,  segment in enumerate(mission.segments): 
-        # --------------------------------------------------------------------------------------------------------------------        
-        # check if geometry analysis is defined 
-        # --------------------------------------------------------------------------------------------------------------------
+
+    config_tags  = []
+    segment_idxs = []
+    
+    # preprocess geometry of aircraft planform 
+    for i, segment in enumerate(mission.segments):
+        config_tag = segment.analyses.vehicle.tag 
         if segment.analyses.geometry is None: 
             raise AssertionError('Geometry Analyses not defined') 
-        if i == 0 or segment.analyses.geometry.settings.unique_geometry: 
-            geometry_preprocess_routine(segment.analyses) 
+        if config_tag not in config_tags: 
+            planform_preprocess_routine(segment.analyses)
+            config_tags.append(config_tag)
+            segment_idxs.append(i) 
+        else:   
+            list_idx    = config_tags.index(config_tag)
+            segment_idx = segment_idxs[list_idx]
+            segment.analyses.vehicle = deepcopy(mission.segments[segment_idx].analyses.vehicle)
+            
+    # preprocess geometry of fuel tanks, since liquid hydrogen tank sizing take a while, we will only preprocess them once (i.e. the first segment)      
+    for i, segment in enumerate(mission.segments):
+        if i == 0: 
+            powertrain_preprocess_routine(segment.analyses)
         else:
-            use_previous_segment_pre_processed_data(mission,segment,i)   
-    return 
+            for network in segment.analyses.vehicle.networks:
+                for fuel_line in network.fuel_lines:
+                    for fuel_tank in fuel_line.fuel_tanks: 
+                        segment.analyses.vehicle.networks[network.tag].fuel_lines[fuel_line.tag].fuel_tanks[fuel_tank.tag] = deepcopy(mission.segments[0].analyses.vehicle.networks[network.tag].fuel_lines[fuel_line.tag].fuel_tanks[fuel_tank.tag])
+                
         
-def geometry_preprocess_routine(analyses):
+    return
+
+def powertrain_preprocess_routine(analyses):
+
+    settings = analyses.geometry.settings
+    vehicle  = analyses.vehicle        
+    compute_fuel_volume(vehicle,compute_fuel_volume = settings.compute_fuel_volume, update_max_fuel=settings.update_max_fuel)
+    
+    return     
+            
+def planform_preprocess_routine(analyses):
     settings = analyses.geometry.settings
     vehicle  = analyses.vehicle
     
@@ -162,7 +189,6 @@ def geometry_preprocess_routine(analyses):
     # --------------------------------------------------------------------------------------------------------------------
     # Update passenger imformation 
     # --------------------------------------------------------------------------------------------------------------------
-  
     if  vehicle.number_of_passengers == 0:
         pass 
     else:   
@@ -219,14 +245,45 @@ def use_previous_segment_pre_processed_data(mission,segment,i):
 def write_geometry_to_excel(vehicle):
 
     """
-    THIS IS CURRENTLY MEANT ONLY FOR BWB AND THE AACES PROJECT EXCLUSIVELY 
-    DO NOT LET THIS GO THROUGH A PR WITHOUT INCLUDING OTHER COMPONENTS LIKE THE FUSELAGE...... 
+    Export vehicle geometry and related fuel/propulsor data to an Excel workbook.
+
+    Parameters
+    ----------
+    vehicle : RCAIDE.Vehicle
+        Vehicle object containing fuselages, wings, segments, networks, fuel tanks,
+        and propulsors to be serialized into tabular sheets.
+
+    Notes
+    -----
+    None
     """
+
     excel_filename = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), os.path.splitext(os.path.basename(sys.argv[0]))[0] + "_geometry_description.xlsx")
+    fuselage_rows = []
     wing_rows     = []
     segment_rows  = []
     fuel_rows     = []
     prop_rows     = []
+
+    # Collect Fuselage Level Properties
+    for fuselage in vehicle.fuselages:
+        fuselage_rows.append({
+            "Fuselage Tag"                           : fuselage.tag,
+            "Fuselage Origin"                        : fuselage.origin[0],
+            "Total Length (m)"                       : fuselage.lengths.total,
+            "Nose Length (m)"                        : fuselage.lengths.nose,
+            "Tail Length (m)"                        : fuselage.lengths.tail,
+            "Maximum Height (m)"                     : fuselage.heights.maximum,
+            "Width (m)"                              : fuselage.width,
+            "Effective Diameter (m)"                 : fuselage.effective_diameter,
+            "Fineness Nose"                          : fuselage.fineness.nose,
+            "Fineness Tail"                          : fuselage.fineness.tail,
+            "Front Projected Area (m^2)"             : fuselage.areas.front_projected,
+            "Side Projected Area (m^2)"              : fuselage.areas.side_projected,
+            "Wetted Area (m^2)"                      : fuselage.areas.wetted,
+            "Passengers"                             : fuselage.number_of_passengers,
+            "Seats"                                  : fuselage.number_of_seats,
+        })
 
     # Collect wing-level properties
     for wing in vehicle.wings:
@@ -301,6 +358,7 @@ def write_geometry_to_excel(vehicle):
 
     # Write to Excel with separate sheets for wings and segments
     with pd.ExcelWriter(excel_filename) as writer:
+        pd.DataFrame(fuselage_rows).to_excel(writer, sheet_name='Fuselage_Properties', index=False)
         pd.DataFrame(wing_rows).to_excel(writer, sheet_name='Wing_Properties', index=False)
         pd.DataFrame(segment_rows).to_excel(writer, sheet_name='Segment_Properties', index=False)
         pd.DataFrame(fuel_rows).to_excel(writer, sheet_name='Fuel_Tanks', index=False)
