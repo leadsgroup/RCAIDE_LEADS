@@ -128,7 +128,7 @@ def lithium_ion_battery_test():
             V_ul_diff   = np.abs(V_ul - V_ul_true[j,i])
             print('Under load voltage difference')
             print(V_ul_diff) 
-            assert np.abs((V_ul_diff)/V_ul_true[j,i]) < 1e-3
+            assert np.abs((V_ul_diff)/V_ul_true[j,i]) < 1e-6  
            
             # Temperature Regression
             bat_temp        = results.segments[1].conditions.energy.busses['bus'].battery_modules[battery_chemistry[i]].cell.temperature[2][0]  
@@ -136,7 +136,7 @@ def lithium_ion_battery_test():
             bat_temp_diff   = np.abs(bat_temp  - bat_temp_true[j,i]) 
             print('cell temperature difference')
             print(bat_temp_diff)
-            assert np.abs((bat_temp_diff)/bat_temp_true[j,i]) < 5e-3
+            assert np.abs((bat_temp_diff)/bat_temp_true[j,i]) < 1e-6
        
             for segment in results.segments.values(): 
                 volts         = segment.conditions.energy.busses['bus'].voltage_under_load[:,0] 
