@@ -86,6 +86,16 @@ class Fuel_Tank(Source):
         self.segments_percent_chord_start   = [0.1,0.1]
         self.segments_percent_chord_end     = [0.7,0.7]
         self.percent_span_location          = 0.0
+
+
+    def unpack_unknowns(self,segment):
+        return 
+
+    def pack_residuals(self,segment): 
+        return        
+
+    def append_unknowns_and_residuals(self,segment):
+        return         
  
     def append_operating_conditions(self,segment):  
         """

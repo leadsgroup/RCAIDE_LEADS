@@ -318,14 +318,14 @@ class Network(Component):
         for network in segment.analyses.vehicle.networks:
             for propulsor in network.propulsors:
                 propulsor.unpack_unknowns(segment) 
-            #for source in network.sources:
-                #source.unpack_unknowns(segment) 
-            #for modulator in network.modulators:
-                #modulator.unpack_unknowns(segment) 
-            #for distributor in network.distributors:
-                #distributor.unpack_unknowns(segment) 
-            #for system in network.systems:
-                #system.unpack_unknowns(segment) 
+            for source in network.sources:
+                source.unpack_unknowns(segment) 
+            for modulator in network.modulators:
+                modulator.unpack_unknowns(segment) 
+            for distributor in network.distributors:
+                distributor.unpack_unknowns(segment) 
+            for system in network.systems:
+                system.unpack_unknowns(segment) 
         return    
      
     def residuals(self,segment):
@@ -354,14 +354,14 @@ class Network(Component):
                 if propulsor.active:
                     propulsor =  network.propulsors[propulsor.tag]
                     propulsor.pack_residuals(segment) 
-            #for source in network.sources:
-                #source.pack_residuals(segment) 
-            #for modulator in network.modulators:
-                #modulator.pack_residuals(segment) 
-            #for distributor in network.distributors:
-                #distributor.pack_residuals(segment) 
-            #for system in network.systems:
-                #system.pack_residuals(segment) 
+            for source in network.sources:
+                source.pack_residuals(segment) 
+            for modulator in network.modulators:
+                modulator.pack_residuals(segment) 
+            for distributor in network.distributors:
+                distributor.pack_residuals(segment) 
+            for system in network.systems:
+                system.pack_residuals(segment) 
         return      
     
     def add_unknowns_and_residuals_to_segment(self, segment):

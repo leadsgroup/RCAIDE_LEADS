@@ -347,70 +347,62 @@ def add_mission_variables(segment):
         input_aliases[:,1] = input_string
     
     
-    
-    
-    
-    
-    
-    
-    
-    
     # Step 4.2: Setup the aliases for the residuals
-    #basic_string_res      = np.tile('segment.state.residuals.pack_array()[', len_residuals)
-    #residual_string       = np.core.defchararray.add(basic_string_res,np.array(con_numbers-1).astype(str))
-    #residual_string       = np.core.defchararray.add(residual_string, np.tile(']',len_residuals))
-    #residual_aliases      = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_residuals), (-1, 2)) 
-    #residual_aliases[:,0] = con_names
-    #residual_aliases[:,1] = residual_string
+    basic_string_res      = np.tile('segment.state.residuals.pack_array()[', len_residuals)
+    residual_string       = np.core.defchararray.add(basic_string_res,np.array(con_numbers-1).astype(str))
+    residual_string       = np.core.defchararray.add(residual_string, np.tile(']',len_residuals))
+    residual_aliases      = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_residuals), (-1, 2)) 
+    residual_aliases[:,0] = con_names
+    residual_aliases[:,1] = residual_string
     
-    basic_string_con = Data()
-    input_string = []
-    input_string_network = []
+    #basic_string_con = Data()
+    #input_string = []
+    #input_string_network = []
 
-    if ground_seg_flag:
-        output_numbers = np.linspace(0,n_points-2,n_points-1,dtype=np.int16)
-        basic_string_con[residual_keys[0]] = np.tile('segment.state.residuals.mission.'+residual_keys[0]+'[', n_points-1)
-        input_string.append(np.core.defchararray.add(basic_string_con[residual_keys[0]],np.array(output_numbers).astype(str)))
-        output_numbers = np.linspace(0,n_points-1,n_points,dtype=np.int16)
-        if segment.state.numerics.network_solver.type is None:
-            for res in net_residual_keys:
-                basic_string_con[res] = np.tile('segment.state.residuals.network.'+res+'[', n_points)
-                input_string_network.append(np.core.defchararray.add(basic_string_con[res],np.array(output_numbers).astype(str)))
-            input_string = np.hstack((input_string[0],np.ravel(input_string_network)))
-        input_string        = np.core.defchararray.add(input_string, np.tile(']',len_residuals-1))
-        residual_aliases       = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_residuals), (-1, 2))
-        residual_aliases[:,0]  = con_names
-        residual_aliases[0,1]  = 'segment.state.residuals.mission.'+residual_keys[1]
-        residual_aliases[1:,1] = input_string
+    #if ground_seg_flag:
+        #output_numbers = np.linspace(0,n_points-2,n_points-1,dtype=np.int16)
+        #basic_string_con[residual_keys[0]] = np.tile('segment.state.residuals.mission.'+residual_keys[0]+'[', n_points-1)
+        #input_string.append(np.core.defchararray.add(basic_string_con[residual_keys[0]],np.array(output_numbers).astype(str)))
+        #output_numbers = np.linspace(0,n_points-1,n_points,dtype=np.int16)
+        #if segment.state.numerics.network_solver.type is None:
+            #for res in net_residual_keys:
+                #basic_string_con[res] = np.tile('segment.state.residuals.network.'+res+'[', n_points)
+                #input_string_network.append(np.core.defchararray.add(basic_string_con[res],np.array(output_numbers).astype(str)))
+            #input_string = np.hstack((input_string[0],np.ravel(input_string_network)))
+        #input_string        = np.core.defchararray.add(input_string, np.tile(']',len_residuals-1))
+        #residual_aliases       = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_residuals), (-1, 2))
+        #residual_aliases[:,0]  = con_names
+        #residual_aliases[0,1]  = 'segment.state.residuals.mission.'+residual_keys[1]
+        #residual_aliases[1:,1] = input_string
 
-    elif single_pt_seg:
-        for res in residual_keys:
-            basic_string_con[res] = np.tile('segment.state.residuals.mission.'+res+'[', n_points)
-            input_string.append(np.core.defchararray.add(basic_string_con[res],np.array([0]).astype(str)))
-        input_string       = np.ravel(input_string)
-        input_string       = np.core.defchararray.add(input_string, np.tile(']',len_residuals))
-        residual_aliases      = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_residuals), (-1, 2))
-        residual_aliases[:,0] = con_names
-        residual_aliases[:,1] = input_string
+    #elif single_pt_seg:
+        #for res in residual_keys:
+            #basic_string_con[res] = np.tile('segment.state.residuals.mission.'+res+'[', n_points)
+            #input_string.append(np.core.defchararray.add(basic_string_con[res],np.array([0]).astype(str)))
+        #input_string       = np.ravel(input_string)
+        #input_string       = np.core.defchararray.add(input_string, np.tile(']',len_residuals))
+        #residual_aliases      = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_residuals), (-1, 2))
+        #residual_aliases[:,0] = con_names
+        #residual_aliases[:,1] = input_string
 
-    else:
-        output_numbers = np.linspace(0,n_points-1,n_points,dtype=np.int16)
-        input_len_strings = np.tile('Residual_', len_residuals)
-        input_numbers     = np.linspace(1,len_residuals,len_residuals,dtype=np.int16)
-        input_names       = np.core.defchararray.add(input_len_strings,np.array(input_numbers+input_count).astype(str))
-        for res in residual_keys:
-            basic_string_con[res] = np.tile('segment.state.residuals.mission.'+res+'[', n_points)
-            input_string.append(np.core.defchararray.add(basic_string_con[res],np.array(output_numbers).astype(str)))
+    #else:
+        #output_numbers = np.linspace(0,n_points-1,n_points,dtype=np.int16)
+        #input_len_strings = np.tile('Residual_', len_residuals)
+        #input_numbers     = np.linspace(1,len_residuals,len_residuals,dtype=np.int16)
+        #input_names       = np.core.defchararray.add(input_len_strings,np.array(input_numbers+input_count).astype(str))
+        #for res in residual_keys:
+            #basic_string_con[res] = np.tile('segment.state.residuals.mission.'+res+'[', n_points)
+            #input_string.append(np.core.defchararray.add(basic_string_con[res],np.array(output_numbers).astype(str)))
 
-        if segment.state.numerics.network_solver.type is None:
-            for res in net_residual_keys:
-                basic_string_con[res] = np.tile('segment.state.residuals.network.'+res+'[', n_points)
-                input_string_network.append(np.core.defchararray.add(basic_string_con[res],np.array(output_numbers).astype(str)))
-            input_string = np.hstack((np.ravel(input_string),np.ravel(input_string_network)))
-        input_string       = np.core.defchararray.add(input_string, np.tile(']',len_residuals))
-        residual_aliases      = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_residuals), (-1, 2))
-        residual_aliases[:,0] = input_names
-        residual_aliases[:,1] = input_string
+        #if segment.state.numerics.network_solver.type is None:
+            #for res in net_residual_keys:
+                #basic_string_con[res] = np.tile('segment.state.residuals.network.'+res+'[', n_points)
+                #input_string_network.append(np.core.defchararray.add(basic_string_con[res],np.array(output_numbers).astype(str)))
+            #input_string = np.hstack((np.ravel(input_string),np.ravel(input_string_network)))
+        #input_string       = np.core.defchararray.add(input_string, np.tile(']',len_residuals))
+        #residual_aliases      = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_residuals), (-1, 2))
+        #residual_aliases[:,0] = input_names
+        #residual_aliases[:,1] = input_string
         
     # Step 4.3: Append Aliases
     aliases = []
