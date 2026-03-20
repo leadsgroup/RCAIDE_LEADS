@@ -185,7 +185,7 @@ class Network(Component):
         
                     if type(distributor) == RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line:    
                         if source.identical_sources == False or stored_results_flag == False:
-                            state.conditions.energy.sources[source.tag].outputs.power.chemical = total_chemical_power
+                            state.conditions.energy.sources[source.tag].outputs.power.chemical = total_chemical_power *  state.conditions.energy.sources[source.tag].fuel_flow_split_ratio
                             inputs, outputs, stored_results_flag, stored_source_tag = source.compute_performance(state,network)
                         else:
                             inputs, outputs = source.reuse_stored_data(state,network,stored_source_tag=stored_source_tag)
