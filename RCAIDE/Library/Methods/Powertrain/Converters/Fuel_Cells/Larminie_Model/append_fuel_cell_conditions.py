@@ -81,13 +81,13 @@ def append_fuel_cell_conditions(fuel_cell_stack,segment):
     if isinstance(segment,RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge):
         segment.state.conditions.energy.recharging  = True 
         segment.state.unknowns.mission['recharge']          =  0* ones_row(1)  
-        segment.state.residuals.mission.network['recharge'] =  0* ones_row(1)
+        segment.state.residuals.mission['recharge'] =  0* ones_row(1)
         segment.state.number_of_mission_unknowns  += 1
         segment.state.number_of_mission_residuals += 1    
     elif type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Battery_Discharge:
         segment.state.conditions.energy.recharging   = False 
         segment.state.unknowns.mission['discharge']          =  0* ones_row(1)  
-        segment.state.residuals.mission.network['discharge'] =  0* ones_row(1) 
+        segment.state.residuals.mission['discharge'] =  0* ones_row(1) 
         segment.state.number_of_mission_unknowns  += 1
         segment.state.number_of_mission_residuals += 1        
     else:
@@ -112,9 +112,9 @@ def append_fuel_cell_segment_conditions(fuel_cell_stack, segment):
     Returns
     -------  
     """ 
-    fuel_cell_conditions = segment.state.conditions[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag]
+    fuel_cell_conditions = segment.state.conditions.energy.converters[fuel_cell_stack.tag]
     if segment.state.initials:  
-        fuel_cell_initials                                   = segment.state.initials.conditions.energy.busses[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag]
+        fuel_cell_initials                                   = segment.state.initials.conditions.energy.converters[fuel_cell_stack.tag]
         fuel_cell_conditions.temperature[:,0]                = fuel_cell_initials.temperature[-1,0]
         fuel_cell_conditions.cell.temperature[:,0]           = fuel_cell_initials.cell.temperature[-1,0]     
     return
@@ -122,6 +122,6 @@ def append_fuel_cell_segment_conditions(fuel_cell_stack, segment):
 def reuse_stored_fuel_cell_data(fuel_cell_stack,state,bus,stored_results_flag, stored_fuel_cell_stack_tag):
     '''Reuses results from one propulsor for identical fuel cells     
     ''' 
-    state.conditions.energy.busses[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag] = deepcopy(state.conditions.energy.busses[bus.tag].fuel_cell_stacks[stored_fuel_cell_stack_tag])
+    state.conditions.energy.converters[fuel_cell_stack.tag] = deepcopy(state.conditions.energy.converters[stored_fuel_cell_stack_tag])
      
     return
