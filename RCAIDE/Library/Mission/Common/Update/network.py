@@ -27,7 +27,7 @@ def network(segment):
     """  
     # unpack
     energy_model = segment.analyses.energy
-    for network  in segment.analyses.energy.vehicle.networks:
+    for network  in segment.analyses.vehicle.networks:
 
         unknown_keys = list(segment.state.unknowns.network.keys())
         unknown_keys.remove('tag') 

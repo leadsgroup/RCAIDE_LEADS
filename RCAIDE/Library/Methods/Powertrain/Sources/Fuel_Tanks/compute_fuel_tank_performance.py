@@ -14,14 +14,14 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHOD
 # ----------------------------------------------------------------------------------------------------------------------  
-def compute_fuel_tank_performance(tank,state):
+def compute_fuel_tank_performance(tank,state,network):
     """ Computes fuel comsumtion of tanks
     """
     # unpack  
     I    = state.numerics.time.integrate
     fuel = tank.fuel
      
-    tank_conditions = state.conditions.sources[tank.tag]      
+    tank_conditions = state.conditions.energy.sources[tank.tag]      
     if type(tank.fuel) == RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen:
         '''needs updating'''
         # unpack
@@ -52,5 +52,8 @@ def compute_fuel_tank_performance(tank,state):
     if len(mass_flow_rate) > 1:
         # update mass 
         state.conditions.weights.components.mass[fuel.tag][:,0]  = m_0_fuel +  np.dot(I, -mass_flow_rate).flatten()
-         
-    return 
+    
+    stored_results_flag     = True
+    stored_fuel_tank_tag    = tank.tag
+    
+    return tank_conditions.inputs, tank_conditions.outputs, stored_results_flag, stored_fuel_tank_tag 

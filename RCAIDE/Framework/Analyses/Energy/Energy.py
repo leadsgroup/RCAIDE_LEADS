@@ -51,7 +51,7 @@ class Energy(Analysis):
         """ 
         # assumes only one network exists
 
-        cg       = self.vehicle.mass_properties.center_of_gravity
+        cg    = segment.analyses.vehicle.mass_properties.center_of_gravity
         state = segment.state
 
         # Pack the unknowns to pass through the network

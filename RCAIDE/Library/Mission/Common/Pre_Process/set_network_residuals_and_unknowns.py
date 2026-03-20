@@ -26,23 +26,23 @@ def set_network_residuals_and_unknowns(mission):
             for distributor in network.distributors:                 
                 distributor.append_unknowns_and_residuals(segment)                
     
-            # ---------------------------------------------------------------------------------------------            
-            # Source 
-            # ---------------------------------------------------------------------------------------------          
-            for source in network.sources:
-                source.append_unknowns_and_residuals(segment) #NEED TO UPDATE TO HANDLE MULTIPLE BATTERIES   
+            ## ---------------------------------------------------------------------------------------------            
+            ## Source 
+            ## ---------------------------------------------------------------------------------------------          
+            #for source in network.sources:
+                #source.append_unknowns_and_residuals(segment) #NEED TO UPDATE TO HANDLE MULTIPLE BATTERIES   
     
-            # ---------------------------------------------------------------------------------------------            
-            # System 
-            # ---------------------------------------------------------------------------------------------          
-            for system in network.systems:
-                system.append_unknowns_and_residuals(segment)
+            ## ---------------------------------------------------------------------------------------------            
+            ## System 
+            ## ---------------------------------------------------------------------------------------------          
+            #for system in network.systems:
+                #system.append_unknowns_and_residuals(segment)
     
-            # ---------------------------------------------------------------------------------------------            
-            # Modulator 
-            # ---------------------------------------------------------------------------------------------          
-            for modulator in network.modulators:
-                modulator.append_unknowns_and_residuals(segment)                
+            ## ---------------------------------------------------------------------------------------------            
+            ## Modulator 
+            ## ---------------------------------------------------------------------------------------------          
+            #for modulator in network.modulators:
+                #modulator.append_unknowns_and_residuals(segment)                
                 
                  
             # Ensure the mission knows how to pack and unpack the unknowns and residuals
