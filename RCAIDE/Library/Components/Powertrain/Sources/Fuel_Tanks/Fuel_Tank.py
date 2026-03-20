@@ -169,7 +169,7 @@ class Fuel_Tank(Source):
     
     def compute_performance(self,state,network):
         inputs, outputs, stored_results_flag, stored_source_tag = compute_fuel_tank_performance(self, state,network)
-        return
+        return inputs, outputs, stored_results_flag, stored_source_tag 
     
     def compute_center_of_gravity(self,vehicle): 
         """

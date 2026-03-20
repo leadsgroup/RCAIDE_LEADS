@@ -106,12 +106,9 @@ class Network(Component):
         total_mdot              = 0. * state.ones_row(1)
         total_propulsive_power  = 0. * state.ones_row(1)
         total_electrical_power  = 0. * state.ones_row(1)
+        total_chemical_power    = 0. * state.ones_row(1)
         total_current           = 0. * state.ones_row(1)
-        
-        ''' MAJOR ASSUMTION
-        
-        number of unknowns is the number of distributors 
-        '''
+ 
         # ----------------------------------------------------------
         # Propulsors
         # ----------------------------------------------------------
@@ -131,25 +128,41 @@ class Network(Component):
                 total_moment           += outputs.moment
                 total_propulsive_power += outputs.power.propulsive 
                 total_current          += outputs.current 
-                total_electrical_power += outputs.power.electrical 
+                total_electrical_power += outputs.power.electrical
+                total_chemical_power   += inputs.power.chemical
                 total_mdot             += inputs.mdot_fuel  
         
         # ----------------------------------------------------------
         # Systems
         # ----------------------------------------------------------
         for system in systems:
-            inputs, outputs, stored_results_flag, stored_propulsor_tag = system.compute_performance(state)
+            inputs, outputs, stored_results_flag, stored_propulsor_tag = system.compute_performance(state) 
+            total_electrical_power += outputs.power.electrical  
             
       
-   
+        for converter in converters:   
+            if converter.active: 
+                if converter.identical_propulsors == False or stored_results_flag == False:
+                    #state.conditions.energy.converters[converter.tag].outputs.power.electrical =  total_elec_power*(1 - state.conditions.energy.hybrid_power_split_ratio )  # NEED TO ASSIGN PRIOR
+                    inputs, outputs, stored_results_flag, stored_conveter_tag = converter.compute_performance(state,network, center_of_gravity=center_of_gravity)
+                else:
+                    inputs, outputs = propulsor.reuse_stored_data(state,network,stored_propulsor_tag=stored_propulsor_tag, center_of_gravity=center_of_gravity)
+ 
+                total_thrust           += outputs.thrust
+                total_moment           += outputs.moment
+                total_propulsive_power += outputs.power.propulsive 
+                total_current          += outputs.current 
+                total_electrical_power += outputs.power.electrical 
+                total_chemical_power   += inputs.power.chemical
+                total_mdot             += inputs.mdot_fuel
+                
         # ----------------------------------------------------------
         # Sources 
         # ----------------------------------------------------------
         for source in sources: 
-            if source.assigned_distributors != None: 
+            if source.assigned_distributors != None and  source.active: 
                 for distributor_tag in source.assigned_distributors[0]:  
-                    distributor = distributors[distributor_tag]
-                    
+                    distributor = distributors[distributor_tag] 
                     if type(distributor) == RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus:
                         
                         # Bus Voltage 
@@ -161,8 +174,21 @@ class Network(Component):
                             conditions.energy.sources[source.tag].inputs.power.electrical        = charging_power *  conditions.energy.sources[source.tag].power_split_ratio
                             conditions.energy.sources[source.tag].inputs.current                 = (charging_power /voltage) *  conditions.energy.sources[source.tag].power_split_ratio
                         else:
-                            conditions.energy.sources[source.tag].outputs.power.electrical       = total_electrical_power*  conditions.energy.sources[source.tag].power_split_ratio / distributor.efficiency
+                            conditions.energy.sources[source.tag].outputs.power.electrical       = total_electrical_power*  conditions.energy.sources[source.tag].power_split_ratio / distributor.efficiency # need to split elsewhere 
                             conditions.energy.sources[source.tag].outputs.current                = total_current *  conditions.energy.sources[source.tag].power_split_ratio / distributor.efficiency
+            
+                        if source.identical_sources == False or stored_results_flag == False:
+                            inputs, outputs, stored_results_flag, stored_source_tag = source.compute_performance(state,network)
+                        else:
+                            inputs, outputs = source.reuse_stored_data(state,network,stored_source_tag=stored_source_tag)
+                    
+        
+                    if type(distributor) == RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line:    
+                        if source.identical_sources == False or stored_results_flag == False:
+                            state.conditions.energy.sources[source.tag].outputs.power.chemical = total_chemical_power
+                            inputs, outputs, stored_results_flag, stored_source_tag = source.compute_performance(state,network)
+                        else:
+                            inputs, outputs = source.reuse_stored_data(state,network,stored_source_tag=stored_source_tag)
 
         ## ----------------------------------------------------------
         ## Build Power Balance System
@@ -247,18 +273,7 @@ class Network(Component):
             #else:    
                 #conditions.energy[component_group][component_tag][direction].power[power_type][:,0] = val                        
                     
-        
-        # ----------------------------------------------------------
-        # Compute performance of sources 
-        # ----------------------------------------------------------
-        stored_results_flag  = False
-        for source in sources: 
-            if source.active:
-                if source.identical_sources == False or stored_results_flag == False:
-                    inputs, outputs, stored_results_flag, stored_source_tag = source.compute_performance(state,network)
-                else:
-                    inputs, outputs = source.reuse_stored_data(state,network,stored_source_tag=stored_source_tag)
- 
+       
         # ----------------------------------------------------------
         ## Compute performance of distributors  
         ## ---------------------------------------------------------- 
