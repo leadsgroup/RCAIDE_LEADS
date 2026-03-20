@@ -30,6 +30,7 @@ class Fuel_Tank(Source):
         Identifier for the fuel tank (default: 'fuel_tank')
         
     fuel_selector_ratio : float
+    fuel_flow_split_ratio : float
         Ratio of fuel flow allocation (default: 1.0)
         
     mass_properties.empty_mass : float
@@ -64,7 +65,7 @@ class Fuel_Tank(Source):
         self.secondary_mass_flow_rate       = 0.0   #kg/s
         self.wall_clearance                 = 0.0
         self.wall_thickness                 = 1E-3
-        self.fuel_selector_ratio            = 1.0
+        self.fuel_flow_split_ratio          = None
         self.xz_plane_symmetric             = True
         self.wing_tag                       = None
         self.fuselage_tag                   = None
@@ -171,6 +172,7 @@ class Fuel_Tank(Source):
         inputs, outputs, stored_results_flag, stored_source_tag = compute_fuel_tank_performance(self, state,network)
         return inputs, outputs, stored_results_flag, stored_source_tag 
     
+
     def compute_center_of_gravity(self,vehicle): 
         """
         Computes the center of gravity for a fuel tank.
@@ -187,8 +189,5 @@ class Fuel_Tank(Source):
         """
         
         _  = compute_cuboid_center_of_gravity(self, length=self.lengths.external)
-        # Working it with a different angle, the fuel selector ratio has a different purpose
-        # if self.fuel.mass_properties.mass != 0: 
-        #     self.fuel_selector_ratio = self.fuel.mass_properties.mass / vehicle.mass_properties.fuel  
             
         return
