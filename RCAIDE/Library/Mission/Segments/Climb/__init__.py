@@ -8,7 +8,7 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
 
-from . import Constant_Acceleration_Constant_Pitchrate_Constant_Angle 
+from . import Constant_Acceleration_Constant_Pitchrate_Constant_Angle
 from . import Constant_Speed_Constant_Rate
 from . import Constant_Mach_Constant_Rate
 from . import Constant_Mach_Constant_Angle

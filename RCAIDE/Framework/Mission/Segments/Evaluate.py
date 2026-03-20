@@ -106,7 +106,7 @@ class Evaluate(Segment):
         
         # Unpack Unknowns
         iterate.unknowns                         = Process()       
-        iterate.unknowns.mission.mission         = Process()  
+        iterate.unknowns.mission                 = Process()  
         iterate.unknowns.mission.controls        = Common.Unpack_Unknowns.control_surfaces
         
         # Update Conditions

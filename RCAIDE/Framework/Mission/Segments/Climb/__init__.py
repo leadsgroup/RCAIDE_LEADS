@@ -8,6 +8,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
+from .Constant_Acceleration_Constant_Pitchrate_Constant_Angle import Constant_Acceleration_Constant_Pitchrate_Constant_Angle
 from .Constant_Dynamic_Pressure_Constant_Angle import Constant_Dynamic_Pressure_Constant_Angle
 from .Constant_Dynamic_Pressure_Constant_Rate  import Constant_Dynamic_Pressure_Constant_Rate
 from .Constant_Mach_Constant_Angle             import Constant_Mach_Constant_Angle
