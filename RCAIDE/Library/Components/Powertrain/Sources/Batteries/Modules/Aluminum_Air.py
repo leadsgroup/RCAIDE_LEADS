@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Powertrain/Energy/Sources/Battery_Modules/Aluminum_Air.py
+# RCAIDE/Library/Components/Powertrain/Energy/Sources/Batteries/Modules/Aluminum_Air.py
 # 
 # 
 # Created:  Mar 2024, M. Clarke 
@@ -68,7 +68,7 @@ class Aluminum_Air(Generic_Battery_Module):
 
     See Also
     --------
-    RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module
+    RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Generic_Battery_Module
         Base battery module class
     """
     

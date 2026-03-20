@@ -68,6 +68,7 @@ class Systems(Component):
         """        
         self.tag                          = 'System'  
         self.power_draw                   = 0.0
+        self.active                       = True
         self.assigned_distributors        = None
         self.efficiency                   = 0.0
 

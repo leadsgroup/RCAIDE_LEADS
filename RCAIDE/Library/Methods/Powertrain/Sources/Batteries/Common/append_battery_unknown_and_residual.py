@@ -14,7 +14,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  append_battery_unknown_and_residual
 # ----------------------------------------------------------------------------------------------------------------------
-def append_battery_unknown_and_residual(battery_module,segment):
+def append_battery_unknown_and_residual(module, battery,segment):
     
     # compute ambient conditions
     atmosphere    = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
@@ -31,20 +31,20 @@ def append_battery_unknown_and_residual(battery_module,segment):
         cell_temperature  = segment.cell_temperature  
     else:
         cell_temperature = atmo_data.temperature[0,0] 
-    segment.state.unknowns.network[battery_module.tag+ '_cell_temperature']  = ones_row(1) * cell_temperature
-    segment.state.residuals.network[battery_module.tag+ '_cell_temperature'] = ones_row(1)* 0
+    segment.state.unknowns.network[battery.tag + '_' + module.tag + '_cell_temperature']  = ones_row(1) * cell_temperature
+    segment.state.residuals.network[battery.tag + '_' + module.tag + '_cell_temperature'] = ones_row(1)* 0
 
     if segment.initial_battery_conditions.state_of_charge is not None: 
         initial_battery_energy                                                      = segment.initial_battery_conditions.state_of_charge
-        segment.state.unknowns.network[battery_module.tag+ '_cell_state_of_charge'] = ones_row(1) * initial_battery_energy
+        segment.state.unknowns.network[battery.tag + '_' + module.tag + '_cell_state_of_charge'] = ones_row(1) * initial_battery_energy
     else:
-        segment.state.unknowns.network[battery_module.tag+ '_cell_state_of_charge'] = ones_row(1) * 0
-    segment.state.residuals.network[battery_module.tag+ '_cell_state_of_charge']    = ones_row(1)* 0
+        segment.state.unknowns.network[battery.tag + '_' + module.tag + '_cell_state_of_charge'] = ones_row(1) * 0
+    segment.state.residuals.network[battery.tag + '_' + module.tag + '_cell_state_of_charge']    = ones_row(1)* 0
  
-    segment.state.unknowns_lower_bounds.network[battery_module.tag + '_cell_temperature']     = -np.inf * ones_row(1)
-    segment.state.unknowns_upper_bounds.network[battery_module.tag + '_cell_temperature']     = np.inf * ones_row(1)    
-    segment.state.unknowns_lower_bounds.network[battery_module.tag + '_cell_state_of_charge'] = -np.inf * ones_row(1)
-    segment.state.unknowns_upper_bounds.network[battery_module.tag + '_cell_state_of_charge'] = np.inf * ones_row(1)
+    segment.state.unknowns_lower_bounds.network[battery.tag + '_' + module.tag  + '_cell_temperature']     = -np.inf * ones_row(1)
+    segment.state.unknowns_upper_bounds.network[battery.tag + '_' + module.tag  + '_cell_temperature']     = np.inf * ones_row(1)    
+    segment.state.unknowns_lower_bounds.network[battery.tag + '_' + module.tag  + '_cell_state_of_charge'] = -np.inf * ones_row(1)
+    segment.state.unknowns_upper_bounds.network[battery.tag + '_' + module.tag  + '_cell_state_of_charge'] = np.inf * ones_row(1)
   
 
     return

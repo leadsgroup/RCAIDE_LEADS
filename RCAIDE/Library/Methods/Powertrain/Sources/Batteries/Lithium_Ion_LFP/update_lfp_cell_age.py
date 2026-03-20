@@ -62,7 +62,7 @@ def update_lfp_cell_age(battery_module, segment, battery_conditions, increment_b
     
     See Also
     --------
-    RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP
+    RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack.Lithium_Ion_LFP
     RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.compute_lfp_cell_performance
     """
     SOC                = battery_conditions.cell.state_of_charge

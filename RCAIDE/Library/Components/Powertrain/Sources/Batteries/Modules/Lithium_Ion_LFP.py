@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Powertrain/Energy/Sources/Battery_Modules/Lithium_Ion_LFP.py
+# RCAIDE/Library/Components/Powertrain/Powertrain/Sources/Batteries/Modules/Lithium_Ion_LFP.py
 # 
 # 
 # Created: Nov 2024, S. Shekar
@@ -94,7 +94,7 @@ class Lithium_Ion_LFP(Generic_Battery_Module):
 
     See Also
     --------
-    RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module
+    RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Generic_Battery_Module
         Base battery module class
     """
     
@@ -139,7 +139,7 @@ class Lithium_Ion_LFP(Generic_Battery_Module):
         battery_raw_data                      = load_battery_results()                                                   
         self.cell.discharge_performance_map   = create_discharge_performance_map(battery_raw_data)
 
-        return                                     
+        return                       
 
     def compute_performance(self,state,bus,network): 
         """

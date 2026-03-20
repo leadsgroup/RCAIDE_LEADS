@@ -51,10 +51,7 @@ class Electrical_Bus(Distributor):
         Total capacity of connected batteries (default: 0.0)
         
     charging_c_rate : float
-        Battery charging rate in C (default: 1.0)
-        
-    battery_module_electric_configuration : str
-        Configuration of battery modules ('Series' or 'Parallel') (default: 'Series')
+        Battery charging rate in C (default: 1.0) 
 
     Notes
     -----
@@ -72,7 +69,7 @@ class Electrical_Bus(Distributor):
 
     See Also
     --------
-    RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules
+    RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules
         Battery module components
     """
     
@@ -87,7 +84,7 @@ class Electrical_Bus(Distributor):
         """                
         self.tag                                    = 'electrical_line' 
         self.domain                                 = 'electrical'
-        self.electrical_line                        = Electrical_Line()
+        #self.electrical_line                        = Electrical_Line()
         self.battery_modules                        = Container() 
         self.type                                   = 'DC'  
         self.active                                 = True
@@ -97,8 +94,6 @@ class Electrical_Bus(Distributor):
         self.frequency                              = 0.0 
         self.nominal_capacity                       = 0.0
         self.charging_c_rate                        = 1.0
-        self.battery_module_electric_configuration  = "Series"
-        self.fuel_cell_stack_electric_configuration = "Series"
 
     def unpack_unknowns(self,segment):
         return 
@@ -183,26 +178,26 @@ class Electrical_Bus(Distributor):
 
         #return inputs, outputs
     
-class Electrical_Line(Distributor):
-    def __defaults__(self):
-        self.tag                               = 'electrical_line'
-        self.to                                = None
-        self.from_                             = None
-        self.current_type                      = 'DC'  
-        self.voltage                           = 0  
-        self.efficiency                        = 1
-        self.length                            = 0
-        self.design_ambient_temperature        = 273 # kelvin
-        self.maximum_insulator_electric_field  = 0 # NEED TO CHECK 
-        self.maximum_operating_temperature     = 0 # NEED TO CHECK 
-        self.maximum_current                   = 0 # NEED TO CHECK
-        self.maximum_temperature               = 0 # NEED TO CHECK
-        self.environmental_external_thermal_resistance = 0 # CHECK  IEC 60287-2-1 Section 4.2.1.1.
-        self.conductor_radius                  = None
-        self.conductor_material                = Copper()  # Default conductor material
-        self.insulator_radius                  = None
-        self.insulator_material                = Polyimide()  # Default insulator material 
-        self.duplicate_wires                   =  2# Number of duplicate cables for redundancy
+#class Electrical_Line(Distributor):
+    #def __defaults__(self):
+        #self.tag                               = 'electrical_line'
+        #self.to                                = None
+        #self.from_                             = None
+        #self.current_type                      = 'DC'  
+        #self.voltage                           = 0  
+        #self.efficiency                        = 1
+        #self.length                            = 0
+        #self.design_ambient_temperature        = 273 # kelvin
+        #self.maximum_insulator_electric_field  = 0 # NEED TO CHECK 
+        #self.maximum_operating_temperature     = 0 # NEED TO CHECK 
+        #self.maximum_current                   = 0 # NEED TO CHECK
+        #self.maximum_temperature               = 0 # NEED TO CHECK
+        #self.environmental_external_thermal_resistance = 0 # CHECK  IEC 60287-2-1 Section 4.2.1.1.
+        #self.conductor_radius                  = None
+        #self.conductor_material                = Copper()  # Default conductor material
+        #self.insulator_radius                  = None
+        #self.insulator_material                = Polyimide()  # Default insulator material 
+        #self.duplicate_wires                   =  2# Number of duplicate cables for redundancy
     
 
 

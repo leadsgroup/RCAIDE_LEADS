@@ -5,7 +5,7 @@
 #
 
 import RCAIDE
-from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common          import compute_module_properties 
+from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common          import compute_battery_pack_properties 
 from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common      import compute_stack_properties
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -58,41 +58,28 @@ def initialize_bus_properties(bus,network):
     
     See Also
     --------
-    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.compute_module_properties
+    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.compute_battery_pack_properties
     RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common.compute_stack_properties
-    """
-    # loops through the sources, if electrical, update the bus that it is on
-    number_of_sources = 0
-    cumulative_fuel_cell_stack = 0
-    power_split_ratio = 0
+    """ 
     for source in network.sources:
-        if source.active and (bus.tag in source.assigned_distributors[0]): 
-            number_of_sources += 1
-            
-            # compute power split ratio
-            power_split_ratio = 1/number_of_sources 
-            
-            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module): 
-                bus            = network.distributors[source.assigned_distributors[0][0]] 
-                if bus.battery_module_electric_configuration == 'Series':
-                    compute_module_properties(source) 
-                    bus.voltage         +=  source.voltage
-                elif bus.battery_module_electric_configuration == 'Parallel': 
-                    compute_module_properties(source)        
-                    bus.voltage           =  max(source.voltage, bus.voltage)
-            elif isinstance(source, RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack): 
-                fuel_cell_stack =  source 
-                bus             = network.distributors[source.assigned_distributors[0][0]] 
-                if bus.fuel_cell_stack_electric_configuration == 'Series':  
-                    compute_stack_properties(fuel_cell_stack)
-                    cumulative_fuel_cell_stack += fuel_cell_stack.voltage 
-                    bus.voltage     =  min(fuel_cell_stack.voltage, cumulative_fuel_cell_stack) 
-                elif bus.fuel_cell_stack_electric_configuration == 'Parallel':  
-                    compute_stack_properties(fuel_cell_stack)        
-                    bus.voltage     =  max(fuel_cell_stack.voltage, bus.voltage)
+        if source.active and (bus.tag in source.assigned_distributors[0]):  
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack): 
+                compute_battery_pack_properties(source) 
+                bus.voltage  =  source.voltage   
+                    
+            #elif isinstance(source, RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack): 
+                #fuel_cell_stack =  source 
+                #bus             = network.distributors[source.assigned_distributors[0][0]] 
+                #if bus.fuel_cell_stack_electric_configuration == 'Series':  
+                    #compute_stack_properties(fuel_cell_stack)
+                    #cumulative_fuel_cell_stack += fuel_cell_stack.voltage 
+                    #bus.voltage     =  min(fuel_cell_stack.voltage, cumulative_fuel_cell_stack) 
+                #elif bus.fuel_cell_stack_electric_configuration == 'Parallel':  
+                    #compute_stack_properties(fuel_cell_stack)        
+                    #bus.voltage     =  max(fuel_cell_stack.voltage, bus.voltage)
                     
                 
-    for source in network.sources:
-        if source.active and (bus.tag in source.assigned_distributors[0]):
-            source.power_split_ratio = power_split_ratio
+    #for source in network.sources:
+        #if source.active and (bus.tag in source.assigned_distributors[0]):
+            #source.power_split_ratio = power_split_ratio
     return

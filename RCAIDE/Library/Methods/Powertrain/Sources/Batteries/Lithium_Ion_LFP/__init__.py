@@ -7,7 +7,7 @@ It includes methods for computing LFP cell performance and updating cell age.
 
 See Also
 --------
-RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP
+RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_LFP
 RCAIDE.Library.Methods.Powertrain.Sources.Batteries
 """
 

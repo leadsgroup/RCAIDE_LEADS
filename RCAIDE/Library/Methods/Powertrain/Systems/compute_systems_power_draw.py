@@ -10,11 +10,7 @@ def compute_systems_power_draw(system, state):
     """
     
     """
-    system_conditions              = state.conditions.energy.systems[system.tag]    
+    system_conditions              = state.conditions.energy.systems[system.tag]      
+    system_conditions.inputs.power.electrical    = system.power_draw * state.ones_row(1) 
 
-    inputs                         = system_conditions.inputs
-    outputs                        = system_conditions.outputs
-
-    inputs.power.electrical        = system.power_draw * state.ones_row(1) 
-
-    return inputs, outputs
+    return system_conditions.inputs, system_conditions.outputs

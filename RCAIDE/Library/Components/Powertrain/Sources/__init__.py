@@ -13,7 +13,7 @@ as the primary energy providers in aircraft propulsion systems.
 
 See Also
 --------
-RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules
+RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules
     Battery system components and models
 RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks
     Fuel storage and delivery systems
@@ -24,5 +24,5 @@ RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks
 # ----------------------------------------------------------------------------------------------------------------------
 
 from .Source import Source
-from .       import Battery_Modules
+from .       import Batteries
 from .       import Fuel_Tanks

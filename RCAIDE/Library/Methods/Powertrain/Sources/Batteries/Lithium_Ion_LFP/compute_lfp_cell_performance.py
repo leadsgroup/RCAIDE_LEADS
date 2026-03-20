@@ -89,7 +89,7 @@ def compute_lfp_cell_performance(battery_module, state, bus, network):
     
     See Also
     --------
-    RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP
+    RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_LFP
     """ 
     # ---------------------------------------------------------------------------------    
     # battery cell properties
@@ -149,8 +149,7 @@ def compute_lfp_cell_performance(battery_module, state, bus, network):
     # Calculate the current going into one cell  
     n_series          = battery_module.electrical_configuration.series
     n_parallel        = battery_module.electrical_configuration.parallel 
-    n_total           = n_series * n_parallel
-    no_modules        = len(bus.battery_modules)
+    n_total           = n_series * n_parallel 
     
     # ---------------------------------------------------------------------------------
     # Examine Thermal Management System
@@ -164,17 +163,7 @@ def compute_lfp_cell_performance(battery_module, state, bus, network):
                         if sub_tag == battery_module.tag:
                             for btms in  sub_item:
                                 HAS = btms    
-
-
-    # ---------------------------------------------------------------------------------------------------
-    # Current State 
-    # ---------------------------------------------------------------------------------------------------
-    if bus_config == 'Series':
-        I_module[t_idx]      = I_bus[t_idx]
-    elif bus_config  == 'Parallel':
-        I_module[t_idx]      = I_bus[t_idx] / len(bus.battery_modules)
-
-    I_cell[t_idx] = I_module[t_idx] / n_parallel   
+ 
        
     # ---------------------------------------------------------------------------------
     # Compute battery_module cell temperature 
@@ -285,7 +274,7 @@ def compute_lfp_cell_state(battery_module, battery_module_data, SOC, T, I):
     
     See Also
     --------
-    RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP
+    RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_LFP
     """
 
     # Make sure things do not break by limiting current, temperature and current 

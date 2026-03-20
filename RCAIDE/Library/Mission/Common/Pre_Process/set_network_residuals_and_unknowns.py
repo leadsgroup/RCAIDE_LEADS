@@ -2,7 +2,7 @@
 # 
 # 
 # Created:  Jul 2023, M. Clarke
-
+import  numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  set_residuals_and_unknowns
 # ----------------------------------------------------------------------------------------------------------------------  
@@ -11,7 +11,16 @@ def set_network_residuals_and_unknowns(mission):
     for segment in mission.segments: 
         segment.state.number_of_network_unknowns   = 0 
         segment.state.number_of_network_residuals  = 0 
-        for network in segment.analyses.vehicle.networks:                        
+        for network in segment.analyses.vehicle.networks:
+            
+        
+            ones_row    = segment.state.ones_row   
+            segment.state.unknowns.network['electrical_power'] = 1 *  ones_row(1)    
+            segment.state.residuals.network[ 'electrical_power'] = 0. * ones_row(1)
+            segment.state.unknowns_upper_bounds.network['electrical_power'] =   np.inf* ones_row(1) 
+            segment.state.unknowns_lower_bounds.network['electrical_power'] = - np.inf* ones_row(1)
+            segment.state.number_of_network_unknowns  += 1
+            segment.state.number_of_network_residuals += 1            
 
             # ---------------------------------------------------------------------------------------------
             # Propulsors 
@@ -26,11 +35,11 @@ def set_network_residuals_and_unknowns(mission):
             for distributor in network.distributors:                 
                 distributor.append_unknowns_and_residuals(segment)                
     
-            ## ---------------------------------------------------------------------------------------------            
-            ## Source 
-            ## ---------------------------------------------------------------------------------------------          
-            #for source in network.sources:
-                #source.append_unknowns_and_residuals(segment) #NEED TO UPDATE TO HANDLE MULTIPLE BATTERIES   
+            # ---------------------------------------------------------------------------------------------            
+            # Source 
+            # ---------------------------------------------------------------------------------------------          
+            for source in network.sources:
+                source.append_unknowns_and_residuals(segment) 
     
             ## ---------------------------------------------------------------------------------------------            
             ## System 

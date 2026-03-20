@@ -58,17 +58,9 @@ def append_battery_conditions(battery,segment):
         None
     """
  
-    ones_row  = segment.state.ones_row
-
-    # compute ambient conditions
-    atmosphere    = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    alt           = -segment.conditions.frames.inertial.position_vector[:,2] 
-    if segment.temperature_deviation != None:
-        temp_dev = segment.temperature_deviation    
-    atmo_data    = atmosphere.compute_values(altitude = alt,temperature_deviation=temp_dev)  
-               
-    segment.state.conditions.energy.sources[battery.tag]                                 = Conditions() 
-
+    ones_row  = segment.state.ones_row 
+    
+    segment.state.conditions.energy.sources[battery.tag]                                 = Conditions()  
     segment.state.conditions.energy.sources[battery.tag].voltage_open_circuit            = 0 * ones_row(1) 
     segment.state.conditions.energy.sources[battery.tag].internal_resistance             = 0 * ones_row(1)
     segment.state.conditions.energy.sources[battery.tag].voltage_under_load              = 0 * ones_row(1)  
@@ -76,40 +68,16 @@ def append_battery_conditions(battery,segment):
     segment.state.conditions.energy.sources[battery.tag].energy                          = 0 * ones_row(1)     
     segment.state.conditions.energy.sources[battery.tag].power_draw                      = 0 * ones_row(1)    
     segment.state.conditions.energy.sources[battery.tag].current_draw                    = 0 * ones_row(1) 
-    segment.state.conditions.energy.sources[battery.tag].current                         = 0 * ones_row(1)
-    
-    segment.state.conditions.energy.sources[battery.tag].cell                            = Conditions()
-    segment.state.conditions.energy.sources[battery.tag].cell.voltage_open_circuit       = 0 * ones_row(1)
-    segment.state.conditions.energy.sources[battery.tag].cell.internal_resistance        = 0 * ones_row(1)
-    segment.state.conditions.energy.sources[battery.tag].cell.voltage_under_load         = 0 * ones_row(1)
-    segment.state.conditions.energy.sources[battery.tag].cell.power                      = 0 * ones_row(1) 
-    segment.state.conditions.energy.sources[battery.tag].cell.current                    = 0 * ones_row(1)   
-    segment.state.conditions.energy.sources[battery.tag].cell.heat_energy_generated      = 0 * ones_row(1)   
-    segment.state.conditions.energy.sources[battery.tag].cell.energy                     = 0 * ones_row(1)
-    segment.state.conditions.energy.sources[battery.tag].cell.cycle_in_day               = 0
-    segment.state.conditions.energy.sources[battery.tag].cell.resistance_growth_factor   = 1.
-    segment.state.conditions.energy.sources[battery.tag].cell.capacity_fade_factor       = 1. 
+    segment.state.conditions.energy.sources[battery.tag].current                         = 0 * ones_row(1) 
      
     segment.state.conditions.energy.sources[battery.tag].power_split_ratio               = battery.power_split_ratio  
     segment.state.conditions.energy.sources[battery.tag].inputs                          = Conditions()
-    segment.state.conditions.energy.sources[battery.tag].inputs.power                    = Conditions() 
-    #segment.state.conditions.energy.sources[battery.tag].inputs.power.propulsive         = 0 * ones_row(1)
-    #segment.state.conditions.energy.sources[battery.tag].inputs.power.mechanical         = 0 * ones_row(1)
-    segment.state.conditions.energy.sources[battery.tag].inputs.power.electrical         = 0 * ones_row(1)
-    #segment.state.conditions.energy.sources[battery.tag].inputs.power.chemical           = 0 * ones_row(1)
-    #segment.state.conditions.energy.sources[battery.tag].inputs.power.pneumatic          = 0 * ones_row(1)
-    #segment.state.conditions.energy.sources[battery.tag].inputs.power.hydraulic          = 0 * ones_row(1)
-    #segment.state.conditions.energy.sources[battery.tag].inputs.power.thermal            = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[battery.tag].inputs.power                    = Conditions()  
+    segment.state.conditions.energy.sources[battery.tag].inputs.power.electrical         = 0 * ones_row(1) 
            
     segment.state.conditions.energy.sources[battery.tag].outputs                         = Conditions()  
-    segment.state.conditions.energy.sources[battery.tag].outputs.power                   = Conditions() 
-    #segment.state.conditions.energy.sources[battery.tag].outputs.power.propulsive        = 0 * ones_row(1)
-    #segment.state.conditions.energy.sources[battery.tag].outputs.power.mechanical        = 0 * ones_row(1)
-    segment.state.conditions.energy.sources[battery.tag].outputs.power.electrical        = 0 * ones_row(1)
-    #segment.state.conditions.energy.sources[battery.tag].outputs.power.chemical          = 0 * ones_row(1)
-    #segment.state.conditions.energy.sources[battery.tag].outputs.power.pneumatic         = 0 * ones_row(1)
-    #segment.state.conditions.energy.sources[battery.tag].outputs.power.hydraulic         = 0 * ones_row(1)
-    #segment.state.conditions.energy.sources[battery.tag].outputs.power.thermal           = 0 * ones_row(1) 
+    segment.state.conditions.energy.sources[battery.tag].outputs.power                   = Conditions()  
+    segment.state.conditions.energy.sources[battery.tag].outputs.power.electrical        = 0 * ones_row(1) 
     
     # Conditions for recharging battery module
     if isinstance(segment,RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge):
@@ -125,47 +93,7 @@ def append_battery_conditions(battery,segment):
         segment.state.number_of_unknowns  += 1
         segment.state.number_of_residuals += 1    
     else:
-        segment.state.conditions.energy.recharging  = False 
-        
-    # first segment 
-    if 'initial_battery_state_of_charge' in segment:
-    
-        n_series          = battery.electrical_configuration.series
-        n_parallel        = battery.electrical_configuration.parallel 
-        n_total           = n_series*n_parallel
-        
-        initial_battery_energy                                                        = segment.initial_battery_state_of_charge*battery.maximum_energy   
-        segment.state.conditions.energy.sources[battery.tag].maximum_initial_energy   = initial_battery_energy
-        segment.state.conditions.energy.sources[battery.tag].energy                   = initial_battery_energy* ones_row(1) 
-        segment.state.conditions.energy.sources[battery.tag].cell.energy              = initial_battery_energy / n_total* ones_row(1) 
-        segment.state.conditions.energy.sources[battery.tag].state_of_charge          = segment.initial_battery_state_of_charge* ones_row(1) 
-        segment.state.conditions.energy.sources[battery.tag].cell.state_of_charge     = segment.initial_battery_state_of_charge* ones_row(1) 
-        segment.state.conditions.energy.sources[battery.tag].cell.depth_of_discharge  = 1 - segment.initial_battery_state_of_charge* ones_row(1)
-    else:  
-        segment.state.conditions.energy.sources[battery.tag].energy                    = 0 * ones_row(1)
-        segment.state.conditions.energy.sources[battery.tag].state_of_charge           = 0 * ones_row(1)
-        segment.state.conditions.energy.sources[battery.tag].cell.state_of_charge      = 0 * ones_row(1)       
-        segment.state.conditions.energy.sources[battery.tag].cell.depth_of_discharge   = 0 * ones_row(1) 
-        
-    # temperature 
-    if 'battery_cell_temperature' in segment:
-        cell_temperature  = segment.battery_cell_temperature  
-    else:
-        cell_temperature                                      = atmo_data.temperature[0,0] 
-    segment.state.conditions.energy.sources[battery.tag].temperature      = cell_temperature * ones_row(1)         
-    segment.state.conditions.energy.sources[battery.tag].cell.temperature = cell_temperature * ones_row(1) 
-
-    # charge thoughput 
-    if 'charge_throughput' in segment: 
-        segment.state.conditions.energy.sources[battery.tag].cell.charge_throughput          = segment.charge_throughput * ones_row(1)  
-        segment.state.conditions.energy.sources[battery.tag].cell.resistance_growth_factor   = segment.resistance_growth
-        segment.state.conditions.energy.sources[battery.tag].cell.capacity_fade_factor       = segment.capacity_fade
-        segment.state.conditions.energy.sources[battery.tag].cell.cycle_in_day               = segment.cycle_day 
-        segment.state.conditions.energy.sources[battery.tag].cell.resistance_growth_factor   = 1 
-        segment.state.conditions.energy.sources[battery.tag].cell.capacity_fade_factor       = 1 
-        segment.state.conditions.energy.sources[battery.tag].cell.cycle_in_day               = 0
-    else:
-        segment.state.conditions.energy.sources[battery.tag].cell.charge_throughput    = 0 * ones_row(1)   
+        segment.state.conditions.energy.recharging  = False  
         
     # This is the only one besides energy and discharge flag that should be moduleed into the segment top level
     if 'increment_battery_age_by_one_day' not in segment:
@@ -192,21 +120,9 @@ def append_battery_segment_conditions(battery, segment):
         None
     """
 
-    module_conditions = segment.state.conditions.energy.sources[battery.tag]   
-    #module_conditions.inputs.power.propulsive[:,0]    = 0.0
-    #module_conditions.inputs.power.mechanical[:,0]    = 0.0 
-    module_conditions.inputs.power.electrical[:,0]    = 0.0 
-    #module_conditions.inputs.power.chemical[:,0]      = 0.0
-    #module_conditions.inputs.power.pneumatic[:,0]     = 0.0 
-    #module_conditions.inputs.power.hydraulic[:,0]     = 0.0 
-    #module_conditions.inputs.power.thermal[:,0]       = 0.0 
-    #module_conditions.outputs.power.propulsive[:,0]   = 0.0
-    #module_conditions.outputs.power.mechanical[:,0]   = 0.0   
-    module_conditions.outputs.power.electrical[:,0]   = 0.0 
-    #module_conditions.outputs.power.chemical[:,0]     = 0.0
-    #module_conditions.outputs.power.pneumatic[:,0]    = 0.0   
-    #module_conditions.outputs.power.hydraulic[:,0]    = 0.0   
-    #module_conditions.outputs.power.thermal[:,0]      = 0.0 
+    module_conditions = segment.state.conditions.energy.sources[battery.tag]    
+    module_conditions.inputs.power.electrical[:,0]    = 0.0   
+    module_conditions.outputs.power.electrical[:,0]   = 0.0  
     
     if segment.state.initials:   
         battery_initials                                        = segment.state.initials.conditions.energy.sources[battery.tag]   
@@ -217,24 +133,8 @@ def append_battery_segment_conditions(battery, segment):
             
         module_conditions.energy[:,0]                     = battery_initials.energy[-1,0]
         module_conditions.temperature[:,0]                = battery_initials.temperature[-1,0]
-        module_conditions.cell.temperature[:,0]           = battery_initials.cell.temperature[-1,0]
-        module_conditions.cell.cycle_in_day               = battery_initials.cell.cycle_in_day      
-        module_conditions.cell.charge_throughput[:,0]     = battery_initials.cell.charge_throughput[-1,0]
-        module_conditions.cell.resistance_growth_factor   = battery_initials.cell.resistance_growth_factor 
-        module_conditions.cell.capacity_fade_factor       = battery_initials.cell.capacity_fade_factor 
-        module_conditions.cell.state_of_charge[:,0]       = battery_initials.cell.state_of_charge[-1,0]
-        module_conditions.cell.energy[:,0]                = battery_initials.cell.energy[-1,0]
-
+        
     if 'battery_cell_temperature' in segment:       
-        module_conditions.temperature[:,0]                = segment.battery_cell_temperature 
-        module_conditions.cell.temperature[:,0]           = segment.battery_cell_temperature     
-       
-    if 'initial_battery_state_of_charge' in segment:    
-        n_series                                          = battery.electrical_configuration.series
-        n_parallel                                        = battery.electrical_configuration.parallel 
-        n_total                                           = n_series*n_parallel 
-        module_conditions.cell.energy[:,0]                = segment.initial_battery_state_of_charge*battery.maximum_energy / n_total 
-        module_conditions.cell.state_of_charge[:,0]       = segment.initial_battery_state_of_charge
-        module_conditions.cell.depth_of_discharge[:,0]    = 1 - segment.initial_battery_state_of_charge
+        module_conditions.temperature[:,0]                = segment.battery_cell_temperature  
 
     return    

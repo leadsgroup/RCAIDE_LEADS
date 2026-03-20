@@ -11,6 +11,10 @@ import RCAIDE
 from RCAIDE.Framework.Core                                            import Units , Data
 from .Generic_Battery_Module                                          import Generic_Battery_Module   
 from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC  import *
+from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC.unpack_lithium_ion_nmc_unknowns import unpack_lithium_ion_nmc_unknowns
+from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC.pack_lithium_ion_nmc_residuals  import pack_lithium_ion_nmc_residuals
+from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_unknown_and_residual      import append_battery_unknown_and_residual
+
 # package imports 
 import numpy as np
 import os 
@@ -96,7 +100,7 @@ class Lithium_Ion_NMC(Generic_Battery_Module):
 
     See Also
     --------
-    RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module
+    RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Generic_Battery_Module
         Base battery module class
     """       
     
@@ -169,6 +173,18 @@ class Lithium_Ion_NMC(Generic_Battery_Module):
         battery_raw_data                      = load_battery_results()                                                   
         self.cell.discharge_performance_map   = create_discharge_performance_map(battery_raw_data)  
         return  
+
+    def unpack_unknowns(self,battery,segment):
+        unpack_lithium_ion_nmc_unknowns(self,battery,segment)
+        return 
+
+    def pack_residuals(self,battery,segment):
+        pack_lithium_ion_nmc_residuals(self,battery,segment)
+        return         
+       
+    def append_unknowns_and_residuals(self,battery,segment): 
+        append_battery_unknown_and_residual(self,battery,segment)   
+        return
     
     def compute_performance(self,state,network): 
         """

@@ -50,8 +50,7 @@ class Generic_Fuel_Cell_Stack(Converter):
         """           
         self.tag                                        = 'fuel_cell'     
         self.mass_properties.mass                       = 1.0
-        self.energy_density                             = 0.0
-        self.current_energy                             = 0.0
+        self.energy_density                             = 0.0 
         self.current_capacitor_charge                   = 0.0
         self.capacity                                   = 0.0
             

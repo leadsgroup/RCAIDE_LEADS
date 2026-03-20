@@ -31,6 +31,7 @@ class Converter(Component):
         self.assigned_modulators      = None
         self.assigned_distributors    = None
         self.propulsor_integrated     = True 
+        self.electrical_power_generation_split       = 1
         self.efficiency               = Data()
         self.efficiency.electrical    = 1.0
         self.efficiency.mechanical    = 1.0

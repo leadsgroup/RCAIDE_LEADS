@@ -159,7 +159,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
                 W_systems.W_avionics  += system.mass_properties.mass                  
          
         for source in network.sources:
-            if isinstance(system, RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module):
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
                 W_energy_network_total    += source.mass_properties.mass  
                 W_energy_network.W_battery = source.mass_properties.mass  
                 

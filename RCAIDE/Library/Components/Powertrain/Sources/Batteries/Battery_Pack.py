@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Powertrain/Energy/Sources/Battery_Modules/Generic_Battery_Module.py
+# RCAIDE/Library/Components/Powertrain/Powertrain/Sources/Batteries/Battery_Pack.py
 # 
 # 
 # Created:  Mar 2024, M. Clarke
@@ -8,25 +8,22 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports
-from RCAIDE.Framework.Core        import Data
+import RCAIDE 
+from RCAIDE.Framework.Core     import Data, Container
 from RCAIDE.Library.Components.Powertrain.Sources.Source    import Source   
 from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_conditions import append_battery_conditions, append_battery_segment_conditions
-from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_unknown_and_residual import append_battery_unknown_and_residual
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Battery
 # ----------------------------------------------------------------------------------------------------------------------      
-class Generic_Battery_Module(Source):
+class Battery_Pack(Source):
     """
     Base class for battery module implementations
     
     Attributes
     ----------
     energy_density : float
-        Energy stored per unit volume [J/m^3] (default: 0.0)
-        
-    current_energy : float
-        Current energy stored in battery [J] (default: 0.0)
+        Energy stored per unit volume [J/m^3] (default: 0.0) 
         
     current_capacitor_charge : float
         Current charge level of capacitor [C] (default: 0.0)
@@ -99,7 +96,7 @@ class Generic_Battery_Module(Source):
 
     See Also
     --------
-    RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC
+    RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_NMC
         Example implementation of a specific battery type
     """
     
@@ -107,32 +104,20 @@ class Generic_Battery_Module(Source):
         """
         Sets default values for battery module attributes
         """
-        self.energy_density                                    = 0.0
-        self.current_energy                                    = 0.0
-        self.current_capacitor_charge                          = 0.0
+        self.energy_density                                    = 0.0 
         self.capacity                                          = 0.0
-            
-        self.length                                            = 0.0
-        self.width                                             = 0.0
-        self.height                                            = 0.0
-        self.volume_packaging_factor                           = 1.05
-        self.BMS_additional_weight_factor                      = 1.42
-                 
-        self.orientation_euler_angles                          = [0.,0.,0.]  # vector of angles defining default orientation of rotor        
-                     
-        self.cell                                              = Data()
-        self.cell.chemistry                                    = None                             
-        self.cell.discharge_performance_map                    = None  
-        self.cell.ragone                                       = Data()
-        self.cell.ragone.const_1                               = 0.0     # used for ragone functions; 
-        self.cell.ragone.const_2                               = 0.0     # specific_power=ragone_const_1*10^(specific_energy*ragone_const_2)
-        self.cell.ragone.lower_bound                           = 0.0     # lower bound specific energy for which ragone curves no longer make sense
-        self.cell.ragone.i                                     = 0.0 
+        self.voltage                                           = 0.0
+        self.modules                                           = Container()
+        self.identical_modules                                 = True
+        self.orientation_euler_angles                          = [0.,0.,0.]
+        self.number_of_active_modules                          = 0
  
         self.electrical_configuration                          = Data()
         self.electrical_configuration.series                   = 1
         self.electrical_configuration.parallel                 = 1   
 
+        self.battery_module_electric_configuration             = "Series"
+        #self.fuel_cell_stack_electric_configuration            = "Series"
         self.geometrtic_configuration                          = Data() 
         self.geometrtic_configuration.normal_count             = 1
         self.geometrtic_configuration.parallel_count           = 1
@@ -151,7 +136,12 @@ class Generic_Battery_Module(Source):
         bus : Component
             Electrical bus connected to this battery
         """
-        append_battery_conditions(self,segment)  
+        append_battery_conditions(self,segment)
+
+        for m_i, module in enumerate(self.modules):
+            if module.active and (self.identical_modules == False or m_i == 0): 
+                module.append_operating_conditions(self,segment)
+                
         return
     
     def append_segment_conditions(self,segment):
@@ -168,8 +158,23 @@ class Generic_Battery_Module(Source):
             Flight segment data
         """
         append_battery_segment_conditions(self,segment)
-        return
+        for m_i, module in enumerate(self.modules):
+            if module.active and (self.identical_modules == False or m_i == 0): 
+                module.append_segment_conditions(self,segment) 
+        return 
 
+    def unpack_unknowns(self,segment):
+        for m_i, module in enumerate(self.modules):
+            if module.active and (self.identical_modules == False or m_i == 0): 
+                module.unpack_unknowns(self,segment) 
+        return 
+
+    def pack_residuals(self,segment): 
+        for m_i, module in enumerate(self.modules):
+            if module.active and (self.identical_modules == False or m_i == 0): 
+                module.pack_residuals(self,segment) 
+        return        
+       
     def append_unknowns_and_residuals(self,segment):
 
         """
@@ -184,7 +189,28 @@ class Generic_Battery_Module(Source):
         network: 
 
         """
-        append_battery_unknown_and_residual(self,segment)  
-        
+        for m_i, module in enumerate(self.modules):
+            if module.active and (self.identical_modules == False or m_i == 0): 
+                module.append_unknowns_and_residuals(self,segment)   
         return
+    
+        
+    def append_module(self,module):
+        """
+        Adds a new segment to the boom's segment container.
+
+        Parameters
+        ----------
+        segment : Data
+            Boom segment to be added
+        """
+
+        # Assert database type
+        if not issubclass(type(module),RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Generic_Battery_Module):
+            raise Exception('input component must be of type battery module')
+
+        # Store data
+        self.modules.append(module)
+
+        return    
     

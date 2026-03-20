@@ -21,7 +21,7 @@ def compute_nmc_cell_performance(battery_module,state,network):
 
     Parameters
     ----------
-    battery_module : RCAIDE.Library.Components.Sources.Battery_Modules.Lithium_Ion_NMC
+    battery_module : RCAIDE.Library.Components.Sources.Batteries.Modules.Lithium_Ion_NMC
         Battery module component with the following attributes:
             - tag : str
                 Identifier for the battery module
@@ -200,7 +200,9 @@ def compute_nmc_cell_performance(battery_module,state,network):
     Q_heat_module      = battery_module_conditions.heat_energy_generated
     Q_heat_cell        = battery_module_conditions.cell.heat_energy_generated  
     V_ul_cell          = battery_module_conditions.cell.voltage_under_load 
-    I_module           = battery_module_conditions.current*psi   
+    I_module           = battery_module_conditions.current*psi 
+    T_cell             = battery_module_conditions.cell.temperature
+    SOC_cell           = battery_module_conditions.cell.state_of_charge    
     battery_module_conditions.cell.current = I_module / n_parallel   
     I_cell             = battery_module_conditions.cell.current  
     
@@ -212,11 +214,6 @@ def compute_nmc_cell_performance(battery_module,state,network):
     n_parallel        = battery_module.electrical_configuration.parallel 
     n_total           = n_series*n_parallel 
 
-    # ---------------------------------------------------------------------------------                   
-    # set unknowns 
-    # ---------------------------------------------------------------------------------
-    T_cell_unkn   = state.unknowns.network[battery_module.tag +  '_cell_temperature']
-    SOC_cell_unkn = state.unknowns.network[battery_module.tag + '_cell_state_of_charge']
     
     # ---------------------------------------------------------------------------------
     # Electrical configuration
@@ -230,8 +227,8 @@ def compute_nmc_cell_performance(battery_module,state,network):
     E_scale = E_module_max
     
     # Scaled and bounded unknowns
-    T_cell_scaled = T_cell_unkn / T_scale
-    SOC_bounded = np.clip(SOC_cell_unkn, 1e-4, 1.0) 
+    T_cell_scaled = T_cell / T_scale
+    SOC_bounded = np.clip(SOC_cell, 1e-4, 1.0) 
     
     # ---------------------------------------------------------------------------------
     # Resistance with logarithmic transformation for stability
@@ -250,13 +247,13 @@ def compute_nmc_cell_performance(battery_module,state,network):
     F = 96485
     i_cell = I_cell / electrode_area
     
-    q_dot_entropy = -(T_cell_unkn) * delta_S * i_cell / (n * F)
+    q_dot_entropy = -(T_cell) * delta_S * i_cell / (n * F)
     q_dot_joule   = (i_cell**2) * battery_module_conditions.cell.resistance_growth_factor / sigma
     Q_heat_cell   = (q_dot_joule + q_dot_entropy) * As_cell
     Q_heat_module = Q_heat_cell * n_total
     
     # Voltage calculations with bounded inputs
-    T_cell_bounded = np.clip(T_cell_unkn, 272.65, 322.65)
+    T_cell_bounded = np.clip(T_cell, 272.65, 322.65)
     V_ul_cell      = compute_nmc_cell_state(battery_module_data, SOC_bounded, T_cell_bounded, abs(I_cell))
     V_oc_cell      = V_ul_cell + (abs(I_cell) * R_0_cell) 
     
@@ -279,8 +276,8 @@ def compute_nmc_cell_performance(battery_module,state,network):
         
     # SOC residual with better conditioning
     dE_dt    = -P_module
-    R_soc    = np.dot(D, SOC_cell_unkn * E_scale)[:, 0] - dE_dt[:, 0]
-    R_soc[0] = SOC_cell_unkn[0] - battery_module_conditions.cell.state_of_charge[0, 0]
+    R_soc    = np.dot(D, SOC_cell * E_scale)[:, 0] - dE_dt[:, 0]
+    R_soc[0] = SOC_cell[0] - battery_module_conditions.cell.state_of_charge[0, 0]
     state.residuals.network[battery_module.tag+ '_cell_state_of_charge'] = R_soc
     
     # Update states
@@ -396,7 +393,7 @@ def compute_nmc_cell_state(battery_module_data, SOC, T, I):
     
     See Also
     --------
-    RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC
+    RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_NMC
     """
 
     # Make sure things do not break by limiting current, temperature and current 

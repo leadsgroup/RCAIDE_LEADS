@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
-
+import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Plots.Common import set_axes, plot_style
 import matplotlib.pyplot as plt
@@ -109,15 +109,12 @@ def plot_air_cooled_conditions(air_cooled, results, coolant_line,
     fig = plt.figure(save_filename)
     fig.set_size_inches(width,height)  
     axis_1 = plt.subplot(2,1,1)
-    axis_2 = plt.subplot(2,1,2)
-    
-
+    axis_2 = plt.subplot(2,1,2) 
  
     for network in results.segments[0].analyses.vehicle.networks: 
-        busses  = network.busses 
-        for bus in busses:
-            for b_i, battery in enumerate(bus.battery_modules):
-                if b_i == 0 or bus.identical_sources == False:
+        for b_i, battery  in enumerate(network.sources):
+            if issubclass(type(battery), RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
+                if b_i == 0 or battery.identical_modules == False:
                     for i in range(len(results.segments)): 
                         time                       = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min    
                         air_cooled_conditions      = results.segments[i].conditions.energy.coolant_lines[coolant_line.tag][air_cooled.tag]

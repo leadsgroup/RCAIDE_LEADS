@@ -48,12 +48,10 @@ class Energy(Analysis):
 
         Returns:
             results : results of the thrust evaluation method. 
-        """ 
-        # assumes only one network exists
-
+        """  
         cg    = segment.analyses.vehicle.mass_properties.center_of_gravity
         state = segment.state
-
+        
         # Pack the unknowns to pass through the network
         if isinstance(unknowns,np.ndarray):
             state.unknowns.network.unpack_array(unknowns)

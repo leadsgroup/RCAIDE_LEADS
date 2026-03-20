@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Powertrain/Energy/Sources/Battery_Modules/Lithium_Sulfur.py
+# RCAIDE/Library/Components/Powertrain/Powertrain/Sources/Batteries/Modules/Lithium_Sulfur.py
 # 
 # 
 # Created:  Mar 2024, M. Clarke 
@@ -46,7 +46,7 @@ class Lithium_Sulfur(Generic_Battery_Module):
 
     See Also
     --------
-    RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Generic_Battery_Module
+    RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Generic_Battery_Module
         Base battery module class
     """
     
