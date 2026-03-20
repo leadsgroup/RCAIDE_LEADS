@@ -42,25 +42,24 @@ def converge(segment):
 
     Properties Used:
     N/A
-    """ 
-    numerics = segment.state.numerics
-    if numerics.mission_solver.type  == "optimize":
+    """
+    
+    if segment.state.numerics.mission_solver.type  == "optimize":
         problem  = add_mission_variables(segment) 
-       
 
         # Comment suppression of console window output
-        if numerics.mission_solver.verbose == False:
+        if segment.state.numerics.mission_solver.verbose == False:
             devnull = open(os.devnull,'w')
             sys.stdout = devnull
          
         outputs  = scipy_setup.SciPy_Solve(problem,
-                                           solver     = numerics.mission_solver.method,
-                                           sense_step = numerics.mission_solver.step_size,
-                                           iter       = numerics.mission_solver.max_evaluations,
-                                           tolerance  = numerics.mission_solver.tolerance)
+                                           solver     = segment.state.numerics.mission_solver.method,
+                                           sense_step = segment.state.numerics.mission_solver.step_size,
+                                           iter       = segment.state.numerics.mission_solver.max_evaluations,
+                                           tolerance  = segment.state.numerics.mission_solver.tolerance)
     
         # Terminate suppression of console window output
-        if numerics.mission_solver.verbose == False:
+        if segment.state.numerics.mission_solver.verbose == False:
             sys.stdout = sys.__stdout__
          
         if outputs[3] != 0:
@@ -69,24 +68,23 @@ def converge(segment):
         else:
             mission_converge = True
      
-    elif numerics.mission_solver.type  == "root_finder":
+    elif segment.state.numerics.mission_solver.type  == "root_finder":
         unknowns = segment.state.unknowns.mission.pack_array()
         if segment.state.numerics.network_solver.type is None:
             unknowns = np.concatenate([unknowns, segment.state.unknowns.network.pack_array()])
-
-
+ 
         if segment.state.number_of_mission_unknowns != segment.state.number_of_mission_residuals:
             raise AttributeError('\n The system of equations representing the mission is not square. The number of unknowns (' + str(segment.state.number_of_mission_unknowns) + \
                                  ') is not equal to the number of residuals (equations) (' + str(segment.state.number_of_mission_residuals) + '). Either enforce of unknowns '+\
                                  ' to be equal to the number of residuals (equations) to use fsolve or switch RCAIDE solver type to "optimize" when defining the segment.'+ \
-                                 '\n i.e. numerics.mission_solver.type  = "optimize" ')
+                                 '\n i.e. segment.state.numerics.mission_solver.type  = "optimize" ')
         else:
             unknowns,infodict,ier,error_message = scipy.optimize.fsolve(iterate_root_finder,
                                                  unknowns,
                                                  args   = segment,
-                                                 xtol   = numerics.mission_solver.tolerance,
-                                                 maxfev = numerics.mission_solver.max_evaluations,
-                                                 epsfcn = numerics.mission_solver.step_size,
+                                                 xtol   = segment.state.numerics.mission_solver.tolerance,
+                                                 maxfev = segment.state.numerics.mission_solver.max_evaluations,
+                                                 epsfcn = segment.state.numerics.mission_solver.step_size,
                                                  full_output = 1)
         
         if ier !=1:
@@ -97,13 +95,13 @@ def converge(segment):
     else: 
         raise Exception('undefined mission solver type')        
         
-    if mission_converge == False or segment.state.numerics.network_solver.converged is False:
+    if (mission_converge == False) or (segment.state.numerics.network_solver.converged == False):
         print("Segment did not converge. Segment Tag: " + segment.tag)
         print("Error Message:\n" + error_message)
-        numerics.mission_solver.converged = False
+        segment.state.numerics.mission_solver.converged = False
         segment.converged = False
     else:
-        numerics.mission_solver.converged = True
+        segment.state.numerics.mission_solver.converged = True
         segment.converged = True
                                 
     return
@@ -348,7 +346,23 @@ def add_mission_variables(segment):
         input_aliases[:,0] = input_names
         input_aliases[:,1] = input_string
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
     # Step 4.2: Setup the aliases for the residuals
+    #basic_string_res      = np.tile('segment.state.residuals.pack_array()[', len_residuals)
+    #residual_string       = np.core.defchararray.add(basic_string_res,np.array(con_numbers-1).astype(str))
+    #residual_string       = np.core.defchararray.add(residual_string, np.tile(']',len_residuals))
+    #residual_aliases      = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_residuals), (-1, 2)) 
+    #residual_aliases[:,0] = con_names
+    #residual_aliases[:,1] = residual_string
+    
     basic_string_con = Data()
     input_string = []
     input_string_network = []
