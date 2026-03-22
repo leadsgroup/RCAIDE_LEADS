@@ -103,7 +103,7 @@ def initialize_conditions(segment):
                     if segment.state.initials.keys():                    
                         end_of_flight_soc = min(end_of_flight_soc,source.cell.state_of_charge[-1])
                     else:
-                        end_of_flight_soc =  segment.initial_battery_state_of_charge
+                        end_of_flight_soc =  segment.initial_battery_conditions.state_of_charge 
                     
                     t   =  max(((segment.cutoff_SOC-end_of_flight_soc) / source.charging_c_rate )*Units.hrs  , t) 
                     t   += segment.cooling_time

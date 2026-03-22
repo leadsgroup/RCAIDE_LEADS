@@ -224,29 +224,30 @@ def mission_setup(analyses,vehicle,battery_chemistry,current,mAh):
     mission.tag        = 'cell_cycle_test'   
     Segments           = RCAIDE.Framework.Mission.Segments 
     base_segment       = Segments.Segment()   
-    time               = 0.8 * (mAh/1000)/current * Units.hrs  
+    time               = 0.8 * (mAh/1000)/current * Units.hrs
+    #base_segment.state.numerics.mission_solver.type =  'optimize'
 
     # Charge Segment 
     segment                                 = Segments.Ground.Battery_Recharge(base_segment)      
     segment.analyses.extend(analyses.charge) 
     segment.cutoff_SOC                      = 1.0  
-    segment.initial_battery_state_of_charge = 0.2  
+    segment.initial_battery_conditions.state_of_charge  = 0.2  
     segment.tag                             = 'Recharge' 
     mission.append_segment(segment)   
 
          
-    segment                                 = Segments.Ground.Battery_Discharge(base_segment) 
-    segment.analyses.extend(analyses.discharge)  
-    segment.tag                             = 'Discharge_1' 
-    segment.time                            = time/2  
-    segment.initial_battery_state_of_charge = 1  
-    mission.append_segment(segment)
+    #segment                                 = Segments.Ground.Battery_Discharge(base_segment) 
+    #segment.analyses.extend(analyses.discharge)  
+    #segment.tag                             = 'Discharge_1' 
+    #segment.time                            = time/2  
+    #segment.initial_battery_conditions.state_of_charge  = 1  
+    #mission.append_segment(segment)
     
-    segment                                = Segments.Ground.Battery_Discharge(base_segment) 
-    segment.tag                            = 'Discharge_2'
-    segment.analyses.extend(analyses.discharge)   
-    segment.time                           = time/2  
-    mission.append_segment(segment)        
+    #segment                                = Segments.Ground.Battery_Discharge(base_segment) 
+    #segment.tag                            = 'Discharge_2'
+    #segment.analyses.extend(analyses.discharge)   
+    #segment.time                           = time/2  
+    #mission.append_segment(segment)        
     
     return mission 
 

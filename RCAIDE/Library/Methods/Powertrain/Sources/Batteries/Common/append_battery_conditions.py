@@ -60,15 +60,23 @@ def append_battery_conditions(battery,segment):
  
     ones_row  = segment.state.ones_row 
     
-    segment.state.conditions.energy.sources[battery.tag]                                 = Conditions()  
-    segment.state.conditions.energy.sources[battery.tag].voltage_open_circuit            = 0 * ones_row(1) 
-    segment.state.conditions.energy.sources[battery.tag].internal_resistance             = 0 * ones_row(1)
-    segment.state.conditions.energy.sources[battery.tag].voltage_under_load              = 0 * ones_row(1)  
+    segment.state.conditions.energy.sources[battery.tag]                                 = Conditions()
+    segment.state.conditions.energy.sources[battery.tag]                                 = Conditions()   
+    segment.state.conditions.energy.sources[battery.tag].state_of_charge                 = 0 * ones_row(1) 
+    segment.state.conditions.energy.sources[battery.tag].depth_of_discharge              = 0 * ones_row(1)  
+    segment.state.conditions.energy.sources[battery.tag].charging_current                = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[battery.tag].voltage_open_circuit            = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[battery.tag].voltage_under_load              = 0 * ones_row(1) 
     segment.state.conditions.energy.sources[battery.tag].heat_energy_generated           = 0 * ones_row(1) 
-    segment.state.conditions.energy.sources[battery.tag].energy                          = 0 * ones_row(1)   
+    segment.state.conditions.energy.sources[battery.tag].efficiency                      = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[battery.tag].temperature                     = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[battery.tag].energy                          = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[battery.tag].regenerative_power              = 0 * ones_row(1)   
+    segment.state.conditions.energy.sources[battery.tag].internal_resistance             = 0 * ones_row(1)     
     segment.state.conditions.energy.sources[battery.tag].current                         = 0 * ones_row(1)
     segment.state.conditions.energy.sources[battery.tag].charging_c_rate                 = battery.charging_c_rate  * ones_row(1)  
-    segment.state.conditions.energy.sources[battery.tag].power_split_ratio               = battery.power_split_ratio  
+    segment.state.conditions.energy.sources[battery.tag].power_split_ratio               = battery.power_split_ratio
+    
     segment.state.conditions.energy.sources[battery.tag].inputs                          = Conditions()
     segment.state.conditions.energy.sources[battery.tag].inputs.power                    = Conditions()  
     segment.state.conditions.energy.sources[battery.tag].inputs.power.electrical         = 0 * ones_row(1) 
@@ -127,7 +135,10 @@ def append_battery_segment_conditions(battery, segment):
     battery_conditions.voltage_under_load[:,0]         = 0.0  
     battery_conditions.heat_energy_generated[:,0]      = 0.0  
     battery_conditions.energy[:,0]                     = 0.0  
-    battery_conditions.current[:,0]                    = 0.0    
+    battery_conditions.current[:,0]                    = 0.0
+    
+    ones_row                           = segment.state.ones_row
+    battery_conditions.power_draw      = 0 * ones_row(1)  
 
 
     return    

@@ -248,7 +248,7 @@ def get_values(dictionary,outputs,aliases):
         else :
             raise TypeError("Pointers for Objectives and Constraints must be unique path (str), not list or contain asterisk")
             
-        values[ii]  = eval('dictionary.'+'.'.join(splitstring[0:]))
+        values[ii]  = eval('dictionary.'+'.'.join(splitstring[0:]))[0]
     
     return values
 

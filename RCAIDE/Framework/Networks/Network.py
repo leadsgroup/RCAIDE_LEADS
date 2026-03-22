@@ -299,7 +299,7 @@ class Network(Component):
                 #reservoir.compute_reservior_coolant_temperature(state,coolant_line)
 
         # pack residuals 
-        state.residuals.network[ 'electrical_power'] = net_electrical_power
+        # state.residuals.network[ 'electrical_power'] = net_electrical_power
                 
         # Final aggregation for system level performance 
         conditions.energy.total_force_vector       = total_thrust
