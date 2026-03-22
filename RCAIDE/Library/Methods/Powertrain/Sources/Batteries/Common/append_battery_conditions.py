@@ -107,9 +107,16 @@ def append_battery_segment_conditions(battery, segment):
         None
     """
 
-    battery_conditions = segment.state.conditions.energy.sources[battery.tag]  
-    ones_row                                = segment.state.ones_row
-    battery_conditions.power_draw           = 0 * ones_row(1)  
+    battery_conditions = segment.state.conditions.energy.sources[battery.tag]   
+    battery_conditions.power_draw[:,0]            = 0 
+    battery_conditions.inputs.power.electrical[:,0] = 0
+    battery_conditions.outputs.power.electrical[:,0] = 0
+    battery_conditions.temperature[:,0] = 0
+    battery_conditions.energy[:,0] = 0
+    battery_conditions.state_of_charge[:,0] = 0
+    battery_conditions.heat_energy_generated[:,0] = 0
+    battery_conditions.voltage_open_circuit[:,0] = 0
+    battery_conditions.voltage_under_load[:,0] = 0
     
     # Thermal power draw
     if segment.state.initials:

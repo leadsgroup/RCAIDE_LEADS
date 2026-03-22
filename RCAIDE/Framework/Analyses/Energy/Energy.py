@@ -58,6 +58,9 @@ class Energy(Analysis):
 
         # RCAIDE.Library.Mission.Common.Initialize.energy(segment)
         network.evaluate(state,cg)
+        
+        if type(segment) != RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge: 
+            state.residuals.network[ 'electrical_power'] = state.conditions.energy.net_electrical_power 
 
         # Unpack Residuals
         residual_keys = list(state.residuals.network.keys())

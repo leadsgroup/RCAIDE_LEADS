@@ -11,7 +11,18 @@ def set_network_residuals_and_unknowns(mission):
      
     for segment in mission.segments: 
         segment.state.number_of_network_unknowns   = 0 
-        segment.state.number_of_network_residuals  = 0 
+        segment.state.number_of_network_residuals  = 0
+        
+
+        if type(segment) != RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge: 
+            ones_row    = segment.state.ones_row   
+            segment.state.unknowns.network['electrical_power']              = 0 *  ones_row(1)    
+            segment.state.residuals.network[ 'electrical_power']            = 0. * ones_row(1)
+            segment.state.unknowns_upper_bounds.network['electrical_power'] =   np.inf* ones_row(1) 
+            segment.state.unknowns_lower_bounds.network['electrical_power'] = - np.inf* ones_row(1)
+            segment.state.number_of_network_unknowns  += 1
+            segment.state.number_of_network_residuals += 1
+            
         for network in segment.analyses.vehicle.networks:         
 
             # ---------------------------------------------------------------------------------------------
@@ -43,17 +54,9 @@ def set_network_residuals_and_unknowns(mission):
             ## Modulator 
             ## ---------------------------------------------------------------------------------------------          
             #for modulator in network.modulators:
-                #modulator.append_unknowns_and_residuals(segment)                
-                
+                #modulator.append_unknowns_and_residuals(segment)              
                  
             # Ensure the mission knows how to pack and unpack the unknowns and residuals
             segment.process.iterate.unknowns.mission.network   = network.unpack_unknowns 
             segment.process.iterate.residuals.mission.network  = network.residuals
              
-            #ones_row    = segment.state.ones_row   
-            #segment.state.unknowns.network['electrical_power']              = 0 *  ones_row(1)    
-            #segment.state.residuals.network[ 'electrical_power']            = 0. * ones_row(1)
-            #segment.state.unknowns_upper_bounds.network['electrical_power'] =   np.inf* ones_row(1) 
-            #segment.state.unknowns_lower_bounds.network['electrical_power'] = - np.inf* ones_row(1)
-            #segment.state.number_of_network_unknowns  += 1
-            #segment.state.number_of_network_residuals += 1   

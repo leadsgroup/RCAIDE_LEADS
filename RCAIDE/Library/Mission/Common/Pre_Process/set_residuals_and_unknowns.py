@@ -331,6 +331,9 @@ def set_residuals_and_unknowns(mission):
                 segment.state.unknowns_upper_bounds.mission["aileron"] = ctrls.aileron_deflection.bounds[i][1] * ones_row(1)
             else:
                 segment.state.unknowns_lower_bounds.mission["aileron"] =  -np.inf * ones_row(1) 
-                segment.state.unknowns_upper_bounds.mission["aileron"] =   np.inf * ones_row(1)                 
+                segment.state.unknowns_upper_bounds.mission["aileron"] =   np.inf * ones_row(1)
+                
+                
+       
     return 
                                                                                                                                                                 

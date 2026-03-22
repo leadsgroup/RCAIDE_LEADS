@@ -26,23 +26,17 @@ def compute_battery_pack_performance(battery,state,network):
     for m_i, module in enumerate(battery.modules):
         
         if module.active: 
-            voltage = battery.voltage * state.ones_row(1)
+            battery_voltage = battery.voltage * state.ones_row(1)
+            module_voltage  = module.voltage * state.ones_row(1)
             
-            if state.conditions.energy.recharging: 
-                charging_current                 = module.nominal_capacity * battery.charging_c_rate 
-                charging_power                   = (charging_current*voltage*module.power_split_ratio) 
-                #battery_conditions[module.tag].power_draw   -= charging_power 
-                battery_conditions[module.tag].current_draw  = -battery_conditions[module.tag].power_draw /battery.voltage
-                
-                
-                 
-                #battery_conditions.inputs.power.electrical             =  state.unknowns.network['electrical_power'] *  battery_conditions.power_split_ratio * psi * phi
-                battery_conditions[module.tag].inputs.power.electrical  = charging_power 
-                battery_conditions[module.tag].current_draw             =  battery_conditions[module.tag].inputs.power.electrical  /battery.voltage 
+            if state.conditions.energy.recharging:  
+                battery_conditions.outputs.power.electrical             = (battery.nominal_capacity * battery.charging_c_rate* battery_voltage*battery.power_split_ratio) 
+                battery_conditions[module.tag].inputs.power.electrical  = (module.nominal_capacity  * battery.charging_c_rate* module_voltage *battery.power_split_ratio)  
+                battery_conditions[module.tag].current_draw             = battery_conditions[module.tag].inputs.power.electrical  / module_voltage 
             else:
-                battery_conditions.outputs.power.electrical              = state.unknowns.network['electrical_power'] *  battery.power_split_ratio * psi * phi
-                battery_conditions.current_draw                          = battery_conditions.outputs.power.electrical /voltage 
-                battery_conditions[module.tag].outputs.power.electrical  = battery_conditions.outputs.power.electrical  / battery.number_of_active_modules   
+                battery_conditions.outputs.power.electrical              = state.unknowns.network['electrical_power']    *  battery.power_split_ratio * psi * phi
+                battery_conditions[module.tag].outputs.power.electrical  = battery_conditions.outputs.power.electrical / battery.number_of_active_modules
+                battery_conditions[module.tag].current_draw              = battery_conditions[module.tag].outputs.power.electrical /module_voltage 
           
           
             battery_conditions[module.tag].power_draw   = battery_conditions[module.tag].outputs.power.electrical -  battery_conditions[module.tag].inputs.power.electrical      
@@ -52,14 +46,12 @@ def compute_battery_pack_performance(battery,state,network):
             else: 
                 module_inputs, module_outputs = module.reuse_stored_data(state,network,battery.tag,stored_module_tag)                
                 
-            #battery_conditions.inputs.power.electrical += module_inputs.power.electrical
-            #battery_conditions.outputs.power.electrical += module_outputs.power.electrical
-            
-
-            battery_conditions.temperature        = battery_conditions[module.tag].temperature 
-            battery_conditions.energy             +=  battery_conditions[module.tag].energy
-            battery_conditions.state_of_charge    = battery_conditions[module.tag].state_of_charge  
-            battery_conditions.heat_energy_generated +=  battery_conditions[module.tag].heat_energy_generated       
+            battery_conditions.inputs.power.electrical += module_inputs.power.electrical
+            battery_conditions.outputs.power.electrical += module_outputs.power.electrical 
+            battery_conditions.temperature              = battery_conditions[module.tag].temperature 
+            battery_conditions.energy                   +=  battery_conditions[module.tag].energy
+            battery_conditions.state_of_charge          = battery_conditions[module.tag].state_of_charge  
+            battery_conditions.heat_energy_generated    +=  battery_conditions[module.tag].heat_energy_generated       
 
             if battery.battery_module_electric_configuration == 'Series': 
                 battery_conditions.voltage_open_circuit  +=  battery_conditions[module.tag].voltage_open_circuit 

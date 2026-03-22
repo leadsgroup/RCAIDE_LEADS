@@ -164,12 +164,9 @@ class Network(Component):
         # ----------------------------------------------------------        
         for source in sources: 
             if source.active:
-                if issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
-                    charing_power = 0
-                    if state.conditions.energy.recharging:  
-                        charing_power  =  (source.nominal_capacity * source.charging_c_rate* source.voltage)                       
+                if issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):            
                     inputs, outputs, _, _ = source.compute_performance(state,network) 
-                    net_electrical_power   += (outputs.power.electrical - inputs.power.electrical) -charing_power    
+                    net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
             
                 if issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
                     state.conditions.energy.sources[source.tag].outputs.power.chemical = total_chemical_power *  state.conditions.energy.sources[source.tag].power_split_ratio
@@ -305,6 +302,7 @@ class Network(Component):
         conditions.energy.total_force_vector       = total_thrust
         conditions.energy.total_moment_vector      = total_moment
         conditions.energy.power.outputs.propulsive = total_propulsive_power 
+        conditions.energy.net_electrical_power     = net_electrical_power 
         conditions.weights.vehicle.mass_rate       = total_mdot  
 
         return

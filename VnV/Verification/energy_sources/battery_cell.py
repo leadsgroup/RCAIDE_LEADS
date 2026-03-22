@@ -233,9 +233,8 @@ def mission_setup(analyses,vehicle,battery_chemistry,current,mAh):
     segment.cutoff_SOC                      = 1.0  
     segment.initial_battery_conditions.state_of_charge  = 0.2  
     segment.tag                             = 'Recharge' 
-    mission.append_segment(segment)   
-
-         
+    mission.append_segment(segment)
+    
     #segment                                 = Segments.Ground.Battery_Discharge(base_segment) 
     #segment.analyses.extend(analyses.discharge)  
     #segment.tag                             = 'Discharge_1' 
