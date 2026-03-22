@@ -30,7 +30,7 @@ def energy(segment):
     # loop throuh networks in vehicle 
     for network in segment.analyses.vehicle.networks:  
         for source in network.sources:
-            if issubclass(type(source), RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
-                increment_day       = segment.increment_battery_age_by_one_day
+            if issubclass(type(source), RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack): 
+                increment_day = segment.initial_battery_conditions.increment_battery_age  
                 battery_conditions  = segment.conditions.energy.sources[source.tag]
                 network.sources[source.tag].update_battery_age(segment,battery_conditions,increment_battery_age_by_one_day = increment_day) 
