@@ -36,8 +36,8 @@ def compute_battery_pack_performance(battery,state,network):
                 #battery_conditions.current     = battery_conditions[module.tag].inputs.power.electrical/battery.voltage
                 
           
-                battery.charging_current         = battery.nominal_capacity * battery.charging_c_rate 
-                charging_power               = (battery.charging_current*voltage*battery.power_split_ratio) 
+                charging_current                 = module.nominal_capacity * battery.charging_c_rate 
+                charging_power                   = (charging_current*voltage*module.power_split_ratio) 
                 battery_conditions[module.tag].power_draw   -= charging_power 
                 battery_conditions[module.tag].current_draw  = -battery_conditions[module.tag].power_draw /battery.voltage                
                 

@@ -179,6 +179,7 @@ def append_battery_module_segment_conditions(module,battery, segment):
     """
     
     module_conditions = segment.state.conditions.energy.sources[battery.tag][module.tag]
+    module_conditions.power_draw[:,0] =  0
     if segment.state.initials:  
         battery_initials                                        = segment.state.initials.conditions.energy.sources[battery.tag][module.tag]
         if type(segment) ==  RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge:             
