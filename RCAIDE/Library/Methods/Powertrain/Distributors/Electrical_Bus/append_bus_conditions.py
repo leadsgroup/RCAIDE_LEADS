@@ -5,8 +5,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-# RCAIDE imports  
-import RCAIDE
+# RCAIDE imports   
 from RCAIDE.Framework.Mission.Common     import   Conditions
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHODS
@@ -45,10 +44,7 @@ def append_bus_conditions(bus,segment):
     
     For segments with an initial battery state of charge specified, the function also
     sets the initial energy and state of charge values accordingly.
-    
-    See Also
-    --------
-    RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_conditions
+     
     """
     ones_row                                                                = segment.state.ones_row
     segment.state.conditions.energy.distributors[bus.tag]                   = Conditions() 

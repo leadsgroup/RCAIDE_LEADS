@@ -163,34 +163,24 @@ def compute_nmc_cell_performance(battery_module,battery,state,network):
     As_cell                   = battery_module.cell.surface_area
     cell_mass                 = battery_module.cell.mass    
     Cp                        = battery_module.cell.specific_heat_capacity       
-    battery_module_data       = battery_module.cell.discharge_performance_map
+    battery_module_data       = battery_module.cell.discharge_performance_map 
     
     # ---------------------------------------------------------------------------------
-    # Compute Bus electrical properties 
-    # ---------------------------------------------------------------------------------    
-    #bus_conditions              = state.conditions.energy.sources[battery]
-    #bus_config                  = battery.battery_module_electric_configuration
-    #psi                         = state.conditions.energy.battery_fuel_cell_power_split_ratio
-    # ---------------------------------------------------------------------------------
     # Compute battery_module Conditions
-    # ---------------------------------------------------------------------------------
-    battery_module_conditions = state.conditions.energy.sources[battery.tag][battery_module.tag]  
+    # --------------------------------------------------------------------------------- 
+    battery_module_conditions   = state.conditions.energy.sources[battery.tag][battery_module.tag]  
+    E_module_max                = battery_module.maximum_energy * battery_module_conditions.cell.capacity_fade_factor
     P_module                    = battery_module_conditions.power_draw 
     I_module                    = battery_module_conditions.current_draw 
-     
-   
-    E_module_max       = battery_module.maximum_energy * battery_module_conditions.cell.capacity_fade_factor 
-    V_oc_module        = battery_module_conditions.voltage_open_circuit
-    V_oc_cell          = battery_module_conditions.cell.voltage_open_circuit    
-    #P_module           = battery_module_conditions.power
-    P_cell             = battery_module_conditions.cell.power 
-    R_0_module         = battery_module_conditions.internal_resistance
-    R_0_cell           = battery_module_conditions.cell.internal_resistance 
-    Q_heat_module      = battery_module_conditions.heat_energy_generated
-    Q_heat_cell        = battery_module_conditions.cell.heat_energy_generated 
-    V_ul_cell          = battery_module_conditions.cell.voltage_under_load 
-    #I_module           = battery_module_conditions.current 
-    I_cell             = battery_module_conditions.cell.current
+    V_oc_module                 = battery_module_conditions.voltage_open_circuit
+    V_oc_cell                   = battery_module_conditions.cell.voltage_open_circuit   
+    P_cell                      = battery_module_conditions.cell.power 
+    R_0_module                  = battery_module_conditions.internal_resistance
+    R_0_cell                    = battery_module_conditions.cell.internal_resistance 
+    Q_heat_module               = battery_module_conditions.heat_energy_generated
+    Q_heat_cell                 = battery_module_conditions.cell.heat_energy_generated 
+    V_ul_cell                   = battery_module_conditions.cell.voltage_under_load  
+    I_cell                      = battery_module_conditions.cell.current
 
     # ---------------------------------------------------------------------------------                   
     # set unknowns 
@@ -203,8 +193,7 @@ def compute_nmc_cell_performance(battery_module,battery,state,network):
     # ---------------------------------------------------------------------------------
     n_series   = battery_module.electrical_configuration.series
     n_parallel = battery_module.electrical_configuration.parallel 
-    n_total    = n_series*n_parallel 
-    #no_modules = len(bus.battery_modules)
+    n_total    = n_series*n_parallel  
     
     # Scaling factors for numerical conditioning
     T_scale = 310.0
@@ -226,11 +215,7 @@ def compute_nmc_cell_performance(battery_module,battery,state,network):
                 coolant_line = distributor 
     # ---------------------------------------------------------------------------------
     # Current calculations
-    # ---------------------------------------------------------------------------------
-    #if bus_config == 'Series':
-        #I_module = I_bus
-    #elif bus_config == 'Parallel':
-        #I_module = I_bus / len(bus.battery_modules)
+    # --------------------------------------------------------------------------------- 
     I_cell = I_module / n_parallel
     
     # ---------------------------------------------------------------------------------
