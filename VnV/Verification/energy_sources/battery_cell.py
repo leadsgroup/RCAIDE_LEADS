@@ -225,7 +225,7 @@ def mission_setup(analyses,vehicle,battery_chemistry,current,mAh):
     Segments           = RCAIDE.Framework.Mission.Segments 
     base_segment       = Segments.Segment()   
     time               = 0.8 * (mAh/1000)/current * Units.hrs
-    #base_segment.state.numerics.mission_solver.type =  'optimize'
+    base_segment.state.numerics.mission_solver.type =  'root_finder'
 
     # Charge Segment 
     segment                                 = Segments.Ground.Battery_Recharge(base_segment)      

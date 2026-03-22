@@ -109,20 +109,21 @@ def append_battery_segment_conditions(battery, segment):
 
     battery_conditions = segment.state.conditions.energy.sources[battery.tag]  
     ones_row                                = segment.state.ones_row
-    battery_conditions.power_draw               = 0 * ones_row(1)  
+    battery_conditions.power_draw           = 0 * ones_row(1)  
     
     # Thermal power draw
     if segment.state.initials:
-        for network in segment.analyses.energy.vehicle.networks:
-            for coolant_line in  network.coolant_lines:
-                for tag, item in  coolant_line.items():
-                    if tag == 'battery_modules':
-                        for battery in item:
-                            for btms in  battery:
-                                battery_conditions.power_draw[0,0]   +=  segment.state.initials.conditions.energy.coolant_lines[coolant_line.tag][btms.tag].power[-1] 
-                    if tag == 'heat_exchangers':
-                        for heat_exchanger in  item:                    
-                            battery_conditions.power_draw[0,0]   +=  segment.state.initials.conditions.energy.coolant_lines[coolant_line.tag][heat_exchanger.tag].power[-1] 
+        for network in segment.analyses.vehicle.networks:
+            for distributor in  network.distributors:
+                pass
+                #for tag, item in  coolant_line.items():
+                    #if tag == 'battery_modules':
+                        #for battery in item:
+                            #for btms in  battery:
+                                #battery_conditions.power_draw[0,0]   +=  segment.state.initials.conditions.energy.coolant_lines[coolant_line.tag][btms.tag].power[-1] 
+                    #if tag == 'heat_exchangers':
+                        #for heat_exchanger in  item:                    
+                            #battery_conditions.power_draw[0,0]   +=  segment.state.initials.conditions.energy.coolant_lines[coolant_line.tag][heat_exchanger.tag].power[-1] 
         # Bus Properties 
         battery_initials            = segment.state.initials.conditions.energy.sources[battery.tag]  
         if type(segment) ==  RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge:             
