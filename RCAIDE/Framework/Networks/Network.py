@@ -73,14 +73,16 @@ class Network(Component):
     def __defaults__(self):
         """ This sets the default values for the network to function.
         """        
-        self.tag                          = 'network'
-        self.propulsors                   = Container() 
-        self.converters                   = Container() 
-        self.nacelles                     = Container()
-        self.modulators                   = Container()
-        self.distributors                 = Container()
-        self.sources                      = Container()
-        self.systems                      = Container()
+        self.tag                                 = 'network' 
+        self.hybrid_power_split_ratio            = None
+        self.battery_fuel_cell_power_split_ratio = None        
+        self.propulsors                          = Container() 
+        self.converters                          = Container() 
+        self.nacelles                            = Container()
+        self.modulators                          = Container()
+        self.distributors                        = Container()
+        self.sources                             = Container()
+        self.systems                             = Container()
          
 
     def evaluate(network,state,center_of_gravity):
@@ -116,7 +118,10 @@ class Network(Component):
         for propulsor in propulsors:
             if propulsor.active:
                 if propulsor.identical_propulsors == False or stored_results_flag == False:
+                    # -----------
+                    # to remove 
                     state.conditions.energy.propulsors[propulsor.tag].outputs.power.electrical = propulsor.electrical_power_generation_split *  state.unknowns.network['electrical_power']*(1 - state.conditions.energy.hybrid_power_split_ratio)  
+                    # -----------
                     inputs, outputs, stored_results_flag, stored_propulsor_tag = propulsor.compute_performance(state,network, center_of_gravity=center_of_gravity)
                 else:
                     inputs, outputs = propulsor.reuse_stored_data(state,network,stored_propulsor_tag=stored_propulsor_tag, center_of_gravity=center_of_gravity)
@@ -153,11 +158,6 @@ class Network(Component):
                 net_electrical_power   -= inputs.power.electrical
                 total_chemical_power   += inputs.power.chemical
                 total_mdot             += inputs.mdot_fuel
-                
-        # ----------------------------------------------------------
-        # Distributors 
-        # ----------------------------------------------------------
-        
 
         # ----------------------------------------------------------
         # Sources 
@@ -165,37 +165,41 @@ class Network(Component):
         for source in sources: 
             if source.active:
                 if issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
-                    
-                    # REMOVE --------
-                    
-                    # Bus Voltage 
-                    voltage = source.voltage * state.ones_row(1)       
+                    charing_power = 0
+                    if state.conditions.energy.recharging:  
+                        charing_power  =  (source.nominal_capacity * source.charging_c_rate* source.voltage)                       
+                    inputs, outputs, _, _ = source.compute_performance(state,network) 
+                    net_electrical_power   += (outputs.power.electrical - inputs.power.electrical) -charing_power    
             
-                    if conditions.energy.recharging:             
-                        source.charging_current  = source.nominal_capacity * source.charging_c_rate 
-                        charging_power           = (source.charging_current*voltage*source.power_split_ratio) 
-                        conditions.energy.sources[source.tag].inputs.power.electrical        = (charging_power /source.number_of_active_modules)  *  conditions.energy.sources[source.tag].power_split_ratio
-                        conditions.energy.sources[source.tag].inputs.current                 = ((charging_power /source.number_of_active_modules) /voltage) *  conditions.energy.sources[source.tag].power_split_ratio
-                    else:
-                        conditions.energy.sources[source.tag].outputs.power.electrical       = source.electrical_power_generation_split *  (state.unknowns.network['electrical_power'] /source.number_of_active_modules) *  conditions.energy.sources[source.tag].power_split_ratio 
-                        conditions.energy.sources[source.tag].outputs.current                = total_current *  conditions.energy.sources[source.tag].power_split_ratio  
-                    # REMOVE --------
-         
-                    if source.identical_sources == False or stored_results_flag == False:
-                        inputs, outputs, stored_results_flag, stored_source_tag = source.compute_performance(state,network)
-                    else:
-                        inputs, outputs = source.reuse_stored_data(state,network,stored_source_tag=stored_source_tag)
-    
-                    net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)     
-            
-                if issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
-                    if source.identical_sources == False or stored_results_flag == False:
-                        state.conditions.energy.sources[source.tag].outputs.power.chemical = total_chemical_power *  state.conditions.energy.sources[source.tag].fuel_flow_split_ratio
-                        inputs, outputs, stored_results_flag, stored_source_tag = source.compute_performance(state,network)
-                    else:
-                        inputs, outputs = source.reuse_stored_data(state,network,stored_source_tag=stored_source_tag)
-                                
-                                   
+                if issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
+                    state.conditions.energy.sources[source.tag].outputs.power.chemical = total_chemical_power *  state.conditions.energy.sources[source.tag].power_split_ratio
+                    inputs, outputs, _, _ = source.compute_performance(state,network)
+                    
+                    # pumps 
+                    #net_electrical_power   -= inputs.power.electrical              
+                            
+        # ----------------------------------------------------------
+        # Distributors 
+        # ----------------------------------------------------------
+        # loop through compoments and determine the power in OR out of a distributor, compute power poss, heat transfer
+        
+
+        # ----------------------------------------------------------
+        # Modulatore  
+        # ----------------------------------------------------------
+        #  
+        
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                   
+                                                       
 
         ## ----------------------------------------------------------
         ## Build Power Balance System
@@ -294,13 +298,14 @@ class Network(Component):
             #for reservoir in coolant_line.reservoirs:   
                 #reservoir.compute_reservior_coolant_temperature(state,coolant_line)
 
-                   
+        # pack residuals 
+        state.residuals.network[ 'electrical_power'] = net_electrical_power
+                
         # Final aggregation for system level performance 
         conditions.energy.total_force_vector       = total_thrust
         conditions.energy.total_moment_vector      = total_moment
         conditions.energy.power.outputs.propulsive = total_propulsive_power 
         conditions.weights.vehicle.mass_rate       = total_mdot  
-        state.residuals.network[ 'electrical_power'] = net_electrical_power
 
         return
     

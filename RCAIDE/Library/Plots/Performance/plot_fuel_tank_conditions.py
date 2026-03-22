@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
-
+import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Plots.Common import set_axes, plot_style
 import matplotlib.pyplot as plt
@@ -52,7 +52,7 @@ def plot_fuel_tank_conditions(results,
                     time    = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min    
                     tank_conditions    = results.segments[i].conditions.energy.sources[source.tag]
                     
-                    fsr                = tank_conditions.fuel_flow_split_ratio[:,0]
+                    fsr                = tank_conditions.power_split_ratio[:,0]
                     m_dot              = tank_conditions.mass_flow_rate[:,0]
                     sm_dot             = tank_conditions.secondary_mass_flow_rate[:,0] 
                     tank_mass          = results.segments[i].conditions.weights.components.mass[source.tag]

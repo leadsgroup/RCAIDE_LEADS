@@ -64,8 +64,9 @@ def initialize_bus_properties(bus,network):
     for source in network.sources:
         if source.active and (bus.tag in source.assigned_distributors[0]):  
             if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack): 
-                compute_battery_pack_properties(source) 
-                bus.voltage  =  source.voltage   
+                compute_battery_pack_properties(source)
+                
+                #bus.voltage  =  source.voltage   
                     
             #elif isinstance(source, RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack): 
                 #fuel_cell_stack =  source 

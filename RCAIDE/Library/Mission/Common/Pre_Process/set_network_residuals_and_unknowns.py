@@ -15,8 +15,8 @@ def set_network_residuals_and_unknowns(mission):
             
         
             ones_row    = segment.state.ones_row   
-            segment.state.unknowns.network['electrical_power'] = 1 *  ones_row(1)    
-            segment.state.residuals.network[ 'electrical_power'] = 0. * ones_row(1)
+            segment.state.unknowns.network['electrical_power']              = 0 *  ones_row(1)    
+            segment.state.residuals.network[ 'electrical_power']            = 0. * ones_row(1)
             segment.state.unknowns_upper_bounds.network['electrical_power'] =   np.inf* ones_row(1) 
             segment.state.unknowns_lower_bounds.network['electrical_power'] = - np.inf* ones_row(1)
             segment.state.number_of_network_unknowns  += 1

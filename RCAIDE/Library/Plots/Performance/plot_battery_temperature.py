@@ -102,7 +102,7 @@ def plot_battery_temperature(results,
                     for i in range(len(results.segments)): 
                         bus_results         = results.segments[i].conditions.energy.busses[bus.tag]
                         time                = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min                      
-                        battery_conditions  = results.segments[i].conditions.energy.busses[bus.tag].battery_modules[battery.tag]
+                        battery_conditions  = results.segments[i].conditions.energy.sources[battery.tag]
                         cell_temp           = battery_conditions.cell.temperature[:,0]
                         cell_charge         = battery_conditions.cell.charge_throughput[:,0]
                         pack_Q              = bus_results.heat_energy_generated[:,0]

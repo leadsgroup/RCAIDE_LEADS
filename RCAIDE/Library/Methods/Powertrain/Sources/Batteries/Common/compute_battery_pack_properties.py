@@ -92,9 +92,7 @@ def compute_battery_pack_properties(battery):
     """
     
     
-    for battery_module in battery.modules:
-        if battery_module.active:
-            battery.number_of_active_modules += 1
+    for battery_module in battery.modules: 
         series_e           = battery_module.electrical_configuration.series
         parallel_e         = battery_module.electrical_configuration.parallel 
         normal_count       = battery_module.geometrtic_configuration.normal_count  
@@ -154,6 +152,15 @@ def compute_battery_pack_properties(battery):
         if battery.battery_module_electric_configuration == 'Series': 
             battery.voltage         +=  battery_module.voltage
         elif battery.battery_module_electric_configuration == 'Parallel':    
-            battery.voltage          =  max(battery_module.voltage, battery.voltage)
+            battery.voltage          =  max(battery_module.voltage, battery.voltage) 
+    
+        battery.mass_properties.mass    += battery_module.mass_properties.mass   
+        battery.maximum_energy          += battery_module.maximum_energy       
+        battery.specific_energy         = battery.maximum_energy / battery.mass_properties.mass  
+        battery.maximum_power           += battery_module.maximum_power                  
+        battery.specific_power          = battery.maximum_power/ battery.mass_properties.mass      
+        battery.maximum_voltage         = battery.voltage             
+        battery.initial_maximum_energy  +=  battery_module.initial_maximum_energy   
+        battery.nominal_capacity        += battery_module.nominal_capacity                     
             
         return 

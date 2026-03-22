@@ -186,7 +186,7 @@ class Lithium_Ion_NMC(Generic_Battery_Module):
         append_battery_unknown_and_residual(self,battery,segment)   
         return
     
-    def compute_performance(self,state,network): 
+    def compute_performance(self,battery,state,network): 
         """
         Computes the state of the NMC battery cell
         
@@ -236,16 +236,16 @@ class Lithium_Ion_NMC(Generic_Battery_Module):
         - Thermal distribution with cooling effects
         - State of charge tracking
         """        
-        inputs, outputs, stored_results_flag, stored_source_tag = compute_nmc_cell_performance(self,state,network) 
+        inputs, outputs, stored_results_flag, stored_source_tag = compute_nmc_cell_performance(self,battery,state,network) 
         
         return inputs, outputs, stored_results_flag, stored_source_tag
     
-    def reuse_stored_data(self,state,network,stored_battery_tag):
-        inputs, outputs = reuse_stored_nmc_cell_data(self,state,network,stored_battery_tag)
+    def reuse_stored_data(self,state,network,stored_battery_tag,stored_battery_module_tag):
+        inputs, outputs = reuse_stored_nmc_cell_data(self,state,network,stored_battery_tag,stored_battery_module_tag)
         return inputs, outputs
      
     
-    def update_battery_age(self,segment,battery_conditions,increment_battery_age_by_one_day = False):  
+    def update_battery_age(self,battery,segment,increment_battery_age_by_one_day = False):  
         """
         Updates battery aging parameters based on usage and environmental conditions
         
@@ -277,7 +277,7 @@ class Lithium_Ion_NMC(Generic_Battery_Module):
         - Temperature-dependent degradation
         - Current rate impacts
         """        
-        update_nmc_cell_age(self,segment,battery_conditions,increment_battery_age_by_one_day) 
+        update_nmc_cell_age(self,battery,segment,increment_battery_age_by_one_day) 
         
         return  
 

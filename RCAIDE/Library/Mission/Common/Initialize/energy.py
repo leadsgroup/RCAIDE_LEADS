@@ -70,11 +70,8 @@ def energy(segment):
     See Also
     --------
     RCAIDE.Framework.Mission.Segments
-    """ 
-
-    energy_conditions  = segment.state.conditions.energy 
-    vehicle            = segment.analyses.vehicle
-    ones_row           = segment.state.ones_row  
+    """  
+    vehicle            = segment.analyses.vehicle 
  
     for network in vehicle.networks:
         

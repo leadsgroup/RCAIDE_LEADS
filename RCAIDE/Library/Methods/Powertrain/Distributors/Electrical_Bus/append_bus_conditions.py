@@ -54,9 +54,7 @@ def append_bus_conditions(bus,segment):
     segment.state.conditions.energy.distributors[bus.tag]                                     = Conditions()
     segment.state.conditions.energy.distributors[bus.tag].battery_modules                     = Conditions()
     segment.state.conditions.energy.distributors[bus.tag].fuel_cell_stacks                    = Conditions()
-    segment.state.conditions.energy.distributors[bus.tag].fuel_tanks                          = Conditions()
-    segment.state.conditions.energy.distributors[bus.tag].hybrid_power_split_ratio            = segment.hybrid_power_split_ratio * ones_row(1)
-    segment.state.conditions.energy.distributors[bus.tag].battery_fuel_cell_power_split_ratio = segment.battery_fuel_cell_power_split_ratio * ones_row(1) 
+    segment.state.conditions.energy.distributors[bus.tag].fuel_tanks                          = Conditions()  
     segment.state.conditions.energy.distributors[bus.tag].state_of_charge                     = 0 * ones_row(1) 
     segment.state.conditions.energy.distributors[bus.tag].depth_of_discharge                  = 0 * ones_row(1) 
     segment.state.conditions.energy.distributors[bus.tag].current_draw                        = 0 * ones_row(1)
@@ -155,12 +153,12 @@ def append_bus_segment_conditions(bus,segment):
                             for heat_exchanger in  item:                    
                                 bus_conditions.power.electrical[0,0]   +=  segment.state.initials.conditions.energy.distributors[distributor.tag][heat_exchanger.tag].power.electrical[-1] 
         # Bus Properties 
-        bus_initials            = segment.state.initials.conditions.energy.distributors[bus.tag]
-        if type(segment) ==  RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge:             
-            bus_initials.battery_discharge_flag           = False 
-        else:                   
-            bus_initials.battery_discharge_flag           = True     
-        bus_conditions.energy[0,0]          = bus_initials.energy[-1,0]
+        #bus_initials            = segment.state.initials.conditions.energy.distributors[bus.tag]
+        #if type(segment) ==  RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge:             
+            #bus_initials.battery_discharge_flag           = False 
+        #else:                   
+            #bus_initials.battery_discharge_flag           = True     
+        #bus_conditions.energy[0,0]          = bus_initials.energy[-1,0]
 
 
     return

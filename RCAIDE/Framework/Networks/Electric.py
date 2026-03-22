@@ -12,7 +12,7 @@ from .Network                                              import Network
 # ----------------------------------------------------------------------------------------------------------------------
 # Fuel
 # ----------------------------------------------------------------------------------------------------------------------  
-class Fuel(Network):
+class Electric(Network):
     """ Fuel Network Class - Derivative of the hybrid energy network class
                                
     Attributes
@@ -34,6 +34,6 @@ class Fuel(Network):
     def __defaults__(self):
         """ This sets the default values for the network to function. 
         """  
-        self.tag                                 = 'fuel' 
-        self.hybrid_power_split_ratio            = 0.0
-        self.battery_fuel_cell_power_split_ratio = 1.0       
+        self.tag                                 = 'electric' 
+        self.hybrid_power_split_ratio            = 1.0
+        self.battery_fuel_cell_power_split_ratio = 1.0        

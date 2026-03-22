@@ -49,10 +49,7 @@ class Electrical_Bus(Distributor):
         
     nominal_capacity : float
         Total capacity of connected batteries (default: 0.0)
-        
-    charging_c_rate : float
-        Battery charging rate in C (default: 1.0) 
-
+         
     Notes
     -----
     The electrical bus manages power distribution between sources and consumers,
@@ -93,7 +90,6 @@ class Electrical_Bus(Distributor):
         self.voltage_phase_to_phase                 = 200.0
         self.frequency                              = 0.0 
         self.nominal_capacity                       = 0.0
-        self.charging_c_rate                        = 1.0
 
     def unpack_unknowns(self,segment):
         return 

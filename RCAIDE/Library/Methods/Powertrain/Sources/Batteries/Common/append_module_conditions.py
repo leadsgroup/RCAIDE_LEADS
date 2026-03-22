@@ -62,6 +62,25 @@ def append_module_conditions(module,battery,segment):
     
     segment.state.conditions.energy.sources[battery.tag][module.tag] = Conditions() 
     module_conditions                                 = segment.state.conditions.energy.sources[battery.tag][module.tag] 
+
+    module_conditions.state_of_charge                 = 0 * ones_row(1)
+    module_conditions.temperature                     = 0 * ones_row(1)
+    module_conditions.energy                          = 0 * ones_row(1) 
+    module_conditions.voltage_open_circuit            = 0 * ones_row(1)
+    module_conditions.voltage_under_load              = 0 * ones_row(1)
+    module_conditions.internal_resistance             = 0 * ones_row(1)
+    module_conditions.heat_energy_generated           = 0 * ones_row(1)
+    module_conditions.current                         = 0 * ones_row(1)
+    module_conditions.power                           = 0 * ones_row(1)
+    
+    module_conditions.inputs                          = Conditions()
+    module_conditions.inputs.power                    = Conditions()  
+    module_conditions.inputs.power.electrical         = 0 * ones_row(1)
+    
+    module_conditions.outputs                         = Conditions()  
+    module_conditions.outputs.power                   = Conditions()  
+    module_conditions.outputs.power.electrical        = 0 * ones_row(1)    
+    
     module_conditions.cell                            = Conditions() 
     module_conditions.cell.voltage_open_circuit       = 0 * ones_row(1)
     module_conditions.cell.internal_resistance        = 0 * ones_row(1)
@@ -77,8 +96,8 @@ def append_module_conditions(module,battery,segment):
     # first segment 
     if 'initial_battery_state_of_charge' in segment:
     
-        n_series          = battery.electrical_configuration.series
-        n_parallel        = battery.electrical_configuration.parallel 
+        n_series          = module.electrical_configuration.series
+        n_parallel        = module.electrical_configuration.parallel 
         n_total           = n_series*n_parallel
         
         initial_battery_energy                          = segment.initial_battery_state_of_charge*battery.maximum_energy   
@@ -97,8 +116,7 @@ def append_module_conditions(module,battery,segment):
     # temperature 
     if 'battery_cell_temperature' in segment:
         cell_temperature  = segment.battery_cell_temperature  
-    else:
-     
+    else: 
         # compute ambient conditions
         atmosphere    = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
         alt           = -segment.conditions.frames.inertial.position_vector[:,2] 
@@ -141,25 +159,33 @@ def append_battery_module_segment_conditions(module,battery, segment):
         Properties Used:
         None
     """ 
+    battery_conditions = segment.state.conditions.energy.sources[battery.tag]
 
-    module_conditions  = segment.state.conditions.energy.sources[battery.tag][module.tag]
+    battery_conditions.inputs.power.electrical[:,0]    = 0.0   
+    battery_conditions.outputs.power.electrical[:,0]   = 0.0      
+    module_conditions  = battery_conditions[module.tag]
     
-    if segment.state.initials:   
-        battery_initials    = segment.state.initials.conditions.energy.sources[battery.tag][module.tag]
-        module_conditions.cell.temperature[:,0]           = battery_initials.cell.temperature[-1,0]
-        module_conditions.cell.cycle_in_day               = battery_initials.cell.cycle_in_day      
-        module_conditions.cell.charge_throughput[:,0]     = battery_initials.cell.charge_throughput[-1,0]
-        module_conditions.cell.resistance_growth_factor   = battery_initials.cell.resistance_growth_factor 
-        module_conditions.cell.capacity_fade_factor       = battery_initials.cell.capacity_fade_factor 
-        module_conditions.cell.state_of_charge[:,0]       = battery_initials.cell.state_of_charge[-1,0]
-        module_conditions.cell.energy[:,0]                = battery_initials.cell.energy[-1,0]
+    if segment.state.initials:         
+        module_initials    = segment.state.initials.conditions.energy.sources[battery.tag][module.tag]
+        module_conditions.cell.temperature[:,0]           = module_initials.cell.temperature[-1,0]
+        module_conditions.cell.cycle_in_day               = module_initials.cell.cycle_in_day      
+        module_conditions.cell.charge_throughput[:,0]     = module_initials.cell.charge_throughput[-1,0]
+        module_conditions.cell.resistance_growth_factor   = module_initials.cell.resistance_growth_factor 
+        module_conditions.cell.capacity_fade_factor       = module_initials.cell.capacity_fade_factor 
+        module_conditions.cell.state_of_charge[:,0]       = module_initials.cell.state_of_charge[-1,0]
+        module_conditions.cell.energy[:,0]                = module_initials.cell.energy[-1,0]  
+        
+        #battery_conditions.energy[:,0]                     = battery_initials.energy[-1,0]
+        module_conditions.temperature[:,0]                = module_initials.temperature[-1,0]
+            
 
     if 'battery_cell_temperature' in segment:        
-        module_conditions.cell.temperature[:,0]           = segment.battery_cell_temperature     
+        module_conditions.cell.temperature[:,0]           = segment.battery_cell_temperature
+        module_conditions.temperature[:,0]               = segment.battery_cell_temperature       
        
     if 'initial_battery_state_of_charge' in segment:    
-        n_series                                          = battery.electrical_configuration.series
-        n_parallel                                        = battery.electrical_configuration.parallel 
+        n_series                                          = module.electrical_configuration.series
+        n_parallel                                        = module.electrical_configuration.parallel 
         n_total                                           = n_series*n_parallel 
         module_conditions.cell.energy[:,0]                = segment.initial_battery_state_of_charge*battery.maximum_energy / n_total 
         module_conditions.cell.state_of_charge[:,0]       = segment.initial_battery_state_of_charge

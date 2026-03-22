@@ -65,11 +65,9 @@ def append_battery_conditions(battery,segment):
     segment.state.conditions.energy.sources[battery.tag].internal_resistance             = 0 * ones_row(1)
     segment.state.conditions.energy.sources[battery.tag].voltage_under_load              = 0 * ones_row(1)  
     segment.state.conditions.energy.sources[battery.tag].heat_energy_generated           = 0 * ones_row(1) 
-    segment.state.conditions.energy.sources[battery.tag].energy                          = 0 * ones_row(1)     
-    segment.state.conditions.energy.sources[battery.tag].power_draw                      = 0 * ones_row(1)    
-    segment.state.conditions.energy.sources[battery.tag].current_draw                    = 0 * ones_row(1) 
-    segment.state.conditions.energy.sources[battery.tag].current                         = 0 * ones_row(1) 
-     
+    segment.state.conditions.energy.sources[battery.tag].energy                          = 0 * ones_row(1)   
+    segment.state.conditions.energy.sources[battery.tag].current                         = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[battery.tag].charging_c_rate                 = battery.charging_c_rate  * ones_row(1)  
     segment.state.conditions.energy.sources[battery.tag].power_split_ratio               = battery.power_split_ratio  
     segment.state.conditions.energy.sources[battery.tag].inputs                          = Conditions()
     segment.state.conditions.energy.sources[battery.tag].inputs.power                    = Conditions()  
@@ -82,16 +80,16 @@ def append_battery_conditions(battery,segment):
     # Conditions for recharging battery module
     if isinstance(segment,RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge):
         segment.state.conditions.energy.recharging  = True 
-        segment.state.unknowns['recharge']          =  0* ones_row(1)  
-        segment.state.residuals.network['recharge'] =  0* ones_row(1)
-        segment.state.number_of_unknowns  += 1
-        segment.state.number_of_residuals += 1    
+        #segment.state.unknowns['recharge']          =  0* ones_row(1)  
+        #segment.state.residuals.network['recharge'] =  0* ones_row(1)
+        #segment.state.number_of_mission_unknowns  += 1
+        #segment.state.number_of_mission_residuals += 1    
     elif type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Battery_Discharge:
         segment.state.conditions.energy.recharging   = False 
-        segment.state.unknowns['discharge']          =  0* ones_row(1)  
-        segment.state.residuals.network['discharge'] =  0* ones_row(1) 
-        segment.state.number_of_unknowns  += 1
-        segment.state.number_of_residuals += 1    
+        #segment.state.unknowns['discharge']          =  0* ones_row(1)  
+        #segment.state.residuals.network['discharge'] =  0* ones_row(1) 
+        #segment.state.number_of_mission_unknowns  += 1
+        #segment.state.number_of_mission_residuals += 1    
     else:
         segment.state.conditions.energy.recharging  = False  
         
@@ -120,21 +118,16 @@ def append_battery_segment_conditions(battery, segment):
         None
     """
 
-    module_conditions = segment.state.conditions.energy.sources[battery.tag]    
-    module_conditions.inputs.power.electrical[:,0]    = 0.0   
-    module_conditions.outputs.power.electrical[:,0]   = 0.0  
-    
-    if segment.state.initials:   
-        battery_initials                                        = segment.state.initials.conditions.energy.sources[battery.tag]   
-        if type(segment) ==  RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge:             
-            module_conditions.battery_discharge_flag      = False 
-        else:                      
-            module_conditions.battery_discharge_flag      = True      
-            
-        module_conditions.energy[:,0]                     = battery_initials.energy[-1,0]
-        module_conditions.temperature[:,0]                = battery_initials.temperature[-1,0]
-        
-    if 'battery_cell_temperature' in segment:       
-        module_conditions.temperature[:,0]                = segment.battery_cell_temperature  
+    battery_conditions = segment.state.conditions.energy.sources[battery.tag] 
+    battery_conditions.inputs.power.electrical[:,0]    = 0.0   
+    battery_conditions.outputs.power.electrical[:,0]   = 0.0   
+    battery_conditions.current[:,0]                    = 0.0 
+    battery_conditions.voltage_open_circuit[:,0]       = 0.0  
+    battery_conditions.internal_resistance[:,0]        = 0.0  
+    battery_conditions.voltage_under_load[:,0]         = 0.0  
+    battery_conditions.heat_energy_generated[:,0]      = 0.0  
+    battery_conditions.energy[:,0]                     = 0.0  
+    battery_conditions.current[:,0]                    = 0.0    
+
 
     return    

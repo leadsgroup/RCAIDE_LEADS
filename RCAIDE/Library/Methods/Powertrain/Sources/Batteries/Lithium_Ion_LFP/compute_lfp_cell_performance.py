@@ -113,7 +113,7 @@ def compute_lfp_cell_performance(battery_module, state, bus, network):
     # ---------------------------------------------------------------------------------
     # Compute battery_module Conditions
     # -------------------------------------------------------------------------    
-    battery_module_conditions = state.conditions.energy.busses[bus.tag].battery_modules[battery_module.tag]  
+    battery_module_conditions = state.conditions.energy.sources[battery_module.tag]  
    
     E_module_max       = battery_module.maximum_energy * battery_module_conditions.cell.capacity_fade_factor
     
@@ -218,11 +218,11 @@ def compute_lfp_cell_performance(battery_module, state, bus, network):
 
     return battery_module_conditions.inputs, battery_module_conditions.outputs, stored_results_flag, stored_source_tag 
 
-def reuse_stored_lfp_cell_data(battery_module,state,bus,stored_results_flag, stored_battery_tag):
+def reuse_stored_lfp_cell_data(battery_module,state,bus,stored_results_flag,stored_battery_tag,stored_battery_module_tag):
     """Reuses results from one propulsor for identical batteries       
     """
    
-    state.conditions.energy.busses[bus.tag].battery_modules[battery_module.tag] = deepcopy(state.conditions.energy.busses[bus.tag].battery_modules[stored_battery_tag])      
+    state.conditions.energy.sources[battery_module.tag] = deepcopy(state.conditions.energy.sources[stored_battery_tag])      
     
     P_mech = 0.0*state.ones_row(1)
     P_elec = state.conditions.energy.sources[stored_battery_tag].power

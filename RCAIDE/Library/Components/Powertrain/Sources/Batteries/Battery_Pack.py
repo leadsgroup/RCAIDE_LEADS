@@ -12,7 +12,7 @@ import RCAIDE
 from RCAIDE.Framework.Core     import Data, Container
 from RCAIDE.Library.Components.Powertrain.Sources.Source    import Source   
 from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_conditions import append_battery_conditions, append_battery_segment_conditions
-
+from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.compute_battery_pack_performance import compute_battery_pack_performance
 # ----------------------------------------------------------------------------------------------------------------------
 #  Battery
 # ----------------------------------------------------------------------------------------------------------------------      
@@ -104,26 +104,79 @@ class Battery_Pack(Source):
         """
         Sets default values for battery module attributes
         """
-        self.energy_density                                    = 0.0 
-        self.capacity                                          = 0.0
-        self.voltage                                           = 0.0
-        self.modules                                           = Container()
-        self.identical_modules                                 = True
-        self.orientation_euler_angles                          = [0.,0.,0.]
-        self.number_of_active_modules                          = 0
- 
-        self.electrical_configuration                          = Data()
-        self.electrical_configuration.series                   = 1
-        self.electrical_configuration.parallel                 = 1   
+        
+        self.tag                                   = 'battery_pack'
+        self.energy_density                        = 0.0 
+        self.capacity                              = 0.0
+        self.voltage                               = 0.0
+        self.modules                               = Container()
+        self.identical_modules                     = True
+        self.orientation_euler_angles              = [0.,0.,0.]
+        self.number_of_active_modules              = 0
+        self.charging_c_rate                       = 1.0 
+        self.battery_module_electric_configuration = "Series" 
+        self.maximum_energy                        = 0.0
+        self.specific_energy                       = 0.0
+        self.maximum_power                         = 0.0
+        self.specific_power                        = 0.0
+        self.maximum_voltage                       = 0.0
+        self.initial_maximum_energy                = 0.0
+        self.nominal_capacity                      = 0.0 
+    
+    def compute_performance(self,state,network): 
+        """
+        Computes the state of the NMC battery cell
+        
+        This method calculates the battery's electrical performance and thermal
+        behavior during operation, including voltage, current, power, and 
+        temperature distributions.
 
-        self.battery_module_electric_configuration             = "Series"
-        #self.fuel_cell_stack_electric_configuration            = "Series"
-        self.geometrtic_configuration                          = Data() 
-        self.geometrtic_configuration.normal_count             = 1
-        self.geometrtic_configuration.parallel_count           = 1
-        self.geometrtic_configuration.normal_spacing           = 0.02
-        self.geometrtic_configuration.stacking_rows            = 3
-        self.geometrtic_configuration.parallel_spacing         = 0.02   
+        Parameters
+        ----------
+        state : Data
+            Current system state containing:
+            - Temperature distributions
+            - Power demands
+            - Operating conditions
+            
+        bus : Component
+            Connected electrical bus containing:
+            - Voltage requirements
+            - Power requirements
+            - Load characteristics
+            
+        coolant_lines : Component
+            Thermal management system containing:
+            - Coolant properties
+            - Flow conditions
+            - Heat exchanger parameters
+            
+        t_idx : int
+            Current time index in the simulation
+            
+        delta_t : float
+            Time step size [s]
+
+        Returns
+        -------
+        stored_results_flag : bool
+            Flag indicating if results were stored for future reuse
+            
+        stored_battery_tag : str
+            Identifier for stored battery state data
+
+        Notes
+        -----
+        The calculation includes:
+        - Voltage and current based on load demand
+        - Heat generation from internal resistance
+        - Thermal distribution with cooling effects
+        - State of charge tracking
+        """
+
+        inputs, outputs, stored_results_flag, stored_source_tag =  compute_battery_pack_performance(self,state,network)
+        return inputs, outputs, stored_results_flag, stored_source_tag
+    
  
     def append_operating_conditions(self,segment):  
         """
@@ -139,9 +192,10 @@ class Battery_Pack(Source):
         append_battery_conditions(self,segment)
 
         for m_i, module in enumerate(self.modules):
-            if module.active and (self.identical_modules == False or m_i == 0): 
-                module.append_operating_conditions(self,segment)
-                
+            if module.active: 
+                self.number_of_active_modules += 1 
+                if (self.identical_modules == False) or m_i == 0: 
+                    module.append_operating_conditions(self,segment) 
         return
     
     def append_segment_conditions(self,segment):
@@ -192,6 +246,44 @@ class Battery_Pack(Source):
         for m_i, module in enumerate(self.modules):
             if module.active and (self.identical_modules == False or m_i == 0): 
                 module.append_unknowns_and_residuals(self,segment)   
+        return
+
+    
+    def update_battery_age(self,segment,battery_conditions,increment_battery_age_by_one_day = False):  
+        """
+        Updates battery aging parameters based on usage and environmental conditions
+        
+        This method tracks battery degradation by considering factors such as:
+        cycle count, depth of discharge, temperature exposure, and calendar aging.
+
+        Parameters
+        ----------
+        segment : Segment
+            Flight segment containing:
+            - Duration
+            - Operating conditions
+            - Power profile
+            
+        battery_conditions : Data
+            Battery state data including:
+            - Temperature history
+            - Current rates
+            - State of charge history
+            
+        increment_battery_age_by_one_day : bool, optional
+            Flag to increment calendar age (default: False)
+
+        Notes
+        -----
+        The aging model accounts for:
+        - Capacity fade from cycling
+        - Calendar aging effects
+        - Temperature-dependent degradation
+        - Current rate impacts
+        """
+
+        for m_i, module in enumerate(self.modules): 
+            module.update_battery_age(self,segment,increment_battery_age_by_one_day = increment_battery_age_by_one_day)
         return
     
         

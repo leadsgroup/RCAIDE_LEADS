@@ -70,9 +70,7 @@ class Untrimmed(Segment):
         self.linear_acceleration_y                            = 0.  
         self.linear_acceleration_z                            = 0. # note that down is positive
         self.roll_rate                                        = 0.
-        self.pitch_rate                                       = 0.
-        self.hybrid_power_split_ratio                         = None
-        self.battery_fuel_cell_power_split_ratio              = None 
+        self.pitch_rate                                       = 0. 
         self.initial_battery_conditions                       = Data()
         self.initial_battery_conditions.cell_temperature      = None 
         self.initial_battery_conditions.state_of_charge       = None

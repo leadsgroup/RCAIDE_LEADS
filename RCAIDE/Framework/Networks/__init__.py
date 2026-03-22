@@ -8,3 +8,5 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 from .Network       import Network
+from .Fuel import Fuel
+from .Electric import Electric

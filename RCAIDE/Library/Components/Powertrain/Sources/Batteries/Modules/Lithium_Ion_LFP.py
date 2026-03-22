@@ -169,7 +169,7 @@ class Lithium_Ion_LFP(Generic_Battery_Module):
                         
         return inputs, outputs, stored_results_flag, stored_source_tag
     
-    def reuse_stored_data(self,state,network,stored_results_flag, stored_battery_tag):
+    def reuse_stored_data(self,state,network,stored_results_flag,stored_battery_tag,stored_battery_module_tag):
         """
         Reuses previously stored battery performance data
         
@@ -190,10 +190,10 @@ class Lithium_Ion_LFP(Generic_Battery_Module):
         stored_battery_tag : str
             Identifier for stored results
         """
-        inputs, outputs = reuse_stored_lfp_cell_data(self,state,network,stored_results_flag,stored_battery_tag)
+        inputs, outputs = reuse_stored_lfp_cell_data(self,state,network,stored_results_flag,stored_battery_tag,stored_battery_module_tag)
         return inputs, outputs
       
-    def update_battery_age(self,segment,battery_conditions,increment_battery_age_by_one_day): 
+    def update_battery_age(self,battery,segment,increment_battery_age_by_one_day): 
         """
         Updates battery age and degradation parameters
         
@@ -206,7 +206,7 @@ class Lithium_Ion_LFP(Generic_Battery_Module):
         increment_battery_age_by_one_day : bool
             Flag to increment battery age
         """
-        update_lfp_cell_age(self,segment,battery_conditions,increment_battery_age_by_one_day)
+        update_lfp_cell_age(self,battery,segment,increment_battery_age_by_one_day)
         return 
     
 def create_discharge_performance_map(raw_data):

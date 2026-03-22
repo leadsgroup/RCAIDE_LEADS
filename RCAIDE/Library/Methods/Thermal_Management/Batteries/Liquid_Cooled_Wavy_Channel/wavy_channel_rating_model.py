@@ -16,12 +16,12 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Wavy Channel Rating Model
 # ----------------------------------------------------------------------------------------------------------------------
-def  wavy_channel_rating_model(HAS,battery,bus,coolant_line,Q_heat_gen,T_cell,state,delta_t,t_idx):
+def  wavy_channel_rating_model(HAS,battery_module,bus,coolant_line,Q_heat_gen,T_cell,state,delta_t,t_idx):
     """ Computes the net heat removed by a wavy channel heat acquisition system.
 
     Assumptions:
     1) Battery pack cell heat transfer can be modelled as a cooling columns in a cross-flow
-    2) Isothermal battery cell - the temperature at the center of the cell is the same at 
+    2) Isothermal battery_module cell - the temperature at the center of the cell is the same at 
     the surface of the cell
 
     Source: 
@@ -30,7 +30,7 @@ def  wavy_channel_rating_model(HAS,battery,bus,coolant_line,Q_heat_gen,T_cell,st
 
     Inputs:  
               T_current                 (pack temperature)           [Kelvin]
-              T_cell                    (battery cell temperature)   [Kelvin] 
+              T_cell                    (battery_module cell temperature)   [Kelvin] 
               heat_transfer_efficiency                               [unitless]
           HAS.
               channel_side_thickness                                 [meter]
@@ -44,7 +44,7 @@ def  wavy_channel_rating_model(HAS,battery,bus,coolant_line,Q_heat_gen,T_cell,st
               
       
       Outputs:
-             T_cell                     (Updated battery cell temperature) [Kelvin]
+             T_cell                     (Updated battery_module cell temperature) [Kelvin]
   
     Properties Used:
     None 
@@ -54,7 +54,7 @@ def  wavy_channel_rating_model(HAS,battery,bus,coolant_line,Q_heat_gen,T_cell,st
     for reservoir in  coolant_line.reservoirs:
         T_inlet = state.conditions.energy.coolant_lines[coolant_line.tag][reservoir.tag].coolant_temperature[t_idx, 0]
     #turndown_ratio           = battery_conditions.thermal_management_system.HAS.percent_operation[t_idx,0] 
-    T_cell                   = state.conditions.energy.busses[bus.tag].battery_modules[battery.tag].cell.temperature[t_idx, 0]
+    T_cell                   = state.conditions.energy.sources[battery_module.tag].cell.temperature[t_idx, 0]
     heat_transfer_efficiency = HAS.heat_transfer_efficiency   
 
     # Coolant Properties
@@ -67,23 +67,23 @@ def  wavy_channel_rating_model(HAS,battery,bus,coolant_line,Q_heat_gen,T_cell,st
     k                           = opt_coolant.inlet_thermal_cond
     
     # Battery Properties
-    d_cell                      = battery.cell.diameter                    
-    h_cell                      = battery.cell.height                      
+    d_cell                      = battery_module.cell.diameter                    
+    h_cell                      = battery_module.cell.height                      
     A_cell                      = np.pi*d_cell*h_cell 
-    N_cells_geometric_config    = battery.geometrtic_configuration.parallel_count*battery.geometrtic_configuration.normal_count  
-    cell_mass                   = battery.cell.mass 
-    Nn_module_cells             = battery.electrical_configuration.series            
-    Np_module_cells             = battery.electrical_configuration.parallel
+    N_cells_geometric_config    = battery_module.geometrtic_configuration.parallel_count*battery_module.geometrtic_configuration.normal_count  
+    cell_mass                   = battery_module.cell.mass 
+    Nn_module_cells             = battery_module.electrical_configuration.series            
+    Np_module_cells             = battery_module.electrical_configuration.parallel
     number_of_cells_in_module   = Nn_module_cells*Np_module_cells   
     Q_module                    = Q_heat_gen*number_of_cells_in_module
-    Cp_bat                      = battery.cell.specific_heat_capacity
+    Cp_bat                      = battery_module.cell.specific_heat_capacity
     
     
     # Channel Properties
     b         = HAS.channel_side_thickness                
     d         = HAS.channel_width                         
     theta     = HAS.channel_contact_angle    
-    c         = battery.cell.height  
+    c         = battery_module.cell.height  
     channel   = HAS.channel
     AR        = d/c    
     k_chan    = channel.thermal_conductivity    
@@ -93,7 +93,7 @@ def  wavy_channel_rating_model(HAS,battery,bus,coolant_line,Q_heat_gen,T_cell,st
     A_chan   = 2*N_cells_geometric_config*(theta)*A_cell  
 
     #Length of Channel   
-    L_extra  =  battery.geometrtic_configuration.parallel_count*d_cell
+    L_extra  =  battery_module.geometrtic_configuration.parallel_count*d_cell
     L_chan   = (N_cells_geometric_config*d_cell)+L_extra 
 
     # Hydraulic diameter    
@@ -118,7 +118,7 @@ def  wavy_channel_rating_model(HAS,battery,bus,coolant_line,Q_heat_gen,T_cell,st
     # heat transfer coefficient of the channeled coolant (eq 11)
     h = k*Nu/dh
 
-    # Overall Heat Transfer Coefficient from battery surface to the coolant fluid (eq 10)
+    # Overall Heat Transfer Coefficient from battery_module surface to the coolant fluid (eq 10)
     U_total = 1/((1/h)+(b/k_chan))
 
     # Calculate NTU
@@ -169,7 +169,7 @@ def  wavy_channel_rating_model(HAS,battery,bus,coolant_line,Q_heat_gen,T_cell,st
         P_net                   = Q_convec + Q_module
         
     elif T_inlet  == T_cell:
-        # When battery temperature is equal to the battery temperature 
+        # When battery_module temperature is equal to the battery_module temperature 
         P_net = 0
         Q_convec = 0
         T_o = T_inlet
