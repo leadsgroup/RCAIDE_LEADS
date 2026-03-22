@@ -13,6 +13,7 @@ from RCAIDE.Framework.Core     import Data, Container
 from RCAIDE.Library.Components.Powertrain.Sources.Source    import Source   
 from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_conditions import append_battery_conditions, append_battery_segment_conditions
 from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.compute_battery_pack_performance import compute_battery_pack_performance
+from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.compute_battery_pack_properties import compute_battery_pack_properties
 # ----------------------------------------------------------------------------------------------------------------------
 #  Battery
 # ----------------------------------------------------------------------------------------------------------------------      
@@ -196,6 +197,10 @@ class Battery_Pack(Source):
                 self.number_of_active_modules += 1 
                 if (self.identical_modules == False) or m_i == 0: 
                     module.append_operating_conditions(self,segment) 
+        return
+
+    def initialize(self,network):
+        compute_battery_pack_properties(self,network)
         return
     
     def append_segment_conditions(self,segment):

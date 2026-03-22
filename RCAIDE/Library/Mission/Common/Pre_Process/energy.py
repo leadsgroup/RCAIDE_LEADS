@@ -12,35 +12,43 @@ import RCAIDE
 # ----------------------------------------------------------------------------------------------------------------------  
 def energy(mission):
     """ Pre-processes energy network by appending all unknowns and residuals             
-    """ 
-    idx = 0      
+    """  
     for segment in mission.segments: 
-        for network in segment.analyses.vehicle.networks: 
-            
+        for network in segment.analyses.vehicle.networks:
+            if type(network) == RCAIDE.Framework.Networks.Fuel: 
+                if segment.hybrid_power_split_ratio == None:                
+                    segment.hybrid_power_split_ratio = 0.0
+                    segment.battery_fuel_cell_power_split_ratio = 0.0
+            elif type(network) == RCAIDE.Framework.Networks.Electric: 
+                if segment.hybrid_power_split_ratio == None:                
+                    segment.hybrid_power_split_ratio = 1.0  
+                    segment.battery_fuel_cell_power_split_ratio = 1.0 
+            segment.state.conditions.energy.hybrid_power_split_ratio            = segment.hybrid_power_split_ratio * segment.state.ones_row(1)  
+            segment.state.conditions.energy.battery_fuel_cell_power_split_ratio = segment.battery_fuel_cell_power_split_ratio * segment.state.ones_row(1)  
+        
+          
             for distributor in network.distributors:
                 distributor.initialize(network)
-            
-            #'''not sure I want to keep this but this basically is where matteo assigns the voltage of the bus a compoment is on may not need '''
-            #for converter in network.converters:  
-                #for distributor_tag in converter.assigned_distributors:
-                    #if isinstance(network.distributors[distributor_tag[0]], RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
-                        #converter.bus_voltage = network.distributors[distributor_tag[0]].voltage
+                 
+            for source in network.sources: 
+                source.initialize(network) 
+                     
+            for propulsor in network.propulsors: 
+                propulsor.append_operating_conditions(segment)
+    
+            for converter in network.converters: 
+                converter.append_operating_conditions(segment)  
 
-            #for modulator in network.modulators:
-                #for distributor_tag in modulator.assigned_distributors:
-                    #if isinstance(network.distributors[distributor_tag[0]], RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
-                        #modulator.bus_voltage = network.distributors[distributor_tag[0]].voltage
+            for modulator in network.modulators: 
+                modulator.append_operating_conditions(segment)  
 
-            #for system in network.systems:
-                #for distributor_tag in system.assigned_distributors:
-                    #if isinstance(network.distributors[distributor_tag[0]], RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
-                        #system.bus_voltage = network.distributors[distributor_tag[0]].voltage
-                        
-                        
-            segment.state.conditions.energy.hybrid_power_split_ratio            = network.hybrid_power_split_ratio * segment.state.ones_row(1)  
-            segment.state.conditions.energy.battery_fuel_cell_power_split_ratio = network.battery_fuel_cell_power_split_ratio * segment.state.ones_row(1)                    
-            network.add_unknowns_and_residuals_to_segment(segment) 
+            for source in  network.sources: 
+                source.append_operating_conditions(segment)  
 
-        idx += 1
-
+            for system in network.systems:
+                system.append_operating_conditions(segment)             
+    
+            for distributor in network.distributors:
+                distributor.append_operating_conditions(segment) 
+                
     return 

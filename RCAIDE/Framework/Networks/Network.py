@@ -375,56 +375,8 @@ class Network(Component):
                 distributor.pack_residuals(segment) 
             for system in network.systems:
                 system.pack_residuals(segment) 
-        return      
+        return
     
-    def add_unknowns_and_residuals_to_segment(self, segment):
-        """ This function sets up the information that the mission needs to run a mission segment using this network 
-         
-            Assumptions:
-            None
-    
-            Source:
-            N/A
-    
-            Inputs:
-            segment
-            eestimated_throttles           [-]
-            estimated_propulsor_group_rpms [-]  
-            
-            Outputs:
-            segment
-    
-            Properties Used:
-            N/A
-        """                   
-        segment.state.residuals.network = Residuals()
-        
-        for network in segment.analyses.vehicle.networks:
-            
-            for propulsor in network.propulsors: 
-                propulsor.append_operating_conditions(segment)
-    
-            for converter in network.converters: 
-                converter.append_operating_conditions(segment)  
-
-            for modulator in network.modulators: 
-                modulator.append_operating_conditions(segment)  
-
-            for source in  network.sources: 
-                source.append_operating_conditions(segment)  
-
-            for system in network.systems:
-                system.append_operating_conditions(segment)             
-    
-            for distributor in network.distributors:
-                distributor.append_operating_conditions(segment)                                         
-    
-        # Ensure the mission knows how to pack and unpack the unknowns and residuals
-        segment.process.iterate.unknowns.network            = self.unpack_unknowns
-        segment.process.iterate.residuals.network           = self.residuals   
-        
-        return segment
-
 # ----------------------------------------------------------------------
 #  Component Container
 # ---------------------------------------------------------------------- 

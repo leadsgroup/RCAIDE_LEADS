@@ -70,27 +70,33 @@ def energy(segment):
     See Also
     --------
     RCAIDE.Framework.Mission.Segments
-    """  
-    vehicle            = segment.analyses.vehicle 
+    """
  
+    vehicle    = segment.analyses.vehicle
+
+    # loop through battery modules in networks
     for network in vehicle.networks:
         
-        # resets the conditions of components each iteration if the mission solver
-        for propulsor in  network.propulsors: 
-            propulsor.append_segment_conditions(segment) 
-         
-        for converter in network.converters:
-            converter.append_segment_conditions(segment) 
-    
-        for modulator in network.modulators:
-            modulator.append_segment_conditions(segment)
-            
+        # if network has busses
         for source in network.sources:
             source.append_segment_conditions(segment)
-            
-        for system in network.systems:
-            system.append_segment_conditions(segment) 
-        
-        for distributor in network.distributors:
-            distributor.append_segment_conditions(segment)
-            
+            #for battery_module in  bus.battery_modules:
+                #battery_module.append_segment_conditions(segment, bus)
+            #for coolant_line in  network.coolant_lines:
+                #for tag, item in  coolant_line.items():
+                    #if tag == 'heat_exchangers':
+                        #for heat_exchanger in  item:
+                            #heat_exchanger.append_segment_conditions(segment,bus,coolant_line)
+                    #if tag == 'reservoirs':
+                        #for reservoir in  item:
+                            #reservoir.append_segment_conditions(segment, coolant_line)
+
+        ## if network has fuel lines
+        #for fuel_line in  network.fuel_lines:
+            #for fuel_tank in fuel_line.fuel_tanks:
+                #if segment.state.initials:
+                    #segment.state.conditions.energy.cumulative_fuel_consumption[:,0] = segment.state.initials.conditions.energy.cumulative_fuel_consumption[-1,0]
+                    #fuel_tank.append_segment_conditions(segment,fuel_line)
+
+                #elif vehicle.networks[network.tag].fuel_lines[fuel_line.tag].fuel_tanks[fuel_tank.tag].fuel != None:
+                    #segment.state.conditions.energy.cumulative_fuel_consumption[:,0] = 0

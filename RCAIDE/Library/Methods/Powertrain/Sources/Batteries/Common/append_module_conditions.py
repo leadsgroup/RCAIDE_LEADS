@@ -178,29 +178,26 @@ def append_battery_module_segment_conditions(module,battery, segment):
         None
     """
     
-
-
     module_conditions = segment.state.conditions.energy.sources[battery.tag][module.tag]
     if segment.state.initials:  
-        module_initials                                        = segment.state.initials.conditions.energy.sources[battery.tag][module.tag]  
-        #if type(segment) ==  RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge:             
-            #module_conditions.battery_discharge_flag           = False 
-        #else:                   
-            #module_conditions.battery_discharge_flag           = True      
-            
-        module_conditions.energy[:,0]                     = module_initials.energy[-1,0]
-        module_conditions.temperature[:,0]                = module_initials.temperature[-1,0]
-        module_conditions.cell.temperature[:,0]           = module_initials.cell.temperature[-1,0]
-        module_conditions.cell.cycle_in_day               = module_initials.cell.cycle_in_day      
-        module_conditions.cell.charge_throughput[:,0]     = module_initials.cell.charge_throughput[-1,0]
-        module_conditions.cell.resistance_growth_factor   = module_initials.cell.resistance_growth_factor 
-        module_conditions.cell.capacity_fade_factor       = module_initials.cell.capacity_fade_factor 
-        module_conditions.cell.state_of_charge[:,0]       = module_initials.cell.state_of_charge[-1,0]
-        module_conditions.cell.energy[:,0]                = module_initials.cell.energy[-1,0]
+        battery_initials                                        = segment.state.initials.conditions.energy.sources[battery.tag][module.tag]
+        if type(segment) ==  RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge:             
+            module_conditions.battery_discharge_flag           = False 
+        else:                   
+            module_conditions.battery_discharge_flag           = True      
 
-    else:      
+        module_conditions.energy[:,0]                     = battery_initials.energy[-1,0]
+        module_conditions.temperature[:,0]                = battery_initials.temperature[-1,0]
+        module_conditions.cell.temperature[:,0]           = battery_initials.cell.temperature[-1,0]
+        module_conditions.cell.cycle_in_day               = battery_initials.cell.cycle_in_day      
+        module_conditions.cell.charge_throughput[:,0]     = battery_initials.cell.charge_throughput[-1,0]
+        module_conditions.cell.resistance_growth_factor   = battery_initials.cell.resistance_growth_factor 
+        module_conditions.cell.capacity_fade_factor       = battery_initials.cell.capacity_fade_factor 
+        module_conditions.cell.state_of_charge[:,0]       = battery_initials.cell.state_of_charge[-1,0]
+        module_conditions.cell.energy[:,0]                = battery_initials.cell.energy[-1,0]
+
+    if 'cell_temperature' in segment:       
         module_conditions.temperature[:,0]          = segment.cell_temperature 
         module_conditions.cell.temperature[:,0]     = segment.cell_temperature 
-               
      
     return    

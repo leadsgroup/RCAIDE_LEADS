@@ -13,7 +13,7 @@ import  numpy as  np
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHOD
 # ----------------------------------------------------------------------------------------------------------------------  
-def compute_battery_pack_properties(battery):  
+def compute_battery_pack_properties(battery,network):  
     """
     Calculates module level properties of battery module using cell properties and module configuration.
     
@@ -148,7 +148,9 @@ def compute_battery_pack_properties(battery):
         battery_module.initial_maximum_energy         = battery_module.maximum_energy      
         battery_module.nominal_capacity               = battery_module.cell.nominal_capacity* parallel_e 
         battery_module.voltage                        = battery_module.maximum_voltage 
- 
+        
+        
+        # compute pack properties
         if battery.battery_module_electric_configuration == 'Series': 
             battery.voltage         +=  battery_module.voltage
         elif battery.battery_module_electric_configuration == 'Parallel':    

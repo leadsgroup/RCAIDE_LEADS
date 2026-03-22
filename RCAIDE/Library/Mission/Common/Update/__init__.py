@@ -18,10 +18,10 @@ from .atmosphere                               import atmosphere
 from .energy                                   import energy
 from .differentials_time                       import differentials_time
 from .forces                                   import forces
-from .network                                  import network
 from .noise                                    import noise
 from .emissions                                import emissions   
 from .moments                                  import moments
+from .network                                  import network
 from .ground_forces                            import ground_forces
 from .freestream                               import freestream
 from .gravity                                  import gravity 

@@ -69,7 +69,7 @@ def geometry_preprocess_routine(analyses):
     settings = analyses.geometry.settings
     vehicle  = analyses.vehicle
     
-    # initalize variables 
+    # initialize variables 
     A_fuselage     = 0
     defined_cabins = False 
     NPF            = 0

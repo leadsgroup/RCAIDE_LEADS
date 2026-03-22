@@ -126,7 +126,7 @@ class Electrical_Bus(Distributor):
         append_bus_segment_conditions(self,segment)
         return     
         
-    def compute_distributor_conditions(self, source, state,t_idx, delta_t):
+    def compute_distributor_conditions(self, source, state):
         """
         Compute electrical conditions during operation
         
@@ -139,17 +139,10 @@ class Electrical_Bus(Distributor):
         delta_t : float
             Time step
         """
-        compute_bus_conditions(self, source, state,t_idx, delta_t)
+        compute_bus_conditions(self, source, state)
         return
 
     def initialize(self,network):
-        """
-        Initialize electrical bus properties
-        
-        Sets up initial values for bus voltage, capacity, and other electrical
-        properties based on connected components.
-        """
-        initialize_bus_properties(self,network)
         return
         
     

@@ -490,9 +490,9 @@ def segment_post_process(nexus):
                     (type(nexus.segment) == SPS.Set_Speed_Set_Altitude_AVL_Trimmed) or \
                     (type(nexus.segment) == SPS.Set_Speed_Set_Altitude_No_Propulsion) or \
                     (type(nexus.segment) == SPS.Set_Speed_Set_Throttle): 
-        energy_consumed =  0
+        energy_consumed =  np.array([0])
     else:
-        energy_consumed = np.dot(I,power)[-1][0]
+        energy_consumed = np.dot(I,power)[-1]
     
     postprocess                 = nexus.postprocess
     postprocess.maximum_power   = max_power

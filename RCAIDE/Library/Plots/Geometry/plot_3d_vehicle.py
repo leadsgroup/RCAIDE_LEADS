@@ -114,7 +114,7 @@ def plot_3d_vehicle(vehicle,
     """
  
     # -------------------------------------------------------------------------  
-    # Initalize Renderer
+    # initialize Renderer
     # ------------------------------------------------------------------------- 
     if save_figure: 
         plotter = pv.Plotter(off_screen=True)

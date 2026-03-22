@@ -32,8 +32,13 @@ class Electric(Network):
         Hydrogen network class
     """
     def __defaults__(self):
-        """ This sets the default values for the network to function. 
-        """  
-        self.tag                                 = 'electric' 
-        self.hybrid_power_split_ratio            = 1.0
-        self.battery_fuel_cell_power_split_ratio = 1.0        
+        """ This sets the default values for the network to function.
+
+            Assumptions:
+            None
+
+            Source:
+            N/A
+        """
+
+        self.tag                          = 'electric'

@@ -64,6 +64,8 @@ class Evaluate(Segment):
         self.sideslip_angle                                        = 0.0
         self.angle_of_attack                                       = 1.0 *  Units.degree
         self.bank_angle                                            = 0.0
+        self.hybrid_power_split_ratio                              = None
+        self.battery_fuel_cell_power_split_ratio                   = None
         self.trim_lift_coefficient                                 = None
         self.initial_battery_conditions                            = Data()
         self.initial_battery_conditions.cell_temperature           = None
