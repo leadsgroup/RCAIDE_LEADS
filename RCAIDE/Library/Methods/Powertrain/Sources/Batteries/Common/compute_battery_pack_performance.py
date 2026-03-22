@@ -78,33 +78,5 @@ def compute_battery_pack_performance(battery,state,network):
     stored_results_flag     = True
     stored_battery_tag      = battery.tag
     
-     
-    phi   = state.conditions.energy.hybrid_power_split_ratio 
-    if len(battery.modules) != 0: 
-        if battery.battery_module_electric_configuration == 'Series':
-            bm_conditions                         = [battery_conditions[bm.tag] for bm in battery.modules]
-            battery_conditions.voltage_open_circuit   = sum(bm.voltage_open_circuit  for bm in bm_conditions)
-            battery_conditions.voltage_under_load     = sum(bm.voltage_under_load  for bm in bm_conditions)
-            battery_conditions.heat_energy_generated  = sum(bm.heat_energy_generated  for bm in bm_conditions)
-            battery_conditions.efficiency             = (battery_conditions.power_draw *phi  + battery_conditions.heat_energy_generated )/(battery_conditions.power_draw *phi )
-           
-            bm_conditions                         = [battery_conditions[bm.tag] for bm in battery.modules]
-            battery_conditions.temperature            = sum(bm.temperature  for bm in bm_conditions)/ len(battery.modules)
-            battery_conditions.energy                 = sum(bm.energy  for bm in bm_conditions)
-            battery_conditions.state_of_charge        = bm_conditions[-1].state_of_charge 
-    
-        elif battery.battery_module_electric_configuration == 'Parallel':
-            bm_conditions                         = [battery_conditions.battery_modules[bm.tag] for bm in battery.modules]
-            battery_conditions.heat_energy_generated  = sum(bm.heat_energy_generated  for bm in bm_conditions)
-            battery_conditions.voltage_open_circuit   = bm_conditions[-1].voltage_open_circuit 
-            battery_conditions.voltage_under_load     = bm_conditions[-1].voltage_under_load              
-            battery_conditions.efficiency             = (battery_conditions.power_draw *phi  +  battery_conditions.heat_energy_generated )/(battery_conditions.power_draw *phi )
-
-            battery_conditions.heat_energy_generated  = sum(bm.heat_energy_generated  for bm in bm_conditions)
-            battery_conditions.temperature            = sum(bm.temperature  for bm in bm_conditions)/len(battery.modules)
-            battery_conditions.energy                 = sum(bm.energy  for bm in bm_conditions)
-            battery_conditions.state_of_charge        = bm_conditions[-1].cell.state_of_charge    
-    
-            
     return battery_conditions.inputs, battery_conditions.outputs, stored_results_flag, stored_battery_tag 
  
