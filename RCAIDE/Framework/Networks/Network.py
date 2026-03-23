@@ -107,9 +107,13 @@ class Network(Component):
         total_moment            = 0. * state.ones_row(3)
         total_mdot              = 0. * state.ones_row(1)
         total_propulsive_power  = 0. * state.ones_row(1)
-        net_electrical_power  = 0. * state.ones_row(1)
         total_chemical_power    = 0. * state.ones_row(1)
         total_current           = 0. * state.ones_row(1)
+        
+        # net power 
+        net_electrical_power    = 0. * state.ones_row(1)
+        net_hydraulic_power     = 0. * state.ones_row(1)
+        net_thermal_power       = 0. * state.ones_row(1) 
  
         # ----------------------------------------------------------
         # Propulsors
@@ -134,9 +138,11 @@ class Network(Component):
                 total_moment           += outputs.moment
                 total_propulsive_power += outputs.power.propulsive 
                 total_current          += outputs.current 
-                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
                 total_chemical_power   += inputs.power.chemical
                 total_mdot             += inputs.mdot_fuel  
+                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
+                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
+                net_thermal_power      += (outputs.power.hydraulic - inputs.power.hydraulic)
         
         # ----------------------------------------------------------
         # Systems
@@ -145,6 +151,8 @@ class Network(Component):
             if system.active: 
                 inputs, outputs,_,_= system.compute_performance(state) 
                 net_electrical_power += (outputs.power.electrical - inputs.power.electrical)
+                net_thermal_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
+                net_hydraulic_power  += (outputs.power.hydraulic - inputs.power.hydraulic)
       
         for converter in converters:   
             if converter.active: 
@@ -154,9 +162,12 @@ class Network(Component):
                 else:
                     inputs, outputs = converter.reuse_stored_data(state,network,stored_conveter_tag=stored_conveter_tag)
                 total_current          += outputs.current 
-                net_electrical_power   -= inputs.power.electrical
                 total_chemical_power   += inputs.power.chemical
                 total_mdot             += inputs.mdot_fuel
+
+                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
+                net_thermal_power      += (outputs.power.hydraulic - inputs.power.hydraulic)
+                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)              
 
         # ----------------------------------------------------------
         # Sources 
@@ -164,41 +175,25 @@ class Network(Component):
         for source in sources: 
             if source.active:
                 if issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):            
-                    inputs, outputs, _, _ = source.compute_performance(state,network) 
-                    net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
+                    inputs, outputs, _, _ = source.compute_performance(state,network)  
             
                 if issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
                     state.conditions.energy.sources[source.tag].outputs.power.chemical = total_chemical_power *  state.conditions.energy.sources[source.tag].power_split_ratio
-                    inputs, outputs, _, _ = source.compute_performance(state,network) 
-                    net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)            
-                            
+                    inputs, outputs, _, _ = source.compute_performance(state,network)
+                    
+                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
+                net_thermal_power      += (outputs.power.hydraulic - inputs.power.hydraulic)
+                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)   
+        
+        
         # ----------------------------------------------------------
-        # Distributors 
+        # Network Power flow
         # ----------------------------------------------------------
-        # loop through compoments and determine the power in OR out of a distributor, compute power poss, heat transfer
+        # determine power flow across different distributors 
         
 
-        # ----------------------------------------------------------
-        # Modulatore  
-        # ----------------------------------------------------------
-        #  
-        
-                   
-                   
-                   
-                   
-                   
-                   
-                   
-                   
-                   
-                   
-                                                       
 
         ## ----------------------------------------------------------
-        ## Build Power Balance System
-        ## ----------------------------------------------------------
-
         #n_rows  = len(distributors)
         #n_cpts = state.numerics.number_of_control_points
         #A_matrix = np.zeros((n_cpts,n_rows,0))
@@ -292,11 +287,27 @@ class Network(Component):
             #for reservoir in coolant_line.reservoirs:   
                 #reservoir.compute_reservior_coolant_temperature(state,coolant_line)
                 
+
+        # ----------------------------------------------------------        
+        # Distributors 
+        # ----------------------------------------------------------
+        for distributors in distributors:
+            inputs, outputs, _, _ = distributors.compute_performance(state,network)
+            net_electrical_power   += (outputs.power.electrical - inputs.power.electrical) # electrical power loss due to heat for electrical lines  
+            net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)   # hydraulic loss due to friction abd bends 
+            net_thermal_power      += (outputs.power.hydraulic - inputs.power.hydraulic)   # thermal losses 
+        
+         
+
+                   
+                                                       
         # Final aggregation for system level performance 
         conditions.energy.total_force_vector       = total_thrust
         conditions.energy.total_moment_vector      = total_moment
         conditions.energy.power.outputs.propulsive = total_propulsive_power 
         conditions.energy.net_electrical_power     = net_electrical_power 
+        conditions.energy.net_thermal_power        = net_thermal_power 
+        conditions.energy.net_hydraulic_power      = net_hydraulic_power 
         conditions.weights.vehicle.mass_rate       = total_mdot  
 
         return
