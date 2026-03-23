@@ -133,7 +133,7 @@ class Network(Component):
                 if propulsor.reverse_thrust == True:
                     total_thrust = outputs.thrust * -1
                     total_moment = outputs.moment * -1
-
+ 
                 total_thrust           += outputs.thrust
                 total_moment           += outputs.moment
                 total_propulsive_power += outputs.power.propulsive 
@@ -189,7 +189,7 @@ class Network(Component):
         # ----------------------------------------------------------
         # Network Power flow
         # ----------------------------------------------------------
-        # determine power flow across different distributors 
+        # determine power flow across different distributors and modulators 
         
 
 
@@ -291,14 +291,21 @@ class Network(Component):
         # ----------------------------------------------------------        
         # Distributors 
         # ----------------------------------------------------------
-        for distributors in distributors:
-            inputs, outputs, _, _ = distributors.compute_performance(state,network)
+        for distributor in distributors:
+            inputs, outputs, _, _ = distributor.compute_performance(state,network)
             net_electrical_power   += (outputs.power.electrical - inputs.power.electrical) # electrical power loss due to heat for electrical lines  
             net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)   # hydraulic loss due to friction abd bends 
             net_thermal_power      += (outputs.power.hydraulic - inputs.power.hydraulic)   # thermal losses 
         
-         
-
+    
+        # ----------------------------------------------------------        
+        # Modulators  
+        # ----------------------------------------------------------
+        for modulator in modulators:
+            inputs, outputs, _, _ = modulator.compute_performance(state,network)
+            net_electrical_power   += (outputs.power.electrical - inputs.power.electrical) # electrical power loss due to heat for electrical lines  
+            net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)   # hydraulic loss due to friction abd bends 
+            net_thermal_power      += (outputs.power.hydraulic - inputs.power.hydraulic)   # thermal losses  
                    
                                                        
         # Final aggregation for system level performance 
