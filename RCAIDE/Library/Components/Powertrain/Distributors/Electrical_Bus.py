@@ -101,7 +101,8 @@ class Electrical_Bus(Distributor):
         self.conductor_material                        = Copper()  # Default conductor material
         self.insulator_radius                          = None
         self.insulator_material                        = Polyimide()  # Default insulator material 
-        self.duplicate_wires                           = 2# Number of duplicate cables for redundancy 
+        self.duplicate_wires                           = 2# Number of duplicate cables for redundancy
+            
 
     def unpack_unknowns(self,segment):
         return 
