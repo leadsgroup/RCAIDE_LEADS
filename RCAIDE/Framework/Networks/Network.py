@@ -122,7 +122,8 @@ class Network(Component):
                 if propulsor.identical_propulsors == False or stored_results_flag == False:
                     # -----------
                     # to remove 
-                    state.conditions.energy.propulsors[propulsor.tag].outputs.power.electrical = propulsor.electrical_power_generation_split *  state.unknowns.network['electrical_power']*(1 - state.conditions.energy.hybrid_power_split_ratio)  
+                    state.conditions.energy.propulsors[propulsor.tag].outputs.power.electrical = propulsor.electrical_power_generation_split \
+                        *  state.unknowns.network['electrical_power']*(1 - state.conditions.energy.hybrid_power_split_ratio)  
                     # -----------
                     inputs, outputs, stored_results_flag, stored_propulsor_tag = propulsor.compute_performance(state,network, center_of_gravity=center_of_gravity)
                 else:
@@ -138,7 +139,7 @@ class Network(Component):
                 total_current          += outputs.current 
                 total_chemical_power   += inputs.power.chemical
                 total_mdot             += inputs.mdot_fuel  
-                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
+                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)  # must handle tank integrated pump
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
         
@@ -155,7 +156,7 @@ class Network(Component):
         for converter in converters:   
             if converter.active: 
                 if converter.identical_propulsors == False or stored_results_flag == False:
-                    state.conditions.energy.converters[converter.tag].outputs.power.electrical =  converter.electrical_power_generation_split *  state.unknowns.network['electrical_power']*(1 - state.conditions.energy.hybrid_power_split_ratio )  # NEED TO ASSIGN PRIOR
+                    state.conditions.energy.converters[converter.tag].outputs.power.electrical =  converter.electrical_power_generation_split * state.unknowns.network['electrical_power']*(1 - state.conditions.energy.hybrid_power_split_ratio )  # NEED TO ASSIGN PRIOR
                     inputs, outputs, stored_results_flag, stored_conveter_tag = converter.compute_performance(state,network)
                 else:
                     inputs, outputs = converter.reuse_stored_data(state,network,stored_conveter_tag=stored_conveter_tag)
@@ -177,7 +178,7 @@ class Network(Component):
                 inputs, outputs, _, _  = source.compute_performance(state,network)   
                 net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
-                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)                     
+                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic) # thermal pump included                    
                             
         # ----------------------------------------------------------
         # Power Balance 
@@ -270,37 +271,32 @@ class Network(Component):
             #else:    
                 #conditions.energy[component_group][component_tag][direction].power[power_type][:,0] = val                        
                     
-        
-
+                        
         # ----------------------------------------------------------
         # Distributors 
         # ----------------------------------------------------------
-        for distributor in distributors: 
-            if distributor.active:   
-                inputs, outputs, _, _  = distributor.compute_performance(state,network)   
-                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
+        for distributor in distributors:
+            if distributor.active:    
+                for propulsor in  network.propulsors:
+                    if distributor.tag in propulsor.assigned_distributors[0]:
+                        state.conditions.energy.distributors[distributor.tag].outputs.power[distributor.domain] +=  state.conditions.energy.propulsors[propulsor.tag].inputs.power[distributor.domain]
+                        
+                # this computes the input power (output power is suppled to the components of various forms )
+                inputs, outputs, _, _  = distributor.compute_performance(state,network)
+                
+                # determine system losses (should be negative )
+                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)  
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
-                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)          
-
-        # ----------------------------------------------------------
-        # Modulators 
-        # ----------------------------------------------------------
-        for modulator in modulators: 
-            if modulator.active:   
-                inputs, outputs, _, _  = modulator.compute_performance(state,network)   
-                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
-                net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
-                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)   
-                   
+                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)  # line integrated pump 
                 
         # Final aggregation for system level performance 
         conditions.energy.total_force_vector       = total_thrust
         conditions.energy.total_moment_vector      = total_moment
         conditions.energy.power.outputs.propulsive = total_propulsive_power 
+        conditions.weights.vehicle.mass_rate       = total_mdot  
         conditions.energy.net_electrical_power     = net_electrical_power 
         conditions.energy.net_thermal_power        = net_thermal_power 
         conditions.energy.net_hydraulic_power      = net_hydraulic_power 
-        conditions.weights.vehicle.mass_rate       = total_mdot  
 
         return
     
