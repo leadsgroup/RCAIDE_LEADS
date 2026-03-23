@@ -140,8 +140,7 @@ def append_module_conditions(module,battery,segment):
     if segment.initial_battery_conditions.cell_temperature is not None:
         cell_temperature  = segment.initial_battery_conditions.cell_temperature
     else:
-        cell_temperature  = atmo_data.temperature[0,0]
-    segment.cell_temperature = cell_temperature
+        cell_temperature  = atmo_data.temperature[0,0] 
     segment.state.conditions.energy.sources[battery.tag][module.tag].temperature      = cell_temperature * ones_row(1)         
     segment.state.conditions.energy.sources[battery.tag][module.tag].cell.temperature = cell_temperature * ones_row(1)  
 

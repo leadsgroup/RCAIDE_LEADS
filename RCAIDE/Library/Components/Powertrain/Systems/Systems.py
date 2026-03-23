@@ -97,9 +97,9 @@ class Systems(Component):
     
     def compute_performance(self, state):
 
-        Power = compute_systems_power_draw(self, state)
+        outputs,inputs = compute_systems_power_draw(self, state)
 
-        return Power
+        return outputs,inputs, None, None
     
 
     def append_segment_conditions(self,segment):

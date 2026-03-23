@@ -197,6 +197,7 @@ def base_analysis(vehicle):
 
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    geometry.settings.unique_geometry = True
     analyses.append(geometry)
 
     #  Weights
@@ -235,18 +236,18 @@ def mission_setup(analyses,vehicle,battery_chemistry,current,mAh):
     segment.tag                             = 'Recharge' 
     mission.append_segment(segment)
     
-    #segment                                 = Segments.Ground.Battery_Discharge(base_segment) 
-    #segment.analyses.extend(analyses.discharge)  
-    #segment.tag                             = 'Discharge_1' 
-    #segment.time                            = time/2  
-    #segment.initial_battery_conditions.state_of_charge  = 1  
-    #mission.append_segment(segment)
+    segment                                 = Segments.Ground.Battery_Discharge(base_segment) 
+    segment.analyses.extend(analyses.discharge)  
+    segment.tag                             = 'Discharge_1' 
+    segment.time                            = time/2  
+    segment.initial_battery_conditions.state_of_charge  = 1  
+    mission.append_segment(segment)
     
-    #segment                                = Segments.Ground.Battery_Discharge(base_segment) 
-    #segment.tag                            = 'Discharge_2'
-    #segment.analyses.extend(analyses.discharge)   
-    #segment.time                           = time/2  
-    #mission.append_segment(segment)        
+    segment                                = Segments.Ground.Battery_Discharge(base_segment) 
+    segment.tag                            = 'Discharge_2'
+    segment.analyses.extend(analyses.discharge)   
+    segment.time                           = time/2  
+    mission.append_segment(segment)        
     
     return mission 
 

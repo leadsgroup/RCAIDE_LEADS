@@ -30,7 +30,7 @@ def vehicle_setup(current,C_rat,cell_chemistry,electrical_config):
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus
     #------------------------------------------------------------------------------------------------------------------------------------  
-    bus                                       = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
+    bus                              = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
     
     # Battery Module
     battery_pack = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack()
@@ -47,9 +47,9 @@ def vehicle_setup(current,C_rat,cell_chemistry,electrical_config):
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Systems
     #------------------------------------------------------------------------------------------------------------------------------------  
-    systems                     = RCAIDE.Library.Components.Powertrain.Systems.Systems()
-    systems.power_draw          = current * battery_module.cell.maximum_voltage  
-    net.systems.append(systems)     
+    system                     = RCAIDE.Library.Components.Powertrain.Systems.Systems()
+    system.power_draw          = current * battery_module.cell.maximum_voltage  
+    net.systems.append(system)     
     
     # append bus 
     net.distributors.append(bus)     

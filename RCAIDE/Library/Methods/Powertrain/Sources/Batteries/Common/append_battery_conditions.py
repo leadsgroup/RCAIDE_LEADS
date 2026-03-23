@@ -137,8 +137,8 @@ def append_battery_segment_conditions(battery, segment):
             battery_initials.battery_discharge_flag           = False 
         else:                   
             battery_initials.battery_discharge_flag           = True     
-        battery_conditions.energy[0,0]          = battery_initials.energy[-1,0]
-
+        battery_conditions.energy[0,0]          = battery_initials.energy[-1,0] 
+        battery_conditions.temperature[0,0]     = battery_initials.temperature[-1,0]
 
 
     return    

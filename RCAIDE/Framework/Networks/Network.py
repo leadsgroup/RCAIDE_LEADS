@@ -143,7 +143,7 @@ class Network(Component):
         # ----------------------------------------------------------
         for system in systems:
             if system.active: 
-                inputs, outputs = system.compute_performance(state) 
+                inputs, outputs,_,_= system.compute_performance(state) 
                 net_electrical_power += (outputs.power.electrical - inputs.power.electrical)
       
         for converter in converters:   
