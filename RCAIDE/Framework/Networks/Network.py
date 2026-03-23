@@ -180,26 +180,11 @@ class Network(Component):
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)                     
                             
         # ----------------------------------------------------------
-        # Distributors 
+        # Power Balance 
         # ----------------------------------------------------------
         # loop through compoments and determine the power in OR out of a distributor, compute power poss, heat transfer
         
 
-        # ----------------------------------------------------------
-        # Modulatore  
-        # ----------------------------------------------------------
-        #  
-        
-                   
-                   
-                   
-                   
-                   
-                   
-                   
-                   
-                   
-                   
                                                        
 
         ## ----------------------------------------------------------
@@ -285,19 +270,28 @@ class Network(Component):
             #else:    
                 #conditions.energy[component_group][component_tag][direction].power[power_type][:,0] = val                        
                     
-       
-        # ----------------------------------------------------------
-        ## Compute performance of distributors  
-        ## ---------------------------------------------------------- 
-        #for distributor in distributors:         
-            #distributors.compute_performance(state,network)
+        
 
-        ## Step 4 : Battery Thermal Management Calculations                    
-        #for coolant_line in coolant_lines: 
-            #for heat_exchanger in coolant_line.heat_exchangers: 
-                #heat_exchanger.compute_heat_exchanger_performance(state,coolant_line) 
-            #for reservoir in coolant_line.reservoirs:   
-                #reservoir.compute_reservior_coolant_temperature(state,coolant_line)
+        # ----------------------------------------------------------
+        # Distributors 
+        # ----------------------------------------------------------
+        for distributor in distributors: 
+            if distributor.active:   
+                inputs, outputs, _, _  = distributor.compute_performance(state,network)   
+                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
+                net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
+                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)          
+
+        # ----------------------------------------------------------
+        # Modulators 
+        # ----------------------------------------------------------
+        for modulator in modulators: 
+            if modulator.active:   
+                inputs, outputs, _, _  = modulator.compute_performance(state,network)   
+                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
+                net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
+                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)   
+                   
                 
         # Final aggregation for system level performance 
         conditions.energy.total_force_vector       = total_thrust

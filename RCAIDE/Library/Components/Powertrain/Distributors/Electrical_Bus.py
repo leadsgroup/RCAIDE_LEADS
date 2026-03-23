@@ -142,7 +142,7 @@ class Electrical_Bus(Distributor):
         append_bus_segment_conditions(self,segment)
         return     
         
-    def compute_distributor_conditions(self, source, state):
+    def compute_performance(self,state,network):
         """
         Compute electrical conditions during operation
         
@@ -155,8 +155,8 @@ class Electrical_Bus(Distributor):
         delta_t : float
             Time step
         """ 
-        compute_bus_conditions(self, source, state) 
-        return    
+        inputs, outputs = compute_electrical_bus_conditions(self,state,network)
+        return inputs, outputs, None, None
 
     def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
         """

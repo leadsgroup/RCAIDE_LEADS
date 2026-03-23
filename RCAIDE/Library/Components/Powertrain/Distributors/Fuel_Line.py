@@ -9,7 +9,7 @@
 
 # RCAIDE imports  
 import RCAIDE
-from RCAIDE.Framework.Core                                    import Data
+from RCAIDE.Framework.Core                                  import Data
 from .Distributor                                           import Distributor   
 from RCAIDE.Library.Methods.Powertrain.Distributors.Fuel_Line import *
 
@@ -105,23 +105,7 @@ class Fuel_Line(Distributor):
         append_fuel_line_segment_conditions(self, segment)
         return   
 
-    def compute_performance(self, state):
+    def compute_performance(self,state,network):
 
-        inputs = Data()
-        outputs = Data()
-
-        inputs.power.mechanical  = state.conditions.energy.distributors[self.tag].inputs.power.mechanical
-        inputs.power.electrical  = state.conditions.energy.distributors[self.tag].inputs.power.electrical
-        inputs.power.chemical    = state.conditions.energy.distributors[self.tag].inputs.power.chemical  
-        inputs.power.pneumatic   = state.conditions.energy.distributors[self.tag].inputs.power.pneumatic 
-        inputs.power.hydraulic   = state.conditions.energy.distributors[self.tag].inputs.power.hydraulic 
-        inputs.power.thermal     = state.conditions.energy.distributors[self.tag].inputs.power.thermal  
-
-        outputs.power.mechanical = state.conditions.energy.distributors[self.tag].outputs.power.mechanical
-        outputs.power.electrical = state.conditions.energy.distributors[self.tag].outputs.power.electrical
-        outputs.power.chemical   = state.conditions.energy.distributors[self.tag].outputs.power.chemical  
-        outputs.power.pneumatic  = state.conditions.energy.distributors[self.tag].outputs.power.pneumatic 
-        outputs.power.hydraulic  = state.conditions.energy.distributors[self.tag].outputs.power.hydraulic 
-        outputs.power.thermal    = state.conditions.energy.distributors[self.tag].outputs.power.thermal  
-
-        return inputs, outputs
+        inputs, outputs = compute_fuel_line_conditions(self, state,network)
+        return inputs, outputs, None, None

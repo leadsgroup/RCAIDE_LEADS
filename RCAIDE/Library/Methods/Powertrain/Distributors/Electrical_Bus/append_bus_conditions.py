@@ -47,9 +47,20 @@ def append_bus_conditions(bus,segment):
      
     """
     ones_row                                                                = segment.state.ones_row
-    segment.state.conditions.energy.distributors[bus.tag]                   = Conditions() 
-    segment.state.conditions.energy.distributors[bus.tag].power             = Conditions()  
+    segment.state.conditions.energy.distributors[bus.tag]                   = Conditions()  
     segment.state.conditions.energy.distributors[bus.tag].links             = Conditions() 
+
+    segment.state.conditions.energy.distributors[bus.tag].inputs                          = Conditions()
+    segment.state.conditions.energy.distributors[bus.tag].inputs.power                    = Conditions()  
+    segment.state.conditions.energy.distributors[bus.tag].inputs.power.electrical         = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].inputs.power.thermal            = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[bus.tag].inputs.power.hydraulic          = 0 * ones_row(1)
+    
+    segment.state.conditions.energy.distributors[bus.tag].outputs                         = Conditions()  
+    segment.state.conditions.energy.distributors[bus.tag].outputs.power                   = Conditions()  
+    segment.state.conditions.energy.distributors[bus.tag].outputs.power.electrical        = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[bus.tag].outputs.power.thermal           = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[bus.tag].outputs.power.hydraulic         = 0 * ones_row(1)      
 
     if bus.assigned_distributors != None:
         for distributor_tag in bus.assigned_distributors[0]:    

@@ -49,22 +49,21 @@ def append_fuel_line_conditions(fuel_line,segment):
     # ------------------------------------------------------------------------------------------------------            
     # Create fuel_line results data structure  
     # ------------------------------------------------------------------------------------------------------ 
-    segment.state.conditions.energy.distributors[fuel_line.tag]                                     = Conditions() 
-    segment.state.conditions.energy.distributors[fuel_line.tag].power_draw                          = 0 * ones_row(1)   
-    segment.state.conditions.energy.distributors[fuel_line.tag].heat_energy_generated               = 0 * ones_row(1) 
-    segment.state.conditions.energy.distributors[fuel_line.tag].efficiency                          = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[fuel_line.tag].temperature                         = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[fuel_line.tag].energy                              = 0 * ones_row(1)  
-    segment.state.conditions.energy.distributors[fuel_line.tag].fuel_mass_flow_rate                 = 0 * ones_row(1)  
-    segment.state.conditions.energy.distributors[fuel_line.tag].power                               = Conditions()  
-    #segment.state.conditions.energy.distributors[fuel_line.tag].power.mechanical                    = 0 * ones_row(1) 
-    #segment.state.conditions.energy.distributors[fuel_line.tag].power.electrical                    = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[fuel_line.tag].power.chemical                      = 0 * ones_row(1)
-    #segment.state.conditions.energy.distributors[fuel_line.tag].power.pneumatic                     = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[fuel_line.tag].power.hydraulic                     = 0 * ones_row(1)
-    #segment.state.conditions.energy.distributors[fuel_line.tag].power.thermal                       = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[fuel_line.tag].fuel_tanks                          = Conditions()
-    segment.state.conditions.energy.distributors[fuel_line.tag].links                               = Conditions() 
+    segment.state.conditions.energy.distributors[fuel_line.tag]                                     = Conditions()    
+    segment.state.conditions.energy.distributors[fuel_line.tag].fuel_mass_flow_rate                 = 0 * ones_row(1)   
+    segment.state.conditions.energy.distributors[fuel_line.tag].links                               = Conditions()
+    
+    segment.state.conditions.energy.distributors[fuel_line.tag].inputs                              = Conditions()
+    segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power                        = Conditions()  
+    segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power.electrical             = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power.thermal                = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power.hydraulic              = 0 * ones_row(1)
+    
+    segment.state.conditions.energy.distributors[fuel_line.tag].outputs                             = Conditions()  
+    segment.state.conditions.energy.distributors[fuel_line.tag].outputs.power                       = Conditions()  
+    segment.state.conditions.energy.distributors[fuel_line.tag].outputs.power.electrical            = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[fuel_line.tag].outputs.power.thermal               = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[fuel_line.tag].outputs.power.hydraulic             = 0 * ones_row(1)          
 
     if fuel_line.assigned_distributors != None:
         for distributor_tag in fuel_line.assigned_distributors[0]:    
@@ -132,13 +131,9 @@ def append_fuel_line_segment_conditions(fuel_line,segment):
     
 
     fuel_line_conditions   = segment.state.conditions.energy.distributors[fuel_line.tag] 
-    fuel_line_conditions.fuel_mass_flow_rate[:,0]  = 0.0 
-    #fuel_line_conditions.power.mechanical[:,0]     = 0.0 
-    #fuel_line_conditions.power.electrical[:,0]     = 0.0 
-    fuel_line_conditions.power.chemical[:,0]       = 0.0 
-    #fuel_line_conditions.power.pneumatic[:,0]      = 0.0 
-    fuel_line_conditions.power.hydraulic[:,0]      = 0.0 
-    #fuel_line_conditions.power.thermal[:,0]        = 0.0   
+    fuel_line_conditions.fuel_mass_flow_rate[:,0]  = 0.0  
+    fuel_line_conditions.power.chemical[:,0]       = 0.0  
+    fuel_line_conditions.power.hydraulic[:,0]      = 0.0   
 
     if fuel_line.assigned_distributors != None:
         for distributor_tag in fuel_line.assigned_distributors[0]:     

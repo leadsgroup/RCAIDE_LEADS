@@ -14,4 +14,4 @@ RCAIDE.Library.Methods.Powertrain.Distributors
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 from .append_bus_conditions     import *
-from .compute_bus_conditions    import compute_bus_conditions 
+from .compute_electrical_bus_conditions    import compute_electrical_bus_conditions 
