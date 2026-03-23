@@ -82,8 +82,8 @@ def append_battery_module_conditions(module,battery,segment):
     segment.state.conditions.energy.sources[battery.tag][module.tag].cell.heat_energy_generated = 0 * ones_row(1)  
     segment.state.conditions.energy.sources[battery.tag][module.tag].cell.energy                = 0 * ones_row(1)
     segment.state.conditions.energy.sources[battery.tag][module.tag].energy                     = 0 * ones_row(1) 
-    segment.state.conditions.energy.sources[battery.tag][module.tag].temperature      = 0 * ones_row(1)         
-    segment.state.conditions.energy.sources[battery.tag][module.tag].cell.temperature = 0 * ones_row(1)    
+    segment.state.conditions.energy.sources[battery.tag][module.tag].temperature                = 0 * ones_row(1)         
+    segment.state.conditions.energy.sources[battery.tag][module.tag].cell.temperature           = 0 * ones_row(1)    
     segment.state.conditions.energy.sources[battery.tag][module.tag].cell.cycle_in_day               = 0
     segment.state.conditions.energy.sources[battery.tag][module.tag].cell.resistance_growth_factor   = 1.
     segment.state.conditions.energy.sources[battery.tag][module.tag].cell.capacity_fade_factor       = 1.
@@ -92,10 +92,14 @@ def append_battery_module_conditions(module,battery,segment):
     segment.state.conditions.energy.sources[battery.tag][module.tag].inputs                          = Conditions()
     segment.state.conditions.energy.sources[battery.tag][module.tag].inputs.power                    = Conditions()  
     segment.state.conditions.energy.sources[battery.tag][module.tag].inputs.power.electrical         = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[battery.tag][module.tag].inputs.power.thermal            = 0 * ones_row(1) 
+    segment.state.conditions.energy.sources[battery.tag][module.tag].inputs.power.hydraulic          = 0 * ones_row(1)  
     
     segment.state.conditions.energy.sources[battery.tag][module.tag].outputs                         = Conditions()  
     segment.state.conditions.energy.sources[battery.tag][module.tag].outputs.power                   = Conditions()  
-    segment.state.conditions.energy.sources[battery.tag][module.tag].outputs.power.electrical        = 0 * ones_row(1)        
+    segment.state.conditions.energy.sources[battery.tag][module.tag].outputs.power.electrical        = 0 * ones_row(1) 
+    segment.state.conditions.energy.sources[battery.tag][module.tag].outputs.power.thermal           = 0 * ones_row(1) 
+    segment.state.conditions.energy.sources[battery.tag][module.tag].outputs.power.hydraulic         = 0 * ones_row(1)        
 
     # -----------------------------------------------------------------------------------------      
     # Conditions for recharging battery  
