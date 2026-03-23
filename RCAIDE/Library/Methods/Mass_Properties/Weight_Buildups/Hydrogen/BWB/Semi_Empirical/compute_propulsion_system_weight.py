@@ -130,19 +130,16 @@ def compute_fuel_system_weight(vehicle, NENG,settings):
     WLINE = 0
     WPUMP = 0
  
-    #if settings.physics_based_distributor_estimation: 
+    #if settings.physics_based_distributor_estimation:  
     for network in vehicle.networks: 
         for source in  network.sources: 
             if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
                 WTANK += source.tank_accesories_weight_factor * (source.mass_properties.insulation_mass + source.mass_properties.structural_mass) # The factor 0.5 covers all the other tank adjustments
-             
-            # Step 2 estimate line weight of true transfer line
-            compute_distributor_center_of_gravity(fuel_line,vehicle, length=0)
-            WLINE = fuel_line.mass_properties.mass
-            
-            # # compute adjustment of transfer line weight 
-            # W_SYS_adjustment =  W_SYS_truth - W_SYS_Jet_A
-
+         
+        for distributor in  network.distributor:      
+            compute_distributor_center_of_gravity(distributor,vehicle, length=0)
+            WLINE += distributor.mass_properties.mass        
+        
         for converter in network.converters:
             if issubclass(type(converter),RCAIDE.Library.Components.Powertrain.Converters.Pump):
                 WPUMP += converter.mass_properties.mass

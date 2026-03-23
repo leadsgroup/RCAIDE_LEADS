@@ -124,15 +124,13 @@ def plot_aerodynamic_coefficients(results,
         segment_name = segment_tag.replace('_', ' ')
         axis_1 = plt.subplot(2,2,1) 
         axis_1.plot(time, aoa, color = line_colors[i], marker = ps.markers[0],markersize = ps.marker_size, linewidth = ps.line_width, label = segment_name) 
-        axis_1.set_ylabel(r'AoA (deg)') 
-        axis_1.set_xlabel('Time (mins)')        
+        axis_1.set_ylabel(r'AoA (deg)')       
         axis_1.set_ylim([-5,15])
         set_axes(axis_1)    
 
         axis_2 = plt.subplot(2,2,2)        
         axis_2.plot(time, l_d, color = line_colors[i], marker = ps.markers[0],markersize = ps.marker_size, linewidth = ps.line_width) 
-        axis_2.set_ylabel(r'L/D')
-        axis_2.set_xlabel('Time (mins)')
+        axis_2.set_ylabel(r'L/D') 
         set_axes(axis_2) 
 
         axis_3 = plt.subplot(2,2,3) 
@@ -152,7 +150,11 @@ def plot_aerodynamic_coefficients(results,
     
     # Adjusting the sub-plots for legend
     fig.tight_layout() 
-    fig.subplots_adjust(top=0.8)  
+    fig.subplots_adjust(top=0.8) 
+    
+    # set title of plot 
+    title_text    = 'Aerodynamic Coefficients'      
+    fig.suptitle(title_text)    
     
     if save_figure:
         fig.savefig(save_filename   + file_type)  

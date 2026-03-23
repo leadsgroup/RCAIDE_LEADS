@@ -319,7 +319,8 @@ def make_object(renderer, GEOM,  rgb_color, opacity):
     actor.GetProperty().SetOpacity(opacity)
     renderer.AddActor(actor)
     
-    return 
+    return
+
 def generate_vtk_object(pts):
     comp = vtk.vtkPolyData()
     points = vtk.vtkPoints()

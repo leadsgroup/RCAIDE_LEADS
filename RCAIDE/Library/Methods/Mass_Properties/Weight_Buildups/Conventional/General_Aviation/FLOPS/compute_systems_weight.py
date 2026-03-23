@@ -10,6 +10,7 @@
 # RCAIDE
 import  RCAIDE 
 from RCAIDE.Framework.Core    import Units, Data 
+from RCAIDE.Library.Components import Component
 
 # python imports 
 import  numpy as  np
@@ -217,7 +218,37 @@ def compute_systems_weight(vehicle):
 
     WAC     = (3.2 * (FPAREA * DF) ** 0.6 + 9 * NPASS ** 0.83) * VMAX + 0.075 * WAVONC  # ac weight
 
-
+    # Update system component masses if not user defined. If user defined than update the outputs
+    for system in vehicle.systems:
+        if isinstance(system,Component):
+            if system.mass_properties.mass == 0 or system.mass_properties.calculated_flag:
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Avionics:
+                    system.mass_properties.mass = WAVONC * Units.lbs
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls:
+                    system.mass_properties.mass = WSC * Units.lbs
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Electrical: 
+                    system.mass_properties.mass = WELEC * Units.lbs
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Hydraulics: 
+                    system.mass_properties.mass = WHYD * Units.lbs
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls: 
+                    system.mass_properties.mass = WAC * Units.lbs + WAC * Units.lbs
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Instruments:
+                    system.mass_properties.mass = WIN * Units.lbs
+                system.mass_properties.calculated_flag = True
+            else:
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Avionics:
+                    WAVONC = system.mass_properties.mass / Units.lbs
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls:
+                    WSC    = system.mass_properties.mass / Units.lbs
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Electrical: 
+                    WELEC  = system.mass_properties.mass / Units.lbs
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Hydraulics: 
+                    WHYD   = system.mass_properties.mass / Units.lbs
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls: 
+                    WAI    = system.mass_properties.mass * 0.5 / Units.lbs
+                    WAC    = system.mass_properties.mass * 0.5 / Units.lbs
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Instruments:
+                    WIN    = system.mass_properties.mass / Units.lbs
 
     output                     = Data()
     output.W_flight_control    = WSC * Units.lbs

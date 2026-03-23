@@ -76,8 +76,7 @@ def append_fuel_tank_conditions(tank, segment):
     #segment.state.conditions.energy.sources[tank.tag].outputs.power.pneumatic    = 0 * ones_row(1)
     #segment.state.conditions.energy.sources[tank.tag].outputs.power.hydraulic    = 0 * ones_row(1)
     #segment.state.conditions.energy.sources[tank.tag].outputs.power.thermal      = 0 * ones_row(1)
-    segment.state.conditions.weights.components.mass[tank.fuel.tag]               = tank.fuel.mass_properties.mass * ones_row(1)
-        
+    segment.state.conditions.weights.components.mass[tank.fuel.tag]               = tank.fuel.mass_properties.mass * ones_row(1) 
          
     return
 

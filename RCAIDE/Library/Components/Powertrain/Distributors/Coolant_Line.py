@@ -6,7 +6,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
-# RCAIDE imports  
+# RCAIDE imports
+import RCAIDE
 from .Distributor                                             import Distributor
 from RCAIDE.Library.Components.Component                      import Container   
 from RCAIDE.Framework.Core                                    import Data 
@@ -71,11 +72,28 @@ class Coolant_Line(Distributor):
         
         Source:
             None
-        """          
-        self.tag                            = 'coolant_line' 
-        self.domain                         = 'thermal'
-        self.heat_exchangers                = Container()
-        self.reservoirs                     = Container()  
+        """           
+        self.tag                                  = 'coolant_line' 
+        self.heat_exchangers                      = Container()
+        self.reservoirs                           = Container()
+        self.connector_weight_factor              = 1.1  
+        self.pipe                                 = Data()
+        self.pipe.rigid_material                  = RCAIDE.Library.Attributes.Materials.Aluminum()
+        self.pipe.flexible_material               = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304()
+        self.pipe.flexible_material_ratio         = 0.25
+        self.pipe.diameters                       = Data()
+        self.pipe.diameters.external              = 0.0
+        self.pipe.diameters.internal              = 0.0
+        self.insulation                           = Data()
+        self.insulation.rigid_material            = RCAIDE.Library.Attributes.Materials.Aluminum() 
+        self.insulation.flexible_material         = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304() 
+        self.insulation.flexible_material_ratio   = 0.25
+        self.insulation.diameters                 = Data()
+        self.insulation.diameters.external        = 0.0
+        self.insulation.diameters.internal        = 0.0
+        self.fuel_probe_unit_mass                 = 0.0
+        self.valve_unit_mass                      = 0.0      
+        self.boost_pump_unit_mass                 = 0.0 
 
     def __init__ (self, distributor=None):
         """
@@ -95,15 +113,7 @@ class Coolant_Line(Distributor):
         containers to store the cooling system components for each battery.
         """               
         self.active                        = True 
-        self.efficiency                    = 1.0
-        #if distributor is not None:
-            #for tag, item in  distributor.items():
-                #self.identical_sources  =  distributor.identical_sources
-                #if tag == 'battery_modules':
-                    #if not hasattr(self, 'battery_modules'):
-                        #self.battery_modules = Container()
-                    #for battery in item:
-                        #self.battery_modules[battery.tag] = Container()
+        self.efficiency                    = 1.0 
 
     def compute_performance(self, state):
 

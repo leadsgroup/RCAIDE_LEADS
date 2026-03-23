@@ -37,7 +37,6 @@ Segments
    Ground
    Segment
    Single_Point
-   Transition
    Untrimmed
    Vertical_Flight
 

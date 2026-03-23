@@ -34,6 +34,7 @@ Descent
    Constant_EAS_Constant_Rate
    Constant_Speed_Constant_Angle
    Constant_Speed_Constant_Rate
+   Constant_Throttle_Constant_Speed
    Linear_Mach_Constant_Rate
    Linear_Speed_Constant_Rate
 

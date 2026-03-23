@@ -126,29 +126,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
     # System Weight
     ##------------------------------------------------------------------------------- 
     W_systems = FLOPS.compute_systems_weight(vehicle)
-    for system in vehicle.systems:
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Avionics:
-            if system.mass_properties.mass == 0:
-                system.mass_properties.mass = W_systems.W_avionics 
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls:
-            if system.mass_properties.mass == 0:
-                system.mass_properties.mass = W_systems.W_flight_control 
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit: 
-            if system.mass_properties.mass == 0:
-                system.mass_properties.mass = W_systems.W_apu 
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Electrical: 
-            if system.mass_properties.mass == 0:
-                system.mass_properties.mass = W_systems.W_electrical 
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Hydraulics: 
-            if system.mass_properties.mass == 0:
-                system.mass_properties.mass = W_systems.W_hyd_pnu 
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls: 
-            if system.mass_properties.mass == 0:
-                system.mass_properties.mass = W_systems.W_ac + W_systems.W_anti_ice   
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Instruments:
-            if system.mass_properties.mass == 0:     
-                system.mass_properties.mass = W_systems.W_instruments 
-
+    
     ##-------------------------------------------------------------------------------                 
     # Propulsion Weight 
     ##-------------------------------------------------------------------------------
@@ -321,7 +299,10 @@ def compute_operating_empty_weight(vehicle, settings=None):
                                                     + output.empty.systems.electrical + output.empty.systems.avionics \
                                                     + output.empty.systems.hydraulics + output.empty.systems.furnishings \
                                                     + output.empty.systems.air_conditioner + output.empty.systems.instruments
- 
+    if hasattr(W_systems, 'W_water_tank'):
+        output.empty.systems.water_tank             = W_systems.W_water_tank
+        output.empty.systems.total                 += output.empty.systems.water_tank 
+        
     output.payload    = payload 
     output.operational_items    = Data()
     output.operational_items    = W_oper 

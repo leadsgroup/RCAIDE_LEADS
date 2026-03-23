@@ -11,7 +11,6 @@ sys.path.append(os.path.join(sys.path[0], 'Vehicles'))
 sys.path.append(os.path.join(sys.path[0], 'Vehicles', 'Rotors'))
 
 modules = [ 
-    'Verification/network_vtol/vtol_aircraft_test.py',  
     'Verification/analysis_aerodynamics/airfoil_panel_method_test.py',    
     'Verification/analysis_aerodynamics/airfoil_panel_method_convergence.py',
     'Verification/analysis_aerodynamics/VLM_control_surface_test.py',    
@@ -44,11 +43,13 @@ modules = [
     'Verification/geometry/airfoil_interpolation_test.py',    
     'Verification/geometry/fuselage_planform_compute.py',   
     'Verification/geometry/fuel_tank_volume_test.py',
-    'Verification/future_capability_coverage/coverage_test.py',    
+    'Verification/future_capability_coverage/coverage_test.py', 
+    'Verification/network_vtol/vtol_aircraft_test.py',     
     'Verification/network_electric/battery_electric_aircraft_test.py',
     'Verification/network_electric/electric_ducted_fan_aircraft_test.py',
     'Verification/network_fuel_cell/hydrogen_fuel_cell_aircraft_test.py', 
     'Verification/network_hybrid/hybrid_network_test.py',  
+    'Verification/network_hydrogen/bwb_hydrogen_test.py',
     'Verification/network_turbofan/turbofan_network_test.py',  
     'Verification/network_turbojet/turbojet_network_test.py',
     'Verification/network_turboprop/turboprop_network_test.py',

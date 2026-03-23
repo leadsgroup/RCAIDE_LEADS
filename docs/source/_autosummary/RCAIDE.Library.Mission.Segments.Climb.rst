@@ -30,6 +30,7 @@ Climb
    :template: custom-module-template.rst
    :recursive:
 
+   Constant_Acceleration_Constant_Pitchrate_Constant_Angle
    Constant_CAS_Constant_Rate
    Constant_Dynamic_Pressure_Constant_Angle
    Constant_Dynamic_Pressure_Constant_Rate

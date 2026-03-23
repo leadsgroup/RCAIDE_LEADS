@@ -109,7 +109,6 @@ def plot_altitude_sfc_weight(results,
         set_axes(axis_1) 
 
         axis_2.plot(time, fuel_mass, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
-        axis_2.set_xlabel('Time (mins)')
         set_axes(axis_2) 
 
         axis_3.plot(time, sfc, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)

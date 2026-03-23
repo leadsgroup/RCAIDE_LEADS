@@ -21,7 +21,14 @@ import matplotlib.cm as cm
 # local imports 
 import sys 
 import os
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
 from Hydrogen_Fuel_Cell   import vehicle_setup , configs_setup  
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -104,6 +111,7 @@ def base_analysis(vehicle):
 
     #  Weights
     weights = RCAIDE.Framework.Analyses.Weights.Weights()
+    weights.settings.run_weights_analysis = True
     analyses.append(weights)        
 
     #  Geometry

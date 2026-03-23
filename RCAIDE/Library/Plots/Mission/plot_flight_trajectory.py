@@ -122,8 +122,7 @@ def plot_flight_trajectory(results,
     line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))    
      
     for i in range(len(results.segments)): 
-        time     = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min
-        Range    = results.segments[i].conditions.frames.inertial.aircraft_range[:,0]/Units.nmi
+        time     = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min 
         x        = results.segments[i].conditions.frames.inertial.position_vector[:,0]  
         y        = results.segments[i].conditions.frames.inertial.position_vector[:,1] 
         z        = -results.segments[i].conditions.frames.inertial.position_vector[:,2] 
@@ -132,9 +131,8 @@ def plot_flight_trajectory(results,
         segment_name = segment_tag.replace('_', ' ')
         
         axes = plt.subplot(2,2,1)
-        axes.plot( time , Range, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width , label = segment_name)
-        axes.set_ylabel('Distance (nmi)')
-        axes.set_xlabel('Time (min)')
+        axes.plot( time , x, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width , label = segment_name)
+        axes.set_ylabel('x (m)') 
         set_axes(axes)            
 
         axes = plt.subplot(2,2,2)

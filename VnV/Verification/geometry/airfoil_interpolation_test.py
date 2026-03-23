@@ -7,17 +7,14 @@ from RCAIDE.Library.Methods.Geometry.Airfoil.generate_interpolated_airfoils  imp
 from RCAIDE.Library.Methods.Geometry.Airfoil.import_airfoil_geometry         import  import_airfoil_geometry
 from RCAIDE.Library.Plots.Geometry import plot_airfoil
 import os
-import sys
 import numpy as np
 import matplotlib.pyplot as plt 
 
 def main():
 
-    separator     = os.path.sep 
-    if  os.path.split(sys.path[0])[1] == 'geometry':
-        airfoils_path =  os.path.split(os.path.split(sys.path[0])[0])[0] + separator +  'Vehicles' + os.path.sep + 'Airfoils' + os.path.sep
-    else:
-        airfoils_path = sys.path[0] + separator +  'Vehicles' + os.path.sep + 'Airfoils' + os.path.sep
+    airfoils_path = os.path.abspath(
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "Vehicles", "Airfoils")
+    ) + os.path.sep
     a_labels      = ["Clark_y", "E63"]
     nairfoils     = 4   # number of total airfoils
     

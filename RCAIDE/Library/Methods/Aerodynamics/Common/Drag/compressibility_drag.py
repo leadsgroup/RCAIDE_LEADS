@@ -148,6 +148,6 @@ def compressibility_drag(state,settings,geometry):
     cd_comp  = cd_compressibility*(sub_h00(Mach))   
    
     # store results  
-    conditions.aerodynamics.coefficients.drag.compressible.total = cd_comp
+    conditions.aerodynamics.coefficients.drag.compressible.total =  cd_comp # Verification Required
 
     return  

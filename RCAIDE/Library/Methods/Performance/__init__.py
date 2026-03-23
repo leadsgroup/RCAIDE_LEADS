@@ -19,6 +19,7 @@ RCAIDE.Library.Methods.Aerodynamics
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 from .aircraft_aerodynamic_analysis     import aircraft_aerodynamic_analysis
+from .cruise_drag_buildup_table         import cruise_drag_buildup_table
 from .estimate_take_off_field_length    import estimate_take_off_field_length
 from .estimate_stall_speed              import estimate_stall_speed
 from .compute_payload_range_diagram     import compute_payload_range_diagram

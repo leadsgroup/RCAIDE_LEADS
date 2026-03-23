@@ -44,7 +44,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
     ##-------------------------------------------------------------------------------         
     # System Weight
     ##------------------------------------------------------------------------------- 
-    W_systems = FLOPS.compute_systems_weight(vehicle)
+    W_systems = FLOPS.compute_systems_weight(vehicle) 
     for system in vehicle.systems:
         if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Avionics:
             if system.mass_properties.mass == 0:
@@ -67,7 +67,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
         if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Instruments:
             if system.mass_properties.mass == 0:     
                 system.mass_properties.mass = W_systems.W_instruments 
- 
+  
     ##-------------------------------------------------------------------------------                 
     # Propulsion Weight 
     ##-------------------------------------------------------------------------------

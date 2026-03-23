@@ -130,56 +130,7 @@ def compute_operating_empty_weight(vehicle,settings=None):
     # System Weight
     ##------------------------------------------------------------------------------- 
     W_systems = compute_systems_weight(vehicle)
-    for system in vehicle.systems:
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit: 
-            if system.mass_properties.mass != 0:
-                W_systems.W_apu = 0 # All these things need to be refactored. But we are sure this works 
-
-    for system in vehicle.systems:
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Avionics:
-            if system.mass_properties.mass == 0 or system.mass_properties.calculated_flag:
-                system.mass_properties.mass = W_systems.W_avionics 
-                system.mass_properties.calculated_flag = True
-            else:
-                W_systems.W_avionics = system.mass_properties.mass
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls:
-            if system.mass_properties.mass == 0 or system.mass_properties.calculated_flag:
-                system.mass_properties.mass = W_systems.W_flight_control 
-                system.mass_properties.calculated_flag = True
-            else:
-                W_systems.W_flight_control = system.mass_properties.mass
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit: 
-            if system.mass_properties.mass == 0 or system.mass_properties.calculated_flag:
-                system.mass_properties.mass = W_systems.W_apu 
-                system.mass_properties.calculated_flag = True
-            else:
-                W_systems.W_apu += system.mass_properties.mass
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Electrical: 
-            if system.mass_properties.mass == 0 or system.mass_properties.calculated_flag:
-                system.mass_properties.mass = W_systems.W_electrical 
-                system.mass_properties.calculated_flag = True
-            else:
-                 W_systems.W_electrical = system.mass_properties.mass
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Hydraulics: 
-            if system.mass_properties.mass == 0 or system.mass_properties.calculated_flag:
-                system.mass_properties.mass = W_systems.W_hyd_pnu 
-                system.mass_properties.calculated_flag = True
-            else:
-                W_systems.W_hyd_pnu = system.mass_properties.mass
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls: 
-            if system.mass_properties.mass == 0 or system.mass_properties.calculated_flag:
-                system.mass_properties.mass = W_systems.W_ac + W_systems.W_anti_ice   
-                system.mass_properties.calculated_flag = True
-            else:
-                W_systems.W_anti_ice = system.mass_properties.mass * 0.5
-                W_systems.W_ac       = system.mass_properties.mass * 0.5
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Instruments:
-            if system.mass_properties.mass == 0 or system.mass_properties.calculated_flag:     
-                system.mass_properties.mass = W_systems.W_instruments  
-                system.mass_properties.calculated_flag = True
-            else:
-                W_systems.W_instruments = system.mass_properties.mass
-
+    
     ##-------------------------------------------------------------------------------                 
     # Propulsion Weight 
     ##-------------------------------------------------------------------------------
@@ -358,8 +309,12 @@ def compute_operating_empty_weight(vehicle,settings=None):
     output.empty.systems.total                  = output.empty.systems.control_systems + output.empty.systems.apu \
                                                     + output.empty.systems.electrical + output.empty.systems.avionics \
                                                     + output.empty.systems.hydraulics + output.empty.systems.furnishings \
-                                                    + output.empty.systems.air_conditioner + output.empty.systems.instruments
- 
+                                                    + output.empty.systems.air_conditioner + output.empty.systems.instruments \
+                                                    
+    if hasattr(W_systems, 'W_water_tank'):
+        output.empty.systems.water_tank             = W_systems.W_water_tank
+        output.empty.systems.total                 += output.empty.systems.water_tank 
+    
     output.payload    = payload 
     output.operational_items    = Data()
     output.operational_items    = W_oper 

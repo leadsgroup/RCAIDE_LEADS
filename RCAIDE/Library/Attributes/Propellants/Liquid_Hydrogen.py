@@ -79,14 +79,11 @@ class Liquid_Hydrogen(Propellant):
         
         self.tag                           = 'Liquid_H2' 
         self.reactant                      = 'O2' 
-        
         self.density                       = 70.85                            # [kg/m^3]
-        self.specific_energy               = 119.9e6                          # [J/kg] 
+        self.specific_energy               = 120e6  # [J/kg] Considering the lower heating value https://ntrs.nasa.gov/api/citations/20020085127/downloads/20020085127.pdf
         self.energy_density                = 8491.0e6                         # [J/m^3] 
         self.gravimetric_efficiency        = .3
         self.stoichiometric_fuel_to_air    = 0.029411 
-        self.lower_heating_value           = 120e6
-
         self.temperatures.autoignition     = 845.15                           # [K]  
         self.stoichiometric_fuel_air_ratio = 0.029411         # [-] Stoichiometric Fuel to Air ratio
         self.heat_of_vaporization          = 0         # [J/kg] Heat of vaporization at standard conditions
@@ -96,9 +93,9 @@ class Liquid_Hydrogen(Propellant):
         self.kinetic_mechanism             = '' # [-] Kinetic mechanism for fuel surrogate species
         self.oxidizer                      = ''       
 
-        self.materials_properties = self.propellant_properties()
+        self.materials_properties = self.liquid_hydrogen_properties()
 
-    def propellant_properties(self, T, prop_name):
+    def liquid_hydrogen_properties(self, T, prop_name):
         """
             Return interpolated liquid hydrogen property value at a given temperature.
 

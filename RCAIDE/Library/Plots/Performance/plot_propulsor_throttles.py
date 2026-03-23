@@ -95,7 +95,8 @@ def plot_propulsor_throttles(results,
         
         # power 
         axis_1 = plt.subplot(1,1,1)
-        axis_1.set_ylabel(r'Throttle')
+        axis_1.set_ylabel(r'Throttle') 
+        axis_1.set_xlabel('Time (mins)')        
         set_axes(axis_1)               
         for network in results.segments[i].analyses.vehicle.networks: 
             for j ,  propulsor in enumerate(network.propulsors):

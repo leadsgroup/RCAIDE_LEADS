@@ -15,7 +15,14 @@ import numpy as np
 import os
 
 # local imports 
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
 from Embraer_190    import vehicle_setup as vehicle_setup
 from Embraer_190    import configs_setup as configs_setup 
 
@@ -32,9 +39,9 @@ def main():
     results = compute_noise_certification_data(approach_mission = approach_mission, takeoff_mission=takeoff_mission)
     plot_noise_certification_contour(results)
 
-    truth_approach_noise_2000m  = 95.74105421155724
-    truth_flyover_noise_6000m   = 89.1840478382459
-    truth_sideline_noise_450m   = 98.55365729833616
+    truth_approach_noise_2000m  = 95.5410451280585
+    truth_flyover_noise_6000m   = 86.39085739592565
+    truth_sideline_noise_450m   = 97.7164459639408
 
     # Check the errors
     error = Data()

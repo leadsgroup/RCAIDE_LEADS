@@ -42,7 +42,6 @@ Converters
    Fan
    Generic_Fuel_Cell_Stack
    Lift_Rotor
-   Offtake_Shaft
    PMSM_Generator
    PMSM_Motor
    Prop_Rotor

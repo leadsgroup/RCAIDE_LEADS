@@ -18,7 +18,14 @@ import pylab as plt
 import sys
 import os
 
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
 from Navion    import vehicle_setup, configs_setup 
 
 # ----------------------------------------------------------------------
@@ -65,7 +72,7 @@ def AVL_Surrogate_Mission(use_surrogate,trim_aircraft,keep_regression_files,new_
  
     # Extract sample values from computation   
     cruise_CL        = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0] 
-    cruise_CL_thruth = 0.4662357296346775
+    cruise_CL_thruth = 0.4207404923969484
     # Truth values  
     error = Data()  
     error.cruise_CL   = np.max(np.abs(cruise_CL - cruise_CL_thruth))   

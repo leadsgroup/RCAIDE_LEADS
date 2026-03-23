@@ -35,6 +35,7 @@ OpenVSP
    get_vsp_measurements
    import_vsp_vehicle
    mach_slices
+   run_vsp_mesh
    vsp_boom
    vsp_fuselage
    vsp_nacelle

@@ -22,7 +22,14 @@ import os
 import numpy as np
 
 # import vehicle file
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
 from Lockheed_Martin_F22 import vehicle_setup as vehicle_setup
 import matplotlib.pyplot                as plt
 

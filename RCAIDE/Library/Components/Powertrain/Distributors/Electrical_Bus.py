@@ -11,8 +11,11 @@
 # RCAIDE imports  
 import RCAIDE  
 from .Distributor                                                  import Distributor 
-from RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus import *
-from RCAIDE.Library.Attributes.Materials                           import Copper, Polyimide
+from RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus import * 
+from RCAIDE.Library.Attributes.Materials                           import Copper, Polyimide 
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_distributor_moment_of_inertia import *
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_distributor_center_of_gravity import * 
+ 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Electrical_Bus
@@ -151,9 +154,38 @@ class Electrical_Bus(Distributor):
             Time index
         delta_t : float
             Time step
-        """
-        compute_bus_conditions(self, source, state)
-        return
+        """ 
+        compute_bus_conditions(self, source, state) 
+        return    
 
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
+        """
+        Computes the moment of inertia tensor for the fuel line.
+
+        Parameters
+        ----------
+        center_of_gravity : list, optional
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]] 
+
+        See Also
+        --------
+        RCAIDE.Library.Methods.weights.vehicle.moments_of_inertia.compute_fuselage_moment_of_inertia
+            Implementation of the moment of inertia calculation
+        """
+        # _ , _ = compute_distributor_moment_of_inertia(self,center_of_gravity= center_of_gravity)  
+        return
+ 
     def initialize(self,network):
+        return
+    
+    def compute_center_of_gravity(self,vehicle): 
+        """
+        Computes the center of gravity for the distributor. 
+
+        See Also
+        --------
+        RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_fuselage_center_of_gravity
+            Implementation of the moment of inertia calculation
+        """
+        # _  = compute_distributor_center_of_gravity(self,vehicle) 
         return 

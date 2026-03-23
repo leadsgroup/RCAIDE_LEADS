@@ -3,12 +3,19 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Data, Units  
 from RCAIDE.Library.Plots import *  
+from RCAIDE.Library.Methods.Performance.cruise_drag_buildup_table import cruise_drag_buildup_table
 import numpy as  np 
 import sys
 import os
 
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+base_dir = os.path.dirname(os.path.abspath(__file__))
 
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
 # the analysis functions
 from BWB    import vehicle_setup  ,  configs_setup
 
@@ -17,6 +24,22 @@ from BWB    import vehicle_setup  ,  configs_setup
 # ----------------------------------------------------------------------
 def main():
     
+    vehicle  = vehicle_setup() 
+    configs  = configs_setup(vehicle) 
+    analyses = analyses_setup(configs)  
+    mission  = mission_setup(analyses)
+    cruise_drag_buildup_table(mission = mission, cruise_segment_tag = "cruise", save_filepath = os.path.join(os.path.dirname(os.path.abspath(__file__))))
+    for filename in (
+    "cruise_drag_buildup_parasite_zoom.png",
+    "cruise_drag_buildup.xlsx",
+    "cruise_drag_buildup_pie.png",
+    "cruise_drag_buildup.png",
+    ):
+        file_path = os.path.join(base_dir, filename)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+
     vehicle  = vehicle_setup() 
     configs  = configs_setup(vehicle) 
     analyses = analyses_setup(configs)  
@@ -36,7 +59,7 @@ def main():
                     show_figure                 = False)
 
     Cruise_CL        = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0] 
-    Cruise_CL_true   = 0.38410077243879337
+    Cruise_CL_true   = 0.5112606367799638
     Cruise_CL_diff   = np.abs(Cruise_CL - Cruise_CL_true)
     print('Error: ',Cruise_CL_diff)
     assert np.abs((Cruise_CL - Cruise_CL_true)/Cruise_CL_true) < 1e-6 

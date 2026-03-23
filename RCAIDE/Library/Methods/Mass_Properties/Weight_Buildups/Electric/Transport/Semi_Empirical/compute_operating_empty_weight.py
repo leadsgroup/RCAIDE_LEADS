@@ -125,28 +125,6 @@ def compute_operating_empty_weight(vehicle, settings=None):
     # Operating Items Weight
     ##------------------------------------------------------------------------------- 
     W_oper = compute_operating_items_weight(vehicle) 
-    for system in vehicle.systems:
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Avionics:
-            if system.mass_properties.mass == 0:
-                system.mass_properties.mass = W_systems.W_avionics 
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls:
-            if system.mass_properties.mass == 0:
-                system.mass_properties.mass = W_systems.W_flight_control 
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit: 
-            if system.mass_properties.mass == 0:
-                system.mass_properties.mass = W_systems.W_apu 
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Electrical: 
-            if system.mass_properties.mass == 0:
-                system.mass_properties.mass = W_systems.W_electrical 
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Hydraulics: 
-            if system.mass_properties.mass == 0:
-                system.mass_properties.mass = W_systems.W_hyd_pnu 
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls: 
-            if system.mass_properties.mass == 0:
-                system.mass_properties.mass = W_systems.W_ac + W_systems.W_anti_ice   
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Instruments:
-            if system.mass_properties.mass == 0:     
-                system.mass_properties.mass = W_systems.W_instruments 
     
     ##-------------------------------------------------------------------------------         
     # System Weight

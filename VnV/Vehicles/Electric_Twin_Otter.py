@@ -37,6 +37,7 @@ def vehicle_setup(cell_chemistry, btms_type):
     vehicle.mass_properties.takeoff       = 5670  # kg 
     vehicle.mass_properties.max_zero_fuel = 5670  # kg 
     vehicle.mass_properties.max_payload   = 1414. # kg  
+    vehicle.mass_properties.payload       = 100   # kg
     vehicle.reference_area                = 39 
     vehicle.number_of_passengers          = 19
     vehicle.systems.control               = "fully powered"

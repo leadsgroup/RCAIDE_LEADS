@@ -31,4 +31,5 @@ Booms
    :recursive:
 
    Boom
+   Segments
 

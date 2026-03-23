@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  RCAIDE
 # ---------------------------------------------------------------------------------------------------------------------- 
+from copy import deepcopy
 import RCAIDE 
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_vehicle_moment_of_inertia
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_vehicle_center_of_gravity 
@@ -109,7 +110,10 @@ def mass_properties(mission):
         if segment.analyses.weights == None:
             raise AssertionError('Define weights analysis method')
         else: 
-            mass_properties_preprocess_routine(segment, i) 
+            if i ==0 or segment.analyses.geometry.settings.unique_geometry:
+                mass_properties_preprocess_routine(segment, i) 
+            else:
+                use_previous_segment_pre_processed_data(mission,segment,i)   
     return 
 
 def mass_properties_preprocess_routine(segment, i = 0):
@@ -142,14 +146,17 @@ def mass_properties_preprocess_routine(segment, i = 0):
     # ---------------------------------------------------------------------------------------------------------------------------         
         if analyses.vehicle.mass_properties.payload > analyses.vehicle.mass_properties.max_payload:
             print('Warning:Prescribed payload weight is greater than maxmimum payload weight')
-        if weights_analysis.settings.iterate_mtow and i ==0:
+        if weights_analysis.settings.iterate_mtow:
             diff = 999
             max_iterations = 1000
             mtow_iterations = 0 
+            max_zero_fuel_flag = False
+            compute_max_fuel = False
             while abs(diff)>0.00005 and mtow_iterations<max_iterations:
                 if analyses.vehicle.mass_properties.max_zero_fuel == None:
+                    max_zero_fuel_flag = True
                     # Before proceeding to the weight buildups, the buildups need either the max fuel capacity or the max zero fuel to compute OEW 
-                    if i == 0:
+                    if i == 0 and mtow_iterations == 0:
                         print('\n Warning: Max Fuel or Max Zero Fuel not defined. Iterating to find these values.')
                     # Inital guess for max fuel and max zero fuel based on regressional analysis which use max takeoff weight of the aircraft
                     compute_max_fuel = False
@@ -193,8 +200,6 @@ def mass_properties_preprocess_routine(segment, i = 0):
                             if compute_max_fuel: 
                                 analyses.vehicle.mass_properties.max_fuel      += residual_max_fuel * 0.1 
 
-                
-                
                 _ = weights_analysis.evaluate(analyses.vehicle) 
 
                 if analyses.vehicle.mass_properties.payload > analyses.vehicle.mass_properties.max_payload:
@@ -216,10 +221,17 @@ def mass_properties_preprocess_routine(segment, i = 0):
                                 analyses.vehicle.mass_properties.max_fuel,
                                 analyses.vehicle)
                 analyses.vehicle.mass_properties.max_takeoff = new_mtow
-            if mtow_iterations>max_iterations:
-                print('MTOW DIDNT CONVERGE')
 
-    
+                if abs(diff)> 0.00005:
+                    if max_zero_fuel_flag:
+                        analyses.vehicle.mass_properties.max_zero_fuel = None
+                    if compute_max_fuel:
+                        analyses.vehicle.mass_properties.max_fuel = None
+                mtow_iterations += 1
+            
+            if mtow_iterations>max_iterations:
+                raise Exception('MTOW DIDNT CONVERGE')
+            
         else:
             if analyses.vehicle.mass_properties.max_zero_fuel == None:
             # Before proceeding to the weight buildups, the buildups need either the max fuel capacity or the max zero fuel to compute OEW 
@@ -283,6 +295,11 @@ def mass_properties_preprocess_routine(segment, i = 0):
             apply_correction_factors(analyses)
             if i == 0:
                 apply_component_weights(analyses)
+        if (analyses.vehicle.mass_properties.fuel  == 0 or analyses.vehicle.mass_properties.fuel is None) and weights_analysis.propulsion_architecture != 'Electric':
+            ('Fuel Weight for the mission is not defned. Filling up the airplace till max takeoff weight')     
+            analyses.vehicle.mass_properties.fuel     = analyses.vehicle.mass_properties.max_takeoff-\
+                                                        (analyses.vehicle.mass_properties.operating_empty + analyses.vehicle.mass_properties.payload)
+
 
         # Compute takeoff weight and max zero fuel weight 
         if analyses.vehicle.mass_properties.takeoff == None:
@@ -297,7 +314,7 @@ def mass_properties_preprocess_routine(segment, i = 0):
         # ---------------------------------------------------------------------------------------------------------------------------
         # STEP 3: Print weight statements and apply weight factors  
         # --------------------------------------------------------------------------------------------------------------------------- 
-            
+       
         if weights_analysis.print_weight_analysis_report and type(weights_analysis) != RCAIDE.Framework.Analyses.Weights.Weights: 
             if i == 0: 
                 print("\nPerforming Weights Analysis")
@@ -445,6 +462,7 @@ def mass_properties_preprocess_routine(segment, i = 0):
             with pd.ExcelWriter(excel_filename, engine="openpyxl",mode="a",if_sheet_exists="replace") as writer:
                 centre_of_gravity_df.to_excel(writer,sheet_name="Centre of Gravity",index=False)
             print(f"CG breakdown written to Excel:\n  {excel_filename}")
+        analyses.vehicle.mass_properties.center_of_gravity_breakdown = centre_of_gravity_df
 
     # ---------------------------------------------------------------------------------------------------------------------------         
     # STEP 6: Compute Moment of Inertia 
@@ -537,10 +555,15 @@ def apply_component_weights(analyses):
                         fuselage.mass_properties.mass *= weight_correction_factors.empty.structural.fuselage
         elif key == 'networks':
             for network in analyses.vehicle.networks:
-                for propulsor in network.propulsors:
-                    propulsor.mass_properties.mass *= 1 
+                for propulsor in network.propulsors: 
                     if hasattr(weight_correction_factors.empty.structural, 'nacelle'):
                         propulsor.nacelle.mass_properties.mass *= weight_correction_factors.empty.structural.nacelle
+                    if hasattr(weight_correction_factors.empty.propulsion, 'engines'):
+                        propulsor.mass_properties.mass *= weight_correction_factors.empty.propulsion.engines
+                # for fuel_line in network.fuel_lines:
+                #     for converter in fuel_line.converters:
+                #         if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Pump()):
+                #             analyses.vehicle.mass_properties.weight_breakdown.empty.propulsion.converters[converter.tag] = converter.mass_properties.mass
                     # Add to this nacelles, thrust reversers, etc
         elif key == 'landing_gears':
             for landing_gear in analyses.vehicle.landing_gears:
@@ -562,7 +585,7 @@ def apply_component_weights(analyses):
                         system.mass_properties.mass *= weight_correction_factors.empty.systems.control_systems 
                     elif hasattr(weight_correction_factors.empty.systems, 'control_systems') and system.mass_properties.calculated_flag == False:
                         analyses.vehicle.mass_properties.weight_breakdown.empty.systems.control_systems = system.mass_properties.mass
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit: 
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit: 
                     if hasattr(weight_correction_factors.empty.systems, 'apu') and system.mass_properties.calculated_flag:
                         system.mass_properties.mass *= weight_correction_factors.empty.systems.apu  
                     elif hasattr(weight_correction_factors.empty.systems, 'apu') and system.mass_properties.calculated_flag == False:
@@ -608,3 +631,17 @@ def iterate_for_mtow(old_mtow, oew, max_payload, max_fuel,vehicle):
     # Keep MTOW physically meaningful.
     return max(new_mtow, 0.0),diff
                                     
+
+def use_previous_segment_pre_processed_data(mission,segment,i):
+    '''
+    Reuses previous segment pre processed data to save computational time.
+    Ensures that changes in configuration are not overwritten.    
+    '''
+    analyses         = segment.analyses
+    weights_analysis = analyses.weights 
+    vehicle_1 = deepcopy(mission.segments[i-1].analyses.vehicle)
+    segment.analyses.vehicle.mass_properties = vehicle_1.mass_properties
+    weights_analysis.settings.iterate_mtow = False
+    mass_properties_preprocess_routine(segment, i) 
+    
+    return

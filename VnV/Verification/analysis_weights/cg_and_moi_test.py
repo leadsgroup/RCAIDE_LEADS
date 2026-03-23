@@ -12,10 +12,18 @@ from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_ve
 from RCAIDE.Library.Methods.Geometry.Planform                  import wing_planform
 import numpy as  np
 import RCAIDE
+import pandas as pd
 import sys   
 import os
 
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
 
 # the analysis functions
 from Lockheed_C5a           import vehicle_setup as transport_setup
@@ -37,7 +45,7 @@ def Transport_Aircraft_Test():
 
     # update fuel weight to 60%
     vehicle.networks.fuel.fuel_lines.fuel_line.fuel_tanks.integral_tank.fuel.mass_properties.mass = 0.6 * vehicle.networks.fuel.fuel_lines.fuel_line.fuel_tanks.integral_tank.fuel.mass_properties.mass
-
+    vehicle.mass_properties.fuel = 0.6 * vehicle.networks.fuel.fuel_lines.fuel_line.fuel_tanks.integral_tank.fuel.mass_properties.mass
     # ------------------------------------------------------------------
     #   Weight Breakdown 
     # ------------------------------------------------------------------  
@@ -51,19 +59,44 @@ def Transport_Aircraft_Test():
 
     # ------------------------------------------------------------------
     #   CG Location
-    # ------------------------------------------------------------------    
-    CG_location, _, _ = compute_vehicle_center_of_gravity(vehicle)  
+    # ------------------------------------------------------------------  
+    centre_of_gravity_df = pd.DataFrame(columns=[
+    "Component",
+    "Mass (kg)",
+    "CG x (m)",
+    "CG y (m)",
+    "CG z (m)"
+    ])
+    verbose_flag = False
+    CG_location,_, _, centre_of_gravity_df = compute_vehicle_center_of_gravity(vehicle,centre_of_gravity_df,
+                                            overwrite_center_of_gravity =  True ,
+                                            verbose=verbose_flag)     
 
     # ------------------------------------------------------------------
     #   Operating Aircraft MOI
-    # ------------------------------------------------------------------    
-    MOI  = compute_vehicle_moment_of_inertia(vehicle, CG_location) 
-
+    # ------------------------------------------------------------------ 
+ 
+    moment_of_inertia_df = pd.DataFrame(columns=[
+    "Component",
+    "Mass (kg)",
+    "Ixx (kg·m²)",
+    "Iyy (kg·m²)",
+    "Izz (kg·m²)",
+    "Ixy (kg·m²)",
+    "Ixz (kg·m²)",
+    "Iyz (kg·m²)",
+    ])
+    overwrite_MOI = True
+    verbose_flag = False
+    MOI ,moment_of_inertia_df = compute_vehicle_moment_of_inertia(vehicle,moment_of_inertia_df,
+                                        overwrite_moment_of_intertia = overwrite_MOI,
+                                        verbose=verbose_flag)   
+    
     print(vehicle.tag + ' Moment of Inertia')
     print(MOI) 
-    accepted  = np.array([[13477607.88436136,  1060786.65213009, -2303578.72179531],
-                          [ 1060786.65213009, 27157084.72163714,   144715.50530858],
-                          [-2303578.72179531,   144715.50530858, 26665027.80590354]])
+    accepted  = np.array([[ 1.61568025e+07, -2.32830644e-10, -7.93049792e+06],
+       [-2.32830644e-10,  5.94821638e+07,  0.00000000e+00],
+       [-7.93049792e+06,  0.00000000e+00,  5.53750895e+07]])
                           
     MOI_error     = (MOI - accepted) / accepted
 
@@ -99,19 +132,43 @@ def General_Aviation_Test():
     # ------------------------------------------------------------------
     #   CG Location
     # ------------------------------------------------------------------    
-    CG_location, _ , _= compute_vehicle_center_of_gravity(vehicle)  
+    centre_of_gravity_df = pd.DataFrame(columns=[
+    "Component",
+    "Mass (kg)",
+    "CG x (m)",
+    "CG y (m)",
+    "CG z (m)"
+    ])
+    verbose_flag = False
+    CG_location,_, _, centre_of_gravity_df = compute_vehicle_center_of_gravity(vehicle,centre_of_gravity_df,
+                                            overwrite_center_of_gravity =  True ,
+                                            verbose=verbose_flag)   
 
     # ------------------------------------------------------------------
     #   Operating Aircraft MOI
     # ------------------------------------------------------------------    
-    MOI  = compute_vehicle_moment_of_inertia(vehicle, CG_location) 
+    moment_of_inertia_df = pd.DataFrame(columns=[
+    "Component",
+    "Mass (kg)",
+    "Ixx (kg·m²)",
+    "Iyy (kg·m²)",
+    "Izz (kg·m²)",
+    "Ixy (kg·m²)",
+    "Ixz (kg·m²)",
+    "Iyz (kg·m²)",
+    ])
+    overwrite_MOI = True
+    verbose_flag = False
+    MOI ,moment_of_inertia_df = compute_vehicle_moment_of_inertia(vehicle,moment_of_inertia_df,
+                                        overwrite_moment_of_intertia = overwrite_MOI,
+                                        verbose=verbose_flag)   
 
     print(vehicle.tag + ' Moment of Inertia')
     print(MOI)
 
-    accepted  = np.array([[3289.69032531,  -10.87334507,  -50.30969647],
-                          [ -10.87334507, 3683.8647338 ,   -9.44417805],
-                          [ -50.30969647,   -9.44417805, 2795.54860064]])
+    accepted  = np.array([[3092.49011892,    0.        , -283.80274831],
+       [   0.        , 6061.22925355,    0.        ],
+       [-283.80274831,    0.        , 4921.69877942]])
 
     MOI_error     = MOI - accepted
 
@@ -153,18 +210,42 @@ def EVTOL_Aircraft_Test(update_regression_values):
     # ------------------------------------------------------------------
     #   CG Location
     # ------------------------------------------------------------------    
-    CG_location, _ , _=  compute_vehicle_center_of_gravity(vehicle)  
+    centre_of_gravity_df = pd.DataFrame(columns=[
+    "Component",
+    "Mass (kg)",
+    "CG x (m)",
+    "CG y (m)",
+    "CG z (m)"
+    ])
+    verbose_flag = False
+    CG_location,_, _, centre_of_gravity_df = compute_vehicle_center_of_gravity(vehicle,centre_of_gravity_df,
+                                            overwrite_center_of_gravity =  True ,
+                                            verbose=verbose_flag)   
 
     # ------------------------------------------------------------------
     #   Operating Aircraft MOI
     # ------------------------------------------------------------------    
-    MOI  = compute_vehicle_moment_of_inertia(vehicle, CG_location)
+    moment_of_inertia_df = pd.DataFrame(columns=[
+    "Component",
+    "Mass (kg)",
+    "Ixx (kg·m²)",
+    "Iyy (kg·m²)",
+    "Izz (kg·m²)",
+    "Ixy (kg·m²)",
+    "Ixz (kg·m²)",
+    "Iyz (kg·m²)",
+    ])
+    overwrite_MOI = True
+    verbose_flag = False
+    MOI ,moment_of_inertia_df = compute_vehicle_moment_of_inertia(vehicle,moment_of_inertia_df,
+                                        overwrite_moment_of_intertia = overwrite_MOI,
+                                        verbose=verbose_flag)   
 
     print(vehicle.tag + ' Moment of Inertia')
     print(MOI) 
-    accepted  = np.array([[ 8897.68574941,  -234.00424743,  -357.809369  ],
-                          [ -234.00424743, 12111.53717803,  -175.47068943],
-                          [ -357.809369  ,  -175.47068943, 19414.704072  ]])
+    accepted  = np.array([[ 9463.1492284 ,  -431.31503284,  -323.65112921],
+       [ -431.31503284,  9992.41102398,  -101.09543924],
+       [ -323.65112921,  -101.09543924, 17665.06668109]])
     MOI_error     = (MOI - accepted) / accepted
 
     # Check the errors

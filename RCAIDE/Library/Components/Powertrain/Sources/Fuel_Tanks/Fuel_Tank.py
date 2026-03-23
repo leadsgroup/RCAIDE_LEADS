@@ -26,8 +26,11 @@ class Fuel_Tank(Source):
     
     Attributes
     ----------
-    tag : str
-        Identifier for the fuel tank (default: 'fuel_tank') 
+    tag : str 
+        Identifier for the fuel tank (default: 'fuel_tank')
+        
+    fuel_flow_split_ratio : float
+        Ratio of fuel flow allocation (default: 1.0) 
         
     mass_properties.empty_mass : float
         Mass of empty tank structure [kg] (default: 0.0)
@@ -59,8 +62,9 @@ class Fuel_Tank(Source):
         self.tag                            = 'fuel_tank'  
         self.fuel                           = None
         self.secondary_mass_flow_rate       = 0.0   #kg/s
-        self.wall_clearance                 = 0.0
-        self.wall_thickness                 = 1E-3 
+        self.wall_clearance                 = 0.0 
+        self.wall_thickness                 = 1E-3
+        self.fuel_flow_split_ratio          = None 
         self.xz_plane_symmetric             = True
         self.wing_tag                       = None
         self.fuselage_tag                   = None

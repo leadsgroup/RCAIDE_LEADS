@@ -26,10 +26,11 @@ def vehicle_setup():
     vehicle.tag                                      = 'Cessna_172' 
     vehicle.mass_properties.max_takeoff              = 2550. * Units.pounds
     vehicle.mass_properties.takeoff                  = 2550. * Units.pounds 
+    vehicle.mass_properties.operating_empty          = 1600 * Units.pounds
     vehicle.mass_properties.max_zero_fuel            = 1680  * Units.pounds 
     vehicle.mass_properties.max_fuel                 = 152.407
     vehicle.mass_properties.max_payload              = 910  * Units.pounds 
-    vehicle.mass_properties.cargo                    = 0. 
+    vehicle.mass_properties.payload                  = 200
                                                
     # envelope properties                       
     vehicle.flight_envelope.ultimate_load            = 5.7 

@@ -16,7 +16,6 @@ from RCAIDE.Framework.Analyses                   import Process
 # ----------------------------------------------------------------------------------------------------------------------
 # Constant_Throttle_Constant_Speed
 # ---------------------------------------------------------------------------------------------------------------------- 
- 
 class Constant_Throttle_Constant_Speed(Evaluate):
     """ Climb at a constant throttle setting and true airspeed. This segment may not always converge as the vehicle 
         could be deficient in thrust. Useful as a check to see the climb rate at the top of climb.

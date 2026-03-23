@@ -117,9 +117,9 @@ def compute_wing_center_of_gravity(wing,vehicle,n_points = 101):
         airfoil = wing.airfoil 
         if  airfoil !=  None:                 
             if type(airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
-                geometry = compute_naca_4series(airfoil_in.NACA_4_Series_code,n_points)
+                geometry = compute_naca_4series(airfoil.NACA_4_Series_code,n_points)
             elif type(airfoil) == RCAIDE.Library.Components.Airfoils.Airfoil: 
-                geometry     = import_airfoil_geometry(airfoil_in.coordinate_file,n_points)
+                geometry     = import_airfoil_geometry(airfoil.coordinate_file,n_points)
         else:
             geometry = compute_naca_4series('0012',n_points) 
 

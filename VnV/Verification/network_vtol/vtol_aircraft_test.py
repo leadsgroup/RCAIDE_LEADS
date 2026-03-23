@@ -21,7 +21,14 @@ import os
 import time
 
 # local imports 
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
 from Tiltrotor_EVTOL        import vehicle_setup as  TR_vehicle_setup 
 from Tiltrotor_EVTOL        import configs_setup as  TR_configs_setup 
 from Tiltwing_EVTOL         import vehicle_setup as  TW_vehicle_setup 
@@ -67,7 +74,7 @@ def tiltrotor_transition_test(update_regression_values):
     
     # Extract sample values from computation     
     hover_throttle          = TR_results.segments.vertical_climb.conditions.energy.propulsors['front_port_propulsor'].throttle[1][0]
-    transition_throttle     = TR_results.segments.departure_transition_1.conditions.energy.propulsors['front_port_propulsor'].throttle[1][0]  
+    cruise_rpm              = TR_results.segments.cruise.conditions.energy.converters.front_port_rotor.rpm[0][0]
       
     tf                   = time.time()
     elapsed_time         = round((tf-ti)/60,2)
@@ -76,22 +83,22 @@ def tiltrotor_transition_test(update_regression_values):
     #print values for resetting regression
     show_vals = True
     if show_vals:
-        data = [ hover_throttle,transition_throttle ]
+        data = [ hover_throttle,cruise_rpm ]
         for val in data:
             print(val)
     
     # Truth values 
-    hover_throttle_truth              = 0.5961266565749898
-    transition_throttle_truth         = 0.5072857641977504
+    hover_throttle_truth    = 0.5961266565749898
+    cruise_rpm_truth        = 396.22413812373867
     
     # Store errors 
     error = Data() 
-    error.hover_throttle                 = np.max(np.abs( hover_throttle_truth - hover_throttle )/ hover_throttle_truth )
-    error.transition_throttle            = np.max(np.abs( transition_throttle_truth - transition_throttle )/ transition_throttle_truth )
+    error.hover_throttle  = np.max(np.abs( hover_throttle_truth - hover_throttle )/ hover_throttle_truth )
+    error.cruise_rpm      = np.max(np.abs( cruise_rpm_truth - cruise_rpm  )/ cruise_rpm_truth )
     
     print('Errors:')
     print(error)
-     
+      
     for k,v in list(error.items()):
         assert(np.abs(v)<1e-1)  
     return
@@ -125,9 +132,9 @@ def tiltwing_transition_test(update_regression_values):
             print(val)
     
     # Truth values 
-    hover_throttle_truth              = 0.603551113759768
-    vertical_climb_1_throttle_truth   = 0.6136507871198783
-    vertical_descent_throttle_truth   = 0.5934061351356941
+    hover_throttle_truth              = 0.7336052390182969
+    vertical_climb_1_throttle_truth   = 0.7436815431612642
+    vertical_descent_throttle_truth   = 0.723131676668686
     
     # Store errors 
     error = Data() 
@@ -381,10 +388,7 @@ def TR_mission_setup(analyses):
     Segments = RCAIDE.Framework.Mission.Segments  
     base_segment = Segments.Segment() 
     base_segment.state.numerics.solver.type = 'optimize' 
-    
 
-    beta_cruise = analyses.low_speed_transition.vehicle.networks.electric.propulsors.front_port_propulsor.rotor.cruise.design_blade_pitch_command
-    
     
     # ------------------------------------------------------------------
     #   First Climb Segment: Constant Speed, Constant Rate
@@ -449,8 +453,7 @@ def TR_mission_setup(analyses):
     segment                                               = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
     segment.tag                                           = "cruise"  
     segment.analyses.extend( analyses.cruise)      
-    segment.air_speed                                     = 150 * Units['mph']    
-    segment.initial_battery_state_of_charge               = 1.0 
+    segment.air_speed                                     = 150 * Units['mph']   
     segment.altitude                                      = 1000 *  Units.feet 
     segment.throttle                                      = 0.33197
   
@@ -466,7 +469,6 @@ def TR_mission_setup(analyses):
     segment.assigned_control_variables.blade_pitch_command.assigned_rotors            =  [['front_port_rotor','front_starboard_rotor','outboard_port_rotor',
                                                                                            'outboard_starboard_rotor', 'rear_port_rotor','rear_starboard_rotor']]
 
-    
     mission.append_segment(segment)    
         
     

@@ -33,4 +33,5 @@ Mass\_Properties
    Center_of_Gravity
    Moment_of_Inertia
    Weight_Buildups
+   estimate_maximum_landing_weight
 

@@ -17,8 +17,6 @@ compute\_noise\_certification\_data
       :toctree:
    
       compute_noise_certification_data
-      post_process_certification_noise_data
-      truncate_colormap
    
    
 

@@ -18,7 +18,7 @@ from scipy.optimize import minimize, minimize_scalar, brentq
 # ----------------------------------------------------------------------------------------------------------------------
 #  Structural Solver
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_liquid_hydrogen_tank_volume(fuel_tank):
+def compute_liquid_hydrogen_tank_volume(fuel_tank,fuel_tanks):
     """
     Size a liquid hydrogen tank to meet outer-diameter constraints while satisfying
     structural and thermal limits via nested 1D root solves.
@@ -177,8 +177,7 @@ def compute_liquid_hydrogen_tank_volume(fuel_tank):
     fuel_tank.inner_structure.inner_diameter = 2*r_inner
     fuel_tank.inner_structure.inner_length   = L_inner
     fuel_tank.inner_structure.outer_length   =  (2 * r_outer * fuel_tank.aspect_ratio)-2*r_outer
-    fuel_tank.insulation_thickness           = t_ins # SAI PLEASE CHANGE THIS TO insulation.thickness  # Nomenclature changes are not priority right now, since it would mean changing stuff in the server scripts. will address in a PR
-    fuel_tank.total_thickness                 = fuel_tank.insulation_thickness + fuel_tank.inner_structure.thickness 
+    fuel_tank.insulation_thickness           = t_ins 
 
     # Insulation geometry and mass
     a_ins = 2 * np.pi * fuel_tank.diameters.external/2 * (fuel_tank.lengths.external) + 4 * np.pi * (fuel_tank.diameters.external/2)**2
@@ -200,10 +199,13 @@ def compute_liquid_hydrogen_tank_volume(fuel_tank):
         V_material *= 2
         mass_ins *=2
     
+    if np.isnan(mass_ins):
+        print(f"[WARNING] Tank '{fuel_tank.tag}' is too small and has negative fuel volume. Removing from list.")
+        fuel_tanks.pop(fuel_tank.tag)
     fuel_tank.fuel.mass_properties.mass =  fuel_tank.fuel.volume_properties.net_volume *  fuel_tank.fuel.density
     fuel_tank.mass_properties.insulation_mass =  mass_ins
     fuel_tank.mass_properties.structural_mass = V_material * fuel_tank.material.density  # Structural Mass of the tank
-    fuel_tank.mass_properties.mass = 1.5*(fuel_tank.mass_properties.insulation_mass + fuel_tank.mass_properties.structural_mass)
+    fuel_tank.mass_properties.mass = fuel_tank.tank_accesories_weight_factor*(fuel_tank.mass_properties.insulation_mass + fuel_tank.mass_properties.structural_mass)
     
     return
 
@@ -371,8 +373,7 @@ def heat_transfer_wrap(Te, t_ins, fuel_tank, atmo_data,ro,ri,li):
     Qc = Qc_cyl + Qc_sph
 
     fuel_tank.insulation_wall_conductive_heat_transfer = Qc
-
-    return float(Qv + Qr - Qc)
+    return float(np.asarray(Qv + Qr - Qc).reshape(-1)[0])
 
 
 def bracket_root(func, start=1e-6, factor=10, limit=1e2, args=()):

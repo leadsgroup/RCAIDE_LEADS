@@ -14,7 +14,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units , Data 
 from RCAIDE.Library.Components.Airfoils.Airfoil import Airfoil
-from RCAIDE.Library.Methods.Geometry.Planform import wing_planform, bwb_wing_planform 
+from RCAIDE.Library.Methods.Geometry.Planform import wing_planform 
 
 import numpy as np
 import string
@@ -287,13 +287,8 @@ def read_vsp_wing(wing_id, main_wing_tag = None,blended_wing_body = False , last
         # Chords
         wing.chords.root              = vsp.GetParmVal(wing_id, 'Tip_Chord', 'XSec_0') * units_factor
         wing.chords.tip               = tc
-        wing.chords.mean_geometric    = wing.areas.reference / wing.spans.projected
-
-        # Just double calculate and fix things:
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):  
-            bwb_wing_planform(wing)  
-        else: 
-            wing_planform(wing) 
+        wing.chords.mean_geometric    = wing.areas.reference / wing.spans.projected 
+        wing_planform(wing) 
 
 
     else:
@@ -321,13 +316,8 @@ def read_vsp_wing(wing_id, main_wing_tag = None,blended_wing_body = False , last
         wing.chords.root           = vsp.GetParmVal(x_sec_1_rc_parm)* units_factor
         wing.chords.tip            = vsp.GetParmVal(x_sec_1_tc_parm) * units_factor
         wing.chords.mean_geometric = wing.areas.reference / wing.spans.projected
-        wing.thickness_to_chord    = vsp.GetParmVal(x_sec_1_t_parm)
-
-        # Just double calculate and fix things:
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):  
-            bwb_wing_planform(wing)  
-        else: 
-            wing_planform(wing) 
+        wing.thickness_to_chord    = vsp.GetParmVal(x_sec_1_t_parm) 
+        wing_planform(wing) 
 
     # Twists
     wing.twists.root      = vsp.GetParmVal(wing_id, 'Twist', 'XSec_0') * Units.deg +  y_rot

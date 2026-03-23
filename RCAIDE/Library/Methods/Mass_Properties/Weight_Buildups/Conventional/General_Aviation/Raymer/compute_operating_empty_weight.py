@@ -251,18 +251,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
 
     # Calculating Empty Weight of Aircraft
     W_systems           = Raymer.compute_systems_weight(vehicle,V_fuel, V_fuel_int, number_of_tanks, number_of_engines)
-    for system in vehicle.systems:
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Avionics: 
-            system.mass_properties.mass               = W_systems.W_avionics 
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls: 
-            system.mass_properties.mass        = W_systems.W_flight_control  
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Electrical: 
-            system.mass_properties.mass             = W_systems.W_electrical 
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Hydraulics: 
-            system.mass_properties.mass             = W_systems.W_hyd_pnu 
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls: 
-            system.mass_properties.mass = W_systems.W_ac   
-
+    
     # Calculate the equipment empty weight of the aircraft 
     W_empty           = (W_wing + W_fuselage + W_landing_gear.main+W_landing_gear.nose + W_energy_network_cumulative + W_systems.total + \
                           W_tail_horizontal +W_tail_vertical) 

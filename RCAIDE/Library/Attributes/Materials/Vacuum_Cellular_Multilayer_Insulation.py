@@ -71,4 +71,4 @@ class Vacuum_Cellular_Multilayer_Insulation(Solid):
         """
         self.density                    = 65 * Units['kg/(m**3)']        
         self.thermal_conductivity       = 0.005
-        self.specific_density           = 0.0
+        self.specific_density           = 1.1

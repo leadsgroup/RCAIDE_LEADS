@@ -61,13 +61,7 @@ def compute_landing_gear_weight(vehicle):
         if isinstance(wing,RCAIDE.Library.Components.Wings.Blended_Wing_Body):
             l_f =  wing.chords.root
             w_f = 0
-    
-    for fuselage in vehicle.fuselages:
-        if l_f < fuselage.lengths.total:
-            main_fuselage = fuselage 
-            l_f = main_fuselage.lengths.total
-            w_f = main_fuselage.width
-        
+            
     for network in vehicle.networks:
         for propulsor in  network.propulsors:
             if propulsor.wing_mounted:
