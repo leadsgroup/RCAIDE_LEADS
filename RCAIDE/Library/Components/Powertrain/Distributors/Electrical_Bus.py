@@ -79,17 +79,30 @@ class Electrical_Bus(Distributor):
         Source:
             None
         """                
-        self.tag                                    = 'electrical_line' 
-        self.domain                                 = 'electrical'
-        #self.electrical_line                        = Electrical_Line()
-        self.battery_modules                        = Container() 
-        self.type                                   = 'DC'  
-        self.active                                 = True
-        self.voltage                                = 0.0 
-        self.voltage_phase_to_neutral               = 115.0 
-        self.voltage_phase_to_phase                 = 200.0
-        self.frequency                              = 0.0 
-        self.nominal_capacity                       = 0.0
+        self.tag                                       = 'electrical_line' 
+        self.domain                                    = 'electrical'  
+        self.active                                    = True
+        self.voltage                                   = 0.0 
+        self.voltage_phase_to_neutral                  = 115.0 
+        self.voltage_phase_to_phase                    = 200.0
+        self.frequency                                 = 0.0   
+        self.to                                        = None
+        self.from_                                     = None
+        self.current_type                              = 'DC'   
+        self.efficiency                                = 1
+        self.length                                    = 0
+        self.design_ambient_temperature                = 273 # kelvin
+        self.maximum_insulator_electric_field          = 0 # NEED TO CHECK 
+        self.maximum_operating_temperature             = 0 # NEED TO CHECK 
+        self.maximum_current                           = 0 # NEED TO CHECK
+        self.maximum_temperature                       = 0 # NEED TO CHECK
+        self.environmental_external_thermal_resistance = 0 # CHECK  IEC 60287-2-1 Section 4.2.1.1.
+        self.conductor_radius                          = None
+        self.conductor_material                        = Copper()  # Default conductor material
+        self.insulator_radius                          = None
+        self.insulator_material                        = Polyimide()  # Default insulator material 
+        self.duplicate_wires                           = 2# Number of duplicate cables for redundancy
+            
 
     def unpack_unknowns(self,segment):
         return 
@@ -143,50 +156,4 @@ class Electrical_Bus(Distributor):
         return
 
     def initialize(self,network):
-        return
-        
-    
-    #def compute_performance(self, state):
-
-        #inputs = Data()
-        #outputs = Data()
-
-        #inputs.power.mechanical  = state.conditions.energy.distributors[self.tag].inputs.power.mechanical
-        #inputs.power.electrical  = state.conditions.energy.distributors[self.tag].inputs.power.electrical
-        #inputs.power.chemical    = state.conditions.energy.distributors[self.tag].inputs.power.chemical  
-        #inputs.power.pneumatic   = state.conditions.energy.distributors[self.tag].inputs.power.pneumatic 
-        #inputs.power.hydraulic   = state.conditions.energy.distributors[self.tag].inputs.power.hydraulic 
-        #inputs.power.thermal     = state.conditions.energy.distributors[self.tag].inputs.power.thermal  
-
-        #outputs.power.mechanical = state.conditions.energy.distributors[self.tag].outputs.power.mechanical
-        #outputs.power.electrical = state.conditions.energy.distributors[self.tag].outputs.power.electrical
-        #outputs.power.chemical   = state.conditions.energy.distributors[self.tag].outputs.power.chemical  
-        #outputs.power.pneumatic  = state.conditions.energy.distributors[self.tag].outputs.power.pneumatic 
-        #outputs.power.hydraulic  = state.conditions.energy.distributors[self.tag].outputs.power.hydraulic 
-        #outputs.power.thermal    = state.conditions.energy.distributors[self.tag].outputs.power.thermal  
-
-        #return inputs, outputs
-    
-#class Electrical_Line(Distributor):
-    #def __defaults__(self):
-        #self.tag                               = 'electrical_line'
-        #self.to                                = None
-        #self.from_                             = None
-        #self.current_type                      = 'DC'  
-        #self.voltage                           = 0  
-        #self.efficiency                        = 1
-        #self.length                            = 0
-        #self.design_ambient_temperature        = 273 # kelvin
-        #self.maximum_insulator_electric_field  = 0 # NEED TO CHECK 
-        #self.maximum_operating_temperature     = 0 # NEED TO CHECK 
-        #self.maximum_current                   = 0 # NEED TO CHECK
-        #self.maximum_temperature               = 0 # NEED TO CHECK
-        #self.environmental_external_thermal_resistance = 0 # CHECK  IEC 60287-2-1 Section 4.2.1.1.
-        #self.conductor_radius                  = None
-        #self.conductor_material                = Copper()  # Default conductor material
-        #self.insulator_radius                  = None
-        #self.insulator_material                = Polyimide()  # Default insulator material 
-        #self.duplicate_wires                   =  2# Number of duplicate cables for redundancy
-    
-
-
+        return 

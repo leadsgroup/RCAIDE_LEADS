@@ -14,7 +14,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHODS
 # ----------------------------------------------------------------------------------------------------------------------  
-def append_battery_conditions(battery,segment): 
+def append_battery_pack_conditions(battery,segment): 
     """ Appends the initial battery conditions
     
         Assumptions:
@@ -88,7 +88,7 @@ def append_battery_conditions(battery,segment):
      
     return 
     
-def append_battery_segment_conditions(battery, segment): 
+def append_battery_pack_segment_conditions(battery, segment): 
     """Sets the initial battery energy at the start of each segment as the last point from the previous segment 
     
         Assumptions:

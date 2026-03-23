@@ -6,35 +6,29 @@
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------
-import RCAIDE
-from RCAIDE.Framework.Core import Units 
-import numpy as np
-from copy import deepcopy
+# ---------------------------------------------------------------------------------------------------------------------- 
  
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_nmc_cell_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
 def compute_battery_pack_performance(battery,state,network):
     """ 
-    """ 
-    
+    """  
     battery_conditions = state.conditions.energy.sources[battery.tag]
     psi                = state.conditions.energy.battery_fuel_cell_power_split_ratio  
     phi                = state.conditions.energy.hybrid_power_split_ratio
     
     for m_i, module in enumerate(battery.modules):
-        
         if module.active: 
             battery_voltage = battery.voltage * state.ones_row(1)
             module_voltage  = module.voltage * state.ones_row(1)
             
             if state.conditions.energy.recharging:  
                 battery_conditions.outputs.power.electrical             = (battery.nominal_capacity * battery.charging_c_rate* battery_voltage*battery.power_split_ratio) 
-                battery_conditions[module.tag].inputs.power.electrical  = (module.nominal_capacity  * battery.charging_c_rate* module_voltage *battery.power_split_ratio)  
+                battery_conditions[module.tag].inputs.power.electrical  = battery_conditions.outputs.power.electrical/ battery.number_of_active_modules 
                 battery_conditions[module.tag].current_draw             = battery_conditions[module.tag].inputs.power.electrical  / module_voltage 
             else:
-                battery_conditions.outputs.power.electrical              = state.unknowns.network['electrical_power']    *  battery.power_split_ratio * psi * phi
+                battery_conditions.outputs.power.electrical              = state.unknowns.network['electrical_power']  *  battery.power_split_ratio * psi * phi
                 battery_conditions[module.tag].outputs.power.electrical  = battery_conditions.outputs.power.electrical / battery.number_of_active_modules
                 battery_conditions[module.tag].current_draw              = battery_conditions[module.tag].outputs.power.electrical /module_voltage 
           
@@ -57,11 +51,11 @@ def compute_battery_pack_performance(battery,state,network):
                 battery_conditions.voltage_under_load    = battery_conditions[module.tag].voltage_under_load  
        
             if state.conditions.energy.recharging:
-                fully_charged = battery_conditions.state_of_charge == 1
-                battery_conditions.charging_current[fully_charged]  = 0
-                battery_conditions[module.tag].power[fully_charged]        = 0
-                battery_conditions[module.tag].current[fully_charged]      = 0
-                battery_conditions[module.tag].inputs.power.electrical[fully_charged]      = 0
+                fully_charged = battery_conditions.state_of_charge                    == 1
+                battery_conditions.charging_current[fully_charged]                    = 0
+                battery_conditions[module.tag].power[fully_charged]                   = 0
+                battery_conditions[module.tag].current[fully_charged]                 = 0
+                battery_conditions[module.tag].inputs.power.electrical[fully_charged] = 0
             
     stored_results_flag     = True
     stored_battery_tag      = battery.tag

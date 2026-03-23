@@ -11,7 +11,7 @@
 import RCAIDE 
 from RCAIDE.Framework.Core     import Data, Container
 from RCAIDE.Library.Components.Powertrain.Sources.Source    import Source   
-from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_conditions import append_battery_conditions, append_battery_segment_conditions
+from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_pack_conditions import append_battery_pack_conditions, append_battery_pack_segment_conditions
 from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.compute_battery_pack_performance import compute_battery_pack_performance
 from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.compute_battery_pack_properties import compute_battery_pack_properties
 # ----------------------------------------------------------------------------------------------------------------------
@@ -190,8 +190,9 @@ class Battery_Pack(Source):
         bus : Component
             Electrical bus connected to this battery
         """
-        append_battery_conditions(self,segment)
+        append_battery_pack_conditions(self,segment)
 
+        self.number_of_active_modules = 0
         for m_i, module in enumerate(self.modules):
             if module.active: 
                 self.number_of_active_modules += 1 
@@ -216,7 +217,7 @@ class Battery_Pack(Source):
         segment : Segment
             Flight segment data
         """
-        append_battery_segment_conditions(self,segment)
+        append_battery_pack_segment_conditions(self,segment)
         for m_i, module in enumerate(self.modules):
             if module.active and (self.identical_modules == False or m_i == 0): 
                 module.append_segment_conditions(self,segment) 

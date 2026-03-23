@@ -153,7 +153,6 @@ class Network(Component):
                     inputs, outputs, stored_results_flag, stored_conveter_tag = converter.compute_performance(state,network)
                 else:
                     inputs, outputs = converter.reuse_stored_data(state,network,stored_conveter_tag=stored_conveter_tag)
-  
                 total_current          += outputs.current 
                 net_electrical_power   -= inputs.power.electrical
                 total_chemical_power   += inputs.power.chemical
@@ -170,10 +169,8 @@ class Network(Component):
             
                 if issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
                     state.conditions.energy.sources[source.tag].outputs.power.chemical = total_chemical_power *  state.conditions.energy.sources[source.tag].power_split_ratio
-                    inputs, outputs, _, _ = source.compute_performance(state,network)
-                    
-                    # pumps 
-                    #net_electrical_power   -= inputs.power.electrical              
+                    inputs, outputs, _, _ = source.compute_performance(state,network) 
+                    net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)            
                             
         # ----------------------------------------------------------
         # Distributors 
@@ -294,9 +291,6 @@ class Network(Component):
                 #heat_exchanger.compute_heat_exchanger_performance(state,coolant_line) 
             #for reservoir in coolant_line.reservoirs:   
                 #reservoir.compute_reservior_coolant_temperature(state,coolant_line)
-
-        # pack residuals 
-        #state.residuals.network[ 'electrical_power'] = net_electrical_power
                 
         # Final aggregation for system level performance 
         conditions.energy.total_force_vector       = total_thrust

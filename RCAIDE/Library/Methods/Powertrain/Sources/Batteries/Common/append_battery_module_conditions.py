@@ -14,7 +14,7 @@ from RCAIDE.Framework.Mission.Common     import   Conditions
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHODS
 # ----------------------------------------------------------------------------------------------------------------------  
-def append_module_conditions(module,battery,segment): 
+def append_battery_module_conditions(module,battery,segment): 
     """ Appends the initial battery conditions
     
         Assumptions:
@@ -59,16 +59,7 @@ def append_module_conditions(module,battery,segment):
     """
  
     ones_row  = segment.state.ones_row
-
-    # -----------------------------------------------------------------------------------------  
-    # compute ambient conditions
-    # -----------------------------------------------------------------------------------------  
-    atmosphere    = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    alt           = -segment.conditions.frames.inertial.position_vector[:,2] 
-    if segment.temperature_deviation != None:
-        temp_dev = segment.temperature_deviation    
-    atmo_data    = atmosphere.compute_values(altitude = alt,temperature_deviation=temp_dev)  
-
+ 
     # -----------------------------------------------------------------------------------------  
     # initialize data structures 
     # -----------------------------------------------------------------------------------------  
@@ -81,7 +72,8 @@ def append_module_conditions(module,battery,segment):
     segment.state.conditions.energy.sources[battery.tag][module.tag].voltage_under_load         = 0 * ones_row(1)
     segment.state.conditions.energy.sources[battery.tag][module.tag].cell.voltage_under_load    = 0 * ones_row(1) 
     segment.state.conditions.energy.sources[battery.tag][module.tag].power                      = 0 * ones_row(1)
-    segment.state.conditions.energy.sources[battery.tag][module.tag].cell.power                 = 0 * ones_row(1)  
+    segment.state.conditions.energy.sources[battery.tag][module.tag].cell.power                 = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[battery.tag][module.tag].depth_of_discharge         = 0 * ones_row(1) 
     segment.state.conditions.energy.sources[battery.tag][module.tag].power_draw                 = 0 * ones_row(1)    
     segment.state.conditions.energy.sources[battery.tag][module.tag].current_draw               = 0 * ones_row(1) 
     segment.state.conditions.energy.sources[battery.tag][module.tag].current                    = 0 * ones_row(1)
@@ -140,6 +132,11 @@ def append_module_conditions(module,battery,segment):
     if segment.initial_battery_conditions.cell_temperature is not None:
         cell_temperature  = segment.initial_battery_conditions.cell_temperature
     else:
+        atmosphere    = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
+        alt           = -segment.conditions.frames.inertial.position_vector[:,2] 
+        if segment.temperature_deviation != None:
+            temp_dev = segment.temperature_deviation    
+        atmo_data    = atmosphere.compute_values(altitude = alt,temperature_deviation=temp_dev)  
         cell_temperature  = atmo_data.temperature[0,0] 
     segment.state.conditions.energy.sources[battery.tag][module.tag].temperature      = cell_temperature * ones_row(1)         
     segment.state.conditions.energy.sources[battery.tag][module.tag].cell.temperature = cell_temperature * ones_row(1)  
@@ -197,9 +194,20 @@ def append_battery_module_segment_conditions(module,battery, segment):
         module_conditions.cell.capacity_fade_factor       = battery_initials.cell.capacity_fade_factor 
         module_conditions.cell.state_of_charge[:,0]       = battery_initials.cell.state_of_charge[-1,0]
         module_conditions.cell.energy[:,0]                = battery_initials.cell.energy[-1,0]
-
-    if 'cell_temperature' in segment:       
-        module_conditions.temperature[:,0]          = segment.cell_temperature 
-        module_conditions.cell.temperature[:,0]     = segment.cell_temperature 
+ 
+    else:
+        
+        # temperature 
+        if segment.initial_battery_conditions.cell_temperature is not None:
+            cell_temperature  = segment.initial_battery_conditions.cell_temperature
+        else:
+            atmosphere    = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
+            alt           = -segment.conditions.frames.inertial.position_vector[:,2] 
+            if segment.temperature_deviation != None:
+                temp_dev = segment.temperature_deviation    
+            atmo_data    = atmosphere.compute_values(altitude = alt,temperature_deviation=temp_dev)  
+            cell_temperature  = atmo_data.temperature[0,0] 
+        module_conditions.temperature[:,0]                = cell_temperature
+        module_conditions.cell.temperature[:,0]           = cell_temperature            
      
     return    

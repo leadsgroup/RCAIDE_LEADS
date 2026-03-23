@@ -13,7 +13,7 @@ from .Generic_Battery_Module                                          import Gen
 from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC  import *
 from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC.unpack_lithium_ion_nmc_unknowns import unpack_lithium_ion_nmc_unknowns
 from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_NMC.pack_lithium_ion_nmc_residuals  import pack_lithium_ion_nmc_residuals
-from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_unknown_and_residual      import append_battery_unknown_and_residual
+from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_module_unknown_and_residual      import append_battery_module_unknown_and_residual
 
 # package imports 
 import numpy as np
@@ -183,7 +183,7 @@ class Lithium_Ion_NMC(Generic_Battery_Module):
         return         
        
     def append_unknowns_and_residuals(self,battery,segment): 
-        append_battery_unknown_and_residual(self,battery,segment)   
+        append_battery_module_unknown_and_residual(self,battery,segment)   
         return
     
     def compute_performance(self,battery,state,network): 
