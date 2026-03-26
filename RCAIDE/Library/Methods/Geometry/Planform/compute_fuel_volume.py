@@ -106,10 +106,22 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = False, update_max_fuel = 
                     total_fuel_volume += fuel_tank.fuel.volume_properties.net_volume 
                     total_fuel_mass   += fuel_tank.fuel.mass_properties.mass
                 
+                
+    # determine fuel split          
+    for network in vehicle.networks: 
+        for fuel_line in network.fuel_lines: 
+            for fuel_tank in fuel_line.fuel_tanks:
+                if fuel_tank.fuel_flow_split_ratio == None:
+                    fuel_tank.fuel_flow_split_ratio  = fuel_tank.fuel.mass_properties.mass / total_fuel_mass
+        
+            for bus in network.busses:
+                for fuel_tank in bus.fuel_tanks:
+                    if fuel_tank.fuel_flow_split_ratio == None:
+                        fuel_tank.fuel_flow_split_ratio  = fuel_tank.fuel.mass_properties.mass / total_fuel_mass                
+                                
     # Assign Total Fuel Volume and to Vehicle 
     if compute_fuel_volume:
-        vehicle.volume_properties.max_fuel   = total_fuel_volume
-
+        vehicle.volume_properties.max_fuel   = total_fuel_volume 
     
     if update_max_fuel:
         vehicle.mass_properties.max_fuel = total_fuel_mass

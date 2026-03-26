@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Performance/compute_load_and_trim_diagram.py
+# RCAIDE/Library/Methods/Performance/compute_load_and_trim_diagram.py
 # 
 # 
 # Created:  Dec 2024, M. Clarke
@@ -46,8 +46,7 @@ def compute_load_and_trim_diagram(mission = None, cruise_segment_tag = "cruise",
         segment.analyses.geometry.settings.compute_fuel_volume             = True 
         segment.analyses.weights.print_weight_analysis_report              = True 
         segment.analyses.weights.settings.run_center_of_gravity_analysis   = True
-        segment.analyses.weights.settings.run_moments_of_inertia_analysis  = True  
-        segment.analyses.stability.print_stability_analysis_report         = True
+        segment.analyses.weights.settings.run_moments_of_inertia_analysis  = True   
         segment.analyses.stability.settings.compute_neutral_point          = True
         segment.analyses.weights.settings.overwrite_center_of_gravity      = True
     

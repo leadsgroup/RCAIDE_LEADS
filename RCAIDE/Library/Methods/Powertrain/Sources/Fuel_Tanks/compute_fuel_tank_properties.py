@@ -52,7 +52,7 @@ def compute_fuel_tank_properties(tank,state,distributor):
         tank_conditions.boil_off_flow_rate =  m_dot_boil_off 
      
     m_0_fuel                                       = state.conditions.weights.components.mass[fuel.tag][0,0]  
-    mass_flow_rate                                 = tank.fuel_flow_split_ratio*distributor_conditions.fuel_mass_flow_rate + tank_conditions.boil_off_flow_rate +  tank_conditions.secondary_mass_flow_rate             
+    mass_flow_rate                                 = distributor_conditions.fuel_flow_split_ratio*distributor_conditions.fuel_mass_flow_rate + tank_conditions.boil_off_flow_rate +  tank_conditions.secondary_mass_flow_rate             
     tank_conditions.mass_flow_rate                 = mass_flow_rate
     if len(mass_flow_rate) > 1:
         # update mass 

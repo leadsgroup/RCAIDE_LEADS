@@ -67,8 +67,7 @@ class Fuel_Line(Component):
         self.assigned_propulsors                  = [] 
         self.assigned_converters                  = []
         self.converters                           = Container()       
-        self.active                               = True 
-        self.additional_line_flow_rate            = 0.0
+        self.active                               = True  
         self.efficiency                           = 1.0
         self.valve_unit_mass                      = 3 * Units.lbs
         self.fuel_probe_unit_mass                 = 2.5 * Units.lbs
