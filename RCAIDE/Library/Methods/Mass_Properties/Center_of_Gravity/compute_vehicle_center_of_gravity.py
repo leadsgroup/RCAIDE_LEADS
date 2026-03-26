@@ -16,7 +16,7 @@ import pandas as pd
 # ----------------------------------------------------------------------------------------------------------------------
 #  Computer Aircraft Center of Gravity
 # ----------------------------------------------------------------------------------------------------------------------   
-def compute_vehicle_center_of_gravity(vehicle,centre_of_gravity_df, overwrite_center_of_gravity=True,segment=None,verbose=True,include_payload = True, include_fuel = True): 
+def compute_vehicle_center_of_gravity(vehicle,center_of_gravity_df, overwrite_center_of_gravity=True,segment=None,verbose=True,include_payload = True, include_fuel = True): 
     ''' Computes the moment of inertia of aircraft 
     
     Source:
@@ -47,7 +47,7 @@ def compute_vehicle_center_of_gravity(vehicle,centre_of_gravity_df, overwrite_ce
     OEW_mass        = np.array([0.0])
     for key in vehicle.keys():
         item = vehicle[key]  
-        OEW_mass,OEW_moment = compute_component_center_of_gravity(centre_of_gravity_df,item,vehicle,OEW_mass,OEW_moment,None,False,False,False)    
+        OEW_mass,OEW_moment = compute_component_center_of_gravity(center_of_gravity_df,item,vehicle,OEW_mass,OEW_moment,None,False,False,False)    
     
     # center of gravity
     OEW_CG = OEW_moment / OEW_mass 
@@ -71,13 +71,13 @@ def compute_vehicle_center_of_gravity(vehicle,centre_of_gravity_df, overwrite_ce
     
     # print center of gravity 
     CG = mission_moment /mission_mass 
-    centre_of_gravity_df = centre_of_gravity_df[centre_of_gravity_df["Mass (kg)"] != 0].reset_index(drop=True)
+    center_of_gravity_df = center_of_gravity_df[center_of_gravity_df["Mass (kg)"] != 0].reset_index(drop=True)
     if verbose:
         print('\n*************** Center of Gravity *************** ')
         print('OEW Center of Gravity            : ', OEW_CG) 
         print('% Mass used in OEW CG calculation: ', round(OEW_mass_percentage,2), '%')  
         print('Mission Center of Gravity        : ', CG)   
-    centre_of_gravity_df.loc[len(centre_of_gravity_df)] = [
+    center_of_gravity_df.loc[len(center_of_gravity_df)] = [
                 'Operating_Empty',
                 round(OEW_mass[0], 2),
                 OEW_CG[0][0],
@@ -93,4 +93,4 @@ def compute_vehicle_center_of_gravity(vehicle,centre_of_gravity_df, overwrite_ce
         vehicle.mass_properties.center_of_gravity = CG.tolist()
         vehicle.mass_properties.operating_empty_center_of_gravity = OEW_CG.tolist()
         
-    return vehicle.mass_properties.center_of_gravity, mission_mass, mission_moment, centre_of_gravity_df 
+    return vehicle.mass_properties.center_of_gravity, mission_mass, mission_moment, center_of_gravity_df 

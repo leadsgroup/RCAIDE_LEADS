@@ -71,6 +71,7 @@ def wing_planform(wing):
         seg_keys = list(wing.segments.keys())  
         for i in range(len(wing.segments)): 
             seg       = wing.segments[seg_keys[i]]
+            seg.tank_percent_span_location =  0
             span_locs.append(seg.percent_span_location)
             twists.append(seg.twist)
             chords.append(seg.root_chord_percent)

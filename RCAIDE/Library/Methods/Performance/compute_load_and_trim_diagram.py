@@ -324,7 +324,7 @@ def compute_aircraft_load_data_point(vehicle,cruise_segment_tag,RES,counter,
         
     # run geometry and mass properties analyes 
     center_of_gravity, mass, moment, _  = compute_vehicle_center_of_gravity(vehicle,
-                                            centre_of_gravity_df = pd.DataFrame(columns=[ "Component", "Mass (kg)", "CG x (m)", "CG y (m)","CG z (m)"]),
+                                            center_of_gravity_df = pd.DataFrame(columns=[ "Component", "Mass (kg)", "CG x (m)", "CG y (m)","CG z (m)"]),
                                             overwrite_center_of_gravity = True,
                                             segment=None,
                                             verbose=False) 

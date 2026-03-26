@@ -66,13 +66,36 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = False, update_max_fuel = 
     wings             = vehicle.wings
     fuselages         = vehicle.fuselages 
     total_fuel_volume = 0
-    total_fuel_mass   = 0
+    total_fuel_mass   = 0 
+    
+    # --------------------------------------------------------------------------
+    # Step 1: Check the fuel tanks and updates them if there are duplications
+    # this is critical for mass properties  
+    # --------------------------------------------------------------------------
+    fuel_tag = None 
     for network in vehicle.networks: 
         for fuel_line in network.fuel_lines:
-            fuel_tanks = fuel_line.fuel_tanks
-            for fuel_tank in fuel_tanks:
-                # update fuel tag to ensure no overwriting of mass 
-                fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag          
+            for fuel_tank in fuel_line.fuel_tanks:
+                if fuel_tag == None:
+                    fuel_tag = fuel_tank.fuel.tag
+                else:
+                    if fuel_tag == fuel_tank.fuel.tag:
+                        fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag 
+                
+        for bus in network.busses:
+            for fuel_tank in bus.fuel_tanks:
+                if fuel_tag == None:
+                    fuel_tag = fuel_tank.fuel.tag
+                else:
+                    if fuel_tag == fuel_tank.fuel.tag: 
+                        fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag 
+                    
+    # --------------------------------------------------------------------------                    
+    # Step 2: Compute fuel volume and mass within each tank  
+    # --------------------------------------------------------------------------      
+    for network in vehicle.networks: 
+        for fuel_line in network.fuel_lines: 
+            for fuel_tank in fuel_line.fuel_tanks:  
                 try:
                     compute_fuel_tank_volume = fuel_tank.compute_volume
                 except Exception as e:
@@ -81,18 +104,13 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = False, update_max_fuel = 
                 else:
                     # if no error getting the method, run it normally
                     if compute_fuel_volume:
-                        compute_fuel_tank_volume(wings, fuselages, fuel_tanks) 
+                        compute_fuel_tank_volume(wings, fuselages, fuel_line.fuel_tanks) 
                         fuel_tank.fuel.volume_properties.net_volume = fuel_tank.fuel.mass_properties.mass / fuel_tank.fuel.density
                     total_fuel_volume += fuel_tank.fuel.volume_properties.net_volume 
                     total_fuel_mass   += fuel_tank.fuel.mass_properties.mass
         
-        for bus in network.busses:
-            fuel_tanks = bus.fuel_tanks
-            for fuel_tank in fuel_tanks:
-            
-                # update fuel tag to ensure no overwriting of mass 
-                fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag
-                                
+        for bus in network.busses: 
+            for fuel_tank in  bus.fuel_tanks: 
                 try:
                     compute_fuel_tank_volume = fuel_tank.compute_volume
                 except Exception as e:
@@ -101,13 +119,14 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = False, update_max_fuel = 
                 else:
                     # if no error getting the method, run it normally
                     if compute_fuel_volume:
-                        compute_fuel_tank_volume(wings, fuselages, fuel_tanks) 
+                        compute_fuel_tank_volume(wings, fuselages,  bus.fuel_tanks) 
                         fuel_tank.fuel.volume_properties.net_volume = fuel_tank.fuel.mass_properties.mass / fuel_tank.fuel.density
                     total_fuel_volume += fuel_tank.fuel.volume_properties.net_volume 
-                    total_fuel_mass   += fuel_tank.fuel.mass_properties.mass
+                    total_fuel_mass   += fuel_tank.fuel.mass_properties.mass 
                 
-                
-    # determine fuel split          
+    # --------------------------------------------------------------------------                 
+    # Step 3: determine fuel split based on tank volumes   
+    # --------------------------------------------------------------------------      
     for network in vehicle.networks: 
         for fuel_line in network.fuel_lines: 
             for fuel_tank in fuel_line.fuel_tanks:
@@ -118,8 +137,10 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = False, update_max_fuel = 
                 for fuel_tank in bus.fuel_tanks:
                     if fuel_tank.fuel_flow_split_ratio == None:
                         fuel_tank.fuel_flow_split_ratio  = fuel_tank.fuel.mass_properties.mass / total_fuel_mass                
-                                
-    # Assign Total Fuel Volume and to Vehicle 
+                    
+    # --------------------------------------------------------------------------                                 
+    # Step 4: Assign total fuel volume to vehicle 
+    # -------------------------------------------------------------------------- 
     if compute_fuel_volume:
         vehicle.volume_properties.max_fuel   = total_fuel_volume 
     

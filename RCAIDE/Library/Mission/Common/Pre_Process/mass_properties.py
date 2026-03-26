@@ -163,9 +163,7 @@ def mass_properties_preprocess_routine(segment, i = 0):
                     if analyses.vehicle.mass_properties.max_fuel == None:
                         analyses.vehicle.mass_properties.max_fuel =  0.477*analyses.vehicle.mass_properties.max_takeoff -13455
                         compute_max_fuel = True
-                    analyses.vehicle.mass_properties.max_zero_fuel = 0.6269*analyses.vehicle.mass_properties.max_takeoff + 20505
-                    
-                
+                    analyses.vehicle.mass_properties.max_zero_fuel = 0.6269*analyses.vehicle.mass_properties.max_takeoff + 20505  
                     iteration = 0
 
                     # Convergence loop
@@ -441,7 +439,7 @@ def mass_properties_preprocess_routine(segment, i = 0):
     #  STEP 5: Compute Center of Gravity   
     # --------------------------------------------------------------------------------------------------------------------------- 
     if weights_analysis.settings.run_center_of_gravity_analysis:
-        centre_of_gravity_df = pd.DataFrame(columns=[
+        center_of_gravity_df = pd.DataFrame(columns=[
         "Component",
         "Mass (kg)",
         "CG x (m)",
@@ -452,7 +450,7 @@ def mass_properties_preprocess_routine(segment, i = 0):
             verbose_flag = False
         else:
             verbose_flag = weights_analysis.print_weight_analysis_report
-        _ ,_, _, centre_of_gravity_df = compute_vehicle_center_of_gravity(analyses.vehicle,centre_of_gravity_df,
+        _ ,_, _, center_of_gravity_df = compute_vehicle_center_of_gravity(analyses.vehicle,center_of_gravity_df,
                                                 overwrite_center_of_gravity =  weights_analysis.settings.run_center_of_gravity_analysis ,
                                                 segment=segment,
                                                 verbose=verbose_flag)  
@@ -460,9 +458,9 @@ def mass_properties_preprocess_routine(segment, i = 0):
         if i==0 and weights_analysis.settings.write_mass_properties:
             # Centre of Gravity sheet
             with pd.ExcelWriter(excel_filename, engine="openpyxl",mode="a",if_sheet_exists="replace") as writer:
-                centre_of_gravity_df.to_excel(writer,sheet_name="Centre of Gravity",index=False)
+                center_of_gravity_df.to_excel(writer,sheet_name="Centre of Gravity",index=False)
             print(f"CG breakdown written to Excel:\n  {excel_filename}")
-        analyses.vehicle.mass_properties.center_of_gravity_breakdown = centre_of_gravity_df
+        analyses.vehicle.mass_properties.center_of_gravity_breakdown = center_of_gravity_df
 
     # ---------------------------------------------------------------------------------------------------------------------------         
     # STEP 6: Compute Moment of Inertia 

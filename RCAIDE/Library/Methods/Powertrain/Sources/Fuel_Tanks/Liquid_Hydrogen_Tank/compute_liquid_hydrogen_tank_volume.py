@@ -44,7 +44,7 @@ def compute_liquid_hydrogen_tank_volume(fuel_tank,fuel_tanks):
                 Cylindrical outer length [m].
             - inner_structure.material_volume : float
                 Pressure shell material volume [m³].
-            - insulation_thickness : float
+            - insulation.thickness : float
                 Required insulation thickness [m].
             - fuel.volume_properties.{gross_volume, net_volume} : float
                 Sized fuel volumes [m³] (scaled if symmetric).
@@ -59,11 +59,7 @@ def compute_liquid_hydrogen_tank_volume(fuel_tank,fuel_tanks):
     * Thermal sizing balances convection/radiation with conduction through insulation.
     * Outer-diameter constraint is enforced by iterating on fuel volume until geometry closes.
     * Symmetry doubles volume and material where specified.
-    """
-    
-    fuel_tank.wall_thickness = None
-    fuel_tank.volume_properties.net_volume = None
-
+    """  
     # Constants
     safety_factor   = 1.6          # structural factor of safety
     pressure_factor = 5.0          # internal pressure multiplier for sizing
@@ -80,8 +76,7 @@ def compute_liquid_hydrogen_tank_volume(fuel_tank,fuel_tanks):
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
     atmo_data  = atmosphere.compute_values(fuel_tank.design_altitude,
                                            fuel_tank.design_isa_deviation)
-    Ta = float(np.asarray(atmo_data.temperature).reshape(-1)[0])
-
+    Ta = float(np.asarray(atmo_data.temperature).reshape(-1)[0]) 
     
     # Initial fuel volume guess
     if fuel_tank.xz_plane_symmetric:
@@ -163,29 +158,28 @@ def compute_liquid_hydrogen_tank_volume(fuel_tank,fuel_tanks):
         rel_error                                      = error / (fuel_tank.diameters.external / 2)
         fuel_tank.fuel.volume_properties.net_volume    = V_guess
         fuel_tank.fuel.volume_properties.gross_volume  = V_total
-        fuel_tank.fuel.mass_properties.mass            = float(V_guess *  fuel_tank.fuel.density)  
+        fuel_tank.fuel.mass_properties.mass            = float(V_guess *  fuel_tank.fuel.density)     
         V_guess                                       += alpha * rel_error
         iteration                                     += 1
 
     if abs(error) > tol:
         print("[Warning] compute_liquid_hydrogen_tank_volume did not converge within the iteration limit.")
 
-    # Store results
-    fuel_tank.inner_structure                = Data()
+    # Store results 
     fuel_tank.inner_structure.thickness      = r_outer -r_inner
     fuel_tank.inner_structure.outer_diameter = 2*r_outer
     fuel_tank.inner_structure.inner_diameter = 2*r_inner
     fuel_tank.inner_structure.inner_length   = L_inner
     fuel_tank.inner_structure.outer_length   =  (2 * r_outer * fuel_tank.aspect_ratio)-2*r_outer
-    fuel_tank.insulation_thickness           = t_ins 
+    fuel_tank.insulation.thickness           = t_ins 
 
     # Insulation geometry and mass
     a_ins = 2 * np.pi * fuel_tank.diameters.external/2 * (fuel_tank.lengths.external) + 4 * np.pi * (fuel_tank.diameters.external/2)**2
     v_ins = (np.pi * (fuel_tank.diameters.external/2)**2 * (fuel_tank.lengths.external) + (4/3) * np.pi * (fuel_tank.diameters.external/2)**3)-\
             (np.pi * (fuel_tank.inner_structure.outer_diameter/2)**2 * (fuel_tank.inner_structure.outer_length) + (4/3) * np.pi * (fuel_tank.inner_structure.outer_diameter/2)**3)
          
-    mass_ins = (v_ins * fuel_tank.insulation_material.density
-               + a_ins * fuel_tank.insulation_material.specific_density)
+    mass_ins = (v_ins * fuel_tank.insulation.material.density
+               + a_ins * fuel_tank.insulation.material.specific_density)
 
     # Material volume between inner and outer shells (cylinder + two hemispherical caps)
     L_outer = fuel_tank.inner_structure.outer_length
@@ -202,10 +196,11 @@ def compute_liquid_hydrogen_tank_volume(fuel_tank,fuel_tanks):
     if np.isnan(mass_ins):
         print(f"[WARNING] Tank '{fuel_tank.tag}' is too small and has negative fuel volume. Removing from list.")
         fuel_tanks.pop(fuel_tank.tag)
-    fuel_tank.fuel.mass_properties.mass =  fuel_tank.fuel.volume_properties.net_volume *  fuel_tank.fuel.density
-    fuel_tank.mass_properties.insulation_mass =  mass_ins
-    fuel_tank.mass_properties.structural_mass = V_material * fuel_tank.material.density  # Structural Mass of the tank
-    fuel_tank.mass_properties.mass = fuel_tank.tank_accesories_weight_factor*(fuel_tank.mass_properties.insulation_mass + fuel_tank.mass_properties.structural_mass)
+    fuel_tank.fuel.mass_properties.mass       = fuel_tank.fuel.volume_properties.net_volume *  fuel_tank.fuel.density
+    fuel_tank.mass_properties.insulation_mass = mass_ins
+    fuel_tank.mass_properties.structural_mass = V_material * fuel_tank.inner_structure.material.density  # Structural Mass of the tank
+    fuel_tank.wall_thickness                  = fuel_tank.inner_structure.thickness +  fuel_tank.insulation.thickness 
+    fuel_tank.mass_properties.mass            = fuel_tank.tank_accesories_weight_factor*(fuel_tank.mass_properties.insulation_mass + fuel_tank.mass_properties.structural_mass)
     
     return
 
@@ -252,7 +247,7 @@ def tank_width(ro_ri, P_internal, P_external, safety_factor, fuel_tank):
                         (sigma_r - sigma_z)**2 + 
                         (sigma_z - sigma_theta)**2) / 2)
 
-    return sigma_vm - fuel_tank.material.yield_tensile_strength / safety_factor
+    return sigma_vm - fuel_tank.inner_structure.material.yield_tensile_strength / safety_factor
 
 
 def insulation_width(t_ins, Ta, PI_Q, fuel_tank, atmo_data,r_o,r_i,l_i):   
@@ -352,8 +347,8 @@ def heat_transfer_wrap(Te, t_ins, fuel_tank, atmo_data,ro,ri,li):
     Qv_cyl = h_cyl * (np.pi * (2*ro + 2*t_ins) * (li)) * (Ta - Te)
     Qr_cyl = (5.67e-8) * 0.03 * (np.pi * (2*ro + 2*t_ins) * (li)) * (Ta**4 - Te**4)
     Qc_cyl = (Te - Ti) / (
-        np.log(ro/ri) / (2*np.pi*(li)*fuel_tank.material.thermal_conductivity)
-        + np.log((ro+t_ins)/ro) / (2*np.pi*(li)*fuel_tank.insulation_material.thermal_conductivity)
+        np.log(ro/ri) / (2*np.pi*(li)*fuel_tank.inner_structure.material.thermal_conductivity)
+        + np.log((ro+t_ins)/ro) / (2*np.pi*(li)*fuel_tank.insulation.material.thermal_conductivity)
     )
 
     # ---- Spherical end caps ----
@@ -363,8 +358,8 @@ def heat_transfer_wrap(Te, t_ins, fuel_tank, atmo_data,ro,ri,li):
     Qv_sph = h_sph * (np.pi * (2*ro + 2*t_ins)**2) * (Ta - Te)
     Qr_sph = (5.67e-8) * 0.03 * (np.pi * (2*ro + 2*t_ins)**2) * (Ta**4 - Te**4)
     Qc_sph = (Te - Ti) / (
-        (ro - ri) / (4*np.pi*fuel_tank.material.thermal_conductivity*ri*ro)
-        + t_ins / (4*np.pi*fuel_tank.insulation_material.thermal_conductivity*ro*(ro+t_ins))
+        (ro - ri) / (4*np.pi*fuel_tank.inner_structure.material.thermal_conductivity*ri*ro)
+        + t_ins / (4*np.pi*fuel_tank.insulation.material.thermal_conductivity*ro*(ro+t_ins))
     )
 
     # Total heat transfer

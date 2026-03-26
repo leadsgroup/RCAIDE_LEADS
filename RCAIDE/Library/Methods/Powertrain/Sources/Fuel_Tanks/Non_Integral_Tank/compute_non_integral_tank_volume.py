@@ -415,13 +415,8 @@ def compute_wing_non_integral_tank_volume(fuel_tank, wing,fuel_tanks):
         for i in range(len(seg_tags)-1):
             inner_segment = wing.segments[seg_tags[i]]
             outer_segment = wing.segments[seg_tags[i+1]] 
-            try:
-                try:
-                    tank_percent_span_location = inner_segment.tank_percent_span_location    
-                except:
-                    tank_percent_span_location = 0
-                inner_segment.tank_percent_span_location, tank_volume_o, tank_volume_i\
-                                        = compute_wing_non_integral_tank_fuel_volume(fuel_tank,wing,inner_segment,outer_segment,tank_percent_span_location)
+            try:  
+                tank_volume_o, tank_volume_i  = compute_wing_non_integral_tank_fuel_volume(fuel_tank,wing,inner_segment,outer_segment)
             except:
                 print(f"[WARNING] Tank '{fuel_tank.tag}' does not fit in the segment. Removing from list.")
                 fuel_tanks.pop(fuel_tank.tag)
@@ -446,7 +441,7 @@ def compute_wing_non_integral_tank_volume(fuel_tank, wing,fuel_tanks):
              
     return 
 
-def compute_wing_non_integral_tank_fuel_volume(fuel_tank, wing, inner_segment_0, outer_segment, tank_percent_span_location):
+def compute_wing_non_integral_tank_fuel_volume(fuel_tank, wing, inner_segment_0, outer_segment):
     """
     Computes the fuel volume for a non-integral tank between two wing segments.
 
@@ -524,9 +519,10 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank, wing, inner_segment_0,
         between wing ribs or spars
     """
 
-    semi_span      = wing.spans.projected / 2
-    inner_segment  = deepcopy(inner_segment_0) 
-    spar_sweep     = convert_sweep_segments(inner_segment_0.sweeps.quarter_chord, inner_segment_0, outer_segment, wing, old_ref_chord_fraction=0.25, new_ref_chord_fraction=fuel_tank.percent_span_location  )     
+    semi_span                  = wing.spans.projected / 2
+    tank_percent_span_location = inner_segment_0.tank_percent_span_location * 1 
+    inner_segment              = deepcopy(inner_segment_0) 
+    spar_sweep                 = convert_sweep_segments(inner_segment_0.sweeps.quarter_chord, inner_segment_0, outer_segment, wing, old_ref_chord_fraction=0.25, new_ref_chord_fraction=fuel_tank.percent_span_location  )     
     if tank_percent_span_location > inner_segment_0.percent_span_location: 
         inner_segment.percent_span_location = tank_percent_span_location
         m                                   =  (outer_segment.root_chord_percent -  inner_segment_0.root_chord_percent) / (outer_segment.percent_span_location - fuel_tank.percent_span_location)
@@ -641,7 +637,10 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank, wing, inner_segment_0,
         tank_volume_o *= 2
         tank_volume_i *= 2 
 
-    return tank_percent_span_location, tank_volume_o, tank_volume_i
+    # update tank_percent_span_location
+    inner_segment_0.tank_percent_span_location =  tank_percent_span_location
+    
+    return tank_volume_o, tank_volume_i
 
 def compute_non_dimensional_rib_coordinates(compoment,fuel_tank,front_rib_nondim_x,rear_rib_nondim_x): 
     """

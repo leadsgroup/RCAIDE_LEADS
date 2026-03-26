@@ -24,10 +24,7 @@ def compute_liquid_hydrogen_tank_conformal_volume(fuel_tank,fuel_tanks):
     structural and thermal limits via nested 1D root solves.
 
     Parameters
-    """
-    
-    fuel_tank.wall_thickness = None
-    fuel_tank.volume_properties.net_volume = None
+    """  
 
     # Constants
     safety_factor   = 1.6          # structural factor of safety
@@ -89,7 +86,7 @@ def compute_liquid_hydrogen_tank_conformal_volume(fuel_tank,fuel_tanks):
         h_o =   h_i + 2*th
         l_o =   l_i + 2*th
         w_o =   w_i + 2*th
-        mass_struct = ((l_o* w_o * h_o) - (h_i*l_i*w_i))* fuel_tank.material.density 
+        mass_struct = ((l_o* w_o * h_o) - (h_i*l_i*w_i))* fuel_tank.inner_structure.material.density 
         t_ins, mass_ins = thermal_solver_basic_rectangular(Ta, fuel_tank,l_o,w_o,h_o)
 
         h_o_o =   h_o + 2*t_ins
@@ -118,23 +115,21 @@ def compute_liquid_hydrogen_tank_conformal_volume(fuel_tank,fuel_tanks):
     
     fuel_tank.fuel.mass_properties.mass =  fuel_tank.fuel.volume_properties.net_volume *  fuel_tank.fuel.density
     fuel_tank.mass_properties.insulation_mass =  mass_ins
-    fuel_tank.mass_properties.structural_mass = mass_struct
-    
-    fuel_tank.inner_structure   = Data()
-    fuel_tank.inner_structure.thickness = th
-    fuel_tank.inner_structure.outer_length  = l_o
-    fuel_tank.inner_structure.inner_length  = l_i
-    fuel_tank.inner_structure.outer_width   = w_o
-    fuel_tank.inner_structure.inner_width   = w_i
-    fuel_tank.inner_structure.outer_height  = h_o
-    fuel_tank.inner_structure.inner_height  = h_i
+    fuel_tank.mass_properties.structural_mass = mass_struct 
+    fuel_tank.inner_structure.thickness       = th
+    fuel_tank.inner_structure.outer_length    = l_o
+    fuel_tank.inner_structure.inner_length    = l_i
+    fuel_tank.inner_structure.outer_width     = w_o
+    fuel_tank.inner_structure.inner_width     = w_i
+    fuel_tank.inner_structure.outer_height    = h_o
+    fuel_tank.inner_structure.inner_height    = h_i
 
     fuel_tank.outer_length  = l_o_o
     fuel_tank.outer_width   = w_o_o
     fuel_tank.outer_height  = h_o_o
 
-    fuel_tank.insulation_thickness  = t_ins
-    fuel_tank.total_thickness   = t_ins + th
+    fuel_tank.insulation.thickness  = t_ins
+    fuel_tank.total_thickness       = t_ins + th
 
     fuel_tank.mass_properties.mass = fuel_tank.tank_accesories_weight_factor*(fuel_tank.mass_properties.insulation_mass + fuel_tank.mass_properties.structural_mass)
     
@@ -217,7 +212,7 @@ def tank_width(th, li,hi,wi,P_internal, P_external, safety_factor, fuel_tank ):
         sv = max(N_totali, N_totalo, M_totali, M_totalo, Q_totali, Q_totalo, Qs_totali, Qs_totalo) #maximum stress
         # sv = max(N_totali, N_totalo, M_totali, M_totalo)  # maximum stress
         # print("sv", sv)
-        return np.abs(sv - fuel_tank.material.yield_tensile_strength/safety_factor) #von Mises criteria
+        return np.abs(sv - fuel_tank.inner_structure.material.yield_tensile_strength/safety_factor) #von Mises criteria
     
 def thermal_solver_basic_rectangular(Ta, fuel_tank,lo,wo,ho):
     #Reads properties, tank material (mt), insulation material (mi), tank geometry - 
@@ -232,12 +227,12 @@ def thermal_solver_basic_rectangular(Ta, fuel_tank,lo,wo,ho):
     area_ref = 2 * (lo * wo + lo * ho + wo * ho)
     q_flux = Qo / max(area_ref, 1e-12)
 
-    t_ins = fuel_tank.insulation_material.thermal_conductivity * (Ta-Ti) / max(q_flux, 1e-12)
+    t_ins = fuel_tank.insulation.material.thermal_conductivity * (Ta-Ti) / max(q_flux, 1e-12)
     h_o_o =   ho + 2*t_ins
     l_o_o =   lo + 2*t_ins
     w_o_o =   wo + 2*t_ins
     a_ins = 2*(l_o_o*w_o_o + l_o_o*h_o_o + w_o_o*h_o_o)
     v_ins = (l_o_o*w_o_o*h_o_o)-(lo*wo*ho)
-    mass_ins = v_ins*fuel_tank.insulation_material.density + a_ins* fuel_tank.insulation_material.specific_density
+    mass_ins = v_ins*fuel_tank.insulation.material.density + a_ins* fuel_tank.insulation.material.specific_density
     
     return t_ins, mass_ins

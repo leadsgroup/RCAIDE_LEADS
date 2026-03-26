@@ -16,7 +16,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Recursive C.G.
 # ----------------------------------------------------------------------------------------------------------------------   
-def compute_component_center_of_gravity(centre_of_gravity_df,component,vehicle,total_mass,total_moment,segment=None,verbose=True,include_payload=True,include_fuel=True):
+def compute_component_center_of_gravity(center_of_gravity_df,component,vehicle,total_mass,total_moment,segment=None,verbose=True,include_payload=True,include_fuel=True):
     """ Recursively computes the center of gravity all components and subcomponents
 
     Assumptions:
@@ -35,20 +35,20 @@ def compute_component_center_of_gravity(centre_of_gravity_df,component,vehicle,t
     if isinstance(component,Component.Container): 
         for key in component.keys():
             item = component[key]        
-            total_mass,total_moment = compute_component_center_of_gravity(centre_of_gravity_df,item,vehicle,total_mass,total_moment,segment,verbose,include_payload,include_fuel)
+            total_mass,total_moment = compute_component_center_of_gravity(center_of_gravity_df,item,vehicle,total_mass,total_moment,segment,verbose,include_payload,include_fuel)
     if isinstance(component,Component):
         component.compute_center_of_gravity(vehicle)
-        update_mass_and_moment(total_mass,total_moment,component,segment,verbose,include_payload,include_fuel,centre_of_gravity_df)     
+        update_mass_and_moment(total_mass,total_moment,component,segment,verbose,include_payload,include_fuel,center_of_gravity_df)     
         for key in component.keys():
             item = component[key]
             if isinstance(item,Component.Container):
-                total_mass,total_moment = compute_component_center_of_gravity(centre_of_gravity_df,item,vehicle,total_mass,total_moment,segment,verbose,include_payload,include_fuel)
+                total_mass,total_moment = compute_component_center_of_gravity(center_of_gravity_df,item,vehicle,total_mass,total_moment,segment,verbose,include_payload,include_fuel)
             if isinstance(item,Component):
                 item.compute_center_of_gravity(vehicle)
-                update_mass_and_moment(total_mass,total_moment,item,segment,verbose,include_payload,include_fuel,centre_of_gravity_df)   
+                update_mass_and_moment(total_mass,total_moment,item,segment,verbose,include_payload,include_fuel,center_of_gravity_df)   
     return total_mass,total_moment 
 
-def update_mass_and_moment(total_mass,total_moment,C,segment,verbose,include_payload,include_fuel,centre_of_gravity_df):
+def update_mass_and_moment(total_mass,total_moment,C,segment,verbose,include_payload,include_fuel,center_of_gravity_df):
     global_cg_loc = np.array(C.mass_properties.center_of_gravity) + np.array(C.origin) 
     include_component = True
     if isinstance(C,RCAIDE.Library.Components.Fuselages.Cabins.Cabin) or isinstance(C,RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay):
@@ -81,7 +81,7 @@ def update_mass_and_moment(total_mass,total_moment,C,segment,verbose,include_pay
             name_column_width = 20
             num_column_width  = 6
             print(f"{C.tag.ljust(name_column_width)}",'\t \t', f"{str(round(C.mass_properties.mass,2)).ljust(num_column_width)}", '\t',  global_cg_loc  ) 
-        centre_of_gravity_df.loc[len(centre_of_gravity_df)] = [
+        center_of_gravity_df.loc[len(center_of_gravity_df)] = [
             C.tag,
             round(C.mass_properties.mass, 2),
             global_cg_loc[0][0],
