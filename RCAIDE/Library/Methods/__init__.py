@@ -28,6 +28,7 @@ from . import Powertrain
 from . import Stability
 from . import Thermal_Management
 from . import Utilities
+from . import Aerostructures
 
 from .skip import skip
 
