@@ -17,7 +17,14 @@ import os
 import  sys
 
 # local imports 
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
 from Boeing_737    import vehicle_setup   as B737_vehicle_setup  
 from Boeing_737    import configs_setup   as B737_configs_setup 
 from BWB           import vehicle_setup   as BWB_vehicle_setup
@@ -96,15 +103,15 @@ def BWB_Drag_Polar():
                                                                       mach_numbers     = Mach_number_range,
                                                                       altitude         = 0)
 
-    CL_truth = np.array([-0.66537549, -0.43113207, -0.19644241,  0.03928848,  0.27496979,
-                         0.50921321,  0.74216586,  0.97253695,  1.19801695,  1.42066528,
-                         1.59950605,  1.70267922,  1.80585239,  1.90902557,  2.01219874,
-                         2.11537191,  2.21854509,  2.32171826])
+    CL_truth = np.array([-0.8859043 , -0.57402438, -0.26155033,  0.05231007,  0.36610444,
+                        0.67798436,  0.98814569,  1.29486985,  1.59508185,  1.89152364,
+                        2.12963852,  2.26700691,  2.4043753 ,  2.54174368,  2.67911207,
+                        2.81648046,  2.95384884,  3.09121723])
 
-    CD_truth = np.array([0.08133093, 0.03386143, 0.01340683, 0.01032553, 0.01485286,
-                         0.02576822, 0.05289148, 0.0994132 , 0.16812622, 0.26008066,
-                         0.41868775, 0.66980037, 1.03969088, 1.56379824, 2.28231239,
-                         3.24017418, 4.48707534, 6.07745849])
+    CD_truth = np.array([0.04902018, 0.0432557 , 0.02050936, 0.01461097, 0.02046714,
+                        0.03695656, 0.08905799, 0.14631973, 0.22536315, 0.32287296,
+                        0.33891408, 0.35478732, 0.37077092, 0.38686488, 0.40306919,
+                        0.41938387, 0.43580891, 0.45234431])
 
     plot_aircraft_aerodynamics(results,  save_filename = "BWB_Aircraft_Aerodynamic_Analysis")
 

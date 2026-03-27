@@ -61,10 +61,9 @@ class Battery_Discharge(Evaluate):
         iterate                            = self.process.iterate 
         iterate.unknowns.mission           = skip
         iterate.conditions.aerodynamics    = skip
-        iterate.conditions.stability       = skip
-        
+        iterate.conditions.stability       = skip 
         post_process                       = self.process.post_process  
-        post_process.noise                 = skip
+        post_process.aeroacoustics         = skip
         post_process.emissions             = skip
         
         return

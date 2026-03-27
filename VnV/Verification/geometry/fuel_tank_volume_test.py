@@ -20,7 +20,14 @@ import os
 import matplotlib.pyplot as plt  
 
 
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
 from BWB         import vehicle_setup as BWB_vehicle_setup
 from Boeing_737  import vehicle_setup as B737_vehicle_setup
 from Navion      import vehicle_setup as Nav_vehicle_setup
@@ -38,9 +45,11 @@ def main():
     # like 'maximum_inscribed_circle' required for this test.
     # -------------------------------------------------------------
     if sys.version_info >= (3, 11):
-        non_integral_fuel_tank_volume_test()
+        non_conformal_lh2_fuel_tank_volume_test()
+        conformal_lh2_fuel_tank_volume_test()
     else:
-        print("Skipping non_integral_fuel_tank_volume_test(): Shapely lacks 'maximum_inscribed_circle' support for Python < 3.11.")
+        print("Skipping non_conformal_lh2_fuel_tank_volume_test() and conformal_lh2_fuel_tank_volume_test():\
+            Shapely lacks 'maximum_inscribed_circle' support for Python < 3.11.")
     return
 
 def single_wing_segment_integral_fuel_tank_volume_test():
@@ -66,7 +75,7 @@ def single_wing_segment_integral_fuel_tank_volume_test():
     mission = mission_setup(analyses)
     geometry(mission)
 
-    error = (fuel_volume_true[0]- mission.segments.cruise.analyses.vehicle.volume_properties.fuel)/fuel_volume_true[0]
+    error = (fuel_volume_true[0]- mission.segments.cruise.analyses.vehicle.volume_properties.max_fuel)/fuel_volume_true[0]
     print(error)
     assert(abs(error)<1e-6)    
     return
@@ -74,7 +83,7 @@ def single_wing_segment_integral_fuel_tank_volume_test():
 
 def integral_fuel_tank_volume_test():
 
-    fuel_volume_true = [19.53629338802644,77.88321682397498]
+    fuel_volume_true = [21.519610119449926,79.86653355539846]
     vehicle          = B737_vehicle_setup() 
     fuel_line        = vehicle.networks.fuel.fuel_lines.fuel_line
     fuel_line.fuel_tanks.clear()
@@ -84,7 +93,7 @@ def integral_fuel_tank_volume_test():
     #  Main Wing Tanks
     #------------------------------------------------------------------------------------------------------------------------------------       
     wing_tank_1                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)  
-    wing_tank_1.fuel_selector_ratio          = 0.5
+    wing_tank_1.fuel_flow_split_ratio          = 0.5
     wing_tank_1.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A()  
     wing_tank_1.segments_bounding_tank       = ['root', 'yehudi']  
     wing_tank_1.segments_percent_chord_start = [0.1, 0.1]
@@ -92,7 +101,7 @@ def integral_fuel_tank_volume_test():
     fuel_line.fuel_tanks.append(wing_tank_1)
     
     wing_tank_2                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)  
-    wing_tank_2.fuel_selector_ratio          = 0.5
+    wing_tank_2.fuel_flow_split_ratio          = 0.5
     wing_tank_2.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A()  
     wing_tank_2.segments_bounding_tank       = ['yehudi', 'section_2']  
     wing_tank_2.segments_percent_chord_start = [0.1, 0.1]
@@ -106,24 +115,24 @@ def integral_fuel_tank_volume_test():
     mission  = mission_setup(analyses)
     geometry(mission)
 
-    error = (fuel_volume_true[0]- mission.segments.cruise.analyses.vehicle.volume_properties.fuel)/fuel_volume_true[0]
+    error = (fuel_volume_true[0]- mission.segments.cruise.analyses.vehicle.volume_properties.max_fuel)/fuel_volume_true[0]
     print(error)
     assert(abs(error)<1e-6)    
 
     fus_tank_1 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.fuselages.fuselage)  
-    fus_tank_1.fuel_selector_ratio     = 0.5
+    fus_tank_1.fuel_flow_split_ratio     = 0.5
     fus_tank_1.fuel                    = RCAIDE.Library.Attributes.Propellants.Jet_A()  
     fus_tank_1.segments_bounding_tank  = ['segment_5','segment_6'] 
     fuel_line.fuel_tanks.append(fus_tank_1)
     
     fus_tank_2 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.fuselages.fuselage)  
-    fus_tank_2.fuel_selector_ratio     = 0.5
+    fus_tank_2.fuel_flow_split_ratio     = 0.5
     fus_tank_2.fuel                    = RCAIDE.Library.Attributes.Propellants.Jet_A()  
     fus_tank_2.segments_bounding_tank  = ['segment_6','segment_7']  
     fuel_line.fuel_tanks.append(fus_tank_2)
     
     fus_tank_3 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.fuselages.fuselage)  
-    fus_tank_3.fuel_selector_ratio     = 0.5
+    fus_tank_3.fuel_flow_split_ratio     = 0.5
     fus_tank_3.fuel                    = RCAIDE.Library.Attributes.Propellants.Jet_A()  
     fus_tank_3.segments_bounding_tank  = ['segment_7','segment_8']  
     fuel_line.fuel_tanks.append(fus_tank_3) 
@@ -135,16 +144,16 @@ def integral_fuel_tank_volume_test():
     mission  = mission_setup(analyses)
     geometry(mission)
 
-    error = (fuel_volume_true[1]- mission.segments.cruise.analyses.vehicle.volume_properties.fuel)/fuel_volume_true[0]
+    error = (fuel_volume_true[1]- mission.segments.cruise.analyses.vehicle.volume_properties.max_fuel)/fuel_volume_true[0]
     print(error)
     assert(abs(error)<1e-6)    
 
     return
 
 
-def non_integral_fuel_tank_volume_test():
+def non_conformal_lh2_fuel_tank_volume_test():
 
-    fuel_volume_true = 566.6589439371462
+    fuel_volume_true = 436.7662354258231
     vehicle          = BWB_vehicle_setup() 
     fuel_line        = vehicle.networks.fuel.fuel_lines.fuel_line
     fuel_line.fuel_tanks.clear()
@@ -271,12 +280,65 @@ def non_integral_fuel_tank_volume_test():
 
     geometry(mission)   
     
-    error = (fuel_volume_true- mission.segments.cruise.analyses.vehicle.volume_properties.fuel)/fuel_volume_true
+    error = (fuel_volume_true- mission.segments.cruise.analyses.vehicle.volume_properties.max_fuel)/fuel_volume_true
     
     assert(abs(error)<5e-2) 
 
     return
 
+
+
+def conformal_lh2_fuel_tank_volume_test():
+
+    fuel_volume_true = 152.4271916826183
+    vehicle          = BWB_vehicle_setup() 
+    fuel_line        = vehicle.networks.fuel.fuel_lines.fuel_line
+    fuel_line.fuel_tanks.clear()
+    
+    #############################################################################################################################    
+     #------------------------------------------------------------------------------------------------------------------------- 
+    #  Energy Source: Fuel Tank
+    #------------------------------------------------------------------------------------------------------------------------- 
+    # fuel tank
+    fuel_tank   = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
+    fuel_tank.tag = 'wing_tanks'
+    fuel_tank.geometry_type     = 'conformal'
+    fuel_tank.fuel  = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()   
+    fuel_tank.material              = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank.insulation_material   = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
+    fuel_tank.segments_bounding_tank    = ['fuel_wall', 'wing_section_1']  
+    fuel_tank.segments_percent_chord_start  = [0.2,0.2] 
+    fuel_tank.segments_percent_chord_end    = [0.6,0.6]  
+    fuel_line.fuel_tanks.append(fuel_tank) 
+
+    fuel_tank_2                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
+    fuel_tank_2.tag                                    = 'aft_tank' 
+    fuel_tank_2.geometry_type                          = 'conformal'
+    fuel_tank_2.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank_2.insulation_material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
+    fuel_tank_2.xz_plane_symmetric                     = False
+    fuel_tank_2.orientation_euler_angles               = [0,0,np.pi/2]
+    fuel_tank_2.bwb_aft_tank                           = True
+    fuel_tank_2.aft_tank_root_chord_bounds             = [0.7,0.8]
+    fuel_tank_2.aft_tank_segment_bound                 = 'cabin_wall'
+    fuel_tank_2.radial_offset                          = 0.1
+    fuel_tank_2.fuel.tag                               = '_lh2' 
+    fuel_line.fuel_tanks.append(fuel_tank_2)
+
+    configs  = configs_setup(vehicle)
+    analyses = analyses_setup(configs)
+    for analysis in analyses:
+        analysis.geometry.settings.compute_fuel_volume = True
+        analysis.geometry.settings.update_max_fuel = True
+    mission  = mission_setup(analyses)
+
+    geometry(mission)   
+    
+    error = (fuel_volume_true- mission.segments.cruise.analyses.vehicle.volume_properties.max_fuel)/fuel_volume_true
+    
+    assert(abs(error)<5e-2) 
+
+    return
 def configs_setup(vehicle):
     """This function sets up vehicle configurations for use in different parts of the mission.
     Here, this is mostly in terms of high lift settings."""

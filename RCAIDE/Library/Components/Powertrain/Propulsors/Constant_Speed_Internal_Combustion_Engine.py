@@ -9,8 +9,7 @@
  # RCAIDE imports   
 from .                import Propulsor 
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine.append_constant_speed_internal_combustion_engine_conditions  import append_constant_speed_internal_combustion_engine_conditions
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine.compute_constant_speed_internal_combustion_engine_performance  import compute_constant_speed_internal_combustion_engine_performance, reuse_stored_constant_speed_internal_combustion_engine_data
-from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia                               import compute_cylinder_moment_of_inertia 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine.compute_constant_speed_internal_combustion_engine_performance  import compute_constant_speed_internal_combustion_engine_performance, reuse_stored_constant_speed_internal_combustion_engine_data 
  
 # python imports 
 import numpy as np 
@@ -81,21 +80,3 @@ class Constant_Speed_Internal_Combustion_Engine(Propulsor):
     def reuse_stored_data(ICE_cs_prop, state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
         thrust,moment,power_mech,power_elec  = reuse_stored_constant_speed_internal_combustion_engine_data(ICE_cs_prop,state,network,stored_propulsor_tag,center_of_gravity)
         return thrust,moment,power_mech,power_elec
-    
-    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
-        """
-        Computes the moment of inertia tensor for the propulsor.
-
-        Parameters
-        ---------- 
-        center_of_gravity : list, optional
-            Reference point coordinates, defaults to [[0, 0, 0]]
-        
-        Returns
-        -------
-        ndarray
-            3x3 moment of inertia tensor
-        """
-
-        _, _ =  compute_cylinder_moment_of_inertia(self, self.length, self.diameter/2, 0, 0, center_of_gravity = np.array([[0,0,0]]))  
-        return     

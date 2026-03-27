@@ -48,7 +48,7 @@ def compute_wing_moment_of_inertia(wing, center_of_gravity = [[0, 0, 0]]):
     vertical    = wing.vertical
     span        = wing.spans.projected
     
-    I_global        = np.zeros((3, 3)) 
+    I_local   = np.zeros((3, 3)) 
     if xz_symm:  
         m_wing = mass * 0.5
     else:
@@ -64,30 +64,28 @@ def compute_wing_moment_of_inertia(wing, center_of_gravity = [[0, 0, 0]]):
                 if not isinstance(inner_segment, RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment):
                     outer_wing_flag = True
                 if outer_wing_flag:
-                    tr          = inner_segment.thickness_to_chord                              # root thickness as percent of chord
-                    tt          = outer_segment.thickness_to_chord                              # tip thickness as a percent of chord
-                    ct          = wing.chords.root  * outer_segment.root_chord_percent          # tip chord 
-                    cr          = wing.chords.root  * inner_segment.root_chord_percent          # root chord
-                    b           = span * (outer_segment.percent_span_location - inner_segment.percent_span_location)/(1+xz_symm)                                  # half-span of the wing
-                    A           = inner_segment.sweeps.quarter_chord                            # sweep angle (located at quarter chord)
-                    dihedral    = inner_segment.dihedral_outboard                               # Wing dihedral
-                    origin_wing = np.array(wing.origin) + inner_segment.origin + np.array([[cr / 4, 0, 0]]) # moves the origin of the wing to the quarter chord of the root airfoil.              
-                    m_wing        = wing.mass_properties.mass * (inner_segment.volume_properties.gross_volume / wing.volume_properties.gross_volume )  
-                    I_section , _ = compute_wing_section_moment_of_intertia(m_wing,tr,tt,ct,cr, b, A,dihedral,origin_wing,xz_symm,vertical,center_of_gravity)
-                    I_global      += I_section 
+                    tr              = inner_segment.thickness_to_chord                              # root thickness as percent of chord
+                    tt              = outer_segment.thickness_to_chord                              # tip thickness as a percent of chord
+                    ct              = wing.chords.root  * outer_segment.root_chord_percent          # tip chord 
+                    cr              = wing.chords.root  * inner_segment.root_chord_percent          # root chord
+                    b               = span * (outer_segment.percent_span_location - inner_segment.percent_span_location)/(1+xz_symm)  # half-span of the wing
+                    A               = inner_segment.sweeps.quarter_chord                            # sweep angle (located at quarter chord)
+                    dihedral        = inner_segment.dihedral_outboard                               # Wing dihedral           
+                    m_wing          = wing.mass_properties.mass * (inner_segment.volume_properties.gross_volume / wing.volume_properties.gross_volume )  
+                    I_section , _   = compute_wing_section_moment_of_intertia(m_wing,tr,tt,ct,cr, b, A,dihedral,xz_symm,vertical,center_of_gravity)
+                    I_local        += I_section 
                      
             else:    
-                tr           = inner_segment.thickness_to_chord   # root thickness as percent of chord
-                tt           = outer_segment.thickness_to_chord   #tip thickness as a percent of chord
-                ct           = wing.chords.root  * outer_segment.root_chord_percent        # tip chord 
-                cr           = wing.chords.root  * inner_segment.root_chord_percent          # root chord
-                b            = span * (outer_segment.percent_span_location - inner_segment.percent_span_location)/(1+xz_symm)                               # half-span of the wing
-                A            = inner_segment.sweeps.quarter_chord                            # sweep angle (located at quarter chord)
-                dihedral     = inner_segment.dihedral_outboard                               # Wing dihedral
-                origin_wing  = np.array(wing.origin) + inner_segment.origin + np.array([[cr / 4, 0, 0]]) # moves the origin of the wing to the quarter chord of the root airfoil.  
-                m_wing       = wing.mass_properties.mass * (inner_segment.volume_properties.gross_volume / wing.volume_properties.gross_volume )   
-                I_section,_  = compute_wing_section_moment_of_intertia(m_wing,tr,tt,ct,cr, b, A,dihedral,origin_wing,xz_symm,vertical,center_of_gravity)
-                I_global     += I_section 
+                tr              = inner_segment.thickness_to_chord   # root thickness as percent of chord
+                tt              = outer_segment.thickness_to_chord   #tip thickness as a percent of chord
+                ct              = wing.chords.root  * outer_segment.root_chord_percent        # tip chord 
+                cr              = wing.chords.root  * inner_segment.root_chord_percent          # root chord
+                b               = span * (outer_segment.percent_span_location - inner_segment.percent_span_location)/(1+xz_symm)                           
+                A               = inner_segment.sweeps.quarter_chord                            # sweep angle (located at quarter chord)
+                dihedral        = inner_segment.dihedral_outboard                               # Wing dihedral
+                m_wing          = wing.mass_properties.mass * (inner_segment.volume_properties.gross_volume / wing.volume_properties.gross_volume )   
+                I_section,_     = compute_wing_section_moment_of_intertia(m_wing,tr,tt,ct,cr, b, A,dihedral,xz_symm,vertical,center_of_gravity)
+                I_local         += I_section 
         
     else: 
         tr          = wing.thickness_to_chord # root thickness as percent of chord
@@ -97,18 +95,16 @@ def compute_wing_moment_of_inertia(wing, center_of_gravity = [[0, 0, 0]]):
         b           = span/(1+xz_symm)           # half-span of the wing
         A           = wing.sweeps.quarter_chord # sweep angle (located at quarter chord)
         dihedral    = wing.dihedral # Wing dihedral
-        origin_wing = wing.origin + np.array([[cr / 4, 0, 0]]) # moves the origin of the wing to the quarter chord of the root airfoil.
-         
-        I_global,_  = compute_wing_section_moment_of_intertia(m_wing,tr,tt,ct,cr, b, A,dihedral,origin_wing,xz_symm,vertical,center_of_gravity)
+        I_local,_  = compute_wing_section_moment_of_intertia(m_wing,tr,tt,ct,cr, b, A,dihedral,xz_symm,vertical,center_of_gravity)
         
     
     # Store moment of inertia tensor on component 
-    wing.mass_properties.moments_of_inertia.tensor                     = I_global  
+    wing.mass_properties.moments_of_inertia.tensor  = I_local
     
-    return I_global,  mass
+    return I_local,  mass
     
     
-def compute_wing_section_moment_of_intertia(m_wing,tr,tt,ct,cr, b, A,dihedral,origin_wing,xz_symm,vertical,center_of_gravity):
+def compute_wing_section_moment_of_intertia(m_wing,tr,tt,ct,cr, b, A,dihedral,xz_symm,vertical,center_of_gravity):
     # ----------------------------------------------------------------------------------------------------------------------
     # Constants. These values and equations are defined in Moulton and Hunsaker [1]
     # ----------------------------------------------------------------------------------------------------------------------
@@ -191,15 +187,9 @@ def compute_wing_section_moment_of_intertia(m_wing,tr,tt,ct,cr, b, A,dihedral,or
     # RCAIDE Coordinate system. (Local system is flipped 180 deg from RCAIDE coordinate system convention.)
     # ----------------------------------------------------------------------------------------------------------------------
     Rr       = np.array([[-1, 0, 0], [0, 1, 0], [0, 0, -1]])
-    I_RCAIDE = Rr * I_local * np.transpose(Rr)
-    
-    # ----------------------------------------------------------------------------------------------------------------------
-    # Global Coordinate System
-    # ----------------------------------------------------------------------------------------------------------------------
-    s        = np.array(center_of_gravity) - np.array(origin_wing) # Vector for the parallel axis theorem
-    I_global = np.array(I_RCAIDE) + m_wing * (np.array(np.dot(s[0], s[0])) * np.array(np.identity(3)) - np.outer(s, s))
+    I_RCAIDE = Rr * I_local * np.transpose(Rr) 
   
-    I_RCAIDE_non_dimensional = I_global /m_wing 
+    I_RCAIDE_non_dimensional = I_RCAIDE /m_wing 
         
-    return I_global , I_RCAIDE_non_dimensional
+    return I_RCAIDE , I_RCAIDE_non_dimensional
 

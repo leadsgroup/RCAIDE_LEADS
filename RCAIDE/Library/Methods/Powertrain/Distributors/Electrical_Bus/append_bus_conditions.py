@@ -80,7 +80,37 @@ def append_bus_conditions(bus,segment):
         segment.state.conditions.energy.busses[bus.tag].state_of_charge           = segment.initial_battery_state_of_charge* ones_row(1) 
         segment.state.conditions.energy.busses[bus.tag].depth_of_discharge        = 1 - segment.initial_battery_state_of_charge* ones_row(1)
    
-    return
+    if bus.fuel_tanks:
+    # Sum all user-defined split ratios; treat missing values as 0.
+        user_defined_ratio = sum(t.fuel_flow_split_ratio or 0 for t in bus.fuel_tanks)
+
+        # Tanks without a user-defined ratio will be automatically assigned one.
+        auto_assigned_tanks = [t for t in bus.fuel_tanks if t.fuel_flow_split_ratio is None]
+
+        # Total fuel mass across auto-assigned tanks (used for mass-proportional splitting).
+        total_auto_mass = sum(t.fuel.mass_properties.mass for t in auto_assigned_tanks)
+
+        # Portion of ratio budget still available after user-defined assignments.
+        remaining_ratio = max(0.0, 1.0 - user_defined_ratio)
+
+        # Distribute remaining ratio across auto-assigned tanks:
+        # - proportional to fuel mass when total mass is nonzero
+        # - evenly if all auto-assigned tank masses sum to zero
+        for t in auto_assigned_tanks:
+            t.fuel_flow_split_ratio = (
+                (t.fuel.mass_properties.mass / total_auto_mass) * remaining_ratio
+                if total_auto_mass
+                else remaining_ratio / len(auto_assigned_tanks)
+            )
+
+        # Validation: if every tank was user-defined, their ratios must total ~1.0.
+        if not auto_assigned_tanks:
+            if round(user_defined_ratio, 4) != 1.0:
+                raise ValueError(
+                    f"User-defined flow_split_ratio values sum to {user_defined_ratio:.3f}, must equal 1.0"
+                )
+
+        return
 
 
 def append_bus_segment_conditions(bus,segment):

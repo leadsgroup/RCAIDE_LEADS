@@ -93,8 +93,8 @@ class Landing_Gear(Component):
         self.width                           = 0 
         self.height                          = 0
         self.wheel_clearance_factor          = 1.1
-        self.number_of_gear_types_in_tandem  = None
-        self.number_of_wheels_in_gear_type   = None  
+        self.number_of_gear_types_in_tandem  = 1
+        self.number_of_wheels_in_gear_type   = 1  
         self.gear_extended                   = False
         self.fairing                         = False
          
@@ -102,15 +102,10 @@ class Landing_Gear(Component):
         """
         Computes the center of gravity for a landing gear.
 
-        Parameters
-        ----------
-        center_of_gravity : list, optional
-            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
-
-        Returns
-        -------
-        I : ndarray
-            3x3 moment of inertia tensor in kg*m^2 
+        See Also
+        --------
+        RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_fuselage_center_of_gravity
+            Implementation of the center of gravity calculation
         """
         
         if type(self) == RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear():
@@ -127,12 +122,7 @@ class Landing_Gear(Component):
         Parameters
         ---------- 
         center_of_gravity : list, optional
-            Reference point coordinates, defaults to [[0, 0, 0]]
-        
-        Returns
-        -------
-        ndarray
-            3x3 moment of inertia tensor
+            Reference point coordinates, defaults to [[0, 0, 0]] 
         """
 
         if type(self) == RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear():

@@ -18,7 +18,14 @@ import numpy as np
 import sys 
 import os
 
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
 from Navion    import vehicle_setup, configs_setup
 # ----------------------------------------------------------------------
 #   Main
@@ -45,19 +52,19 @@ def main():
     results = missions.base_mission.evaluate() 
 
     elevator_deflection        = results.segments.climb.conditions.control_surfaces.elevator.deflection[0,0] / Units.deg
-    elevator_deflection_true   = -0.0014336949158761567
+    elevator_deflection_true   = 0.7173607885939329
     elevator_deflection_diff   = np.abs(elevator_deflection - elevator_deflection_true)
     print('Error1: ',elevator_deflection_diff)
     assert np.abs(elevator_deflection_diff/elevator_deflection_true) < 5e-3
 
     aileron_deflection        = results.segments.climb.conditions.control_surfaces.aileron.deflection[0,0] / Units.deg
-    aileron_deflection_true   = 0.449873434803063
+    aileron_deflection_true   = 0.44816965172713286
     aileron_deflection_diff   = np.abs(aileron_deflection - aileron_deflection_true)
     print('Error2: ',aileron_deflection_diff)
     assert np.abs(aileron_deflection_diff/aileron_deflection_true) < 5e-3
 
     rudder_deflection        = results.segments.climb.conditions.control_surfaces.rudder.deflection[0,0] / Units.deg
-    rudder_deflection_true   = 1.4157450384944188
+    rudder_deflection_true   = 1.4189996564257998
     rudder_deflection_diff   = np.abs(rudder_deflection - rudder_deflection_true)
     print('Error3: ',rudder_deflection_diff)
     assert np.abs(rudder_deflection_diff/rudder_deflection_true) < 5e-3    
@@ -98,6 +105,9 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Weights
     weights = RCAIDE.Framework.Analyses.Weights.Conventional_General_Aviation() 
+    weights.settings.run_weights_analysis = True
+    weights.settings.run_moments_of_inertia_analysis = True
+    weights.settings.run_center_of_gravity_analysis = True
     analyses.append(weights) 
 
     # ------------------------------------------------------------------

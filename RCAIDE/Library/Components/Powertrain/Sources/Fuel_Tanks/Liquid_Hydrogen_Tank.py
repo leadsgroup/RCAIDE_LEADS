@@ -8,12 +8,14 @@
 
 # RCAIDE imports
 from .Non_Integral_Tank  import Non_Integral_Tank 
+import RCAIDE
 from RCAIDE.Framework.Core import Units
-
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Integral_Tank.compute_integral_tank_volume               import *
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_non_integral_tank_volume       import *
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank.compute_liquid_hydrogen_tank_volume import compute_liquid_hydrogen_tank_volume
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank.compute_liquid_hydrogen_conformal_tank_volume import compute_liquid_hydrogen_tank_conformal_volume
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_cylinder_center_of_gravity
-from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_rounded_end_cylinder_moment_of_inertia
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_rounded_end_cylinder_moment_of_inertia, compute_cuboid_moment_of_inertia
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Liquid Hydrogen Tank
@@ -94,13 +96,16 @@ class Liquid_Hydrogen_Tank(Non_Integral_Tank):
         self.fuel                     = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
         self.material                 = None
         self.insulation_material      = None
+        self.geometry_type            = 'cylindrical' # conformal
         self.design_inlet_temperature = 20
         self.design_altitiude         = 0
         self.acceptable_heat_leak     = 20
+        self.acceptable_total_heat_leak= 2000
         self.design_altitude          = 30000 * Units.ft
         self.design_isa_deviation     = 0
         self.ullage_volume_fraction   = 0.07
         self.design_external_pressure = 0 
+        self.tank_accesories_weight_factor = 1.5
 
     def compute_volume(self, wings, fuselages,fuel_tanks):
         """
@@ -141,14 +146,32 @@ class Liquid_Hydrogen_Tank(Non_Integral_Tank):
                 wing = wings[self.wing_tag]  
                 compute_wing_non_integral_tank_volume(self, wing,fuel_tanks)
                 if hasattr(fuel_tanks,self.tag):
-                    compute_liquid_hydrogen_tank_volume(self)
+                    compute_liquid_hydrogen_tank_volume(self,fuel_tanks)
                   
             else:
                 if self.bwb_aft_tank == True:
                     if self.wing_tag != None:
                         wing = wings[self.wing_tag]  
-                        compute_bwb_aft_tank_volume(self, wing)
-                        compute_liquid_hydrogen_tank_volume(self)
+                        compute_bwb_aft_tank_volume(self, wing,fuel_tanks)
+                        if hasattr(fuel_tanks,self.tag):
+                            compute_liquid_hydrogen_tank_volume(self,fuel_tanks)
+        elif self.geometry_type == 'conformal':
+             if self.wing_tag != None and self.bwb_aft_tank is False:
+                wing = wings[self.wing_tag]  
+                compute_wing_integral_prismatic_tank_volume(self, wing,fuel_tanks)
+                if hasattr(fuel_tanks,self.tag):
+                    compute_liquid_hydrogen_tank_conformal_volume(self,fuel_tanks)
+             else:
+                if self.bwb_aft_tank == True:
+                    if self.wing_tag != None:
+                        wing = wings[self.wing_tag]  
+                        compute_bwb_aft_integral_prismatic_tank_volume(self, wing,fuel_tanks)
+                        if hasattr(fuel_tanks,self.tag):
+                            compute_liquid_hydrogen_tank_conformal_volume(self,fuel_tanks)
+        else:
+            raise NotImplementedError
+
+                        
         return
   
     def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
@@ -169,11 +192,17 @@ class Liquid_Hydrogen_Tank(Non_Integral_Tank):
         
         outer_length = self.lengths.external
         outer_radius = self.diameters.external/2
-        inner_length = self.lengths.external - 2*self.wall_thickness
-        inner_radius = self.diameters.internal/2 - self.wall_thickness
+        inner_length = self.inner_structure.inner_length 
          
-        _, _ = compute_rounded_end_cylinder_moment_of_inertia(self, outer_length,outer_radius,inner_length=inner_length, inner_radius=inner_radius, center_of_gravity=center_of_gravity, fuel_tank=True) 
-                
+        if  self.geometry_type == 'cylindrical':
+            inner_radius = self.inner_structure.inner_diameter/2
+            _, _ = compute_rounded_end_cylinder_moment_of_inertia(self, outer_length,outer_radius,inner_length=inner_length, inner_radius=inner_radius, center_of_gravity=center_of_gravity, fuel_tank=True) 
+        elif self.geometry_type == 'conformal' and self.bwb_aft_tank:
+            pass
+        elif self.geometry_type == 'conformal' and self.bwb_aft_tank == False:
+            thickness = self.inner_structure.thickness + self.insulation_thickness
+            _, _ = compute_cuboid_moment_of_inertia(self, outer_length = self.average_outer_length, outer_width = self.average_outer_width, outer_height = self.average_outer_height, inner_length = self.average_outer_length - 2 *thickness, inner_width = self.average_outer_width - 2*thickness, inner_height=self.average_outer_height - 2 * thickness, center_of_gravity=center_of_gravity, fuel_tank=True)
+        
         return
     
 
@@ -191,8 +220,9 @@ class Liquid_Hydrogen_Tank(Non_Integral_Tank):
         I : ndarray
             3x3 moment of inertia tensor in kg*m^2 
         """
-        
-        length = self.lengths.external +  self.diameters.external
-        _      = compute_cylinder_center_of_gravity(self, length )
-            
+        if self.geometry_type == 'cylindrical':        
+            length = self.lengths.external +  self.diameters.external
+            _      = compute_cylinder_center_of_gravity(self, length )
+        elif self.geometry_type == 'conformal':
+            pass # cg calcs are done and stored on the fuel tank during volume computations
         return

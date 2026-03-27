@@ -59,6 +59,43 @@ def append_fuel_line_conditions(fuel_line,segment):
     segment.state.conditions.energy.fuel_lines[fuel_line.tag].fuel_mass_flow_rate                 = 0 * ones_row(1)  
     segment.state.conditions.energy.fuel_lines[fuel_line.tag].fuel_tanks                          = Conditions() 
 
+    if fuel_line.additional_line_flow_rate != 0:
+        # If there is an additional flow rate on the line then we will split it between the fuel tanks on the fuel line based on the volume of the tank
+        total_mass = 0 
+        for fuel_tank in fuel_line.fuel_tanks:
+            total_mass += fuel_tank.fuel.mass_properties.mass 
+        for fuel_tank in fuel_line.fuel_tanks:
+            fuel_tank.secondary_mass_flow_rate= (fuel_tank.fuel.mass_properties.mass / total_mass) * fuel_line.additional_line_flow_rate
+
+    # Sum all user-defined split ratios; treat missing values as 0.
+    user_defined_ratio = sum(t.fuel_flow_split_ratio or 0 for t in fuel_line.fuel_tanks)
+
+    # Tanks without a user-defined ratio will be automatically assigned one.
+    auto_assigned_tanks = [t for t in fuel_line.fuel_tanks if t.fuel_flow_split_ratio is None]
+
+    # Total fuel mass across auto-assigned tanks (used for mass-proportional splitting).
+    total_auto_mass = sum(t.fuel.mass_properties.mass for t in auto_assigned_tanks)
+
+    # Portion of ratio budget still available after user-defined assignments.
+    remaining_ratio = max(0.0, 1.0 - user_defined_ratio)
+
+    # Distribute remaining ratio across auto-assigned tanks:
+    # - proportional to fuel mass when total mass is nonzero
+    # - evenly if all auto-assigned tank masses sum to zero
+    for t in auto_assigned_tanks:
+        t.fuel_flow_split_ratio = (
+            (t.fuel.mass_properties.mass / total_auto_mass) * remaining_ratio
+            if total_auto_mass
+            else remaining_ratio / len(auto_assigned_tanks)
+        )
+
+    # Validation: if every tank was user-defined, their ratios must total ~1.0.
+    if not auto_assigned_tanks:
+        if round(user_defined_ratio, 4) != 1.0:
+            raise ValueError(
+                f"User-defined flow_split_ratio values sum to {user_defined_ratio:.3f}, must equal 1.0"
+            )
+
     return
 
 

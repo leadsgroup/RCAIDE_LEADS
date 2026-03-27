@@ -74,8 +74,6 @@ class Vortex_Lattice_Method(Stability):
         self.settings.vortex_distribution                           = Data()
         self.settings.leading_edge_suction_multiplier               = 1.0  
         self.settings.use_VORLAX_matrix_calculation                 = False
-        self.settings.update_center_of_gravity                      = True 
-        self.settings.update_moments_of_inertia                     = True
         self.settings.floating_point_precision                      = np.float32 
         
         # conditions table, used for surrogate model training
@@ -106,6 +104,7 @@ class Vortex_Lattice_Method(Stability):
         
         # compute neutral point 
         if self.settings.compute_neutral_point:
+            print("Computing neutral point (This might take a while)")
             compute_neutral_point(self, vehicle)  
         elif vehicle.neutral_point == None:
             raise AttributeError('Neutral point not defined.')

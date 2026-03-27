@@ -54,13 +54,8 @@ def compute_cabin_moment_of_inertia(cabin,fuselage,center_of_gravity = np.array(
     # Calculate MOI of the cabin
     mass                  = cabin.mass_properties.mass
     solid_segment.density = mass / solid_segment.volume # Assign the density of the solid so that the total mass is equal to the assigned mass
-    I                     = solid_segment.moment_inertia
-    centroid              = solid_segment.centroid
+    I_compoment           = solid_segment.moment_inertia
     
-    # additional MOI due to parallel axis theorm with respect to the centroid of the calcualted shape
-    s     = np.array(center_of_gravity) - np.array(centroid) 
-    I_par = cabin.mass_properties.mass * (np.array(np.dot(s[0], s[0])) * np.array(np.identity(3)) - np.outer(s, s))             
-    
-    cabin.mass_properties.moments_of_inertia.tensor =  I + I_par # Combine inertia tensors for the full tensor w.r.t. the designated center of gravity
+    cabin.mass_properties.moments_of_inertia.tensor =  I_compoment
 
     return  cabin.mass_properties.moments_of_inertia.tensor, cabin.mass_properties.mass

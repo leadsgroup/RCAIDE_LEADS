@@ -156,7 +156,7 @@ def design_turboshaft(turboshaft):
     
     segment                  = RCAIDE.Framework.Mission.Segments.Segment()  
     segment.state.conditions = conditions
-    turboshaft.append_operating_conditions(segment,conditions.energy,conditions.noise)  
+    turboshaft.append_operating_conditions(segment,conditions.energy,conditions.aeroacoustics)  
             
     ram                     = turboshaft.ram
     inlet_nozzle            = turboshaft.inlet_nozzle
@@ -241,8 +241,7 @@ def design_turboshaft(turboshaft):
     lpt_conditions.inputs.mach_number                         = hpt_conditions.outputs.mach_number  
     low_pressure_turbine.working_fluid                        = high_pressure_turbine.working_fluid    
     lpt_conditions.inputs.compressor                          = Data()
-    lpt_conditions.inputs.compressor.work_done                = 0.0 
-    lpt_conditions.inputs.compressor.external_shaft_work_done = 0.0 
+    lpt_conditions.inputs.compressor.work_done                = 0.0  
     lpt_conditions.inputs.fuel_to_air_ratio                   = combustor_conditions.outputs.fuel_to_air_ratio 
     lpt_conditions.inputs.bypass_ratio                        = 0.0
     lpt_conditions.inputs.fan                                 = Data()

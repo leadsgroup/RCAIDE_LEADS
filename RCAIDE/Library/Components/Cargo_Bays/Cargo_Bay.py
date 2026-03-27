@@ -42,29 +42,17 @@ class Cargo_Bay(Component):
         self.length        = 1.0
         self.width         = 1.0
         self.height        = 1.0 
-        self.density       = 0.0
-        self.cargo         = Component() 
-        self.cargo.tag     = 'cargo'
-        self.baggage       = Component() 
-        self.baggage.tag   = 'baggage'
-        self.container     = Component() 
-        self.container.tag = 'container'
+        self.density       = 0.0 
         self.power_draw    = 0.0
         
     def compute_center_of_gravity(self,vehicle): 
         """
         Computes the center of gravity for the  cargo bay.
 
-        Parameters
-        ----------
-        center_of_gravity : list, optional
-            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
-
-        Returns
-        ------- 
-        center_of_gravity : list, optional
-            Reference point coordinates, defaults to [[0, 0, 0]]
- 
+        See Also
+        --------
+        RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_fuselage_center_of_gravity
+            Implementation of the center of gravity calculation
         """
         _ = compute_cargo_bay_center_of_gravity(self)
         return
@@ -77,11 +65,7 @@ class Cargo_Bay(Component):
         ---------- 
         center_of_gravity : list, optional
             Reference point coordinates, defaults to [[0, 0, 0]]
- 
-        Returns
-        -------
-        ndarray
-            3x3 moment of inertia tensor
+            
         """ 
         _,_ = compute_cuboid_moment_of_inertia(self,self.length,self.width,self.height, inner_length = 0, inner_width = 0, inner_height = 0, center_of_gravity = np.array([[0,0,0]]))  
         return       

@@ -23,7 +23,7 @@ def compute_cabin_center_of_gravity(cabin,comp):
     num_pax            = cabin.number_of_passengers
     cabin_mass         = cabin.mass_properties.mass
     arr                = cabin.filled_seats_arrangement 
-    LOPA               = comp.layout_of_passenger_accommodations.object_coordinates
+    LOPA               = cabin.layout_of_passenger_accommodations.object_coordinates
     point_mass         = cabin_mass/num_pax 
     if arr == 'random':
         idxs =  np.random.choice(range(0, num_seats), size=num_pax, replace=False)

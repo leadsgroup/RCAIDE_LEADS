@@ -177,9 +177,10 @@ def write_vsp_nacelle(nacelle, OML_set_ind):
         for i3 in reversed(range(num_segs-2)):
             xsec = vsp.GetXSec( xsec_surf, i3 ) 
             # order is reversed because sections are initially bunched in the front and cannot be extended passed the next
-            vsp.SetParmVal(nac_id, "XLocPercent", "XSec_"+str(i3+1),x_delta[i3+1])
-            vsp.SetParmVal(nac_id, "ZLocPercent", "XSec_"+str(i3+1),z_delta[i3+1])
-                       
+    
+            vsp.SetParmVal(nac_id, "XDelta", "XSec_"+str(i3+1),x_delta[i3+1])
+            vsp.SetParmVal(nac_id, "ZDelta", "XSec_"+str(i3+1),z_delta[i3+1])
+             
             if type(segs[segment_list[i3]]) == RCAIDE.Library.Components.Fuselages.Segments.Circle_Segment:
                 vsp.SetParmVal(nac_id, "Circle_Diameter", "XSecCurve_"+str(i3+1), widths[i3+1]) 
                 

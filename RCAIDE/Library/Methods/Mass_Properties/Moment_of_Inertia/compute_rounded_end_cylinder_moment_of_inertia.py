@@ -14,7 +14,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Compute Rounded-End Cylinder Moment of Inertia
 # ----------------------------------------------------------------------------------------------------------------------   
-def compute_rounded_end_cylinder_moment_of_inertia(component,outer_length,outer_radius,inner_length = 0,inner_radius = 0,
+def compute_rounded_end_cylinder_moment_of_inertia(component,outer_length,outer_radius,inner_length,inner_radius,
                                                    center_of_gravity = np.array([[0,0,0]]), fuel_tank=False):  
     """
     Computes the moment of inertia tensor for a hollow rounded-end cylinder.
@@ -77,9 +77,8 @@ def compute_rounded_end_cylinder_moment_of_inertia(component,outer_length,outer_
 
     # ----------------------------------------------------------------------------------------------------------------------
     # unpack 
-    # ----------------------------------------------------------------------------------------------------------------------
-    origin = component.origin
-    mass   = component.mass_properties.mass
+    # ---------------------------------------------------------------------------------------------------------------------- 
+    mass           = component.mass_properties.mass
         
     # ----------------------------------------------------------------------------------------------------------------------    
     # Setup
@@ -90,7 +89,7 @@ def compute_rounded_end_cylinder_moment_of_inertia(component,outer_length,outer_
     # Moment of inertia in local system 
     # ----------------------------------------------------------------------------------------------------------------------
     # volume of cylindrical part 
-    volume_cyl = (np.pi * outer_radius ** 2 * outer_length ) -  (np.pi * inner_radius ** 2 * inner_length )
+    volume_cyl = (np.pi * (outer_radius ** 2 )* outer_length ) -  (np.pi * (inner_radius ** 2) * inner_length )
    
     # volume of sperical end caps 
     volume_sph =   ( 4 / 3 * np.pi * outer_radius ** 3) -  ( 4 / 3 * np.pi * inner_radius ** 3)  
@@ -105,14 +104,13 @@ def compute_rounded_end_cylinder_moment_of_inertia(component,outer_length,outer_
     # MOI about cylindrical axis
     d = outer_length / 2 + (3/8)*outer_radius # distance from centroid to base of hemisphere
     I_cylinder_cylin_axis      = mass_cyl *  ( (outer_radius**2 + inner_radius**2)/4 + (outer_length**2)/12 )
-    I_sperical_caps_cylin_axis = 2/5 * 2*mass_sph  *  (outer_radius**5 - inner_radius**5)/ (outer_radius**3 - inner_radius**3)
-    I_tot_cylin_axis           = I_cylinder_cylin_axis + I_sperical_caps_cylin_axis + 2*mass_sph*(d**2)
+    I_sperical_caps_cylin_axis = 2/5 * mass_sph  *  (outer_radius**5 - inner_radius**5)/ (outer_radius**3 - inner_radius**3)
+    I_tot_cylin_axis           = I_cylinder_cylin_axis + I_sperical_caps_cylin_axis + mass_sph*(d**2)
 
     # MOI about longitudinal axis (passing through the center of the circle)
     I_cylinder_long_axis       = 0.5 * mass_cyl * (outer_radius**2 + inner_radius**2)
-    I_sperical_caps_long_axis  = 2/5 * 2*mass_sph *  (outer_radius**5 - inner_radius**5)/ (outer_radius**3 - inner_radius**3)
+    I_sperical_caps_long_axis  = 2/5 * mass_sph *  (outer_radius**5 - inner_radius**5)/ (outer_radius**3 - inner_radius**3)
     I_tot_long_axis            = I_cylinder_long_axis + I_sperical_caps_long_axis    
-     
 
     # depending on orientation of cylindrical tank     
     if isinstance(component, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
@@ -128,22 +126,16 @@ def compute_rounded_end_cylinder_moment_of_inertia(component,outer_length,outer_
         I[0][0] =  I_tot_long_axis
         I[1][1] =  I_tot_cylin_axis
         I[2][2] =  I_tot_cylin_axis      
-    
-    # ----------------------------------------------------------------------------------------------------------------------    
-    # transform moment of inertia to the global system
-    # ----------------------------------------------------------------------------------------------------------------------
-    s        = np.array(center_of_gravity) - np.array(origin) # Vector between component and the CG    
-    I_global = np.array(I) + mass * (np.array(np.dot(s[0], s[0])) * np.array(np.identity(3)) - np.outer(s,s))
 
     # Store moment of inertia tensor on component 
-    component.mass_properties.moments_of_inertia.tensor                 = I_global   
-    component.mass_properties.moments_of_inertia.non_dimensional_tensor = I_global / mass
+    component.mass_properties.moments_of_inertia.tensor                 = I   
+    component.mass_properties.moments_of_inertia.non_dimensional_tensor = I / mass  
     
     if fuel_tank == True:
         # unpack fuel 
         fuel      = component.fuel
         
         # compute MOI of fuel assume inner walls of tank is boundary of fuel
-        _,_ = compute_rounded_end_cylinder_moment_of_inertia(fuel,inner_length, inner_radius,center_of_gravity = center_of_gravity,fuel_tank=False)        
+        _,_ = compute_rounded_end_cylinder_moment_of_inertia(fuel,inner_length, inner_radius,inner_length=0,inner_radius=0,center_of_gravity = center_of_gravity,fuel_tank=False)        
         
-    return I_global,  mass
+    return I,  mass

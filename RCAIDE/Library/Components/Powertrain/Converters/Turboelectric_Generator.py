@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Propulsors/Turboelectric_Generator.py
+# RCAIDE/Library/Components/Converters/Turboelectric_Generator.py
 # 
 #  
 # Created:  Jan 2025, M. Clarke 

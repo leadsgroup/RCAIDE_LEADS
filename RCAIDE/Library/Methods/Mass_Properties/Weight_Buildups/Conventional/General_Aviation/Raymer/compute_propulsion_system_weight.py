@@ -15,7 +15,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_propulsion_system_weight
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_propulsion_system_weight(network):
+def compute_propulsion_system_weight(network, settings):
     W_energy_network_total = 0
     number_of_jet_engines = 0
     number_of_piston_engines = 0
@@ -26,7 +26,7 @@ def compute_propulsion_system_weight(network):
                 W_propulsion                   = integrated_propulsion_jet(W_engine_jet) 
                 propulsor.mass_properties.mass = W_propulsion
                 W_energy_network_total         += W_propulsion                
-            elif isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Internal_Combustion_Engine):    
+            elif isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Internal_Combustion_Engine) or isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine):    
                 number_of_piston_engines += 1
                 W_engine_piston                = compute_piston_engine_weight(propulsor)
                 W_propulsion                   = integrated_propulsion_piston(W_engine_piston) 

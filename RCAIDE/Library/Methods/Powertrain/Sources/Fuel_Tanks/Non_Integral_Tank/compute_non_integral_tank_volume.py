@@ -22,7 +22,7 @@ import os
 # ----------------------------------------------------------------------------------------------------------------------
 #  Methods to compute volume of non integrak tanks
 # ----------------------------------------------------------------------------------------------------------------------  
-def compute_bwb_aft_tank_volume(fuel_tank, wing):
+def compute_bwb_aft_tank_volume(fuel_tank, wing,fuel_tanks):
     """
     Computes the volume of an aft fuel tank for a Blended Wing Body (BWB) aircraft configuration.
 
@@ -86,15 +86,21 @@ def compute_bwb_aft_tank_volume(fuel_tank, wing):
 
     where r is the tank radius and l is the cylindrical length.
     """
-
     # Check if there are enough properties to accurately compute the maximum possible tank volume 
     if any(val is None for val in [
         fuel_tank.aft_tank_root_chord_bounds[0],
         fuel_tank.aft_tank_root_chord_bounds[1],
-         fuel_tank.segments_bounding_tank ,
-         fuel_tank.aft_tank_segment_bound
+        fuel_tank.segments_bounding_tank ,
+        fuel_tank.aft_tank_segment_bound
         ]):
         raise ValueError("One or more required aft tank parameters are not set in 'fuel_tank'.")
+    if hasattr( wing, 'aft_tank_end_percent'):
+        if  (fuel_tank.aft_tank_root_chord_bounds[1] - wing.aft_tank_end_percent - 0.005)*wing.chords.root > 0.25: # Successive Aft Tank diameter needs to be atleast 0.25m
+            fuel_tank.aft_tank_root_chord_bounds[0] = wing.aft_tank_end_percent + 0.005
+        else:
+            print(f"[WARNING] Tank '{fuel_tank.tag}' cannot not fit in the space. Removing from list.")
+            fuel_tanks.pop(fuel_tank.tag)
+            return
     # ------------------------------------------------------
     # compute tank bounds
     # ------------------------------------------------------
@@ -104,12 +110,8 @@ def compute_bwb_aft_tank_volume(fuel_tank, wing):
     # where tank is located as a percentage of root chord
     tank_start_percent = fuel_tank.aft_tank_root_chord_bounds[0]
     tank_end_percent   = fuel_tank.aft_tank_root_chord_bounds[1]
-    # dimensionalized location of tank bounds
-    tank_start_dimensional = tank_start_percent *  root_chord
-    tank_end_dimensional   = tank_end_percent *  root_chord
     # create x coordinates where airfoils will be interpolated to find polygon of interest
     n = 5
-    x_tank_bounds =  np.linspace(tank_start_dimensional,tank_end_dimensional,n)
     # ------------------------------------------------------
     # loop through wing segments to get cooridates
     # ------------------------------------------------------
@@ -125,58 +127,72 @@ def compute_bwb_aft_tank_volume(fuel_tank, wing):
         segment = wing.segments[tag]
         num_tank_sections += 1
         wing_segment_origins =  np.concatenate((wing_segment_origins, np.array(segment.origin)), axis=0)
-    # ------------------------------------------------------
-    # loop through wing segments to get cooridates
-    # ------------------------------------------------------
-    polygon_points = []
-    for seg_i in  range(num_tank_sections):
-        segment =  segments[seg_names[seg_i]]
-        if seg_i == 0:
-            fuel_tank.wing_root_twist =  segments[seg_names[seg_i]].twist
-        if segment.airfoil != None:
-            if type(segment.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
-                geometry = compute_naca_4series(segment.airfoil.NACA_4_Series_code)
-            elif type(segment.airfoil) == RCAIDE.Library.Components.Airfoils.Airfoil:
-                geometry = import_airfoil_geometry(segment.airfoil.coordinate_file)
-        else:
-            geometry = compute_naca_4series('0012')
-        # Get segment chord
-        segment_chord = segments[seg_names[seg_i]].root_chord_percent * root_chord
-        # Get upper and lower points and scale by chord
-        x_points_upper = segment_chord * geometry.x_upper_surface
-        x_points_lower = segment_chord * geometry.x_lower_surface
-        y_points_upper = segment_chord * geometry.y_upper_surface
-        y_points_lower = segment_chord * geometry.y_lower_surface
-        # position points correct using segment origin (this is based on sweep and dihedral)
-        x_points_upper_positioned = x_points_upper + wing_segment_origins[seg_i][0]
-        x_points_lower_positioned = x_points_lower + wing_segment_origins[seg_i][0]
-        y_points_upper_positioned = y_points_upper + wing_segment_origins[seg_i][2] - fuel_tank.wall_clearance
-        y_points_lower_positioned = y_points_lower + wing_segment_origins[seg_i][2] + fuel_tank.wall_clearance
-        # Use interpolant to evaluate polygon points
-        upper_y_function = interp1d(x_points_upper_positioned  ,y_points_upper_positioned, kind='linear')
-        lower_y_function = interp1d(x_points_lower_positioned  ,y_points_lower_positioned, kind='linear')
-        upper_y_points   = upper_y_function(x_tank_bounds)
-        lower_y_points   = lower_y_function(x_tank_bounds)
-        
-        # Create polygon
-        polygon   = []
-        # upper points
-        idx = 0
-        for polygon_corner in range(n):
-            polygon.append((x_tank_bounds[polygon_corner] ,  upper_y_points[polygon_corner]))
-            idx += 1
-        # lower points
-        for polygon_corner_rev in range(n-1, -1, -1):
-            polygon.append((x_tank_bounds[polygon_corner_rev] ,  lower_y_points[polygon_corner_rev]))
-            idx += 1
-        # close polygon
-        polygon.append((x_tank_bounds[0] ,  upper_y_points[0]))
-        # store polygon points
-        polygon_points.append(polygon)
-        # test polygon
-        # Extract x and y coordinates into separate lists for plotting
-        x_coords = [p[0] for p in polygon_points[seg_i]]
-        y_coords = [p[1] for p in polygon_points[seg_i]]
+
+    tank_end_percent_current = tank_end_percent
+    while True:
+        try:
+            # dimensionalized location of tank bounds
+            tank_start_dimensional = tank_start_percent * root_chord
+            tank_end_dimensional   = tank_end_percent_current * root_chord
+            x_tank_bounds = np.linspace(tank_start_dimensional, tank_end_dimensional, n)
+            # ------------------------------------------------------
+            # loop through wing segments to get cooridates
+            # ------------------------------------------------------
+            polygon_points = []
+            for seg_i in range(num_tank_sections):
+                segment = segments[seg_names[seg_i]]
+                if seg_i == 0:
+                    fuel_tank.wing_root_twist = segments[seg_names[seg_i]].twist
+                if segment.airfoil != None:
+                    if type(segment.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
+                        geometry = compute_naca_4series(segment.airfoil.NACA_4_Series_code)
+                    elif type(segment.airfoil) == RCAIDE.Library.Components.Airfoils.Airfoil:
+                        geometry = import_airfoil_geometry(segment.airfoil.coordinate_file)
+                else:
+                    geometry = compute_naca_4series('0012')
+                # Get segment chord
+                segment_chord = segments[seg_names[seg_i]].root_chord_percent * root_chord
+                # Get upper and lower points and scale by chord
+                x_points_upper = segment_chord * geometry.x_upper_surface
+                x_points_lower = segment_chord * geometry.x_lower_surface
+                y_points_upper = segment_chord * geometry.y_upper_surface
+                y_points_lower = segment_chord * geometry.y_lower_surface
+                # position points correct using segment origin (this is based on sweep and dihedral)
+                x_points_upper_positioned = x_points_upper + wing_segment_origins[seg_i][0]
+                x_points_lower_positioned = x_points_lower + wing_segment_origins[seg_i][0]
+                y_points_upper_positioned = y_points_upper + wing_segment_origins[seg_i][2] - fuel_tank.wall_clearance
+                y_points_lower_positioned = y_points_lower + wing_segment_origins[seg_i][2] + fuel_tank.wall_clearance
+                # Use interpolant to evaluate polygon points
+                upper_y_function = interp1d(x_points_upper_positioned, y_points_upper_positioned, kind='linear')
+                lower_y_function = interp1d(x_points_lower_positioned, y_points_lower_positioned, kind='linear')
+                upper_y_points   = upper_y_function(x_tank_bounds)
+                lower_y_points   = lower_y_function(x_tank_bounds)
+                
+                # Create polygon
+                polygon = []
+                # upper points
+                idx = 0
+                for polygon_corner in range(n):
+                    polygon.append((x_tank_bounds[polygon_corner], upper_y_points[polygon_corner]))
+                    idx += 1
+                # lower points
+                for polygon_corner_rev in range(n-1, -1, -1):
+                    polygon.append((x_tank_bounds[polygon_corner_rev], lower_y_points[polygon_corner_rev]))
+                    idx += 1
+                # close polygon
+                polygon.append((x_tank_bounds[0], upper_y_points[0]))
+                # store polygon points
+                polygon_points.append(polygon)
+                # test polygon
+                # Extract x and y coordinates into separate lists for plotting
+                x_coords = [p[0] for p in polygon_points[seg_i]]
+                y_coords = [p[1] for p in polygon_points[seg_i]]
+            fuel_tank.aft_tank_root_chord_bounds[1] = tank_end_percent_current
+            break
+        except Exception:
+            tank_end_percent_current -= 0.01
+            if tank_end_percent_current <= tank_start_percent:
+                raise ValueError("Unable to compute aft tank polygon bounds after reducing aft_tank_root_chord_bounds[1].")
     # ------------------------------------------------------------------------------------------------------
     # Iteratively get maximum inscribed circle between wing segment circles and store volume
     # ------------------------------------------------------------------------------------------------------
@@ -254,6 +270,7 @@ def compute_bwb_aft_tank_volume(fuel_tank, wing):
     fuel_tank.fuel.xz_plane_symmetric = wing.xz_plane_symmetric
     fuel_tank.fuel.xy_plane_symmetric = wing.xy_plane_symmetric
     fuel_tank.fuel.yz_plane_symmetric = wing.yz_plane_symmetric 
+    wing.aft_tank_end_percent =  (fuel_tank.origin[0][0] + fuel_tank.diameters.external )/wing.chords.root
     
     return
 
@@ -351,7 +368,6 @@ def compute_rounded_end_cylindical_tank_volume(fuel_tank):
     fuel_tank.fuel.origin                             = fuel_tank.origin    
     return 
     
-    
 def compute_wing_non_integral_tank_volume(fuel_tank, wing,fuel_tanks):
     """
     Computes the volume of non-integral fuel tanks within wing segments.
@@ -414,6 +430,7 @@ def compute_wing_non_integral_tank_volume(fuel_tank, wing,fuel_tanks):
         fuel_tank.volume_properties.net_volume         = tank_volume_i
         fuel_tank.volume_properties.gross_volume       = tank_volume_o
 
+        fuel_tank.mass_properties.center_of_gravity       =  [[(fuel_tank.lengths.external + fuel_tank.diameters.external) /2, 0,0]]     
         fuel_tank.fuel.mass_properties.center_of_gravity  =  [[(fuel_tank.lengths.external + fuel_tank.diameters.external) /2, 0,0]]     
         fuel_tank.mass_properties.center_of_gravity       =  [[(fuel_tank.lengths.external + fuel_tank.diameters.external) /2, 0,0]]   
 

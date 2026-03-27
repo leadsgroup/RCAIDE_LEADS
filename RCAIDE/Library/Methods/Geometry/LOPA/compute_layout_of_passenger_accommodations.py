@@ -29,6 +29,7 @@ def compute_layout_of_passenger_accommodations(fuselage):
         
         side_cabin_offset = 0
         for cabin in fuselage.cabins:
+            cabin_LOPA = np.empty(( 0, 14))
             cabin_number_of_seats = 0
             cabin_class_origin  = [0, 0, 0]
             total_cabin_length = 0
@@ -36,6 +37,10 @@ def compute_layout_of_passenger_accommodations(fuselage):
                 seat_data ,cabin_class_origin,cabin_number_of_seats,total_cabin_length  = create_class_seating_map_layout(cabin, cabin_class,cabin_class_origin, side_cabin_offset,cabin_number_of_seats,total_cabin_length)
                 side_cabin_offset = cabin.width / 2
                 LOPA = np.vstack((LOPA,seat_data))
+                cabin_LOPA = np.vstack((cabin_LOPA,seat_data))
+            cabin.layout_of_passenger_accommodations                     = Data()
+            cabin.layout_of_passenger_accommodations.object_coordinates  = cabin_LOPA      
+            cabin.layout_of_passenger_accommodations.cabin_x_offset      = offset_x_overall
             cabin.length = total_cabin_length 
             cabin.number_of_seats = cabin_number_of_seats
         

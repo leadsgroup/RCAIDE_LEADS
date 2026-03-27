@@ -6,13 +6,13 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------   
 # RCAIDE imports  
-from RCAIDE.Library.Components import Component
+from .Systems import Systems
 from RCAIDE.Library.Methods.Powertrain.Systems.append_avionics_conditions import append_avionics_conditions 
  
 # ----------------------------------------------------------------------------------------------------------------------
 #  Avionics
 # ----------------------------------------------------------------------------------------------------------------------            
-class Avionics(Component):
+class Avionics(Systems):
     """
     A class representing aircraft avionics systems and their power requirements.
 

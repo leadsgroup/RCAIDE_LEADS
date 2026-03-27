@@ -168,7 +168,7 @@ def design_turbofan(turbofan):
      
     segment                  = RCAIDE.Framework.Mission.Segments.Segment()  
     segment.state.conditions = conditions 
-    turbofan.append_operating_conditions(segment,conditions.energy,conditions.noise)
+    turbofan.append_operating_conditions(segment,conditions.energy,conditions.aeroacoustics)
                     
     ram                       = turbofan.ram
     inlet_nozzle              = turbofan.inlet_nozzle
@@ -268,7 +268,6 @@ def design_turbofan(turbofan):
     hpt_conditions.inputs.static_pressure           = combustor_conditions.outputs.static_pressure
     hpt_conditions.inputs.mach_number               = combustor_conditions.outputs.mach_number       
     hpt_conditions.inputs.compressor                = hpc_conditions.outputs  
-    hpt_conditions.inputs.fan                       = fan_conditions.outputs 
     hpt_conditions.inputs.bypass_ratio              = 0.0
     high_pressure_turbine.working_fluid             = combustor.working_fluid    
     

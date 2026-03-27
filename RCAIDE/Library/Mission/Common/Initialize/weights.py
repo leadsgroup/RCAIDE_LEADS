@@ -64,7 +64,6 @@ def weights(segment):
     --------
     RCAIDE.Framework.Mission.Segments
     """      
- 
     if segment.state.initials:
         m_initial = segment.state.initials.conditions.weights.vehicle.mass[-1,0]
         
@@ -80,19 +79,21 @@ def weights(segment):
         segment.state.conditions.weights.vehicle.moments_of_inertia_Izx[0,:]       = segment.state.initials.conditions.weights.vehicle.moments_of_inertia_Izx[-1,0]
         segment.state.conditions.weights.vehicle.moments_of_inertia_Izy[0,:]       = segment.state.initials.conditions.weights.vehicle.moments_of_inertia_Izy[-1,0]
         segment.state.conditions.weights.vehicle.moments_of_inertia_Izz[0,:]       = segment.state.initials.conditions.weights.vehicle.moments_of_inertia_Izz[-1,0]
-                
+      
         for tag,item in segment.state.initials.conditions.weights.components.mass.items():
-            segment.state.conditions.weights.components.mass[tag][:,0]                         = segment.state.initials.conditions.weights.components.mass[tag][-1,0] 
-            segment.state.conditions.weights.components.global_center_of_gravity[tag][:,0]     = segment.state.initials.conditions.weights.components.global_center_of_gravity[tag][-1,0] 
-            segment.state.conditions.weights.components.moments_of_inertia_Ixx[tag][:,0]       = segment.state.initials.conditions.weights.components.moments_of_inertia_Ixx[tag][-1,0]
-            segment.state.conditions.weights.components.moments_of_inertia_Ixy[tag][:,0]       = segment.state.initials.conditions.weights.components.moments_of_inertia_Ixy[tag][-1,0]
-            segment.state.conditions.weights.components.moments_of_inertia_Ixz[tag][:,0]       = segment.state.initials.conditions.weights.components.moments_of_inertia_Ixz[tag][-1,0]
-            segment.state.conditions.weights.components.moments_of_inertia_Iyx[tag][:,0]       = segment.state.initials.conditions.weights.components.moments_of_inertia_Iyx[tag][-1,0]
-            segment.state.conditions.weights.components.moments_of_inertia_Iyy[tag][:,0]       = segment.state.initials.conditions.weights.components.moments_of_inertia_Iyy[tag][-1,0]
-            segment.state.conditions.weights.components.moments_of_inertia_Iyz[tag][:,0]       = segment.state.initials.conditions.weights.components.moments_of_inertia_Iyz[tag][-1,0]
-            segment.state.conditions.weights.components.moments_of_inertia_Izx[tag][:,0]       = segment.state.initials.conditions.weights.components.moments_of_inertia_Izx[tag][-1,0]
-            segment.state.conditions.weights.components.moments_of_inertia_Izy[tag][:,0]       = segment.state.initials.conditions.weights.components.moments_of_inertia_Izy[tag][-1,0]
-            segment.state.conditions.weights.components.moments_of_inertia_Izz[tag][:,0]       = segment.state.initials.conditions.weights.components.moments_of_inertia_Izz[tag][-1,0]
+            if segment.analyses.weights.settings.run_center_of_gravity_analysis:  
+                segment.state.conditions.weights.components.mass[tag][:,0]                         = segment.state.initials.conditions.weights.components.mass[tag][-1,0] 
+                segment.state.conditions.weights.components.global_center_of_gravity[tag][:,0]     = segment.state.initials.conditions.weights.components.global_center_of_gravity[tag][-1,0]  
+            if segment.analyses.weights.settings.run_moments_of_inertia_analysis:
+                segment.state.conditions.weights.components.moments_of_inertia_Ixx[tag][:,0]       = segment.state.initials.conditions.weights.components.moments_of_inertia_Ixx[tag][-1,0]
+                segment.state.conditions.weights.components.moments_of_inertia_Ixy[tag][:,0]       = segment.state.initials.conditions.weights.components.moments_of_inertia_Ixy[tag][-1,0]
+                segment.state.conditions.weights.components.moments_of_inertia_Ixz[tag][:,0]       = segment.state.initials.conditions.weights.components.moments_of_inertia_Ixz[tag][-1,0]
+                segment.state.conditions.weights.components.moments_of_inertia_Iyx[tag][:,0]       = segment.state.initials.conditions.weights.components.moments_of_inertia_Iyx[tag][-1,0]
+                segment.state.conditions.weights.components.moments_of_inertia_Iyy[tag][:,0]       = segment.state.initials.conditions.weights.components.moments_of_inertia_Iyy[tag][-1,0]
+                segment.state.conditions.weights.components.moments_of_inertia_Iyz[tag][:,0]       = segment.state.initials.conditions.weights.components.moments_of_inertia_Iyz[tag][-1,0]
+                segment.state.conditions.weights.components.moments_of_inertia_Izx[tag][:,0]       = segment.state.initials.conditions.weights.components.moments_of_inertia_Izx[tag][-1,0]
+                segment.state.conditions.weights.components.moments_of_inertia_Izy[tag][:,0]       = segment.state.initials.conditions.weights.components.moments_of_inertia_Izy[tag][-1,0]
+                segment.state.conditions.weights.components.moments_of_inertia_Izz[tag][:,0]       = segment.state.initials.conditions.weights.components.moments_of_inertia_Izz[tag][-1,0]
      
     else: 
         m_initial = segment.analyses.vehicle.mass_properties.takeoff 

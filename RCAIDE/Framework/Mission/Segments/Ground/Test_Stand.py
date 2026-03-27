@@ -9,9 +9,8 @@
 
 # RCAIDE imports 
 from RCAIDE.Framework.Mission.Segments.Evaluate       import Evaluate
-from RCAIDE.Framework.Core                            import Units, Data 
-from RCAIDE.Library.Mission.Segments                  import Ground  
-from RCAIDE.Library.Mission.Common                    import Residuals , Unpack_Unknowns, Update
+from RCAIDE.Framework.Core                            import Units 
+from RCAIDE.Library.Mission.Segments                  import Ground   
 from RCAIDE.Library.Methods.skip                      import skip 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -70,7 +69,7 @@ class Test_Stand(Evaluate):
         iterate.conditions.aerodynamics    = skip
         iterate.conditions.stability       = skip  
         post_process                       = self.process.post_process  
-        post_process.noise                 = skip      
+        post_process.aeroacoustics         = skip      
         
         return
 

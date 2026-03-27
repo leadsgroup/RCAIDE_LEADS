@@ -117,7 +117,7 @@ def plot_battery_module_conditions(results,
                         module_SOC            = battery_conditions.cell.state_of_charge[:,0]   
                         module_temperature    = battery_conditions.temperature[:,0]   
                     
-                        if b_i == 0 and i ==0:                             
+                        if i ==0:                             
                             axis_1.plot(time, module_SOC, color = line_colors[i], marker = ps.markers[b_i], linewidth = ps.line_width, label = battery.tag)
                         else:
                             axis_1.plot(time, module_SOC, color = line_colors[i], marker = ps.markers[b_i], linewidth = ps.line_width)
@@ -139,10 +139,12 @@ def plot_battery_module_conditions(results,
                     
                         axis_5.plot(time, module_volts, color = line_colors[i], marker = ps.markers[b_i], linewidth = ps.line_width) 
                         axis_5.set_ylabel(r'Voltage (V)')
+                        axis_5.set_xlabel('Time (mins)')  
                         set_axes(axis_5) 
                     
                         axis_6.plot(time, module_temperature, color = line_colors[i], marker = ps.markers[b_i], linewidth = ps.line_width)
                         axis_6.set_ylabel(r'Temperature, $\degree$C')
+                        axis_6.set_xlabel('Time (mins)') 
                         set_axes(axis_6)  
                   
     if show_legend:      
@@ -157,5 +159,5 @@ def plot_battery_module_conditions(results,
     fig.suptitle(title_text) 
     
     if save_figure:
-        plt.savefig(save_filename + battery.tag + file_type)    
+        plt.savefig(save_filename + file_type)    
     return fig 

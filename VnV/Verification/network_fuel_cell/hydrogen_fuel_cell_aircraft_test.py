@@ -22,7 +22,14 @@ import sys
 import os
 import numpy as np
 import matplotlib.pyplot as plt 
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
 from Hydrogen_Fuel_Cell_Twin_Otter   import vehicle_setup , configs_setup  
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -88,13 +95,14 @@ def base_analysis(vehicle):
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
     geometry.settings.overwrite_reference        = False
+    geometry.settings.compute_fuel_volume        = True
+    geometry.settings.update_max_fuel = True
     analyses.append(geometry)
  
     # ------------------------------------------------------------------
     #  Weights
     weights          = RCAIDE.Framework.Analyses.Weights.Electric_General_Aviation()  
-    weights.settings.overwrite_center_of_gravity       = False
-    weights.settings.overwrite_moments_of_inertia      = False  
+    weights.settings.overwrite_center_of_gravity       = True
     analyses.append(weights)
 
     # ------------------------------------------------------------------

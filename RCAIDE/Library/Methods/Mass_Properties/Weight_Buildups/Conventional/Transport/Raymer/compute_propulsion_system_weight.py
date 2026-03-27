@@ -16,7 +16,7 @@ import  numpy as  np
 # ----------------------------------------------------------------------------------------------------------------------
 # Propulsion System Weight 
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_propulsion_system_weight(vehicle,network):
+def compute_propulsion_system_weight(vehicle,network, settings):
     """
     Calculates the total propulsion system weight using Raymer's method, including subsystems.
 
@@ -78,16 +78,16 @@ def compute_propulsion_system_weight(vehicle,network):
         W_{nacelle} = 0.6724K_{ng}L_n^{0.1}W_n^{0.294}N_{ult}^{0.119}W_{ec}^{0.611}N_{eng}^{0.984}S_n^{0.224}
 
     .. math::
-        W_{fuel\_sys} = 1.07W_{fuel}^{0.58}N_{eng}^{0.43}M_{max}^{0.34}
+        W_{fuel_sys} = 1.07W_{fuel}^{0.58}N_{eng}^{0.43}M_{max}^{0.34}
 
     .. math::
         W_{engine} = 0.084BPR^{1.1}W_{eng}^{0.5}N_{eng}^{0.5}
 
     .. math::
-        W_{engine\_controls} = 5N_{eng} + 0.8L_{eng}
+        W_{engine_controls} = 5N_{eng} + 0.8L_{eng}
 
     .. math::
-        W_{starter} = 49.19\left(\frac{W_{eng}}{1000}\right)^{0.541}
+        W_{starter} = 49.19  (\frac{W_{eng}}{1000} )^{0.541}
     
     where:
         * :math:`K_{ng}` is a factor for the engine mount type
@@ -134,7 +134,7 @@ def compute_propulsion_system_weight(vehicle,network):
             if propulsor.nacelle != None:
                 ref_nacelle =  propulsor.nacelle 
                     
-    WFSYS           = compute_fuel_system_weight(vehicle, NENG)
+    WFSYS           = compute_fuel_system_weight(vehicle, NENG,settings)
     
     if ref_nacelle != None: 
         WNAC = compute_nacelle_weight(vehicle,ref_nacelle, NENG, WENG)
@@ -225,7 +225,7 @@ def compute_misc_engine_weight(vehicle, NENG, WENG):
     WSTART  = 49.19*((WENG/Units.lbs)/1000)**0.541
     return WEC * Units.lbs, WSTART * Units.lbs
  
-def compute_fuel_system_weight(vehicle, NENG):
+def compute_fuel_system_weight(vehicle, NENG,settings):
     """ Calculates the weight of the fuel system based on the Raymer method
         Assumptions:
 

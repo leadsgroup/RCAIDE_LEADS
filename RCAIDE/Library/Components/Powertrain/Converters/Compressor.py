@@ -63,7 +63,7 @@ class Compressor(Converter):
         self.tag                             = 'Compressor'
         self.polytropic_efficiency           = 1.0
         self.pressure_ratio                  = 1.0
-        self.design_angular_velocity         = 12000 *  Units.rpm
+        self.design_angular_velocity         = 12000 *  Units.rpm 
         self.motor                           = None
         self.generator                       = None
         self.nondimensional_massflow         = 0.0

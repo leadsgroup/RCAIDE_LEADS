@@ -195,7 +195,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
                     W_energy_network_cumulative  += motor_mass                
         
         # Fuel network
-        W_propulsion = Raymer.compute_propulsion_system_weight(network)      
+        W_propulsion = Raymer.compute_propulsion_system_weight(network, settings)      
                 
         W_energy_network_cumulative = W_propulsion.W_prop
         number_of_engines           =  W_propulsion.number_of_engines
@@ -230,39 +230,26 @@ def compute_operating_empty_weight(vehicle, settings=None):
         fuselage.mass_properties.mass = W_fuselage
         
     # landing gear 
-    strut_length_main = 0
-    strut_length_nose = 0 
-    nose_landing_gear = False
-    main_landing_gear = False
+    strut_length_main = None
+    strut_length_nose = None  
     for LG in vehicle.landing_gears:
-        if isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear):
-            strut_length_main = LG.strut_length
-            main_landing_gear = True
+        if isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear): 
+            strut_length_main = LG.strut_length   
         elif isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear):
-            strut_length_nose = LG.strut_length 
-            nose_landing_gear = True
-    W_landing_gear         = Raymer.compute_landing_gear_weight(landing_weight, Nult, strut_length_main, strut_length_nose) 
-    for landing_gear in vehicle.landing_gears:
-        if isinstance(landing_gear, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear):
-            landing_gear.mass_properties.mass = W_landing_gear.main
-            main_landing_gear = True
-        elif isinstance(landing_gear, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear):
-            landing_gear.mass_properties.mass = W_landing_gear.nose
-            nose_landing_gear = True 
-    if nose_landing_gear == False:
-        nose_gear = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()  
-        nose_gear.mass_properties.mass = W_landing_gear.nose
-        vehicle.landing_gears.append(nose_gear) 
-    if main_landing_gear == False:
-        main_gear = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()  
-        main_gear.mass_properties.mass = W_landing_gear.main
-        vehicle.landing_gears.append(main_gear)
+            strut_length_nose = LG.strut_length  
+     
+    if (strut_length_main  != None) and  (strut_length_nose != None): 
+        W_landing_gear  = Raymer.compute_landing_gear_weight(landing_weight, Nult, strut_length_main, strut_length_nose) 
+        for landing_gear in vehicle.landing_gears:
+            if isinstance(landing_gear, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear):
+                landing_gear.mass_properties.mass = W_landing_gear.main 
+            elif isinstance(landing_gear, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear):
+                landing_gear.mass_properties.mass = W_landing_gear.nose 
 
     # Calculating Empty Weight of Aircraft
     W_systems           = Raymer.compute_systems_weight(vehicle,V_fuel, V_fuel_int, number_of_tanks, number_of_engines)
-
-    # Calculate the equipment empty weight of the aircraft
-
+    
+    # Calculate the equipment empty weight of the aircraft 
     W_empty           = (W_wing + W_fuselage + W_landing_gear.main+W_landing_gear.nose + W_energy_network_cumulative + W_systems.total + \
                           W_tail_horizontal +W_tail_vertical) 
 
@@ -292,7 +279,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
     output.empty.systems.avionics             = W_systems.W_avionics
     output.empty.systems.electrical           = W_systems.W_electrical
     output.empty.systems.air_conditioner      = W_systems.W_ac
-    output.empty.systems.furnishings              = W_systems.W_furnish
+    output.empty.systems.furnishings          = W_systems.W_furnish
     output.empty.systems.apu                  = 0
     output.empty.systems.instruments          = 0
     output.empty.systems.anti_ice             = 0

@@ -47,17 +47,15 @@ def compute_fuel_tank_properties(tank,state,distributor):
         Q_convection =  h * (T_amb - T_s) 
         Q_total      = Q_convection + Q_radianton
         
-        m_dot_boil_off = 0 #Q_dot_liquid / h_fg
+        m_dot_boil_off = 0 # Q_dot_liquid / h_fg
          
         tank_conditions.boil_off_flow_rate =  m_dot_boil_off 
      
     m_0_fuel                                       = state.conditions.weights.components.mass[fuel.tag][0,0]  
-    mass_flow_rate                                 = tank.fuel_selector_ratio*distributor_conditions.fuel_mass_flow_rate + tank_conditions.boil_off_flow_rate +  tank_conditions.secondary_mass_flow_rate             
+    mass_flow_rate                                 = tank.fuel_flow_split_ratio*distributor_conditions.fuel_mass_flow_rate + tank_conditions.boil_off_flow_rate +  tank_conditions.secondary_mass_flow_rate             
     tank_conditions.mass_flow_rate                 = mass_flow_rate
     if len(mass_flow_rate) > 1:
         # update mass 
         state.conditions.weights.components.mass[fuel.tag][:,0]  = m_0_fuel +  np.dot(I, -mass_flow_rate).flatten()
         
-        # update moment of inertia of tank
-        update_fuel_tank_moment_of_inertia(tank,state)
     return 

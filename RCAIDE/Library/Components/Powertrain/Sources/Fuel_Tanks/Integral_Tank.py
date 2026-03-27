@@ -13,8 +13,7 @@ from .Fuel_Tank  import Fuel_Tank
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions import append_fuel_tank_conditions 
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Integral_Tank.compute_integral_tank_volume import *
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_wing_integral_tank_moment_of_inertia     import  compute_wing_integral_tank_moment_of_inertia
-from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_fuselage_integral_tank_moment_of_inertia import  compute_fuselage_integral_tank_moment_of_inertia
-from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_wing_center_of_gravity                   import  compute_wing_center_of_gravity
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_wing_integral_tank_center_of_gravity     import  compute_wing_integral_tank_center_of_gravity
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -30,7 +29,7 @@ class Integral_Tank(Fuel_Tank):
     tag : str
         Identifier for the fuel tank (default: 'wing_fuel_tank')
         
-    fuel_selector_ratio : float
+    fuel_flow_split_ratio : float
         Ratio of fuel flow allocation (default: 1.0)
         
     mass_properties.empty_mass : float
@@ -175,9 +174,7 @@ class Integral_Tank(Fuel_Tank):
         if self.wing_tag != None:
             wing = vehicle.wings[self.wing_tag]  
             _, _ = compute_wing_integral_tank_moment_of_inertia(self, wing, center_of_gravity = center_of_gravity)
-        elif self.fuselage_tag != None:
-            fuselage = vehicle.fuselages[self.fuselage_tag] 
-            _, _     = compute_fuselage_integral_tank_moment_of_inertia(self, fuselage, center_of_gravity = center_of_gravity)
+        #  MOI for fuselage Integral Tank is computed with the volume computations.
          
         return
     
@@ -198,7 +195,6 @@ class Integral_Tank(Fuel_Tank):
         """
 
         if self.wing_tag != None:
-            _ = compute_wing_center_of_gravity(self,vehicle)             
-            
+            _ = compute_wing_integral_tank_center_of_gravity(self,vehicle)
         return
         

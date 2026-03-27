@@ -40,6 +40,8 @@ def vehicle_setup():
     vehicle.mass_properties.center_of_gravity         = [[0,0,0]] # Unknown 
     vehicle.mass_properties.moments_of_inertia.tensor = [[0,0,0]] # Unknown 
     vehicle.mass_properties.max_fuel                  = 5000
+    vehicle.mass_properties.max_payload               = 7000
+    vehicle.mass_properties.payload                   = 5000
 
     # envelope properties
     vehicle.flight_envelope.design_mach_number        = 0.43 

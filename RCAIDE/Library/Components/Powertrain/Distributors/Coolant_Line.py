@@ -5,9 +5,13 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
-# RCAIDE imports  
+# RCAIDE imports
+import RCAIDE
+from RCAIDE.Framework.Core                                    import Data
 from RCAIDE.Library.Components                                import Component
 from RCAIDE.Library.Components.Component                      import Container    
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_distributor_moment_of_inertia import compute_distributor_moment_of_inertia 
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_distributor_center_of_gravity import compute_distributor_center_of_gravity 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Coolant Line
@@ -73,9 +77,27 @@ class Coolant_Line(Component):
         Source:
             None
         """          
-        self.tag                            = 'coolant_line' 
-        self.heat_exchangers                = Container()
-        self.reservoirs                     = Container() 
+        self.tag                                  = 'coolant_line' 
+        self.heat_exchangers                      = Container()
+        self.reservoirs                           = Container()
+        self.connector_weight_factor              = 1.1  
+        self.pipe                                 = Data()
+        self.pipe.rigid_material                  = RCAIDE.Library.Attributes.Materials.Aluminum()
+        self.pipe.flexible_material               = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304()
+        self.pipe.flexible_material_ratio         = 0.25
+        self.pipe.diameters                       = Data()
+        self.pipe.diameters.external              = 0.0
+        self.pipe.diameters.internal              = 0.0
+        self.insulation                           = Data()
+        self.insulation.rigid_material            = RCAIDE.Library.Attributes.Materials.Aluminum() 
+        self.insulation.flexible_material         = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304() 
+        self.insulation.flexible_material_ratio   = 0.25
+        self.insulation.diameters                 = Data()
+        self.insulation.diameters.external        = 0.0
+        self.insulation.diameters.internal        = 0.0
+        self.fuel_probe_unit_mass                 = 0.0
+        self.valve_unit_mass                      = 0.0      
+        self.boost_pump_unit_mass                 = 0.0
 
                     
     def __init__ (self, distributor=None):
@@ -104,4 +126,35 @@ class Coolant_Line(Component):
                     if not hasattr(self, 'battery_modules'):
                         self.battery_modules = Container()
                     for battery in item.battery_modules:
-                        self.battery_modules[battery.tag] = Container()
+                        self.battery_modules[battery.tag] = Container() 
+                        
+
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
+        """
+        Computes the moment of inertia tensor for the fuel line.
+
+        Parameters
+        ----------
+        center_of_gravity : list, optional
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]] 
+
+        See Also
+        --------
+        RCAIDE.Library.Methods.weights.vehicle.moments_of_inertia.compute_fuselage_moment_of_inertia
+            Implementation of the moment of inertia calculation
+        """
+        _ , _ = compute_distributor_moment_of_inertia(self,center_of_gravity= center_of_gravity) 
+        return
+    
+
+    def compute_center_of_gravity(self,vehicle): 
+        """
+        Computes the center of gravity for the distributor. 
+
+        See Also
+        --------
+        RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_fuselage_center_of_gravity
+            Implementation of the moment of inertia calculation
+        """
+        _  = compute_distributor_center_of_gravity(self,vehicle) 
+        return                        

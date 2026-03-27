@@ -126,7 +126,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
     # System Weight
     ##------------------------------------------------------------------------------- 
     W_systems = FLOPS.compute_systems_weight(vehicle)
-
+    
     ##-------------------------------------------------------------------------------                 
     # Propulsion Weight 
     ##-------------------------------------------------------------------------------
@@ -158,7 +158,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
         W_energy_network_total   = 0 
         # Fuel-Powered Propulsors  
 
-        W_propulsion                         = Hydrogen.compute_propulsion_system_weight(vehicle, network)
+        W_propulsion                         = Hydrogen.compute_propulsion_system_weight(vehicle, network, settings)
         W_energy_network_total              += W_propulsion.W_prop 
         W_energy_network.W_engine           += W_propulsion.W_engine
         W_energy_network.W_thrust_reverser  += W_propulsion.W_thrust_reverser
@@ -260,6 +260,11 @@ def compute_operating_empty_weight(vehicle, settings=None):
     # Landing Gear Weight
     ##------------------------------------------------------------------------------- 
     landing_gear = FLOPS.compute_landing_gear_weight(vehicle)
+    for LG in vehicle.landing_gears:
+        if isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear): 
+            LG.mass_properties.mass = landing_gear.main 
+        elif isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear):  
+            LG.mass_properties.mass = landing_gear.nose    
     
     ##-------------------------------------------------------------------------------                 
     # Accumulate Structural Weight
@@ -291,30 +296,15 @@ def compute_operating_empty_weight(vehicle, settings=None):
                                                     + output.empty.systems.electrical + output.empty.systems.avionics \
                                                     + output.empty.systems.hydraulics + output.empty.systems.furnishings \
                                                     + output.empty.systems.air_conditioner + output.empty.systems.instruments
- 
+    if hasattr(W_systems, 'W_water_tank'):
+        output.empty.systems.water_tank             = W_systems.W_water_tank
+        output.empty.systems.total                 += output.empty.systems.water_tank 
+        
     output.payload    = payload 
     output.operational_items    = Data()
     output.operational_items    = W_oper 
     output.empty.total          = output.empty.structural.total + output.empty.propulsion.total + output.empty.systems.total 
     output.zero_fuel_weight     = output.empty.total + output.operational_items.total + output.payload.total
     output.max_takeoff          = vehicle.mass_properties.max_takeoff
-                    
-    nose_landing_gear = False
-    main_landing_gear =  False
-    for LG in vehicle.landing_gears:
-        if isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear):
-            LG.mass_properties.mass = landing_gear.main
-            main_landing_gear = True
-        elif isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear):
-            LG.mass_properties.mass = landing_gear.nose
-            nose_landing_gear = True 
-    if nose_landing_gear == False:
-        nose_gear = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()  
-        nose_gear.mass_properties.mass = landing_gear.nose    
-        vehicle.append_component(nose_gear) 
-    if main_landing_gear == False:
-        main_gear = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()  
-        main_gear.mass_properties.mass = landing_gear.main  
-        vehicle.append_component(main_gear)  
-
+                     
     return output

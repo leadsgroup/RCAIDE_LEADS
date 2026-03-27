@@ -10,6 +10,7 @@
 # RCAIDE
 import RCAIDE
 from RCAIDE.Framework.Core import  Units , Data 
+from RCAIDE.Library.Components import Component
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Systems Weight 
@@ -95,6 +96,34 @@ def compute_systems_weight(vehicle, V_fuel, V_int, N_tank, N_eng):
     # Furnishings Group Wt
     W_furnish = (.0582*W_0-65.)*Units.lb
 
+
+        # Update system component masses if not user defined. If user defined than update the outputs
+    for system in vehicle.systems:
+        if isinstance(system,Component):
+            if system.mass_properties.mass == 0 or system.mass_properties.calculated_flag:
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Avionics:
+                    system.mass_properties.mass = W_avionics * Units.lbs
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls:
+                    system.mass_properties.mass = W_flight_controls * Units.lbs
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Electrical: 
+                    system.mass_properties.mass = W_electrical * Units.lbs
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Hydraulics: 
+                    system.mass_properties.mass = hyd_pnu_wt * Units.lbs
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls: 
+                    system.mass_properties.mass = W_air_conditioning * Units.lbs
+                system.mass_properties.calculated_flag = True
+            else:
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Avionics:
+                    W_avionics = system.mass_properties.mass / Units.lbs
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls:
+                    W_flight_controls    = system.mass_properties.mass / Units.lbs
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Electrical: 
+                    W_electrical  = system.mass_properties.mass / Units.lbs
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Hydraulics: 
+                    hyd_pnu_wt   = system.mass_properties.mass / Units.lbs
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls: 
+                    W_air_conditioning    = system.mass_properties.mass * 0.5 / Units.lbs
+
     # packup outputs
     output = Data()   
     output.W_flight_control    = W_flight_controls
@@ -108,35 +137,4 @@ def compute_systems_weight(vehicle, V_fuel, V_int, N_tank, N_eng):
                                   + output.W_ac + output.W_avionics + output.W_electrical \
                                   + output.W_furnish + output.W_fuel_system
     
-    # Assign mass properties to components
-    if has_air_conditioner:
-        vehicle.air_conditioner.mass_properties.mass    = output.empty.systems.air_conditioner 
-    
-    avionics.mass_properties.mass           = W_avionics
-    vehicle.avionics                                    = avionics
-
-    control_systems                                  = RCAIDE.Library.Components.Component()
-    control_systems.tag                              = 'control_systems'  
-    electrical_systems                               = RCAIDE.Library.Components.Component()
-    electrical_systems.tag                           = 'electrical_systems'
-    furnishings                                      = RCAIDE.Library.Components.Component()
-    furnishings.tag                                  = 'furnishings'
-    air_conditioner                                  = RCAIDE.Library.Components.Component() 
-    air_conditioner.tag                              = 'air_conditioner' 
-    hydraulics                                       = RCAIDE.Library.Components.Component()
-    hydraulics.tag                                   = 'hydraulics'  
-
-    control_systems.mass_properties.mass    = W_flight_controls
-    electrical_systems.mass_properties.mass = W_electrical
-    furnishings.mass_properties.mass        = W_furnish
-    air_conditioner.mass_properties.mass    = W_air_conditioning
-    hydraulics.mass_properties.mass         = hyd_pnu_wt
-
-    # assign components to vehicle
-    vehicle.control_systems                             = control_systems
-    vehicle.electrical_systems                          = electrical_systems
-    vehicle.furnishings                                 = furnishings 
-    vehicle.hydraulics                                  = hydraulics
-    
-
     return output

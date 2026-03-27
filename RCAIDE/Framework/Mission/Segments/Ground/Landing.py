@@ -92,7 +92,6 @@ class Landing(Evaluate):
         initialize.conditions              = Ground.Landing.initialize_conditions  
         iterate                            = self.process.iterate   
         iterate.conditions.forces_ground   = Update.ground_forces
-        iterate.unknowns.mission           = Unpack_Unknowns.ground
-        iterate.residuals.flight_dynamics  = Residuals.flight_dynamics    
+        iterate.unknowns.mission           = Unpack_Unknowns.ground 
 
         return

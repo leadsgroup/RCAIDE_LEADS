@@ -179,6 +179,7 @@ class Wing(Component):
         self.areas.exposed                          = 0.0
         self.areas.affected                         = 0.0
         self.areas.wetted                           = 0.0
+        self.areas.planform                         = 0.0
                                                     
         self.chords                                 = Data()
         self.chords.mean_aerodynamic                = 0.0
@@ -279,8 +280,7 @@ class Wing(Component):
         -------
         ndarray
             3x3 moment of inertia tensor
-        """
-        
+        """ 
         _, _ = compute_wing_moment_of_inertia(self, center_of_gravity) 
         return
     
@@ -289,20 +289,10 @@ class Wing(Component):
         """
         Computes the center of gravity for the wing.
 
-        Parameters
-        ----------
-        center_of_gravity : list, optional
-            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
-
-        Returns
-        -------
-        I : ndarray
-            3x3 moment of inertia tensor in kg*m^2
-
         See Also
         --------
-        RCAIDE.Library.Methods.weights.vehicle.moments_of_inertia.compute_fuselage_moment_of_inertia
-            Implementation of the moment of inertia calculation
+        RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_fuselage_center_of_gravity
+            Implementation of the center of gravity calculation
         """
         compute_wing_center_of_gravity(self, vehicle)
         return

@@ -18,7 +18,14 @@ import matplotlib.pyplot as plt
 import os
 
 # local imports 
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
 from Tiltrotor_EVTOL                import vehicle_setup as Tiltrotor_vehicle_setup   
 from Tiltwing_EVTOL                 import vehicle_setup as Tiltwing_vehicle_setup  
 from Embraer_190                    import vehicle_setup as E190_vehicle_setup 
@@ -236,6 +243,31 @@ def bwb_aircraft_geometry_test(show_figure):
         fuel_tank_4.radial_offset                 = 0.2
         
         fuel_line.fuel_tanks.append(fuel_tank_4)
+
+        fuel_tank   = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
+        fuel_tank.tag = 'wing_tanks'
+        fuel_tank.geometry_type     = 'conformal'
+        fuel_tank.fuel  = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()   
+        fuel_tank.material              = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+        fuel_tank.insulation_material   = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
+        fuel_tank.segments_bounding_tank    = ['fuel_wall', 'wing_section_1']  
+        fuel_tank.segments_percent_chord_start  = [0.2,0.2] 
+        fuel_tank.segments_percent_chord_end    = [0.6,0.6]  
+        fuel_line.fuel_tanks.append(fuel_tank) 
+
+        fuel_tank_2                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
+        fuel_tank_2.tag                                    = 'aft_tank' 
+        fuel_tank_2.geometry_type                          = 'conformal'
+        fuel_tank_2.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+        fuel_tank_2.insulation_material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
+        fuel_tank_2.xz_plane_symmetric                     = False
+        fuel_tank_2.orientation_euler_angles               = [0,0,np.pi/2]
+        fuel_tank_2.bwb_aft_tank                           = True
+        fuel_tank_2.aft_tank_root_chord_bounds             = [0.7,0.8]
+        fuel_tank_2.aft_tank_segment_bound                 = 'cabin_wall'
+        fuel_tank_2.radial_offset                          = 0.1
+        fuel_tank_2.fuel.tag                               = '_lh2' 
+        fuel_line.fuel_tanks.append(fuel_tank_2)    
    
     plot_3d_vehicle(vehicle, 
                     save_filename = "BWB_Additional_Tanks",  

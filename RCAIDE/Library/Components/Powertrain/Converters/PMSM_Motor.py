@@ -157,20 +157,10 @@ class PMSM_Motor(Converter):
         """
         Computes the moment of inertia tensor for the motor.
 
-        Parameters
-        ----------
-        center_of_gravity : list, optional
-            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
-
-        Returns
-        -------
-        I : ndarray
-            3x3 moment of inertia tensor in kg*m^2
-
         See Also
         --------
-        RCAIDE.Library.Methods.weights.vehicle.moments_of_inertia.compute_fuselage_moment_of_inertia
-            Implementation of the moment of inertia calculation
+        RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_fuselage_center_of_gravity
+            Implementation of the center of gravity calculation
         """
         _ , _ = compute_cylinder_moment_of_inertia(self,outer_length=self.length,outer_radius=self.diameter/2,center_of_gravity= center_of_gravity) 
         return
@@ -183,12 +173,7 @@ class PMSM_Motor(Converter):
         Parameters
         ----------
         center_of_gravity : list, optional
-            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
-
-        Returns
-        -------
-        I : ndarray
-            3x3 moment of inertia tensor in kg*m^2
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]] 
 
         See Also
         --------

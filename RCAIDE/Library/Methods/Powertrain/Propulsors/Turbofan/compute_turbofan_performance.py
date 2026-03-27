@@ -188,7 +188,7 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_thurst
     """ 
     conditions                = state.conditions   
-    noise_conditions          = conditions.noise.propulsors[turbofan.tag] 
+    noise_conditions          = conditions.aeroacoustics.propulsors[turbofan.tag] 
     turbofan_conditions       = conditions.energy.propulsors[turbofan.tag] 
     U0                        = conditions.freestream.velocity
     T                         = conditions.freestream.temperature
@@ -293,7 +293,6 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     hpt_conditions.inputs.static_pressure           = combustor_conditions.outputs.static_pressure
     hpt_conditions.inputs.mach_number               = combustor_conditions.outputs.mach_number  
     hpt_conditions.inputs.compressor                = hpc_conditions.outputs 
-    hpt_conditions.inputs.fan                       = fan_conditions.outputs
     hpt_conditions.inputs.bypass_ratio              = 0.0 #set to zero to ensure that fan not linked here 
     high_pressure_turbine.working_fluid             = combustor.working_fluid 
         
@@ -409,6 +408,10 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     
   
     # store data
+    fan_res         = Data(
+                    angular_velocity   = fan.angular_velocity
+    )
+    
     core_nozzle_res = Data(
                 exit_static_temperature             = core_nozzle_conditions.outputs.static_temperature,
                 exit_static_pressure                = core_nozzle_conditions.outputs.static_pressure,
@@ -430,7 +433,8 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
             )
 
     noise_conditions.fan_nozzle             = fan_nozzle_res
-    noise_conditions.core_nozzle            = core_nozzle_res  
+    noise_conditions.core_nozzle            = core_nozzle_res 
+    noise_conditions.fan                    = fan_res  
     noise_conditions.low_pressure_spool     = lpc_res
     stored_results_flag                     = True
     stored_propulsor_tag                    = turbofan.tag 
@@ -485,7 +489,7 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
     
     # deep copy results 
     conditions.energy.propulsors[turbofan.tag]                 = deepcopy(conditions.energy.propulsors[stored_propulsor_tag])
-    conditions.noise.propulsors[turbofan.tag]                  = deepcopy(conditions.noise.propulsors[stored_propulsor_tag]) 
+    conditions.aeroacoustics.propulsors[turbofan.tag]          = deepcopy(conditions.aeroacoustics.propulsors[stored_propulsor_tag]) 
     conditions.energy.converters[ram.tag]                      = deepcopy(conditions.energy.converters[ram_0.tag]                     )
     conditions.energy.converters[inlet_nozzle.tag]             = deepcopy(conditions.energy.converters[inlet_nozzle_0.tag]            )
     conditions.energy.converters[fan.tag]                      = deepcopy(conditions.energy.converters[fan_0.tag]                     )

@@ -7,9 +7,12 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 # RCAIDE imports
 import RCAIDE
-from RCAIDE.Framework.Core import Data, Container
+from RCAIDE.Framework.Core import Data 
 from .Main_Wing import Main_Wing
+from RCAIDE.Library.Components.Component  import Container
 from RCAIDE.Library.Components  import Component  
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_bwb_moment_of_inertia import  compute_bwb_moment_of_inertia
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_bwb_center_of_gravity import  compute_bwb_center_of_gravity
 
 # python imports 
 import numpy as np
@@ -108,7 +111,38 @@ class Blended_Wing_Body(Main_Wing):
         self.x_rotation                             = 0.0
         self.y_rotation                             = 0.0
         self.z_rotation                             = 0.0    
-        self.cabins                                 = Container() 
+        self.cabins                                 = Container()
+
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
+        """
+        Computes the moment of inertia tensor for the wing.
+
+        Parameters
+        ---------- 
+        center_of_gravity : list, optional
+            Reference point coordinates, defaults to [[0, 0, 0]]
+        fuel_flag : bool, optional
+            Flag to include fuel mass, defaults to False
+
+        Returns
+        -------
+        ndarray
+            3x3 moment of inertia tensor
+        """ 
+        _, _ = compute_bwb_moment_of_inertia(self, center_of_gravity) 
+        return
+    
+    def compute_center_of_gravity(self,vehicle): 
+        """
+        Computes the center of gravity for the wing.
+
+        See Also
+        --------
+        RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_fuselage_center_of_gravity
+            Implementation of the center of gravity calculation
+        """
+        compute_bwb_center_of_gravity(self, vehicle)
+        return 
 
     
     def append_cabin(self,cabin):
@@ -128,4 +162,4 @@ class Blended_Wing_Body(Main_Wing):
         # Store data
         self.cabins.append(cabin)
 
-        return      
+        return       

@@ -37,7 +37,6 @@ Aerodynamics
    plot_airfoil_polar_files
    plot_airfoil_polars
    plot_airfoil_surface_forces
-   plot_disc_and_power_loading
    plot_drag_components
    plot_lift_distribution
    plot_rotor_conditions

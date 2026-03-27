@@ -32,6 +32,7 @@ from .Ducted_Fan                                 import Ducted_Fan
 from .Propeller                                  import Propeller
 from .Ram                                        import Ram 
 from .Rotor                                      import Rotor
+from .Pump                                       import Pump 
 from .Prop_Rotor                                 import Prop_Rotor
 from .Proton_Exchange_Membrane_Fuel_Cell         import Proton_Exchange_Membrane_Fuel_Cell
 from .Supersonic_Nozzle                          import Supersonic_Nozzle
@@ -40,3 +41,5 @@ from .Turboelectric_Generator                    import Turboelectric_Generator
 from .Turboshaft                                 import Turboshaft
 from .Reformer                                   import Reformer
 from .Turboshaft                                 import Turboshaft
+from .Liquid_Hydrogen_Fuel_Cell_Pump import Liquid_Hydrogen_Fuel_Cell_Pump
+

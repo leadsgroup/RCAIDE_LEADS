@@ -165,7 +165,7 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.compute_thrust
     """ 
     conditions               = state.conditions 
-    noise_conditions         = conditions.noise.propulsors[turboprop.tag]  
+    noise_conditions         = conditions.aeroacoustics.propulsors[turboprop.tag]  
     turboprop_conditions     = conditions.energy.propulsors[turboprop.tag]
     U0                       = conditions.freestream.velocity
     T                        = conditions.freestream.temperature
@@ -247,8 +247,7 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     lpt_conditions.inputs.static_pressure                 = hpt_conditions.outputs.static_pressure 
     lpt_conditions.inputs.mach_number                     = hpt_conditions.outputs.mach_number     
     lpt_conditions.inputs.compressor                      = Data()
-    lpt_conditions.inputs.compressor.work_done            = 0.0   
-    lpt_conditions.inputs.compressor.external_shaft_work_done = 0.0
+    lpt_conditions.inputs.compressor.work_done            = 0.0    
     lpt_conditions.inputs.bypass_ratio                    = 0.0 
     lpt_conditions.inputs.fuel_to_air_ratio               = combustor_conditions.outputs.fuel_to_air_ratio 
     low_pressure_turbine.working_fluid                    = high_pressure_turbine.working_fluid    
@@ -369,7 +368,7 @@ def reuse_stored_turboprop_data(turboprop,state,network,stored_propulsor_tag,cen
 
     # deep copy results 
     conditions.energy.propulsors[turboprop.tag]                = deepcopy(conditions.energy.propulsors[stored_propulsor_tag])
-    conditions.noise.propulsors[turboprop.tag]                 = deepcopy(conditions.noise.propulsors[stored_propulsor_tag]) 
+    conditions.aeroacoustics.propulsors[turboprop.tag]         = deepcopy(conditions.aeroacoustics.propulsors[stored_propulsor_tag]) 
     conditions.energy.converters[ram.tag]                      = deepcopy(conditions.energy.converters[ram_0.tag]                     )
     conditions.energy.converters[inlet_nozzle.tag]             = deepcopy(conditions.energy.converters[inlet_nozzle_0.tag]            ) 
     conditions.energy.converters[compressor.tag]               = deepcopy(conditions.energy.converters[compressor_0.tag] ) 

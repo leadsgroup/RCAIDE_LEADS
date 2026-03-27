@@ -25,7 +25,7 @@ def compute_operating_items_weight(vehicle):
         - engine oil
         - passenger service
         - ammunition and non-fixed weapons
-        - cargo containers
+        - cargo containers (not included)
 
         Assumptions:
             If no tanks are specified, 5 fuel tanks are assumed (includes main and auxiliary tanks)
@@ -86,14 +86,6 @@ def compute_operating_items_weight(vehicle):
     WUF   = 11.5 * NENG * THRUST ** 0.2 + 0.07 * SW + 1.6 * number_of_tanks * FMXTOT ** 0.28  # unusable fuel weight
     WOIL  = 0.082 * NENG * THRUST ** 0.65  # engine oil weight 
     WSRV  = (5.164 * NPF + 3.846 * NPB + 2.529 * NPE) * (DESRNG / VMAX) ** 0.225  # passenger service weight
-    
-    W_cargo = 0
-    WCON    = 0
-    for cargo_bay in vehicle.cargo_bays:
-        W_cargo     =  int(cargo_bay.cargo.mass_properties.mass)
-        W_container = 175 * np.ceil(W_cargo/ Units.lbs * 1. / 950)  # cargo container weight
-        cargo_bay.container.mass_properties.mass = W_container
-        WCON        += W_container
 
     if vehicle.number_of_passengers >= 150:
         NFLCR = 3  # number of flight crew
@@ -113,7 +105,7 @@ def compute_operating_items_weight(vehicle):
     WSRV = (5.164*NPF + 3.846*NPB + 2.529*NPE)*(DESRNG/VMAX)**0.225
     
     output                           = Data()
-    output.misc                      = WUF * Units.lbs + WOIL * Units.lbs + WCON * Units.lbs
+    output.misc                      = WUF * Units.lbs + WOIL * Units.lbs
     output.flight_crew               = WFLCRB * Units.lbs
     output.flight_attendants         = WFLAAB * Units.lbs
     output.passenger_service         = WSRV   * Units.lbs

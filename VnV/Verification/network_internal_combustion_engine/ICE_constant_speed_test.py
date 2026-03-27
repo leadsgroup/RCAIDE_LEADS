@@ -18,7 +18,14 @@ import numpy as np
 import sys 
 import os
 
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
 from Cessna_172                       import vehicle_setup  
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine import design_constant_speed_internal_combustion_engine
 
@@ -44,8 +51,8 @@ def main():
     # mission analysis 
     results = missions.base_mission.evaluate()   
     
-    P_truth     = 42081.530690631174
-    mdot_truth  = 0.0036973789893088482
+    P_truth     = 41773.24166588215
+    mdot_truth  = 0.0036702920144760787
     
     P    = results.segments.cruise.state.conditions.energy.converters['internal_combustion_engine'].power[-1,0]
     mdot = results.segments.cruise.state.conditions.weights.vehicle.mass_rate[-1,0]     
@@ -258,6 +265,7 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Weights
     weights = RCAIDE.Framework.Analyses.Weights.Conventional_General_Aviation()
+    weights.method = 'Raymer'
     analyses.append(weights)     
     
     # ------------------------------------------------------------------

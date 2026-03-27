@@ -69,8 +69,10 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = False, update_max_fuel = 
     total_fuel_mass   = 0
     for network in vehicle.networks: 
         for fuel_line in network.fuel_lines:
-            fuel_tanks= fuel_line.fuel_tanks
+            fuel_tanks = fuel_line.fuel_tanks
             for fuel_tank in fuel_tanks:
+                # update fuel tag to ensure no overwriting of mass 
+                fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag          
                 try:
                     compute_fuel_tank_volume = fuel_tank.compute_volume
                 except Exception as e:
@@ -83,10 +85,14 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = False, update_max_fuel = 
                         fuel_tank.fuel.volume_properties.net_volume = fuel_tank.fuel.mass_properties.mass / fuel_tank.fuel.density
                     total_fuel_volume += fuel_tank.fuel.volume_properties.net_volume 
                     total_fuel_mass   += fuel_tank.fuel.mass_properties.mass
-                    
+        
         for bus in network.busses:
-            fuel_tanks= bus.fuel_tanks
+            fuel_tanks = bus.fuel_tanks
             for fuel_tank in fuel_tanks:
+            
+                # update fuel tag to ensure no overwriting of mass 
+                fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag
+                                
                 try:
                     compute_fuel_tank_volume = fuel_tank.compute_volume
                 except Exception as e:
@@ -98,12 +104,13 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = False, update_max_fuel = 
                         compute_fuel_tank_volume(wings, fuselages, fuel_tanks) 
                         fuel_tank.fuel.volume_properties.net_volume = fuel_tank.fuel.mass_properties.mass / fuel_tank.fuel.density
                     total_fuel_volume += fuel_tank.fuel.volume_properties.net_volume 
-                    total_fuel_mass   += fuel_tank.fuel.mass_properties.mass 
-                    
-    # Assign Total Fuel Volume and Mass to Vehicle 
-    vehicle.volume_properties.fuel   = total_fuel_volume
-    vehicle.mass_properties.fuel     = total_fuel_mass
+                    total_fuel_mass   += fuel_tank.fuel.mass_properties.mass
+                
+    # Assign Total Fuel Volume and to Vehicle 
+    if compute_fuel_volume:
+        vehicle.volume_properties.max_fuel   = total_fuel_volume
 
+    
     if update_max_fuel:
         vehicle.mass_properties.max_fuel = total_fuel_mass
 

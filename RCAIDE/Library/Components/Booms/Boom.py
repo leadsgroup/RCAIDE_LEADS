@@ -198,12 +198,7 @@ class Boom(Component):
         Parameters
         ----------
         center_of_gravity : list, optional
-            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
-
-        Returns
-        -------
-        I : ndarray
-            3x3 moment of inertia tensor in kg*m^2
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]] 
 
         See Also
         --------
@@ -218,20 +213,10 @@ class Boom(Component):
         """
         Computes the center of gravity for the boom.
 
-        Parameters
-        ----------
-        center_of_gravity : list, optional
-            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
-
-        Returns
-        -------
-        I : ndarray
-            3x3 moment of inertia tensor in kg*m^2
-
         See Also
         --------
-        RCAIDE.Library.Methods.weights.vehicle.moments_of_inertia.compute_fuselage_moment_of_inertia
-            Implementation of the moment of inertia calculation
+        RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_fuselage_center_of_gravity
+            Implementation of the center of gravity calculation
         """
         _  = compute_boom_center_of_gravity(self) 
         return

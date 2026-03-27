@@ -39,7 +39,7 @@ def append_internal_combustion_engine_conditions(propulsor, segment, energy_cond
     -------
     None
         Results are stored in energy_conditions.propulsors[propulsor.tag] and
-        segment.state.conditions.noise[propulsor.tag]
+        segment.state.conditions.aeroacoustics[propulsor.tag]
     
     Notes
     -----
@@ -80,7 +80,7 @@ def append_internal_combustion_engine_conditions(propulsor, segment, energy_cond
     energy_conditions.propulsors[propulsor.tag].fuel_mass_flow_rate           = 0. * ones_row(1)
     energy_conditions.propulsors[propulsor.tag].inputs                        = Conditions()
     energy_conditions.propulsors[propulsor.tag].outputs                       = Conditions() 
-    segment.state.conditions.noise[propulsor.tag]                             = Conditions()  
+    segment.state.conditions.aeroacoustics[propulsor.tag]                     = Conditions()  
  
     for tag, item in  propulsor.items(): 
         if issubclass(type(item), RCAIDE.Library.Components.Component):

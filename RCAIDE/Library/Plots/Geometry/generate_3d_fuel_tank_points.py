@@ -7,11 +7,15 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------    
+import RCAIDE
 from RCAIDE.Framework.Core import Data 
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank import compute_non_dimensional_rib_coordinates 
+from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry, compute_naca_4series
 
 # python imports
 import numpy as np
+from scipy.interpolate import interp1d
+from shapely import Polygon
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  generate_integral_wing_tank_points
@@ -437,3 +441,157 @@ def generate_non_integral_fuel_tank_points(fuel_tank, tessellation = 24):
     G.PTS  = fuel_tank_points 
 
     return G 
+
+def aft_tank_root_chord_bounds(fuel_tank, tessalation = 24):
+    """
+    Returns aft tank root chord bounds used by aft BWB tank generators.
+    """
+    return getattr(fuel_tank, "aft_tank_root_chord_bounds", None)
+
+
+def generate_aft_integral_wing_tank_points(wing, n_points, segment_list, fuel_tank):
+    """
+    Generates 3D points for a BWB aft conformal integral tank.
+
+    This mirrors the polygon-intersection logic used by
+    compute_bwb_aft_integral_prismatic_tank_volume so plotting geometry
+    matches volume geometry.
+    """
+    if segment_list is None or len(segment_list) < 2:
+        raise ValueError("segment_list must contain [start_percent, end_percent].")
+
+    if any(val is None for val in [
+        segment_list[0],
+        segment_list[1],
+        fuel_tank.aft_tank_segment_bound
+    ]):
+        raise ValueError("Aft tank bounds and segment bound must be defined.")
+
+    root_chord = wing.chords.root
+    wing_span = wing.spans.projected
+    tank_start_percent = segment_list[0]
+    tank_end_percent = segment_list[1]
+
+    segments = wing.segments
+    seg_tags = list(segments.keys())
+    index = seg_tags.index(fuel_tank.aft_tank_segment_bound)
+    seg_names = seg_tags[:index + 1]
+    num_tank_sections = len(seg_names)
+
+    wing_segment_origins = np.array([segments[tag].origin[0] for tag in seg_names])
+    x_tank_bounds = np.linspace(tank_start_percent * root_chord, tank_end_percent * root_chord, 2)
+
+    polygon_points = []
+    for seg_i, seg_name in enumerate(seg_names):
+        segment = segments[seg_name]
+        if seg_i == 0:
+            fuel_tank.wing_root_twist = segment.twist
+
+        if segment.airfoil is not None:
+            if type(segment.airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
+                geometry = compute_naca_4series(segment.airfoil.NACA_4_Series_code)
+            elif type(segment.airfoil) == RCAIDE.Library.Components.Airfoils.Airfoil:
+                geometry = import_airfoil_geometry(segment.airfoil.coordinate_file)
+            else:
+                geometry = compute_naca_4series('0012')
+        else:
+            geometry = compute_naca_4series('0012')
+
+        segment_chord = segment.root_chord_percent * root_chord
+        x_points_upper = segment_chord * geometry.x_upper_surface + wing_segment_origins[seg_i][0]
+        x_points_lower = segment_chord * geometry.x_lower_surface + wing_segment_origins[seg_i][0]
+        z_points_upper = segment_chord * geometry.y_upper_surface + wing_segment_origins[seg_i][2] - fuel_tank.wall_clearance
+        z_points_lower = segment_chord * geometry.y_lower_surface + wing_segment_origins[seg_i][2] + fuel_tank.wall_clearance
+
+        upper_fn = interp1d(x_points_upper, z_points_upper, kind='linear')
+        lower_fn = interp1d(x_points_lower, z_points_lower, kind='linear')
+        upper_z = upper_fn(x_tank_bounds)
+        lower_z = lower_fn(x_tank_bounds)
+
+        polygon = [
+            (x_tank_bounds[0], upper_z[0]),
+            (x_tank_bounds[1], upper_z[1]),
+            (x_tank_bounds[1], lower_z[1]),
+            (x_tank_bounds[0], lower_z[0]),
+            (x_tank_bounds[0], upper_z[0]),
+        ]
+        polygon_points.append(polygon)
+
+    tank_volumes = np.zeros(num_tank_sections - 1)
+    tank_lengths = np.zeros(num_tank_sections - 1)
+    intersection_polygons = []
+
+    for seg_i in range(1, num_tank_sections):
+        if seg_i == 1:
+            inner_polygon = Polygon(polygon_points[seg_i - 1])
+        else:
+            inner_polygon = intersection_polygon
+
+        outer_polygon = Polygon(polygon_points[seg_i])
+        intersection_polygon = inner_polygon.intersection(outer_polygon)
+
+        if intersection_polygon.is_empty:
+            tank_volumes[seg_i - 1] = 0.0
+            tank_lengths[seg_i - 1] = 0.0
+            intersection_polygons.append(None)
+            continue
+
+        if intersection_polygon.geom_type == 'MultiPolygon':
+            intersection_polygon = max(intersection_polygon.geoms, key=lambda g: g.area)
+
+        area = intersection_polygon.area
+        y_curr = segments[seg_names[seg_i]].percent_span_location * wing_span
+        y_prev = segments[seg_names[seg_i - 1]].percent_span_location * wing_span
+        span_length = y_curr - y_prev
+
+        tank_volumes[seg_i - 1] = area * span_length
+        tank_lengths[seg_i - 1] = span_length
+        intersection_polygons.append(intersection_polygon)
+
+    if np.all(tank_volumes <= 0.0):
+        raise AttributeError("No valid intersection polygon found for aft tank geometry.")
+
+    max_idx = int(np.argmax(tank_volumes))
+    best_polygon = intersection_polygons[max_idx]
+    if best_polygon is None:
+        raise AttributeError("No valid intersection polygon found for aft tank geometry.")
+
+    polygon_for_plot = best_polygon
+    if polygon_for_plot.geom_type == 'MultiPolygon':
+        polygon_for_plot = max(polygon_for_plot.geoms, key=lambda g: g.area)
+
+    coords = list(polygon_for_plot.exterior.coords)
+    if np.allclose(coords[0], coords[-1]):
+        coords = coords[:-1]
+    if len(coords) != 4:
+        # Robust fallback for slightly over-resolved intersections.
+        rect = polygon_for_plot.minimum_rotated_rectangle
+        coords = list(rect.exterior.coords)[:-1]
+
+    coords_np = np.asarray(coords, dtype=float)
+    center = np.mean(coords_np, axis=0)
+    angles = np.arctan2(coords_np[:, 1] - center[1], coords_np[:, 0] - center[0])
+    coords_np = coords_np[np.argsort(angles)]
+    coords_np = np.vstack([coords_np, coords_np[0]])
+
+    span_length = float(tank_lengths[max_idx])
+    y0 = -0.5 * span_length
+    y1 = 0.5 * span_length
+
+    section_0 = np.column_stack((coords_np[:, 0], np.full(coords_np.shape[0], y0), coords_np[:, 1]))
+    section_1 = np.column_stack((coords_np[:, 0], np.full(coords_np.shape[0], y1), coords_np[:, 1]))
+    tank_points = np.stack((section_0, section_1), axis=0)
+
+    if hasattr(fuel_tank, "wing_root_twist"):
+        wing_root_rotation = np.zeros((3, 3))
+        wing_root_rotation[0, 0] = np.cos(fuel_tank.wing_root_twist)
+        wing_root_rotation[0, 2] = np.sin(fuel_tank.wing_root_twist)
+        wing_root_rotation[1, 1] = 1
+        wing_root_rotation[2, 0] = -np.sin(fuel_tank.wing_root_twist)
+        wing_root_rotation[2, 2] = np.cos(fuel_tank.wing_root_twist)
+        tank_points = tank_points @ wing_root_rotation.T
+
+    G = Data()
+    G.PTS = tank_points
+
+    return G

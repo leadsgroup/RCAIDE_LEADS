@@ -129,7 +129,7 @@ def compute_operating_empty_weight(vehicle,settings=None):
     # System Weight
     ##------------------------------------------------------------------------------- 
     W_systems = compute_systems_weight(vehicle)
-
+    
     ##-------------------------------------------------------------------------------                 
     # Propulsion Weight 
     ##-------------------------------------------------------------------------------
@@ -161,7 +161,7 @@ def compute_operating_empty_weight(vehicle,settings=None):
         W_energy_network_total   = 0 
         # Fuel-Powered Propulsors  
 
-        W_propulsion                         = FLOPS.compute_propulsion_system_weight(vehicle, network)
+        W_propulsion                        = FLOPS.compute_propulsion_system_weight(vehicle, network, settings)
         W_energy_network_total              += W_propulsion.W_prop 
         W_energy_network.W_engine           += W_propulsion.W_engine
         W_energy_network.W_thrust_reverser  += W_propulsion.W_thrust_reverser
@@ -254,11 +254,10 @@ def compute_operating_empty_weight(vehicle,settings=None):
     ##-------------------------------------------------------------------------------                 
     # Fuselage 
     ##------------------------------------------------------------------------------- 
-    TOW                = vehicle.mass_properties.max_takeoff
-    W_cabin            = compute_cabin_weight(vehicle,settings) 
+    TOW                 = vehicle.mass_properties.max_takeoff
+    W_cabin             = compute_cabin_weight(vehicle,settings) 
     W_aft_center_body   = compute_aft_center_body_weight(number_of_engines,bwb_aft_center_body_area, bwb_aft_center_body_taper, TOW)
-    vehicle.wings.main_wing.aft_center_body.mass_properties.mass = W_aft_center_body
-    vehicle.wings.main_wing.center_body.mass_properties.mass = W_cabin
+    
     ##-------------------------------------------------------------------------------                 
     # Landing Gear Weight
     ##------------------------------------------------------------------------------- 
@@ -283,7 +282,7 @@ def compute_operating_empty_weight(vehicle,settings=None):
     output.empty.systems                        = Data()
     output.empty.systems.control_systems        = W_systems.W_flight_control
     output.empty.systems.apu                    = W_systems.W_apu
-    output.empty.systems.electrical             = W_systems.W_electrical
+    output.empty.systems.electrical             = W_systems.W_electrical 
     output.empty.systems.avionics               = W_systems.W_avionics
     output.empty.systems.hydraulics             = W_systems.W_hyd_pnu
     output.empty.systems.furnishings            = W_systems.W_furnish
@@ -299,25 +298,22 @@ def compute_operating_empty_weight(vehicle,settings=None):
     output.operational_items    = W_oper 
     output.empty.total          = output.empty.structural.total + output.empty.propulsion.total + output.empty.systems.total 
     output.zero_fuel_weight     = output.empty.total + output.operational_items.total + output.payload.total
-    output.max_takeoff          = vehicle.mass_properties.max_takeoff
+    output.max_takeoff          = vehicle.mass_properties.max_takeoff  
+ 
+    for wing in vehicle.wings:
+        if isinstance(wing, Wings.Blended_Wing_Body):     
+            wing.aft_center_body.mass_properties.mass = output.empty.structural.aft_center_body  +  output.empty.propulsion.miscellaneous
+            wing.center_body.mass_properties.mass     = output.empty.structural.center_body  + output.operational_items.total +  output.empty.systems.furnishings 
     
-    nose_landing_gear = False
-    main_landing_gear = False
+    #-------------------------------------------------------------------------------                 
+    # Assign landing gear weights to landing gear components 
+    #-------------------------------------------------------------------------------
+    # Assign landing gear weights to landing gear components 
     for LG in vehicle.landing_gears:
-        if isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear):
-            LG.mass_properties.mass = landing_gear.main
-            main_landing_gear = True
-        elif isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear):
-            LG.mass_properties.mass = landing_gear.nose
-            nose_landing_gear = True 
-    if nose_landing_gear == False:
-        nose_gear = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()  
-        nose_gear.mass_properties.mass = landing_gear.nose    
-        vehicle.landing_gears.append(nose_gear)
-    if main_landing_gear == False:
-        main_gear = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()  
-        main_gear.mass_properties.mass = landing_gear.main  
-        vehicle.landing_gears.append(main_gear)   
+        if isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear): 
+            LG.mass_properties.mass = landing_gear.main 
+        elif isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear):  
+            LG.mass_properties.mass = landing_gear.nose   
 
     return output
 

@@ -17,7 +17,7 @@ import  numpy as  np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Propulsion Systems Weight 
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_propulsion_system_weight(vehicle,ref_propulsor):
+def compute_propulsion_system_weight(vehicle,ref_propulsor, settings):
     """ REVIEW LATER********
     Calculate the weight of propulsion system, including:
         - dry engine weight
@@ -81,7 +81,7 @@ def compute_propulsion_system_weight(vehicle,ref_propulsor):
                   
     if ref_nacelle is not None:
         WNAC        = compute_nacelle_weight(ref_propulsor,ref_nacelle,NENG ) 
-    WFSYS           = compute_fuel_system_weight(vehicle, NENG)
+    WFSYS           = compute_fuel_system_weight(vehicle, NENG, settings)
     WENG            = compute_engine_weight(vehicle,ref_propulsor)
     WEC, WSTART     = compute_misc_propulsion_system_weight(vehicle,ref_propulsor,ref_nacelle,NENG)
     WTHR            = compute_thrust_reverser_weight(ref_propulsor,NENG)
@@ -201,7 +201,7 @@ def compute_misc_propulsion_system_weight(vehicle,ref_propulsor,ref_nacelle,NENG
     return WEC * Units.lbs, WSTART * Units.lbs
 
  
-def compute_fuel_system_weight(vehicle, NENG):
+def compute_fuel_system_weight(vehicle, NENG, settings):
     """ Calculates the weight of the fuel system based on the FLOPS method
         Assumptions:
 
@@ -219,12 +219,13 @@ def compute_fuel_system_weight(vehicle, NENG):
         Properties Used:
             N/A
     """
-
+    
     WFSYS = 0
     for network in vehicle.networks:
         for fuel_line in network.fuel_lines:
             for fuel_tank in fuel_line.fuel_tanks:
-                WFSYS+=  fuel_tank.fuel.mass_properties.mass * (1/fuel_tank.fuel.gravimetric_efficiency -1)
+                WFSYS+=  fuel_tank.fuel.mass_properties.mass * (1/fuel_tank.fuel.gravimetric_efficiency -1) 
+        
     return WFSYS 
 
 

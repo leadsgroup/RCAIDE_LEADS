@@ -26,6 +26,7 @@ def vehicle_setup(fuel_cell_model):
     # mass properties
     vehicle.mass_properties.takeoff         = 1 * Units.kg 
     vehicle.mass_properties.max_takeoff     = 1 * Units.kg 
+    vehicle.mass_properties.operating_empty = 1 * Units.kg
          
     net                              = RCAIDE.Framework.Networks.Fuel_Cell()  
 

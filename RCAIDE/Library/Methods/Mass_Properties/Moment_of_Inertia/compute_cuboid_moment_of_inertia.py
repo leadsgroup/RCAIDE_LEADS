@@ -41,10 +41,7 @@ def compute_cuboid_moment_of_inertia(component,outer_length, outer_width, outer_
     '''
     # ----------------------------------------------------------------------------------------------------------------------
     # unpack 
-    # ----------------------------------------------------------------------------------------------------------------------
-    origin = component.origin  
-    if component.xz_plane_symmetric:
-        origin[0][1] = 0    
+    # ---------------------------------------------------------------------------------------------------------------------- 
     mass   = component.mass_properties.mass
     
     # ----------------------------------------------------------------------------------------------------------------------    
@@ -69,15 +66,9 @@ def compute_cuboid_moment_of_inertia(component,outer_length, outer_width, outer_
     I[1][1] = mass / 12 * (V2 * (outer_length ** 2 + outer_height ** 2) - V1 * (inner_length ** 2 + inner_height ** 2)) / temp
     I[2][2] = mass / 12 * (V2 * (outer_length ** 2 + outer_width ** 2) - V1 * (inner_length ** 2 + inner_width ** 2)) / temp
     
-    # ----------------------------------------------------------------------------------------------------------------------    
-    # transform moment of inertia to the global system
-    # ----------------------------------------------------------------------------------------------------------------------
-    s        = np.array(center_of_gravity) - np.array(origin) # Vector between component and the CG
-    I_global = np.array(I) + mass * (np.array(np.dot(s[0], s[0])) * np.array(np.identity(3)) - np.outer(s,s))    
-
     # Store moment of inertia tensor on component 
-    component.mass_properties.moments_of_inertia.tensor = I_global    
-    component.mass_properties.moments_of_inertia.non_dimensional_tensor = I_global / mass
+    component.mass_properties.moments_of_inertia.tensor                 = I 
+    component.mass_properties.moments_of_inertia.non_dimensional_tensor = I / mass
     
     if fuel_tank == True:
         # unpack fuel 
@@ -87,4 +78,4 @@ def compute_cuboid_moment_of_inertia(component,outer_length, outer_width, outer_
         _,_ = compute_cuboid_moment_of_inertia(fuel,inner_length, inner_width, inner_height,center_of_gravity=center_of_gravity,fuel_tank=False)        
         
        
-    return I_global,  mass
+    return I ,  mass

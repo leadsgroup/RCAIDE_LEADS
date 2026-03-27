@@ -8,8 +8,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 from .compute_cabin_moment_of_inertia                   import compute_cabin_moment_of_inertia
 from .compute_cuboid_moment_of_inertia                  import compute_cuboid_moment_of_inertia
+from .compute_bwb_moment_of_inertia                     import compute_bwb_moment_of_inertia
 from .compute_fuselage_moment_of_inertia                import compute_fuselage_moment_of_inertia
-from .compute_fuselage_integral_tank_moment_of_inertia  import compute_fuselage_integral_tank_moment_of_inertia
 from .compute_cylinder_moment_of_inertia                import compute_cylinder_moment_of_inertia
 from .compute_rounded_end_cylinder_moment_of_inertia    import compute_rounded_end_cylinder_moment_of_inertia
 from .compute_wing_integral_tank_moment_of_inertia      import compute_wing_integral_tank_moment_of_inertia

@@ -30,5 +30,5 @@ General\_Aviation
    :template: custom-module-template.rst
    :recursive:
 
-   Physics_Based
+   Semi_Empirical
 

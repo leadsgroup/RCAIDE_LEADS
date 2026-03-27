@@ -181,7 +181,12 @@ class Network(Component):
                     for converter_tag in converter_group:
                         converter =  converters[converter_tag]
                         if converter.active:
-                            converter.inverse_calculation = True 
+                            converter.inverse_calculation = True
+                            if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Pump):  
+                                P_mech, P_elec, stored_results_flag,stored_conveter_tag          = converter.compute_performance(state,fuel_line)   
+                                conditions.energy.fuel_lines[fuel_line.tag].fuel_mass_flow_rate += conditions.energy.converters[converter.tag].fuel_mass_flow_rate  
+                                a=90
+                                
                             if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator): 
                                 if stored_conveter_tag is False:
                                     generator             = converter.generator   
@@ -232,6 +237,7 @@ class Network(Component):
                 # Determine mass flow from each tank
                 for tank in fuel_line.fuel_tanks:
                     tank.compute_tank_properties(state,fuel_line)  
+                    total_mdot += conditions.energy.fuel_lines[fuel_line.tag].fuel_tanks[tank.tag].secondary_mass_flow_rate
         
         # 3.2 Electric Sources 
         time               = state.conditions.frames.inertial.time[:,0] 
@@ -249,11 +255,11 @@ class Network(Component):
                     for battery_module in  bus.battery_modules:                   
                         if bus.identical_battery_modules == False:
                             # run analysis  
-                            stored_results_flag, stored_battery_cell_tag =  battery_module.energy_calc(state,bus,coolant_lines, t_idx, delta_t)
+                            stored_results_flag, stored_battery_cell_tag =  battery_module.compute_performance(state,bus,coolant_lines, t_idx, delta_t)
                         else:             
                             if stored_results_flag == False: 
                                 # run battery analysis 
-                                stored_results_flag, stored_battery_cell_tag  =  battery_module.energy_calc(state,bus,coolant_lines, t_idx, delta_t)
+                                stored_results_flag, stored_battery_cell_tag  =  battery_module.compute_performance(state,bus,coolant_lines, t_idx, delta_t)
                             else:
                                 # use previous battery results 
                                 battery_module.reuse_stored_data(state,bus,stored_results_flag, stored_battery_cell_tag)
@@ -266,11 +272,11 @@ class Network(Component):
                     for fuel_cell_stack in  bus.fuel_cell_stacks:                   
                         if bus.identical_fuel_cell_stacks == False:
                             # run analysis  
-                            stored_results_flag, stored_fuel_cell_tag =  fuel_cell_stack.energy_calc(state,bus,coolant_lines, t_idx, delta_t)
+                            stored_results_flag, stored_fuel_cell_tag =  fuel_cell_stack.compute_performance(state,bus,coolant_lines, t_idx, delta_t)
                         else:             
                             if stored_results_flag == False: 
                                 # run battery analysis 
-                                stored_results_flag, stored_fuel_cell_tag  =  fuel_cell_stack.energy_calc(state,bus,coolant_lines, t_idx, delta_t)
+                                stored_results_flag, stored_fuel_cell_tag  =  fuel_cell_stack.compute_performance(state,bus,coolant_lines, t_idx, delta_t)
                             else:
                                 # use previous battery results 
                                 fuel_cell_stack.reuse_stored_data(state,bus,stored_results_flag, stored_fuel_cell_tag)
@@ -400,7 +406,7 @@ class Network(Component):
         
         for network in segment.analyses.vehicle.networks:
             for propulsor in network.propulsors: 
-                propulsor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)     
+                propulsor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.aeroacoustics)     
     
             for converter in network.converters: 
                 converter.append_operating_conditions(segment,segment.state.conditions.energy)                 

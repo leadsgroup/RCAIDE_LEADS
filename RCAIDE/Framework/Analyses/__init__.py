@@ -20,7 +20,7 @@ from . import Atmospheric
 from . import Emissions
 from . import Energy
 from . import Geometry
-from . import Noise
+from . import Aeroacoustics
 from . import Propulsion
 from . import Stability
 from . import Weights

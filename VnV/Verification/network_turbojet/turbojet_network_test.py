@@ -20,7 +20,14 @@ import matplotlib.pyplot as plt
 import os
 
 # local imports 
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
 from Concorde    import vehicle_setup as vehicle_setup
 from Concorde    import configs_setup as configs_setup 
 
@@ -59,7 +66,7 @@ def main():
             print(val)
     
     # Truth values 
-    L_D_truth         = 7.236631632651507
+    L_D_truth         = 7.247823909318594
     
     # Store errors 
     error = Data() 
@@ -111,6 +118,7 @@ def base_analysis(vehicle):
     weights                 = RCAIDE.Framework.Analyses.Weights.Conventional_Transport()  
     weights.settings.overwrite_center_of_gravity    = False
     weights.settings.overwrite_moments_of_inertia   = False 
+    weights.settings.iterate_mtow = True
     analyses.append(weights)
     
     # ------------------------------------------------------------------
@@ -163,7 +171,9 @@ def plot_mission(results):
  
     plot_emissions(results) 
   
-    plot_aerodynamic_forces(results) 
+    plot_aerodynamic_forces(results)
+    
+    plot_control_surface_conditions(results)
         
     return 
 

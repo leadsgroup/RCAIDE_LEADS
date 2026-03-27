@@ -36,9 +36,9 @@ def append_turbine_conditions(turbine, segment, energy_conditions):
     RCAIDE.Library.Methods.Powertrain.Converters.Turbine.compute_turbine_performance
     """
     ones_row    = segment.state.ones_row 
-    energy_conditions.converters[turbine.tag]                                             = Conditions()
-    energy_conditions.converters[turbine.tag].inputs                                      = Conditions()
-    energy_conditions.converters[turbine.tag].outputs                                     = Conditions()
-    energy_conditions.converters[turbine.tag].inputs.fan                                  = Conditions()
-    energy_conditions.converters[turbine.tag].inputs.fan.work_done                        = 0*ones_row(1)
+    energy_conditions.converters[turbine.tag]                                 = Conditions()
+    energy_conditions.converters[turbine.tag].inputs                          = Conditions()
+    energy_conditions.converters[turbine.tag].outputs                         = Conditions()
+    energy_conditions.converters[turbine.tag].inputs.fan                      = Conditions()
+    energy_conditions.converters[turbine.tag].inputs.fan.work_done            = 0*ones_row(1) 
     return 

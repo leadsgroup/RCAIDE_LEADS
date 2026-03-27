@@ -88,6 +88,7 @@ class Results(Conditions):
         self.frames.inertial.total_force_vector                                = ones_3col * 0
         self.frames.inertial.total_moment_vector                               = ones_3col * 0
         self.frames.inertial.time                                              = ones_1col * 0
+        self.frames.inertial.climb_rate                                        = ones_1col * 0
         self.frames.inertial.aircraft_range                                    = ones_1col * 0
 
                                                                                
@@ -411,10 +412,10 @@ class Results(Conditions):
         # ----------------------------------------------------------------------------------------------------------------------         
         # Noise
         # ----------------------------------------------------------------------------------------------------------------------       
-        self.noise                                            = Conditions() 
-        self.noise.converters                                 = Conditions() 
-        self.noise.propulsors                                 = Conditions() 
-        self.noise.modulators                                 = Conditions() 
+        self.aeroacoustics                                            = Conditions() 
+        self.aeroacoustics.converters                                 = Conditions() 
+        self.aeroacoustics.propulsors                                 = Conditions() 
+        self.aeroacoustics.modulators                                 = Conditions() 
 
         # ----------------------------------------------------------------------------------------------------------------------         
         # Energy
@@ -454,6 +455,7 @@ class Results(Conditions):
         self.weights.components                               = Conditions() 
         self.weights.components.mass                          = Conditions() 
         self.weights.components.global_center_of_gravity      = Conditions() 
+        self.weights.components.symmetry_flag                 = Conditions()
         self.weights.components.mass_rate                     = Conditions() 
         self.weights.components.moments_of_inertia_Ixx        = Conditions() 
         self.weights.components.moments_of_inertia_Ixy        = Conditions() 

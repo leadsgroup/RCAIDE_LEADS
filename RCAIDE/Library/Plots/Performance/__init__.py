@@ -21,6 +21,8 @@ from .plot_battery_temperature                  import plot_battery_temperature
 from .plot_battery_module_C_rates               import plot_battery_module_C_rates
 from .plot_battery_pack_conditions              import plot_battery_pack_conditions
 from .plot_battery_ragone_diagram               import plot_battery_ragone_diagram 
-from .plot_electric_propulsor_efficiencies      import plot_electric_propulsor_efficiencies 
+from .plot_electric_propulsor_efficiencies      import plot_electric_propulsor_efficiencies
+from .plot_fuel_tank_conditions                 import plot_fuel_tank_conditions
 from .plot_altitude_sfc_weight                  import plot_altitude_sfc_weight
 from .plot_propulsor_throttles                  import plot_propulsor_throttles               
+from .plot_fuel_flow_rates                      import plot_fuel_flow_rates

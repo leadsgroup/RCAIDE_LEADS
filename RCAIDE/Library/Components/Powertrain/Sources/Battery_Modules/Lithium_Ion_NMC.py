@@ -171,7 +171,7 @@ class Lithium_Ion_NMC(Generic_Battery_Module):
 
         return  
     
-    def energy_calc(self,state,bus,coolant_lines, t_idx, delta_t): 
+    def compute_performance(self,state,bus,coolant_lines, t_idx, delta_t): 
         """
         Computes the state of the NMC battery cell
         

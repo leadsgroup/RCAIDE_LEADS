@@ -236,7 +236,14 @@ def evaluate_surrogate(state,settings,vehicle):
         conditions.control_surfaces.rudder.static_stability.coefficients.L        = conditions.static_stability.derivatives.CL_delta_r * conditions.control_surfaces.rudder.deflection        
         conditions.control_surfaces.rudder.static_stability.coefficients.N        = conditions.static_stability.derivatives.CN_delta_r * conditions.control_surfaces.rudder.deflection       
     
+    # -----------------------------------------------------------------------------------------------------------------------
+    # Pack Aero Results 
+    # -----------------------------------------------------------------------------------------------------------------------   
+    conditions.aerodynamics.coefficients.lift.inviscid.total    = Clift_alpha
+    conditions.aerodynamics.coefficients.drag.induced.inviscid  = Cdrag_induced_alpha
+    # -----------------------------------------------------------------------------------------------------------------------
     # Flap 
+    # -----------------------------------------------------------------------------------------------------------------------
     if aerodynamics.flap_flag:
         if aerodynamics.stability_derivatives.CM_delta_f == None:
             conditions.static_stability.derivatives.CM_delta_f     = compute_stability_derivative(sub_sur.dCM_ddelta_f     ,trans_sur.dCM_ddelta_f     ,sup_sur.dCM_ddelta_f     ,h_sub,h_sup,Mach)
@@ -249,14 +256,9 @@ def evaluate_surrogate(state,settings,vehicle):
             conditions.static_stability.derivatives.Clift_delta_f = aerodynamics.stability_derivatives.Clift_delta_f* ones_row 
 
         conditions.static_stability.coefficients.M                                   += conditions.static_stability.derivatives.CM_delta_f * conditions.control_surfaces.flap.deflection  
+        conditions.static_stability.coefficients.Z                                   += conditions.static_stability.derivatives.Clift_delta_f * conditions.control_surfaces.flap.deflection  
         conditions.control_surfaces.flap.static_stability.coefficients.M              = conditions.static_stability.derivatives.CM_delta_f * conditions.control_surfaces.flap.deflection      
-    
-    # -----------------------------------------------------------------------------------------------------------------------
-    # Pack Aero Results 
-    # -----------------------------------------------------------------------------------------------------------------------   
-    conditions.aerodynamics.coefficients.lift.inviscid.total    = Clift_alpha
-    conditions.aerodynamics.coefficients.drag.induced.inviscid  = Cdrag_induced_alpha
-    
+        conditions.aerodynamics.coefficients.lift.inviscid.total                     += conditions.static_stability.derivatives.Clift_delta_f * conditions.control_surfaces.flap.deflection  
     return
 
 def evaluate_no_surrogate(state,settings,vehicle):
@@ -437,10 +439,11 @@ def evaluate_no_surrogate(state,settings,vehicle):
     CM_alpha_prime    = VLM_results.CM
     CN_alpha_prime    = VLM_results.CN
  
-    pertubation_conditions.aerodynamics.coefficients.lift.inviscid.total   = Clift_i_alpha_prime     
-    pertubation_conditions.aerodynamics.coefficients.lift.inviscid.wings  = VLM_results.CLift_wings          
-    pertubation_conditions.aerodynamics.coefficients.drag.induced.wings   = VLM_results.CDrag_induced_wings 
-    pertubation_conditions.aerodynamics.coefficients.drag.induced.total   = Cdrag_i_alpha_prime
+    pertubation_conditions.aerodynamics.coefficients.lift.inviscid.total     = Clift_i_alpha_prime     
+    pertubation_conditions.aerodynamics.coefficients.lift.inviscid.wings     = VLM_results.CLift_wings  
+    pertubation_conditions.aerodynamics.coefficients.lift.inviscid.spanwise  = VLM_results.sectional_CLift        
+    pertubation_conditions.aerodynamics.coefficients.drag.induced.wings      = VLM_results.CDrag_induced_wings 
+    pertubation_conditions.aerodynamics.coefficients.drag.induced.total      = Cdrag_i_alpha_prime
      
     perturbation_state                  = RCAIDE.Framework.Mission.Common.State()
     perturbation_state.conditions       = pertubation_conditions  
@@ -450,6 +453,7 @@ def evaluate_no_surrogate(state,settings,vehicle):
     orientation(perturbation_state)
     orientations(perturbation_state) 
     
+    RCAIDE.Library.Methods.Aerodynamics.Common.Lift.fuselage_correction(perturbation_state,settings,vehicle)  
     for wing in  vehicle.wings: 
         RCAIDE.Library.Methods.Aerodynamics.Common.Drag.parasite_drag_wing(perturbation_state,settings,wing)
     for fuslage in vehicle.fuselages: 
@@ -471,8 +475,8 @@ def evaluate_no_surrogate(state,settings,vehicle):
     Clift_visc_prime  = perturbation_state.conditions.aerodynamics.coefficients.lift.total
     CX_visc_prime     = orientation_product(T_wind2inertial,Cdrag_visc_prime)[:,0][:,None] 
     
-    conditions.static_stability.derivatives.Clift_alpha = (Cdrag_visc_prime    - Clift_0) / (delta_angle)
-    conditions.static_stability.derivatives.Cdrag_alpha = (Clift_visc_prime    - Cdrag_0) / (delta_angle)  
+    conditions.static_stability.derivatives.Clift_alpha = (Clift_visc_prime    - Clift_0) / (delta_angle)
+    conditions.static_stability.derivatives.Cdrag_alpha = (Cdrag_visc_prime    - Cdrag_0) / (delta_angle)  
     conditions.static_stability.derivatives.CX_alpha    = (CX_visc_prime       - CX_0) / (delta_angle)   
     conditions.static_stability.derivatives.CY_alpha    = (CY_alpha_prime      - CY_0) / (delta_angle)  
     conditions.static_stability.derivatives.CZ_alpha    = (CZ_alpha_prime      - CZ_0) / (delta_angle) 
@@ -540,6 +544,7 @@ def evaluate_no_surrogate(state,settings,vehicle):
     orientation(perturbation_state)
     orientations(perturbation_state)
     
+    RCAIDE.Library.Methods.Aerodynamics.Common.Lift.fuselage_correction(perturbation_state,settings,vehicle)  
     for wing in  vehicle.wings: 
         RCAIDE.Library.Methods.Aerodynamics.Common.Drag.parasite_drag_wing(perturbation_state,settings,wing)
     for fuslage in vehicle.fuselages: 
@@ -686,6 +691,7 @@ def evaluate_no_surrogate(state,settings,vehicle):
     orientation(perturbation_state)
     orientations(perturbation_state)
     
+    RCAIDE.Library.Methods.Aerodynamics.Common.Lift.fuselage_correction(perturbation_state,settings,vehicle)  
     for wing in  vehicle.wings: 
         RCAIDE.Library.Methods.Aerodynamics.Common.Drag.parasite_drag_wing(perturbation_state,settings,wing)
     for fuslage in vehicle.fuselages: 

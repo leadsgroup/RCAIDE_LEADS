@@ -120,25 +120,30 @@ def parasite_total(state,settings,geometry):
     vehicle_reference_area = geometry.reference_area
     
     #compute parasite drag total
+    total_parasite_drag          = 0.0
+    total_wing_parasite_drag     = 0.0
+    total_boom_parasite_drag     = 0.0
+    total_fuselage_parasite_drag = 0.0
+    total_nacelle_parasite_drag  = 0.0
     total_parasite_drag = 0.0
     
     # renormalize parasite drag from wings using reference area of aircraft 
     for wing in geometry.wings:
         wing_parasite_drag = conditions.aerodynamics.coefficients.drag.parasite[wing.tag].total 
         conditions.aerodynamics.coefficients.drag.parasite[wing.tag].total  = wing_parasite_drag * wing.areas.reference/vehicle_reference_area
-        total_parasite_drag += wing_parasite_drag * wing.areas.reference/vehicle_reference_area
+        total_wing_parasite_drag += wing_parasite_drag * wing.areas.reference/vehicle_reference_area
  
     # renormalize parasite drag from fuselages using reference area of aircraft 
     for fuselage in geometry.fuselages:
         fuselage_parasite_drag = conditions.aerodynamics.coefficients.drag.parasite[fuselage.tag].total 
         conditions.aerodynamics.coefficients.drag.parasite[fuselage.tag].total = fuselage_parasite_drag * fuselage.areas.front_projected/vehicle_reference_area
-        total_parasite_drag += fuselage_parasite_drag * fuselage.areas.front_projected/vehicle_reference_area
+        total_fuselage_parasite_drag += fuselage_parasite_drag * fuselage.areas.front_projected/vehicle_reference_area
     
     # renormalize parasite drag from booms using reference area of aircraft         
     for boom in geometry.booms:
         boom_parasite_drag = conditions.aerodynamics.coefficients.drag.parasite[boom.tag].total 
         conditions.aerodynamics.coefficients.drag.parasite[boom.tag].total = boom_parasite_drag * boom.areas.front_projected/vehicle_reference_area
-        total_parasite_drag += boom_parasite_drag * boom.areas.front_projected/vehicle_reference_area
+        total_boom_parasite_drag += boom_parasite_drag * boom.areas.front_projected/vehicle_reference_area
     
     # renormalize parasite drag from nacelles and pylons using reference area of aircraft  
     for network in  geometry.networks: 
@@ -148,8 +153,13 @@ def parasite_total(state,settings,geometry):
                 front_area    = np.pi * (nacelle.diameter ** 2) /4  
                 nacelle_parasite_drag = conditions.aerodynamics.coefficients.drag.parasite[nacelle.tag].total  
                 conditions.aerodynamics.coefficients.drag.parasite[nacelle.tag].total  = nacelle_parasite_drag * front_area/vehicle_reference_area
-                total_parasite_drag += nacelle_parasite_drag * front_area/vehicle_reference_area
-                
-    state.conditions.aerodynamics.coefficients.drag.parasite.total = total_parasite_drag *  (1 -  settings.drag_reduction_factors.parasite_drag)
+                total_nacelle_parasite_drag += nacelle_parasite_drag * front_area/vehicle_reference_area
+    
+    total_parasite_drag = total_nacelle_parasite_drag + total_fuselage_parasite_drag + total_wing_parasite_drag + total_boom_parasite_drag 
+    state.conditions.aerodynamics.coefficients.drag.parasite.total     = total_parasite_drag *  (1 -  settings.drag_reduction_factors.parasite_drag)
+    state.conditions.aerodynamics.coefficients.drag.parasite.nacelles  = total_nacelle_parasite_drag *  (1 -  settings.drag_reduction_factors.parasite_drag)
+    state.conditions.aerodynamics.coefficients.drag.parasite.fuselages = total_fuselage_parasite_drag *  (1 -  settings.drag_reduction_factors.parasite_drag)
+    state.conditions.aerodynamics.coefficients.drag.parasite.wings     = total_wing_parasite_drag *  (1 -  settings.drag_reduction_factors.parasite_drag)
+    state.conditions.aerodynamics.coefficients.drag.parasite.booms     = total_boom_parasite_drag *  (1 -  settings.drag_reduction_factors.parasite_drag) 
 
     return 

@@ -17,7 +17,7 @@ import  numpy as  np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Propulsion Systems Weight 
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_propulsion_system_weight(vehicle,network):
+def compute_propulsion_system_weight(vehicle,network,settings):
     """
     Calculate the weight of the complete propulsion system using FLOPS methodology.
 
@@ -112,7 +112,7 @@ def compute_propulsion_system_weight(vehicle,network):
     NENG = JNENG + PNENG
                 
     # fuel systems weight  
-    WFSYS           = compute_fuel_system_weight(vehicle, NENG) 
+    WFSYS           = compute_fuel_system_weight(vehicle, NENG,settings) 
 
     output                      = Data()
     output.W_prop               = WENG + WFSYS + WTHR + WSTART + WEC + WNAC
@@ -372,7 +372,7 @@ def compute_misc_propulsion_system_weight(vehicle,ref_propulsor,ref_nacelle,NENG
     return WEC * Units.lbs, WSTART * Units.lbs
 
  
-def compute_fuel_system_weight(vehicle, NENG):
+def compute_fuel_system_weight(vehicle, NENG,settings):
     """
     Calculate the weight of the general aviation aircraft fuel system using FLOPS methodology.
 

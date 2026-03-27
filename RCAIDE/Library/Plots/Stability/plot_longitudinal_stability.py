@@ -118,7 +118,7 @@ def plot_longitudinal_stability(results,
     for i in range(len(results.segments)): 
         time       = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min
         c_m        = results.segments[i].conditions.static_stability.coefficients.M[:,0]   
-        SM         = results.segments[i].conditions.static_stability.static_margin[:,0]  
+        SM         = results.segments[i].conditions.static_stability.static_margin[:,0] *100 
         delta_e    = results.segments[i].conditions.control_surfaces.elevator.deflection[:,0] / Units.deg
         CM_delta_e = results.segments[i].conditions.static_stability.derivatives.CM_delta_e[:,0]
         Cm_alpha   = results.segments[i].conditions.static_stability.derivatives.CM_alpha[:,0]
@@ -135,13 +135,11 @@ def plot_longitudinal_stability(results,
         axis_2.set_ylabel(r'$C_M\alpha$') 
         set_axes(axis_2) 
         
-        axis_3.plot(time,SM , color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
-        axis_3.set_xlabel('Time (mins)')
+        axis_3.plot(time,SM , color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width) 
         axis_3.set_ylabel(r'Static Margin (%)')
         set_axes(axis_3)  
 
-        axis_4.plot(time,delta_e , color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)
-        axis_4.set_xlabel('Time (mins)')
+        axis_4.plot(time,delta_e , color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width) 
         axis_4.set_ylabel(r'Elevator Defl.n')  
         set_axes(axis_4) 
         

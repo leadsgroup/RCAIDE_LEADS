@@ -45,7 +45,7 @@ def vehicle_setup(rotor_type):
     vehicle.flight_envelope.design_mach_number        = 0.228
     
     vehicle.reference_area                            = 14.76
-    vehicle.number_of_passengers                                = 4
+    vehicle.number_of_passengers                                = 1
     vehicle.systems.control                           = "fully powered"
     vehicle.systems.accessories                       = "commuter"
     
@@ -377,11 +377,11 @@ def vehicle_setup(rotor_type):
     bat                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC() 
     bat.tag                                                = 'li_ion_battery'
     bat.electrical_configuration.series                    = 30   
-    bat.electrical_configuration.parallel                  = 40
+    bat.electrical_configuration.parallel                  = 12
     bat.geometrtic_configuration.normal_count              = 30
-    bat.geometrtic_configuration.parallel_count            = 40
+    bat.geometrtic_configuration.parallel_count            = 12
      
-    for _ in range(8):
+    for _ in range(16):
         bus.battery_modules.append(deepcopy(bat))      
     bus.initialize_bus_properties()      
     #------------------------------------------------------------------------------------------------------------------------------------  

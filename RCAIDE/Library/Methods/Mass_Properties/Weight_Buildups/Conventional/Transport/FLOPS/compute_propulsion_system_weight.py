@@ -17,7 +17,7 @@ import  numpy as  np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Propulsion Systems Weight 
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_propulsion_system_weight(vehicle,ref_propulsor):
+def compute_propulsion_system_weight(vehicle,ref_propulsor, settings):
     """ Calculate the weight of propulsion system, including:
         - dry engine weight
         - fuel system weight
@@ -82,7 +82,7 @@ def compute_propulsion_system_weight(vehicle,ref_propulsor):
                   
     if ref_nacelle is not None:
         WNAC        = compute_nacelle_weight(ref_propulsor,ref_nacelle,NENG ) 
-    WFSYS           = compute_fuel_system_weight(vehicle, NENG)
+    WFSYS           = compute_fuel_system_weight(vehicle, NENG,settings)
     WENG            = compute_engine_weight(vehicle,ref_propulsor)
     WEC, WSTART     = compute_misc_propulsion_system_weight(vehicle,ref_propulsor,ref_nacelle,NENG)
     WTHR            = compute_thrust_reverser_weight(ref_propulsor,NENG)
@@ -196,7 +196,7 @@ def compute_misc_propulsion_system_weight(vehicle,ref_propulsor,ref_nacelle,NENG
     return WEC * Units.lbs, WSTART * Units.lbs
 
  
-def compute_fuel_system_weight(vehicle, NENG):
+def compute_fuel_system_weight(vehicle, NENG,settings):
     """ Calculates the weight of the fuel system based on the FLOPS method
         Assumptions:
 

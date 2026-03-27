@@ -65,12 +65,9 @@ class Constant_Dynamic_Pressure_Constant_Angle(Evaluate):
         # --------------------------------------------------------------------------------------------------------------   
         initialize                         = self.process.initialize
         initialize.conditions              = Segments.Climb.Constant_Dynamic_Pressure_Constant_Angle.initialize_conditions_unpack_unknowns 
-        iterate                            = self.process.iterate 
-        iterate.unknowns.mission           = Common.Unpack_Unknowns.orientation
-        iterate.unknowns.controls          = Common.Unpack_Unknowns.control_surfaces
+        iterate                            = self.process.iterate  
         iterate.unknowns.kinematics        = Segments.Climb.Constant_Dynamic_Pressure_Constant_Angle.initialize_conditions_unpack_unknowns
         iterate.conditions.differentials   = Segments.Climb.Constant_Dynamic_Pressure_Constant_Angle.update_differentials 
-        iterate.residuals.flight_dynamics  = Common.Residuals.flight_dynamics
         iterate.residuals.altitude         = Segments.Climb.Constant_Dynamic_Pressure_Constant_Angle.residual_altitude
         return
        

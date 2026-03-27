@@ -29,7 +29,7 @@ class Fuel_Tank(Component):
     tag : str
         Identifier for the fuel tank (default: 'fuel_tank')
         
-    fuel_selector_ratio : float
+    fuel_flow_split_ratio : float
         Ratio of fuel flow allocation (default: 1.0)
         
     mass_properties.empty_mass : float
@@ -61,13 +61,14 @@ class Fuel_Tank(Component):
         """          
         self.tag                            = 'fuel_tank'  
         self.fuel                           = None
-        self.secondary_mass_flow_rate       = 0.0
-        self.fuel_selector_ratio            = 1.0    
+        self.secondary_mass_flow_rate       = 0.0   #kg/s
         self.wall_clearance                 = 0.0
         self.wall_thickness                 = 1E-3
+        self.fuel_flow_split_ratio          = None
         self.xz_plane_symmetric             = True
         self.wing_tag                       = None
         self.fuselage_tag                   = None
+        self.bwb_aft_tank                   = False
         self.lengths                        = Data()
         self.lengths.external               = 0.0
         self.lengths.interal                = 0.0  
@@ -182,6 +183,6 @@ class Fuel_Tank(Component):
             3x3 moment of inertia tensor in kg*m^2 
         """
         
-        _  = compute_cuboid_center_of_gravity(self, length=self.lengths.external) 
+        _  = compute_cuboid_center_of_gravity(self, length=self.lengths.external)
             
         return

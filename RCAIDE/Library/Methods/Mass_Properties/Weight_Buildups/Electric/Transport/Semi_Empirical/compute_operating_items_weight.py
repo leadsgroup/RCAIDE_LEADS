@@ -65,15 +65,6 @@ def compute_operating_items_weight(vehicle):
     VMAX            = vehicle.flight_envelope.design_mach_number   
             
     WSRV        = (5.164 * NPF + 3.846 * NPB + 2.529 * NPE) * (DESRNG / VMAX) ** 0.225  # passenger service weight
- 
-
-    W_cargo = 0
-    WCON    = 0
-    for cargo_bay in vehicle.cargo_bays:
-        W_cargo     =  int(cargo_bay.cargo.mass_properties.mass)
-        W_container = 175 * np.ceil(W_cargo/ Units.lbs * 1. / 950)  # cargo container weight
-        cargo_bay.container.mass_properties.mass = W_container
-        WCON        += W_container 
 
     if vehicle.number_of_passengers >= 150:
         NFLCR = 3  # number of flight crew
@@ -93,7 +84,7 @@ def compute_operating_items_weight(vehicle):
     WSRV = (5.164*NPF + 3.846*NPB + 2.529*NPE)*(DESRNG/VMAX)**0.225 
 
     output                           = Data()
-    output.container                 = WCON * Units.lbs
+    output.container                 = 0.0 * Units.lbs
     output.flight_crew               = WFLCRB * Units.lbs
     output.flight_attendants         = WFLAAB * Units.lbs
     output.passenger_service         = WSRV   * Units.lbs

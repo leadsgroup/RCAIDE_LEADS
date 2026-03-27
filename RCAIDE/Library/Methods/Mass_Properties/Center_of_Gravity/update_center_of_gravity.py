@@ -12,7 +12,7 @@ import numpy   as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  update_center_of_gravity
 # ---------------------------------------------------------------------------------------------------------------------- 
-def update_center_of_gravity(state,vehicle):
+def update_center_of_gravity(state, vehicle):
     """
     Updates the vehicle center of gravity accounting for fuel consumption during flight.
 
@@ -74,7 +74,7 @@ def update_center_of_gravity(state,vehicle):
     
     # unpack
     conditions     = state.conditions
-    N              = state.numerics.number_of_control_points   
+    N              = state.numerics.number_of_control_points
     
     # --------------------------------------------------------------------------       
     # update center of gravity
@@ -82,8 +82,12 @@ def update_center_of_gravity(state,vehicle):
     Mom_tot   = np.zeros((N,3))
     Mass_tot  = np.zeros((N,1))
     for item in conditions.weights.components.mass.keys():
-        Mass_tot += conditions.weights.components.mass[item] 
-        Mom_tot  += conditions.weights.components.global_center_of_gravity[item] * conditions.weights.components.mass[item]
+        mass = conditions.weights.components.mass[item]
+        CG   = conditions.weights.components.global_center_of_gravity[item]
+        sym  = conditions.weights.components.symmetry_flag[item] 
+        Mass_tot += conditions.weights.components.mass[item]
+        Mom_tot  += CG*sym * mass
     
     state.conditions.weights.vehicle.global_center_of_gravity =  Mom_tot / Mass_tot
+    
     return 

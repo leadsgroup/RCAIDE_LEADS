@@ -5,8 +5,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------   
-# RCAIDE imports  
-from RCAIDE.Library.Components import Component
+# RCAIDE imports   
+from RCAIDE.Library.Components import Component 
 from RCAIDE.Library.Methods.Powertrain.Systems.append_systems_conditions import append_systems_conditions
  
 # ----------------------------------------------------------------------------------------------------------------------
@@ -67,6 +67,7 @@ class Systems(Component):
         self.power_draw  = 0.0
         self.control     = None
         self.accessories = None 
+        self.mass_properties.calculated_flag = False
 
     def append_operating_conditions(self, segment, bus): 
         """
@@ -80,4 +81,4 @@ class Systems(Component):
             Electrical bus supplying power to the avionics
         """
         append_systems_conditions(self, segment, bus)
-        return        
+        return         

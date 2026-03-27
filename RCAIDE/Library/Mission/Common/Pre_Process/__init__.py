@@ -15,4 +15,3 @@ from .energy                                  import energy
 from .emissions                               import emissions
 from .mass_properties                         import mass_properties,  mass_properties_preprocess_routine
 from .set_residuals_and_unknowns              import set_residuals_and_unknowns
-from .use_previous_segment_pre_processed_data import use_previous_segment_pre_processed_data
