@@ -70,7 +70,7 @@ def compute_motor_performance(motor,state):
     # Unpack
     motor_conditions = state.energy.converters[motor.tag]
     
-    if (motor.type == RCAIDE.Library.Components.Powertrain.Converters.Motor): 
+    if (motor.type == RCAIDE.Library.Components.Powertrain.Converters.DC_Motor): 
         if motor.inverse_calculation == False:
             Res            = motor.resistance
             G              = motor.gearbox.gear_ratio

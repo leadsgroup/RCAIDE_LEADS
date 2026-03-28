@@ -110,11 +110,8 @@ def compute_electric_rotor_performance(propulsor,state,network=None,center_of_gr
     electric_rotor_conditions  = conditions.energy.propulsors[propulsor.tag]
     eta                        = electric_rotor_conditions.throttle
     
-    # Compute distributor performance 
-    distributor = propulsor.assigned_distributors[[0]]   
-    
     # Compute electronic speed controller performance 
-    conditions.energy.modulators[esc.tag].outputs.voltage   = conditions.energy.distributors[distributor.tag].voltage 
+    #conditions.energy.modulators[esc.tag].outputs.voltage   = conditions.energy.distributors[distributor.tag].voltage 
     conditions.energy.modulators[esc.tag].throttle          = eta 
     compute_voltage_out_from_throttle(esc,conditions)
 

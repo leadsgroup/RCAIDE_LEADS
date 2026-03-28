@@ -117,7 +117,7 @@ class Electric_Rotor(Propulsor):
             pack_electric_rotor_residuals(self,segment)
         return    
     
-    def compute_performance(self,state,network,center_of_gravity = [[0, 0, 0]]):
+    def compute_performance(self,state,network=None,center_of_gravity = [[0, 0, 0]]):
         """
         Computes propulsor performance including thrust, moment, and power. 
         """
