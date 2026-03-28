@@ -11,6 +11,7 @@
 import  RCAIDE
 from RCAIDE.Framework.Core                    import Data
 from .   import Propulsor  
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan.design_electric_ducted_fan                      import design_electric_ducted_fan
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan.append_electric_ducted_fan_conditions           import append_electric_ducted_fan_conditions
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan.unpack_electric_ducted_fan_unknowns             import unpack_electric_ducted_fan_unknowns
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan.pack_electric_ducted_fan_residuals              import pack_electric_ducted_fan_residuals 
@@ -73,6 +74,10 @@ class Electric_Ducted_Fan(Propulsor):
         self.ducted_fan                   = None 
         self.electronic_speed_controller  = None
 
+    def initialize(self, network): 
+        design_electric_ducted_fan(self)
+        return
+    
     def append_operating_conditions(self,segment):
         append_electric_ducted_fan_conditions(self,segment)
         return 

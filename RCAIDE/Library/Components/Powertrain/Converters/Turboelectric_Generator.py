@@ -10,8 +10,7 @@
 # RCAIDE imports
 from RCAIDE.Framework.Core                  import Data 
 from .Converter                             import Converter
-from RCAIDE.Library.Components.Powertrain.Converters.Turboshaft    import Turboshaft 
-from RCAIDE.Library.Components.Powertrain.Converters.Generator  import Generator 
+from RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator   import design_turboelectric_generator  
 from RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator.append_turboelectric_generator_conditions      import append_turboelectric_generator_conditions  
 from RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator.compute_turboelectric_generator_performance    import compute_turboelectric_generator_performance, reuse_stored_turboelectric_generator_data
  
@@ -54,14 +53,16 @@ class Turboelectric_Generator(Converter):
     def __defaults__(self):
         # setting the default values
         self.tag                       = 'turboelectric_generator'
-        self.turboshaft                = Turboshaft()
-        self.generator                 = Generator()
+        self.turboshaft                = None
+        self.generator                 = None
         self.gearbox                   = Data()
         self.gearbox.gear_ratio        = None  
-        self.inverse_calculation       = False
-        self.generator_tag             = []
-        self.turboshaft_tag            = []
-        self.assigned_converters       = Data() 
+        self.inverse_calculation       = False 
+        self.assigned_converters       = Data()
+        
+    def initialize(self, network): 
+        design_turboelectric_generator(self, network) 
+        return
 
     def append_operating_conditions(self,segment): 
         """

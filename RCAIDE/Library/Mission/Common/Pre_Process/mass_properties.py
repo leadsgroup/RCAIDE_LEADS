@@ -585,7 +585,7 @@ def apply_component_weights(analyses):
                         system.mass_properties.mass *= weight_correction_factors.empty.systems.control_systems 
                     elif hasattr(weight_correction_factors.empty.systems, 'control_systems') and system.mass_properties.calculated_flag == False:
                         analyses.vehicle.mass_properties.weight_breakdown.empty.systems.control_systems = system.mass_properties.mass
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit: 
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit: 
                     if hasattr(weight_correction_factors.empty.systems, 'apu') and system.mass_properties.calculated_flag:
                         system.mass_properties.mass *= weight_correction_factors.empty.systems.apu  
                     elif hasattr(weight_correction_factors.empty.systems, 'apu') and system.mass_properties.calculated_flag == False:

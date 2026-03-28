@@ -182,8 +182,6 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
      
     mission = RCAIDE.Framework.Mission.Sequential_Segments() 
     segment = RCAIDE.Framework.Mission.Segments.Segment() 
-    segment.hybrid_power_split_ratio            = None
-    segment.battery_fuel_cell_power_split_ratio = None
     segment.analyses.extend( analysis) 
     mission.append_segment(segment) 
     segment.state.conditions  = conditions    

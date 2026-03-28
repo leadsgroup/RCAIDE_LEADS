@@ -81,6 +81,10 @@ class Electric_Rotor(Propulsor):
         # setting the default values
         self.tag                           = 'electric_rotor'    
         self.active_crypgenic_tanks_tanks  = None        
+
+    def initialize(self, network): 
+        design_electric_rotor(self)
+        return
     
     def append_operating_conditions(self,segment):
         """

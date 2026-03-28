@@ -9,7 +9,7 @@
 from .Systems import Systems
  
 # ----------------------------------------------------------------------
-# Auxillary_Power_Unit
+# Auxiliary_Power_Unit
 # ----------------------------------------------------------------------
 class Water_Tank(Systems): 
     """

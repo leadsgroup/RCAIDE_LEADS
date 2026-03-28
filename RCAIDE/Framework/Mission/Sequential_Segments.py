@@ -50,10 +50,11 @@ class Sequential_Segments(Segments.Segment.Container):
         #   Initialize   
         self.process.initialize                                      = Process()
         self.process.initialize.geometry                             = geometry 
+        self.process.initialize.energy                               = energy
         self.process.initialize.mass_properties                      = mass_properties 
         self.process.initialize.aero                                 = aerodynamics
         self.process.initialize.stability                            = stability
-        self.process.initialize.energy                               = energy
+        #self.process.initialize.energy                               = energy
         self.process.initialize.emissions                            = emissions
         self.process.initialize.set_residuals_and_unknowns           = set_residuals_and_unknowns
         self.process.initialize.set_network_residuals_and_unknowns   = set_network_residuals_and_unknowns

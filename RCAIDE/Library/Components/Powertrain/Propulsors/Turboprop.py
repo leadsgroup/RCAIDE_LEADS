@@ -123,6 +123,10 @@ class Turboprop(Propulsor):
         """
         append_turboprop_conditions(self,segment)
         return
+    
+    def initialize(self, network): 
+        design_turboprop(self)
+        return
 
     def unpack_unknowns(self,segment):
         return 

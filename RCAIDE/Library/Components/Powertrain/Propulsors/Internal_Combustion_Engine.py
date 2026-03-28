@@ -80,6 +80,9 @@ class Internal_Combustion_Engine(Propulsor):
         """
         append_internal_combustion_engine_conditions(self,segment)
         return
+    
+    def initialize(self, network):  
+        return
 
     def unpack_unknowns(self,segment):
         """

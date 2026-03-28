@@ -189,7 +189,7 @@ def compute_systems_weight(vehicle):
     WAI     = ref_wing.spans.projected / Units.ft * 1. / np.cos(ref_wing.sweeps.quarter_chord) + 3.8 * FNAC * NENG + 1.5 * WF  # anti-ice weight
     
     for system in vehicle.systems:
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit: 
+        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit: 
             if system.mass_properties.mass != 0:
                 WAPU = 0 
     W_water_tank = 0
@@ -202,7 +202,7 @@ def compute_systems_weight(vehicle):
                     system.mass_properties.mass = WAVONC * Units.lbs
                 if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls:
                     system.mass_properties.mass = WSC * Units.lbs
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit: 
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit: 
                     system.mass_properties.mass = WAPU * Units.lbs
                 if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Electrical: 
                     system.mass_properties.mass = WELEC * Units.lbs
@@ -218,7 +218,7 @@ def compute_systems_weight(vehicle):
                     WAVONC = system.mass_properties.mass / Units.lbs
                 if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls:
                     WSC    = system.mass_properties.mass / Units.lbs
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit: 
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit: 
                     WAPU   += system.mass_properties.mass / Units.lbs
                 if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Electrical: 
                     WELEC  = system.mass_properties.mass / Units.lbs

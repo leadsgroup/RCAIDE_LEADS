@@ -188,7 +188,11 @@ class Turbofan(Propulsor):
         """
         append_turbofan_conditions(self, segment)
         return
-
+    
+    def initialize(self, network): 
+        design_turbofan(self)
+        return
+    
     def unpack_unknowns(self,segment):
         return 
 

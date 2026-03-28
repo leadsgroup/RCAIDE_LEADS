@@ -61,9 +61,7 @@ def append_battery_pack_conditions(battery,segment):
     ones_row  = segment.state.ones_row 
       
     segment.state.conditions.energy.sources[battery.tag]                                     = Conditions()  
-    segment.state.conditions.energy.sources[battery.tag].power_draw                          = 0 * ones_row(1)
-    segment.state.conditions.energy.sources[battery.tag].hybrid_power_split_ratio            = segment.hybrid_power_split_ratio * ones_row(1)
-    segment.state.conditions.energy.sources[battery.tag].battery_fuel_cell_power_split_ratio = segment.battery_fuel_cell_power_split_ratio * ones_row(1) 
+    segment.state.conditions.energy.sources[battery.tag].power_draw                          = 0 * ones_row(1) 
     segment.state.conditions.energy.sources[battery.tag].state_of_charge                     = 0 * ones_row(1) 
     segment.state.conditions.energy.sources[battery.tag].depth_of_discharge                  = 0 * ones_row(1) 
     segment.state.conditions.energy.sources[battery.tag].current_draw                        = 0 * ones_row(1)
