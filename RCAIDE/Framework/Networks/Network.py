@@ -74,8 +74,8 @@ class Network(Component):
         """ This sets the default values for the network to function.
         """        
         self.tag                                 = 'network' 
-        self.hybrid_power_split_ratio            = None
-        self.battery_fuel_cell_power_split_ratio = None        
+        self.hybrid_power_split_ratio            = 1.0
+        self.battery_fuel_cell_power_split_ratio = 1.0        
         self.propulsors                          = Container() 
         self.converters                          = Container() 
         self.nacelles                            = Container()
@@ -170,15 +170,27 @@ class Network(Component):
 
         # ----------------------------------------------------------
         # Sources 
-        # ----------------------------------------------------------        
+        # ----------------------------------------------------------   
+        state.conditions.energy.outputs.power.chemical = total_chemical_power
         for source in sources: 
-            if source.active:  
-                if issubclass(type(source),RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
-                    state.conditions.energy.sources[source.tag].outputs.power.chemical = total_chemical_power *  state.conditions.energy.sources[source.tag].power_split_ratio
+            if source.active:    
                 inputs, outputs, _, _  = source.compute_performance(state,network)   
                 net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic) # thermal pump included                    
+                           
+                           
+                           
+                           
+                           
+                           
+                           
+                           
+                           
+                           
+                           
+                           
+                           
                             
         # ----------------------------------------------------------
         # Power Balance 
@@ -275,30 +287,50 @@ class Network(Component):
         # ----------------------------------------------------------
         # Distributors 
         # ----------------------------------------------------------
-        for distributor in distributors:
-            if distributor.active:    
-                for propulsor in  network.propulsors:
-                    if distributor.tag in propulsor.assigned_distributors[0]:
-                        state.conditions.energy.distributors[distributor.tag].outputs.power[distributor.domain] +=  state.conditions.energy.propulsors[propulsor.tag].inputs.power[distributor.domain]
+        #for distributor in distributors:
+            #if distributor.active:    
+                #for propulsor in  network.propulsors:
+                    #if distributor.tag in propulsor.assigned_distributors[0]:
+                        #state.conditions.energy.distributors[distributor.tag].outputs.power[distributor.domain] +=  state.conditions.energy.propulsors[propulsor.tag].inputs.power[distributor.domain]
                         
-                # this computes the input power (output power is suppled to the components of various forms )
-                inputs, outputs, _, _  = distributor.compute_performance(state,network)
+                ## this computes the input power (output power is suppled to the components of various forms )
+                #inputs, outputs, _, _  = distributor.compute_performance(state,network)
                 
-                # determine system losses (should be negative )
-                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)  
-                net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
-                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)  # line integrated pump 
+                ## determine system losses (should be negative )
+                #net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)  
+                #net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
+                #net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)  # line integrated pump 
                 
         # Final aggregation for system level performance 
         conditions.energy.total_force_vector       = total_thrust
         conditions.energy.total_moment_vector      = total_moment
-        conditions.energy.power.outputs.propulsive = total_propulsive_power 
+        conditions.energy.outputs.power.propulsive = total_propulsive_power 
         conditions.weights.vehicle.mass_rate       = total_mdot  
         conditions.energy.net_electrical_power     = net_electrical_power 
         conditions.energy.net_thermal_power        = net_thermal_power 
         conditions.energy.net_hydraulic_power      = net_hydraulic_power 
 
         return
+     
+       
+    def append_segment_conditions(self,segment): 
+ 
+        segment.conditions.energy.inputs.power.propulsive[:,0]    = 0
+        segment.conditions.energy.inputs.power.mechanical[:,0]     = 0
+        segment.conditions.energy.inputs.power.electrical[:,0]     = 0
+        segment.conditions.energy.inputs.power.chemical[:,0]       = 0
+        segment.conditions.energy.inputs.power.pneumatic[:,0]      = 0
+        segment.conditions.energy.inputs.power.hydraulic[:,0]      = 0
+        segment.conditions.energy.inputs.power.thermal[:,0]        = 0 
+        segment.conditions.energy.outputs.power.propulsive[:,0]    = 0
+        segment.conditions.energy.outputs.power.mechanical[:,0]    = 0
+        segment.conditions.energy.outputs.power.electrical[:,0]    = 0
+        segment.conditions.energy.outputs.power.chemical[:,0]      = 0
+        segment.conditions.energy.outputs.power.pneumatic[:,0]     = 0
+        segment.conditions.energy.outputs.power.hydraulic[:,0]     = 0
+        segment.conditions.energy.outputs.power.thermal[:,0]       = 0        
+        return 
+        
     
     def unpack_unknowns(self,segment):
         """Unpacks the unknowns set in the mission to be available for the mission.

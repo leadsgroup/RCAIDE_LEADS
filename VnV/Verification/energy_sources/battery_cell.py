@@ -93,12 +93,14 @@ def lithium_ion_battery_test():
     plt.rcParams.update({'font.size': 12})
     fig1 = plt.figure('Cell Test') 
     fig1.set_size_inches(12,7)   
-    axes1  = fig1.add_subplot(3,2,1)
-    axes2  = fig1.add_subplot(3,2,2)  
-    axes3  = fig1.add_subplot(3,2,3) 
-    axes4  = fig1.add_subplot(3,2,4) 
-    axes5  = fig1.add_subplot(3,2,5) 
-    axes6  = fig1.add_subplot(3,2,6)  
+    axes1  = fig1.add_subplot(4,2,1)
+    axes2  = fig1.add_subplot(4,2,2) 
+    axes3  = fig1.add_subplot(4,2,3)
+    axes4  = fig1.add_subplot(4,2,4)  
+    axes5  = fig1.add_subplot(4,2,5) 
+    axes6  = fig1.add_subplot(4,2,6) 
+    axes7  = fig1.add_subplot(4,2,7) 
+    axes8  = fig1.add_subplot(4,2,8)  
 
     battery_chemistry     = ['lithium_ion_nmc'] # ,'lithium_ion_lfp']    
     electrical_config     = ['Series','Parallel'] 
@@ -145,44 +147,63 @@ def lithium_ion_battery_test():
        
             for segment in results.segments.values(): 
                 volts         = segment.conditions.energy.sources[battery.tag][module.tag].cell.voltage_under_load[:,0] 
+                current         = segment.conditions.energy.sources[battery.tag][module.tag].cell.current[:,0] 
                 SOC           = segment.conditions.energy.sources[battery.tag][module.tag].cell.state_of_charge[:,0]   
                 cell_temp     = segment.conditions.energy.sources[battery.tag][module.tag].cell.temperature[:,0]   
                 Amp_Hrs       = segment.conditions.energy.sources[battery.tag][module.tag].cell.charge_throughput[:,0]                   
                   
                 if battery_chemistry[i] == 'lithium_ion_nmc':
-                    axes1.plot(Amp_Hrs , volts , marker= marker[i], linestyle = linestyles[i],  color= linecolors[j]  , markersize=marker_size   ,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C') 
-                    axes3.plot(Amp_Hrs , SOC   , marker= marker[i] , linestyle = linestyles[i],  color= linecolors[j], markersize=marker_size   ,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C') 
-                    axes5.plot(Amp_Hrs , cell_temp, marker= marker[i] , linestyle = linestyles[i],  color= linecolors[j] , markersize=marker_size,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C')              
+                    axes1.plot(Amp_Hrs , current , marker= marker[i], linestyle = linestyles[i],  color= linecolors[j]  , markersize=marker_size   ,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C') 
+                    axes3.plot(Amp_Hrs , volts , marker= marker[i], linestyle = linestyles[i],  color= linecolors[j]  , markersize=marker_size   ,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C') 
+                    axes5.plot(Amp_Hrs , SOC   , marker= marker[i] , linestyle = linestyles[i],  color= linecolors[j], markersize=marker_size   ,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C') 
+                    axes7.plot(Amp_Hrs , cell_temp, marker= marker[i] , linestyle = linestyles[i],  color= linecolors[j] , markersize=marker_size,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C')              
                 else:
-                    axes2.plot(Amp_Hrs , volts , marker= marker[i], linestyle = linestyles[i],  color= linecolors[j] , markersize=marker_size   ,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C') 
-                    axes4.plot(Amp_Hrs , SOC   , marker= marker[i] , linestyle = linestyles[i],  color= linecolors[j], markersize=marker_size   ,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C') 
-                    axes6.plot(Amp_Hrs , cell_temp, marker= marker[i] , linestyle = linestyles[i],  color= linecolors[j] , markersize=marker_size,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C')              
+                    axes2.plot(Amp_Hrs , current , marker= marker[i], linestyle = linestyles[i],  color= linecolors[j] , markersize=marker_size   ,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C') 
+                    axes4.plot(Amp_Hrs , volts , marker= marker[i], linestyle = linestyles[i],  color= linecolors[j] , markersize=marker_size   ,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C') 
+                    axes6.plot(Amp_Hrs , SOC   , marker= marker[i] , linestyle = linestyles[i],  color= linecolors[j], markersize=marker_size   ,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C') 
+                    axes8.plot(Amp_Hrs , cell_temp, marker= marker[i] , linestyle = linestyles[i],  color= linecolors[j] , markersize=marker_size,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C')              
              
-    legend_font_size = 6                     
-    axes1.set_ylabel('Voltage $(V_{UL}$)')  
+    legend_font_size = 6                 
+    axes1.set_ylabel('Current (Apm)')  
     axes1.legend(loc='upper right', ncol = 2, prop={'size': legend_font_size})  
-    axes1.set_ylim([2.25,5]) 
-    axes1.set_xlim([0,7])
-    axes2.set_xlabel('Amp-Hours (A-hr)') 
+    #axes1.set_ylim([2.25,5]) 
+    #axes1.set_xlim([0,7])
+    
+    axes2.set_xlabel('Current (Apm)') 
     axes2.legend(loc='upper right', ncol = 2, prop={'size': legend_font_size})  
-    axes2.set_ylim([2.25,5])   
-    axes2.set_xlim([0,7])   
-    axes3.set_ylabel('SOC')  
+    #axes2.set_ylim([2.25,5])   
+    #axes2.set_xlim([0,7])
+    
+                       
+    axes3.set_ylabel('Voltage $(V_{UL}$)')  
     axes3.legend(loc='upper right', ncol = 2, prop={'size': legend_font_size})  
-    axes3.set_ylim([0,1.2]) 
-    axes3.set_xlim([0,7]) 
+    axes3.set_ylim([2.25,5]) 
+    axes3.set_xlim([0,7])
+    
+    axes4.set_xlabel('Amp-Hours (A-hr)') 
     axes4.legend(loc='upper right', ncol = 2, prop={'size': legend_font_size})  
-    axes4.set_ylim([0,1.2])   
-    axes4.set_xlim([0,7])      
-    axes5.set_xlabel('Amp-Hours (A-hr)') 
-    axes5.legend(loc='upper left', ncol = 2, prop={'size': legend_font_size})
-    axes5.set_ylim([273,340])
-    axes5.set_xlim([0,7]) 
-    axes5.set_ylabel(r'Temperature ($\degree$C)')    
-    axes6.set_xlabel('Amp-Hours (A-hr)')        
-    axes6.legend(loc='upper left', ncol = 2, prop={'size': legend_font_size})
-    axes6.set_ylim([273,340])
-    axes6.set_xlim([0,7])  
+    axes4.set_ylim([2.25,5])   
+    axes4.set_xlim([0,7])
+    
+    axes5.set_ylabel('SOC')  
+    axes5.legend(loc='upper right', ncol = 2, prop={'size': legend_font_size})  
+    axes5.set_ylim([0,1.2]) 
+    axes5.set_xlim([0,7])
+    
+    axes6.legend(loc='upper right', ncol = 2, prop={'size': legend_font_size})  
+    axes6.set_ylim([0,1.2])   
+    axes6.set_xlim([0,7])
+    
+    axes7.set_xlabel('Amp-Hours (A-hr)') 
+    axes7.legend(loc='upper left', ncol = 2, prop={'size': legend_font_size})
+    axes7.set_ylim([273,340])
+    axes7.set_xlim([0,7]) 
+    axes7.set_ylabel(r'Temperature ($\degree$C)')    
+
+    axes8.set_xlabel('Amp-Hours (A-hr)')        
+    axes8.legend(loc='upper left', ncol = 2, prop={'size': legend_font_size})
+    axes8.set_ylim([273,340])
+    axes8.set_xlim([0,7])  
     
     return  
  

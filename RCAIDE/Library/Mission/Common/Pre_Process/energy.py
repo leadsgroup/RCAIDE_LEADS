@@ -17,13 +17,7 @@ def energy(mission):
         for network in segment.analyses.vehicle.networks: 
             segment.state.conditions.energy.hybrid_power_split_ratio            = network.hybrid_power_split_ratio * segment.state.ones_row(1)  
             segment.state.conditions.energy.battery_fuel_cell_power_split_ratio = network.battery_fuel_cell_power_split_ratio * segment.state.ones_row(1)  
-          
-            for distributor in network.distributors:
-                distributor.initialize(network)
-                 
-            for source in network.sources: 
-                source.initialize(network) 
-                     
+            
             for propulsor in network.propulsors: 
                 propulsor.initialize(network) 
                 propulsor.append_operating_conditions(segment)
@@ -36,12 +30,14 @@ def energy(mission):
                 modulator.append_operating_conditions(segment)  
 
             for source in  network.sources: 
+                source.initialize(network)  
                 source.append_operating_conditions(segment)  
 
             for system in network.systems:
                 system.append_operating_conditions(segment)             
     
             for distributor in network.distributors:
+                distributor.initialize(network)
                 distributor.append_operating_conditions(segment) 
                 
     return 

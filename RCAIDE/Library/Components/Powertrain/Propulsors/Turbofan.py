@@ -203,7 +203,8 @@ class Turbofan(Propulsor):
         return 
 
     def append_segment_conditions(self,segment): 
-        append_turbofan_segment_conditions(self,segment)   
+        append_turbofan_segment_conditions(self,segment)
+        return 
     
     def compute_performance(self,state,network=None,center_of_gravity = [[0, 0, 0]]):
         """

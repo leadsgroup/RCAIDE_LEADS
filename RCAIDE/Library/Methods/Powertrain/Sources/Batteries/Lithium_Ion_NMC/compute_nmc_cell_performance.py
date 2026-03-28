@@ -321,9 +321,10 @@ def reuse_stored_nmc_cell_data(battery_module,state,stored_battery_tag,stored_ba
     Properties Used: 
     N.A.        
     ''' 
-    state.conditions.energy.sources[battery_module.tag][stored_battery_tag] = deepcopy(state.conditions.energy.sources[stored_battery_module_tag]) 
-        
-    return  
+    state.conditions.energy.sources[stored_battery_tag][battery_module.tag] = deepcopy(state.conditions.energy.sources[stored_battery_tag][stored_battery_module_tag]) 
+    inputs  = state.conditions.energy.sources[stored_battery_tag][battery_module.tag].inputs
+    outputs = state.conditions.energy.sources[stored_battery_tag][battery_module.tag].outputs 
+    return  inputs,outputs
  
 def compute_nmc_cell_state(battery_module_data, SOC, T, I):
     """

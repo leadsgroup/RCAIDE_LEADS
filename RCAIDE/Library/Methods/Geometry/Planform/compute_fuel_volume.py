@@ -67,7 +67,24 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = False, update_max_fuel = 
     wings             = vehicle.wings
     fuselages         = vehicle.fuselages 
     total_fuel_volume = 0
-    total_fuel_mass   = 0 
+    total_fuel_mass   = 0
+
+    
+    # --------------------------------------------------------------------------
+    # Step 1: Check the fuel tanks and updates them if there are duplications
+    # this is critical for mass properties  
+    # --------------------------------------------------------------------------
+    fuel_tag = None 
+    for network in vehicle.networks: 
+        for source in  network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                fuel_tank =  source             
+                if fuel_tag == None:
+                    fuel_tag = fuel_tank.fuel.tag
+                else:
+                    if fuel_tag == fuel_tank.fuel.tag:
+                        fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag  
+                        
     for network in vehicle.networks:
         for source in  network.sources:
             if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
@@ -86,12 +103,19 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = False, update_max_fuel = 
                         fuel_tank.fuel.volume_properties.net_volume = fuel_tank.fuel.mass_properties.mass / fuel_tank.fuel.density
                     total_fuel_volume += fuel_tank.fuel.volume_properties.net_volume 
                     total_fuel_mass   += fuel_tank.fuel.mass_properties.mass
-                    
+             
+    '''NEED TO REMOVE '''
+    for network in vehicle.networks:
+        for source in  network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                fuel_tank =  source            
+                if fuel_tank.power_split_ratio == None:
+                    fuel_tank.power_split_ratio = fuel_tank.fuel.mass_properties.mass / total_fuel_mass
+                                
     # Assign Total Fuel Volume and to Vehicle 
     if compute_fuel_volume:
         vehicle.volume_properties.max_fuel   = total_fuel_volume
         
     if update_max_fuel:
-        vehicle.mass_properties.max_fuel = total_fuel_mass
-
+        vehicle.mass_properties.max_fuel = total_fuel_mass 
     return 

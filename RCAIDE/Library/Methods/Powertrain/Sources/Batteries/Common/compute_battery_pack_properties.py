@@ -102,7 +102,6 @@ def compute_battery_pack_properties(battery,network):
         if int(parallel_e*series_e) != int(normal_count*parallel_count):
             pass #raise Exception('Number of cells in gemetric layout not equal to number of cells in electric circuit configuration ')
             
-            
         normal_spacing     = battery_module.geometrtic_configuration.normal_spacing   
         parallel_spacing   = battery_module.geometrtic_configuration.parallel_spacing
         volume_factor      = battery_module.volume_packaging_factor
@@ -147,8 +146,7 @@ def compute_battery_pack_properties(battery,network):
         battery_module.maximum_voltage                = battery_module.cell.maximum_voltage  * series_e   
         battery_module.initial_maximum_energy         = battery_module.maximum_energy      
         battery_module.nominal_capacity               = battery_module.cell.nominal_capacity* parallel_e 
-        battery_module.voltage                        = battery_module.maximum_voltage 
-        
+        battery_module.voltage                        = battery_module.maximum_voltage  
         
         # compute pack properties
         if battery.battery_module_electric_configuration == 'Series': 

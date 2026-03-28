@@ -72,21 +72,21 @@ def append_battery_pack_conditions(battery,segment):
     segment.state.conditions.energy.sources[battery.tag].efficiency                          = 0 * ones_row(1)
     segment.state.conditions.energy.sources[battery.tag].temperature                         = 0 * ones_row(1)
     segment.state.conditions.energy.sources[battery.tag].energy                              = 0 * ones_row(1)
-    segment.state.conditions.energy.sources[battery.tag].regenerative_power                  = 0 * ones_row(1) 
-    segment.state.conditions.energy.sources[battery.tag].fuel_mass_flow_rate                 = 0 * ones_row(1)  
-
-    segment.state.conditions.energy.sources[battery.tag].inputs                          = Conditions()
-    segment.state.conditions.energy.sources[battery.tag].inputs.power                    = Conditions()  
-    segment.state.conditions.energy.sources[battery.tag].inputs.power.electrical         = 0 * ones_row(1)
-    segment.state.conditions.energy.sources[battery.tag].inputs.power.thermal            = 0 * ones_row(1) 
-    segment.state.conditions.energy.sources[battery.tag].inputs.power.hydraulic          = 0 * ones_row(1)  
-    
-    segment.state.conditions.energy.sources[battery.tag].outputs                         = Conditions()  
-    segment.state.conditions.energy.sources[battery.tag].outputs.power                   = Conditions()  
-    segment.state.conditions.energy.sources[battery.tag].outputs.power.electrical        = 0 * ones_row(1) 
-    segment.state.conditions.energy.sources[battery.tag].outputs.power.thermal           = 0 * ones_row(1) 
-    segment.state.conditions.energy.sources[battery.tag].outputs.power.hydraulic         = 0 * ones_row(1)       
+    segment.state.conditions.energy.sources[battery.tag].regenerative_power                  = 0 * ones_row(1)    
+    segment.state.conditions.energy.sources[battery.tag].power_split_ratio                   = ones_row(1)       # NEEED TO UPDATE battery.power_split_ratio * ones_row(1)
+    segment.state.conditions.energy.sources[battery.tag].inputs                              = Conditions()
+    segment.state.conditions.energy.sources[battery.tag].inputs.power                        = Conditions()  
+    segment.state.conditions.energy.sources[battery.tag].inputs.power.electrical             = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[battery.tag].inputs.power.thermal                = 0 * ones_row(1) 
+    segment.state.conditions.energy.sources[battery.tag].inputs.power.hydraulic              = 0 * ones_row(1)   
+    segment.state.conditions.energy.sources[battery.tag].outputs                             = Conditions()  
+    segment.state.conditions.energy.sources[battery.tag].outputs.power                       = Conditions()  
+    segment.state.conditions.energy.sources[battery.tag].outputs.power.electrical            = 0 * ones_row(1) 
+    segment.state.conditions.energy.sources[battery.tag].outputs.power.thermal               = 0 * ones_row(1) 
+    segment.state.conditions.energy.sources[battery.tag].outputs.power.hydraulic             = 0 * ones_row(1)       
      
+    for module in battery.modules: 
+        module.append_operating_conditions(battery,segment)
     return 
     
 def append_battery_pack_segment_conditions(battery, segment): 
