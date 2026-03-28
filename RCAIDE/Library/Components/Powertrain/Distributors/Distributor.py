@@ -28,8 +28,7 @@ class Distributor(Component):
         self.type                     = 'distributor'
         self.working_fluid            = Data()
         self.active                   = True
-        self.assigned_distributors    = None 
-        self.identical_sources        = True 
+        self.assigned_distributors    = None  
         self.efficiency               = 0.0
         
     def initialize(self,network):

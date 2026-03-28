@@ -36,10 +36,7 @@ class Electrical_Bus(Distributor):
         List of propulsion systems powered by this bus
         
     avionics : Component
-        Aircraft avionics system 
-        
-    identical_sources : bool
-        Flag indicating if all battery modules are identical (default: True)
+        Aircraft avionics system  
         
     active : bool
         Flag indicating if the bus is operational (default: True)

@@ -107,8 +107,7 @@ class Network(Component):
         total_moment            = 0. * state.ones_row(3)
         total_mdot              = 0. * state.ones_row(1)
         total_propulsive_power  = 0. * state.ones_row(1)
-        total_chemical_power    = 0. * state.ones_row(1)
-        total_current           = 0. * state.ones_row(1)
+        total_chemical_power    = 0. * state.ones_row(1) 
         net_electrical_power    = 0. * state.ones_row(1)
         net_thermal_power       = 0. * state.ones_row(1)
         net_hydraulic_power     = 0. * state.ones_row(1)
@@ -120,11 +119,11 @@ class Network(Component):
         for propulsor in propulsors:
             if propulsor.active:
                 if propulsor.identical_propulsors == False or stored_results_flag == False:
-                    # -----------
-                    # to remove 
+                    #################################
+                    # TO REMOVE
                     state.conditions.energy.propulsors[propulsor.tag].outputs.power.electrical = propulsor.electrical_power_generation_split \
                         *  state.unknowns.network['electrical_power']*(1 - state.conditions.energy.hybrid_power_split_ratio)  
-                    # -----------
+                    #################################
                     inputs, outputs, stored_results_flag, stored_propulsor_tag = propulsor.compute_performance(state,network, center_of_gravity=center_of_gravity)
                 else:
                     inputs, outputs = propulsor.reuse_stored_data(state,network,stored_propulsor_tag=stored_propulsor_tag, center_of_gravity=center_of_gravity)
@@ -135,10 +134,9 @@ class Network(Component):
 
                 total_thrust           += outputs.thrust
                 total_moment           += outputs.moment
-                total_propulsive_power += outputs.power.propulsive 
-                total_current          += outputs.current 
+                total_propulsive_power += outputs.power.propulsive  
                 total_chemical_power   += inputs.power.chemical
-                total_mdot             += inputs.mdot_fuel  
+                total_mdot             += inputs.fuel_mass_flow_rate  
                 net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)  # must handle tank integrated pump
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
@@ -159,8 +157,7 @@ class Network(Component):
                     state.conditions.energy.converters[converter.tag].outputs.power.electrical =  converter.electrical_power_generation_split * state.unknowns.network['electrical_power']*(1 - state.conditions.energy.hybrid_power_split_ratio )  # NEED TO ASSIGN PRIOR
                     inputs, outputs, stored_results_flag, stored_conveter_tag = converter.compute_performance(state,network)
                 else:
-                    inputs, outputs = converter.reuse_stored_data(state,network,stored_conveter_tag=stored_conveter_tag)
-                total_current          += outputs.current  
+                    inputs, outputs = converter.reuse_stored_data(state,network,stored_conveter_tag=stored_conveter_tag) 
                 total_chemical_power   += inputs.power.chemical
                 total_mdot             += inputs.mdot_fuel
 
@@ -352,10 +349,12 @@ class Network(Component):
          
         unknowns(segment)  
         for network in segment.analyses.vehicle.networks:
-            for propulsor in network.propulsors:
-                propulsor.unpack_unknowns(segment) 
-            for source in network.sources:
-                source.unpack_unknowns(segment) 
+            for p_i, propulsor in enumerate(network.propulsors):
+                if propulsor.active and (propulsor.identical_propulsors == False or p_i == 0): 
+                    propulsor.unpack_unknowns(segment) 
+            for s_i, source in enumerate(network.sources):
+                if source.active and (source.identical_sources == False or s_i == 0): 
+                    source.unpack_unknowns(segment) 
             for modulator in network.modulators:
                 modulator.unpack_unknowns(segment) 
             for distributor in network.distributors:

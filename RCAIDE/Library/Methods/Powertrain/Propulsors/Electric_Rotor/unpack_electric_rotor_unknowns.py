@@ -13,5 +13,5 @@ def unpack_electric_rotor_unknowns(propulsor,segment):
     '''
     motor   = propulsor.motor   
     motor_conditions = segment.state.conditions.energy.converters[motor.tag]
-    motor_conditions.inputs.current = segment.state.unknowns[propulsor.tag + '_motor_current'] 
+    motor_conditions.inputs.current = segment.state.unknowns.mission[propulsor.tag + '_motor_current'] 
     return 

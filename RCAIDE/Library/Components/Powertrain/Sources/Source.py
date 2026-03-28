@@ -41,4 +41,4 @@ class Source(Component):
         self.assigned_distributors        = None
         self.efficiency                   = 0.0
         self.power_split_ratio            = None
-        self.identical_sources            = False 
+        self.identical_sources            = False

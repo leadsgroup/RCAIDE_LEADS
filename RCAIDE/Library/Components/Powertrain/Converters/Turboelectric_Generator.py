@@ -61,7 +61,7 @@ class Turboelectric_Generator(Converter):
         self.assigned_converters       = Data()
         
     def initialize(self, network): 
-        design_turboelectric_generator(self, network) 
+        design_turboelectric_generator(self) 
         return
 
     def append_operating_conditions(self,segment): 

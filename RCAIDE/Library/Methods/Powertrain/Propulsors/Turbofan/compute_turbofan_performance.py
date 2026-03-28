@@ -428,17 +428,17 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
                 angular_velocity    = fan_conditions.omega, 
             )
 
-    noise_conditions.fan_nozzle                  = fan_nozzle_res
-    noise_conditions.core_nozzle                 = core_nozzle_res  
-    noise_conditions.low_pressure_spool          = lpc_res
-    stored_results_flag                          = True
-    stored_propulsor_tag                         = turbofan.tag  
-
-    turbofan_conditions.outputs.thrust           = thrust_vector
-    turbofan_conditions.outputs.moment           = moment
-    turbofan_conditions.outputs.power.propulsive = power
-    turbofan_conditions.inputs.power.chemical    = mdot_fuel * combustor.fuel_data.lower_heating_value 
-    turbofan_conditions.inputs.mdot_fuel         = mdot_fuel  
+    noise_conditions.fan_nozzle                      = fan_nozzle_res
+    noise_conditions.core_nozzle                     = core_nozzle_res  
+    noise_conditions.low_pressure_spool              = lpc_res
+    stored_results_flag                              = True
+    stored_propulsor_tag                             = turbofan.tag  
+    
+    turbofan_conditions.outputs.thrust               = thrust_vector
+    turbofan_conditions.outputs.moment               = moment
+    turbofan_conditions.outputs.power.propulsive     = power
+    turbofan_conditions.inputs.power.chemical        = mdot_fuel * combustor.fuel_data.lower_heating_value 
+    turbofan_conditions.inputs.fuel_mass_flow_rate   = mdot_fuel  
 
     return turbofan_conditions.inputs ,turbofan_conditions.outputs, stored_results_flag, stored_propulsor_tag 
     

@@ -16,5 +16,5 @@ def pack_electric_rotor_residuals(propulsor,segment):
     rotor               = propulsor.rotor 
     q_motor             = propulsor_results.converters[motor.tag].outputs.torque
     q_prop              = propulsor_results.converters[rotor.tag].torque
-    segment.state.residuals.network[ propulsor.tag + '_rotor_motor_torque'] = q_motor - q_prop 
+    segment.state.residuals.mission[ propulsor.tag + '_rotor_motor_torque'] = q_motor - q_prop 
     return 
