@@ -18,7 +18,7 @@ from copy import deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_electric_rotor_performance
 # ----------------------------------------------------------------------------------------------------------------------  
-def compute_electric_rotor_performance(propulsor, state, center_of_gravity=[[0.0, 0.0, 0.0]]):
+def compute_electric_rotor_performance(propulsor,state,network=None,center_of_gravity=[[0.0, 0.0, 0.0]]):
     """
     Computes the performance of an electric rotor propulsion system.
     
@@ -109,15 +109,20 @@ def compute_electric_rotor_performance(propulsor, state, center_of_gravity=[[0.0
     esc                        = propulsor.electronic_speed_controller   
     electric_rotor_conditions  = conditions.energy.propulsors[propulsor.tag]
     eta                        = electric_rotor_conditions.throttle
-     
-    conditions.energy.modulators[esc.tag].throttle         = eta 
+    
+    # Compute distributor performance 
+    distributor = propulsor.assigned_distributors[[0]]   
+    
+    # Compute electronic speed controller performance 
+    conditions.energy.modulators[esc.tag].outputs.voltage   = conditions.energy.distributors[distributor.tag].voltage 
+    conditions.energy.modulators[esc.tag].throttle          = eta 
     compute_voltage_out_from_throttle(esc,conditions)
 
-    # Assign conditions to the rotor
+    # Assign conditions to the motor and compute performance 
     conditions.energy.converters[motor.tag].inputs.voltage = conditions.energy.modulators[esc.tag].outputs.voltage  
     compute_motor_performance(motor,conditions) 
     
-    # Spin the rotor 
+    #  Assign conditions to the rotor and compute performance 
     conditions.energy.converters[rotor.tag].omega                         = conditions.energy.converters[motor.tag].outputs.omega
     conditions.energy.converters[rotor.tag].throttle                      = conditions.energy.modulators[esc.tag].throttle      
     conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle = conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle

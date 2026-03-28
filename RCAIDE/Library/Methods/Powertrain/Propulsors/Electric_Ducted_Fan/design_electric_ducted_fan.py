@@ -30,9 +30,7 @@ def design_electric_ducted_fan(EDF, new_regression_results=False, keep_files=Tru
             - tag : str
                 Identifier for the propulsor
             - electronic_speed_controller : Data
-                ESC component
-                    - bus_voltage : float
-                        Bus voltage [V]
+                ESC component 
             - ducted_fan : Data
                 Ducted fan component
                     - cruise : Data
@@ -92,10 +90,7 @@ def design_electric_ducted_fan(EDF, new_regression_results=False, keep_files=Tru
     RCAIDE.Library.Methods.Powertrain.setup_operating_conditions
     """
     if EDF.electronic_speed_controller == None: 
-        raise AssertionError("electric speed controller not defined on propulsor")
-    
-    if EDF.electronic_speed_controller.bus_voltage == None: 
-        raise AssertionError("ESC bus voltage not specified on propulsor")
+        raise AssertionError("electric speed controller not defined on propulsor") 
     
     if EDF.ducted_fan == None:
         raise AssertionError("ducted fan not defined on propulsor")

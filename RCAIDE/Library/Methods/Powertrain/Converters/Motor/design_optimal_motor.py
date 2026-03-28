@@ -90,11 +90,7 @@ def design_optimal_motor(motor):
     See Also
     --------
     RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance
-    """
-
-    if motor.type != 'DC':
-        raise Exception('function only supports low-fidelity (DC) motor')
-    
+    """ 
     # design properties of the motor 
     io     = motor.no_load_current
     v      = motor.nominal_voltage

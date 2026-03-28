@@ -50,7 +50,6 @@ class Electronic_Speed_Controller(Modulator):
         """         
  
         self.tag                   = 'electronic_speed_controller'  
-        self.bus_voltage           = None
 
     def append_operating_conditions(self,segment): 
         append_esc_conditions(self,segment)

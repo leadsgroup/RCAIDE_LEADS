@@ -47,8 +47,7 @@ class Inverter(Modulator):
         should be set to an appropriate value based on the specific inverter being modeled.
         """         
 
-        self.tag                   = 'inverter'  
-        self.bus_voltage           = None
+        self.tag                   = 'inverter'   
 
     def append_operating_conditions(self,segment): 
         """

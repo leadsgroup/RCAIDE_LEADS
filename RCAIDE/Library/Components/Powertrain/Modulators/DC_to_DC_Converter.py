@@ -25,8 +25,7 @@ class DC_to_DC_Converter(Modulator):
        
         """         
 
-        self.tag                   = 'dc_to_dc_converter'  
-        self.bus_voltage           = None
+        self.tag                   = 'dc_to_dc_converter'   
 
     def append_operating_conditions(self,segment): 
         append_dcdc_conditions(self,segment)

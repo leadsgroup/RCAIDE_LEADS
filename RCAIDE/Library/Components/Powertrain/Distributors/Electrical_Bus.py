@@ -15,7 +15,7 @@ from RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus import *
 from RCAIDE.Library.Attributes.Materials                           import Copper, Polyimide 
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_distributor_moment_of_inertia import *
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_distributor_center_of_gravity import * 
- 
+from RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.compute_bus_properties import compute_bus_properties
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Electrical_Bus
@@ -176,6 +176,7 @@ class Electrical_Bus(Distributor):
         return
  
     def initialize(self,network):
+        compute_bus_properties(self, network)
         return
     
     def compute_center_of_gravity(self,vehicle): 

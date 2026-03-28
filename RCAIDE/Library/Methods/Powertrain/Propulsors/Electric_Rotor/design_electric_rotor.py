@@ -33,9 +33,7 @@ def design_electric_rotor(electric_rotor, number_of_stations=20, solver_name='SL
             - tag : str
                 Identifier for the propulsor
             - electronic_speed_controller : Data
-                ESC component
-                    - bus_voltage : float
-                        Bus voltage [V]
+                ESC component 
             - rotor : Data
                 Rotor component (Propeller, Lift_Rotor, or Prop_Rotor)
             - motor : Data
@@ -107,10 +105,7 @@ def design_electric_rotor(electric_rotor, number_of_stations=20, solver_name='SL
     """
 
     if electric_rotor.electronic_speed_controller == None: 
-        raise AssertionError("Electric Speed Controller not defined on propulsor")
-    
-    if electric_rotor.electronic_speed_controller.bus_voltage == None: 
-        raise AssertionError("Electric Speed Controller  bus voltage not specified on propulsor") 
+        raise AssertionError("Electric Speed Controller not defined on propulsor") 
     
     if electric_rotor.rotor == None:
         raise AssertionError("Rotor not defined on propulsor")
@@ -148,7 +143,7 @@ def design_electric_rotor(electric_rotor, number_of_stations=20, solver_name='SL
     operating_state       = setup_operating_conditions(electric_rotor,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
     operating_state.conditions.energy.propulsors[electric_rotor.tag].throttle[:,0] = 1.0
     operating_state.conditions.energy.converters[motor.tag].inputs.current[:,0] =  motor.design_current
-    sls_T,_,sls_P,_,_,_                          = electric_rotor.compute_performance(operating_state) 
+    sls_T,_,sls_P,_,_                            = electric_rotor.compute_performance(operating_state) 
     electric_rotor.sealevel_static_thrust        = np.linalg.norm(sls_T, axis=1)
     electric_rotor.sealevel_static_power         = sls_P[0][0]
      

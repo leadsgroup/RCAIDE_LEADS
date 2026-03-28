@@ -98,7 +98,7 @@ class Electric_Rotor(Propulsor):
         Appends propulsor unknowns and residuals to the segment.
         """ 
         if type(segment) != RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion:        
-            append_electric_rotor_residual_and_unknown(self,segment, network)
+            append_electric_rotor_residual_and_unknown(self,segment)
         return
 
     def unpack_unknowns(self,segment):
@@ -106,7 +106,7 @@ class Electric_Rotor(Propulsor):
         Unpacks propulsor unknowns from the segment.
         """ 
         if type(segment) != RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion:        
-            unpack_electric_rotor_unknowns(self,segment, network)
+            unpack_electric_rotor_unknowns(self,segment)
         return 
 
     def pack_residuals(self,segment):
@@ -114,7 +114,7 @@ class Electric_Rotor(Propulsor):
         Packs propulsor residuals into the segment.
         """
         if type(segment) != RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_No_Propulsion:  
-            pack_electric_rotor_residuals(self,segment, network)
+            pack_electric_rotor_residuals(self,segment)
         return    
     
     def compute_performance(self,state,network,center_of_gravity = [[0, 0, 0]]):
