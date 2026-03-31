@@ -61,7 +61,6 @@ class Climb(Evaluate):
         iterate                            = self.process.iterate 
         initialize.conditions              = Segments.Vertical_Flight.Climb.initialize_conditions
         iterate.conditions.aerodynamics    = skip
-        iterate.residuals.mission.flight_dynamics  = Common.Residuals.flight_dynamics
     
         return
        

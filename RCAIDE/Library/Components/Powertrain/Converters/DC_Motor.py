@@ -99,7 +99,7 @@ class DC_Motor(Converter):
         self.interpolated_func             = None
         self.type                          = "DC"
         self.interpolated_func             = None
-        self.inverse_calculation           = False
+        self.reverse_mode_computation      = False
         self.design_angular_velocity       = 0.0  # [rad/s]
         self.design_torque                 = 0.0  # [N·m]
         self.design_current                = 0.0  # [A]

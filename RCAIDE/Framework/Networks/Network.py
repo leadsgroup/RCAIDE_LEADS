@@ -124,7 +124,7 @@ class Network(Component):
                     state.conditions.energy.propulsors[propulsor.tag].outputs.power.electrical = propulsor.electrical_power_generation_split \
                         *  state.unknowns.network['electrical_power']*(1 - state.conditions.energy.hybrid_power_split_ratio)  
                     #################################
-                    inputs, outputs, stored_results_flag, stored_propulsor_tag = propulsor.compute_performance(state,network, center_of_gravity=center_of_gravity)
+                    inputs, outputs, stored_results_flag, stored_propulsor_tag = propulsor.compute_performance(state,network,center_of_gravity=center_of_gravity)
                 else:
                     inputs, outputs = propulsor.reuse_stored_data(state,network,stored_propulsor_tag=stored_propulsor_tag, center_of_gravity=center_of_gravity)
 
@@ -150,11 +150,13 @@ class Network(Component):
                 net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
-      
+                
+        stored_results_flag  = False
         for converter in converters:   
             if converter.active: 
-                if converter.identical_propulsors == False or stored_results_flag == False:
+                if converter.identical_converters == False or stored_results_flag == False:
                     state.conditions.energy.converters[converter.tag].outputs.power.electrical =  converter.electrical_power_generation_split * state.unknowns.network['electrical_power']*(1 - state.conditions.energy.hybrid_power_split_ratio )  # NEED TO ASSIGN PRIOR
+                    converter.reverse_mode_computation = True
                     inputs, outputs, stored_results_flag, stored_conveter_tag = converter.compute_performance(state,network)
                 else:
                     inputs, outputs = converter.reuse_stored_data(state,network,stored_conveter_tag=stored_conveter_tag) 

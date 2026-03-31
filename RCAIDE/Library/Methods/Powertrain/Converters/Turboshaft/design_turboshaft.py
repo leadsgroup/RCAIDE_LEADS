@@ -9,8 +9,7 @@
 
 # RCAIDE Imports     
 import RCAIDE
-from RCAIDE.Framework.Core                                           import Data
-from RCAIDE.Framework.Mission.Common                                 import Conditions
+from RCAIDE.Framework.Core                                           import Data 
 from RCAIDE.Library.Methods.Powertrain.Converters.Ram                import compute_ram_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Combustor          import compute_combustor_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Compressor         import compute_compressor_performance
@@ -21,7 +20,8 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Turboshaft         import size
 from RCAIDE.Library.Methods.Powertrain                               import setup_operating_conditions 
 
 # Python package imports   
-import numpy                                                                as np
+import numpy   as np
+from copy import deepcopy
 
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Design Turboshaft
@@ -156,7 +156,7 @@ def design_turboshaft(turboshaft):
     
     segment                  = RCAIDE.Framework.Mission.Segments.Segment()  
     segment.state.conditions = conditions
-    turboshaft.append_operating_conditions(segment,conditions.energy,conditions.noise)  
+    turboshaft.append_operating_conditions(segment)  
             
     ram                     = turboshaft.ram
     inlet_nozzle            = turboshaft.inlet_nozzle
@@ -287,15 +287,28 @@ def design_turboshaft(turboshaft):
     
     # Step 25: Size the core of the turboshaft  
     size_core(turboshaft,conditions)
+     
+    # Static Sea Level Power   
+    atmosphere            = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
+    atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
+    static_sea_level_speed= atmo_data_sea_level.speed_of_sound[0][0]*0.01 
+     
+    # instantiate dummy network 
+    dummy_network          = RCAIDE.Framework.Networks.Network()
+    fuel_line              = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    dummy_network.distributors.append(fuel_line) 
+    dummy_turboshaft       = deepcopy(turboshaft) # create copy of turboshaft so that original is not modified 
+    dummy_turboshaft.assigned_distributors = [[fuel_line.tag]]
     
-    # Step 26: Static Sea Level Thrust  
-    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmo_data_sea_level  = atmosphere.compute_values(0.0,0.0)   
-    V                    = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
-    operating_state      = setup_operating_conditions(turboshaft,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0,temperature_deviation=0)  
-    operating_state.conditions.energy.converters[turboshaft.tag].throttle[:,0] = 1.0  
-    sls_P,_,_                                                       = turboshaft.compute_performance(operating_state,fuel_line) 
-    turboshaft.sealevel_static_power                                = sls_P[0][0]
+    # set up operating conditions for 
+    operating_state       = setup_operating_conditions(dummy_turboshaft,fuel_line,velocity_range=np.array([static_sea_level_speed]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
+    operating_state.conditions.energy.converters[dummy_turboshaft.tag].throttle[:,0] = 1.0
+    
+    # compute propulsor performance 
+    inputs,outputs,_,_                     = dummy_turboshaft.compute_performance(operating_state,dummy_network)
+    
+    # store values 
+    turboshaft.sealevel_static_power       = outputs.power.mechanical[0][0]  
      
     return      
   

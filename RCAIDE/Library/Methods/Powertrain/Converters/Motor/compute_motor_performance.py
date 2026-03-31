@@ -51,9 +51,9 @@ def compute_motor_performance(motor,state):
         - Determines overall efficiency
         
     For Both Motors:
-        - motor.inverse_calculation arg is used to determine parameters that are solved.
-        - motor.inverse_calculation == False calculates electrical properties (electrical power and voltage) from mechnical properties (rpm and torque)
-        - motor.inverse_calculation == True calculates mechanial properties (rpm and torque) from electrical properties (electrical power and voltage)
+        - motor.reverse_mode_computation arg is used to determine parameters that are solved.
+        - motor.reverse_mode_computation == False calculates electrical properties (electrical power and voltage) from mechnical properties (rpm and torque)
+        - motor.reverse_mode_computation == True calculates mechanial properties (rpm and torque) from electrical properties (electrical power and voltage)
 
     **Major Assumptions**
         * Steady state operation
@@ -71,7 +71,7 @@ def compute_motor_performance(motor,state):
     motor_conditions = state.energy.converters[motor.tag]
     
     if (motor.type == RCAIDE.Library.Components.Powertrain.Converters.DC_Motor): 
-        if motor.inverse_calculation == False:
+        if motor.reverse_mode_computation == False:
             Res            = motor.resistance
             G              = motor.gearbox.gear_ratio
             I              = motor_conditions.inputs.current
@@ -182,7 +182,7 @@ def compute_motor_performance(motor,state):
             motor_conditions.efficiency      = etam             
             
     else:
-        if motor.inverse_calculation == False:
+        if motor.reverse_mode_computation == False:
             G              = motor.gearbox.gear_ratio  
             Res            = motor.resistance  
             Kv             = motor.speed_constant

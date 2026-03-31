@@ -6,10 +6,9 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-# RCAIDE imports      
-from RCAIDE.Framework.Core import Data    
-from RCAIDE.Library.Methods.Powertrain.Converters.Turboshaft         import compute_turboshaft_performance
-from RCAIDE.Library.Methods.Powertrain.Converters.Generator          import compute_generator_performance 
+# RCAIDE imports
+import RCAIDE
+from RCAIDE.Framework.Core import Data      
  
 # python imports 
 from copy import deepcopy 
@@ -17,7 +16,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_turboelectric_generator_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_turboelectric_generator_performance(turboelectric_generator, state, fuel_line=None, bus=None):
+def compute_turboelectric_generator_performance(turboelectric_generator,state,network=None):
     """
     Computes the performance of a turboelectric generator system.
     
@@ -46,9 +45,9 @@ def compute_turboelectric_generator_performance(turboelectric_generator, state, 
     Notes
     -----
     This function handles both direct and inverse calculations for the turboelectric generator:
-        - Direct calculation (inverse_calculation=False): Computes generator output based on 
+        - Direct calculation (reverse_mode_computation=False): Computes generator output based on 
         turboshaft throttle setting
-        - Inverse calculation (inverse_calculation=True): Determines turboshaft fuel consumption 
+        - Inverse calculation (reverse_mode_computation=True): Determines turboshaft fuel consumption 
         based on required generator output power
     
     The function coordinates the operation of the turboshaft engine and generator components,
@@ -67,67 +66,58 @@ def compute_turboelectric_generator_performance(turboelectric_generator, state, 
 
     conditions                         = state.conditions
     generator                          = turboelectric_generator.generator
-    turboshaft                         = turboelectric_generator.turboshaft 
-    compressor                         = turboshaft.compressor
+    turboshaft                         = turboelectric_generator.turboshaft  
     turboelectric_generator_conditions = conditions.energy.converters[turboelectric_generator.tag] 
     generator_conditions               = conditions.energy.converters[generator.tag]
     turboshaft_conditions              = conditions.energy.converters[turboshaft.tag]
-    compressor_conditions              = conditions.energy.converters[compressor.tag]
-    
-    generator.inverse_calculation      =  turboelectric_generator.inverse_calculation
-    turboshaft.inverse_calculation     =  turboelectric_generator.inverse_calculation
-    
-    if turboelectric_generator.inverse_calculation == False:
+    generator.reverse_mode_computation      = turboelectric_generator.reverse_mode_computation
+    turboshaft.reverse_mode_computation     = turboelectric_generator.reverse_mode_computation  
+
+    # Determine what electrical distributor is connected to the electric powertrain 
+    for d_tag in turboelectric_generator.assigned_distributors[0]:
+        if type(network.distributors[d_tag]) == RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus:
+            distributor = network.distributors[d_tag]
+            
+    if turboelectric_generator.reverse_mode_computation == False:
         # here we run the turboshaft first, then run the generator
         turboshaft_conditions.throttle = turboelectric_generator_conditions.throttle
         
-        # run the generator 
-        P_mech,stored_results_flag,stored_propulsor_tag = compute_turboshaft_performance(turboshaft,state,turboelectric_generator,fuel_line)
+        # run the turboshaft 
+        _,_,_,_ =  turboshaft.compute_performance(state)
+        turboelectric_generator_conditions.fuel_mass_flow_rate =  turboshaft_conditions.fuel_mass_flow_rate  
         
-        # connect properties of the turboshaft to generator 
-        turboelectric_generator_conditions.power = generator_conditions.outputs.power
-        generator_conditions.inputs.power.mechanical  = P_mech     
-        generator_conditions.inputs.omega  = compressor_conditions.omega         
-        
-        # assign voltage across bus 
-        generator_conditions.outputs.voltage = bus.voltage*np.ones_like(generator_conditions.inputs.power.mechanical)
+        # connect electrical power produced by of the turboshaft to generator  
+        generator_conditions.inputs.omega             = turboelectric_generator_conditions.omega
+        generator_conditions.inputs.power.mechanical  = turboshaft_conditions.outputs.power.mechanical # efficiency 
+        generator_conditions.outputs.voltage          = conditions.energy.distributors[distributor.tag].voltage 
         
          # run the generator 
-        compute_generator_performance(generator,conditions)   
-        turboelectric_generator_conditions.fuel_mass_flow_rate =  turboshaft_conditions.fuel_mass_flow_rate  
+        _,_,_,_ =  generator.compute_performance(generator,conditions)  
+        turboelectric_generator_conditions.outputs.power.electrical = generator_conditions.outputs.power.electrical  
          
-    else:
-        # here , we know the electric power produced by the generator and we want to determine how much fuel was used to produce said power
+    else: 
+        # link turboelectric generator outputs to generator outputs 
+        generator_conditions.outputs.power.electrical = turboelectric_generator_conditions.outputs.power.electrical
+        generator_conditions.outputs.voltage          = conditions.energy.distributors[distributor.tag].voltage 
+        generator_conditions.outputs.current          = generator_conditions.outputs.power.electrical / generator_conditions.outputs.voltage 
+        generator.reverse_mode_computation = True
         
-        # assign voltage across bus 
-        generator_conditions.outputs.voltage = bus.voltage*np.ones_like(generator_conditions.outputs.power)
-        generator_conditions.outputs.current = generator_conditions.outputs.power / generator_conditions.outputs.voltage
-        
-        generator.inverse_calculation = True
         # run the generator 
-        compute_generator_performance(generator,conditions)
+        _,_,_,_  = generator.compute_performance(generator)
         
         # connect properties of the generator to the turboshaft 
-        turboshaft_conditions.power  = generator_conditions.inputs.power
+        turboshaft_conditions.outputs.power.mechanical  = generator_conditions.inputs.power.mechanical # /efficiency
         
         # run the turboshaft 
-        P_mech,stored_results_flag,stored_propulsor_tag = compute_turboshaft_performance(turboshaft,state,turboelectric_generator,fuel_line) 
+        _,_,_,_ = turboshaft.compute_performance(state) 
         turboelectric_generator_conditions.fuel_mass_flow_rate =  turboshaft_conditions.fuel_mass_flow_rate   
     
     stored_results_flag            = True
-    stored_converter_tag           = turboelectric_generator.tag  
-
-    turboelectric_generator_conditions.power.propulsive               = 0.0 * state.ones_row(1)
-    turboelectric_generator_conditions.power.mechanical               = 0.0 * state.ones_row(1)
-    turboelectric_generator_conditions.power.electrical               = generator_conditions.outputs.power       
-    turboelectric_generator_conditions.power.chemical                 = 0.0 * state.ones_row(1)
-    turboelectric_generator_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
-    turboelectric_generator_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
-    turboelectric_generator_conditions.power.thermal                  = 0.0 * state.ones_row(1)
+    stored_converter_tag           = turboelectric_generator.tag   
 
     return  turboelectric_generator_conditions.power, stored_results_flag, stored_converter_tag
 
-def reuse_stored_turboelectric_generator_data(turboelectric_generator,state,network,stored_converter_tag,fuel_line=None, bus=None):
+def reuse_stored_turboelectric_generator_data(turboelectric_generator,state,network,stored_converter_tag):
     '''Reuses results from one turboelectric_generator for identical propulsors
     
     Assumptions: 
@@ -180,9 +170,7 @@ def reuse_stored_turboelectric_generator_data(turboelectric_generator,state,netw
     conditions.energy.converters[high_pressure_turbine.tag] = deepcopy(conditions.energy.converters[high_pressure_turbine_0.tag])
     conditions.energy.converters[combustor.tag]             = deepcopy(conditions.energy.converters[combustor_0.tag]            )
     conditions.energy.converters[core_nozzle.tag]           = deepcopy(conditions.energy.converters[core_nozzle_0.tag]          )
- 
-    P_elec         = conditions.energy.converters[generator.tag].outputs.power 
-    P_mech         = conditions.energy.converters[turboshaft.tag].power  
+  
     
-    return P_mech, P_elec
+    return conditions.energy.converters[turboelectric_generator.tag].inputs, conditions.energy.converters[turboelectric_generator.tag].outputs
  

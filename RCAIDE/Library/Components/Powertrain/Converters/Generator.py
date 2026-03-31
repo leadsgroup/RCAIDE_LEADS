@@ -11,7 +11,7 @@
 from .Converter  import Converter
 from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Methods.Powertrain.Converters.Generator.append_generator_conditions import  append_generator_conditions
-from RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance import compute_generator_performance
+from RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance import compute_generator_performance 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Generator  
@@ -91,9 +91,9 @@ class Generator(Converter):
         None
         """           
         self.tag                      = 'generator' 
-        self.generator_type           = 'DC'
+        self.voltage_type           = 'DC'
         self.active                   = True 
-        self.inverse_calculation      = False
+        self.reverse_mode_computation      = False
         self.interpolated_func        = None  
         self.resistance               = 0.0
         self.no_load_current          = 0.0
@@ -122,11 +122,3 @@ class Generator(Converter):
 
         inputs, outputs, stored_results_flag,stored_converter_tag =  compute_generator_performance(self,state)
         return inputs, outputs, stored_results_flag,stored_converter_tag
-    
-    def reuse_stored_data(generator,state,network,stored_converter_tag = None,center_of_gravity = [[0, 0, 0]]):
-        """
-        Reuses stored turbofan data for performance calculations.
-        """
-        inputs, outputs,  = reuse_stored_generator_data(generator,state,network,stored_converter_tag,center_of_gravity)
-        return inputs, outputs,
-    

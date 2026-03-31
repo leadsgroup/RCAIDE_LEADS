@@ -18,7 +18,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Operating Test Conditions Set-up
 # ---------------------------------------------------------------------------------------------------------------------- 
-def setup_operating_conditions(component, velocity_range=np.array([10]), altitude=0, angle_of_attack=0, temperature_deviation=0):
+def setup_operating_conditions(component,distributor,velocity_range=np.array([10]), altitude=0, angle_of_attack=0, temperature_deviation=0):
     """
     Sets up operating conditions for single component analysis.
     
@@ -147,7 +147,8 @@ def setup_operating_conditions(component, velocity_range=np.array([10]), altitud
     orientations(segment) 
     segment.state.residuals.network                  = Residuals()
     
-    # append component-specific operating conditions 
+    # append component-specific operating conditions
+    distributor.append_operating_conditions(segment)
     component.append_operating_conditions(segment)    
     segment.state.conditions.expand_rows(num_ctrl_pts)              
     return segment.state

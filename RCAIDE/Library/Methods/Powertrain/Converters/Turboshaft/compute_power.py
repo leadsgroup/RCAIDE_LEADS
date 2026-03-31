@@ -42,7 +42,7 @@ def compute_power(turboshaft,conditions):
                         Design mass flow rate [kg/s]
             - conversion_efficiency : float
                 Efficiency of converting thermal energy to shaft power
-            - inverse_calculation : bool
+            - reverse_mode_computation : bool
                 Flag for inverse calculation mode (power to throttle)
     conditions : RCAIDE.Framework.Mission.Common.Conditions
         Flight conditions with:
@@ -116,8 +116,7 @@ def compute_power(turboshaft,conditions):
     Power                                      = turboshaft_conditions.power                              
     Cp                                         = working_fluid.compute_cp(total_temperature_reference,total_pressure_reference)
                                                                                                                                                         
-    #unpacking from turboshaft                                                                                                                         
-                                                                                                                                                        
+    # unpacking from turboshaft                                                                                                                          
     tau_lambda                                 = Tt4/total_temperature_reference                                                                        
     tau_r                                      = 1 + ((gamma - 1)/2)*M0**2                                                                              
     tau_c                                      = pi_c**((gamma - 1)/gamma)                                                                              
@@ -130,27 +129,27 @@ def compute_power(turboshaft,conditions):
     Tsp                                        = a0*(((2/(gamma - 1))*(tau_lambda/(tau_r*tau_c))*(tau_r*tau_c*tau_t - 1))**eta_c - M0)                
     Psp                                        =  Cp*total_temperature_reference*tau_lambda*tau_tH*(1 - tau_tL)*eta_c     
         
-    if turboshaft.inverse_calculation == False: 
+    if turboshaft.reverse_mode_computation == False: 
         m_dot_air   = m_dot_compressor*turboshaft_conditions.throttle*np.sqrt(Tref/total_temperature_reference)*(total_pressure_reference/Pref)     
         Power       = Psp*m_dot_air
     else:
         m_dot_air = Power / Psp
         turboshaft_conditions.throttle =  m_dot_air / (m_dot_compressor*np.sqrt(Tref/total_temperature_reference)*(total_pressure_reference/Pref) )
          
-    #fuel to air ratio
+    # fuel to air ratio
     f                                          = (Cp*total_temperature_reference/LHV)*(tau_lambda - tau_r*tau_c)                                                                              
     m_dot_fuel                                 = (1 - SFC_adjustment) *f*m_dot_air
     
-    #Computing the PSFC                        
+    # Computing the PSFC                        
     PSFC                                       = f/Psp                                                                                                
     
     #Computing the thermal efficiency                       
     eta_T                                      = 1 - (tau_r*(tau_c - 1))/(tau_lambda*(1 - x/(tau_r*tau_c)))                               
 
-    #pack outputs
+    # pack outputs
     turboshaft_conditions.power_specific_fuel_consumption   = PSFC
     turboshaft_conditions.fuel_mass_flow_rate               = m_dot_fuel                                                                              
-    turboshaft_conditions.power                             = Power
+    turboshaft_conditions.outputs.power.mechanical          = Power
     turboshaft_conditions.non_dimensional_power             = Psp
     turboshaft_conditions.non_dimensional_thrust            = Tsp
     turboshaft_conditions.thermal_efficiency                = eta_T        

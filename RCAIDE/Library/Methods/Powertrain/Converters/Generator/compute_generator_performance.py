@@ -56,8 +56,8 @@ def compute_generator_performance(generator,state):
     # unpack generator conditions 
     generator_conditions = state.conditions.energy.converters[generator.tag]    
  
-    if generator.generator_type == 'DC':   
-        if generator.inverse_calculation == False:
+    if generator.voltage_type == 'DC':   
+        if generator.reverse_mode_computation == False:
             P_mech          = generator_conditions.inputs.power 
             Res            = generator.resistance  
             Kv             = generator.speed_constant
@@ -70,7 +70,6 @@ def compute_generator_performance(generator,state):
             Q              = P_mech / omega  
             etam           = (1-io/i)*(1-i*Res/v)
             P_elec         = i * v
-            
         else:
             Res             = generator.resistance  
             Kv              = generator.speed_constant
@@ -86,8 +85,8 @@ def compute_generator_performance(generator,state):
             P_elec          = i * v
             P_mech          = Q * omega       
         
-    elif generator.generator_type == 'AC': 
-        if generator.inverse_calculation == False:
+    elif generator.voltage_type == 'AC': 
+        if generator.reverse_mode_computation == False:
             io     = generator.no_load_current
             G      = generator.gearbox.gear_ratio 
             omega  = generator_conditions.inputs.omega  

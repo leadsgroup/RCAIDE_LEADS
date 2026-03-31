@@ -58,10 +58,6 @@ class Constant_Acceleration_Constant_Altitude(Evaluate):
         #  Mission specific processes 
         # --------------------------------------------------------------------------------------------------------------   
         initialize                                 = self.process.initialize 
-        initialize.conditions                      = Segments.Cruise.Constant_Acceleration_Constant_Altitude.initialize_conditions       
-        iterate                                    = self.process.iterate  
-        iterate.unknowns.mission.mission           = Common.Unpack_Unknowns.orientation
-        iterate.unknowns.mission.controls          = Common.Unpack_Unknowns.control_surfaces
-        iterate.residuals.mission.flight_dynamics  = Common.Residuals.flight_dynamics
+        initialize.conditions                      = Segments.Cruise.Constant_Acceleration_Constant_Altitude.initialize_conditions         
         return
 

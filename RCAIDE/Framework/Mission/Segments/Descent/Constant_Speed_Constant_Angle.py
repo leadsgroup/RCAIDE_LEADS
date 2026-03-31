@@ -59,8 +59,6 @@ class Constant_Speed_Constant_Angle(Evaluate):
         initialize                         = self.process.initialize  
         initialize.differentials_altitude  = Common.Initialize.differentials_altitude
         initialize.conditions              = Segments.Descent.Constant_Speed_Constant_Angle.initialize_conditions
-        iterate                            = self.process.iterate   
-        iterate.residuals.mission.flight_dynamics  = Common.Residuals.flight_dynamics
-        iterate.unknowns.mission.mission           = Common.Unpack_Unknowns.orientation          
+        iterate                            = self.process.iterate             
         return
 

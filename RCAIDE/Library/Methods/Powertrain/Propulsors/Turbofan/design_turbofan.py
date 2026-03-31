@@ -21,6 +21,7 @@ from RCAIDE.Library.Methods.Powertrain                               import setu
 
 # Python package imports
 import numpy as np
+from copy import deepcopy
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Design Turbofan
@@ -328,13 +329,29 @@ def design_turbofan(turbofan):
     # Step 22: Size the core of the turbofan  
     size_core(turbofan,conditions) 
     
-    # Step 23: Static Sea Level Thrust  
+
+     
+     # Step 23: Static Sea Level Thrust  
+    atmosphere            = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
-    V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
-    operating_state       = setup_operating_conditions(turbofan,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
-    operating_state.conditions.energy.propulsors[turbofan.tag].throttle[:,0] = 1.0  
-    inputs, outputs, _, _      = turbofan.compute_performance(operating_state) 
-    turbofan.sealevel_static_thrust              = outputs.thrust[0][0]
-    turbofan.sealevel_static_power               = outputs.power.propulsive[0][0]
+    static_sea_level_speed= atmo_data_sea_level.speed_of_sound[0][0]*0.01 
+     
+    # instantiate dummy network 
+    dummy_network          = RCAIDE.Framework.Networks.Network()
+    fuel_line              = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
+    dummy_network.distributors.append(fuel_line) 
+    dummy_turbofan         = deepcopy(turbofan) # create copy of propulsor so that original is not modified 
+    dummy_turbofan.assigned_distributors = [[fuel_line.tag]]
+    
+    # set up operating conditions for 
+    operating_state       = setup_operating_conditions(dummy_turbofan,fuel_line,velocity_range=np.array([static_sea_level_speed]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
+    operating_state.conditions.energy.propulsors[dummy_turbofan.tag].throttle[:,0] = 1.0   
+    
+    # compute propulsor performance 
+    inputs,outputs,_,_                     = dummy_turbofan.compute_performance(operating_state,dummy_network)
+    
+    # store values  
+    turbofan.sealevel_static_thrust        = outputs.thrust[0][0]
+    turbofan.sealevel_static_power         = outputs.power.propulsive[0][0]
      
     return 

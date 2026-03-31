@@ -65,11 +65,9 @@ class Constant_Mach_Constant_Angle(Evaluate):
         initialize                                 = self.process.initialize  
         initialize.differentials_altitude          = Common.Initialize.differentials_altitude
         initialize.conditions                      = Segments.Climb.Constant_Mach_Constant_Angle.initialize_conditions  
-        iterate                                    = self.process.iterate
-        iterate.residuals.mission.flight_dynamics  = Common.Residuals.flight_dynamics  
+        iterate                                    = self.process.iterate  
         iterate.conditions.differentials           = Segments.Climb.Constant_Mach_Constant_Angle.update_differentials 
         iterate.unknowns.mission.mission           = Common.Unpack_Unknowns.orientation
-        iterate.unknowns.mission.controls          = Common.Unpack_Unknowns.control_surfaces
         iterate.unknowns.kinematics                = Segments.Climb.Constant_Mach_Constant_Angle.initialize_conditions
         iterate.residuals.mission.altitude         = Segments.Climb.Constant_Mach_Constant_Angle.residual_altitude
           

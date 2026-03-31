@@ -17,11 +17,12 @@ from RCAIDE.Library.Methods.Powertrain                                      impo
 
 # Python package imports
 import numpy as np
+from copy import deepcopy
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Design Electric Rotor 
 # ---------------------------------------------------------------------------------------------------------------------- 
-def design_electric_rotor(electric_rotor, number_of_stations=20, solver_name='SLSQP', iterations=200,
+def design_electric_rotor(electric_rotor,number_of_stations=20, solver_name='SLSQP', iterations=200,
                          solver_sense_step=1E-4, solver_tolerance=1E-3, print_iterations=False):
     """
     Computes performance properties of an electrically powered rotor.
@@ -137,13 +138,27 @@ def design_electric_rotor(electric_rotor, number_of_stations=20, solver_name='SL
         compute_motor_weight(motor) 
      
     # Static Sea Level Thrust   
-    atmosphere            = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976() 
+    atmosphere            = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
-    V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
-    operating_state       = setup_operating_conditions(electric_rotor,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
-    operating_state.conditions.energy.propulsors[electric_rotor.tag].throttle[:,0] = 1.0
-    operating_state.conditions.energy.converters[motor.tag].inputs.current[:,0]    = motor.design_current 
-    inputs,outputs,_,_                     = electric_rotor.compute_performance(operating_state)  
+    static_sea_level_speed= atmo_data_sea_level.speed_of_sound[0][0]*0.01 
+     
+    # instantiate dummy network 
+    dummy_network          = RCAIDE.Framework.Networks.Network()
+    electrical_line        = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
+    dummy_network.distributors.append(electrical_line) 
+    dummy_electric_rotor   = deepcopy(electric_rotor) # create copy of propulsor so that original is not modified 
+    dummy_electric_rotor.assigned_distributors = [[electrical_line.tag]]
+    
+    # set up operating conditions for 
+    operating_state       = setup_operating_conditions(dummy_electric_rotor,electrical_line,velocity_range=np.array([static_sea_level_speed]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
+    operating_state.conditions.energy.propulsors[dummy_electric_rotor.tag].throttle[:,0] = 1.0
+    operating_state.conditions.energy.converters[motor.tag].inputs.current[:,0]          = motor.design_current
+    operating_state.conditions.energy.distributors[electrical_line.tag].voltage[:, 0]    = motor.nominal_voltage
+    
+    # compute propulsor performance 
+    inputs,outputs,_,_                     = dummy_electric_rotor.compute_performance(operating_state,dummy_network)
+    
+    # store values 
     electric_rotor.sealevel_static_thrust  = outputs.thrust[0][0]
     electric_rotor.sealevel_static_power   = outputs.power.propulsive[0][0]     
     return 

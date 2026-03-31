@@ -59,9 +59,7 @@ class Constant_Dynamic_Pressure_Constant_Rate(Evaluate):
         initialize                         = self.process.initialize  
         initialize.differentials_altitude  = Common.Initialize.differentials_altitude
         initialize.conditions              = Segments.Climb.Constant_Dynamic_Pressure_Constant_Rate.initialize_conditions
-        iterate                            = self.process.iterate
-        iterate.residuals.mission.flight_dynamics  = Common.Residuals.flight_dynamics
-        iterate.unknowns.mission.mission           = Common.Unpack_Unknowns.orientation           
+        iterate                            = self.process.iterate           
     
         return
        

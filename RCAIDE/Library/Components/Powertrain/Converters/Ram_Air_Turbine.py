@@ -32,7 +32,7 @@ class Ram_Air_Turbine(Converter):
     gearbox : Component
         Gearbox data structure. Default is None. 
         
-    inverse_calculation : Component
+    reverse_mode_computation : Component
         Flag that determines the how calculations are performed. Default is False    
 
     Notes

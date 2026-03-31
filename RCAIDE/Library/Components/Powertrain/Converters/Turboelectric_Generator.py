@@ -36,7 +36,7 @@ class Turboelectric_Generator(Converter):
     gearbox : Component
         Gearbox data structure. Default is None. 
         
-    inverse_calculation : Component
+    reverse_mode_computation : Component
         Flag that determines the how calculations are performed. Default is False    
 
     Notes
@@ -57,7 +57,7 @@ class Turboelectric_Generator(Converter):
         self.generator                 = None
         self.gearbox                   = Data()
         self.gearbox.gear_ratio        = None  
-        self.inverse_calculation       = False 
+        self.reverse_mode_computation       = False 
         self.assigned_converters       = Data()
         
     def initialize(self, network): 
@@ -71,13 +71,13 @@ class Turboelectric_Generator(Converter):
         append_turboelectric_generator_conditions(self,segment) 
         return
  
-    def compute_performance(self,state,fuel_line = None,bus = None):
+    def compute_performance(self,state,network):
         """
         Computes Turboelectric_Generator performance including power.
         """
-        inputs, outputs, stored_results_flag, stored_converter_tag = compute_turboelectric_generator_performance(self,state,fuel_line, bus)
+        inputs, outputs, stored_results_flag, stored_converter_tag = compute_turboelectric_generator_performance(self,state,network=network)
         return inputs, outputs, stored_results_flag, stored_converter_tag
     
-    def reuse_stored_data(self,state,network,stored_conveter_tag,fuel_line, bus):
-        inputs, outputs  = reuse_stored_turboelectric_generator_data(self,state,network,stored_conveter_tag,fuel_line, bus)
+    def reuse_stored_data(self,state,network,stored_conveter_tag):
+        inputs, outputs  = reuse_stored_turboelectric_generator_data(self,state,network,stored_conveter_tag)
         return inputs, outputs
