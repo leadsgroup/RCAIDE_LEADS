@@ -15,6 +15,7 @@ from .Vehicle   import Vehicle
 
 from . import Common
 from . import Aerodynamics
+from . import Aerostructures
 from . import Planets
 from . import Atmospheric
 from . import Emissions

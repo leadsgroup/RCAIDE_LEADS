@@ -41,8 +41,9 @@ class Vehicle(Analysis.Container):
                 Properties Used:
                 N/A
         """
-        self.vehicle      = None
+        self.vehicle       = None
         self.aerodynamics = None
+        self.aerostructures = None
         self.atmosphere   = None
         self.costs        = None
         self.energy       = None
@@ -103,6 +104,7 @@ class Vehicle(Analysis.Container):
             RCAIDE.Framework.Analyses.Geometry.Geometry           : 'geometry'     ,
             RCAIDE.Framework.Analyses.Weights.Weights             : 'weights'      ,
             RCAIDE.Framework.Analyses.Aerodynamics.Aerodynamics   : 'aerodynamics' ,
+            RCAIDE.Framework.Analyses.Aerostructures.Aerostructures   : 'aerostructures' ,
             RCAIDE.Framework.Analyses.Stability.Stability         : 'stability'    ,
             RCAIDE.Framework.Analyses.Energy.Energy               : 'energy'       ,
             RCAIDE.Framework.Analyses.Atmospheric.Atmospheric     : 'atmosphere'   ,
