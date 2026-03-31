@@ -21,7 +21,7 @@ def append_rotor_conditions(rotor, segment):
     Returns
     -------
     None
-        This function modifies the segment.state.conditions.energy and segment.state.conditions.noise dictionaries in-place.
+        This function modifies the segment.state.conditions.energy and segment.state.conditions.aeroacoustics dictionaries in-place.
     
     Notes
     -----
@@ -63,5 +63,5 @@ def append_rotor_conditions(rotor, segment):
     segment.state.conditions.energy.converters[rotor.tag].efficiency                    = 0. * ones_row(1)
     segment.state.conditions.energy.converters[rotor.tag].figure_of_merit               = 0. * ones_row(1)
     segment.state.conditions.energy.converters[rotor.tag].power_coefficient             = 0. * ones_row(1) 
-    segment.state.conditions.noise.converters[rotor.tag]                                = Conditions() 
+    segment.state.conditions.aeroacoustics.converters[rotor.tag]                                = Conditions() 
     return 

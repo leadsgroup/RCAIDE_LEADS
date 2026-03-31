@@ -90,7 +90,7 @@ def append_electric_rotor_conditions(propulsor,segment):
     segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.hydraulic       = 0 * ones_row(1)
     segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.thermal         = 0 * ones_row(1)  
     segment.state.conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate           = 0. * ones_row(1)
-    segment.state.conditions.noise[propulsor.tag]                                           = Conditions()  
+    segment.state.conditions.aeroacoustics[propulsor.tag]                                           = Conditions()  
        
     # parse propulsor for comoonent and append 
     for tag, item in  propulsor.items(): 

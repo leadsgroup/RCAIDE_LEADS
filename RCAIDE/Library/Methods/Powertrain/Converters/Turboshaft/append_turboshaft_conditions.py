@@ -25,7 +25,7 @@ def append_turboshaft_conditions(turboshaft, segment):
     Returns
     -------
     None
-        This function modifies the segment.state.conditions.energy and segment.state.conditions.noise objects in-place
+        This function modifies the segment.state.conditions.energy and segment.state.conditions.aeroacoustics objects in-place
     
     Notes
     -----
