@@ -7,7 +7,8 @@
 # RCAIDE imports  
 import RCAIDE 
 from RCAIDE.Framework.Core import  Data 
-from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM   import VLM 
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM       import VLM 
+from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.FEA   import FEA 
 from copy import deepcopy 
 
 # package imports
@@ -16,7 +17,7 @@ import numpy  as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Vortex_Lattice
 # ---------------------------------------------------------------------------------------------------------------------- 
-def train_VLM_surrogates(aerodynamics, vehicle):
+def train_VLM_surrogates(aerodynamics, vehicle,aerostructures=None):
     """Call methods to run VLM for sample point evaluation. 
     
     Assumptions:
@@ -39,7 +40,7 @@ def train_VLM_surrogates(aerodynamics, vehicle):
     sub_Mach      = Mach[:sub_len] 
     sup_Mach      = Mach[sub_len:] 
 
-    training.subsonic    =  train_model(aerodynamics, sub_Mach, vehicle)
+    training.subsonic    =  train_model(aerodynamics, sub_Mach, vehicle,aerostructures)
     
     # only build supersonic surrogates if necessary
     if len(sup_Mach) > 2: 
@@ -50,7 +51,7 @@ def train_VLM_surrogates(aerodynamics, vehicle):
         training.transonic   = None
     return 
     
-def train_model(aerodynamics,Mach, vehicle): 
+def train_model(aerodynamics,Mach, vehicle,aerostructures=None): 
     """Sub function that call methods to run VLM for sample point evaluation. 
     
     Assumptions:
@@ -66,6 +67,7 @@ def train_model(aerodynamics,Mach, vehicle):
         None    
     """     
     settings       = aerodynamics.settings
+    settings_str   = aerostructures.settings
     AoA            = aerodynamics.training.angle_of_attack                  
     Beta           = aerodynamics.training.sideslip_angle 
     training       = Data()
@@ -97,8 +99,7 @@ def train_model(aerodynamics,Mach, vehicle):
                 delta_f_0                   =  control_surface.deflection
                 delta_f                     = aerodynamics.training.rudder_deflection
                 len_d_f                     = len(delta_f)  
-                aerodynamics.flap_flag      = True
-                
+                aerodynamics.flap_flag      = True 
             control_surface.deflection = 0 # set all control surfaces to be 0
              
     u              = aerodynamics.training.u
@@ -128,7 +129,10 @@ def train_model(aerodynamics,Mach, vehicle):
     clean_wing_vehicle = deepcopy(vehicle) # Double check this is correct
     for wing in clean_wing_vehicle.wings:
         wing.control_surfaces = []
+        
     VLM_results = VLM(conditions,settings,clean_wing_vehicle)
+    FEA_results = FEA(conditions,VLM_results,settings.vortex_distribution,settings_str,clean_wing_vehicle) 
+    
     Clift_res        = VLM_results.CLift
     VD_0             = settings.vortex_distribution
     Cdrag_res        = VLM_results.CDrag_induced
@@ -174,7 +178,7 @@ def train_model(aerodynamics,Mach, vehicle):
     conditions.aerodynamics.angles.alpha            = np.ones_like(Machs) *1E-12
     conditions.aerodynamics.angles.beta             = np.ones_like(Machs)*Betas   
     
-    VLM_results = VLM(conditions,settings,clean_wing_vehicle)
+    VLM_results = VLM(conditions,settings,clean_wing_vehicle) 
     Clift_res   = VLM_results.CLift
     Cdrag_res   = VLM_results.CDrag_induced
     CX_res      = VLM_results.CX
@@ -202,7 +206,7 @@ def train_model(aerodynamics,Mach, vehicle):
     conditions.aerodynamics.angles.alpha            = np.ones_like(Machs) *1E-12 
     conditions.aerodynamics.angles.beta             = np.zeros_like(Machs) 
     conditions.freestream.mach_number               = Machs + u_s/343 
-    VLM_results = VLM(conditions,settings,clean_wing_vehicle)
+    VLM_results = VLM(conditions,settings,clean_wing_vehicle) 
     CX_res    = VLM_results.CX
     CZ_res    = VLM_results.CZ
     CM_res    = VLM_results.CM
@@ -222,7 +226,7 @@ def train_model(aerodynamics,Mach, vehicle):
     conditions.static_stability.pitch_rate          = np.ones_like(Machs)*q_s     
     conditions.freestream.velocity                  = Machs * 343 # speed of sound   
     
-    VLM_results = VLM(conditions,settings,clean_wing_vehicle)
+    VLM_results = VLM(conditions,settings,clean_wing_vehicle) 
     CM_res      = VLM_results.CM  
     CM_q        = np.reshape(CM_res,(len_Mach,len_q)).T    - CM_alpha_0    
     CZ_q        = np.reshape(CZ_res,(len_Mach,len_q)).T    - CZ_alpha_0
@@ -238,7 +242,7 @@ def train_model(aerodynamics,Mach, vehicle):
     conditions.aerodynamics.angles.beta             = np.zeros_like(Machs) 
     conditions.static_stability.roll_rate           = np.ones_like(Machs)*p_s 
     conditions.freestream.velocity                  = Machs * 343 # speed of sound           
-    VLM_results = VLM(conditions,settings,clean_wing_vehicle)
+    VLM_results = VLM(conditions,settings,clean_wing_vehicle) 
     CL_res      = VLM_results.CL
     CN_res      = VLM_results.CN
     CY_res      = VLM_results.CY
@@ -259,7 +263,7 @@ def train_model(aerodynamics,Mach, vehicle):
     conditions.static_stability.yaw_rate            = np.ones_like(Machs)*r_s
     conditions.freestream.velocity                  = Machs * 343
     
-    VLM_results = VLM(conditions,settings,clean_wing_vehicle)
+    VLM_results = VLM(conditions,settings,clean_wing_vehicle) 
     CL_res      = VLM_results.CL
     CN_res      = VLM_results.CN
     CY_res      = VLM_results.CY
@@ -347,7 +351,7 @@ def train_model(aerodynamics,Mach, vehicle):
                     conditions.aerodynamics.angles.beta   = np.zeros_like(Machs) 
                     conditions.freestream.mach_number     = Machs    
                     control_surface.deflection            = delta_a[a_i]
-                    VLM_results          = VLM(conditions,settings,vehicle)
+                    VLM_results          = VLM(conditions,settings,vehicle) 
                     CY_res               = VLM_results.CY
                     CL_res               = VLM_results.CL
                     CN_res               = VLM_results.CN

@@ -151,10 +151,10 @@ def aircraft_aerodynamic_analysis(analyses                         = None,
     state.conditions.frames.wind.transform_to_inertial = np.tile( np.array([[[1., 0., 0.],[0., 1., 0.],[0., 0.,  1.]]]) , ( ctrl_pts,  1, 1)  ) 
     state.conditions.expand_rows(ctrl_pts)
     state.conditions.control_surfaces = Data()
-    analyses.aerodynamics.aileron_flag  = False
-    analyses.aerodynamics.rudder_flag  = False
+    analyses.aerodynamics.aileron_flag   = False
+    analyses.aerodynamics.rudder_flag    = False
     analyses.aerodynamics.elevator_flag  = False
-    analyses.aerodynamics.flap_flag  = False
+    analyses.aerodynamics.flap_flag      = False
 
     for wing in analyses.vehicle.wings: 
         for control_surface in wing.control_surfaces: 
@@ -182,9 +182,6 @@ def aircraft_aerodynamic_analysis(analyses                         = None,
                 state.conditions.control_surfaces.flap.deflection = control_surface.deflection * np.ones_like(angle_of_attacks)
                 state.conditions.control_surfaces.flap.static_stability = Data()
                 state.conditions.control_surfaces.flap.static_stability.coefficients = Data()
-    
-    
-
   
     state.analyses  = analyses 
     state.analyses.aerodynamics.filename =  os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "aerodynamic_training_data.pkl" )

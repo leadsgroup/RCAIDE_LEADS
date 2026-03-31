@@ -149,14 +149,14 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.process.compute                                        = compute
         
 
-    def initialize(self, vehicle): 
+    def initialize(self, vehicle, aerostructural_analyses=None): 
         
         use_surrogate   = self.settings.use_surrogate   
         # If we are using the surrogate
         if use_surrogate == True: 
             #  training data
             if not os.path.exists(self.filename):
-                train_VLM_surrogates(self, vehicle)
+                train_VLM_surrogates(self, vehicle,aerostructural_analyses)
     
                 if self.settings.store_training_data:
                     with open(self.filename, 'wb') as file:
@@ -167,7 +167,7 @@ class Vortex_Lattice_Method(Aerodynamics):
                 print(r""" 
                 [INFO] Aerodynamic training data loaded. Delete the file and rerun to regenerate. """)
             # build surrogate
-            build_VLM_surrogates(self, vehicle)        
+            build_VLM_surrogates(self, vehicle,aerostructural_analyses)        
     
         # build the evaluation process
         compute   =  self.process.compute                  
@@ -178,7 +178,7 @@ class Vortex_Lattice_Method(Aerodynamics):
         return 
     
          
-    def evaluate(self,state, vehicle):
+    def evaluate(self,state,vehicle):
         """The default evaluate function.
 
         Assumptions:

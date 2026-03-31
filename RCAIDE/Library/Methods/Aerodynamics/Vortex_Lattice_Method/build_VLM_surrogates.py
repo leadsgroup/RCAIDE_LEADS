@@ -14,7 +14,7 @@ from scipy import interpolate
 # ----------------------------------------------------------------------------------------------------------------------
 #  Vortex_Lattice
 # ----------------------------------------------------------------------------------------------------------------------   
-def build_VLM_surrogates(aerodynamics, vehicle):
+def build_VLM_surrogates(aerodynamics, vehicle,aerostructural_analyses=None):
     """
     Build surrogate models for aerodynamic coefficients using VLM analysis results.
     
@@ -106,7 +106,6 @@ def build_surrogate(aerodynamics, training, vehicle):
     surrogates.CL_beta            = RegularGridInterpolator((Beta_data ,mach_data),training.CL_beta           ,method = 'linear',   bounds_error=False, fill_value=None)      
     surrogates.CN_beta            = RegularGridInterpolator((Beta_data ,mach_data),training.CN_beta           ,method = 'linear',   bounds_error=False, fill_value=None)  
     surrogates.CM_beta            = RegularGridInterpolator((Beta_data ,mach_data),training.CM_beta           ,method = 'linear',   bounds_error=False, fill_value=None) 
-
 
     # Use interpolat.interp1d below
     surrogates.CM_0             = interpolate.interp1d(mach_data, training.CM_0, kind='linear', bounds_error=False, fill_value='extrapolate')         
