@@ -150,7 +150,7 @@ def compute_electric_rotor_performance(propulsor,state,network=None,center_of_gr
     electric_rotor_conditions.outputs.moment             = moment
     electric_rotor_conditions.outputs.power.propulsive   = conditions.energy.converters[rotor.tag].power 
     electric_rotor_conditions.inputs.power.electrical    = electrical_power
-    electric_rotor_conditions.inputs.fuel_mass_flow_rate = 0*state.ones_row(1)
+    electric_rotor_conditions.fuel_mass_flow_rate = 0*state.ones_row(1)
     
     return electric_rotor_conditions.inputs ,electric_rotor_conditions.outputs, stored_results_flag,stored_propulsor_tag  
                 
@@ -206,7 +206,7 @@ def reuse_stored_electric_rotor_data(propulsor,state,network,stored_propulsor_ta
     conditions.energy.propulsors[propulsor.tag].outputs.thrust             = thrust_vector  
     conditions.energy.propulsors[propulsor.tag].outputs.moment             = moment 
     conditions.energy.propulsors[propulsor.tag].inputs.power.electrical    = P_elec 
-    conditions.energy.propulsors[propulsor.tag].inputs.fuel_mass_flow_rate = 0*state.ones_row(1)
+    conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate        = 0*state.ones_row(1)
         
 
     return conditions.energy.propulsors[propulsor.tag].inputs, conditions.energy.propulsors[propulsor.tag].outputs

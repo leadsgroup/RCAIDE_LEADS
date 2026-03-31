@@ -54,8 +54,7 @@ def compute_generator_performance(generator,state):
     """
     
     # unpack generator conditions 
-    generator_conditions = state.conditions.energy.converters[generator.tag]    
- 
+    generator_conditions = state.conditions.energy.converters[generator.tag]  
     if generator.voltage_type == 'DC':   
         if generator.reverse_mode_computation == False:
             P_mech          = generator_conditions.inputs.power 
@@ -126,15 +125,16 @@ def compute_generator_performance(generator,state):
             etam           = (1-io/i)*(1-i*Res/v)                                                                                           # [W]            electrical power (Eq.11)
             P_mech         = Q * omega                                                                                     # [W]            mechanical power (Eq.10)
 
-        generator_conditions.outputs.power      = P_elec
-        generator_conditions.outputs.current    = i
-        generator_conditions.outputs.voltage    = v
-        generator_conditions.outputs.efficiency = etam
-        generator_conditions.inputs.power       = P_mech
-        generator_conditions.inputs.torque      = Q
-        generator_conditions.inputs.omega       = omega
-        
-        stored_results_flag            = True
-        stored_converter_tag           = generator.tag  
-
+    
+    generator_conditions.outputs.power.electrical  = P_elec
+    generator_conditions.outputs.current           = i
+    generator_conditions.outputs.voltage           = v
+    generator_conditions.outputs.efficiency        = etam
+    generator_conditions.inputs.power.mechanical   = P_mech
+    generator_conditions.inputs.torque             = Q
+    generator_conditions.inputs.omega              = omega
+         
+    stored_results_flag            = True
+    stored_converter_tag           = generator.tag   
+             
     return  generator_conditions.inputs, generator_conditions.outputs, stored_results_flag, stored_converter_tag

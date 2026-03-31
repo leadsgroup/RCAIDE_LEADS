@@ -76,7 +76,7 @@ def append_turbojet_conditions(propulsor, segment):
     segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power                 = Conditions()   
     segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.propulsive      = 0 * ones_row(1) 
     segment.state.conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate           = 0. * ones_row(1)
-    segment.state.conditions.aeroacoustics.propulsors[propulsor.tag]                                = Conditions()  
-    segment.state.conditions.aeroacoustics.propulsors[propulsor.tag].core_nozzle                    = Conditions()
+    segment.state.conditions.aeroacoustics.propulsors[propulsor.tag]                        = Conditions()  
+    segment.state.conditions.aeroacoustics.propulsors[propulsor.tag].core_nozzle            = Conditions()
     
     return 

@@ -64,14 +64,14 @@ def compute_turboelectric_generator_performance(turboelectric_generator,state,ne
     RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance
     """
 
-    conditions                         = state.conditions
-    generator                          = turboelectric_generator.generator
-    turboshaft                         = turboelectric_generator.turboshaft  
-    turboelectric_generator_conditions = conditions.energy.converters[turboelectric_generator.tag] 
-    generator_conditions               = conditions.energy.converters[generator.tag]
-    turboshaft_conditions              = conditions.energy.converters[turboshaft.tag]
-    generator.reverse_mode_computation      = turboelectric_generator.reverse_mode_computation
-    turboshaft.reverse_mode_computation     = turboelectric_generator.reverse_mode_computation  
+    conditions                           = state.conditions
+    generator                            = turboelectric_generator.generator
+    turboshaft                           = turboelectric_generator.turboshaft  
+    turboelectric_generator_conditions   = conditions.energy.converters[turboelectric_generator.tag] 
+    generator_conditions                 = conditions.energy.converters[generator.tag]
+    turboshaft_conditions                = conditions.energy.converters[turboshaft.tag]
+    generator.reverse_mode_computation   = turboelectric_generator.reverse_mode_computation
+    turboshaft.reverse_mode_computation  = turboelectric_generator.reverse_mode_computation  
 
     # Determine what electrical distributor is connected to the electric powertrain 
     for d_tag in turboelectric_generator.assigned_distributors[0]:
@@ -92,7 +92,7 @@ def compute_turboelectric_generator_performance(turboelectric_generator,state,ne
         generator_conditions.outputs.voltage          = conditions.energy.distributors[distributor.tag].voltage 
         
          # run the generator 
-        _,_,_,_ =  generator.compute_performance(generator,conditions)  
+        _,_,_,_ =  generator.compute_performance(state)  
         turboelectric_generator_conditions.outputs.power.electrical = generator_conditions.outputs.power.electrical  
          
     else: 
@@ -103,7 +103,7 @@ def compute_turboelectric_generator_performance(turboelectric_generator,state,ne
         generator.reverse_mode_computation = True
         
         # run the generator 
-        _,_,_,_  = generator.compute_performance(generator)
+        _,_,_,_  = generator.compute_performance(state)
         
         # connect properties of the generator to the turboshaft 
         turboshaft_conditions.outputs.power.mechanical  = generator_conditions.inputs.power.mechanical # /efficiency
@@ -113,9 +113,8 @@ def compute_turboelectric_generator_performance(turboelectric_generator,state,ne
         turboelectric_generator_conditions.fuel_mass_flow_rate =  turboshaft_conditions.fuel_mass_flow_rate   
     
     stored_results_flag            = True
-    stored_converter_tag           = turboelectric_generator.tag   
-
-    return  turboelectric_generator_conditions.power, stored_results_flag, stored_converter_tag
+    stored_converter_tag           = turboelectric_generator.tag 
+    return  turboelectric_generator_conditions.inputs,  turboelectric_generator_conditions.outputs, stored_results_flag, stored_converter_tag
 
 def reuse_stored_turboelectric_generator_data(turboelectric_generator,state,network,stored_converter_tag):
     '''Reuses results from one turboelectric_generator for identical propulsors

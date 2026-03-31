@@ -49,11 +49,11 @@ def append_fuel_line_conditions(fuel_line,segment):
     # ------------------------------------------------------------------------------------------------------            
     # Create fuel_line results data structure  
     # ------------------------------------------------------------------------------------------------------ 
-    segment.state.conditions.energy.distributors[fuel_line.tag]                                     = Conditions()    
-    segment.state.conditions.energy.distributors[fuel_line.tag].fuel_mass_flow_rate                 = 0 * ones_row(1)   
+    segment.state.conditions.energy.distributors[fuel_line.tag]                                     = Conditions()     
     segment.state.conditions.energy.distributors[fuel_line.tag].links                               = Conditions()
     
     segment.state.conditions.energy.distributors[fuel_line.tag].inputs                              = Conditions()
+    segment.state.conditions.energy.distributors[fuel_line.tag].fuel_mass_flow_rate          = 0 * ones_row(1)  
     segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power                        = Conditions()  
     segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power.electrical             = 0 * ones_row(1)
     segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power.thermal                = 0 * ones_row(1) 

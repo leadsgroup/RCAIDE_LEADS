@@ -94,31 +94,32 @@ def plot_powertrain_diagram(results,
                     # membership: distributor.tag present in assigned_distributors (by tag)
                     assigned_tags = []
                     entries = getattr(comp, 'assigned_distributors', [])
-                    for entry in entries:
-                        if isinstance(entry, (list, tuple, set)):
-                            for e in entry:
-                                if isinstance(e, (list, tuple, set)):
-                                    for ee in e:
-                                        if isinstance(ee, str):
-                                            assigned_tags.append(ee)
+                    if entries != None: 
+                        for entry in entries:
+                            if isinstance(entry, (list, tuple, set)):
+                                for e in entry:
+                                    if isinstance(e, (list, tuple, set)):
+                                        for ee in e:
+                                            if isinstance(ee, str):
+                                                assigned_tags.append(ee)
+                                            else:
+                                                t = getattr(ee, 'tag', None)
+                                                if isinstance(t, str):
+                                                    assigned_tags.append(t)
+                                    else:
+                                        if isinstance(e, str):
+                                            assigned_tags.append(e)
                                         else:
-                                            t = getattr(ee, 'tag', None)
+                                            t = getattr(e, 'tag', None)
                                             if isinstance(t, str):
                                                 assigned_tags.append(t)
-                                else:
-                                    if isinstance(e, str):
-                                        assigned_tags.append(e)
-                                    else:
-                                        t = getattr(e, 'tag', None)
-                                        if isinstance(t, str):
-                                            assigned_tags.append(t)
-                        else:
-                            if isinstance(entry, str):
-                                assigned_tags.append(entry)
                             else:
-                                t = getattr(entry, 'tag', None)
-                                if isinstance(t, str):
-                                    assigned_tags.append(t)
+                                if isinstance(entry, str):
+                                    assigned_tags.append(entry)
+                                else:
+                                    t = getattr(entry, 'tag', None)
+                                    if isinstance(t, str):
+                                        assigned_tags.append(t)
 
                     if distributor.tag not in assigned_tags:
                         continue
@@ -233,31 +234,32 @@ def plot_powertrain_diagram(results,
                 # the distributor object itself carries assigned_distributors; gather their tags
                 assigned_bus_tags = []
                 entries = getattr(distributor, 'assigned_distributors', [])
-                for entry in entries:
-                    if isinstance(entry, (list, tuple, set)):
-                        for e in entry:
-                            if isinstance(e, (list, tuple, set)):
-                                for ee in e:
-                                    if isinstance(ee, str):
-                                        assigned_bus_tags.append(ee)
+                if entries != None: 
+                    for entry in entries:
+                        if isinstance(entry, (list, tuple, set)):
+                            for e in entry:
+                                if isinstance(e, (list, tuple, set)):
+                                    for ee in e:
+                                        if isinstance(ee, str):
+                                            assigned_bus_tags.append(ee)
+                                        else:
+                                            t = getattr(ee, 'tag', None)
+                                            if isinstance(t, str):
+                                                assigned_bus_tags.append(t)
+                                else:
+                                    if isinstance(e, str):
+                                        assigned_bus_tags.append(e)
                                     else:
-                                        t = getattr(ee, 'tag', None)
+                                        t = getattr(e, 'tag', None)
                                         if isinstance(t, str):
                                             assigned_bus_tags.append(t)
-                            else:
-                                if isinstance(e, str):
-                                    assigned_bus_tags.append(e)
-                                else:
-                                    t = getattr(e, 'tag', None)
-                                    if isinstance(t, str):
-                                        assigned_bus_tags.append(t)
-                    else:
-                        if isinstance(entry, str):
-                            assigned_bus_tags.append(entry)
                         else:
-                            t = getattr(entry, 'tag', None)
-                            if isinstance(t, str):
-                                assigned_bus_tags.append(t)
+                            if isinstance(entry, str):
+                                assigned_bus_tags.append(entry)
+                            else:
+                                t = getattr(entry, 'tag', None)
+                                if isinstance(t, str):
+                                    assigned_bus_tags.append(t)
 
                 # iterate those assigned buses and plot if a link value exists
                 for other_tag in assigned_bus_tags:

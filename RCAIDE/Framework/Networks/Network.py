@@ -136,7 +136,7 @@ class Network(Component):
                 total_moment           += outputs.moment
                 total_propulsive_power += outputs.power.propulsive  
                 total_chemical_power   += inputs.power.chemical
-                total_mdot             += inputs.fuel_mass_flow_rate  
+                total_mdot             += state.conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate  
                 net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)  # must handle tank integrated pump
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
@@ -161,7 +161,7 @@ class Network(Component):
                 else:
                     inputs, outputs = converter.reuse_stored_data(state,network,stored_conveter_tag=stored_conveter_tag) 
                 total_chemical_power   += inputs.power.chemical
-                total_mdot             += inputs.mdot_fuel
+                total_mdot             += state.conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate  
 
                 net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
@@ -387,12 +387,12 @@ class Network(Component):
            N/A
        """         
         for network in segment.analyses.vehicle.networks:
-            for propulsor_i, propulsor in enumerate(network.propulsors):    
-                if propulsor.active:
-                    propulsor =  network.propulsors[propulsor.tag]
+            for p_i, propulsor in enumerate(network.propulsors):    
+                if propulsor.active and (propulsor.identical_propulsors == False or p_i == 0):
                     propulsor.pack_residuals(segment) 
-            for source in network.sources:
-                source.pack_residuals(segment) 
+            for s_i, source in enumerate(network.sources):
+                if source.active and (source.identical_sources == False or s_i == 0): 
+                    source.pack_residuals(segment) 
             for modulator in network.modulators:
                 modulator.pack_residuals(segment) 
             for distributor in network.distributors:

@@ -438,7 +438,7 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     turbofan_conditions.outputs.moment               = moment
     turbofan_conditions.outputs.power.propulsive     = power
     turbofan_conditions.inputs.power.chemical        = mdot_fuel * combustor.fuel_data.lower_heating_value 
-    turbofan_conditions.inputs.fuel_mass_flow_rate   = mdot_fuel  
+    turbofan_conditions.fuel_mass_flow_rate          = mdot_fuel  
 
     return turbofan_conditions.inputs ,turbofan_conditions.outputs, stored_results_flag, stored_propulsor_tag 
     
@@ -512,7 +512,7 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
     moment             = np.cross(moment_vector,thrust_vector)    
    
     conditions.energy.propulsors[turbofan.tag].outputs.moment = moment
-    conditions.energy.propulsors[turbofan.tag].inputs.fuel_mass_flow_rate = conditions.energy.propulsors[stored_propulsor_tag].fuel_mass_flow_rate    
+    conditions.energy.propulsors[turbofan.tag].fuel_mass_flow_rate = conditions.energy.propulsors[stored_propulsor_tag].fuel_mass_flow_rate    
     conditions.energy.propulsors[turbofan.tag].outputs.power.propulsive   = conditions.energy.propulsors[stored_propulsor_tag].outputs.power.propulsive
     conditions.energy.propulsors[turbofan.tag].inputs.power.chemical      = conditions.energy.propulsors[stored_propulsor_tag].inputs.power.chemical    
     

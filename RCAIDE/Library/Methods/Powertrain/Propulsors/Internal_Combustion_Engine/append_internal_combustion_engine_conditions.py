@@ -95,6 +95,6 @@ def append_internal_combustion_engine_conditions(propulsor, segment):
     segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.hydraulic       = 0 * ones_row(1)
     segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.thermal         = 0 * ones_row(1)  
     segment.state.conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate           = 0. * ones_row(1)
-    segment.state.conditions.aeroacoustics[propulsor.tag]                                           = Conditions()  
+    segment.state.conditions.aeroacoustics[propulsor.tag]                                   = Conditions()  
                  
     return 

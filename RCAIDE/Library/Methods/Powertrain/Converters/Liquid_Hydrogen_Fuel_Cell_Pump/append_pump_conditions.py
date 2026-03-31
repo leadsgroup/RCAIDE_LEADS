@@ -20,6 +20,6 @@ def append_pump_conditions(pump, segment, energy_conditions):
     energy_conditions.converters[pump.tag]                                 = Conditions()
     energy_conditions.converters[pump.tag].inputs                          = Conditions()
     energy_conditions.converters[pump.tag].outputs                         = Conditions() 
-    energy_conditions.converters[pump.tag].fuel_mass_flow_rate             = ones_row(1) * 0
+    energy_conditions.converters[pump.tag].fuel_mass_flow_rate      = ones_row(1) * 0
     
     return 
