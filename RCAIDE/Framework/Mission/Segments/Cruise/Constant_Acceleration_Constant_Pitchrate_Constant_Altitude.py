@@ -10,7 +10,8 @@
 # RCAIDE imports 
 from RCAIDE.Framework.Core                            import Units 
 from RCAIDE.Framework.Mission.Segments.Evaluate       import Evaluate
-from RCAIDE.Library.Mission                   import Common,Segments
+from RCAIDE.Library.Mission                           import Segments
+from RCAIDE.Library.Methods.skip                      import skip 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Constant_Acceleration_Constant_Pitchrate_Constant_Altitude
@@ -60,7 +61,6 @@ class Constant_Acceleration_Constant_Pitchrate_Constant_Altitude(Evaluate):
         # --------------------------------------------------------------------------------------------------------------          
         initialize                         = self.process.initialize 
         initialize.conditions              = Segments.Cruise.Constant_Acceleration_Constant_Pitchrate_Constant_Altitude.initialize_conditions      
-        iterate                            = self.process.iterate    
-        iterate.residuals.flight_dynamics  = Common.Residuals.flight_dynamics
-        
+        iterate                            = self.process.iterate 
+        iterate.unknowns.mission           = skip          
         return

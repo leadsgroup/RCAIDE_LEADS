@@ -148,7 +148,7 @@ def design_turbojet(turbojet,network):
    
     segment                                        = RCAIDE.Framework.Mission.Segments.Segment()  
     segment.state.conditions                       = conditions 
-    turbojet.append_operating_conditions(segment,conditions.energy,conditions.noise)        
+    turbojet.append_operating_conditions(segment,conditions.energy,conditions.aeroacoustics)        
     
     # extract compoment from network 
     ram                       = network.converters(turbojet.ram_tag)

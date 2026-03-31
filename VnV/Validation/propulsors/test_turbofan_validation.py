@@ -74,9 +74,9 @@ def main():
     segment                                           = RCAIDE.Framework.Mission.Segments.Segment()  
     segment.state.conditions                          = conditions     
     segment.state.conditions.energy[fuel_line.tag]    = Conditions()
-    segment.state.conditions.noise[fuel_line.tag]     = Conditions()
+    segment.state.conditions.aeroacoustics[fuel_line.tag]     = Conditions()
 
-    turbofan.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.noise)
+    turbofan.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.aeroacoustics)
 
     for tag, item in turbofan.items(): 
         if issubclass(type(item), RCAIDE.Library.Components.Component):

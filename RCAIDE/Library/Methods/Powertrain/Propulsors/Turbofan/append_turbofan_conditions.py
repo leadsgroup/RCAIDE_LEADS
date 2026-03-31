@@ -102,10 +102,10 @@ def append_turbofan_conditions(propulsor, segment):
     segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.hydraulic       = 0. * ones_row(1)
     segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.thermal         = 0. * ones_row(1)  
     segment.state.conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate           = 0. * ones_row(1)
-    segment.state.conditions.noise.propulsors[propulsor.tag]                                = Conditions()  
-    segment.state.conditions.noise.propulsors[propulsor.tag].core_nozzle                    = Conditions() 
-    segment.state.conditions.noise.propulsors[propulsor.tag].fan_nozzle                     = Conditions() 
-    segment.state.conditions.noise.propulsors[propulsor.tag].fan                            = Conditions()
+    segment.state.conditions.aeroacoustics.propulsors[propulsor.tag]                                = Conditions()  
+    segment.state.conditions.aeroacoustics.propulsors[propulsor.tag].core_nozzle                    = Conditions() 
+    segment.state.conditions.aeroacoustics.propulsors[propulsor.tag].fan_nozzle                     = Conditions() 
+    segment.state.conditions.aeroacoustics.propulsors[propulsor.tag].fan                            = Conditions()
 
     for tag, item in  propulsor.items(): 
         if issubclass(type(item), RCAIDE.Library.Components.Component):

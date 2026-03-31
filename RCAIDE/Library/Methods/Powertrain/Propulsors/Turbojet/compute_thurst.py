@@ -177,7 +177,11 @@ def compute_thrust(turbojet,conditions):
     power            = FD2*u0
 
     # pack outputs 
-    turbojet_conditions.thrust                            = FD2 
+    thrust_vector              = np.zeros((len(FD2), 3))
+    thrust_vector[:,0]         = FD2[:,0]
+    
+    # Pack turbofan outouts  
+    turbojet_conditions.thrust                            = thrust_vector  
     turbojet_conditions.thrust_specific_fuel_consumption  = TSFC
     turbojet_conditions.non_dimensional_thrust            = Fsp 
     turbojet_conditions.core_mass_flow_rate               = mdot_core

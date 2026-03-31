@@ -138,7 +138,7 @@ class Untrimmed(Segment):
         post_process                    = self.process.post_process   
         post_process.inertial_position  = skip
         post_process.energy             = skip
-        post_process.noise              = Common.Update.noise
+        post_process.aeroacoustics      = Common.Update.aeroacoustics
         post_process.emissions          = skip
         
         return 

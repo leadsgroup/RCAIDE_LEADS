@@ -39,7 +39,7 @@ def append_constant_speed_internal_combustion_engine_conditions(propulsor, segme
     -------
     None
         Results are stored in energy_conditions.propulsors[propulsor.tag] and
-        segment.state.conditions.noise[propulsor.tag]
+        segment.state.conditions.aeroacoustics[propulsor.tag]
     
     Notes
     -----
@@ -83,6 +83,6 @@ def append_constant_speed_internal_combustion_engine_conditions(propulsor, segme
     segment.state.conditions.energy.propulsors[propulsor.tag].power.thermal                 = 0 * ones_row(1)   
     segment.state.conditions.energy.propulsors[propulsor.tag].inputs                        = Conditions()
     segment.state.conditions.energy.propulsors[propulsor.tag].outputs                       = Conditions() 
-    segment.state.conditions.noise[propulsor.tag]                                           = Conditions()
+    segment.state.conditions.aeroacoustics[propulsor.tag]                                           = Conditions()
  
     return 

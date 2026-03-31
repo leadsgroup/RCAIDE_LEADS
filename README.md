@@ -63,7 +63,7 @@ flowchart TB
     
     %% Library components
     Libraries --> Aerodynamics
-    Libraries --> Noise
+    Libraries --> Aeroacoustics
     Libraries --> Costs
     Libraries --> Stability
     Libraries --> Energy
@@ -83,7 +83,7 @@ flowchart TB
     
     %% Libraries children styling - Purple
     style Aerodynamics fill:#ffaf33,color:#fff
-    style Noise fill:#ffaf33,color:#fff
+    style Aeroacoustics fill:#ffaf33,color:#fff
     style Costs fill:#ffaf33,color:#fff
     style Stability fill:#ffaf33,color:#fff
     style Energy fill:#ffaf33,color:#fff

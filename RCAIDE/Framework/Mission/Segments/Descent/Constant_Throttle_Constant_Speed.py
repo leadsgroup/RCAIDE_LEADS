@@ -12,6 +12,7 @@ from RCAIDE.Framework.Core                       import Units
 from RCAIDE.Framework.Mission.Segments.Evaluate  import Evaluate 
 from RCAIDE.Library.Mission                      import Common,Segments
 from RCAIDE.Framework.Analyses                   import Process  
+from RCAIDE.Library.Methods.skip                 import skip 
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Constant_Throttle_Constant_Speed
@@ -62,6 +63,7 @@ class Constant_Throttle_Constant_Speed(Evaluate):
         initialize.conditions              = Segments.Descent.Constant_Throttle_Constant_Speed.initialize_conditions 
         
         iterate                            = self.process.iterate 
+        iterate.unknowns.mission           = skip  
          
         # Update Conditions
         iterate.conditions = Process()
@@ -81,7 +83,6 @@ class Constant_Throttle_Constant_Speed(Evaluate):
         iterate.conditions.forces                     = Common.Update.forces
         iterate.conditions.moments                    = Common.Update.moments
         iterate.conditions.planet_position            = Common.Update.planet_position
-        iterate.residuals.flight_dynamics             = Common.Residuals.flight_dynamics 
         
         return
 

@@ -66,8 +66,8 @@ def aerodynamics(segment):
     # -----------------------------------------------------------------
     # Moments
     # -----------------------------------------------------------------
-    C_M = conditions.static_stability.coefficients.M
     C_L = conditions.static_stability.coefficients.L
+    C_M = conditions.static_stability.coefficients.M
     C_N = conditions.static_stability.coefficients.N
 
     C_M[q<=0.0] = 0.0

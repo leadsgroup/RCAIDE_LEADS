@@ -9,7 +9,7 @@
 
 # RCAIDE imports 
 from RCAIDE.Framework.Core import   Data    
-from RCAIDE.Library.Methods.Noise.Common import post_process_noise_data
+from RCAIDE.Library.Methods.Aeroacoustics.Common import post_process_noise_data
  
 # Pacakge imports 
 import numpy as np 
@@ -34,9 +34,9 @@ def compute_noise_certification_data(approach_mission  = None, takeoff_mission  
     
     # update weights analysis
     for segment in approach_mission.segments:
-        if segment.analyses.noise == None:
+        if segment.analyses.aeroacoustics == None:
             raise AssertionError('Noise analysis not specifed!')
-        noise_analysis = segment.analyses.noise
+        noise_analysis = segment.analyses.aeroacoustics
         noise_analysis.settings.microphone_x_resolution                = microphone_x_resolution
         noise_analysis.settings.microphone_y_resolution                = microphone_y_resolution
         noise_analysis.settings.noise_times_steps                      = noise_times_steps
@@ -48,9 +48,9 @@ def compute_noise_certification_data(approach_mission  = None, takeoff_mission  
     
     # update weights analysis
     for segment in takeoff_mission.segments:
-        if segment.analyses.noise == None:
-            raise AssertionError('Noise analysis not specifed!')
-        noise_analysis = segment.analyses.noise 
+        if segment.analyses.aeroacoustics == None:
+            raise AssertionError('Acoustics analysis not specifed!')
+        noise_analysis = segment.analyses.aeroacoustics 
         noise_analysis.settings.microphone_x_resolution                = microphone_x_resolution
         noise_analysis.settings.microphone_y_resolution                = microphone_y_resolution
         noise_analysis.settings.noise_times_steps                      = noise_times_steps

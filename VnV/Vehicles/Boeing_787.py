@@ -83,10 +83,8 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', number_of_passengers = 248) :
     segment.tag                           = 'Root'
     segment.percent_span_location         = 0.0 
     segment.root_chord_percent            = 1.
-    #segment.twist                         = 3.5 * Units.degrees
     segment.dihedral_outboard             = 8.0 * Units.degrees
     segment.sweeps.quarter_chord          = 27.57 * Units.degrees
-    segment.thickness_to_chord            = .15
     segment.append_airfoil(root_airfoil)
     wing.append_segment(segment)
 
@@ -98,7 +96,6 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', number_of_passengers = 248) :
     segment.root_chord_percent            = 0.53 
     segment.dihedral_outboard             = 7.0 * Units.degrees
     segment.sweeps.quarter_chord          = 31. * Units.degrees
-    #segment.twist                         = 2.5 * Units.degrees
     segment.thickness_to_chord            = 0.125
     segment.append_airfoil(yehudi_airfoil)
     wing.append_segment(segment)
@@ -111,8 +108,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', number_of_passengers = 248) :
     segment.root_chord_percent            = 0.155 
     segment.dihedral_outboard             = 12.0 * Units.degrees
     segment.sweeps.quarter_chord          = 42.0 * Units.degrees
-    #segment.twist                         = 1.0 * Units.degrees
-    segment.thickness_to_chord            = .1
+    segment.twist                         = -0.95 * Units.degrees
     segment.append_airfoil(tip_airfoil)
     wing.append_segment(segment)
 
@@ -121,11 +117,10 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', number_of_passengers = 248) :
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Winglet'
     segment.percent_span_location         = 1.00
-    #segment.twist                         = 0.0 * Units.degrees
+    segment.twist                         = -1.0 * Units.degrees
     segment.root_chord_percent            = 0.093 
     segment.dihedral_outboard             = 0.0 * Units.degrees
     segment.sweeps.quarter_chord          = 0.0 * Units.degrees
-    segment.thickness_to_chord            = .095
     segment.append_airfoil(tip_airfoil)
     wing.append_segment(segment)
 
@@ -200,7 +195,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', number_of_passengers = 248) :
     segment.root_chord_percent     = 1.0
     segment.dihedral_outboard      = 8.0 * Units.degrees
     segment.sweeps.quarter_chord   = 35.785  * Units.degrees 
-    segment.thickness_to_chord     = 0.15
+    segment.thickness_to_chord     = 0.12
     wing.append_segment(segment)
 
     segment                        = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -210,7 +205,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', number_of_passengers = 248) :
     segment.root_chord_percent     = 0.237               
     segment.dihedral_outboard      = 0 * Units.degrees
     segment.sweeps.quarter_chord   = 0 * Units.degrees  
-    segment.thickness_to_chord     = 0.15
+    segment.thickness_to_chord     = 0.12
     wing.append_segment(segment) 
 
     # control surfaces -------------------------------------------
@@ -258,7 +253,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', number_of_passengers = 248) :
     segment.root_chord_percent            = 1.
     segment.dihedral_outboard             = 0 * Units.degrees
     segment.sweeps.quarter_chord          = 6.97 * Units.degrees  
-    segment.thickness_to_chord            = 0.15
+    segment.thickness_to_chord            = 0.12
     wing.append_segment(segment)
 
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -268,7 +263,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', number_of_passengers = 248) :
     segment.root_chord_percent            = 1.031
     segment.dihedral_outboard             = 0. * Units.degrees
     segment.sweeps.quarter_chord          = 63.8274 * Units.degrees   
-    segment.thickness_to_chord            = 0.15
+    segment.thickness_to_chord            = 0.12
     wing.append_segment(segment)
 
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -278,7 +273,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', number_of_passengers = 248) :
     segment.root_chord_percent            = 0.815
     segment.dihedral_outboard             = 0.0 * Units.degrees
     segment.sweeps.quarter_chord          = 41.250 * Units.degrees    
-    segment.thickness_to_chord            = 0.15
+    segment.thickness_to_chord            = 0.12
     wing.append_segment(segment)
 
 
@@ -289,7 +284,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', number_of_passengers = 248) :
     segment.root_chord_percent            = 0.298
     segment.dihedral_outboard             = 0.0 * Units.degrees
     segment.sweeps.quarter_chord          = 69.09 * Units.degrees    
-    segment.thickness_to_chord            = 0.15
+    segment.thickness_to_chord            = 0.12
     wing.append_segment(segment)
 
 
@@ -300,7 +295,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', number_of_passengers = 248) :
     segment.root_chord_percent            = 0.105
     segment.dihedral_outboard             = 0.0 * Units.degrees
     segment.sweeps.quarter_chord          = 0.0    
-    segment.thickness_to_chord            = 0.15
+    segment.thickness_to_chord            = 0.12
     wing.append_segment(segment)
     
 
@@ -854,7 +849,8 @@ def configs_setup(vehicle):
     config = RCAIDE.Library.Components.Configs.Config(base_config)
     config.tag = 'reverse_thrust'
     config.wings['main_wing'].control_surfaces.flap.deflection  = 30. * Units.deg
-    config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg 
+    config.wings['main_wing'].control_surfaces.slat.deflection  = 25. * Units.deg
+    config.networks.fuel.reverse_thrust = True
     config.landing_gears.main_gear.gear_extended    = True
     config.landing_gears.nose_gear.gear_extended    = True  
     for landing_gear in  config.landing_gears:

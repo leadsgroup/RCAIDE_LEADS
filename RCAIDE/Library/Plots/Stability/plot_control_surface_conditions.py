@@ -58,6 +58,7 @@ def plot_control_surface_conditions(results,
     
     axis_1.set_xlabel('Time (mins)')
     axis_1.set_ylabel(r'Control Surface Deflection (deg)')
+    axis_1.set_ylim([-40, 40])
     set_axes(axis_1)
     
     if show_legend:        

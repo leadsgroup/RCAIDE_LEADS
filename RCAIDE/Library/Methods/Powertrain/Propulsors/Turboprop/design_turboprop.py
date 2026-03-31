@@ -144,7 +144,7 @@ def design_turboprop(turboprop,network):
           
     segment                                               = RCAIDE.Framework.Mission.Segments.Segment()  
     segment.state.conditions                              = conditions 
-    turboprop.append_operating_conditions(segment,conditions.energy,conditions.noise)       
+    turboprop.append_operating_conditions(segment,conditions.energy,conditions.aeroacoustics)       
         
      # extract compoment from network    
     ram                     = network.converters(turboprop.ram)

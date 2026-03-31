@@ -188,7 +188,7 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_thurst
     """ 
     conditions                = state.conditions   
-    noise_conditions          = conditions.noise.propulsors[turbofan.tag] 
+    noise_conditions          = conditions.aeroacoustics.propulsors[turbofan.tag] 
     turbofan_conditions       = conditions.energy.propulsors[turbofan.tag] 
     U0                        = conditions.freestream.velocity
     T                         = conditions.freestream.temperature
@@ -490,7 +490,7 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
     
     # deep copy results 
     conditions.energy.propulsors[turbofan.tag]                 = deepcopy(conditions.energy.propulsors[stored_propulsor_tag])
-    conditions.noise.propulsors[turbofan.tag]                  = deepcopy(conditions.noise.propulsors[stored_propulsor_tag]) 
+    conditions.aeroacoustics.propulsors[turbofan.tag]                  = deepcopy(conditions.aeroacoustics.propulsors[stored_propulsor_tag]) 
     conditions.energy.converters[ram.tag]                      = deepcopy(conditions.energy.converters[ram_0.tag]                     )
     conditions.energy.converters[inlet_nozzle.tag]             = deepcopy(conditions.energy.converters[inlet_nozzle_0.tag]            )
     conditions.energy.converters[fan.tag]                      = deepcopy(conditions.energy.converters[fan_0.tag]                     )

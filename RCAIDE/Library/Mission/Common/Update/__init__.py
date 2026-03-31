@@ -18,7 +18,7 @@ from .atmosphere                               import atmosphere
 from .energy                                   import energy
 from .differentials_time                       import differentials_time
 from .forces                                   import forces
-from .noise                                    import noise
+from .aeroacoustics                            import aeroacoustics
 from .emissions                                import emissions   
 from .moments                                  import moments
 from .network                                  import network

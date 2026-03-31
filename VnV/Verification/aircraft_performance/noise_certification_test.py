@@ -39,9 +39,9 @@ def main():
     results = compute_noise_certification_data(approach_mission = approach_mission, takeoff_mission=takeoff_mission)
     plot_noise_certification_contour(results)
 
-    truth_approach_noise_2000m  = 95.5410451280585
-    truth_flyover_noise_6000m   = 86.39085739592565
-    truth_sideline_noise_450m   = 97.7164459639408
+    truth_approach_noise_2000m  = 100.1247990732169
+    truth_flyover_noise_6000m   = 90.06438862340616
+    truth_sideline_noise_450m   = 108.69112870202972
 
     # Check the errors
     error = Data()
@@ -110,10 +110,10 @@ def noise_base_analysis(vehicle):
     analyses.append(energy)
     
     # ------------------------------------------------------------------
-    #  Noise Analysis
+    #  Acoustics Analysis
     # ------------------------------------------------------------------
-    noise = RCAIDE.Framework.Analyses.Noise.Correlation_Buildup()  
-    analyses.append(noise)
+    aeroacoustics = RCAIDE.Framework.Analyses.Aeroacoustics.Semi_Empirical()  
+    analyses.append(aeroacoustics)
  
     # ------------------------------------------------------------------
     #  Planet Analysis

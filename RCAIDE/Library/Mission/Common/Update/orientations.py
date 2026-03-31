@@ -58,7 +58,7 @@ def orientations(segment):
 
     # body frame rotations
     phi  = body_inertial_rotations[:,0,None] 
-    beta = segment.sideslip_angle
+    beta = conditions.frames.wind.body_rotations[:,2]
 
     # body frame tranformation matrices
     T_inertial2body = angles_to_dcms(body_inertial_rotations,(2,1,0)) 
@@ -75,7 +75,7 @@ def orientations(segment):
 
     # pack aerodynamics angles
     conditions.aerodynamics.angles.alpha[:,0] = alpha[:,0]
-    conditions.aerodynamics.angles.beta[:,0]  = beta
+    conditions.aerodynamics.angles.beta[:,0]  = beta 
     conditions.aerodynamics.angles.phi[:,0]   = phi[:,0] 
 
     # pack transformation tensor
@@ -89,7 +89,7 @@ def orientations(segment):
     wind_body_rotations = body_inertial_rotations * 0.
     wind_body_rotations[:,0] = 0          # no roll in wind frame
     wind_body_rotations[:,1] = alpha[:,0] # theta is angle of attack
-    wind_body_rotations[:,2] = beta       
+    wind_body_rotations[:,2] = beta 
 
     # wind frame tranformation matricies
     T_wind2body     = angles_to_dcms(wind_body_rotations,(2,1,0))       
