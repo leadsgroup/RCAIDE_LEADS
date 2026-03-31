@@ -41,19 +41,19 @@ class Vehicle(Analysis.Container):
                 Properties Used:
                 N/A
         """
-        self.vehicle       = None
-        self.aerodynamics = None
+        self.vehicle        = None
+        self.aerodynamics   = None
         self.aerostructures = None
-        self.atmosphere   = None
-        self.costs        = None
-        self.energy       = None
-        self.geometry     = None
-        self.aeroacoustics= None
-        self.emissions    = None
-        self.planet       = None
-        self.sizing       = None
-        self.stability    = None
-        self.weights      = None
+        self.atmosphere     = None
+        self.costs          = None
+        self.energy         = None
+        self.geometry       = None
+        self.aeroacoustics  = None
+        self.emissions      = None
+        self.planet         = None
+        self.sizing         = None
+        self.stability      = None
+        self.weights        = None
 
     def append(self,analysis):
         """This is used to add new analyses to the container.
@@ -101,16 +101,16 @@ class Vehicle(Analysis.Container):
         Analysis.Container.__init__(self,*args,**kwarg)
 
         self._analyses_map = { 
-            RCAIDE.Framework.Analyses.Geometry.Geometry           : 'geometry'     ,
-            RCAIDE.Framework.Analyses.Weights.Weights             : 'weights'      ,
-            RCAIDE.Framework.Analyses.Aerodynamics.Aerodynamics   : 'aerodynamics' ,
+            RCAIDE.Framework.Analyses.Geometry.Geometry               : 'geometry'     ,
+            RCAIDE.Framework.Analyses.Weights.Weights                 : 'weights'      ,
+            RCAIDE.Framework.Analyses.Aerodynamics.Aerodynamics       : 'aerodynamics' ,
             RCAIDE.Framework.Analyses.Aerostructures.Aerostructures   : 'aerostructures' ,
-            RCAIDE.Framework.Analyses.Stability.Stability         : 'stability'    ,
-            RCAIDE.Framework.Analyses.Energy.Energy               : 'energy'       ,
-            RCAIDE.Framework.Analyses.Atmospheric.Atmospheric     : 'atmosphere'   ,
-            RCAIDE.Framework.Analyses.Planets.Planet              : 'planet'       ,
-            RCAIDE.Framework.Analyses.Aeroacoustics.Aeroacoustics : 'aeroacoustics',
-            RCAIDE.Framework.Analyses.Emissions.Emissions         : 'emissions'    ,
+            RCAIDE.Framework.Analyses.Stability.Stability             : 'stability'    ,
+            RCAIDE.Framework.Analyses.Energy.Energy                   : 'energy'       ,
+            RCAIDE.Framework.Analyses.Atmospheric.Atmospheric         : 'atmosphere'   ,
+            RCAIDE.Framework.Analyses.Planets.Planet                  : 'planet'       ,
+            RCAIDE.Framework.Analyses.Aeroacoustics.Aeroacoustics     : 'aeroacoustics',
+            RCAIDE.Framework.Analyses.Emissions.Emissions             : 'emissions'    ,
         }
 
     def get_root(self,analysis):

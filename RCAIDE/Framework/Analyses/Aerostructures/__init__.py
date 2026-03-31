@@ -8,4 +8,5 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
   
-from .Aerostructures           import Aerostructures 
+from .Aerostructures           import Aerostructures
+from .Finite_Element_Analysis  import Finite_Element_Analysis

@@ -13,6 +13,7 @@ from .curvilinear_inertial_horizontal_position import curvilinear_inertial_horiz
 from .acceleration                             import acceleration
 from .angular_acceleration                     import angular_acceleration
 from .aerodynamics                             import aerodynamics
+from .aerostructures                           import aerostructures
 from .altitude                                 import altitude
 from .atmosphere                               import atmosphere
 from .energy                                   import energy

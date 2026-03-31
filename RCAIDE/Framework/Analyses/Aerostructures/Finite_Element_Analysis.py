@@ -7,10 +7,10 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE imports   
-from RCAIDE.Framework.Core                                     import Data, Units
-from RCAIDE.Framework.Analyses                                 import Process 
-from RCAIDE.Library.Methods.Aerostructures                       import Common
-from .Aerostructures                                             import Aerostructures
+from RCAIDE.Framework.Core                                         import Data, Units
+from RCAIDE.Framework.Analyses                                     import Process 
+from RCAIDE.Library.Methods.Aerostructures                         import Common
+from .Aerostructures                                               import Aerostructures
 from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis import *   
 
 # package imports 

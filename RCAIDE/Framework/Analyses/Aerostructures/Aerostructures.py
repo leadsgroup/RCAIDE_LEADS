@@ -45,7 +45,7 @@ class Aerostructures(Analysis):
         Properties Used:
         N/A
         """           
-        self.tag                                                         = 'aerodynamics'   
+        self.tag                                                         = 'aerostructures'   
         self.settings                                                    = Data() 
         
         
