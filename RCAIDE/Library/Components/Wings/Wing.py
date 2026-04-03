@@ -207,9 +207,13 @@ class Wing(Component):
    
         self.structural                             = Data()  
         self.structural.rib                         = False   
-        self.structural.front_spar_percent_chord    = 0.1  
-        self.structural.rear_spar_percent_chord     = 0.6  
-        self.structural.stringer_percent_chords     = []         
+        self.structural.front_spar_percent_chords  = Data()
+        self.structural.rear_spar_percent_chords   = Data()
+        self.structural.front_spar_percent_chords.root    = 0.1  
+        self.structural.rear_spar_percent_chord.root      = 0.6  
+        self.structural.front_spar_percent_chords.tip    = 0.1  
+        self.structural.rear_spar_percent_chord.tip      = 0.6  
+        self.structural.stringer_percent_chords            = []         
 
     def append_segment(self, segment):
         """

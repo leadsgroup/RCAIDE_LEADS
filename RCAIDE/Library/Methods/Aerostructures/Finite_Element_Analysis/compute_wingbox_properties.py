@@ -77,15 +77,17 @@ def get_skin_properties(width, thickness, dist_from_center):
 
 # Wingbox Assembly Function
 
-def compute_wingbox_properties(chord_arr, t_c, 
-                                spar_f_loc, spar_r_loc,
-                                f_spar_data, r_spar_data,
-                                skin_t_top, skin_t_bot):
+def compute_wingbox_properties(wing,discretized_params):
     """
     Assembles the wingbox from components at every element.
     """
-    # Geometry Arrays
-    h_arr = chord_arr * t_c
+   
+    chord_arr = discretized_params.discretized_chords_elems
+    spar_r_loc. = 
+    spar_f_loc  = 
+    h_arr.   =
+
+    # Geometry Arrays 
     w_box_arr = chord_arr * (spar_r_loc - spar_f_loc)
     
     # 1. Front Spar (Get Ixx and Iyy)

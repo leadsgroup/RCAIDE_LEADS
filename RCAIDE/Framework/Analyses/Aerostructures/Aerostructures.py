@@ -47,6 +47,7 @@ class Aerostructures(Analysis):
         """           
         self.tag                                                         = 'aerostructures'   
         self.settings                                                    = Data() 
+        self.settings.discretiation = 400
         
         
         
