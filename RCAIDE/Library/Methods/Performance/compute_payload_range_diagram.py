@@ -107,7 +107,6 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
         # perform inital weights analysis
         segment.analyses.vehicle.mass_properties.takeoff      = None
         segment.analyses.weights.print_weight_analysis_report = True
-        segment.analyses.weights.print_weight_analysis_report = True
     mass_properties(mission)
     vehicle = mission.segments[initial_segment].analyses.vehicle 
   
@@ -234,14 +233,12 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
         # Define takeoff weight
         mission.segments[0].analyses.vehicle.mass_properties.takeoff  = TOW[i]
         mission.segments[0].analyses.vehicle.mass_properties.payload  = PLD[i]
-        mission.segments[0].analyses.vehicle.mass_properties.fuel     = FUEL[i] 
+        mission.segments[0].analyses.vehicle.mass_properties.fuel     = FUEL[i]
+
 
         # Evaluate mission with current TOW
         results = mission.evaluate()
         segment = results.segments[cruise_segment_tag]
-        
-        # This ensures that after the first mission, we reuse the surrogate 
-        mission.segments[0].analyses.aerodynamics.settings.reuse_stored_surrogate_model     = True        
         
         # Distance convergency in order to have total fuel equal to target fuel
         #

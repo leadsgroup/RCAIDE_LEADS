@@ -40,12 +40,11 @@ def main():
 
 def Boeing_737_Drag_Polar():
 
-    vehicle  = B737_vehicle_setup()  
-    
+    vehicle  = B737_vehicle_setup()    
     configs  = B737_configs_setup(vehicle) 
     analyses = analyses_setup(configs)  
     
-    angle_of_attack_range                 = np.atleast_2d(np.linspace(-1, 1, 3)).T*Units.degrees   
+    angle_of_attack_range                 = np.atleast_2d(np.linspace(-5, 25, 18)).T*Units.degrees   
     Mach_number_range                     = np.ones_like(angle_of_attack_range) * 0.78 
     temperatures                          = np.ones_like(angle_of_attack_range) * 340
     non_dimensional_reynolds_numbers      = np.ones_like(angle_of_attack_range) * 1E7
@@ -60,14 +59,18 @@ def Boeing_737_Drag_Polar():
                                                                       mach_numbers = Mach_number_range,
                                                                       altitude  = 0)
 
-    CL_truth = np.array([0.46705086, 0.64126679, 0.81505847])
-
-
-    CD_truth = np.array([0.02162666, 0.02365738, 0.02865083])
+    CL_truth = np.array([-0.38186938, -0.10627372,  0.16950056,  0.4455403 ,  0.72072764,
+                         0.99313006,  1.26355613,  1.5300295 ,  1.78970029,  2.04543276,
+                         2.24649627,  2.35313159,  2.4597669 ,  2.56640222,  2.67303754,
+                         2.77967285,  2.88630817,  2.99294349])
+    
+    CD_truth = np.array([0.06682168, 0.03297028, 0.02150798, 0.02273792, 0.04049766,
+                         0.07110456, 0.09480261, 0.10963991, 0.15831249, 0.24051187,
+                         0.36893079, 0.56138268, 0.84474023, 1.24610486, 1.79621305,
+                         2.5294356 , 3.48377719, 4.70087622])
                       
     # plot results 
-    plot_aircraft_aerodynamics(results, save_filename = "B737_Aircraft_Aerodynamic_Analysis")
-    plot_pressure_coefficient_distribution(results)
+    plot_aircraft_aerodynamics(results, save_filename = "B737_Aircraft_Aerodynamic_Analysis")    
     
     # check errors 
     CL_error = np.max(np.abs(results.lift_coefficient[:, 0]-CL_truth))
@@ -81,12 +84,11 @@ def Boeing_737_Drag_Polar():
 
 def BWB_Drag_Polar():
 
-    vehicle  = BWB_vehicle_setup() 
-        
+    vehicle  = BWB_vehicle_setup()    
     configs  = BWB_configs_setup(vehicle) 
     analyses = analyses_setup(configs)
     
-    angle_of_attack_range                 = np.atleast_2d(np.linspace(-1, 1, 3)).T*Units.degrees   
+    angle_of_attack_range                 = np.atleast_2d(np.linspace(-5, 25, 18)).T*Units.degrees   
     Mach_number_range                     = np.ones_like(angle_of_attack_range) * 0.78 
     temperatures                          = np.ones_like(angle_of_attack_range) * 340
     non_dimensional_reynolds_numbers      = np.ones_like(angle_of_attack_range) * 1E7
@@ -101,9 +103,15 @@ def BWB_Drag_Polar():
                                                                       mach_numbers     = Mach_number_range,
                                                                       altitude         = 0)
 
-    CL_truth = np.array([-0.17632756,  0.        ,  0.17632756])
+    CL_truth = np.array([-0.8859043 , -0.57402438, -0.26155033,  0.05231007,  0.36610444,
+                        0.67798436,  0.98814569,  1.29486985,  1.59508185,  1.89152364,
+                        2.12963852,  2.26700691,  2.4043753 ,  2.54174368,  2.67911207,
+                        2.81648046,  2.95384884,  3.09121723])
 
-    CD_truth = np.array([0.01744086, 0.0134204 , 0.01397554])
+    CD_truth = np.array([0.04902018, 0.0432557 , 0.02050936, 0.01461097, 0.02046714,
+                        0.03695656, 0.08905799, 0.14631973, 0.22536315, 0.32287296,
+                        0.33891408, 0.35478732, 0.37077092, 0.38686488, 0.40306919,
+                        0.41938387, 0.43580891, 0.45234431])
 
     plot_aircraft_aerodynamics(results,  save_filename = "BWB_Aircraft_Aerodynamic_Analysis")
 
@@ -144,8 +152,7 @@ def base_analysis(vehicle):
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
     analyses.append(geometry)
   
-    aerodynamics   = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.settings.use_surrogate = False 
+    aerodynamics   = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()     
     analyses.append(aerodynamics)
     
     return analyses 

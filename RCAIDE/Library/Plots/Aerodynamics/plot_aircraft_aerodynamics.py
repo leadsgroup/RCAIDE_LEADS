@@ -116,7 +116,7 @@ def plot_aircraft_aerodynamics(results,
     #------------------------------------------------------------------------
     # setup figures
     #------------------------------------------------------------------------
-    fig = plt.figure("Aircraft_Aerodynamic_Analysis")  
+    fig = plt.figure()  
     fig.set_size_inches(12,6) 
     axis_1 = fig.add_subplot(1, 2, 1)
     axis_2 = fig.add_subplot(1, 2, 2) 
@@ -136,4 +136,5 @@ def plot_aircraft_aerodynamics(results,
     if save_figure:    
         fig.savefig(save_filename + file_type) 
     
+    plt.tight_layout()
     return

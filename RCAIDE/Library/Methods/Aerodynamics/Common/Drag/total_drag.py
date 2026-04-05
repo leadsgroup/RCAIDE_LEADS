@@ -3,7 +3,7 @@
 # Created:  Jun 2024, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  Total Drag 
+#  Wave Drag 
 # ---------------------------------------------------------------------------------------------------------------------- 
 def total_drag(state,settings,geometry):
     """
@@ -28,7 +28,9 @@ def total_drag(state,settings,geometry):
                     - trim.total : float
                         Trim drag coefficient [unitless]
                     - form.total : float
-                        Form drag coefficient [unitless] 
+                        Form drag coefficient [unitless]
+                    - wave.total : float
+                        Wave drag coefficient [unitless]
     settings : dict
         Aerodynamic analysis settings containing:
             - trim_drag_correction_factor : float
@@ -47,7 +49,7 @@ def total_drag(state,settings,geometry):
     -----
     This function aggregates all drag components into a total drag coefficient for the aircraft.
     The calculation includes parasite, induced, compressibility, miscellaneous, cooling, trim,
-    form drag components, with optional correction factors and increments.
+    form, and wave drag components, with optional correction factors and increments.
     
     **Major Assumptions**
         * All drag components are additive with no overlap
@@ -59,7 +61,7 @@ def total_drag(state,settings,geometry):
 
     The total drag coefficient is calculated as the sum of all drag components with corrections:
 
-    :math:`C_{D,total} = f_{trim} \\cdot (C_{D,parasite} + C_{D,induced} + C_{D,compressible} + C_{D,miscellaneous} + C_{D,cooling} + C_{D,trim} + C_{D,form} + \\Delta C_D)`
+    :math:`C_{D,total} = f_{trim} \\cdot (C_{D,parasite} + C_{D,induced} + C_{D,compressible} + C_{D,miscellaneous} + C_{D,cooling} + C_{D,trim} + C_{D,form} + C_{D,wave} + \\Delta C_D)`
 
     where:
         - :math:`f_{trim}` is the trim drag correction factor
@@ -69,7 +71,8 @@ def total_drag(state,settings,geometry):
         - :math:`C_{D,miscellaneous}` is the miscellaneous drag coefficient
         - :math:`C_{D,cooling}` is the cooling drag coefficient
         - :math:`C_{D,trim}` is the trim drag coefficient
-        - :math:`C_{D,form}` is the form drag coefficient 
+        - :math:`C_{D,form}` is the form drag coefficient
+        - :math:`C_{D,wave}` is the wave drag coefficient
         - :math:`\\Delta C_D` is the drag coefficient increment
 
     See Also
@@ -93,10 +96,11 @@ def total_drag(state,settings,geometry):
     miscellaneous_drag    = drag.miscellaneous.total
     cooling_drag          = drag.cooling.total 
     trim_drag             = drag.trim.total  
-    form_drag             = drag.form.total   
+    form_drag             = drag.form.total  
+    wave_drag             = drag.wave.total  
  
     # total drag 
     drag.total =  settings.trim_drag_correction_factor * (parasite_total + induced_total  + compressibility_total + miscellaneous_drag \
-                  + cooling_drag + trim_drag + form_drag   + settings.drag_coefficient_increment)  
+                  + cooling_drag + trim_drag + form_drag + wave_drag     + settings.drag_coefficient_increment)  
 
     return  

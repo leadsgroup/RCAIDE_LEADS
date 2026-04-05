@@ -28,7 +28,7 @@ def main():
     missions = missions_setup(mission)
      
     # run payload range analysis 
-    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage = 0.10, delete_training_data = True) 
+    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage = 0.05, delete_training_data = True) 
     
 
     # #### DO NOT CHANGE THESE VALUES WITHOUT CONSULTING THE AIRPORT PLANNING MANUAL FIRST ###############
@@ -67,7 +67,7 @@ def main():
             rel_error = np.where(denom != 0, numer / denom, 0.0)
             error = np.max(rel_error)
 
-        assert error < 2e-2, f"{key} error too large: {error}"
+        assert error < 5e-3, f"{key} error too large: {error}"
     tf                   = time.time()
     elapsed_time         = round((tf-ti),2)
     print('Payload Range simulation Time: ' + str(elapsed_time) + ' seconds') 
@@ -385,7 +385,9 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Energy
     energy = RCAIDE.Framework.Analyses.Energy.Energy() 
-    analyses.append(energy) 
+    analyses.append(energy)
+    
+  
 
     # ------------------------------------------------------------------
     #  Planet Analysis

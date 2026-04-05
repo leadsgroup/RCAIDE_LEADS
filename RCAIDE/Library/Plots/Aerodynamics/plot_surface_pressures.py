@@ -6,20 +6,20 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
+
 from RCAIDE.Library.Plots.Common import set_axes, plot_style
 import matplotlib.pyplot as plt 
-import matplotlib.colors as colors
 import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
 # ---------------------------------------------------------------------------------------------------------------------- 
-def plot_pressure_coefficient_distribution(results, 
-                                            save_figure = False, 
-                                            save_filename = "Pressure_Coefficient_Distribution", 
-                                            file_type = ".png"):
+def plot_surface_pressures(results, 
+                          save_figure = False, 
+                          save_filename = "Surface_Pressure", 
+                          file_type = ".png"):
     """
-    Creates contour plots of differential surface pressure distributions (CP_lower -CP_upper) on aircraft lifting surfaces.
+    Creates contour plots of surface pressure distributions on aircraft lifting surfaces.
 
     Parameters
     ----------
@@ -87,45 +87,61 @@ def plot_pressure_coefficient_distribution(results,
     RCAIDE.Library.Plots.Aerodynamics.plot_lift_distribution : Spanwise lift analysis
     RCAIDE.Library.Plots.Aerodynamics.plot_aerodynamic_coefficients : Overall coefficient plots
     """
-     
-    VD         = results.vortex_distribution
-    n_cw       = VD.n_cw # number of panels chordwise (including control surfaces)
-    n_sw       = VD.n_sw # number of panels spanwise  (including control surfaces)
-    CP         = results.differential_surface_pressure_coefficient  
-    b_pts      = np.concatenate(([0],np.cumsum(VD.n_sw[0]*VD.n_cw[0]))) 
     
-    for ti in range(len(CP)): 
-        figure_name = r'Delta_CP Surface Distribution_' + str(ti+1)
-        fig        = plt.figure(figure_name)
-        axes       = plt.subplot(1, 1, 1)
-        x_max      = max(VD.XC[ti]) + 2
-        y_max      = max(VD.YC[ti]) + 2
-        axes.set_ylim(x_max, 0)
-        axes.set_xlim(-y_max, y_max)
-        fig.set_size_inches(8,8)
-        
-    
-        norm = colors.TwoSlopeNorm(vmin=-1, vcenter=0, vmax=1)
-        cp_levels   = np.linspace(-1,1, 21)
-        
-        for i in range(VD.n_w[0][0]):
-            n_pts     = (n_sw[ti,i] + 1) * (n_cw[ti,i]+ 1)
-            xc_pts    = VD.X[ti,i*(n_pts):(i+1)*(n_pts)]
-            x_pts     = np.reshape(np.atleast_2d(VD.XC[ti,b_pts[i]:b_pts[i+1]]).T, (n_sw[ti,i],-1))
-            y_pts     = np.reshape(np.atleast_2d(VD.YC[ti,b_pts[i]:b_pts[i+1]]).T, (n_sw[ti,i],-1))
-            z_pts     = np.reshape(np.atleast_2d(CP[ti,b_pts[i]:b_pts[i+1]]).T, (n_sw[ti,i],-1))
-            x_pts_p   = x_pts*((n_cw[ti,i]+1)/n_cw[ti, i]) - x_pts[0,0]*((n_cw[ti,i]+1)/n_cw[ti,i])  +  xc_pts[0]
-            
-            if len(z_pts) > 1: 
-                CS        = axes.contourf(y_pts,x_pts_p, z_pts, levels = cp_levels ,  cmap = 'coolwarm_r', norm=norm,extend='both')
+    vehicle    = results.segments[0].analyses.vehicle
+    VD         = results.segments[0].analyses.aerodynamics.settings.vortex_distribution
+    n_cw       = VD.n_cw 
+    n_sw       = VD.n_sw 
+    b_pts      = np.concatenate(([0],np.cumsum(VD.n_sw[0]*VD.n_cw[0])))
 
-        # Set Color bar
-        cbar = fig.colorbar(CS, ax=axes)
-        cbar.ax.set_ylabel(r'$\Delta$ $C_{P}$', rotation =  0)
-        plt.axis('off')
-        plt.grid(None)
+    # Create a boolean for not plotting vertical wings
+    idx        = 0
+    plot_flag  = np.ones(VD.n_w[0][0])
+    for wing in vehicle.wings:
+        if wing.vertical:
+            plot_flag[idx] = 0
+            idx += 1
+        else:
+            idx += 1
+        if wing.vertical and wing.xz_plane_symmetric:
+            plot_flag[idx] = 0
+            idx += 1
+        else:
+            idx += 1
 
-        if save_figure:
-            plt.savefig( save_filename + '_' + str(ti+1) + file_type)  
+    img_idx    = 1
+    seg_idx    = 1
+    for segment in results.segments.values():
+        num_ctrl_pts = len(segment.conditions.frames.inertial.time)
+        for ti in range(num_ctrl_pts):
+            CP         = segment.conditions.aerodynamics.coefficients.surface_pressure[ti] 
+            fig        = plt.figure()
+            axes       = plt.subplot(1, 1, 1)
+            x_max      = max(VD.XC[ti]) + 2
+            y_max      = max(VD.YC[ti]) + 2
+            axes.set_ylim(x_max, 0)
+            axes.set_xlim(-y_max, y_max)
+            fig.set_size_inches(8,8)
+            for i in range(VD.n_w[0][0]):
+                n_pts     = (n_sw[ti,i] + 1) * (n_cw[ti,i]+ 1)
+                xc_pts    = VD.X[ti,i*(n_pts):(i+1)*(n_pts)]
+                x_pts     = np.reshape(np.atleast_2d(VD.XC[ti,b_pts[i]:b_pts[i+1]]).T, (n_sw[ti,i],-1))
+                y_pts     = np.reshape(np.atleast_2d(VD.YC[ti,b_pts[i]:b_pts[i+1]]).T, (n_sw[ti,i],-1))
+                z_pts     = np.reshape(np.atleast_2d(CP[b_pts[i]:b_pts[i+1]]).T, (n_sw[ti,i],-1))
+                x_pts_p   = x_pts*((n_cw[ti,i]+1)/n_cw[ti, i]) - x_pts[0,0]*((n_cw[ti,i]+1)/n_cw[ti,i])  +  xc_pts[0] 
+                color_map = plt.cm.get_cmap('jet')
+                rev_cm    = color_map.reversed() 
+                CS        = axes.contourf(y_pts,x_pts_p, z_pts, cmap = rev_cm,extend='both')
+
+            # Set Color bar
+            cbar = fig.colorbar(CS, ax=axes)
+            cbar.ax.set_ylabel('$C_{P}$', rotation =  0)
+            plt.axis('off')
+            plt.grid(None)
+
+            if save_figure:
+                plt.savefig( save_filename + '_' + str(img_idx) + file_type)
+            img_idx += 1
+        seg_idx +=1
 
     return

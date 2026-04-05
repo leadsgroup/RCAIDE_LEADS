@@ -95,7 +95,10 @@ def Propeller_Slipstream(wake_fidelity,identical_props):
     return
  
 
-def plot_mission(results): 
+def plot_mission(results):
+
+    # Plot surface pressure coefficient
+    plot_surface_pressures(results)
 
     # Plot lift distribution
     plot_lift_distribution(results) 
