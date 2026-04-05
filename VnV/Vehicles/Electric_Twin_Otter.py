@@ -198,7 +198,8 @@ def vehicle_setup(cell_chemistry, btms_type):
     fuselage = RCAIDE.Library.Components.Fuselages.Fuselage() 
 
     # define cabin
-    cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
+    cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
+    cabin.origin                                      = [[2, 0, 0]]
     economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
     economy_class.number_of_seats_abrest              = 2
     economy_class.number_of_rows                      = 10
@@ -366,10 +367,11 @@ def vehicle_setup(cell_chemistry, btms_type):
         bat_module.electrical_configuration.parallel           = 210
         bat_module.cell.nominal_capacity                       = 3.8 
         bat_module.geometrtic_configuration.normal_count       = 42
-        bat_module.geometrtic_configuration.parallel_count     = 50
+        bat_module.geometrtic_configuration.parallel_count     = 50 
     
-        for _ in range(12):
+        for i in range(12):
             bat_copy = deepcopy(bat_module)
+            bat_copy.origin   = [[4 + (i * 0.5) , 0, -0.5]]
             bus.battery_modules.append(bat_copy)
 
         bus.battery_module_electric_configuration = 'Series' 
@@ -386,9 +388,11 @@ def vehicle_setup(cell_chemistry, btms_type):
             bat_module.geometrtic_configuration.normal_count       = 42
             bat_module.geometrtic_configuration.parallel_count     = 50
             bat_module.nominal_capacity                            = bat_module.cell.nominal_capacity* bat_module.electrical_configuration.parallel
+            bat_module.origin                                      = [[4, 0, 0]]
         
-            for _ in range(12):
+            for i in range(12):
                 bat_copy = deepcopy(bat_module)
+                bat_copy.origin   = [[4 + (i * 0.5) ,0, -0.5]]
                 bus.battery_modules.append(bat_copy)
         
             bus.battery_module_electric_configuration = 'Series' 
@@ -599,12 +603,22 @@ def vehicle_setup(cell_chemistry, btms_type):
     port_propulsor.motor                       = motor_2  
 
               
-    nacelle_2                                    = deepcopy(nacelle)
-    nacelle_2.origin                             =  [[2.81, -2.8129 ,1.22]]        
-    port_propulsor.nacelle                       = nacelle_2
+    nacelle_2                                  = deepcopy(nacelle)
+    nacelle_2.origin                           =  [[2.81, -2.8129 ,1.22]]        
+    port_propulsor.nacelle                     = nacelle_2
     
     # append propulsor to distribution line 
-    net.propulsors.append(port_propulsor)
+    net.propulsors.append(port_propulsor) 
+
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    # Flight Controls 
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    flight_controls =  RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
+    flight_controls.origin = [[1.0,0,0]]
+    flight_controls.length =  0.2
+    flight_controls.width  =  0.2
+    flight_controls.height =  0.2
+    vehicle.append_component(flight_controls)
     
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Avionics

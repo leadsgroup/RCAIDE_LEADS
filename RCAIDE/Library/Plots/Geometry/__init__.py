@@ -25,6 +25,7 @@ from .generate_3d_lopa_points                 import *
 from .generate_3d_fuel_tank_points            import * 
 from .generate_3d_wing_points                 import *
 from .generate_3d_fuselage_points             import *
+from .generate_3d_cuboid_points               import *
 from .plot_3d_vehicle_vlm_panelization        import plot_3d_vehicle_vlm_panelization
 from .plot_layout_of_passenger_accommodations import plot_layout_of_passenger_accommodations
 from .plot_airfoil                            import plot_airfoil

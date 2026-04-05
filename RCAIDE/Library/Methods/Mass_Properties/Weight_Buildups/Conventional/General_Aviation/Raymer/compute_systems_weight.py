@@ -97,7 +97,7 @@ def compute_systems_weight(vehicle, V_fuel, V_int, N_tank, N_eng):
     W_furnish = (.0582*W_0-65.)*Units.lb
 
 
-        # Update system component masses if not user defined. If user defined than update the outputs
+    # Update system component masses if not user defined. If user defined than update the outputs
     for system in vehicle.systems:
         if isinstance(system,Component):
             if system.mass_properties.mass == 0 or system.mass_properties.calculated_flag:

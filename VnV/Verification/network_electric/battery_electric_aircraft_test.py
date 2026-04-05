@@ -63,6 +63,9 @@ def main():
               
             plot_results(results)
 
+
+    plot_3d_vehicle(vehicle)
+
     return
     
 def analyses_setup(configs): 
