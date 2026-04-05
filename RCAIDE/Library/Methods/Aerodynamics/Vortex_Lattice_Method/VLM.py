@@ -298,9 +298,7 @@ def VLM(conditions,settings,geometry):
     # COMPUTE LOAD COEFFICIENT
     GNET = GAMMA*FACTOR
     GNET = GNET *RNMAX /CHORD
-    DCP  = 2*GNET + DCPSID
-    CP   = DCP
-
+    DCP  = 2*GNET + DCPSID 
     # ---------------------------------------------------------------------------------------
     # STEP 12: Compute aerodynamic coefficients 
     # ------------------ --------------------------------------------------------------------  
@@ -318,16 +316,17 @@ def VLM(conditions,settings,geometry):
     
     # DL IS THE DIHEDRAL ANGLE (WITH RESPECT TO THE X-Y PLANE) OF
     # THE IR STREAMWISE STRIP OF HORSESHOE VORTICES. 
-    COD = np.cos(phi[LE_ind]).reshape(dim_1,dim_2)  # Just the LE values 
-    SID = np.sin(phi[LE_ind]).reshape(dim_1,dim_2)  # Just the LE values
+    COD      = np.cos(phi[LE_ind]).reshape(dim_1,dim_2)  # Just the LE values 
+    SID      = np.sin(phi[LE_ind]).reshape(dim_1,dim_2)  # Just the LE values
+    COD_SURF = np.cos(phi[LE_ind])  
+    SID_SURF = np.sin(phi[LE_ind])  
 
     # Now on to each strip
     PION = 2.0 /RNMAX
     ADC  = 0.5*PION
 
     # XLE = LOCATION OF FIRST VORTEX MIDPOINT IN FRACTION OF CHORD.
-    XLE = 0.125 *PION
-    
+    XLE = 0.125 *PION 
     GAF = 0.5 + 0.5 *RJTS**2
 
     # CORMED IS LENGTH OF STRIP CENTERLINE BETWEEN LOAD POINT
@@ -344,13 +343,15 @@ def VLM(conditions,settings,geometry):
 
     # Split into chordwise strengths and sum into strips    
     # SICPLE = COUPLE (ABOUT STRIP CENTERLINE) DUE TO SIDESLIP.
-    CNC    = np.add.reduceat(SINF       ,chord_breaks[0],axis=1)
-    SICPLE = np.add.reduceat(SINF*CORMED,chord_breaks[0],axis=1)
+    CNC          = np.add.reduceat(SINF       ,chord_breaks[0],axis=1)
+    SICPLE       = np.add.reduceat(SINF*CORMED,chord_breaks[0],axis=1)
+    CNC_SURF     = SINF
+    SICPLE_SURF  = SINF*CORMED 
 
     # COMPUTE SLOPE (TX) WITH RESPECT TO X-AXIS AT LOAD POINTS BY INTER
     # POLATING BETWEEN CONTROL POINTS AND TAKING INTO ACCOUNT THE LOCAL
     # INCIDENCE.    
-    XX   = (RK - .75) *PION /2.0
+    XX    = (RK - .75) *PION /2.0
     TX    = VD.SLOPE - ZETA
     CAXL  = -SINF*TX/(1.0+TX**2) # These are the axial forces on each panel
     BMLE  = (XLE-XX)*SINF        # These are moment on each panel
@@ -387,9 +388,9 @@ def VLM(conditions,settings,geometry):
     # ALONG THE X AND Z BODY AXES.   
     
     SLE  = VD.SLOPE[LE_ind].reshape(dim_1,dim_2)
-    ZETA = ZETA[LE_ind].reshape(dim_1,dim_2)
-    XCOS = np.cos(SLE-ZETA) 
-    XSIN = np.sin(SLE-ZETA) 
+    ZETA_LE = ZETA[LE_ind].reshape(dim_1,dim_2)
+    XCOS = np.cos(SLE-ZETA_LE) 
+    XSIN = np.sin(SLE-ZETA_LE) 
     TFX  =  1.*XCOS
     TFZ  = -1.*XSIN
 
@@ -397,21 +398,30 @@ def VLM(conditions,settings,geometry):
     TFX[SPC<0] = XSIN[SPC<0]*np.sign(DCP_LE)[SPC<0]
     TFZ[SPC<0] = np.abs(XCOS)[SPC<0]*np.sign(DCP_LE)[SPC<0]
 
-    CAXL = CAXL - TFX*CSUC
+    CAXL       = CAXL - TFX*CSUC
+    CAXL_SURF  = CAXL_SURF[LE_ind]  - TFX*CSUC
     
     # Add a dimension into the suction to be chordwise
-    CNC   = CNC + CSUC*np.sqrt(1+T2)*TFZ
+    CNC      = CNC + CSUC*np.sqrt(1+T2)*TFZ
+    CNC_SURF = CNC_SURF[LE_ind] + CSUC*np.sqrt(1+T2)*TFZ
     
     # FCOS AND FSIN ARE THE COSINE AND SINE OF THE ANGLE BETWEEN
     # THE CHORDLINE OF THE IR-STRIP AND THE X-AXIS    
-    FCOS = np.cos(ZETA)
-    FSIN = np.sin(ZETA)
+    FCOS      = np.cos(ZETA_LE)
+    FSIN      = np.sin(ZETA_LE)
+    FCOS_SURF = np.cos(ZETA)
+    FSIN_SURF = np.sin(ZETA)
+    
     
     # BFX, BFY, AND BFZ ARE THE COMPONENTS ALONG THE BODY AXES
     # OF THE STRIP FORCE CONTRIBUTION.
     BFX = -  CNC *FSIN + CAXL *FCOS
     BFY = - (CNC *FCOS + CAXL *FSIN) *SID
     BFZ =   (CNC *FCOS + CAXL *FSIN) *COD
+    
+    BFX_SURF = -  CNC_SURF *FSIN_SURF + CAXL_SURF *FCOS_SURF
+    BFY_SURF = - (CNC_SURF *FCOS_SURF + CAXL_SURF *FSIN_SURF) *SID_SURF
+    BFZ_SURF =   (CNC_SURF *FCOS_SURF + CAXL_SURF *FSIN_SURF) *COD_SURF    
 
     # CONVERT CNC FROM CN INTO CNC (COEFF. *CHORD).
     CHORD_strip = CHORD[LE_ind].reshape(dim_1,dim_2)   
@@ -428,11 +438,24 @@ def VLM(conditions,settings,geometry):
     BMY    = BMLE * COD + BFX * (Z - VD.ZBAR) - BFZ * (X - VD.XBAR)
     BMZ    = BMLE * SID - BFX * Y + BFY * (X - VD.XBAR)
     CDC    = BFZ * SINALF +  (BFX *COPSI + BFY *SINPSI) * COSALF
-    CDC    = CDC * CHORD_strip 
+    CDC    = CDC * CHORD_strip
+    
+
+    X      = VD.XCH
+    Y      = VD.YCH
+    Z      = VD.ZCH
+    BMX_SURF    = BFZ_SURF * Y - BFY * (Z - VD.ZBAR)
+    BMX_SURF    = BMX_SURF + SICPLE_SURF
+    BMY_SURF    = BMLE_SURF * COD_SURF + BFX_SURF * (Z - VD.ZBAR) - BFZ_SURF * (X - VD.XBAR)
+    BMZ_SURF    = BMLE_SURF * SID_SURF - BFX_SURF * Y + BFY_SURF * (X - VD.XBAR)
+    CDC_SURF    = BFZ * SINALF_SURF +  (BFX_SURF *COPSI_SURF + BFY_SURF *SINPSI_SURF) * COSALF_SURF
+    CDC_SURF    = CDC_SURF * CHORD_strip_SURF
+    
 
     ES     = 2*s[:,0,:][LE_ind].reshape(dim_1,dim_2)
     STRIP  = ES *CHORD_strip
-    LIFT   = (BFZ *COSALF - (BFX *COPSI + BFY *SINPSI) *SINALF)*STRIP    
+    LIFT   = (BFZ *COSALF - (BFX *COPSI + BFY *SINPSI) *SINALF)*STRIP 
+    LIFT   = (BFZ_SURF *COSALF_SURF - (BFX_SURF *COPSI_SURF + BFY_SURF *SINPSI_SURF) *SINALF_SURF)*SURF    
     MOMENT = STRIP * (BMY *COPSI - BMX *SINPSI)  
     FY     = (BFY *COPSI - BFX *SINPSI) *STRIP
     RM     = STRIP *(BMX *COSALF *COPSI + BMY *COSALF *SINPSI + BMZ *SINALF)
@@ -469,7 +492,7 @@ def VLM(conditions,settings,geometry):
     results.spanwise_stations = Y 
     results.CLift_wing        = CL_wing   
     results.sectional_CLift   = Clift_y     
-    results.CP                = np.array(CP    , dtype=settings.floating_point_precision )
+    results.CP                = np.array(DCP    , dtype=settings.floating_point_precision )
     results.gamma             = np.array(GAMMA , dtype=settings.floating_point_precision ) 
     results.V_distribution    = rhs.V_distribution
     results.V_x               = rhs.Vx_ind_total
@@ -482,7 +505,7 @@ def VLM(conditions,settings,geometry):
     Cdrag_wings         = Data()
 
 
-    CLift_y_wings = Data()
+    Lift_y_wings = Data()
     F_x_wings =  Data()
     F_y_wings =  Data()
     F_z_wings =  Data()
@@ -491,17 +514,24 @@ def VLM(conditions,settings,geometry):
     M_z_wings =  Data()
     # Assign the lift and drag and non-dimensionalize
     for wing in geometry.wings.values():
+        
         ref = wing.areas.reference
         if wing.xz_plane_symmetric:
             Clift_wings[wing.tag]      = np.atleast_2d(np.sum(dim_wing_lifts[:,i:(i+2)],axis=1)).T/ref
-            Cdrag_wings[wing.tag]      = np.atleast_2d(np.sum(dim_wing_drags[:,i:(i+2)],axis=1)).T/ref
+            Cdrag_wings[wing.tag]      = np.atleast_2d(np.sum(dim_wing_drags[:,i:(i+2)],axis=1)).T/ref 
+            n_sw_wing = VD.n_sw[0,i]
+            Lift_y_wings[wing.tag]     = np.atleast_2d(LIFT[:,i*n_sw_wing:(i+2)*n_sw_wing]).T
             i+=1
         else:
+            n_sw_wing = VD.n_sw[0,i]
             Clift_wings[wing.tag]      = np.atleast_2d(dim_wing_lifts[:,i]).T/ref
             Cdrag_wings[wing.tag]      = np.atleast_2d(dim_wing_drags[:,i]).T/ref
+            Lift_y_wings[wing.tag]     = np.atleast_2d(LIFT[:,i*n_sw_wing:(i+2)*n_sw_wing]).T
         i+=1 
     results.CLift_wings         = Clift_wings
     results.CDrag_induced_wings = Cdrag_wings
+    results.sectional_wing_lift = Lift_y_wings
+    results.sectional_wing_moment = Lift_y_wings
     
     return results
 
