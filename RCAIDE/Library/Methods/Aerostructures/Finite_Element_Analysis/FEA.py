@@ -40,6 +40,9 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
     num_elements = settings.discretiation   
 
     for wing in geometry.wings:
+        VD   = settings.vortex_distribution
+        n_sw = VD.n_sw  # N_spanwise
+        n_cw = VD.n_cw  # N_chordwise
         
         # Spanwise lift of wing (dimension: 1 x N_spanwise)
         CL_y = VLM_results.spanwise_wing_lift[wing.tag]
