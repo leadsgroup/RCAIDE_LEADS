@@ -202,8 +202,8 @@ def VLM(conditions,settings,geometry):
     XB1 = VD.XB1*1. 
     
     # Compute X and Z BAR ouside of generate_vortex_distribution to avoid requiring x_m and z_m as inputs 
-    VD.XBAR = np.ones(( len_mach,sum(LE_ind[0]))) * x_m 
-    VD.ZBAR = np.ones(( len_mach,sum(LE_ind[0]))) * z_m  
+    VD.XBAR      = np.ones(( len_mach,sum(LE_ind[0]))) * x_m 
+    VD.ZBAR      = np.ones(( len_mach,sum(LE_ind[0]))) * z_m    
     
     # ---------------------------------------------------------------------------------------
     # STEP 10: Generate A and RHS matrices from VD and geometry
@@ -298,7 +298,8 @@ def VLM(conditions,settings,geometry):
     # COMPUTE LOAD COEFFICIENT
     GNET = GAMMA*FACTOR
     GNET = GNET *RNMAX /CHORD
-    DCP  = 2*GNET + DCPSID 
+    DCP  = 2*GNET + DCPSID
+    
     # ---------------------------------------------------------------------------------------
     # STEP 12: Compute aerodynamic coefficients 
     # ------------------ --------------------------------------------------------------------  
@@ -318,8 +319,8 @@ def VLM(conditions,settings,geometry):
     # THE IR STREAMWISE STRIP OF HORSESHOE VORTICES. 
     COD      = np.cos(phi[LE_ind]).reshape(dim_1,dim_2)  # Just the LE values 
     SID      = np.sin(phi[LE_ind]).reshape(dim_1,dim_2)  # Just the LE values
-    COD_SURF = np.cos(phi[LE_ind])  
-    SID_SURF = np.sin(phi[LE_ind])  
+    COD_SURF = np.cos(phi)  
+    SID_SURF = np.sin(phi)  
 
     # Now on to each strip
     PION = 2.0 /RNMAX
@@ -351,14 +352,14 @@ def VLM(conditions,settings,geometry):
     # COMPUTE SLOPE (TX) WITH RESPECT TO X-AXIS AT LOAD POINTS BY INTER
     # POLATING BETWEEN CONTROL POINTS AND TAKING INTO ACCOUNT THE LOCAL
     # INCIDENCE.    
-    XX    = (RK - .75) *PION /2.0
-    TX    = VD.SLOPE - ZETA
-    CAXL  = -SINF*TX/(1.0+TX**2) # These are the axial forces on each panel
-    BMLE  = (XLE-XX)*SINF        # These are moment on each panel
+    XX         = (RK - .75) *PION /2.0
+    TX         = VD.SLOPE - ZETA
+    CAXL_SURF  = -SINF*TX/(1.0+TX**2) # These are the axial forces on each panel
+    BMLE_SURF  = (XLE-XX)*SINF        # These are moment on each panel
     
     # Sum onto the panel
-    CAXL = np.add.reduceat(CAXL,chord_breaks[0],axis=1)
-    BMLE = np.add.reduceat(BMLE,chord_breaks[0],axis=1)
+    CAXL = np.add.reduceat(CAXL_SURF,chord_breaks[0],axis=1)
+    BMLE = np.add.reduceat(BMLE_SURF,chord_breaks[0],axis=1)
     
     SICPLE *= (-1) * COSIN * COD * GAF
     DCP_LE = DCP[LE_ind].reshape(dim_1,dim_2)
@@ -399,11 +400,11 @@ def VLM(conditions,settings,geometry):
     TFZ[SPC<0] = np.abs(XCOS)[SPC<0]*np.sign(DCP_LE)[SPC<0]
 
     CAXL       = CAXL - TFX*CSUC
-    CAXL_SURF  = CAXL_SURF[LE_ind]  - TFX*CSUC
+    CAXL_SURF[LE_ind]  -= (TFX*CSUC).reshape(dim_1*dim_2)
     
     # Add a dimension into the suction to be chordwise
     CNC      = CNC + CSUC*np.sqrt(1+T2)*TFZ
-    CNC_SURF = CNC_SURF[LE_ind] + CSUC*np.sqrt(1+T2)*TFZ
+    CNC_SURF[LE_ind]  += (CSUC*np.sqrt(1+T2)*TFZ).reshape(dim_1*dim_2)
     
     # FCOS AND FSIN ARE THE COSINE AND SINE OF THE ANGLE BETWEEN
     # THE CHORDLINE OF THE IR-STRIP AND THE X-AXIS    
@@ -415,10 +416,9 @@ def VLM(conditions,settings,geometry):
     
     # BFX, BFY, AND BFZ ARE THE COMPONENTS ALONG THE BODY AXES
     # OF THE STRIP FORCE CONTRIBUTION.
-    BFX = -  CNC *FSIN + CAXL *FCOS
-    BFY = - (CNC *FCOS + CAXL *FSIN) *SID
-    BFZ =   (CNC *FCOS + CAXL *FSIN) *COD
-    
+    BFX      = -  CNC *FSIN + CAXL *FCOS
+    BFY      = - (CNC *FCOS + CAXL *FSIN) *SID
+    BFZ      =   (CNC *FCOS + CAXL *FSIN) *COD 
     BFX_SURF = -  CNC_SURF *FSIN_SURF + CAXL_SURF *FCOS_SURF
     BFY_SURF = - (CNC_SURF *FCOS_SURF + CAXL_SURF *FSIN_SURF) *SID_SURF
     BFZ_SURF =   (CNC_SURF *FCOS_SURF + CAXL_SURF *FSIN_SURF) *COD_SURF    
@@ -426,7 +426,9 @@ def VLM(conditions,settings,geometry):
     # CONVERT CNC FROM CN INTO CNC (COEFF. *CHORD).
     CHORD_strip = CHORD[LE_ind].reshape(dim_1,dim_2)   
     CNC         = CNC  * CHORD_strip
-    BMLE        = BMLE * CHORD_strip
+    BMLE        = BMLE * CHORD_strip 
+    CNC_SURF    = CNC_SURF  * CHORD 
+    BMLE_SURF   = BMLE_SURF * CHORD
 
     # BMX, BMY, AND BMZ ARE THE COMPONENTS ALONG THE BODY AXES
     # OF THE STRIP MOMENT (ABOUT MOM. REF. POINT) CONTRIBUTION.
@@ -438,29 +440,21 @@ def VLM(conditions,settings,geometry):
     BMY    = BMLE * COD + BFX * (Z - VD.ZBAR) - BFZ * (X - VD.XBAR)
     BMZ    = BMLE * SID - BFX * Y + BFY * (X - VD.XBAR)
     CDC    = BFZ * SINALF +  (BFX *COPSI + BFY *SINPSI) * COSALF
-    CDC    = CDC * CHORD_strip
+    CDC    = CDC * CHORD_strip  
     
+    # COMPUTE FORCES 
+    ES      = 2*s[:,0,:][LE_ind].reshape(dim_1,dim_2)
+    STRIP   = ES *CHORD_strip
+    LIFT    = (BFZ *COSALF - (BFX *COPSI + BFY *SINPSI) *SINALF)*STRIP  
+    FY      = (BFY *COPSI - BFX *SINPSI) *STRIP 
+    PM      = STRIP * (BMY *COPSI - BMX *SINPSI)   # Pitch Moment 
+    RM      = STRIP *(BMX *COSALF *COPSI + BMY *COSALF *SINPSI + BMZ *SINALF) # Roll Moment 
+    YM      = STRIP *(BMZ *COSALF - (BMX *COPSI + BMY *SINPSI) *SINALF) # Yaw Moment  
 
-    X      = VD.XCH
-    Y      = VD.YCH
-    Z      = VD.ZCH
-    BMX_SURF    = BFZ_SURF * Y - BFY * (Z - VD.ZBAR)
-    BMX_SURF    = BMX_SURF + SICPLE_SURF
-    BMY_SURF    = BMLE_SURF * COD_SURF + BFX_SURF * (Z - VD.ZBAR) - BFZ_SURF * (X - VD.XBAR)
-    BMZ_SURF    = BMLE_SURF * SID_SURF - BFX_SURF * Y + BFY_SURF * (X - VD.XBAR)
-    CDC_SURF    = BFZ * SINALF_SURF +  (BFX_SURF *COPSI_SURF + BFY_SURF *SINPSI_SURF) * COSALF_SURF
-    CDC_SURF    = CDC_SURF * CHORD_strip_SURF
-    
-
-    ES     = 2*s[:,0,:][LE_ind].reshape(dim_1,dim_2)
-    STRIP  = ES *CHORD_strip
-    LIFT   = (BFZ *COSALF - (BFX *COPSI + BFY *SINPSI) *SINALF)*STRIP 
-    LIFT   = (BFZ_SURF *COSALF_SURF - (BFX_SURF *COPSI_SURF + BFY_SURF *SINPSI_SURF) *SINALF_SURF)*SURF    
-    MOMENT = STRIP * (BMY *COPSI - BMX *SINPSI)  
-    FY     = (BFY *COPSI - BFX *SINPSI) *STRIP
-    RM     = STRIP *(BMX *COSALF *COPSI + BMY *COSALF *SINPSI + BMZ *SINALF)
-    YM     = STRIP *(BMZ *COSALF - (BMX *COPSI + BMY *SINPSI) *SINALF)
-
+    ES_SURF   = 2*s[:,0,:] 
+    SURF      = ES_SURF * CHORD
+    LIFT_SURF = (BFZ_SURF *COSALF - (BFX_SURF *COPSI  + BFY_SURF *SINPSI ) *SINALF )*SURF  
+ 
     # Lift coefficient
     Clift_y   = LIFT/CHORD_strip/ES  
     CL_wing   = np.add.reduceat(LIFT,span_breaks[0],axis=1)/VD.wing_areas  
@@ -474,8 +468,12 @@ def VLM(conditions,settings,geometry):
     CZ_for   = (results.CDrag_induced+ CX_for*COSALF)/SINALF  
     CY_for   = np.atleast_2d(np.sum(FY,axis=1)/S_ref).T  
 
+    FY_SURF   = (BFY_SURF *COPSI - BFX_SURF *SINPSI) *SURF  
+    FX_SURF   = (TANALF * LIFT_SURF -  results.CDrag_induced * S_ref)/(COSALF - SINALF*TANALF)
+    FZ_SURF   = (results.CDrag_induced * S_ref + FX_SURF*COSALF)/SINALF  
+    
     # moment coefficients 
-    CM_mom   = np.atleast_2d(np.sum(MOMENT,axis=1)/S_ref).T/c_ref  
+    CM_mom   = np.atleast_2d(np.sum(PM,axis=1)/S_ref).T/c_ref  
     CL_mom   = np.atleast_2d(np.sum(RM,axis=1)/S_ref).T    /b_ref*(-1)                             
     CN_mom   = np.atleast_2d(np.sum(YM,axis=1)/S_ref).T    /b_ref*(-1)                            
    
@@ -491,7 +489,7 @@ def VLM(conditions,settings,geometry):
     results.CN                = CN_mom  
     results.spanwise_stations = Y 
     results.CLift_wing        = CL_wing   
-    results.sectional_CLift   = Clift_y     
+    results.spanwise_CLift    = Clift_y     
     results.CP                = np.array(DCP    , dtype=settings.floating_point_precision )
     results.gamma             = np.array(GAMMA , dtype=settings.floating_point_precision ) 
     results.V_distribution    = rhs.V_distribution
@@ -502,36 +500,43 @@ def VLM(conditions,settings,geometry):
     dim_wing_lifts      = results.CLift_wing * VD.wing_areas
     dim_wing_drags      = results.CDrag_induced_wing * VD.wing_areas
     Clift_wings         = Data()
-    Cdrag_wings         = Data()
-
-
-    Lift_y_wings = Data()
-    F_x_wings =  Data()
-    F_y_wings =  Data()
-    F_z_wings =  Data()
-    M_x_wings =  Data()
-    M_y_wings =  Data()
-    M_z_wings =  Data()
+    Cdrag_wings         = Data() 
+    spanwise_lift       = Data()
+    surface_lift        = Data()
+    surface_F_x         = Data()
+    surface_F_y         = Data()
+    surface_F_z         = Data()
+    
     # Assign the lift and drag and non-dimensionalize
-    for wing in geometry.wings.values():
-        
+    for wing in geometry.wings.values(): 
         ref = wing.areas.reference
+        n_sw_wing = VD.n_sw[0,i]
+        n_wing    = VD.n_sw[0,i] *  VD.n_cw[0,i]
         if wing.xz_plane_symmetric:
             Clift_wings[wing.tag]      = np.atleast_2d(np.sum(dim_wing_lifts[:,i:(i+2)],axis=1)).T/ref
-            Cdrag_wings[wing.tag]      = np.atleast_2d(np.sum(dim_wing_drags[:,i:(i+2)],axis=1)).T/ref 
-            n_sw_wing = VD.n_sw[0,i]
-            Lift_y_wings[wing.tag]     = np.atleast_2d(LIFT[:,i*n_sw_wing:(i+2)*n_sw_wing]).T
+            Cdrag_wings[wing.tag]      = np.atleast_2d(np.sum(dim_wing_drags[:,i:(i+2)],axis=1)).T/ref  
+            spanwise_lift[wing.tag]    = np.atleast_2d(LIFT[:,i*n_sw_wing:(i+2)*n_sw_wing]).T
+            surface_lift[wing.tag]     = np.atleast_2d(LIFT_SURF[:,i*n_wing:(i+2)*n_wing]).T  
+            surface_F_x[wing.tag]      = np.atleast_2d(FX_SURF[:,i*n_wing:(i+2)*n_wing]).T
+            surface_F_y[wing.tag]      = np.atleast_2d(FY_SURF[:,i*n_wing:(i+2)*n_wing]).T
+            surface_F_z[wing.tag]      = np.atleast_2d(FZ_SURF[:,i*n_wing:(i+2)*n_wing]).T
             i+=1
         else:
-            n_sw_wing = VD.n_sw[0,i]
             Clift_wings[wing.tag]      = np.atleast_2d(dim_wing_lifts[:,i]).T/ref
             Cdrag_wings[wing.tag]      = np.atleast_2d(dim_wing_drags[:,i]).T/ref
-            Lift_y_wings[wing.tag]     = np.atleast_2d(LIFT[:,i*n_sw_wing:(i+2)*n_sw_wing]).T
+            spanwise_lift[wing.tag]    = np.atleast_2d(LIFT[:,i*n_sw_wing:(i+2)*n_sw_wing]).T 
+            surface_lift[wing.tag]     = np.atleast_2d(LIFT_SURF[:,i*n_wing:(i+2)*n_wing]).T  
+            surface_F_x[wing.tag]      = np.atleast_2d(FX_SURF[:,i*n_wing:(i+2)*n_wing]).T
+            surface_F_y[wing.tag]      = np.atleast_2d(FY_SURF[:,i*n_wing:(i+2)*n_wing]).T
+            surface_F_z[wing.tag]      = np.atleast_2d(FZ_SURF[:,i*n_wing:(i+2)*n_wing]).T
         i+=1 
-    results.CLift_wings         = Clift_wings
-    results.CDrag_induced_wings = Cdrag_wings
-    results.sectional_wing_lift = Lift_y_wings
-    results.sectional_wing_moment = Lift_y_wings
+    results.CLift_wings           = Clift_wings
+    results.CDrag_induced_wings   = Cdrag_wings
+    results.spanwise_wing_lift    = spanwise_lift 
+    results.surface_wing_lift     = surface_lift   # lift distribution on the surface of the wing 
+    results.surface_Fx            = FX_SURF 
+    results.surface_Fy            = FY_SURF 
+    results.surface_Fz            = FZ_SURF 
     
     return results
 

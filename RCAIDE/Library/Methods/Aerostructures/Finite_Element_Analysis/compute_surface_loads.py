@@ -18,10 +18,28 @@ import numpy as np
 # ---------------------------------------------------------------------
 def compute_surface_loads(conditions,VLM_results,VD,settings,geometry): 
 
-    spanwise_CL   = VLM_results.sectional_CLift 
-    chords        = VD.chord_lengths 
-    dy            = VD.chord_widths    
-    n_cpts        = len(spanwise_CL)
+    spanwise_CL   = VLM_results.spanwise_CLift
+    
+    
+
+    results.CLift_wings           
+    results.CDrag_induced_wings   
+    results.spanwise_wing_lift    
+    results.surface_wing_lift     
+    results.surface_Fx            
+    results.surface_Fy            
+    results.surface_Fz            
+    
+    
+    
+    
+    
+    
+    
+    
+    #chords        = VD.chord_lengths 
+    #dy            = VD.chord_widths    
+    #n_cpts        = len(spanwise_CL)
     
      
 

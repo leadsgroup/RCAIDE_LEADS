@@ -297,7 +297,7 @@ def evaluate_no_surrogate(state,settings,vehicle):
  
     conditions.aerodynamics.coefficients.lift.inviscid.wings          = VLM_results.CLift_wings 
     conditions.aerodynamics.coefficients.lift.inviscid.total          = Clift
-    conditions.aerodynamics.coefficients.lift.inviscid.spanwise       = VLM_results.sectional_CLift
+    conditions.aerodynamics.coefficients.lift.inviscid.spanwise       = VLM_results.spanwise_CLift
     conditions.aerodynamics.coefficients.drag.induced.wings           = VLM_results.CDrag_induced_wings
     conditions.aerodynamics.coefficients.drag.induced.spanwise        = VLM_results.sectional_CDrag_induced
     conditions.aerodynamics.coefficients.drag.induced.inviscid        = Cdrag
@@ -382,7 +382,7 @@ def evaluate_no_surrogate(state,settings,vehicle):
     # Dimensionalize the lift and drag for each wing   
     equilibrium_conditions.aerodynamics.coefficients.lift.inviscid.wings          = VLM_results.CLift_wings 
     equilibrium_conditions.aerodynamics.coefficients.lift.inviscid.total          = VLM_results.CLift
-    equilibrium_conditions.aerodynamics.coefficients.lift.inviscid.spanwise       = VLM_results.sectional_CLift
+    equilibrium_conditions.aerodynamics.coefficients.lift.inviscid.spanwise       = VLM_results.spanwise_CLift
     equilibrium_conditions.aerodynamics.coefficients.drag.induced.wings           = VLM_results.CDrag_induced_wings
     equilibrium_conditions.aerodynamics.coefficients.drag.induced.spanwise        = VLM_results.sectional_CDrag_induced
     equilibrium_conditions.aerodynamics.coefficients.drag.induced.inviscid        = VLM_results.CDrag_induced
@@ -441,7 +441,7 @@ def evaluate_no_surrogate(state,settings,vehicle):
  
     pertubation_conditions.aerodynamics.coefficients.lift.inviscid.total     = Clift_i_alpha_prime     
     pertubation_conditions.aerodynamics.coefficients.lift.inviscid.wings     = VLM_results.CLift_wings  
-    pertubation_conditions.aerodynamics.coefficients.lift.inviscid.spanwise  = VLM_results.sectional_CLift        
+    pertubation_conditions.aerodynamics.coefficients.lift.inviscid.spanwise  = VLM_results.spanwise_CLift        
     pertubation_conditions.aerodynamics.coefficients.drag.induced.wings      = VLM_results.CDrag_induced_wings 
     pertubation_conditions.aerodynamics.coefficients.drag.induced.total      = Cdrag_i_alpha_prime
      

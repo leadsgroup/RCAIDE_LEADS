@@ -36,14 +36,31 @@ pv.global_theme.font.title_size         = 16
 def FEA(conditions,VLM_results,VD,settings,geometry):
     """
     
-    """
-
-
-    num_elements = settings.discretiation  
-    FX,FY,FZ= compute_surface_loads(conditions,VLM_results,VD,settings,geometry) 
-
+    """ 
+    num_elements = settings.discretiation   
 
     for wing in geometry.wings:
+        
+        # Spanwise lift of wing (dimension: 1 x N_spanwise)
+        CL_y = VLM_results.spanwise_wing_lift[wing.tag]
+        
+        # Surface lift of each panel on the wing  (dimension: 1, N_spanwise x N_chordwise)
+        L    = VLM_results.surface_wing_lift[wing.tag]
+        
+        # Surface forces of each panel on the wing  (dimension: 1, N_spanwise x N_chordwise)
+        Fx   = VLM_results.surface_Fx[wing.tag]             
+        Fy   = VLM_results.surface_Fy[wing.tag]             
+        Fz   = VLM_results.surface_Fz[wing.tag]   
+        
+        # TO DO : NEED TO COMPUTE MOMENT BASED ON SURFACE forces
+        # step 1, determine aerodynamic center
+        # AC_spanwise =
+        # Moment_arm  = VC.X_C - AC_spanwise
+        
+        # compute moment from lift
+        # Moment = .... 
+
+                
         discretized_params = discretize_wing(wing,num_elements)
 
         num_nodes                       = num_elements + 1
