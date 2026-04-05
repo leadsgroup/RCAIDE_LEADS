@@ -480,6 +480,15 @@ def VLM(conditions,settings,geometry):
     dim_wing_drags      = results.CDrag_induced_wing * VD.wing_areas
     Clift_wings         = Data()
     Cdrag_wings         = Data()
+
+
+    CLift_y_wings = Data()
+    F_x_wings =  Data()
+    F_y_wings =  Data()
+    F_z_wings =  Data()
+    M_x_wings =  Data()
+    M_y_wings =  Data()
+    M_z_wings =  Data()
     # Assign the lift and drag and non-dimensionalize
     for wing in geometry.wings.values():
         ref = wing.areas.reference

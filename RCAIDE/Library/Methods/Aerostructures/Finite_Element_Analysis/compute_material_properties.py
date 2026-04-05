@@ -1,3 +1,19 @@
+# RCAIDE/Library/Methods/Aerostructures/Finite_Element_Analysis/compute_material_properties.py
+# 
+# Created: Mar 2026, M. Clarke, S. Sharma  
+
+# ----------------------------------------------------------------------
+#  Imports
+# ----------------------------------------------------------------------
+# Import Supporting Functions
+import RCAIDE 
+
+# Python Imports
+import numpy as np 
+
+# ----------------------------------------------------------------------
+#  compute_material_properties
+# ----------------------------------------------------------------------
 def compute_material_properties(mat_name):
     """
     Returns material properties based on name.

@@ -1,5 +1,19 @@
-import numpy as np
+# RCAIDE/Library/Methods/Aerostructures/Finite_Element_Analysis/compute_multisegment_geometry.py
+# 
+# Created: Mar 2026, M. Clarke, S. Sharma  
 
+# ----------------------------------------------------------------------
+#  Imports
+# ----------------------------------------------------------------------
+# Import Supporting Functions
+import RCAIDE 
+
+# Python Imports
+import numpy as np 
+
+# ----------------------------------------------------------------------
+# Multi Segment GEometry Function 
+# ----------------------------------------------------------------------
 def compute_multisegment_geometry(wing_config, total_elements):
     """
     Takes a wing configuration with multiple segments and outputs continuous 

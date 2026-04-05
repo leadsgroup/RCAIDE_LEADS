@@ -40,8 +40,7 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
 
 
     num_elements = settings.discretiation  
-    FX,FY,FZ= compute_surface_loads(conditions,VLM_results,VD,settings,geometry)
-    
+    FX,FY,FZ= compute_surface_loads(conditions,VLM_results,VD,settings,geometry) 
 
 
     for wing in geometry.wings:

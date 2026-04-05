@@ -1,5 +1,19 @@
-import numpy as np
+# RCAIDE/Library/Methods/Aerostructures/Finite_Element_Analysis/compute_element_stiffness_arrays.py
+# 
+# Created: Mar 2026, M. Clarke, S. Sharma  
 
+# ----------------------------------------------------------------------
+#  Imports
+# ----------------------------------------------------------------------
+# Import Supporting Functions
+import RCAIDE 
+
+# Python Imports
+import numpy as np 
+
+# ----------------------------------------------------------------------
+# compute_element_stiffness_arrays
+# ----------------------------------------------------------------------
 def compute_element_stiffness_arrays(E, G, A, J, I_xx, I_zz, Le, num_elem):
     K_e = np.zeros((num_elem, 12, 12))
     

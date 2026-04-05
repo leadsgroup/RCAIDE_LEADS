@@ -23,15 +23,35 @@ def compute_surface_loads(conditions,VLM_results,VD,settings,geometry):
     dy            = VD.chord_widths    
     n_cpts        = len(spanwise_CL)
     
-    
-    b_sw = np.concatenate(([0],np.cumsum(VD.n_sw[ti]))) 
-    for i in range(VD.n_w[ti][0]):
-        # Sectional Lift 
-        CL_y  = spanwise_CL[ti,b_sw[i]:b_sw[i+1]]
-        c_y   =  chords[ti,b_sw[i]:b_sw[i+1]]
-        L_y   = 0.5 * rho * (V[ti] ** 2) * c_y * CL_y
-        
-        # Section Span 
-        b_y   = VD.Y_SW[ti,b_sw[i]:b_sw[i+1]]
+     
 
-    return FX,FY,FZ
+
+    # F_x_surf = np.zeros((n_cpts,n_panels))
+    # F_y_surf = np.zeros((n_cpts,n_panels))
+    # F_z_surf = np.zeros((n_cpts,n_panels))
+    # M_x_surf = np.zeros((n_cpts,n_panels))
+    # M_y_surf = np.zeros((n_cpts,n_panels))
+    # M_z_surf = np.zeros((n_cpts,n_panels))
+    
+    # b_sw = np.concatenate(([0],np.cumsum(VD.n_sw[ti]))) 
+    # for i in range(VD.n_w[ti][0]):
+    #     # Sectional Lift 
+    #     CL_y  = spanwise_CL[ti,b_sw[i]:b_sw[i+1]]
+    #     c_y   =  chords[ti,b_sw[i]:b_sw[i+1]]
+    #     L_y   = 0.5 * rho * (V[ti] ** 2) * c_y * CL_y
+        
+    #     # Section Span 
+    #     b_y   = VD.Y_SW[ti,b_sw[i]:b_sw[i+1]]
+    
+
+    # surface_forces_and_moments = Data(
+    #                             F_x = F_x_surf,
+    #                             F_y = F_y_surf,
+    #                             F_z = F_z_surf,
+    #                             M_x = M_x_surf,
+    #                             M_y = M_y_surf,
+    #                             M_z = M_z_surf,
+    #                             spanwise_load = L_y, 
+    #                         )
+
+    return # surface_forces_and_moments

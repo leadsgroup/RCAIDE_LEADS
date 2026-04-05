@@ -1,5 +1,19 @@
-import numpy as np
+# RCAIDE/Library/Methods/Aerostructures/Finite_Element_Analysis/compute_force_vector.py
+# 
+# Created: Mar 2026, M. Clarke, S. Sharma  
 
+# ----------------------------------------------------------------------
+#  Imports
+# ----------------------------------------------------------------------
+# Import Supporting Functions
+import RCAIDE 
+
+# Python Imports
+import numpy as np 
+
+# ----------------------------------------------------------------------
+# compute_force_vector
+# ----------------------------------------------------------------------
 def compute_force_vector(w_x, w_y, w_z, t_y, Le, num_elem, T):
     F_local = np.zeros((num_elem, 12))
     

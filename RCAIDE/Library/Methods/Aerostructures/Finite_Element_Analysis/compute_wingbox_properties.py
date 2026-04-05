@@ -1,4 +1,76 @@
-import numpy as np
+# RCAIDE/Library/Methods/Aerostructures/Finite_Element_Analysis/compute_wingbox_properties.py
+# 
+# Created: Mar 2026, M. Clarke, S. Sharma  
+
+# ----------------------------------------------------------------------
+#  Imports
+# ----------------------------------------------------------------------
+# Import Supporting Functions
+import RCAIDE 
+
+# Python Imports
+import numpy as np 
+
+# ----------------------------------------------------------------------
+#  Wingbox Assembly Function
+# ----------------------------------------------------------------------
+def compute_wingbox_properties(wing,discretized_params):
+    """
+    Assembles the wingbox from components at every element.
+    """
+   
+    chord_arr = discretized_params.discretized_chords_elems
+    spar_r_loc = 0 # UPDATE SID 
+    spar_f_loc  = 0# UPDATE SID 
+    h_arr   = 0# UPDATE SID 
+
+    # Geometry Arrays 
+    w_box_arr = chord_arr * (spar_r_loc - spar_f_loc)
+    
+    # 1. Front Spar (Get Ixx and Iyy)
+    A_fs, I_fs_xx, I_fs_yy = get_spar_properties(
+        f_spar_data['type'], h_arr, 
+        f_spar_data['t_web'], f_spar_data['w_cap'], f_spar_data['t_cap']
+    )
+    
+    # 2. Rear Spar (Get Ixx and Iyy)
+    A_rs, I_rs_xx, I_rs_yy = get_spar_properties(
+        r_spar_data['type'], h_arr, 
+        r_spar_data['t_web'], r_spar_data['w_cap'], r_spar_data['t_cap']
+    )
+    
+    # 3. Skins
+    # Top Skin
+    A_sk_top, I_sk_top_xx = get_skin_properties(w_box_arr, skin_t_top, h_arr/2)
+    # Bottom Skin
+    A_sk_bot, I_sk_bot_xx = get_skin_properties(w_box_arr, skin_t_bot, h_arr/2)
+    
+    # 4. Total Vertical Stiffness (Ixx) -> Resists Lift
+    Ixx_total = I_fs_xx + I_rs_xx + I_sk_top_xx + I_sk_bot_xx
+    
+    # 5. Total Chordwise Stiffness (Izz) -> Resists Drag
+    # Plus the "Lateral Bending" (Iyy) of the Spars
+    
+    # Skin contribution (Deep Beam approximation: 2 * t * w^3 / 12)
+    I_skins_chordwise = (skin_t_top * w_box_arr**3 / 12) + (skin_t_bot * w_box_arr**3 / 12)
+    
+    # Total Izz (Note: Spar local Iyy acts in the Global Chordwise direction)
+    Izz_total = I_skins_chordwise + I_fs_yy + I_rs_yy
+    
+    # 6. Torsion (J) - Bredt-Batho Closed Cell
+    Am = w_box_arr * h_arr
+    integral_ds_t = (w_box_arr / skin_t_top) + \
+                    (w_box_arr / skin_t_bot) + \
+                    (h_arr / f_spar_data['t_web']) + \
+                    (h_arr / r_spar_data['t_web'])
+    
+    J_total = 4 * Am**2 / integral_ds_t
+    
+    # 7. Total Area
+    A_total = A_fs + A_rs + A_sk_top + A_sk_bot
+    
+    return A_total, Ixx_total, Izz_total, J_total, w_box_arr, h_arr
+
 
 def get_spar_properties(spar_type, h, t_web, w_cap=0, t_cap=0):
     """
@@ -74,62 +146,3 @@ def get_skin_properties(width, thickness, dist_from_center):
     # Total I contribution
     I_total = I_local + I_parallel
     return A, I_total
-
-# Wingbox Assembly Function
-
-def compute_wingbox_properties(wing,discretized_params):
-    """
-    Assembles the wingbox from components at every element.
-    """
-   
-    chord_arr = discretized_params.discretized_chords_elems
-    spar_r_loc. = 
-    spar_f_loc  = 
-    h_arr.   =
-
-    # Geometry Arrays 
-    w_box_arr = chord_arr * (spar_r_loc - spar_f_loc)
-    
-    # 1. Front Spar (Get Ixx and Iyy)
-    A_fs, I_fs_xx, I_fs_yy = get_spar_properties(
-        f_spar_data['type'], h_arr, 
-        f_spar_data['t_web'], f_spar_data['w_cap'], f_spar_data['t_cap']
-    )
-    
-    # 2. Rear Spar (Get Ixx and Iyy)
-    A_rs, I_rs_xx, I_rs_yy = get_spar_properties(
-        r_spar_data['type'], h_arr, 
-        r_spar_data['t_web'], r_spar_data['w_cap'], r_spar_data['t_cap']
-    )
-    
-    # 3. Skins
-    # Top Skin
-    A_sk_top, I_sk_top_xx = get_skin_properties(w_box_arr, skin_t_top, h_arr/2)
-    # Bottom Skin
-    A_sk_bot, I_sk_bot_xx = get_skin_properties(w_box_arr, skin_t_bot, h_arr/2)
-    
-    # 4. Total Vertical Stiffness (Ixx) -> Resists Lift
-    Ixx_total = I_fs_xx + I_rs_xx + I_sk_top_xx + I_sk_bot_xx
-    
-    # 5. Total Chordwise Stiffness (Izz) -> Resists Drag
-    # Plus the "Lateral Bending" (Iyy) of the Spars
-    
-    # Skin contribution (Deep Beam approximation: 2 * t * w^3 / 12)
-    I_skins_chordwise = (skin_t_top * w_box_arr**3 / 12) + (skin_t_bot * w_box_arr**3 / 12)
-    
-    # Total Izz (Note: Spar local Iyy acts in the Global Chordwise direction)
-    Izz_total = I_skins_chordwise + I_fs_yy + I_rs_yy
-    
-    # 6. Torsion (J) - Bredt-Batho Closed Cell
-    Am = w_box_arr * h_arr
-    integral_ds_t = (w_box_arr / skin_t_top) + \
-                    (w_box_arr / skin_t_bot) + \
-                    (h_arr / f_spar_data['t_web']) + \
-                    (h_arr / r_spar_data['t_web'])
-    
-    J_total = 4 * Am**2 / integral_ds_t
-    
-    # 7. Total Area
-    A_total = A_fs + A_rs + A_sk_top + A_sk_bot
-    
-    return A_total, Ixx_total, Izz_total, J_total, w_box_arr, h_arr

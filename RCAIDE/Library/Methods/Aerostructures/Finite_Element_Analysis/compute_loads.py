@@ -1,5 +1,19 @@
-import numpy as np
+# RCAIDE/Library/Methods/Aerostructures/Finite_Element_Analysis/compute_loads.py
+# 
+# Created: Mar 2026, M. Clarke, S. Sharma  
 
+# ----------------------------------------------------------------------
+#  Imports
+# ----------------------------------------------------------------------
+# Import Supporting Functions
+import RCAIDE 
+
+# Python Imports
+import numpy as np 
+
+# ----------------------------------------------------------------------
+#  compute_loads
+# ----------------------------------------------------------------------
 def compute_loads(lift_total, Y_elems, span_len):
     """ 
     Temporary elliptical load generator. 

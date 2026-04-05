@@ -1,5 +1,19 @@
-import numpy as np
+# RCAIDE/Library/Methods/Aerostructures/Finite_Element_Analysis/compute_3d_transformation_matrix.py
+# 
+# Created: Mar 2026, M. Clarke, S. Sharma  
 
+# ----------------------------------------------------------------------
+#  Imports
+# ----------------------------------------------------------------------
+# Import Supporting Functions
+import RCAIDE 
+
+# Python Imports
+import numpy as np 
+
+# ----------------------------------------------------------------------
+# compute_3d_transformation_matrix
+# ----------------------------------------------------------------------
 def compute_3d_transformation_matrix(sweep_arr, dihedral_arr, twist_arr, num_elements):
     """
     Vectorized 12x12 transformation matrix. 
