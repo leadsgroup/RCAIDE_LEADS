@@ -115,30 +115,30 @@ def plot_drag_components(results,
         cdp    = drag.parasite.total[:,0]
         cdi    = drag.induced.total[:,0]
         cdc    = drag.compressible.total[:,0]
-        cdm    = drag.miscellaneous.total[:,0] 
-        cdw    = drag.wave.total[:,0] 
+        cdm    = drag.miscellaneous.total[:,0]  
         cdf    = drag.form.total[:,0] 
+        cdt    = drag.trim.total[:,0] 
         cdk    = drag.cooling.total[:,0] 
         cd     = drag.total[:,0]  
         
-        if i ==  0:
-            axis_1.plot(time, cdp, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width, label = r'$C_{Dpar}$') 
-            axis_1.plot(time,cdi, color = line_colors[i], marker = ps.markers[1], linewidth = ps.line_width,  label = r'$C_{Dind}$')  
-            axis_1.plot(time, cdc, color = line_colors[i], marker = ps.markers[2], linewidth = ps.line_width,  label =r'$C_{Dcomp}$')  
-            axis_1.plot(time, cdm, color = line_colors[i], marker = ps.markers[3], linewidth = ps.line_width,  label =r'$C_{Dmisc}$')  
-            axis_1.plot(time,cdw, color = line_colors[i], marker = ps.markers[4], linewidth = ps.line_width,  label = r'$C_{Dwave}$')  
-            axis_1.plot(time, cdk, color = line_colors[i], marker = ps.markers[5], linewidth = ps.line_width,  label =r'$C_{Dcool}$')  
-            axis_1.plot(time, cdf, color = line_colors[i], marker = ps.markers[6], linewidth = ps.line_width,  label =r'$C_{Dform}$')  
-            axis_1.plot(time, cd, color = line_colors[i], marker = ps.markers[7], linewidth = ps.line_width,  label =r'$C_D$')
+        if i ==  0:  
+            axis_1.plot(time, cd, color = line_colors[i],  marker = ps.markers[0], linewidth = ps.line_width,  label =r'$C_D$')
+            axis_1.plot(time, cdp, color = line_colors[i], marker = ps.markers[1], linewidth = ps.line_width, label = r'$C_{Dpar}$') 
+            axis_1.plot(time,cdi, color = line_colors[i],  marker = ps.markers[2], linewidth = ps.line_width,  label = r'$C_{Dind}$')  
+            axis_1.plot(time, cdc, color = line_colors[i], marker = ps.markers[3], linewidth = ps.line_width,  label =r'$C_{Dcomp}$')  
+            axis_1.plot(time, cdm, color = line_colors[i], marker = ps.markers[5], linewidth = ps.line_width,  label =r'$C_{Dmisc}$')   
+            axis_1.plot(time, cdk, color = line_colors[i], marker = ps.markers[6], linewidth = ps.line_width,  label =r'$C_{Dcool}$')  
+            axis_1.plot(time, cdf, color = line_colors[i], marker = ps.markers[7], linewidth = ps.line_width,  label =r'$C_{Dform}$')  
+            axis_1.plot(time, cdt, color = line_colors[i], marker = ps.markers[8], linewidth = ps.line_width,  label =r'$C_{Dtrim}$')
         else:
-            axis_1.plot(time, cdp, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width,)
-            axis_1.plot(time,cdi, color = line_colors[i], marker = ps.markers[1], linewidth = ps.line_width, )
-            axis_1.plot(time, cdc, color = line_colors[i], marker = ps.markers[2], linewidth = ps.line_width,)
-            axis_1.plot(time, cdm, color = line_colors[i], marker = ps.markers[3], linewidth = ps.line_width,)
-            axis_1.plot(time,cdw, color = line_colors[i], marker = ps.markers[4], linewidth = ps.line_width, )
-            axis_1.plot(time, cdk, color = line_colors[i], marker = ps.markers[5], linewidth = ps.line_width,)
-            axis_1.plot(time, cdf, color = line_colors[i], marker = ps.markers[6], linewidth = ps.line_width,)
-            axis_1.plot(time, cd, color = line_colors[i], marker = ps.markers[7], linewidth = ps.line_width, )
+            axis_1.plot(time, cd, color = line_colors[i],  marker = ps.markers[0], linewidth = ps.line_width)
+            axis_1.plot(time, cdp, color = line_colors[i], marker = ps.markers[1], linewidth = ps.line_width)
+            axis_1.plot(time,cdi, color = line_colors[i],  marker = ps.markers[2], linewidth = ps.line_width)  
+            axis_1.plot(time, cdc, color = line_colors[i], marker = ps.markers[3], linewidth = ps.line_width)  
+            axis_1.plot(time, cdm, color = line_colors[i], marker = ps.markers[5], linewidth = ps.line_width)   
+            axis_1.plot(time, cdk, color = line_colors[i], marker = ps.markers[6], linewidth = ps.line_width)  
+            axis_1.plot(time, cdf, color = line_colors[i], marker = ps.markers[7], linewidth = ps.line_width)  
+            axis_1.plot(time, cdt, color = line_colors[i], marker = ps.markers[8], linewidth = ps.line_width)
     
         set_axes(axis_1)            
         axis_1.set_xlabel('Time (mins)')

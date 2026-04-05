@@ -94,11 +94,11 @@ def Transport_Aircraft_Test():
     
     print(vehicle.tag + ' Moment of Inertia')
     print(MOI) 
-    accepted  = np.array([[ 1.61568025e+07, -2.32830644e-10, -7.93049792e+06],
-       [-2.32830644e-10,  5.94821638e+07,  0.00000000e+00],
-       [-7.93049792e+06,  0.00000000e+00,  5.53750895e+07]])
+    accepted  = np.array([[16156802.54978671,        0.        , -7824233.96896249],
+                          [       0.        , 58633557.83917309,        0.        ],
+                          [-7824233.96896249,        0.        , 54526483.54615998]])
                           
-    MOI_error     = (MOI - accepted) / accepted
+    MOI_error     = np.nan_to_num((MOI - accepted) / accepted)
 
     # Check the errors
     error = Data()
@@ -166,11 +166,11 @@ def General_Aviation_Test():
     print(vehicle.tag + ' Moment of Inertia')
     print(MOI)
 
-    accepted  = np.array([[3092.49011892,    0.        , -283.80274831],
-       [   0.        , 6061.22925355,    0.        ],
-       [-283.80274831,    0.        , 4921.69877942]])
+    accepted  = np.array([[3092.49011892,    0.        , -278.99230136],
+                          [   0.        , 5921.80746984,    0.        ],
+                          [-278.99230136,    0.        , 4782.27699572]])
 
-    MOI_error     = MOI - accepted
+    MOI_error     =  np.nan_to_num((MOI - accepted) / accepted)
 
     # Check the errors
     error       = Data()
@@ -246,7 +246,7 @@ def EVTOL_Aircraft_Test(update_regression_values):
     accepted  = np.array([[ 9463.1492284 ,  -431.31503284,  -323.65112921],
        [ -431.31503284,  9992.41102398,  -101.09543924],
        [ -323.65112921,  -101.09543924, 17665.06668109]])
-    MOI_error     = (MOI - accepted) / accepted
+    MOI_error     = np.nan_to_num((MOI - accepted) / accepted)
 
     # Check the errors
     error = Data()

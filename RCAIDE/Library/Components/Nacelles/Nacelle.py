@@ -9,7 +9,8 @@
 import RCAIDE
 from RCAIDE.Framework.Core              import Data 
 from RCAIDE.Library.Components          import Component   
-from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia                             import compute_cylinder_moment_of_inertia
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_cylinder_moment_of_inertia  import compute_cylinder_moment_of_inertia 
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_cylinder_center_of_gravity  import compute_cylinder_center_of_gravity
 
 # python imports 
 import scipy as sp
@@ -216,6 +217,18 @@ class Nacelle(Component):
         """
 
         _, _ =  compute_cylinder_moment_of_inertia(self, self.length, self.diameter/2, 0, 0, center_of_gravity = center_of_gravity)  
-        return            
+        return
+ 
+    def compute_center_of_gravity(self,vehicle): 
+        """
+        Computes the center of gravity for the motor.
+
+        See Also
+        --------
+        RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_fuselage_center_of_gravity
+            Implementation of the center of gravity calculation
+        """
+        _  = compute_cylinder_center_of_gravity(self, length=self.length) 
+        return                        
     
         

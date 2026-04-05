@@ -83,14 +83,8 @@ class Vortex_Lattice_Method(Stability):
                       
         self.training.subsonic                                      = None
         self.training.supersonic                                    = None
-        self.training.transonic                                     = None  
-                         
-        # blending function                  
-        self.hsub_min                                               = 0.85
-        self.hsub_max                                               = 0.95
-        self.hsup_min                                               = 1.05
-        self.hsup_max                                               = 1.15 
-                     
+        self.training.transonic                                     = None
+        
         # surrogoate models                 
         self.surrogates                                             = Data()  
 

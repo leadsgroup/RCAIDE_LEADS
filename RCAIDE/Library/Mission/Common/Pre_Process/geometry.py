@@ -153,11 +153,7 @@ def geometry_preprocess_routine(analyses):
         vehicle.reference_span   = np.maximum(vehicle.reference_span  , wing.spans.projected)
         
         # total length 
-        vehicle.length = np.maximum(vehicle.length, wing.chords.root)                         
-        
-        # max cross sectional area 
-        A_wing_plus_fuselage   = wing.spans.projected * wing.thickness_to_chord *  wing.chords.root +  A_fuselage
-        vehicle.maximum_cross_sectional_area = np.maximum(vehicle.maximum_cross_sectional_area,A_wing_plus_fuselage) 
+        vehicle.length = np.maximum(vehicle.length, wing.chords.root)            
 
     # --------------------------------------------------------------------------------------------------------------------
     # Update passenger imformation 

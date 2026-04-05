@@ -312,8 +312,7 @@ def write_vsp_fuselage(fuselage,area_tags, main_wing, fuel_tank_set_ind, OML_set
 
     if 'OpenVSP_values' in fuselage:        
         vals = fuselage.OpenVSP_values
-
-        # for wave drag testing
+ 
         fuselage.OpenVSP_ID = fuse_id
 
         # Nose

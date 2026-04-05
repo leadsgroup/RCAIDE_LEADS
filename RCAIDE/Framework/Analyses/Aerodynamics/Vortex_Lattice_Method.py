@@ -81,7 +81,7 @@ class Vortex_Lattice_Method(Aerodynamics):
         # conditions table, used for surrogate model training
         self.training                                               = Data()
         self.training.angle_of_attack                               = np.array([-5., -2. , 1E-20 , 2.0, 5.0, 8.0, 12., 45., 75.]) * Units.deg 
-        self.training.Mach                                          = np.array([0.1  ,0.3,  0.5,  0.65 , 0.85 , 0.9, 1.3, 1.35 , 1.5 , 2.0, 2.25 , 2.5  , 3.5])             
+        self.training.Mach                                          = np.array([0.1  ,0.3,  0.5,  0.65 , 0.85 , 0.9, 1.3, 1.35 , 1.5 , 2.0, 2.25 , 2.5  , 3.5])  
                       
         self.training.subsonic                                      = None
         self.training.supersonic                                    = None
@@ -112,15 +112,15 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.rudder_flag                                            = False 
         self.elevator_flag                                          = False 
         self.slat_flag                                              = False
-                         
-        # blending function                  
-        self.hsub_min                                               = 0.85
-        self.hsub_max                                               = 0.95
-        self.hsup_min                                               = 1.05
-        self.hsup_max                                               = 1.15  
                                       
         # surrogoate models                                  
         self.surrogates                                             = Data() 
+                         
+        # blending function                  
+        self.surrogates.subsonic_smoothing_min                      = 0.85
+        self.surrogates.subsonic_smoothing_max                      = 0.95
+        self.surrogates.supersonic_smoothing_min                    = 1.05
+        self.surrogates.supersonic_smoothing_max                    = 1.15  
                  
         # build the evaluation process                 
         compute                                                     = Process() 
@@ -142,8 +142,7 @@ class Vortex_Lattice_Method(Aerodynamics):
         compute.drag.cooling                                        = Common.Drag.cooling_drag        
         compute.drag.compressibility                                = Common.Drag.compressibility_drag 
         compute.drag.miscellaneous                                  = Common.Drag.miscellaneous_drag 
-        compute.drag.form                                           = Common.Drag.form_drag  
-        compute.drag.wave                                           = Common.Drag.wave_drag
+        compute.drag.form                                           = Common.Drag.form_drag   
         compute.drag.trim                                           = Common.Drag.trim_drag 
         compute.drag.total                                          = Common.Drag.total_drag
         self.process.compute                                        = compute
@@ -153,19 +152,19 @@ class Vortex_Lattice_Method(Aerodynamics):
         
         use_surrogate   = self.settings.use_surrogate   
         # If we are using the surrogate
-        if use_surrogate == True: 
-            #  training data
-            if not os.path.exists(self.filename):
-                train_VLM_surrogates(self, vehicle)
-    
+        if use_surrogate == True:  
+            if self.settings.reuse_stored_surrogate_model:
+                try: 
+                    with open(self.filename, 'rb') as file:
+                        self.training = pickle.load(file)
+                except:
+                    raise AssertionError('No previously save surrogate model')
+            
+            else:
+                train_VLM_surrogates(self, vehicle) 
                 if self.settings.store_training_data:
                     with open(self.filename, 'wb') as file:
-                        pickle.dump(self.training, file)
-            else:
-                with open(self.filename, 'rb') as file:
-                    self.training = pickle.load(file)
-                print(r""" 
-                [INFO] Aerodynamic training data loaded. Delete the file and rerun to regenerate. """)
+                        pickle.dump(self.training, file) 
             # build surrogate
             build_VLM_surrogates(self, vehicle)        
     

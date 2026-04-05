@@ -147,8 +147,7 @@ class Athena_Vortex_Lattice(Aerodynamics):
         compute.drag.cooling                       = Common.Drag.cooling_drag        
         compute.drag.compressibility               = Common.Drag.compressibility_drag 
         compute.drag.miscellaneous                 = Common.Drag.miscellaneous_drag 
-        compute.drag.form                          = Common.Drag.form_drag  
-        compute.drag.wave                          = Common.Drag.wave_drag
+        compute.drag.form                          = Common.Drag.form_drag   
         compute.drag.trim                          = Common.Drag.trim_drag 
         compute.drag.total                         = Common.Drag.total_drag        
         self.process.compute                       = compute

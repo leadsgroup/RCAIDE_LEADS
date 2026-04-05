@@ -113,16 +113,16 @@ def form_drag(state,settings,geometry):
     RCAIDE.Library.Methods.Utilities.Cubic_Spline_Blender
     """
 
-    conditions       = state.conditions   
-    Mach             = conditions.freestream.mach_number 
-    alpha            = conditions.aerodynamics.angles.alpha 
-    high_mach_cutoff = settings.supersonic.end_drag_rise_mach_number 
-    low_mach_cutoff  = settings.supersonic.begin_drag_rise_mach_number 
-    CD_form          = 0
+    conditions           = state.conditions   
+    Mach                 = conditions.freestream.mach_number 
+    alpha                = conditions.aerodynamics.angles.alpha  
+    sub_low_mach_cutoff  = settings.subsonic.begin_transonic_rise_mach_number      
+    sub_high_mach_cutoff = settings.subsonic.end_transonic_rise_rise_mach_number 
+    CD_form              = 0
     
-    # supersonic smoothing 
-    sup_spline = Cubic_Spline_Blender(low_mach_cutoff,high_mach_cutoff) 
-    sup_h00    = lambda M:sup_spline.compute(M)
+    # transonic and supersonic smoothing out  
+    sub_spline = Cubic_Spline_Blender(sub_low_mach_cutoff, sub_high_mach_cutoff)  
+    sub_h00    = lambda M:sub_spline.compute(M)    
     
     for wing in geometry.wings:
         AR            = wing.aspect_ratio
@@ -159,7 +159,9 @@ def form_drag(state,settings,geometry):
                             
                 CD_form_wing = CD_sep * wing.areas.reference  
         
-            CD_form += CD_form_wing *sup_h00(Mach) /geometry.reference_area 
-        
-    state.conditions.aerodynamics.coefficients.drag.form.total = CD_form  
+            CD_form += CD_form_wing /geometry.reference_area 
+    
+    
+    CD_form_total =  CD_form
+    state.conditions.aerodynamics.coefficients.drag.form.total = CD_form_total  
     return
