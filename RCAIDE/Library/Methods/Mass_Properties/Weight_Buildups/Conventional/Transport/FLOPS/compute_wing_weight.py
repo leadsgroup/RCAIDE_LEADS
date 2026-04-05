@@ -207,12 +207,46 @@ def compute_wing_weight(vehicle, wing, WPOD, fidelity  , settings, num_main_wing
             EA0[1:] = EA1[0:-1]
             
             EW  = np.sum((EA0 + EA1) * DY / 2)
+
+        # ------------------------------------------
+        # Battery additional code
+        # ------------------------------------------
+        Batt_num = 0 # CHANGE THIS
+        if Batt_num>0: # If there are wing batteries
+            batt_loc = np.array([10, 30])
+            num_batt_divisions = 2
+            # Battery locations
+            EETA = np.linspace(batt_loc[0], batt_loc[1], num_batt_divisions+2)[1:-1]* 1 / SEMISPAN
+            
+            W_batt = 100/num_batt_divisions # CHANGE THIS
+            EEL   = np.zeros_like(Y)
+            DELM2 = np.zeros_like(Y)
+            
+            # Do a for loop over engine stations
+            for ii in range(len(EETA)):
+                # Find the station closest to the engine but inboard
+                distances              = EETA[ii]-Y
+                distances[distances<0] = np.inf
+                distance               = np.min(distances)
+                loc                    = np.argmin(distances)
+                DELM2[loc]             = DELM2[loc] + distance
+                EEL[loc+1:]            = EEL[loc+1:] + 1
+
+            DELM2 = DELM2 + EEL*DY
+
+            EEM = np.cumsum(DELM2/np.cos(SWP1))  # Eq. 29
+            EA1 = EEM * 1 / np.cos(SWP1) * 1 / (C1 * T1)  # Eq. 28
+            
+            EA0 = np.zeros_like(Y)
+            EA0[1:] = EA1[0:-1]  # Eq. 28
+            
+            EW  = np.sum((EA0 + EA1) * DY / 2) # Eq. 27
             
         # Finalize properties
         EL = EL[-1] + DELP[-1]    
         EM = EM[-1] / EL
         PM = 4. * PM[-1] / EL
-        EW = 8. * EW
+        EW = 8. * EW  # Eq. 27
         SA = np.sin(ASW[-1])
         AR = 2 / S[-1]       
                 
@@ -227,6 +261,9 @@ def compute_wing_weight(vehicle, wing, WPOD, fidelity  , settings, num_main_wing
         CAYE = 1
         if NEW > 0:
             CAYE = 1 - BTE / BT * WPOD / DG
+        """ADDED THIS BELOW, CHECK"""
+        if Batt_num > 0: # CHANGE THIS
+            CAYE = 1 - BTE / BT * W_batt / DG
 
     A       = wing_weight_constants_FLOPS()  # Wing weight constants
     # Composite utilization factor [0 no composite, 1 full composite]
