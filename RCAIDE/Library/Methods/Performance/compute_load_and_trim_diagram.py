@@ -38,6 +38,9 @@ def compute_load_and_trim_diagram(mission = None, cruise_segment_tag = "cruise",
   
     """  
             
+    if type(mission) != RCAIDE.Framework.Mission:
+        raise AttributeError('RCAIDE mission must be defined')
+    
     #------------------------------------------------------------------------  
     # Remove Takeoff mass
     #------------------------------------------------------------------------   

@@ -40,8 +40,7 @@ def main():
     analyses = analyses_setup(configs) 
 
     takeoff_weight=vehicle.mass_properties.takeoff                
-    takeoff_field_length ,second_seg_clb_grad  =  estimate_take_off_field_length(analyses= analyses.takeoff,
-                                                                                 takeoff_weight=takeoff_weight, 
+    takeoff_field_length ,second_seg_clb_grad  =  estimate_take_off_field_length(analyses= analyses.takeoff, 
                                                                                  compute_2nd_seg_climb = True)
          
     print('Weight (kg): ',takeoff_weight)

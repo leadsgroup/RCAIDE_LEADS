@@ -14,7 +14,7 @@ Date   : Feb 18th, 2026
 import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Internal_Combustion_Engine import design_internal_combustion_engine
-from RCAIDE.Library.Methods.Performance  import generate_V_n_diagram 
+from RCAIDE.Library.Methods.Performance  import compute_V_n_diagram 
 from RCAIDE.Library.Plots import  * 
 
 # package imports
@@ -37,7 +37,7 @@ def main():
     analyses = analyses_setup(configs)
     
     # Vn Diagram 
-    V_n_data = generate_V_n_diagram(analyses=analyses.cruise)
+    V_n_data = compute_V_n_diagram(analyses=analyses.cruise)
     
     plot_V_n_diagram(V_n_data, vehicle)
     

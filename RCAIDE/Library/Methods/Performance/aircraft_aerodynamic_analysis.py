@@ -74,6 +74,8 @@ def aircraft_aerodynamic_analysis(analyses                         = None,
     RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976
     """
 
+    if type(analyses) != RCAIDE.Framework.Analyses:
+        raise AttributeError('RCAIDE analyses must be defined')
     #------------------------------------------------------------------------   
     # Preprocess Geometry 
     #------------------------------------------------------------------------ 

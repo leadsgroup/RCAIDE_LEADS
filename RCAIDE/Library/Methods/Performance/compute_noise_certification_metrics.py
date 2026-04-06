@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Performance/compute_noise_certification_data.py
+# RCAIDE/Library/Methods/Performance/compute_noise_certification_metrics.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke
@@ -7,7 +7,8 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-# RCAIDE imports 
+# RCAIDE imports
+import RCAIDE 
 from RCAIDE.Framework.Core import   Data    
 from RCAIDE.Library.Methods.Aeroacoustics.Common import post_process_noise_data
  
@@ -17,15 +18,15 @@ import numpy as np
 # ----------------------------------------------------------------------
 #  Compute Aircraft Noise Certification Data  
 # ----------------------------------------------------------------------  
-def compute_noise_certification_data(approach_mission  = None, takeoff_mission   = None):
+def compute_noise_certification_metrics(approach_mission  = None, takeoff_mission   = None):
     """Calculates the noise at certification points as well as the noise contours of approach and takeoff.
     A combined approach-takeoff noisec contour is also created 
     """ 
-            
-    if approach_mission == None:
-        raise AssertionError('Approach mission not specifed!')
-    if takeoff_mission == None:
-        raise AssertionError('Takeoff mission not specifed!')
+             
+    if type(approach_mission) != RCAIDE.Framework.Mission:
+        raise AttributeError('RCAIDE mission must be defined') 
+    if type(takeoff_mission) != RCAIDE.Framework.Mission:
+        raise AttributeError('RCAIDE mission must be defined')
      
     microphone_x_resolution                = 401 
     microphone_y_resolution                = 9  

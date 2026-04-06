@@ -14,9 +14,7 @@ import numpy as np
 def propeller_aerodynamic_analysis(propeller,
                            velocity_range,
                            angular_velocity = 2500*Units.rpm,
-                           angle_of_attack = 0, 
-                           altitude = 0,
-                           delta_isa =0 ): 
+                           angle_of_attack = 0): 
     # design aircract 
     electric_rotor                 = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor()  
     electric_rotor.rotor           = propeller 

@@ -9,7 +9,7 @@
 # SUave Imports
 import RCAIDE
 from RCAIDE.Framework.Core  import Data,Units 
-from RCAIDE.Library.Methods.Performance.find_take_off_weight_given_tofl import find_take_off_weight_given_tofl
+from RCAIDE.Library.Methods.Performance.estimate_take_off_weight_given_tofl import find_take_off_weight_given_tofl
 
 # package imports
 import numpy as np

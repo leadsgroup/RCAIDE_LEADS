@@ -3,7 +3,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Data, Units  
 from RCAIDE.Library.Plots import *  
-from RCAIDE.Library.Methods.Performance.cruise_drag_buildup_table import cruise_drag_buildup_table
+from RCAIDE.Library.Methods.Performance.generate_cruise_drag_buildup_table import generate_cruise_drag_buildup_table
 import numpy as  np 
 import sys
 import os
@@ -28,7 +28,7 @@ def main():
     configs  = configs_setup(vehicle) 
     analyses = analyses_setup(configs)  
     mission  = mission_setup(analyses)
-    cruise_drag_buildup_table(mission = mission, cruise_segment_tag = "cruise", save_filepath = os.path.join(os.path.dirname(os.path.abspath(__file__))))
+    generate_cruise_drag_buildup_table(mission = mission, cruise_segment_tag = "cruise", save_filepath = os.path.join(os.path.dirname(os.path.abspath(__file__))))
     for filename in (
     "cruise_drag_buildup_parasite_zoom.png",
     "cruise_drag_buildup.xlsx",

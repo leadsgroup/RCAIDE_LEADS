@@ -7,7 +7,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units , Data
 from RCAIDE.Library.Plots import *
-from RCAIDE.Library.Methods.Performance.compute_noise_certification_data import  compute_noise_certification_data
+from RCAIDE.Library.Methods.Performance.compute_noise_certification_metrics import  compute_noise_certification_metrics
 
 import sys
 import matplotlib.pyplot as plt 
@@ -36,7 +36,7 @@ def main():
     approach_mission  = approach_mission_setup(analyses)
     takeoff_mission   = takeoff_mission_setup(analyses)  
      
-    results = compute_noise_certification_data(approach_mission = approach_mission, takeoff_mission=takeoff_mission)
+    results = compute_noise_certification_metrics(approach_mission = approach_mission, takeoff_mission=takeoff_mission)
     plot_noise_certification_contour(results)
 
     truth_approach_noise_2000m  = 100.1247990732169

@@ -14,7 +14,7 @@ Date   : Feb 18th, 2026
 # RCAIDE Imports
 import RCAIDE
 from RCAIDE.Framework.Core   import Data,Units 
-from RCAIDE.Library.Methods.Performance       import generate_V_n_diagram 
+from RCAIDE.Library.Methods.Performance       import compute_V_n_diagram 
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan                  import design_turbofan 
 from RCAIDE.Library.Plots import  * 
 
@@ -42,7 +42,7 @@ def main():
     analyses = analyses_setup(configs)
     
     # Vn Diagram 
-    V_n_data = generate_V_n_diagram(analyses=analyses.cruise)
+    V_n_data = compute_V_n_diagram(analyses=analyses.cruise)
     
     plot_V_n_diagram(V_n_data, vehicle)
     

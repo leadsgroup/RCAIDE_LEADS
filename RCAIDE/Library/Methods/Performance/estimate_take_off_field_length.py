@@ -10,8 +10,8 @@ import RCAIDE
 from RCAIDE.Framework.Core            import Data, Units     
 from RCAIDE.Library.Methods.Aerodynamics.Common.Drag import * 
 from RCAIDE.Library.Methods.Aerodynamics.Common.Lift import *
-from RCAIDE.Library.Mission.Common.Pre_Process.energy import energy
-from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
+from RCAIDE.Library.Mission.Common.Pre_Process.energy import energy 
+from RCAIDE.Library.Mission.Common.Pre_Process  import geometry_preprocess_routine 
 
 # package imports
 import numpy as np
@@ -19,7 +19,7 @@ import numpy as np
 # ----------------------------------------------------------------------
 #  Compute field length required for takeoff
 # ----------------------------------------------------------------------
-def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0, compute_2nd_seg_climb = False):
+def estimate_take_off_field_length(analyses=None,altitude = 0, delta_isa = 0, compute_2nd_seg_climb = False):
     """
     Computes the takeoff field length and optionally the second segment climb gradient for a given vehicle configuration.
 
@@ -90,16 +90,19 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
     --------
     RCAIDE.Library.Methods.Aerodynamics.Common.Drag.windmilling_drag
     RCAIDE.Library.Methods.Aerodynamics.Common.Drag.asymmetry_drag
-    """        
+    """  
+    if type(analyses) != RCAIDE.Framework.Analyses:
+        raise AttributeError('RCAIDE analyses must be defined')
 
-    # ==============================================
-        # Unpack
-    # ============================================== 
-    for wing in vehicle.wings: 
-        wing_planform(wing) 
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
-            vehicle.reference_area = wing.areas.reference
+    # ---------------------------------------------- 
+    # Preprocess Geometry 
+    # ---------------------------------------------- 
+    geometry_preprocess_routine(analyses)
 
+    # ----------------------------------------------
+    # Unpack
+    # ---------------------------------------------- 
+    vehicle         = analyses.vehicle
     atmo            = analyses.atmosphere 
     weight          = vehicle.mass_properties.takeoff
     reference_area  = vehicle.reference_area 

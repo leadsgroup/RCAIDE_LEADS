@@ -1,4 +1,4 @@
-# estimate_landing_field_length.py
+# RCAIDE/Library/Methods/Performance/estimate_landing_field_length.py
 #
 # Created:  Jun 2014, T. Orra, C. Ilario, Celso, 
 # Modified: Apr 2015, M. Vegh 
@@ -12,13 +12,14 @@
 import  RCAIDE
 from   RCAIDE.Framework.Core import Data, Units
 from   RCAIDE.Library.Methods.Aerodynamics.Common.Lift.compute_max_lift_coeff import compute_max_lift_coeff
+from RCAIDE.Library.Mission.Common.Pre_Process  import geometry_preprocess_routine 
 
 import numpy as np
 
 # ----------------------------------------------------------------------
 #  Compute field length required for landing
 # ----------------------------------------------------------------------
-def estimate_landing_field_length(vehicle,analyses, altitude=0, delta_isa=0):
+def estimate_landing_field_length(analyses = None, altitude=0, delta_isa=0):
     """
     Computes the landing field length required for a given vehicle configuration at specified airport conditions.
 
@@ -78,25 +79,31 @@ def estimate_landing_field_length(vehicle,analyses, altitude=0, delta_isa=0):
     --------
     RCAIDE.Library.Methods.Aerodynamics.Common.Lift.compute_max_lift_coeff
     """            
+
+    if type(analyses) != RCAIDE.Framework.Analyses:
+        raise AttributeError('RCAIDE analyses must be defined')
+    #------------------------------------------------------------------------   
+    # Preprocess Geometry 
+    #------------------------------------------------------------------------ 
+    geometry_preprocess_routine(analyses) 
    
-    # ==============================================
+    #------------------------------------------------------------------------ 
     # Unpack
-    # ============================================== 
-    altitude        = altitude * Units.ft
+    #------------------------------------------------------------------------ 
     delta_isa       = delta_isa
+    vehicle         = analyses.vehicle
     weight          = vehicle.mass_properties.landing
     reference_area  = vehicle.reference_area
-    try:
+    if vehicle.Vref_VS_ratio == None:
+        Vref_VS_ratio = 1.23 
+    else:
         Vref_VS_ratio = vehicle.Vref_VS_ratio
-    except:
-        Vref_VS_ratio = 1.23
         
-    # ==============================================
+    #------------------------------------------------------------------------ 
     # Computing atmospheric conditions
-    # ==============================================
-    atmo            = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmo_values     = atmo.compute_values(altitude,delta_isa)
-    
+    #------------------------------------------------------------------------ 
+    atmo              = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
+    atmo_values       = atmo.compute_values(altitude,delta_isa) 
     p                 = atmo_values.pressure
     T                 = atmo_values.temperature
     rho               = atmo_values.density
@@ -104,9 +111,9 @@ def estimate_landing_field_length(vehicle,analyses, altitude=0, delta_isa=0):
     mu                = atmo_values.dynamic_viscosity
     sea_level_gravity = atmo.planet.sea_level_gravity
    
-    # ==============================================
+    #------------------------------------------------------------------------ 
     # Determining vehicle maximum lift coefficient
-    # ==============================================
+    #------------------------------------------------------------------------ 
     # Condition to CLmax calculation: 90KTAS @ airport
     state = Data()
     state.conditions =  RCAIDE.Framework.Mission.Common.Results() 
@@ -119,16 +126,16 @@ def estimate_landing_field_length(vehicle,analyses, altitude=0, delta_isa=0):
 
     maximum_lift_coefficient, induced_drag_high_lift = compute_max_lift_coeff(state,settings,vehicle)
 
-    # ==============================================
+    #------------------------------------------------------------------------ 
     # Computing speeds (Vs, Vref)
-    # ==============================================
+    #------------------------------------------------------------------------ 
     stall_speed  = (2 * weight * sea_level_gravity / (rho * reference_area * maximum_lift_coefficient)) ** 0.5
     Vref         = stall_speed * Vref_VS_ratio
     
-    # ========================================================================================
+    #------------------------------------------------------------------------ 
     # Computing landing distance, according to Torenbeek equation
     #     Landing Field Length = k1 + k2 * Vref**2
-    # ========================================================================================
+    #------------------------------------------------------------------------ 
 
     # Defining landing distance equation coefficients 
     landing_constants    = np.zeros(3)

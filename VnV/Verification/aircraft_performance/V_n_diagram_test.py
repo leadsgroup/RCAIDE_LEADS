@@ -9,7 +9,7 @@
 # SUave Imports
 import RCAIDE
 from RCAIDE.Framework.Core   import Data,Units 
-from RCAIDE.Library.Methods.Performance  import generate_V_n_diagram
+from RCAIDE.Library.Methods.Performance  import compute_V_n_diagram
 from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
 import matplotlib.pyplot as plt
 
@@ -65,7 +65,7 @@ def part_35_V_n_Diagram():
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
     analyses.append(atmosphere)   
 
-    V_n_data = generate_V_n_diagram(vehicle,analyses)
+    V_n_data = compute_V_n_diagram(vehicle,analyses)
     
     return    
     
@@ -96,7 +96,7 @@ def part_23_V_n_Diagram():
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
     analyses.append(atmosphere)   
 
-    V_n_data = generate_V_n_diagram(vehicle,analyses) 
+    V_n_data = compute_V_n_diagram(vehicle,analyses) 
 
     print(V_n_data.Vs1.positive)
     print(V_n_data.Vs1.negative) 

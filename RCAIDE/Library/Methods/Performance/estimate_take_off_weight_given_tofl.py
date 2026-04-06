@@ -1,4 +1,4 @@
-# find_take_off_weight_given_tofl.py
+# RCAIDE/Library/Methods/Performance/estimate_take_off_weight_given_tofl.py
 
 # Created: Apr 2025, M. Clarke  
 # ----------------------------------------------------------------------
@@ -6,14 +6,14 @@
 # ----------------------------------------------------------------------
 import RCAIDE
 from RCAIDE.Library.Methods.Performance.estimate_take_off_field_length import estimate_take_off_field_length
-from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
+from RCAIDE.Library.Mission.Common.Pre_Process  import geometry_preprocess_routine  
 
 import numpy as np
 
 # ----------------------------------------------------------------------
 #  Find Takeoff Weight Given TOFL
 # ----------------------------------------------------------------------
-def find_take_off_weight_given_tofl(vehicle,analyses,target_tofl,altitude = 0, delta_isa = 0):
+def estimate_take_off_weight_given_tofl(analyses=None,target_tofl=0.0,altitude = 0, delta_isa = 0):
     """
     Estimates the maximum allowable takeoff weight for a given takeoff field length requirement.
 
@@ -63,13 +63,20 @@ def find_take_off_weight_given_tofl(vehicle,analyses,target_tofl,altitude = 0, d
     --------
     RCAIDE.Library.Methods.Performance.estimate_take_off_field_length
     """       
+ 
+    if type(analyses) != RCAIDE.Framework.Analyses:
+        raise AttributeError('RCAIDE analyses must be defined')
+    
+    if target_tofl ==0.0:
+        raise AttributeError('Takeoff field length must be greater than zero')
 
-    for wing in vehicle.wings: 
-        wing_planform(wing) 
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
-            vehicle.reference_area = wing.areas.reference
+    # ---------------------------------------------- 
+    # Preprocess Geometry 
+    # ---------------------------------------------- 
+    geometry_preprocess_routine(analyses)
             
     #unpack
+    vehicle   = analyses.vehicle
     tow_lower = vehicle.mass_properties.operating_empty
     tow_upper = 1.10 * vehicle.mass_properties.max_takeoff
 
