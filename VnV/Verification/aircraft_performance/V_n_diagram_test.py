@@ -36,7 +36,7 @@ from  Boeing_737 import vehicle_setup   as Transport_vehicle_setup
 from  Boeing_737 import configs_setup   as Transport_configs_setup    
 
 def main():
-    part_25_V_n_Diagram()
+    #part_25_V_n_Diagram()
     part_23_V_n_Diagram()
     
     return
@@ -103,7 +103,7 @@ def part_23_V_n_Diagram():
     error.limit_load_pos          = (actual.limit_load_pos - V_n_data.positive_limit_load)/actual.limit_load_pos
     error.limit_load_neg          = (actual.limit_load_neg - V_n_data.negative_limit_load)/actual.limit_load_neg
     error.dive_limit_load_pos     = (actual.dive_limit_load_pos - V_n_data.limit_loads.dive.positive)/actual.dive_limit_load_pos
-    error.dive_limit_load_neg     = (actual.dive_limit_load_neg - V_n_data.limit_loads.dive.negative)
+    error.dive_limit_load_neg     = (actual.dive_limit_load_neg - V_n_data.limit_loads.dive.negative)/actual.dive_limit_load_neg
 
 
     for k,v in error.items():

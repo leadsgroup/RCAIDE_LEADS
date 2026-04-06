@@ -138,31 +138,22 @@ def compute_V_n_diagram(analyses,altitude = 0,delta_ISA = 0):
     # ------------------------------
     # Computing lift-curve slope
     # ------------------------------ 
-    results =  evalaute_aircraft(vehicle,altitude,Vc)
+    results =  evalaute_aircraft(analyses,altitude,Vc)
     CLa     =  results.segments.cruise.conditions.static_stability.derivatives.Clift_alpha[0, 0] 
-
+ 
     # -----------------------------------------------------------
     # Determining vehicle minimum and maximum lift coefficients
     # -----------------------------------------------------------
-    if vehicle.flight_envelope.maximum_lift_coefficient != None: 
-        atmo_values       = atmo.compute_values(altitude,delta_ISA) 
-        rho               = atmo_values.density 
-        mu                = atmo_values.dynamic_viscosity
-        sea_level_gravity = atmo.planet.sea_level_gravity
-        
-        state = Data()
-        state.conditions = RCAIDE.Framework.Mission.Common.Results()
-        state.conditions.freestream = Data()
-        state.conditions.freestream.density           = rho
-        state.conditions.freestream.velocity          = Vc 
-        state.conditions.freestream.dynamic_viscosity = mu
-    
-        settings = analyses.aerodynamics.settings
-    
-        CL_max, _ = compute_max_lift_coeff(state,settings,vehicle)
-        maximum_lift_coefficient =  CL_max[0, 0]
+    if vehicle.flight_envelope.maximum_lift_coefficient != None:
+        maximum_lift_coefficient = vehicle.flight_envelope.maximum_lift_coefficient
     else:
-        maximum_lift_coefficient =  vehicle.flight_envelope.maximum_lift_coefficient
+        raise ValueError("Maximum lift coefficient not specified.")
+
+    if vehicle.flight_envelope.minimum_lift_coefficient != None:
+        minimum_lift_coefficient = vehicle.flight_envelope.minimum_lift_coefficient
+    else: 
+        raise ValueError("Minimum lift coefficient not specified.")
+    
     # -----------------------------------------------------------------------------
     # Convert all terms to English (Used for FAR) and remove elements from arrays
     # -----------------------------------------------------------------------------
@@ -433,13 +424,7 @@ def compute_V_n_diagram(analyses,altitude = 0,delta_ISA = 0):
     return V_n_data
 
       
-def evalaute_aircraft(vehicle,altitude,Vc):
-
-    # Set up vehicle configs
-    configs  = configs_setup(vehicle)
-
-    # create analyses
-    analyses = analyses_setup(configs)
+def evalaute_aircraft(analyses,altitude,Vc): 
 
     # mission analyses
     mission  = base_mission_setup(analyses,altitude,Vc) 
@@ -451,76 +436,7 @@ def evalaute_aircraft(vehicle,altitude,Vc):
     results = missions.base_mission.evaluate() 
 
     return results
- 
-def analyses_setup(configs):
-
-    analyses = RCAIDE.Framework.Analyses.Analysis.Container()
-
-    # build a base analysis for each config
-    for tag,config in configs.items():
-        analysis = base_analysis(config)
-        analyses[tag] = analysis
-
-    return analyses
-
-def base_analysis(vehicle):
-
-       # ------------------------------------------------------------------
-    #   Initialize the Analyses
-    # ------------------------------------------------------------------
-    analyses         = RCAIDE.Framework.Analyses.Vehicle()
-    analyses.vehicle = vehicle
-    
-    #  Geometry
-    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    analyses.append(geometry) 
-
-    # ------------------------------------------------------------------
-    #  Weights
-    # ------------------------------------------------------------------
-    weights         = RCAIDE.Framework.Analyses.Weights.Conventional_General_Aviation() 
-    analyses.append(weights)
-
-    # ------------------------------------------------------------------
-    #  Aerodynamics Analysis
-    # ------------------------------------------------------------------
-    aerodynamics                                      = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.settings.use_surrogate               = False
-    analyses.append(aerodynamics)
-
-
-    # ------------------------------------------------------------------
-    #  Energy
-    # ------------------------------------------------------------------
-    energy     = RCAIDE.Framework.Analyses.Energy.Energy()
-    analyses.append(energy)
-
-    # ------------------------------------------------------------------
-    #  Planet Analysis
-    # ------------------------------------------------------------------
-    planet     = RCAIDE.Framework.Analyses.Planets.Earth()
-    analyses.append(planet)
-
-    # ------------------------------------------------------------------
-    #  Atmosphere Analysis
-    # ------------------------------------------------------------------
-    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    analyses.append(atmosphere)
-
-    # done!
-    return analyses
-
-
-def configs_setup(vehicle):
-    # ------------------------------------------------------------------
-    #   Initialize Configurations
-    # ------------------------------------------------------------------
-    configs = RCAIDE.Library.Components.Configs.Config.Container()
-    base_config                                                       = RCAIDE.Library.Components.Configs.Config(vehicle)
-    base_config.tag                                                   = 'base'
-    configs.append(base_config)
-    return configs
-
+   
 def base_mission_setup(analyses,altitude,Vc):
     '''
     This sets up the nominal cruise of the aircraft
@@ -534,7 +450,7 @@ def base_mission_setup(analyses,altitude,Vc):
 
     #   Cruise Segment: constant Speed, constant altitude 
     segment                           = Segments.Untrimmed.Untrimmed()
-    segment.analyses.extend( analyses.base )   
+    segment.analyses.extend( analyses)   
     segment.tag                       = "cruise" 
     segment.altitude                  = altitude
     segment.air_speed                 = Vc
@@ -624,11 +540,7 @@ def stall_maneuver_speeds(V_n_data):
     airspeeds_neg[2] = (2 * weight * abs(load_factors_neg[2]) / (rho * reference_area * \
                                                                  abs(min_lift_coef))) ** 0.5
     
-    # Pack
-    V_n_data.airspeeds.positive           = airspeeds_pos
-    V_n_data.airspeeds.negative           = airspeeds_neg
-    V_n_data.load_factors.positive        = load_factors_pos
-    V_n_data.load_factors.negative        = load_factors_neg
+    # Pack 
     V_n_data.Vs1.positive                 = airspeeds_pos[1]
     V_n_data.Vs1.negative                 = airspeeds_neg[1]
     V_n_data.Va.positive                  = airspeeds_pos[2]
@@ -758,10 +670,8 @@ def gust_loads(category_tag, V_n_data, Kg, CLa, Num_of_points, FAR_part_number, 
     For more details, refer to S. Gudmundsson "General Aviation Aircraft Design: Applied Methods and Procedures"
     """
 
-    # Unpack
-    weight          = V_n_data.weight
-    wing_loading    = V_n_data.wing_loading
-    reference_area  = V_n_data.reference_area
+    # Unpack 
+    wing_loading    = V_n_data.wing_loading 
     density         = V_n_data.density
     density_ratio   = V_n_data.density_ratio
     Vc              = V_n_data.Vc
