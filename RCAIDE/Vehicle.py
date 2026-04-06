@@ -94,7 +94,7 @@ class Vehicle(Data):
         self.flight_envelope.maximum_dynamic_pressure                      = 0.0
         self.flight_envelope.maximum_mach_operational                      = 0.0
         self.flight_envelope.maximum_lift_coefficient                      = None
-        self.flight_envelope.minimum_lift_coefficient                      = None
+        self.flight_envelope.minimum_lift_coefficient                      = -1.5
 
         self.flight_envelope.maneuver                                      = Data()
         self.flight_envelope.maneuver.load_alleviation_factor              = 0.0 

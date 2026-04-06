@@ -91,7 +91,7 @@ def estimate_take_off_field_length(analyses=None,altitude = 0, delta_isa = 0, co
     RCAIDE.Library.Methods.Aerodynamics.Common.Drag.windmilling_drag
     RCAIDE.Library.Methods.Aerodynamics.Common.Drag.asymmetry_drag
     """  
-    if type(analyses) != RCAIDE.Framework.Analyses:
+    if type(analyses) != RCAIDE.Framework.Analyses.Vehicle:
         raise AttributeError('RCAIDE analyses must be defined')
 
     # ---------------------------------------------- 

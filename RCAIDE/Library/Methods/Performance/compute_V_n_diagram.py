@@ -10,11 +10,12 @@
 # RCAIDE Imports
 import RCAIDE
 from RCAIDE.Framework.Core import Data, Units  
+from RCAIDE.Library.Methods.Aerodynamics.Common.Drag import * 
+from RCAIDE.Library.Methods.Aerodynamics.Common.Lift import *
 from RCAIDE.Library.Mission.Common.Pre_Process  import geometry_preprocess_routine 
 
 # package imports
-import numpy as np
-import matplotlib.pyplot as plt
+import numpy as np 
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Compute a V-n diagram
@@ -101,7 +102,7 @@ def compute_V_n_diagram(analyses,altitude = 0,delta_ISA = 0):
     [3] Gudmundsson, S. (2022). General Aviation Aircraft Design: Applied Methods and procedures. Elsevier. 
     """
     
-    if type(analyses) != RCAIDE.Framework.Analyses:
+    if type(analyses) != RCAIDE.Framework.Analyses.Vehicle:
         raise AttributeError('RCAIDE analyses must be defined')
     # ---------------------------------------------- 
     # Preprocess Geometry 
@@ -111,16 +112,18 @@ def compute_V_n_diagram(analyses,altitude = 0,delta_ISA = 0):
     # ----------------------------------------------
     # Unpack
     # ---------------------------------------------- 
-    vehicle         = analyses.vehicle
-    atmo            = analyses.atmosphere
-    weight          = vehicle.mass_properties.max_takeoff 
-    FAR_part_number = vehicle.flight_envelope.FAR_part_number
-    Mc              = vehicle.flight_envelope.design_mach_number
-    reference_area  = vehicle.reference_area 
-    Cmac            = vehicle.reference_chord 
-    pos_limit_load  = vehicle.flight_envelope.positive_limit_load
-    neg_limit_load  = vehicle.flight_envelope.positive_limit_load 
-    category_tag    = vehicle.flight_envelope.category
+    vehicle                  = analyses.vehicle
+    atmo                     = analyses.atmosphere
+    weight                   = vehicle.mass_properties.max_takeoff 
+    FAR_part_number          = vehicle.flight_envelope.FAR_part_number
+    Mc                       = vehicle.flight_envelope.design_mach_number
+    reference_area           = vehicle.reference_area 
+    Cmac                     = vehicle.reference_chord 
+    pos_limit_load           = vehicle.flight_envelope.positive_limit_load
+    neg_limit_load           = vehicle.flight_envelope.positive_limit_load 
+    category_tag             = vehicle.flight_envelope.category
+    minimum_lift_coefficient = vehicle.flight_envelope.minimum_lift_coefficient
+ 
     
     # ----------------------------------------------
     # Computing atmospheric conditions
@@ -141,16 +144,25 @@ def compute_V_n_diagram(analyses,altitude = 0,delta_ISA = 0):
     # -----------------------------------------------------------
     # Determining vehicle minimum and maximum lift coefficients
     # -----------------------------------------------------------
-    if vehicle.flight_envelope.maximum_lift_coefficient != None:
-        maximum_lift_coefficient = vehicle.flight_envelope.maximum_lift_coefficient
+    if vehicle.flight_envelope.maximum_lift_coefficient != None: 
+        atmo_values       = atmo.compute_values(altitude,delta_ISA) 
+        rho               = atmo_values.density 
+        mu                = atmo_values.dynamic_viscosity
+        sea_level_gravity = atmo.planet.sea_level_gravity
+        
+        state = Data()
+        state.conditions = RCAIDE.Framework.Mission.Common.Results()
+        state.conditions.freestream = Data()
+        state.conditions.freestream.density           = rho
+        state.conditions.freestream.velocity          = Vc 
+        state.conditions.freestream.dynamic_viscosity = mu
+    
+        settings = analyses.aerodynamics.settings
+    
+        CL_max, _ = compute_max_lift_coeff(state,settings,vehicle)
+        maximum_lift_coefficient =  CL_max[0, 0]
     else:
-        raise ValueError("Maximum lift coefficient not specified.")
-
-    if vehicle.flight_envelope.minimum_lift_coefficient != None:
-        minimum_lift_coefficient = vehicle.flight_envelope.minimum_lift_coefficient
-    else: 
-        raise ValueError("Minimum lift coefficient not specified.")
-             
+        maximum_lift_coefficient =  vehicle.flight_envelope.maximum_lift_coefficient
     # -----------------------------------------------------------------------------
     # Convert all terms to English (Used for FAR) and remove elements from arrays
     # -----------------------------------------------------------------------------
@@ -261,7 +273,10 @@ def compute_V_n_diagram(analyses,altitude = 0,delta_ISA = 0):
     V_n_data.maximum_lift_coefficient = maximum_lift_coefficient
     V_n_data.minimum_lift_coefficient = minimum_lift_coefficient
     V_n_data.positive_limit_load      = load_factors_pos[2]
-    V_n_data.negative_limit_load      = load_factors_neg[2]
+    V_n_data.negative_limit_load      = load_factors_neg[2] 
+    V_n_data.tag                      =  vehicle.tag  
+    V_n_data.category                 =  vehicle.flight_envelope.category  
+    V_n_data.FAR_part_number          =  vehicle.flight_envelope.FAR_part_number   
     
     # --------------------------------------------------
     # Computing critical speeds (Va, Vc, Vb, Vd, Vs1)
@@ -409,8 +424,12 @@ def compute_V_n_diagram(analyses,altitude = 0,delta_ISA = 0):
     # Post-processing the V-n diagram
     # ---------------------------------------------- 
     V_n_data.positive_limit_load = max(V_n_data.load_factors.positive)
-    V_n_data.negative_limit_load = min(V_n_data.load_factors.negative) 
-    post_processing(category_tag, Uref_rough, Uref_cruise, Uref_dive, V_n_data, vehicle) 
+    V_n_data.negative_limit_load = min(V_n_data.load_factors.negative)
+    
+    V_n_data.category_tag = category_tag
+    V_n_data.Uref_rough   = Uref_rough  
+    V_n_data.Uref_cruise  = Uref_cruise
+    V_n_data.Uref_dive    = Uref_dive 
     return V_n_data
 
       

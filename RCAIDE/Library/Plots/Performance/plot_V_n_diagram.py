@@ -115,7 +115,7 @@ def plot_V_n_diagram(V_n_data,
     # Formating the plot
     ax.set_xlabel('Airspeed, KEAS')
     ax.set_ylabel('Load Factor')
-    ax.set_title(vehicle.tag + '  Weight=' + str(round(weight)) + 'lb  ' + ' Altitude=' + str(round(altitude)) + 'ft ')
+    ax.set_title(V_n_data.tag + '  Weight=' + str(round(weight)) + 'lb  ' + ' Altitude=' + str(round(altitude)) + 'ft ')
     ax.legend()
     ax.grid() 
 
@@ -123,12 +123,12 @@ def plot_V_n_diagram(V_n_data,
     # Creating results output file
     #---------------------------------
     if generate_report: 
-        fres = open("V_n_diagram_results_" + vehicle.tag +".dat","w")
+        fres = open("V_n_diagram_results_" + V_n_data.tag +".dat","w")
         fres.write('V-n diagram summary\n')
         fres.write('-------------------\n')
-        fres.write('Aircraft: ' + vehicle.tag + '\n')
-        fres.write('category: ' + vehicle.flight_envelope.category + '\n')
-        fres.write('FAR certification: Part ' +  vehicle.flight_envelope.FAR_part_number  + '\n')
+        fres.write('Aircraft: ' + V_n_data.tag + '\n')
+        fres.write('category: ' + V_n_data.category + '\n')
+        fres.write('FAR certification: Part ' +  V_n_data.FAR_part_number  + '\n')
         fres.write('Weight = ' + str(round(weight)) + ' lb\n')
         fres.write('Altitude = ' + str(round(altitude)) + ' ft\n')
         fres.write('---------------------------------------------------------------\n\n')

@@ -49,7 +49,11 @@ def vehicle_setup():
     vehicle.flight_envelope.design_cruise_altitude    = 25000 * Units.feet
     vehicle.flight_envelope.ultimate_load             = 3.75
     vehicle.flight_envelope.positive_limit_load       = 1.5 
-    vehicle.flight_envelope.design_dynamic_pressure   = 2755 # max speed at 10 k feet 
+    vehicle.flight_envelope.design_dynamic_pressure   = 2755 # max speed at 10 k feet  
+    vehicle.flight_envelope.category                  = 'normal'
+    vehicle.flight_envelope.FAR_part_number           = '23' 
+    vehicle.flight_envelope.maximum_lift_coefficient  = 3
+    vehicle.flight_envelope.minimum_lift_coefficient  = -1.5 
               
     # basic parameters              
     vehicle.reference_area                            = 61.0  

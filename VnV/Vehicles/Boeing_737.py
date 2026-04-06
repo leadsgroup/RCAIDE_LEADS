@@ -42,6 +42,10 @@ def vehicle_setup():
     vehicle.flight_envelope.design_cruise_altitude    = 35000*Units.feet
     vehicle.flight_envelope.design_range              = 3500 * Units.nmi
     vehicle.flight_envelope.design_dynamic_pressure   = 293.46
+    vehicle.flight_envelope.category                  = 'normal'
+    vehicle.flight_envelope.FAR_part_number           = '25' 
+    vehicle.flight_envelope.maximum_lift_coefficient  = 3
+    vehicle.flight_envelope.minimum_lift_coefficient  = -1.5 
     vehicle.reference_area                            = 124.862 * Units['meters**2']   
     vehicle.number_of_passengers                      = 170
     vehicle.systems.control                           = "fully powered" 

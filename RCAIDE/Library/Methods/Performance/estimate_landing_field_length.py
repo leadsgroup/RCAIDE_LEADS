@@ -80,7 +80,7 @@ def estimate_landing_field_length(analyses = None, altitude=0, delta_isa=0):
     RCAIDE.Library.Methods.Aerodynamics.Common.Lift.compute_max_lift_coeff
     """            
 
-    if type(analyses) != RCAIDE.Framework.Analyses:
+    if type(analyses) != RCAIDE.Framework.Analyses.Vehicle:
         raise AttributeError('RCAIDE analyses must be defined')
     #------------------------------------------------------------------------   
     # Preprocess Geometry 
