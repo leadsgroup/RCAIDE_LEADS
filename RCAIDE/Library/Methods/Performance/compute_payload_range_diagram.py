@@ -93,10 +93,7 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
     --------
     RCAIDE.Library.Methods.Performance.conventional_payload_range_diagram
     RCAIDE.Library.Methods.Performance.electric_payload_range_diagram
-    """ 
-             
-    if type(mission) != RCAIDE.Framework.Mission:
-        raise AttributeError('RCAIDE mission must be defined')
+    """  
     mission.tag = "payload_range_mission"
     
     initial_segment =  list(mission.segments.keys())[0]
