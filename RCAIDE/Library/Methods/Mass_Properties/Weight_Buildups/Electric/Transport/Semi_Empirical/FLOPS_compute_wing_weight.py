@@ -184,34 +184,34 @@ def compute_wing_weight(vehicle, wing, WPOD, fidelity  , settings, num_main_wing
 
 
         # Adjust for engine loads
-        if N2>0: # If there are engines
-            EEL   = np.zeros_like(Y)
-            DELM2 = np.zeros_like(Y)
+        # if N2>0: # If there are engines
+        #     EEL   = np.zeros_like(Y)
+        #     DELM2 = np.zeros_like(Y)
             
-            # Do a for loop over engine stations
-            for ii in range(len(EETA)):
-                # Find the station closest to the engine but inboard
-                distances              = EETA[ii]-Y
-                distances[distances<0] = np.inf
-                distance               = np.min(distances)
-                loc                    = np.argmin(distances)
-                DELM2[loc]             = DELM2[loc] + distance
-                EEL[loc+1:]            = EEL[loc+1:] + 1
+        #     # Do a for loop over engine stations
+        #     for ii in range(len(EETA)):
+        #         # Find the station closest to the engine but inboard
+        #         distances              = EETA[ii]-Y
+        #         distances[distances<0] = np.inf
+        #         distance               = np.min(distances)
+        #         loc                    = np.argmin(distances)
+        #         DELM2[loc]             = DELM2[loc] + distance
+        #         EEL[loc+1:]            = EEL[loc+1:] + 1
 
-            DELM2 = DELM2 + EEL*DY
+        #     DELM2 = DELM2 + EEL*DY
 
-            EEM = np.cumsum(DELM2/np.cos(SWP1))
-            EA1 = EEM * 1 / np.cos(SWP1) * 1 / (C1 * T1)
+        #     EEM = np.cumsum(DELM2/np.cos(SWP1))
+        #     EA1 = EEM * 1 / np.cos(SWP1) * 1 / (C1 * T1)
             
-            EA0 = np.zeros_like(Y)
-            EA0[1:] = EA1[0:-1]
+        #     EA0 = np.zeros_like(Y)
+        #     EA0[1:] = EA1[0:-1]
             
-            EW  = np.sum((EA0 + EA1) * DY / 2)
+        #     EW  = np.sum((EA0 + EA1) * DY / 2)
 
         # ------------------------------------------
         # Battery additional code
         # ------------------------------------------
-        Batt_num = 0 # CHANGE THIS
+        Batt_num = 1 # CHANGE THIS
         if Batt_num>0: # If there are wing batteries
             batt_loc = np.array([10, 30])
             num_batt_divisions = 4

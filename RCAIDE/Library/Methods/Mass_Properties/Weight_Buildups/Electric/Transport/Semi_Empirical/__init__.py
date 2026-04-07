@@ -9,3 +9,4 @@
 # ----------------------------------------------------------------------------------------------------------------------
 from .compute_operating_empty_weight import compute_operating_empty_weight
 from .compute_operating_items_weight import compute_operating_items_weight
+from .FLOPS_compute_wing_weight import compute_wing_weight

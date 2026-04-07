@@ -10,6 +10,7 @@ from RCAIDE.Framework.Core import Data ,  Units
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common import compute_payload_weight 
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Transport.Semi_Empirical.compute_operating_items_weight import compute_operating_items_weight
 import RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Common as Electric_Common
+from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric.Transport.Semi_Empirical.FLOPS_compute_wing_weight import compute_wing_weight
 
 # python imports 
 import numpy as np
@@ -250,7 +251,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
         if isinstance(wing, Wings.Main_Wing): 
             fidelity = settings.FLOPS.fidelity
             try:
-                W_wing = Method.compute_wing_weight(vehicle, wing, WPOD, fidelity, settings, num_main_wings)
+                W_wing = compute_wing_weight(vehicle, wing, WPOD, fidelity, settings, num_main_wings) # FLOPS wing weight with added battery ienrtia relief
             except:
                 W_wing = Method.compute_main_wing_weight(vehicle, wing, settings)
 
