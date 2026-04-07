@@ -268,7 +268,8 @@ def write_vsp_boom(boom,area_tags, OML_set_ind):
 
     if 'OpenVSP_values' in boom:        
         vals = boom.OpenVSP_values
- 
+
+        # for wave drag testing
         boom.OpenVSP_ID = b_id
 
         # Nose

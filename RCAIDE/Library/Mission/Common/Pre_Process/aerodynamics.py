@@ -81,7 +81,7 @@ def aerodynamics(mission):
                     segment.analyses.aerodynamics.slat_flag                           = mission.segments[last_tag].analyses.aerodynamics.slat_flag    
                     
                 else:  
-                    segment.analyses.aerodynamics.filename =  os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), os.path.splitext(os.path.basename(sys.argv[0]))[0] +"_aero_surrogate_data.pkl")
+                    segment.analyses.aerodynamics.filename =  os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), segment.analyses.aerodynamics.tag + "_" + mission.tag+ "_" + os.path.splitext(os.path.basename(sys.argv[0]))[0] +"_aerodynamic_training_data.pkl")
                     segment.analyses.aerodynamics.initialize(segment.analyses.vehicle)   
                     last_tag = tag  
     return 

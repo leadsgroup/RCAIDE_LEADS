@@ -95,7 +95,8 @@ def generate_cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cru
     cd_total          = float(np.mean(drag.total[:, 0]))
     cd_induced_total  = float(np.mean(drag.induced.total[:, 0]))
     cd_comp_total     = float(np.mean(drag.compressible.total[:, 0]))
-    cd_misc_total     = float(np.mean(drag.miscellaneous.total[:, 0])) 
+    cd_misc_total     = float(np.mean(drag.miscellaneous.total[:, 0]))
+    cd_wave_total     = float(np.mean(drag.wave.total[:, 0]))
     cd_form_total     = float(np.mean(drag.form.total[:, 0]))
     cd_cool_total     = float(np.mean(drag.cooling.total[:, 0]))
 
@@ -137,7 +138,8 @@ def generate_cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cru
         ("parasite",      parasite_sub,      cd_parasite_total),
         ("induced",       induced_sub,       cd_induced_total),
         ("compressible",  [("total", cd_comp_total)],  cd_comp_total),
-        ("miscellaneous", [("total", cd_misc_total)],  cd_misc_total), 
+        ("miscellaneous", [("total", cd_misc_total)],  cd_misc_total),
+        ("wave",          [("total", cd_wave_total)],  cd_wave_total),
         ("form",          [("total", cd_form_total)],  cd_form_total),
         ("cooling",       [("total", cd_cool_total)],  cd_cool_total),
         ("TOTAL",         [("total", cd_total)],       cd_total),
@@ -261,7 +263,8 @@ def generate_cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cru
         ("Parasite", cd_parasite_total),
         ("Induced", cd_induced_total),
         ("Compressible", cd_comp_total),
-        ("Miscellaneous", cd_misc_total), 
+        ("Miscellaneous", cd_misc_total),
+        ("Wave", cd_wave_total),
         ("Form", cd_form_total),
         ("Cooling", cd_cool_total),
     ]
