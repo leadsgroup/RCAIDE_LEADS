@@ -18,14 +18,22 @@ def compute_wingbox_properties(wing,discretized_params):
     """
     Assembles the wingbox from components at every element.
     """
-   
-    chord_arr = discretized_params.discretized_chords_elems
-    spar_r_loc = 0 # UPDATE SID 
-    spar_f_loc  = 0# UPDATE SID 
-    h_arr   = 0# UPDATE SID 
+    # 1. Extract the element arrays
+    chord_arr   = discretized_params.chord_elems
+    spar_f_loc  = discretized_params.spar_f_elems
+    spar_r_loc  = discretized_params.spar_r_elems
+    
+    # 2. Extract structural properties from our saved config dictionary
+    config      = discretized_params.wing_config
+    t_c         = config['t_c']
+    skin_t_top  = config['Skin_Top_Thick']
+    skin_t_bot  = config['Skin_Bot_Thick']
+    f_spar_data = config['Front_Spar']
+    r_spar_data = config['Rear_Spar']
+    h_arr       = chord_arr * t_c
 
     # Geometry Arrays 
-    w_box_arr = chord_arr * (spar_r_loc - spar_f_loc)
+    w_box_arr   = chord_arr * (spar_r_loc - spar_f_loc)
     
     # 1. Front Spar (Get Ixx and Iyy)
     A_fs, I_fs_xx, I_fs_yy = get_spar_properties(

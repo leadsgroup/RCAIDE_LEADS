@@ -1,7 +1,7 @@
-# RCAIDE/Framework/Analyses/Aerodynamics/Aerodynamics.py
+# RCAIDE/Framework/Analyses/Aerostructures/Aerostructures.py
 # 
 # 
-# Created:  Jul 2023, M. Clarke
+# Created:  Mar 2026, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT

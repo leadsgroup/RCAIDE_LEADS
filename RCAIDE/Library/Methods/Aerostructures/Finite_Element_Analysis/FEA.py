@@ -9,15 +9,16 @@
 
 # Import Supporting Functions
 import RCAIDE
+from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.compute_material_properties          import compute_material_properties
 from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.compute_wingbox_properties           import compute_wingbox_properties
 from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.compute_loads                        import compute_loads
 from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.compute_3d_transformation_matrix     import compute_3d_transformation_matrix
 from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.compute_element_stiffness_arrays     import compute_element_stiffness_arrays
 from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.compute_force_vector                 import compute_force_vector
-from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.compute_surface_loads                import compute_surface_loads
 from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.plot_wingbox                         import plot_wingbox
 from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.discretize_wing                      import discretize_wing
+from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.discretize_wing                      import map_panel_forces_to_fea
 
 # Python Imports
 import numpy as np
@@ -35,219 +36,138 @@ pv.global_theme.font.title_size         = 16
 # ----------------------------------------------------------------------
 def FEA(conditions,VLM_results,VD,settings,geometry):
     """
-    
+    Main Aero-Structural integration bridge.
     """ 
-    num_elements = settings.discretiation   
-
-    for wing in geometry.wings:
-        VD   = settings.vortex_distribution
-        n_sw = VD.n_sw  # N_spanwise
-        n_cw = VD.n_cw  # N_chordwise
+    n_cpts = len(VLM_results.CLift) # Number of timesteps/flight conditions
+    # 1. Discretize Geometry
+    num_elements = settings.discretiation
+    num_nodes = num_elements + 1
+    structural_results = Data()
+    
+    # LOOP OVER FLIGHT CONDITIONS (Timesteps)
+    for ti in range(n_cpts):
         
-        # Spanwise lift of wing (dimension: 1 x N_spanwise)
-        CL_y = VLM_results.spanwise_wing_lift[wing.tag]
+        # Array indices for panel flattening (Logic from plot_surface_pressures.py)
+        # VD.n_sw[ti] * VD.n_cw[ti] gives the total panels for each wing segment
+        panels_per_wing = VD.n_sw[ti] * VD.n_cw[ti]
+        b_pts = np.concatenate(([0], np.cumsum(panels_per_wing))) 
         
-        # Surface lift of each panel on the wing  (dimension: 1, N_spanwise x N_chordwise)
-        L    = VLM_results.surface_wing_lift[wing.tag]
+        vd_idx = 0
         
-        # Surface forces of each panel on the wing  (dimension: 1, N_spanwise x N_chordwise)
-        Fx   = VLM_results.surface_Fx[wing.tag]             
-        Fy   = VLM_results.surface_Fy[wing.tag]             
-        Fz   = VLM_results.surface_Fz[wing.tag]   
+        # Calculate Dynamic Pressure for this timestep
+        rho = float(np.atleast_1d(conditions.freestream.density[ti])[0])
+        v_inf = float(np.atleast_1d(conditions.freestream.velocity[ti])[0])
         
-        # TO DO : NEED TO COMPUTE MOMENT BASED ON SURFACE forces
-        # step 1, determine aerodynamic center
-        # AC_spanwise =
-        # Moment_arm  = VC.X_C - AC_spanwise
+        # Override surrogate training conditions
+        if rho <= 0.0:
+            rho = 1.225
         
-        # compute moment from lift
-        # Moment = .... 
-
+        q_dyn = 0.5 * rho * (v_inf ** 2)
+        
+        # LOOP OVER WINGS
+        for wing in geometry.wings.values():
+            
+            sym = wing.xz_plane_symmetric
+            # 1. GENERATE FEA GEOMETRY (Optimize this to run once later)
+            VD_struct = discretize_wing(wing, num_elements)
+            fea_pts = np.column_stack((VD_struct.X_nodes[:-1], VD_struct.Y_elems, VD_struct.Z_nodes[:-1]))
+            
+            # 2. EXTRACT VLM CONTROL POINTS (For this specific wing and timestep)
+            start_idx = int(b_pts[vd_idx])
+            end_idx   = int(b_pts[vd_idx+1])
+            
+            XC = VD.XC[ti, start_idx:end_idx]
+            YC = VD.YC[ti, start_idx:end_idx]
+            # If ZC doesn't exist, assume flat wake (z=0)
+            if hasattr(VD, 'ZC'):
+                ZC = VD.ZC[ti, start_idx:end_idx]
+            else:
+                ZC = np.zeros_like(XC)
                 
-        discretized_params = discretize_wing(wing,num_elements)
-
-        num_nodes                       = num_elements + 1
-        
-        # Material
-        E, G, Rho, Yield_Stress, Nu     = compute_material_properties("Al7075_T6")
-        
-        # --- WINGBOX ASSEMBLY ---
-        A_arr, Ixx_arr, Izz_arr, J_arr, w_box_arr, h_arr = compute_wingbox_properties(wing,discretized_params)
-        
-        # --- LOADS ---
-        # Aero
-        Y_elems                         = (discretized_params.Y_nodes[:-1] + discretized_params.Y_nodes[1:]) / 2
-        load_w_z_aero, load_t_y_aero    = compute_loads(5000, Y_elems, total_span)
-        # Gravity (Ribs + Wing Structure)
-        # Wing Structure Weight
-        w_z_struct                      = -A_arr * Rho * 9.81
-        
-        # Rib Weight (Distributed)
-        Airfoil_Area                    = 0.7 * chord_elems * h_arr
-        Rib_Mass_Per_Meter              = (Airfoil_Area * wing_config['Rib_Thick'] * Rho) / wing_config['Rib_Spacing']
-        w_z_ribs                        = -Rib_Mass_Per_Meter * 9.81
-        
-        # Total Vertical Load
-        load_w_z_total                  = load_w_z_aero # + w_z_struct + w_z_ribs # Weight of Wing Structure Neglected
-        load_w_x                        = np.zeros(num_elements)
-        load_w_y                        = np.zeros(num_elements)
-        
-        ti_assembly = time.time()
-        # --- MATRICES ASSEMBLY ---
-        T_all                           = compute_3d_transformation_matrix(sweep_elems_rad, dihedral_elems_rad, twist_elems_rad, num_elements)
-        K_local                         = compute_element_stiffness_arrays(E, G, A_arr, J_arr, Ixx_arr, Izz_arr, Le, num_elements)
-        
-        # Rotate Stiffness
-        K_temp                          = np.matmul(K_local, T_all)
-        K_global_elem                   = np.matmul(np.transpose(T_all, (0, 2, 1)), K_temp)
-        
-        # Force Vector
-        F_global_elem                   = compute_force_vector(load_w_x, load_w_y, load_w_z_total, load_t_y_aero, Le, num_elements, T_all)
-        
-        # Assembly
-        dofs_per_node                   = 6
-        total_dof                       = dofs_per_node * num_nodes
-        K_global                        = np.zeros((total_dof, total_dof))
-        F_global                        = np.zeros(total_dof)
-        
-        global_indices                  = np.zeros((num_elements, 12), dtype=int)
-        node_indices                    = np.arange(num_nodes)
-        dof_indices                     = np.arange(dofs_per_node)
-        global_indices[:, :6]           = dofs_per_node * node_indices[:-1, np.newaxis] + dof_indices
-        global_indices[:, 6:]           = dofs_per_node * node_indices[1:, np.newaxis] + dof_indices
-        
-        rows                            = global_indices[:, :, np.newaxis]
-        cols                            = global_indices[:, np.newaxis, :]
-        np.add.at(K_global, (rows, cols), K_global_elem)
-        np.add.at(F_global, global_indices, F_global_elem)
-        
-        tf_assembly                     = time.time()
-        print(f"Global Stiffness & Force Matrix Assembly Complete. (Time: {tf_assembly-ti_assembly:.5f} seconds)")
-        
-        # Boundary Conditions (Cantilever Beam)
-        constrained_dof                 = np.arange(0, 6)
-        all_dofs                        = np.arange(total_dof)
-        free_dof                        = np.setdiff1d(all_dofs, constrained_dof)
-        K_reduced                       = K_global[np.ix_(free_dof, free_dof)]
-        F_reduced                       = F_global[free_dof]
-        
-        solve_start                     = time.time()
-        u_reduced                       = np.linalg.solve(K_reduced, F_reduced)
-        solve_end                       = time.time()
-        print(f"Solve complete. (Time: {solve_end - solve_start:.5f} seconds)")
-        
-        u_full                          = np.zeros(total_dof)
-        u_full[free_dof]                = u_reduced
-        
-        # --- POST-PROCESSING ---
-        w_global                        = u_full[2::6]
-        theta_x                         = u_full[3::6]
-        theta_y                         = u_full[4::6]
-        
-        # Interpolate element sweeps back to nodes to calculate Post-Processing Twist properly
-        sweep_nodes_rad                 = np.interp(np.arange(num_nodes), np.arange(num_elements)+0.5, sweep_elems_rad)
-        # Local Twist
-        twist_local_deg                 = np.degrees(theta_x * np.sin(sweep_nodes_rad) + theta_y * np.cos(sweep_nodes_rad))
-        
-        # --- BUCKLING CHECK ---
-        # 1. Calculate Bending Stress
-        d_theta_x                       = np.diff(theta_x)
-        d_theta_y                       = np.diff(theta_y)
-        
-        # Project the relative nodal rotations onto the element's local bending axis
-        curvature                       = (d_theta_x * np.cos(sweep_elems_rad) - d_theta_y * np.sin(sweep_elems_rad)) / Le
-        sigma_bending                   = E * (h_arr/2) * np.abs(curvature)
-        
-        # 2. Calculate Dynamic Buckling Coefficient 'k'
-        # Aspect Ratio = Length (Rib Spacing) / Width (Box Width)
-        # Note: If ribs are far apart (AR > 1), k drops to 4.0.
-        #       If ribs are close (AR < 1), k shoots up.
-        AR_arr                          = wing_config['Rib_Spacing'] / w_box_arr
-        
-        # Formula for Simply Supported Plate on 4 sides (Load in 'a' direction)
-        # If AR < 1 (Wide short plate): k = (AR + 1/AR)^2
-        # If AR >= 1 (Long narrow plate): k reaches min of 4.0 at integer intervals
-        k_arr                           = np.where(AR_arr < 1, 
-                                                    (AR_arr + 1/AR_arr)**2,  # Short plate boost
-                                                    4.0)                     # Long plate conservative limit
-        
-        # 3. Clamping Factor
-        # Set Fixity factor to 1 to model riveted joint and 1.75 to model perfect joint (clamped)
-        # Clamping can raise k_min from 4.0 to ~7.0
-        fixity_factor                   = 1.75 
-        k_arr                           = k_arr * fixity_factor
-
-        # 4. Calculate Critical Stress with dynamic k
-        sigma_crit                      = (k_arr * np.pi**2 * E) / (12 * (1 - Nu**2)) * (wing_config['Skin_Top_Thick'] / w_box_arr)**2
-        
-        # 5. Margin of Safety
-        MoS                             = (sigma_crit / (sigma_bending + 1e-6)) - 1
-        min_margin                      = np.min(MoS)
-        
-        end_time                        = time.time()
-        print(f"Total Script Time: {end_time - start_time:.4f} seconds")
-        
-        print(f"\n--- RESULTS ---")
-        print(f"Max Tip Deflection: {w_global[-1]*1000:.2f} mm")
-        print(f"Max Twist: {twist_local_deg[-1]:.2f} deg")
-        print(f"Max Stress (Top Skin): {np.max(sigma_bending)/1e6:.1f} MPa")
-        print(f"Buckling Margin of Safety: {min_margin:.2f}")
-        
-        if min_margin < 0:
-            print(">> WARNING: SKIN BUCKLING PREDICTED! <<")
-            print(f"   Reduce Rib Spacing (Current: {wing_config['Rib_Spacing']} m) or Increase Skin Thickness.")
-        else:
-            print("Skin Design is Safe.")
-
-        # --- PLOTTING ---
-        
-        # 3D Visualization
-        y_local_path = np.insert(np.cumsum(Le), 0, 0.0)
-        node_aero_loads = np.interp(y_local_path, y_elem_centers, load_w_z_aero)
-        res = {
-            'y_local': y_local_path, 
-            'chord': chord_nodes, 
-            'X0': X_nodes,                                         # Undeformed Baseline
-            'Y0': Y_nodes, 
-            'Z0': Z_nodes,
-            'deflection': w_global,
-            'twist_geo': np.radians(twist_nodes_deg),              # Geometric Washout
-            'twist_elas': np.radians(twist_local_deg),             # Twist due to loading
-            'w_z_load': node_aero_loads,
-            'spar_f': spar_f_nodes, 
-            'spar_r': spar_r_nodes,
-            'params': { 
-                'tc': wing_config['t_c'], 
-                'Rib_Spacing': wing_config['Rib_Spacing'], 
-                'Span': total_span,
-                'Front_Spar': wing_config['Front_Spar'], 
-                'Rear_Spar': wing_config['Rear_Spar']
-            }
-        }
-
-
-
-        
-    # # Call the 3D Plotter
-    # plot_wingbox(res, scale=20.0)
-    
-    # # Plot 2: Buckling Analysis
-    # plt.figure(figsize=(14, 6))
-    # plt.plot(Y_elems, sigma_crit/1e6, 'g--', label='Critical Stress')
-    # plt.plot(Y_elems, sigma_bending/1e6, 'r-', label='Actual Stress')
-    # plt.title(f'Skin Buckling Analysis (Rib Spacing {wing_config['Rib_Spacing']*1000:.0f}mm)')
-    # plt.ylabel('Stress (MPa)')
-    # plt.xlabel('Span (m)')
-    # plt.legend()
-    # plt.grid(True)
-    # plt.show()
-  
+            vlm_pts = np.column_stack((XC, YC, ZC))
             
+            # 3. EXTRACT VLM FORCES
+            Fx = VLM_results.surface_Fx[ti, start_idx:end_idx]
+            Fy = VLM_results.surface_Fy[ti, start_idx:end_idx]
+            Fz = VLM_results.surface_Fz[ti, start_idx:end_idx]
             
+            vlm_F = np.column_stack((Fx, Fy, Fz)) * q_dyn
             
+            # 4. MAP AERO TO STRUCTURE
+            fea_forces, fea_moments = map_panel_forces_to_fea(vlm_pts, vlm_F, fea_pts)
             
+            load_w_x_aero = fea_forces[:, 0]  # Drag
+            load_w_y_aero = fea_forces[:, 1]  # Spanwise Force (Sideslip)
+            load_w_z_aero = fea_forces[:, 2]  # Lift
+            load_t_y_aero = fea_moments[:, 1] # Pitching Moment
             
+            # 5. RUN STRUCTURAL SOLVER
+            # Material & Wingbox
+            E, G, Rho, Yield_Stress, Nu = compute_material_properties("Al7075_T6")
             
-    results = Data()
-    
-    return results  
+            # Pass the VD_struct object to your properties calculator
+            A_arr, Ixx_arr, Izz_arr, J_arr, w_box_arr, h_arr = compute_wingbox_properties(wing, VD_struct)
+            
+            # Gravity & Mass Loads
+            w_z_struct  = -A_arr * Rho * 9.81
+            
+            Airfoil_Area = 0.7 * VD_struct.chord_elems * h_arr
+            Rib_Mass_Per_Meter = (Airfoil_Area * VD_struct.wing_config['Rib_Thick'] * Rho) / VD_struct.wing_config['Rib_Spacing']
+            w_z_ribs = -Rib_Mass_Per_Meter * 9.81
+            
+            # Total Loads
+            load_w_z_total = load_w_z_aero + w_z_struct + w_z_ribs
+            
+            # Matrices Assembly
+            twist_elems_rad = np.radians((VD_struct.twist_nodes_deg[:-1] + VD_struct.twist_nodes_deg[1:]) / 2)
+            T_all = compute_3d_transformation_matrix(VD_struct.sweep_elems_rad, VD_struct.dihedral_elems_rad, twist_elems_rad, num_elements)
+            K_local = compute_element_stiffness_arrays(E, G, A_arr, J_arr, Ixx_arr, Izz_arr, VD_struct.Le, num_elements)
+            
+            K_temp = np.matmul(K_local, T_all)
+            K_global_elem = np.matmul(np.transpose(T_all, (0, 2, 1)), K_temp)
+            F_global_elem = compute_force_vector(load_w_x_aero, load_w_y_aero, load_w_z_total, load_t_y_aero, VD_struct.Le, num_elements, T_all)
+            
+            # Global Assembly
+            num_nodes = num_elements + 1
+            dofs_per_node = 6
+            total_dof = dofs_per_node * num_nodes
+            K_global = np.zeros((total_dof, total_dof))
+            F_global = np.zeros(total_dof)
+            
+            global_indices = np.zeros((num_elements, 12), dtype=int)
+            node_indices = np.arange(num_nodes)
+            dof_indices = np.arange(dofs_per_node)
+            global_indices[:, :6] = dofs_per_node * node_indices[:-1, np.newaxis] + dof_indices
+            global_indices[:, 6:] = dofs_per_node * node_indices[1:, np.newaxis] + dof_indices
+            
+            rows = global_indices[:, :, np.newaxis]
+            cols = global_indices[:, np.newaxis, :]
+            np.add.at(K_global, (rows, cols), K_global_elem)
+            np.add.at(F_global, global_indices, F_global_elem)
+            
+            # Solve boundary conditions (Cantilever)
+            constrained_dof = np.arange(0, 6)
+            all_dofs = np.arange(total_dof)
+            free_dof = np.setdiff1d(all_dofs, constrained_dof)
+            K_reduced = K_global[np.ix_(free_dof, free_dof)]
+            F_reduced = F_global[free_dof]
+            
+            u_reduced = np.linalg.solve(K_reduced, F_reduced)
+            u_full = np.zeros(total_dof)
+            u_full[free_dof] = u_reduced
+            
+            # Store data securely for RCAIDE's mission solver
+            if ti not in structural_results:
+                structural_results[ti] = Data()
+                
+            structural_results[ti][wing.tag] = Data(
+                deflection_z = u_full[2::6],
+                twist_y      = u_full[4::6],
+                deflection_x = u_full[0::6]
+            )
+            
+            vd_idx += 1
+            if sym:
+                vd_idx += 1
+            
+    return structural_results
