@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Performance/estimate_take_off_weight_given_tofl.py
+# RCAIDE/Library/Methods/Performance/estimate_take_off_weight_given_TOFL.py
 
 # Created: Apr 2025, M. Clarke  
 # ----------------------------------------------------------------------
@@ -13,7 +13,7 @@ import numpy as np
 # ----------------------------------------------------------------------
 #  Find Takeoff Weight Given TOFL
 # ----------------------------------------------------------------------
-def estimate_take_off_weight_given_tofl(analyses=None,target_tofl=0.0,altitude = 0, delta_isa = 0):
+def estimate_take_off_weight_given_TOFL(analyses=None,target_tofl=0.0,altitude = 0, delta_isa = 0):
     """
     Estimates the maximum allowable takeoff weight for a given takeoff field length requirement.
 
@@ -88,7 +88,7 @@ def estimate_take_off_weight_given_tofl(analyses=None,target_tofl=0.0,altitude =
 
     for id,tow in enumerate(tow_vec):
         vehicle.mass_properties.takeoff = tow
-        tofl[id], _ = estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0)
+        tofl[id], _ = estimate_take_off_field_length(analyses,altitude = 0, delta_isa = 0)
 
     target_tofl = np.atleast_1d(target_tofl)
     max_tow     = np.zeros_like(target_tofl)
