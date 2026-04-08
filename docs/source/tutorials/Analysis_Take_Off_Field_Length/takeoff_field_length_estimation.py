@@ -102,7 +102,7 @@ def vehicle_setup():
     # Carbo Bays 
     # ------------------------------------------------------------------ 
     forward_cargo_bay = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
-    forward_cargo_bay.cargo.mass_properties.mass  = 1850
+    forward_cargo_bay.mass_properties.mass        = 1850
     forward_cargo_bay.origin                      = [[6.82, 0, -0.5]]
     forward_cargo_bay.length                      = 7.82
     forward_cargo_bay.width                       = 1.57  
@@ -110,7 +110,7 @@ def vehicle_setup():
     vehicle.cargo_bays.append(forward_cargo_bay) 
  
     aft_cargo_bay  = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
-    aft_cargo_bay.cargo.mass_properties.mass  = 1440
+    aft_cargo_bay.mass_properties.mass        = 1440
     aft_cargo_bay.origin                      = [[23.43, 0, -0.5]]
     aft_cargo_bay.length                      =  5.5
     aft_cargo_bay.width                       =  1.57 

@@ -36,11 +36,7 @@ def compute_load_and_trim_diagram(mission = None, cruise_segment_tag = "cruise",
     # where 2: is for the loading and unloading cases
     # and N is the number of object types i.e cabin,cargo and fuel 
   
-    """  
-            
-    if type(mission) != RCAIDE.Framework.Mission:
-        raise AttributeError('RCAIDE mission must be defined')
-    
+    """   
     #------------------------------------------------------------------------  
     # Remove Takeoff mass
     #------------------------------------------------------------------------   

@@ -64,7 +64,7 @@ def main():
             plot_results(results)
 
 
-    plot_3d_vehicle(vehicle)
+    plot_3d_vehicle(vehicle, show_figure = False )
 
     return
     

@@ -71,7 +71,8 @@ class Vehicle(Data):
         self.number_of_seats                                               = 0 
         self.number_of_first_class_seats                                   = 0 
         self.number_of_business_class_seats                                = 0 
-        self.number_of_economy_class_seats                                 = 0 
+        self.number_of_economy_class_seats                                 = 0
+        self.Vref_VS_ratio                                                 = None
         self.maximum_cross_sectional_area                                  = 0.0
         self.length                                                        = 0.0
          

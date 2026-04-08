@@ -21,13 +21,8 @@ import numpy as np
 def compute_noise_certification_metrics(approach_mission  = None, takeoff_mission   = None):
     """Calculates the noise at certification points as well as the noise contours of approach and takeoff.
     A combined approach-takeoff noisec contour is also created 
-    """ 
-             
-    if type(approach_mission) != RCAIDE.Framework.Mission:
-        raise AttributeError('RCAIDE mission must be defined') 
-    if type(takeoff_mission) != RCAIDE.Framework.Mission:
-        raise AttributeError('RCAIDE mission must be defined')
-     
+    """
+    
     microphone_x_resolution                = 401 
     microphone_y_resolution                = 9  
     noise_times_steps                      = 51 
