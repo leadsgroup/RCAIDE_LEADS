@@ -12,6 +12,7 @@ import RCAIDE
 from RCAIDE.Framework.Core                                  import Data
 from .Distributor                                           import Distributor   
 from RCAIDE.Library.Methods.Powertrain.Distributors.Fuel_Line import *
+from RCAIDE.Library.Methods.Powertrain.Distributors.Fuel_Line.compute_fuel_line_conditions import compute_fuel_line_conditions
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Fuel Line
@@ -67,7 +68,8 @@ class Fuel_Line(Distributor):
         self.inner_diameter                = 0.03
         self.outer_diameter                = 0.05
         self.length                        = 1  
-        self.pressure                      = 150000.0  # Pa
+        self.surface_roughness             = 0.015
+        self.pump                          = None
 
     def unpack_unknowns(self,segment):
         return 

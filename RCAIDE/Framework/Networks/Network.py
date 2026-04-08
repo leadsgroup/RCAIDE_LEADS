@@ -181,7 +181,15 @@ class Network(Component):
                            
                            
                            
-                           
+        for distributor in distributors:
+            inputs, outputs, _, _  = source.compute_performance(state,network)   
+            net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
+            net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
+            net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
+            
+            
+            
+                 
                            
                            
                            
