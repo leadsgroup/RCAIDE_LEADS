@@ -45,10 +45,10 @@ def compute_multisegment_geometry(wing, wing_config, total_elements):
     # Element arrays (Size: total_elements)
     sweep_mid_elems, dihedral_elems = [], []
      
-    seg_names = wing.segments.keys()
+    seg_keys = list(wing.segments.keys())  
     for i in range(len(segments)-1):
         seg = segments[i]
-        wing_seg = wing.segments[seg_names[i]]  
+        wing_seg = wing.segments[seg_keys[i]]  
         
         n_elem = seg_elements[i]
         n_nodes = n_elem + 1
