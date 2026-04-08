@@ -6,7 +6,7 @@
 #  Imports
 # ----------------------------------------------------------------------
 
-# RCAIDE Imports
+# SUave Imports
 import RCAIDE
 from RCAIDE.Framework.Core  import Data,Units 
 from RCAIDE.Library.Methods.Performance.estimate_take_off_weight_given_TOFL import estimate_take_off_weight_given_TOFL
@@ -34,7 +34,8 @@ from Embraer_190 import vehicle_setup, configs_setup
 #   Main
 # ----------------------------------------------------------------------
 
-def main():   
+def main():    
+
     # define vehicle 
     vehicle   = vehicle_setup()   
   
@@ -48,17 +49,16 @@ def main():
     target_tofl= 1500
  
     # Compute take off weight given tofl
-    MTOW = estimate_take_off_weight_given_TOFL(analyses = analyses.takeoff, 
-                                               target_tofl= target_tofl )
-    
-    print('MTOW for Target TOFL of ', target_tofl, 'is ', MTOW, 'kg')
-    
-    truth_MTOW = 56980
-    MTOW_error = np.max(np.abs(MTOW-truth_MTOW))
-    assert(MTOW_error<1e-6)    
+    MTOW = estimate_take_off_weight_given_TOFL(analyses = analyses.takeoff,
+                                               target_tofl =target_tofl)
+                                               
+
+    truth_max_tow = 56980.00000000001
+    max_tow_error = np.max(np.abs(MTOW[0]-truth_max_tow)) 
+    print('Range Error = %.4e' % max_tow_error)
+    assert(max_tow_error   < 1e-6 )
 
     return  
-
 
 
 def analyses_setup(configs):
@@ -110,8 +110,7 @@ def base_analysis(vehicle):
     analyses.append(atmosphere)   
 
     # done!
-    return analyses 
-  
+    return analyses
 
 # ----------------------------------------------------------------------        
 #   Call Main

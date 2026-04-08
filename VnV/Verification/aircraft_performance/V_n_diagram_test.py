@@ -9,8 +9,7 @@
 # SUave Imports
 import RCAIDE
 from RCAIDE.Framework.Core   import Data,Units 
-from RCAIDE.Library.Methods.Performance  import compute_V_n_diagram
-from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
+from RCAIDE.Library.Methods.Performance  import compute_V_n_diagram 
 from RCAIDE.Library.Plots import  * 
 import matplotlib.pyplot as plt
 
