@@ -14,7 +14,7 @@ import numpy as np
 # ----------------------------------------------------------------------
 # Multi Segment GEometry Function 
 # ----------------------------------------------------------------------
-def compute_multisegment_geometry(wing_config, total_elements):
+def compute_multisegment_geometry(wing, wing_config, total_elements):
     """
     Takes a wing configuration with multiple segments and outputs continuous 
     1D arrays for FEA nodes and elements.
@@ -39,15 +39,17 @@ def compute_multisegment_geometry(wing_config, total_elements):
     # 3. CONTINUOUS NODE GENERATION
     # Node arrays (Size: total_elements + 1)
     X_nodes, Y_nodes, Z_nodes = [], [], []
-    chord_nodes, twist_nodes_deg = [], []
+    chord_nodes, twist_nodes = [], []
     spar_f_nodes, spar_r_nodes = [], []
     
     # Element arrays (Size: total_elements)
     sweep_mid_elems, dihedral_elems = [], []
-    
-    current_X, current_Y, current_Z = 0.0, 0.0, 0.0
-    
-    for i, seg in enumerate(segments):
+     
+    seg_names = wing.segments.keys()
+    for i in range(len(segments)-1):
+        seg = segments[i]
+        wing_seg = wing.segments[seg_names[i]]  
+        
         n_elem = seg_elements[i]
         n_nodes = n_elem + 1
         
@@ -59,12 +61,12 @@ def compute_multisegment_geometry(wing_config, total_elements):
         mid_f_root = (seg['spar_f_root'] + seg['spar_r_root']) / 2
         mid_f_tip = (seg['spar_f_tip'] + seg['spar_r_tip']) / 2
         offset_root = seg['chord_root'] * mid_f_root
-        offset_tip = seg['span'] * np.tan(np.radians(seg['sweep_LE'])) + seg['chord_tip'] * mid_f_tip
+        offset_tip = seg['span'] * np.tan(seg['sweep_LE']) + seg['chord_tip'] * mid_f_tip
         
         # True Sweep Angle of the structural box
         tan_sw_mid = (offset_tip - offset_root) / seg['span']
         sweep_mid_rad = np.arctan(tan_sw_mid)
-        dihedral_rad = np.radians(seg['dihedral'])
+        dihedral_rad = seg['dihedral']
         
         # Calculate True Spar Length for this segment
         L_spar = (seg['span'] / np.cos(sweep_mid_rad)) / np.cos(dihedral_rad)
@@ -76,9 +78,9 @@ def compute_multisegment_geometry(wing_config, total_elements):
         
         # Transform local spar distance into Global X, Y, Z
         # We start from the exact (X,Y,Z) where the last segment ended
-        x_seg = current_X + y_local * np.sin(sweep_mid_rad) * np.cos(dihedral_rad)
-        y_seg = current_Y + y_local * np.cos(sweep_mid_rad) * np.cos(dihedral_rad)
-        z_seg = current_Z + y_local * np.sin(dihedral_rad)
+        x_seg = wing_seg.origin[0][0] + y_local * np.sin(sweep_mid_rad) * np.cos(dihedral_rad)
+        y_seg = wing_seg.origin[0][1] + y_local * np.cos(sweep_mid_rad) * np.cos(dihedral_rad)
+        z_seg = wing_seg.origin[0][2] + y_local * np.sin(dihedral_rad)
         
         # Append to global lists
         if i == 0:
@@ -89,7 +91,7 @@ def compute_multisegment_geometry(wing_config, total_elements):
             spar_f_nodes.extend(sf_arr)
             spar_r_nodes.extend(sr_arr)
             chord_nodes.extend(c_arr)
-            twist_nodes_deg.extend(tw_arr)
+            twist_nodes.extend(tw_arr)
         else:
             # Subsequent segments: Omit the first node to avoid duplicating the junction
             X_nodes.extend(x_seg[1:])
@@ -98,14 +100,11 @@ def compute_multisegment_geometry(wing_config, total_elements):
             spar_f_nodes.extend(sf_arr[1:])
             spar_r_nodes.extend(sr_arr[1:])
             chord_nodes.extend(c_arr[1:])
-            twist_nodes_deg.extend(tw_arr[1:])
+            twist_nodes.extend(tw_arr[1:])
             
         # Store element-wise angles for the rotation matrices later
         sweep_mid_elems.extend([sweep_mid_rad] * n_elem)
-        dihedral_elems.extend([dihedral_rad] * n_elem)
-        
-        # Update the "pen" to start the next segment at the exact end of this one
-        current_X, current_Y, current_Z = x_seg[-1], y_seg[-1], z_seg[-1]
+        dihedral_elems.extend([dihedral_rad] * n_elem) 
         
     # 4. PACKAGE THE DATA
     return {
@@ -115,7 +114,7 @@ def compute_multisegment_geometry(wing_config, total_elements):
         'spar_f_nodes': np.array(spar_f_nodes),
         'spar_r_nodes': np.array(spar_r_nodes),
         'chord_nodes': np.array(chord_nodes),
-        'twist_nodes_deg': np.array(twist_nodes_deg),
+        'twist_nodes': np.array(twist_nodes),
         'sweep_mid_elems': np.array(sweep_mid_elems),
         'dihedral_elems': np.array(dihedral_elems),
         'total_span': total_span

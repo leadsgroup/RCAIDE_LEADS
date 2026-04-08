@@ -91,7 +91,7 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             Fy = VLM_results.surface_Fy[ti, start_idx:end_idx]
             Fz = VLM_results.surface_Fz[ti, start_idx:end_idx]
             
-            vlm_F = np.column_stack((Fx, Fy, Fz)) * q_dyn
+            vlm_F = np.column_stack((Fx, Fy, Fz)) 
             
             # 4. MAP AERO TO STRUCTURE
             fea_forces, fea_moments = map_panel_forces_to_fea(vlm_pts, vlm_F, fea_pts)
@@ -119,7 +119,7 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             load_w_z_total = load_w_z_aero + w_z_struct + w_z_ribs
             
             # Matrices Assembly
-            twist_elems_rad = np.radians((VD_struct.twist_nodes_deg[:-1] + VD_struct.twist_nodes_deg[1:]) / 2)
+            twist_elems_rad = ((VD_struct.twist_nodes[:-1] + VD_struct.twist_nodes[1:]) / 2)
             T_all = compute_3d_transformation_matrix(VD_struct.sweep_elems_rad, VD_struct.dihedral_elems_rad, twist_elems_rad, num_elements)
             K_local = compute_element_stiffness_arrays(E, G, A_arr, J_arr, Ixx_arr, Izz_arr, VD_struct.Le, num_elements)
             
