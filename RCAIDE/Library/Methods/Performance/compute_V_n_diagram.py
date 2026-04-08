@@ -120,7 +120,7 @@ def compute_V_n_diagram(analyses,altitude = 0,delta_ISA = 0):
     reference_area           = vehicle.reference_area 
     Cmac                     = vehicle.reference_chord 
     pos_limit_load           = vehicle.flight_envelope.positive_limit_load
-    neg_limit_load           = vehicle.flight_envelope.positive_limit_load 
+    neg_limit_load           = vehicle.flight_envelope.negative_limit_load
     category_tag             = vehicle.flight_envelope.category
     minimum_lift_coefficient = vehicle.flight_envelope.minimum_lift_coefficient
  
