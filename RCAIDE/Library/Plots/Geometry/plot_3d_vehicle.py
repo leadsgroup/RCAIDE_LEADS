@@ -7,13 +7,14 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE 
+from RCAIDE.Library.Components   import Component   
 from RCAIDE.Library.Plots.Geometry.generate_3d_wing_points      import *
 from RCAIDE.Library.Plots.Geometry.generate_3d_fuselage_points  import *
 from RCAIDE.Library.Plots.Geometry.generate_3d_fuel_tank_points import *
 from RCAIDE.Library.Plots.Geometry.plot_3d_rotor                import generate_3d_blade_points
 from RCAIDE.Library.Plots.Geometry.generate_3d_nacelle_points   import *
 from RCAIDE.Library.Plots.Geometry.generate_3d_lopa_points      import generate_3d_lopa_points
-from RCAIDE.Library.Plots.Geometry.generate_3d_cargo_bay_points import generate_3d_cargo_bay_points
+from RCAIDE.Library.Plots.Geometry.generate_3d_cuboid_points    import generate_3d_cuboid_points
 from RCAIDE.Library.Methods.Geometry.Planform                   import fuselage_planform, wing_planform , compute_fuel_volume  
 from RCAIDE.Library.Methods.Geometry.LOPA                       import compute_layout_of_passenger_accommodations  
 
@@ -40,6 +41,8 @@ def plot_3d_vehicle(vehicle,
                     fuel_tank_color             = 'orange', 
                     rotor_color                 = 'black', 
                     cargo_bay_color             = 'blue',
+                    battery_color               = 'green',
+                    systems_color               = 'black',
                     plot_actuator_disc          = False,
                     show_LOPA                   = True, 
                     wing_opacity                = 0.5, 
@@ -50,6 +53,8 @@ def plot_3d_vehicle(vehicle,
                     lopa_opacity                = 1.0,
                     rotor_opacity               = 0.6, 
                     cargo_bay_opacity           = 0.6, 
+                    battery_opacity             = 1.0, 
+                    sytems_opacity              = 0.8, 
                     number_of_airfoil_points    = 101,
                     tessellation                = 96,
                     camera_eye_x                = -1,
@@ -131,6 +136,8 @@ def plot_3d_vehicle(vehicle,
     rotor_rgb_color      = mcolors.to_rgb(rotor_color)
     boom_rgb_color       = mcolors.to_rgb(boom_color)
     cargo_bay_rgb_color  = mcolors.to_rgb(cargo_bay_color)
+    battery_rgb_color    = mcolors.to_rgb(battery_color)
+    system_rgb_color     = mcolors.to_rgb(systems_color)
      
     # -------------------------------------------------------------------------
     # Run Geoemtry Analysis
@@ -204,11 +211,24 @@ def plot_3d_vehicle(vehicle,
             lopa_geom = generate_3d_lopa_points(fuselage)
             add_lopa_seats(plotter, lopa_geom, lopa_opacity) 
     
+
+    # -------------------------------------------------------------------------  
+    # Plot systems 
+    # -------------------------------------------------------------------------  
+    for system in vehicle.systems: 
+        if isinstance(system,Component):
+            GEOM = generate_3d_cuboid_points(system) 
+            actor        = generate_vtk_object(GEOM.PTS) 
+            vtk_data     = actor.GetMapper().GetInput() 
+            pyvista_mesh = pv.wrap(vtk_data)                      
+            plotter.add_mesh(pyvista_mesh,color= system_rgb_color,opacity= sytems_opacity)   
+
+
     # -------------------------------------------------------------------------  
     # Plot cargo bay
     # -------------------------------------------------------------------------  
     for cargo_bay in geometry.cargo_bays:
-        GEOM = generate_3d_cargo_bay_points(cargo_bay) 
+        GEOM = generate_3d_cuboid_points(cargo_bay) 
         actor        = generate_vtk_object(GEOM.PTS) 
         vtk_data     = actor.GetMapper().GetInput() 
         pyvista_mesh = pv.wrap(vtk_data)                      
@@ -354,6 +374,14 @@ def plot_3d_vehicle(vehicle,
                         pyvista_mesh = pv.wrap(vtk_data)  
                         plotter.add_mesh(pyvista_mesh,color= fuel_tank_rgb_color,opacity= fuel_tank_opacity)  
                                            
+        for bus in network.busses:
+            for battery in bus.battery_modules:
+                GEOM = generate_3d_cuboid_points(battery) 
+                actor        = generate_vtk_object(GEOM.PTS) 
+                vtk_data     = actor.GetMapper().GetInput() 
+                pyvista_mesh = pv.wrap(vtk_data)                      
+                plotter.add_mesh(pyvista_mesh,color= battery_rgb_color,opacity= battery_opacity)   
+    
     if front_view:
         plotter.camera_position = [(-2 * L , 0, 0), (0, 0,0), (0, 0, 1)] 
     elif side_view:
