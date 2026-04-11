@@ -15,6 +15,7 @@ from RCAIDE.Library.Plots.Geometry.plot_3d_rotor                import generate_
 from RCAIDE.Library.Plots.Geometry.generate_3d_nacelle_points   import *
 from RCAIDE.Library.Plots.Geometry.generate_3d_lopa_points      import generate_3d_lopa_points
 from RCAIDE.Library.Plots.Geometry.generate_3d_cuboid_points    import generate_3d_cuboid_points
+from RCAIDE.Library.Plots.Geometry.generate_3d_propulsor_points import generate_3d_propulsor_points
 from RCAIDE.Library.Methods.Geometry.Planform                   import fuselage_planform, wing_planform , compute_fuel_volume  
 from RCAIDE.Library.Methods.Geometry.LOPA                       import compute_layout_of_passenger_accommodations  
 
@@ -43,18 +44,20 @@ def plot_3d_vehicle(vehicle,
                     cargo_bay_color             = 'blue',
                     battery_color               = 'green',
                     systems_color               = 'black',
+                    propulsor_color             = 'black',
                     plot_actuator_disc          = False,
                     show_LOPA                   = True, 
                     wing_opacity                = 0.5, 
                     fuselage_opacity            = 0.5,
                     boom_opacity                = 1.0,
-                    nacelle_opacity             = 1.0,
+                    nacelle_opacity             = 0.5,
                     fuel_tank_opacity           = 0.5,
                     lopa_opacity                = 1.0,
                     rotor_opacity               = 0.6, 
                     cargo_bay_opacity           = 0.6, 
                     battery_opacity             = 1.0, 
-                    sytems_opacity              = 0.8, 
+                    propulsor_opacity           = 0.5,
+                    systems_opacity             = 0.8, 
                     number_of_airfoil_points    = 101,
                     tessellation                = 96,
                     camera_eye_x                = -1,
@@ -138,6 +141,7 @@ def plot_3d_vehicle(vehicle,
     cargo_bay_rgb_color  = mcolors.to_rgb(cargo_bay_color)
     battery_rgb_color    = mcolors.to_rgb(battery_color)
     system_rgb_color     = mcolors.to_rgb(systems_color)
+    propulsor_rgb_color  = mcolors.to_rgb(propulsor_color)
      
     # -------------------------------------------------------------------------
     # Run Geoemtry Analysis
@@ -221,7 +225,7 @@ def plot_3d_vehicle(vehicle,
             actor        = generate_vtk_object(GEOM.PTS) 
             vtk_data     = actor.GetMapper().GetInput() 
             pyvista_mesh = pv.wrap(vtk_data)                      
-            plotter.add_mesh(pyvista_mesh,color= system_rgb_color,opacity= sytems_opacity)   
+            plotter.add_mesh(pyvista_mesh,color= system_rgb_color,opacity= systems_opacity)   
 
 
     # -------------------------------------------------------------------------  
@@ -249,6 +253,12 @@ def plot_3d_vehicle(vehicle,
     # ------------------------------------------------------------------------- 
     for network in geometry.networks:     
         for propulsor in network.propulsors:  
+            GEOM = generate_3d_propulsor_points(propulsor, tessellation) 
+            actor        = generate_vtk_object(GEOM.PTS) 
+            vtk_data     = actor.GetMapper().GetInput() 
+            pyvista_mesh = pv.wrap(vtk_data)                      
+            plotter.add_mesh(pyvista_mesh,color= propulsor_rgb_color,opacity= propulsor_opacity)  
+
             if propulsor.nacelle !=  None: 
                 if type(propulsor.nacelle) == RCAIDE.Library.Components.Nacelles.Stack_Nacelle: 
                     GEOM = generate_3d_stack_nacelle_points(propulsor.nacelle,tessellation = tessellation,number_of_airfoil_points = number_of_airfoil_points)
