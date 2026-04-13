@@ -219,7 +219,7 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     fan_nozzle_conditions   = conditions.energy.converters[fan_nozzle.tag]    
     
     # Set the electrical power output of the turbofan based on the specified power split for hybrid systems. This is used to determine how much power is generated or consumed by electric components in the engine (e.g., electric motors or generators associated with the fan or compressors).
-    turbofan_conditions.outputs.power.electrical = turbofan.electrical_power_generation_split  *  state.unknowns.network['electrical_power']*(1 - state.conditions.energy.hybrid_power_split_ratio)  
+    #turbofan_conditions.outputs.power.electrical = turbofan.electrical_power_generation_split  *  state.unknowns.network['electrical_power']*(1 - state.conditions.energy.hybrid_power_split_ratio)  
  
     # Set the working fluid to determine the fluid properties
     ram.working_fluid = turbofan.working_fluid
