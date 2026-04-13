@@ -96,14 +96,7 @@ class Propulsor(Component):
         self.assigned_distributors        = None
         self.nacelle                      = None
         self.electrical_power_generation_split       = 1
-        self.efficiency                   = Data()
-        self.efficiency.propulsive        = 1.0
-        self.efficiency.electrical        = 1.0
-        self.efficiency.mechanical        = 1.0
-        self.efficiency.thermal           = 1.0
-        self.efficiency.chemical          = 1.0
-        self.efficiency.hydraulic         = 1.0
-        self.efficiency.pneumatic         = 1.0
+        self.efficiency                   = 1.0
         self.sealevel_static_thrust       = 0.0  
         self.diameter                     = 0.0      
         self.length                       = 0.0

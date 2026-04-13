@@ -9,7 +9,7 @@
 
 # RCAIDE imports  
 import RCAIDE
-from RCAIDE.Framework.Core                                  import Data
+from RCAIDE.Framework.Core                                  import Data, Units
 from .Distributor                                           import Distributor   
 from RCAIDE.Library.Methods.Powertrain.Distributors.Fuel_Line import *
 from RCAIDE.Library.Methods.Powertrain.Distributors.Fuel_Line.compute_fuel_line_conditions import compute_fuel_line_conditions
@@ -61,15 +61,32 @@ class Fuel_Line(Distributor):
         Source:
             None
         """          
-        self.tag                           = 'fuel_line'  
-        self.active                        = True 
-        self.domain                        = 'chemical'
-        self.efficiency                    = 1.0
-        self.inner_diameter                = 0.03
-        self.outer_diameter                = 0.05
-        self.length                        = 1  
-        self.surface_roughness             = 0.015
-        self.pump                          = None
+        self.tag                                  = 'fuel_line'  
+        self.active                               = True 
+        self.domain                               = 'chemical'
+        self.efficiency                           = 1.0 
+        self.length                               = 1  
+        self.working_fluid                        = None  
+        self.pipe                                 = Data()
+        self.pipe.surface_roughness               = 0.015 
+        self.pipe.flexible_material               = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304()
+        self.pipe.flexible_material_ratio         = 0.25
+        self.pipe.diameters                       = Data()
+        self.pipe.diameters.external              = 0.625 *  Units.inches 
+        self.pipe.diameters.internal              = 0.625 *  Units.inches -  (2 * 0.035)*  Units.inches
+        self.pipe.k_factors                       = Data() 
+        self.pipe.k_factors.bend_90_deg           =  0 
+        self.pipe.k_factors.bend_45_deg           = 0.4 
+        self.pipe.k_factors.pipe_entrance_rounded = 0.05
+        self.pipe.k_factors.pipe_exit             = 1.0 
+        self.insulation                           = Data()
+        self.insulation.rigid_material            = RCAIDE.Library.Attributes.Materials.Aluminum() 
+        self.insulation.flexible_material         = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304() 
+        self.insulation.flexible_material_ratio   = 0.25
+        self.insulation.diameters                 = Data()
+        self.insulation.diameters.external        = 0.0
+        self.insulation.diameters.internal        = 0.0 
+        self.pump                                 = RCAIDE.Library.Components.Powertrain.Converters.Pump() 
 
     def unpack_unknowns(self,segment):
         return 

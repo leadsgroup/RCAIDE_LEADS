@@ -107,7 +107,7 @@ class Network(Component):
         total_moment            = 0. * state.ones_row(3)
         total_mdot              = 0. * state.ones_row(1)
         total_propulsive_power  = 0. * state.ones_row(1)
-        total_chemical_power    = 0. * state.ones_row(1) 
+        net_chemical_power      = 0. * state.ones_row(1) 
         net_electrical_power    = 0. * state.ones_row(1)
         net_thermal_power       = 0. * state.ones_row(1)
         net_hydraulic_power     = 0. * state.ones_row(1)
@@ -119,11 +119,11 @@ class Network(Component):
         for propulsor in propulsors:
             if propulsor.active:
                 if propulsor.identical_propulsors == False or stored_results_flag == False:
-                    #################################
-                    # TO REMOVE
-                    state.conditions.energy.propulsors[propulsor.tag].outputs.power.electrical = propulsor.electrical_power_generation_split \
-                        *  state.unknowns.network['electrical_power']*(1 - state.conditions.energy.hybrid_power_split_ratio)  
-                    #################################
+                    # #################################
+                    # # TO REMOVE
+                    # state.conditions.energy.propulsors[propulsor.tag].outputs.power.electrical = propulsor.electrical_power_generation_split \
+                    #     *  state.unknowns.network['electrical_power']*(1 - state.conditions.energy.hybrid_power_split_ratio)  
+                    # #################################
                     inputs, outputs, stored_results_flag, stored_propulsor_tag = propulsor.compute_performance(state,network,center_of_gravity=center_of_gravity)
                 else:
                     inputs, outputs = propulsor.reuse_stored_data(state,network,stored_propulsor_tag=stored_propulsor_tag, center_of_gravity=center_of_gravity)
@@ -134,12 +134,12 @@ class Network(Component):
 
                 total_thrust           += outputs.thrust
                 total_moment           += outputs.moment
-                total_propulsive_power += outputs.power.propulsive  
-                total_chemical_power   += inputs.power.chemical
+                total_propulsive_power += outputs.power.propulsive   
                 total_mdot             += state.conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate  
-                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)  # must handle tank integrated pump
+                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)   
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
+                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)
         
         # ----------------------------------------------------------
         # Systems
@@ -150,54 +150,54 @@ class Network(Component):
                 net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
+                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)
                 
         stored_results_flag  = False
         for converter in converters:   
             if converter.active: 
                 if converter.identical_converters == False or stored_results_flag == False:
+                    # #################################
+                    # # TO REMOVE
+                    '''TRY TO REMOVE LINE BELOW'''
                     state.conditions.energy.converters[converter.tag].outputs.power.electrical =  converter.electrical_power_generation_split * state.unknowns.network['electrical_power']*(1 - state.conditions.energy.hybrid_power_split_ratio )  # NEED TO ASSIGN PRIOR
+                    # #################################
+                    
                     converter.reverse_mode_computation = True
                     inputs, outputs, stored_results_flag, stored_conveter_tag = converter.compute_performance(state,network)
                 else:
-                    inputs, outputs = converter.reuse_stored_data(state,network,stored_conveter_tag=stored_conveter_tag) 
-                total_chemical_power   += inputs.power.chemical
-                total_mdot             += state.conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate  
-
+                    inputs, outputs = converter.reuse_stored_data(state,network,stored_conveter_tag=stored_conveter_tag)  
+                total_mdot             += state.conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate   
                 net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
-                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)                
+                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)       
+                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)         
+
+
+
+        #state.conditions.energy.outputs.power.chemical  = net_chemical_power
+        #state.conditions.energy.outputs.power.hydraulic = net_hydraulic_power 
 
         # ----------------------------------------------------------
         # Sources 
         # ----------------------------------------------------------   
-        state.conditions.energy.outputs.power.chemical = total_chemical_power
         for source in sources: 
             if source.active:    
                 inputs, outputs, _, _  = source.compute_performance(state,network)   
                 net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
-                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic) # thermal pump included                    
+                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)  
+                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)    
                            
-                           
-                           
-                           
+        # ----------------------------------------------------------
+        # Distributors 
+        # ----------------------------------------------------------  
         for distributor in distributors:
-            inputs, outputs, _, _  = source.compute_performance(state,network)   
-            net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
-            net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
-            net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
-            
-            
-            
-                 
-                           
-                           
-                           
-                           
-                           
-                           
-                           
-                           
+            if source.active:   
+                inputs, outputs, _, _  = distributor.compute_performance(state,network)   
+                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
+                net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
+                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)     
+                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)    
                             
         # ----------------------------------------------------------
         # Power Balance 
@@ -316,6 +316,8 @@ class Network(Component):
         conditions.energy.net_electrical_power     = net_electrical_power 
         conditions.energy.net_thermal_power        = net_thermal_power 
         conditions.energy.net_hydraulic_power      = net_hydraulic_power 
+        conditions.energy.net_chemical_power       = net_chemical_power
+
 
         return
      

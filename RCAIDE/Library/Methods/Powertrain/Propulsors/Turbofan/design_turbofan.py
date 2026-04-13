@@ -181,7 +181,8 @@ def design_turbofan(turbofan):
     low_pressure_turbine      = turbofan.low_pressure_turbine
     core_nozzle               = turbofan.core_nozzle
     fan_nozzle                = turbofan.fan_nozzle 
-    bypass_ratio              = turbofan.bypass_ratio  
+    bypass_ratio              = turbofan.bypass_ratio 
+    design_power_offtake      = turbofan.design_power_offtake 
 
     # unpack component conditions
     turbofan_conditions     = conditions.energy.propulsors[turbofan.tag]
@@ -329,8 +330,6 @@ def design_turbofan(turbofan):
     # Step 22: Size the core of the turbofan  
     size_core(turbofan,conditions) 
     
-
-     
      # Step 23: Static Sea Level Thrust  
     atmosphere            = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
@@ -346,6 +345,9 @@ def design_turbofan(turbofan):
     # set up operating conditions for 
     operating_state       = setup_operating_conditions(dummy_turbofan,fuel_line,velocity_range=np.array([static_sea_level_speed]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
     operating_state.conditions.energy.propulsors[dummy_turbofan.tag].throttle[:,0] = 1.0   
+    
+
+    operating_state.unknowns.network['electrical_power']   = np.array([[design_power_offtake]]) 
     
     # compute propulsor performance 
     inputs,outputs,_,_                     = dummy_turbofan.compute_performance(operating_state,dummy_network)

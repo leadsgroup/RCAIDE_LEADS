@@ -20,8 +20,12 @@ def set_network_residuals_and_unknowns(mission):
             segment.state.residuals.network[ 'electrical_power']            = 0. * ones_row(1)
             segment.state.unknowns_upper_bounds.network['electrical_power'] =   np.inf* ones_row(1) 
             segment.state.unknowns_lower_bounds.network['electrical_power'] = - np.inf* ones_row(1)
-            segment.state.number_of_network_unknowns  += 1
-            segment.state.number_of_network_residuals += 1
+            segment.state.unknowns.network['chemical_power']                = 10 *  ones_row(1)    
+            segment.state.residuals.network[ 'chemical_power']              = 0. * ones_row(1)
+            segment.state.unknowns_upper_bounds.network['chemical_power']   =   np.inf* ones_row(1) 
+            segment.state.unknowns_lower_bounds.network['chemical_power']   = - np.inf* ones_row(1)
+            segment.state.number_of_network_unknowns  += 2
+            segment.state.number_of_network_residuals += 2
             
         for network in segment.analyses.vehicle.networks:         
 

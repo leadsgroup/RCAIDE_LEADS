@@ -39,4 +39,6 @@ def append_turbine_conditions(turbine, segment):
     segment.state.conditions.energy.converters[turbine.tag].outputs                                     = Conditions()
     segment.state.conditions.energy.converters[turbine.tag].inputs.fan                                  = Conditions()
     segment.state.conditions.energy.converters[turbine.tag].inputs.fan.work_done                        = 0*ones_row(1) 
+    segment.state.conditions.energy.converters[turbine.tag].inputs.external_shaft                        = Conditions()
+    segment.state.conditions.energy.converters[turbine.tag].inputs.external_shaft.work_done              = 0*ones_row(1)  
     return 

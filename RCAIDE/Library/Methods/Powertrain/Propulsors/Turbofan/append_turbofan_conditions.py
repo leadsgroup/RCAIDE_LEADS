@@ -123,12 +123,12 @@ def append_turbofan_segment_conditions(self,segment):
     energy_conditions.propulsors[self.tag].inputs.power.electrical[:,0]    = 0.0 
     energy_conditions.propulsors[self.tag].inputs.power.chemical[:,0]      = 0.0
     #energy_conditions.propulsors[self.tag].inputs.power.pneumatic[:,0]     = 0.0 
-    #energy_conditions.propulsors[self.tag].inputs.power.hydraulic[:,0]     = 0.0 
+    energy_conditions.propulsors[self.tag].inputs.power.hydraulic[:,0]     = 0.0 
     #energy_conditions.propulsors[self.tag].inputs.power.thermal[:,0]       = 0.0 
     energy_conditions.propulsors[self.tag].outputs.power.propulsive[:,0]   = 0.0
     energy_conditions.propulsors[self.tag].outputs.power.mechanical[:,0]   = 0.0   
     energy_conditions.propulsors[self.tag].outputs.power.electrical[:,0]   = 0.0 
-    #energy_conditions.propulsors[self.tag].outputs.power.chemical[:,0]     = 0.0
+    energy_conditions.propulsors[self.tag].outputs.power.chemical[:,0]     = 0.0
     #energy_conditions.propulsors[self.tag].outputs.power.pneumatic[:,0]    = 0.0   
-    #energy_conditions.propulsors[self.tag].outputs.power.hydraulic[:,0]    = 0.0   
+    energy_conditions.propulsors[self.tag].outputs.power.hydraulic[:,0]    = 0.0   
     #energy_conditions.propulsors[self.tag].outputs.power.thermal[:,0]      = 0.0  

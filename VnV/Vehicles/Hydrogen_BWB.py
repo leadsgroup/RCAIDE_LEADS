@@ -661,7 +661,7 @@ def vehicle_setup(MTOW = 125225.92487939,
     #  PUMPS      
     #------------------------------------------------------------------------------------------------------------------------- 
     # Starboard Pump 
-    starboard_pump                                 = RCAIDE.Library.Components.Powertrain.Converters.Liquid_Hydrogen_Fuel_Cell_Pump()
+    starboard_pump                                 = RCAIDE.Library.Components.Powertrain.Converters.Cryogenic_Pump()
     starboard_pump.working_fluid                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()  
     starboard_pump.power_density                   = 15000 # W/kg
     starboard_pump.pump_efficiency                 = 0.8

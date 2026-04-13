@@ -27,7 +27,7 @@ from . import Supersonic_Nozzle
 from . import Fan 
 from . import Ram
 from . import Pump
-from . import Liquid_Hydrogen_Fuel_Cell_Pump
+from . import Cryogenic_Pump
 from . import Rotor
 from . import Generator
 from . import Turbine

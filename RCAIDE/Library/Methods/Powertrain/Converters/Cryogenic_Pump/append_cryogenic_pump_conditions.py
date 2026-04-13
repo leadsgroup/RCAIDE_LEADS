@@ -1,13 +1,13 @@
-# RCAIDE/Library/Methods/Powertrain/Converters/Pump/append_pump_conditions.py
+# RCAIDE/Library/Methods/Powertrain/Converters/Cryogenic Pump/append_cryogenic_pump_conditions.py
 # 
 # Created:  Sep. 2025, M. Guidotti
 
 from RCAIDE.Framework.Mission.Common     import   Conditions
 
 # ---------------------------------------------------------------------------------------------------------------------- 
-#  append_pump_conditions
+#  append_cryogenic_pump_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_pump_conditions(pump,segment): 
+def append_cryogenic_pump_conditions(pump,segment): 
 
     """
     

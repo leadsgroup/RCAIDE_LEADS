@@ -169,7 +169,8 @@ class Turbofan(Propulsor):
         self.compressor_nondimensional_massflow         = 0.0
         self.reference_temperature                      = 288.15
         self.reference_pressure                         = 1.01325*10**5 
-        self.design_thrust                              = 0.0
+        self.design_thrust                              = 0.0 
+        self.design_power_offtake                       = 0.0
         self.mass_flow_rate_design                      = 0.0
 
         self.emission_indices                           = Data()  

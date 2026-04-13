@@ -32,12 +32,7 @@ class Converter(Component):
         self.assigned_distributors              = None 
         self.identical_converters               = True
         self.electrical_power_generation_split  = 1
-        self.efficiency                         = Data()
-        self.efficiency.electrical              = 1.0
-        self.efficiency.mechanical              = 1.0
-        self.efficiency.chemical                = 1.0
-        self.efficiency.hydraulic               = 1.0 
-        self.efficiency.thermal                 = 1.0
+        self.efficiency                         = 1.0
 
     def initialize(self, network):  
         return

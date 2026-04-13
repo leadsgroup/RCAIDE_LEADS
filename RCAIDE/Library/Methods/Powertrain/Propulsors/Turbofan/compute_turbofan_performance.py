@@ -204,6 +204,7 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     core_nozzle               = turbofan.core_nozzle
     fan_nozzle                = turbofan.fan_nozzle 
     bypass_ratio              = turbofan.bypass_ratio 
+    fuel                      = combustor.fuel_data
     
     # unpack component conditions 
     ram_conditions          = conditions.energy.converters[ram.tag]    
@@ -216,7 +217,9 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     hpt_conditions          = conditions.energy.converters[high_pressure_turbine.tag]
     core_nozzle_conditions  = conditions.energy.converters[core_nozzle.tag]
     fan_nozzle_conditions   = conditions.energy.converters[fan_nozzle.tag]    
-
+    
+    # Set the electrical power output of the turbofan based on the specified power split for hybrid systems. This is used to determine how much power is generated or consumed by electric components in the engine (e.g., electric motors or generators associated with the fan or compressors).
+    turbofan_conditions.outputs.power.electrical = turbofan.electrical_power_generation_split  *  state.unknowns.network['electrical_power']*(1 - state.conditions.energy.hybrid_power_split_ratio)  
  
     # Set the working fluid to determine the fluid properties
     ram.working_fluid = turbofan.working_fluid
@@ -283,7 +286,11 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     combustor.working_fluid                                           = high_pressure_compressor.working_fluid     
         
     # Flow through the high pressor compressor 
-    compute_combustor_performance(combustor,conditions)
+    compute_combustor_performance(combustor,conditions) 
+
+   
+    ''' THIS IS INCORRECT TO DO LINK ELECTRICAL WORK DONE TO SHAFT'''
+    external_shaft_work = turbofan_conditions.outputs.power.electrical * high_pressure_turbine.mechanical_efficiency  
 
     # Link the high pressure turbine to the combustor
     hpt_conditions.inputs.stagnation_temperature    = combustor_conditions.outputs.stagnation_temperature
@@ -294,6 +301,7 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     hpt_conditions.inputs.mach_number               = combustor_conditions.outputs.mach_number  
     hpt_conditions.inputs.compressor                = hpc_conditions.outputs 
     hpt_conditions.inputs.bypass_ratio              = 0.0 #set to zero to ensure that fan not linked here 
+    hpt_conditions.inputs.external_shaft.work_done  = external_shaft_work 
     high_pressure_turbine.working_fluid             = combustor.working_fluid 
         
     # Flow through the high pressure turbine
@@ -371,7 +379,7 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     moment                     = M 
     power                      = turbofan_conditions.outputs.power.propulsive
     turbofan_conditions.moment = moment 
-        
+
     # compute efficiencies 
     mdot_air_core                                  = turbofan_conditions.core_mass_flow_rate
     mdot_air_fan                                   = bypass_ratio *  mdot_air_core  
@@ -385,6 +393,12 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     turbofan_conditions.overall_efficiency         = thrust_vector* U0 / (mdot_fuel * fuel_enthalpy)  
     turbofan_conditions.thermal_efficiency         = 1 - ((mdot_air_core +  mdot_fuel)*(h_e_c -  h_0) + mdot_air_fan*(h_e_f - h_0) + mdot_fuel *h_0)/((mdot_air_core +  mdot_fuel)*h_t4 - mdot_air_core *h_t3)  
      
+    # volumetric flow rate
+    Q  = mdot_fuel /fuel.density 
+
+    # haydraulic power o fuel flow
+    power_hydraulic  = Q * hpc_conditions.outputs.stagnation_pressure  
+        
     # compute shaft RPMs 
     fan_conditions.omega        = fan.design_angular_velocity * turbofan_conditions.throttle
     lpc_conditions.omega        = low_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle
@@ -436,9 +450,11 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     
     turbofan_conditions.outputs.thrust               = thrust_vector
     turbofan_conditions.outputs.moment               = moment
-    turbofan_conditions.outputs.power.propulsive     = power
+    turbofan_conditions.outputs.power.propulsive     = power 
+    turbofan_conditions.outputs.power.hydraulic      = power_hydraulic  
     turbofan_conditions.inputs.power.chemical        = mdot_fuel * combustor.fuel_data.lower_heating_value 
     turbofan_conditions.fuel_mass_flow_rate          = mdot_fuel  
+
 
     return turbofan_conditions.inputs ,turbofan_conditions.outputs, stored_results_flag, stored_propulsor_tag 
     

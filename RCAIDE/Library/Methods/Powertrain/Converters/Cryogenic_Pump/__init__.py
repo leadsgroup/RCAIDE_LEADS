@@ -17,5 +17,5 @@ RCAIDE.Library.Methods.Powertrain.Converters
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-from .append_pump_conditions   import append_pump_conditions                     
-from .compute_pump_performance import compute_pump_performance
+from .append_cryogenic_pump_conditions   import append_cryogenic_pump_conditions                     
+from .compute_cryogenic_pump_performance import compute_cryogenic_pump_performance

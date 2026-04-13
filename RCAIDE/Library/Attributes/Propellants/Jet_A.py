@@ -130,6 +130,7 @@ class Jet_A(Propellant):
         self.lower_heating_value           = 43.24e6                        # J/kg 
         self.heat_of_vaporization          = 300000                         # J/kg
         self.stoichiometric_fuel_air_ratio = 0.068
+        self.kinematic_viscosity           = 2.1e-6
         self.max_mass_fraction             = Data({'Air' : 0.0633,'O2' : 0.3022})   # kg propellant / kg oxidizer
    
         self.stoichiometric_fuel_air_ratio = 0         # [-] Stoichiometric Fuel to Air ratio

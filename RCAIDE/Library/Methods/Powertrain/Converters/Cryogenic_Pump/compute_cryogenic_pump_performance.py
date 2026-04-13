@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Powertrain/Converters/Pump/compute_pump_performance.py
+# RCAIDE/Library/Methods/Powertrain/Converters/Pump/compute_cryogenic_pump_performance.py
 #
 # 
 # Created:  Sep. 2025, M. Guidotti
@@ -38,9 +38,9 @@ def compute_cryogenic_pump_performance(pump, line, state):
         Q_th = pump.num_pistons * pump.omega * pump.piston_volume
         pump_conditions.outputs.theoretical_piston_flow = Q_th
 
-    pump_conditions.inputs.pressure = line.pressure
+    pump_conditions.inputs.pressure  = line.pressure
     pump_conditions.outputs.pressure = line.pressure + pump.delta_pressure
-    pump_conditions.outputs.power = pump.mass_flow_rate * pump.delta_pressure / (line.density * pump.efficiency)
+    pump_conditions.outputs.power    = pump.mass_flow_rate * pump.delta_pressure / (line.density * pump.efficiency)
 
     stored_results_flag            = True
     stored_converter_tag           = pump.tag  

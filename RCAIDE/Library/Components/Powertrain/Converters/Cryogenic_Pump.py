@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Powertrain/Converters/Pump.py
+# RCAIDE/Library/Components/Powertrain/Converters/Cryogenic_Pump.py
 # 
 # Created:  Jan 2026, M. Clarke 
 
@@ -7,13 +7,13 @@
 # ----------------------------------------------------------------------------------------------------------------------   
 # RCAIDE imports  
 from .Pump  import Pump
-from RCAIDE.Library.Methods.Powertrain.Converters.Liquid_Hydrogen_Fuel_Cell_Pump import compute_pump_performance, append_pump_conditions
+from RCAIDE.Library.Methods.Powertrain.Converters.Cryogenic_Pump import compute_cryogenic_pump_performance, append_cryogenic_pump_conditions
 
  
 # ----------------------------------------------------------------------------------------------------------------------
 # Pump
 # ----------------------------------------------------------------------------------------------------------------------            
-class Liquid_Hydrogen_Fuel_Cell_Pump(Pump):
+class Cryogenic_Pump(Pump):
     """ 
     """
     def __defaults__(self): 
@@ -29,7 +29,7 @@ class Liquid_Hydrogen_Fuel_Cell_Pump(Pump):
         """
         Computes Turboelectric_Generator performance including power.
         """
-        P_mech,P_elec,stored_results_flag,stored_propulsor_tag =  compute_pump_performance(self,state,fuel_line, bus)
+        P_mech,P_elec,stored_results_flag,stored_propulsor_tag =  compute_cryogenic_pump_performance(self,state,fuel_line, bus)
         return P_mech,P_elec,stored_results_flag,stored_propulsor_tag 
     
     def append_operating_conditions(self,segment): 
@@ -43,5 +43,5 @@ class Liquid_Hydrogen_Fuel_Cell_Pump(Pump):
         bus : Data
             Electrical bus supplying power to the avionics
         """
-        append_pump_conditions(self,segment) 
+        append_cryogenic_pump_conditions(self,segment) 
         return 

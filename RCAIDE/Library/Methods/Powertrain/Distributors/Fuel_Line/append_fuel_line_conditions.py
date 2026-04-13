@@ -5,7 +5,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-# RCAIDE imports   
+# RCAIDE imports  
+import RCAIDE 
 from RCAIDE.Framework.Mission.Common     import   Conditions
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHODS
@@ -65,13 +66,13 @@ def append_fuel_line_conditions(fuel_line,segment):
     segment.state.conditions.energy.distributors[fuel_line.tag].outputs.power.thermal               = 0 * ones_row(1) 
     segment.state.conditions.energy.distributors[fuel_line.tag].outputs.power.hydraulic             = 0 * ones_row(1)          
 
-    if fuel_line.assigned_distributors != None:
-        for distributor_tag in fuel_line.assigned_distributors[0]:    
-            link                  = Conditions()
-            link.power            = Conditions()
-            link.power.electrical = 0 * ones_row(1)
-            link.power.chemical   = 0 * ones_row(1) 
-            segment.state.conditions.energy.distributors[fuel_line.tag].links[distributor_tag] = link     
+  
+    for tag, item in  fuel_line.items(): 
+        if issubclass(type(item), RCAIDE.Library.Components.Component):
+            item.append_operating_conditions(segment) 
+            for sub_tag, sub_item in  item.items(): 
+                if issubclass(type(sub_item), RCAIDE.Library.Components.Component): 
+                    sub_item.append_operating_conditions(segment)    
 
     return
 
