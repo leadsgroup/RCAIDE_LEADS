@@ -22,9 +22,9 @@ def compute_fuel_line_conditions(fuel_line,state,network):
 
     # Extract current conditions for the fuel line
     fuel_line_conditions    = state.conditions.energy.distributors[fuel_line.tag]   
- 
 
-    chemical_power      = state.unknowns.network['chemical_power'] # state.conditions.energy.inputs.power.chemical 
+    chemical_power      = fuel_line_conditions.outputs.power.chemical 
+    hydraulic_power     = fuel_line_conditions.outputs.power.hydraulic
     mass_flow_rate      = chemical_power /working_fluid.lower_heating_value  
     
     # unpack pump  
@@ -86,7 +86,7 @@ def compute_fuel_line_conditions(fuel_line,state,network):
 
     # 7. Total pressure pump must add to the fluid  
     power_losses      = volumetric_flow_rate * delta_p_losses
-    power_ideal_total = net_hydraulic_power + power_losses
+    power_ideal_total = hydraulic_power + power_losses
     electrical_power  = power_ideal_total / pump.efficiency 
   
     fuel_line_conditions.inputs.power.electrical = electrical_power 

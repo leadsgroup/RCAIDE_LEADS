@@ -54,17 +54,25 @@ def append_fuel_line_conditions(fuel_line,segment):
     segment.state.conditions.energy.distributors[fuel_line.tag].links                               = Conditions()
     
     segment.state.conditions.energy.distributors[fuel_line.tag].inputs                              = Conditions()
-    segment.state.conditions.energy.distributors[fuel_line.tag].fuel_mass_flow_rate          = 0 * ones_row(1)  
+    segment.state.conditions.energy.distributors[fuel_line.tag].fuel_mass_flow_rate                 = 0 * ones_row(1)  
     segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power                        = Conditions()  
-    segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power.electrical             = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power.electrical             = 0 * ones_row(1) 
     segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power.thermal                = 0 * ones_row(1) 
-    segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power.hydraulic              = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power.hydraulic              = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power.propulsive             = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power.pneumatic              = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power.mechanical             = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power.chemical               = 0 * ones_row(1) 
     
     segment.state.conditions.energy.distributors[fuel_line.tag].outputs                             = Conditions()  
     segment.state.conditions.energy.distributors[fuel_line.tag].outputs.power                       = Conditions()  
     segment.state.conditions.energy.distributors[fuel_line.tag].outputs.power.electrical            = 0 * ones_row(1) 
     segment.state.conditions.energy.distributors[fuel_line.tag].outputs.power.thermal               = 0 * ones_row(1) 
-    segment.state.conditions.energy.distributors[fuel_line.tag].outputs.power.hydraulic             = 0 * ones_row(1)          
+    segment.state.conditions.energy.distributors[fuel_line.tag].outputs.power.hydraulic             = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[fuel_line.tag].outputs.power.propulsive            = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[fuel_line.tag].outputs.power.pneumatic             = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[fuel_line.tag].outputs.power.mechanical            = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[fuel_line.tag].outputs.power.chemical              = 0 * ones_row(1)                
 
   
     for tag, item in  fuel_line.items(): 

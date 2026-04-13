@@ -140,6 +140,12 @@ class Network(Component):
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
                 net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)
+
+                
+                # connect propulsor outputs to distributor inputs
+                for domain in inputs.power.keys():
+                    for distributor_tag in propulsor.assigned_distributors[0]:
+                        state.conditions.energy.distributors[distributor_tag].outputs.power[domain] += inputs.power[domain] 
         
         # ----------------------------------------------------------
         # Systems
@@ -150,7 +156,12 @@ class Network(Component):
                 net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
-                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)
+                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical) 
+
+                # connect propulsor outputs to distributor inputs
+                for domain in inputs.power.keys():
+                    for distributor_tag in propulsor.assigned_distributors[0]:
+                        state.conditions.energy.distributors[distributor_tag].outputs.power[domain] += inputs.power[domain] 
                 
         stored_results_flag  = False
         for converter in converters:   
@@ -170,12 +181,23 @@ class Network(Component):
                 net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)       
-                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)         
-
-
-
-        #state.conditions.energy.outputs.power.chemical  = net_chemical_power
-        #state.conditions.energy.outputs.power.hydraulic = net_hydraulic_power 
+                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)  
+                
+                # connect propulsor outputs to distributor inputs
+                for domain in inputs.power.keys():
+                    for distributor_tag in propulsor.assigned_distributors[0]:
+                        state.conditions.energy.distributors[distributor_tag].outputs.power[domain] += inputs.power[domain]    
+                        
+        # ----------------------------------------------------------
+        # Distributors 
+        # ----------------------------------------------------------  
+        for distributor in distributors:
+            if distributor.active:   
+                inputs, outputs, _, _  = distributor.compute_performance(state,network)   
+                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
+                net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
+                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)     
+                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)   
 
         # ----------------------------------------------------------
         # Sources 
@@ -187,18 +209,7 @@ class Network(Component):
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)  
                 net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)    
-                           
-        # ----------------------------------------------------------
-        # Distributors 
-        # ----------------------------------------------------------  
-        for distributor in distributors:
-            if source.active:   
-                inputs, outputs, _, _  = distributor.compute_performance(state,network)   
-                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
-                net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
-                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)     
-                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)    
-                            
+                             
         # ----------------------------------------------------------
         # Power Balance 
         # ----------------------------------------------------------
