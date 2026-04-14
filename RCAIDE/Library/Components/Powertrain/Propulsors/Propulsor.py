@@ -94,8 +94,7 @@ class Propulsor(Component):
         self.assigned_converters          = None 
         self.assigned_modulators          = None 
         self.assigned_distributors        = None
-        self.nacelle                      = None
-        self.electrical_power_generation_split       = 1
+        self.nacelle                      = None 
         self.efficiency                   = 1.0
         self.sealevel_static_thrust       = 0.0  
         self.diameter                     = 0.0      

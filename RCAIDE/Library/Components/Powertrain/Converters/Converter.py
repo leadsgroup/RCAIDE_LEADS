@@ -30,8 +30,7 @@ class Converter(Component):
         self.assigned_converters                = None
         self.assigned_modulators                = None
         self.assigned_distributors              = None 
-        self.identical_converters               = True
-        self.electrical_power_generation_split  = 1
+        self.identical_converters               = True 
         self.efficiency                         = 1.0
 
     def initialize(self, network):  

@@ -6,7 +6,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-# RCAIDE imports  
+# RCAIDE imports
+import RCAIDE
 from RCAIDE.Framework.Core import Data   
 from RCAIDE.Library.Methods.Powertrain.Converters.Ram                  import compute_ram_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Combustor            import compute_combustor_performance
@@ -199,6 +200,8 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     low_pressure_compressor   = turbofan.low_pressure_compressor
     high_pressure_compressor  = turbofan.high_pressure_compressor
     combustor                 = turbofan.combustor
+    integrated_drive_generator= turbofan.integrated_drive_generator 
+    integrated_drive_motor    = turbofan.integrated_drive_motor
     high_pressure_turbine     = turbofan.high_pressure_turbine
     low_pressure_turbine      = turbofan.low_pressure_turbine
     core_nozzle               = turbofan.core_nozzle
@@ -217,9 +220,6 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     hpt_conditions          = conditions.energy.converters[high_pressure_turbine.tag]
     core_nozzle_conditions  = conditions.energy.converters[core_nozzle.tag]
     fan_nozzle_conditions   = conditions.energy.converters[fan_nozzle.tag]    
-    
-    # Set the electrical power output of the turbofan based on the specified power split for hybrid systems. This is used to determine how much power is generated or consumed by electric components in the engine (e.g., electric motors or generators associated with the fan or compressors).
-    #turbofan_conditions.outputs.power.electrical = turbofan.electrical_power_generation_split  *  state.unknowns.network['electrical_power']*(1 - state.conditions.energy.hybrid_power_split_ratio)  
  
     # Set the working fluid to determine the fluid properties
     ram.working_fluid = turbofan.working_fluid
@@ -289,8 +289,36 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     compute_combustor_performance(combustor,conditions) 
 
    
-    ''' THIS IS INCORRECT TO DO LINK ELECTRICAL WORK DONE TO SHAFT'''
-    external_shaft_work = turbofan_conditions.outputs.power.electrical * high_pressure_turbine.mechanical_efficiency  
+    ''' THIS IS INCORRECT TO DO LINK ELECTRICAL WORK DONE TO SHAFT''' 
+    
+    # Set the electrical power output of the turbofan based on the specified power split for hybrid systems. This is used to determine how much power is generated or consumed by electric components in the engine (e.g., electric motors or generators associated with the fan or compressors).
+    if type(network) == RCAIDE.Framework.Networks.Fuel: 
+        turbofan_conditions.outputs.power.electrical = state.unknowns.network['electrical_power'] 
+    else:
+        turbofan_conditions.outputs.power.electrical =  state.unknowns.network['electrical_power'] *(1 - state.conditions.energy.hybrid_power_split_ratio)
+       
+    external_shaft_work       =  0*state.ones_row(1)
+    net_external_shaft_power =  0*state.ones_row(1)
+    
+    # compute electrical power if generated/supplied   
+    if integrated_drive_motor != None and  len(state.numerics.time.differentiate) > 0: 
+        compressor_motor_conditions                 = conditions.energy.converters[integrated_drive_motor.tag] 
+        compressor_motor_conditions.outputs.power   = power    
+        compressor_motor_conditions.outputs.omega   = lpc_conditions.omega
+        compressor_motor_conditions.outputs.torque  = compressor_motor_conditions.outputs.power / compressor_motor_conditions.outputs.omega
+        inputs, outputs, _, _ = compressor_motor_conditions.compute_performance()  
+        net_external_shaft_power +=   outputs.power.electrical
+            
+    if integrated_drive_generator != None and len(state.numerics.time.differentiate) > 0:    
+        IDG_conditions                           = conditions.energy.converters[integrated_drive_generator.tag] 
+        IDG_conditions.outputs.power.electrical  = turbofan_conditions.outputs.power.electrical * high_pressure_turbine.efficiency
+        IDG_conditions.outputs.omega             = lpc_conditions.omega # need to check 
+        IDG_conditions.outputs.torque            = IDG_conditions.outputs.power.electrical / IDG_conditions.outputs.omega  
+        integrated_drive_generator.compute_performance()   
+        inputs, outputs, _, _ = integrated_drive_generator.compute_performance(state,network)  
+        net_external_shaft_power +=  inputs.outputs.power.electrical # CONVERT TO WORK
+                
+    external_shaft_work =  net_external_shaft_power
 
     # Link the high pressure turbine to the combustor
     hpt_conditions.inputs.stagnation_temperature    = combustor_conditions.outputs.stagnation_temperature
@@ -361,7 +389,7 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     turbofan_conditions.total_temperature_reference              = lpc_conditions.outputs.stagnation_temperature
     turbofan_conditions.total_pressure_reference                 = lpc_conditions.outputs.stagnation_pressure 
     turbofan_conditions.bypass_ratio                             = bypass_ratio
-    turbofan_conditions.flow_through_core                        = 1./(1.+bypass_ratio) #scaled constant to turn on core thrust computation
+    turbofan_conditions.flow_through_core                        = 1./(1.+bypass_ratio) # scaled constant to turn on core thrust computation
     turbofan_conditions.flow_through_fan                         = bypass_ratio/(1.+bypass_ratio) #scaled constant to turn on fan thrust computation        
 
     # Compute the thrust
@@ -402,24 +430,7 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     # compute shaft RPMs 
     fan_conditions.omega        = fan.design_angular_velocity * turbofan_conditions.throttle
     lpc_conditions.omega        = low_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle
-    hpc_conditions.omega        = high_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle
-    
-    # compute electrical power if generated/supplied  
-    power_elec = 0*state.ones_row(1)
-    if low_pressure_compressor.motor != None and  len(state.numerics.time.differentiate) > 0: 
-        compressor_motor_conditions                 = conditions.energy.converters[low_pressure_compressor.motor.tag] 
-        compressor_motor_conditions.outputs.power   = power *conditions.energy.hybrid_power_split_ratio   
-        compressor_motor_conditions.outputs.omega   = lpc_conditions.omega
-        compressor_motor_conditions.outputs.torque  = compressor_motor_conditions.outputs.power / compressor_motor_conditions.outputs.omega   
-        power_elec =  compressor_motor_conditions.outputs.power  
-    
-    if low_pressure_compressor.generator != None and len(state.numerics.time.differentiate) > 0: 
-        compressor_generator_conditions                = conditions.energy.converters[low_pressure_compressor.generator.tag] 
-        compressor_generator_conditions.inputs.power   = power *conditions.energy.hybrid_power_split_ratio  
-        compressor_generator_conditions.inputs.omega   = lpc_conditions.omega
-        compressor_generator_conditions.outputs.torque = compressor_generator_conditions.outputs.power / compressor_generator_conditions.outputs.omega  
-        power_elec =  compressor_generator_conditions.inputs.power  
-    
+    hpc_conditions.omega        = high_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle 
   
     # store data
     core_nozzle_res = Data(

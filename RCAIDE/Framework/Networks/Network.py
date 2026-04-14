@@ -118,12 +118,7 @@ class Network(Component):
         stored_results_flag  = False
         for propulsor in propulsors:
             if propulsor.active:
-                if propulsor.identical_propulsors == False or stored_results_flag == False:
-                    # #################################
-                    # # TO REMOVE
-                    # state.conditions.energy.propulsors[propulsor.tag].outputs.power.electrical = propulsor.electrical_power_generation_split \
-                    #     *  state.unknowns.network['electrical_power']*(1 - state.conditions.energy.hybrid_power_split_ratio)  
-                    # #################################
+                if propulsor.identical_propulsors == False or stored_results_flag == False: 
                     inputs, outputs, stored_results_flag, stored_propulsor_tag = propulsor.compute_performance(state,network,center_of_gravity=center_of_gravity)
                 else:
                     inputs, outputs = propulsor.reuse_stored_data(state,network,stored_propulsor_tag=stored_propulsor_tag, center_of_gravity=center_of_gravity)
@@ -163,6 +158,9 @@ class Network(Component):
                     for distributor_tag in propulsor.assigned_distributors[0]:
                         state.conditions.energy.distributors[distributor_tag].outputs.power[domain] += inputs.power[domain] 
                 
+        # ----------------------------------------------------------
+        # Converters 
+        # ----------------------------------------------------------                
         stored_results_flag  = False
         for converter in converters:   
             if converter.active: 
@@ -170,7 +168,7 @@ class Network(Component):
                     # #################################
                     # # TO REMOVE
                     '''TRY TO REMOVE LINE BELOW'''
-                    state.conditions.energy.converters[converter.tag].outputs.power.electrical =  converter.electrical_power_generation_split * state.unknowns.network['electrical_power']*(1 - state.conditions.energy.hybrid_power_split_ratio )  # NEED TO ASSIGN PRIOR
+                    #state.conditions.energy.converters[converter.tag].outputs.power.electrical =  state.unknowns.network['electrical_power']*(1 - state.conditions.energy.hybrid_power_split_ratio )  # NEED TO ASSIGN PRIOR
                     # #################################
                     
                     converter.reverse_mode_computation = True
@@ -209,15 +207,9 @@ class Network(Component):
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)  
                 net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)    
-                             
-        # ----------------------------------------------------------
-        # Power Balance 
-        # ----------------------------------------------------------
-        # loop through compoments and determine the power in OR out of a distributor, compute power poss, heat transfer
-        
-
-                                                       
-
+                              
+                              
+                              
         ## ----------------------------------------------------------
         ## Build Power Balance System
         ## ----------------------------------------------------------
@@ -299,25 +291,7 @@ class Network(Component):
                 #conditions.energy[component_group][component_tag][direction_1].power[power_type][pos_sign,0] =  val[pos_sign] * distributor.efficiency
                 #conditions.energy[component_group][component_tag][direction_2].power[power_type][neg_sign,0] = -val[neg_sign]  
             #else:    
-                #conditions.energy[component_group][component_tag][direction].power[power_type][:,0] = val                        
-                    
-                        
-        # ----------------------------------------------------------
-        # Distributors 
-        # ----------------------------------------------------------
-        #for distributor in distributors:
-            #if distributor.active:    
-                #for propulsor in  network.propulsors:
-                    #if distributor.tag in propulsor.assigned_distributors[0]:
-                        #state.conditions.energy.distributors[distributor.tag].outputs.power[distributor.domain] +=  state.conditions.energy.propulsors[propulsor.tag].inputs.power[distributor.domain]
-                        
-                ## this computes the input power (output power is suppled to the components of various forms )
-                #inputs, outputs, _, _  = distributor.compute_performance(state,network)
-                
-                ## determine system losses (should be negative )
-                #net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)  
-                #net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
-                #net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)  # line integrated pump 
+                #conditions.energy[component_group][component_tag][direction].power[power_type][:,0] = val         
                 
         # Final aggregation for system level performance 
         conditions.energy.total_force_vector       = total_thrust
@@ -327,28 +301,27 @@ class Network(Component):
         conditions.energy.net_electrical_power     = net_electrical_power 
         conditions.energy.net_thermal_power        = net_thermal_power 
         conditions.energy.net_hydraulic_power      = net_hydraulic_power 
-        conditions.energy.net_chemical_power       = net_chemical_power
-
+        conditions.energy.net_chemical_power       = net_chemical_power 
 
         return
      
        
     def append_segment_conditions(self,segment): 
  
-        segment.conditions.energy.inputs.power.propulsive[:,0]    = 0
-        segment.conditions.energy.inputs.power.mechanical[:,0]     = 0
-        segment.conditions.energy.inputs.power.electrical[:,0]     = 0
-        segment.conditions.energy.inputs.power.chemical[:,0]       = 0
-        segment.conditions.energy.inputs.power.pneumatic[:,0]      = 0
-        segment.conditions.energy.inputs.power.hydraulic[:,0]      = 0
-        segment.conditions.energy.inputs.power.thermal[:,0]        = 0 
-        segment.conditions.energy.outputs.power.propulsive[:,0]    = 0
-        segment.conditions.energy.outputs.power.mechanical[:,0]    = 0
-        segment.conditions.energy.outputs.power.electrical[:,0]    = 0
-        segment.conditions.energy.outputs.power.chemical[:,0]      = 0
-        segment.conditions.energy.outputs.power.pneumatic[:,0]     = 0
-        segment.conditions.energy.outputs.power.hydraulic[:,0]     = 0
-        segment.conditions.energy.outputs.power.thermal[:,0]       = 0        
+        segment.conditions.energy.inputs.power.propulsive[:,0]     = 0.0
+        segment.conditions.energy.inputs.power.mechanical[:,0]     = 0.0
+        segment.conditions.energy.inputs.power.electrical[:,0]     = 0.0
+        segment.conditions.energy.inputs.power.chemical[:,0]       = 0.0
+        segment.conditions.energy.inputs.power.pneumatic[:,0]      = 0.0
+        segment.conditions.energy.inputs.power.hydraulic[:,0]      = 0.0
+        segment.conditions.energy.inputs.power.thermal[:,0]        = 0.0
+        segment.conditions.energy.outputs.power.propulsive[:,0]    = 0.0
+        segment.conditions.energy.outputs.power.mechanical[:,0]    = 0.0
+        segment.conditions.energy.outputs.power.electrical[:,0]    = 0.0
+        segment.conditions.energy.outputs.power.chemical[:,0]      = 0.0
+        segment.conditions.energy.outputs.power.pneumatic[:,0]     = 0.0
+        segment.conditions.energy.outputs.power.hydraulic[:,0]     = 0.0
+        segment.conditions.energy.outputs.power.thermal[:,0]       = 0.0       
         return 
         
     

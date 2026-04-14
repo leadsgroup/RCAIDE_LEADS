@@ -31,7 +31,8 @@ def compute_fuel_tank_performance(tank,state,distributor):
             #state.conditions.energy.distributors[distributor_tag].outputs.power[domain] += inputs.power[domain]
             
             
-    chemical_power      = state.conditions.energy.distributors['fuel_line'].outputs.power.chemical # state.unknowns.network['chemical_power'] # state.conditions.energy.outputs.power.chemical 
+    #chemical_power      = state.conditions.energy.distributors['fuel_line'].outputs.power.chemical # state.unknowns.network['chemical_power'] # state.conditions.energy.outputs.power.chemical 
+    chemical_power      = state.unknowns.network['chemical_power'] # state.conditions.energy.outputs.power.chemical 
     fuel_mass_flow_rate = chemical_power / tank.fuel.lower_heating_value
     
     if type(tank.fuel) == RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen:
