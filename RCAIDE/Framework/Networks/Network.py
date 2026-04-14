@@ -135,16 +135,17 @@ class Network(Component):
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
                 net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)
-
                 
                 # connect propulsor outputs to distributor inputs
-                for domain in inputs.power.keys():
-                    for distributor_tag in propulsor.assigned_distributors[0]:
-                        state.conditions.energy.distributors[distributor_tag].outputs.power[domain] += inputs.power[domain] 
+                if propulsor.assigned_distributors != None: 
+                    for domain in inputs.power.keys():
+                        for distributor_tag in propulsor.assigned_distributors[0]:
+                            state.conditions.energy.distributors[distributor_tag].outputs.power[domain] += inputs.power[domain] 
         
         # ----------------------------------------------------------
         # Systems
         # ----------------------------------------------------------
+        stored_results_flag  = False
         for system in systems:
             if system.active: 
                 inputs, outputs,_,_= system.compute_performance(state)  
@@ -153,10 +154,11 @@ class Network(Component):
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
                 net_chemical_power     += (outputs.power.chemical - inputs.power.chemical) 
 
-                # connect propulsor outputs to distributor inputs
-                for domain in inputs.power.keys():
-                    for distributor_tag in propulsor.assigned_distributors[0]:
-                        state.conditions.energy.distributors[distributor_tag].outputs.power[domain] += inputs.power[domain] 
+                # connect systems outputs to distributor inputs
+                if system.assigned_distributors != None: 
+                    for domain in inputs.power.keys():
+                        for distributor_tag in system.assigned_distributors[0]:
+                            state.conditions.energy.distributors[distributor_tag].outputs.power[domain] += inputs.power[domain] 
                 
         # ----------------------------------------------------------
         # Converters 
@@ -175,20 +177,22 @@ class Network(Component):
                     inputs, outputs, stored_results_flag, stored_conveter_tag = converter.compute_performance(state,network)
                 else:
                     inputs, outputs = converter.reuse_stored_data(state,network,stored_conveter_tag=stored_conveter_tag)  
-                total_mdot             += state.conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate   
+                total_mdot             += state.conditions.energy.propulsors[converter.tag].fuel_mass_flow_rate   
                 net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)       
                 net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)  
                 
-                # connect propulsor outputs to distributor inputs
-                for domain in inputs.power.keys():
-                    for distributor_tag in propulsor.assigned_distributors[0]:
-                        state.conditions.energy.distributors[distributor_tag].outputs.power[domain] += inputs.power[domain]    
+                # connect converter outputs to distributor inputs
+                if converter.assigned_distributors != None: 
+                    for domain in inputs.power.keys():
+                        for distributor_tag in converter.assigned_distributors[0]:
+                            state.conditions.energy.distributors[distributor_tag].outputs.power[domain] += inputs.power[domain]    
                         
         # ----------------------------------------------------------
         # Distributors 
-        # ----------------------------------------------------------  
+        # ----------------------------------------------------------
+        stored_results_flag  = False
         for distributor in distributors:
             if distributor.active:   
                 inputs, outputs, _, _  = distributor.compute_performance(state,network)   
@@ -199,7 +203,8 @@ class Network(Component):
 
         # ----------------------------------------------------------
         # Sources 
-        # ----------------------------------------------------------   
+        # ----------------------------------------------------------
+        stored_results_flag  = False
         for source in sources: 
             if source.active:    
                 inputs, outputs, _, _  = source.compute_performance(state,network)   

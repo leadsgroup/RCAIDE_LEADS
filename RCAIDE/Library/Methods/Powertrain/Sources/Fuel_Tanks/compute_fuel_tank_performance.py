@@ -24,15 +24,10 @@ def compute_fuel_tank_performance(tank,state,distributor):
      
     tank_conditions     = state.conditions.energy.sources[tank.tag]
     
-
-    ## connect propulsor outputs to distributor inputs
-    #for domain in inputs.power.keys():
-        #for distributor_tag in propulsor.assigned_distributors[0]:
-            #state.conditions.energy.distributors[distributor_tag].outputs.power[domain] += inputs.power[domain]
-            
+ 
             
     #chemical_power      = state.conditions.energy.distributors['fuel_line'].outputs.power.chemical # state.unknowns.network['chemical_power'] # state.conditions.energy.outputs.power.chemical 
-    chemical_power      = state.unknowns.network['chemical_power'] # state.conditions.energy.outputs.power.chemical 
+    chemical_power      = tank_conditions.power_split_ratio * state.conditions.energy.distributors[tank.assigned_distributors[0][0]].outputs.power.chemical # state.conditions.energy.outputs.power.chemical 
     fuel_mass_flow_rate = chemical_power / tank.fuel.lower_heating_value
     
     if type(tank.fuel) == RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen:
@@ -58,7 +53,7 @@ def compute_fuel_tank_performance(tank,state,distributor):
         tank_conditions.boil_off_flow_rate =  m_dot_boil_off 
      
     m_0_fuel                               = state.conditions.weights.components.mass[fuel.tag][0,0]  
-    total_mass_flow_rate                   = tank_conditions.power_split_ratio * fuel_mass_flow_rate + tank_conditions.boil_off_flow_rate +  tank_conditions.secondary_mass_flow_rate             
+    total_mass_flow_rate                   = fuel_mass_flow_rate + tank_conditions.boil_off_flow_rate +  tank_conditions.secondary_mass_flow_rate             
     tank_conditions.mass_flow_rate         = total_mass_flow_rate
     tank_conditions.outputs.power.chemical = total_mass_flow_rate * tank.fuel.lower_heating_value
     

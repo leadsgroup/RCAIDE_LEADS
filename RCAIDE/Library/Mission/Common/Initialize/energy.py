@@ -81,7 +81,14 @@ def energy(segment):
         # if network has busses
         for source in network.sources:
             source.append_segment_conditions(segment)
+            
+        for distributor in network.distributors:
+            distributor.append_segment_conditions(segment)
+            
+            
             #for battery_module in  bus.battery_modules:
+            
+            
                 #battery_module.append_segment_conditions(segment, bus)
             #for coolant_line in  network.coolant_lines:
                 #for tag, item in  coolant_line.items():

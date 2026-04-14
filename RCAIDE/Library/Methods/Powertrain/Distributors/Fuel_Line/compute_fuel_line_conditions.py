@@ -89,7 +89,8 @@ def compute_fuel_line_conditions(fuel_line,state,network):
     power_ideal_total = hydraulic_power + power_losses
     electrical_power  = power_ideal_total / pump.efficiency 
   
-    fuel_line_conditions.inputs.power.electrical = electrical_power 
+    fuel_line_conditions.inputs.power.electrical = electrical_power
+    fuel_line_conditions.mass_flow_rate          = mass_flow_rate
     pump_conditions.inputs.power.electrical      = electrical_power
     pump_conditions.mass_flow_rate               = mass_flow_rate 
         

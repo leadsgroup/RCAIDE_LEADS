@@ -54,7 +54,7 @@ def append_fuel_line_conditions(fuel_line,segment):
     segment.state.conditions.energy.distributors[fuel_line.tag].links                               = Conditions()
     
     segment.state.conditions.energy.distributors[fuel_line.tag].inputs                              = Conditions()
-    segment.state.conditions.energy.distributors[fuel_line.tag].fuel_mass_flow_rate                 = 0 * ones_row(1)  
+    segment.state.conditions.energy.distributors[fuel_line.tag].mass_flow_rate                      = 0 * ones_row(1)  
     segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power                        = Conditions()  
     segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power.electrical             = 0 * ones_row(1) 
     segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power.thermal                = 0 * ones_row(1) 
@@ -82,8 +82,7 @@ def append_fuel_line_conditions(fuel_line,segment):
                 if issubclass(type(sub_item), RCAIDE.Library.Components.Component): 
                     sub_item.append_operating_conditions(segment)    
 
-    return
-
+    return 
 
 def append_fuel_line_segment_conditions(fuel_line,segment):
     """
@@ -111,11 +110,26 @@ def append_fuel_line_segment_conditions(fuel_line,segment):
     
 
     fuel_line_conditions   = segment.state.conditions.energy.distributors[fuel_line.tag] 
-    fuel_line_conditions.fuel_mass_flow_rate[:,0]  = 0.0  
-    fuel_line_conditions.power.chemical[:,0]       = 0.0  
-    fuel_line_conditions.power.hydraulic[:,0]      = 0.0   
+    fuel_line_conditions.mass_flow_rate[:,0]                      = 0.0  
+    fuel_line_conditions.inputs.power.electrical[:,0]             = 0.0
+    fuel_line_conditions.inputs.power.thermal[:,0]                = 0.0
+    fuel_line_conditions.inputs.power.hydraulic[:,0]              = 0.0
+    fuel_line_conditions.inputs.power.propulsive[:,0]             = 0.0
+    fuel_line_conditions.inputs.power.pneumatic[:,0]              = 0.0
+    fuel_line_conditions.inputs.power.mechanical[:,0]             = 0.0
+    fuel_line_conditions.inputs.power.chemical[:,0]               = 0.0 
+    fuel_line_conditions.outputs.power.electrical[:,0]            = 0.0
+    fuel_line_conditions.outputs.power.thermal[:,0]               = 0.0
+    fuel_line_conditions.outputs.power.hydraulic[:,0]             = 0.0
+    fuel_line_conditions.outputs.power.propulsive[:,0]            = 0.0
+    fuel_line_conditions.outputs.power.pneumatic[:,0]             = 0.0
+    fuel_line_conditions.outputs.power.mechanical[:,0]            = 0.0
+    fuel_line_conditions.outputs.power.chemical[:,0]              = 0.0
+    
+    #fuel_line_conditions.power.chemical[:,0]       = 0.0  
+    #fuel_line_conditions.power.hydraulic[:,0]      = 0.0   
 
-    if fuel_line.assigned_distributors != None:
-        for distributor_tag in fuel_line.assigned_distributors[0]:     
-            fuel_line.links[distributor_tag].power.chemical[:,0] = 0 
+    #if fuel_line.assigned_distributors != None:
+        #for distributor_tag in fuel_line.assigned_distributors[0]:     
+            #fuel_line.links[distributor_tag].power.chemical[:,0] = 0 
     return
