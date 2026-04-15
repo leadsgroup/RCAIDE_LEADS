@@ -49,7 +49,7 @@ def append_bus_conditions(bus,segment):
     ones_row                                                                              = segment.state.ones_row
     segment.state.conditions.energy.distributors[bus.tag]                                 = Conditions()  
     segment.state.conditions.energy.distributors[bus.tag].links                           = Conditions() 
-    segment.state.conditions.energy.distributors[bus.tag].voltage                         = bus.voltage * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].voltage                         = bus.design_voltage * ones_row(1)
 
     segment.state.conditions.energy.distributors[bus.tag].inputs                          = Conditions()
     segment.state.conditions.energy.distributors[bus.tag].inputs.power                    = Conditions()  

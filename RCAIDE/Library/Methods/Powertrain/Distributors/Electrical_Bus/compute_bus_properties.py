@@ -7,12 +7,9 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-# imports 
-import numpy as np
-import RCAIDE
-from RCAIDE.Library.Components.Powertrain.Distributors import Electrical_Bus
-from .size_electrical_cable import size_electrical_cable
-from .calculate_electrical_cable_loss import calculate_electrical_cable_loss
+# imports  
+import RCAIDE 
+from .size_electrical_cable import size_electrical_cable 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_bus_properties
@@ -21,7 +18,7 @@ def compute_bus_properties(bus,network):
     
     for source in network.sources:
         if bus.tag in source.assigned_distributors[0]: 
-            bus.voltage += source.voltage
+            bus.design_voltage += source.voltage
     
     size_electrical_cable(bus)
     

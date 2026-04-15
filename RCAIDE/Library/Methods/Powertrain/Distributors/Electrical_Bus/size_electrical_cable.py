@@ -74,15 +74,15 @@ def size_electrical_cable(bus):
     breakdown based on the maximum electric field threshold.
     """
     P_max_watts         = bus.design_power
-    V_sys               = bus.voltage 
+    V_sys               = bus.design_voltage 
     L                   = bus.length 
     theta_a             = bus.design_ambient_temperature
     theta_max           = bus.maximum_temperature 
-    E0                  = bus.insulator.dielectric_strength
-    rho_elec            = bus.conductor.electrical_resistivity(theta_max)
-    rho_cond            = bus.conductor.density
-    rho_insul           = bus.insulator.density
-    rho_theta_insul     = bus.insulator.thermal_resistivity
+    rho_elec            = bus.conductor.material.compute_electrical_resistivity(theta_max)
+    E0                  = bus.insulator.material.dielectric_strength
+    rho_cond            = bus.conductor.material.density
+    rho_insul           = bus.insulator.material.density
+    rho_theta_insul     = bus.insulator.material.thermal_resistivity
     T4                  = bus.environmental_external_thermal_resistance
     
     # 1. Max design current

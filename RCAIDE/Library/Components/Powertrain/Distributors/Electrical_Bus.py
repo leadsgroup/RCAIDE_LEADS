@@ -84,12 +84,8 @@ class Electrical_Bus(Distributor):
         self.domain                                    = 'electrical'  
         self.active                                    = True
         self.design_power                              = None
-        self.voltage                                   = 0.0 
-        self.voltage_phase_to_neutral                  = 115.0 
-        self.voltage_phase_to_phase                    = 200.0
-        self.frequency                                 = 0.0   
-        self.to                                        = None
-        self.from_                                     = None
+        self.design_voltage                            = 0.0  
+        self.frequency                                 = 0.0    
         self.current_type                              = 'DC'   
         self.efficiency                                = 1
         self.length                                    = 0
@@ -99,10 +95,10 @@ class Electrical_Bus(Distributor):
         self.maximum_current                           = 0 # NEED TO CHECK
         self.maximum_temperature                       = 423 # NEED TO CHECK
         self.environmental_external_thermal_resistance = 1 # CHECK  IEC 60287-2-1 Section 4.2.1.1. (T4)
-        self.conductor = Component()
+        self.conductor                                 = Component()
         self.conductor.radius                          = None
         self.conductor.material                        = Copper()  # Default conductor material
-        self.insulator = Component()
+        self.insulator                                 = Component()
         self.insulator.radius                          = None
         self.insulator.material                        = Polyimide()  # Default insulator material 
         self.duplicate_wires                           = 2# Number of duplicate cables for redundancy

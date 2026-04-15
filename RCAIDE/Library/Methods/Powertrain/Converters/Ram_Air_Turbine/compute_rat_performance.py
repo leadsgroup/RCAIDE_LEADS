@@ -35,7 +35,7 @@ def compute_rat_performance(ram_air_turbine, state, bus=None):
     generator_conditions.inputs.omega  = rotor_conditions.omega         
     
     # assign voltage across bus 
-    generator_conditions.outputs.voltage = bus.voltage*np.ones_like(generator_conditions.inputs.power)
+    generator_conditions.outputs.voltage = bus.design_voltage*np.ones_like(generator_conditions.inputs.power)
     
      # run the generator 
     compute_generator_performance(generator,conditions)   
