@@ -114,7 +114,7 @@ def size_electrical_cable(bus):
     R_total_ohms = (rho_elec * L) / (np.pi * r_cond_m**2)
     
     bus.conductor.radius        = r_cond_m
-    bus.insulation.radius       = r_insul_m
+    bus.insulator.radius        = r_insul_m
     bus.mass_properties.mass    = cable_mass_kg
     bus.conductor.resistance    = R_total_ohms
     

@@ -50,18 +50,28 @@ def append_bus_conditions(bus,segment):
     segment.state.conditions.energy.distributors[bus.tag]                                 = Conditions()  
     segment.state.conditions.energy.distributors[bus.tag].links                           = Conditions() 
     segment.state.conditions.energy.distributors[bus.tag].voltage                         = bus.design_voltage * ones_row(1)
+ 
 
-    segment.state.conditions.energy.distributors[bus.tag].inputs                          = Conditions()
-    segment.state.conditions.energy.distributors[bus.tag].inputs.power                    = Conditions()  
-    segment.state.conditions.energy.distributors[bus.tag].inputs.power.electrical         = 0 * ones_row(1)
-    segment.state.conditions.energy.distributors[bus.tag].inputs.power.thermal            = 0 * ones_row(1) 
-    segment.state.conditions.energy.distributors[bus.tag].inputs.power.hydraulic          = 0 * ones_row(1)
-    
-    segment.state.conditions.energy.distributors[bus.tag].outputs                         = Conditions()  
-    segment.state.conditions.energy.distributors[bus.tag].outputs.power                   = Conditions()  
-    segment.state.conditions.energy.distributors[bus.tag].outputs.power.electrical        = 0 * ones_row(1) 
-    segment.state.conditions.energy.distributors[bus.tag].outputs.power.thermal           = 0 * ones_row(1) 
-    segment.state.conditions.energy.distributors[bus.tag].outputs.power.hydraulic         = 0 * ones_row(1)      
+    segment.state.conditions.energy.distributors[bus.tag].inputs                        = Conditions()
+    segment.state.conditions.energy.distributors[bus.tag].inputs.current                = 0. * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].inputs.power                  = Conditions()
+    segment.state.conditions.energy.distributors[bus.tag].inputs.power.propulsive       = 0. * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].inputs.power.mechanical       = 0. * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].inputs.power.electrical       = 0. * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].inputs.power.chemical         = 0. * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].inputs.power.pneumatic        = 0. * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].inputs.power.hydraulic        = 0. * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].inputs.power.thermal          = 0. * ones_row(1)  
+    segment.state.conditions.energy.distributors[bus.tag].outputs                       = Conditions() 
+    segment.state.conditions.energy.distributors[bus.tag].outputs.power                 = Conditions()
+    segment.state.conditions.energy.distributors[bus.tag].outputs.current               = 0. * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].outputs.power.propulsive      = 0. * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].outputs.power.mechanical      = 0. * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].outputs.power.electrical      = 0. * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].outputs.power.chemical        = 0. * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].outputs.power.pneumatic       = 0. * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].outputs.power.hydraulic       = 0. * ones_row(1)
+    segment.state.conditions.energy.distributors[bus.tag].outputs.power.thermal         = 0. * ones_row(1)     
 
     if bus.assigned_distributors != None:
         for distributor_tag in bus.assigned_distributors[0]:    
@@ -74,5 +84,22 @@ def append_bus_conditions(bus,segment):
 
 
 def append_bus_segment_conditions(bus,segment):
+
+
+    bus_conditions   = segment.state.conditions.energy.distributors[bus.tag]  
+    bus_conditions.inputs.power.electrical[:,0]             = 0.0
+    bus_conditions.inputs.power.thermal[:,0]                = 0.0
+    bus_conditions.inputs.power.hydraulic[:,0]              = 0.0
+    bus_conditions.inputs.power.propulsive[:,0]             = 0.0
+    bus_conditions.inputs.power.pneumatic[:,0]              = 0.0
+    bus_conditions.inputs.power.mechanical[:,0]             = 0.0
+    bus_conditions.inputs.power.chemical[:,0]               = 0.0 
+    bus_conditions.outputs.power.electrical[:,0]            = 0.0
+    bus_conditions.outputs.power.thermal[:,0]               = 0.0
+    bus_conditions.outputs.power.hydraulic[:,0]             = 0.0
+    bus_conditions.outputs.power.propulsive[:,0]            = 0.0
+    bus_conditions.outputs.power.pneumatic[:,0]             = 0.0
+    bus_conditions.outputs.power.mechanical[:,0]            = 0.0
+    bus_conditions.outputs.power.chemical[:,0]              = 0.0    
 
     return

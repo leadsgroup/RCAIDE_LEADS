@@ -141,7 +141,8 @@ class Network(Component):
                     for domain in inputs.power.keys():
                         for distributor_tag in propulsor.assigned_distributors[0]:
                             state.conditions.energy.distributors[distributor_tag].outputs.power[domain] += inputs.power[domain] 
-        
+                            state.conditions.energy.distributors[distributor_tag].inputs.power[domain]  += outputs.power[domain]
+   
         # ----------------------------------------------------------
         # Systems
         # ----------------------------------------------------------
@@ -159,6 +160,7 @@ class Network(Component):
                     for domain in inputs.power.keys():
                         for distributor_tag in system.assigned_distributors[0]:
                             state.conditions.energy.distributors[distributor_tag].outputs.power[domain] += inputs.power[domain] 
+                            state.conditions.energy.distributors[distributor_tag].inputs.power[domain]  += outputs.power[domain] 
                 
         # ----------------------------------------------------------
         # Converters 
@@ -188,6 +190,7 @@ class Network(Component):
                     for domain in inputs.power.keys():
                         for distributor_tag in converter.assigned_distributors[0]:
                             state.conditions.energy.distributors[distributor_tag].outputs.power[domain] += inputs.power[domain]    
+                            state.conditions.energy.distributors[distributor_tag].inputs.power[domain]  += outputs.power[domain] 
                         
         # ----------------------------------------------------------
         # Distributors 
@@ -199,7 +202,8 @@ class Network(Component):
                 net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)     
-                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)   
+                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)
+                
 
         # ----------------------------------------------------------
         # Sources 
@@ -211,16 +215,13 @@ class Network(Component):
                 net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)  
-                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)    
-                              
-                              
+                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)   
                               
         ## ----------------------------------------------------------
-        ## Build Power Balance System
-        ## ----------------------------------------------------------
-
+        ## Determine Power Across Buses
+        ## ---------------------------------------------------------- 
         #n_rows  = len(distributors)
-        #n_cpts = state.numerics.number_of_control_points
+        #n_cpts  = state.numerics.number_of_control_points
         #A_matrix = np.zeros((n_cpts,n_rows,0))
 
         #distributor_tags = []
@@ -228,9 +229,7 @@ class Network(Component):
             #distributor_tags.append(dist.tag) 
 
         #b_vector     = np.zeros((n_cpts,n_rows,1)) 
-        #unknown_cols = {}   # maps a key -> column index
-
-        
+        #unknown_cols = {}   # maps a key -> column index 
 
         ## distributor ↔ distributor links 
         #for distributor in distributors:
@@ -248,56 +247,79 @@ class Network(Component):
                                     #vector[:,row_a,0] = -1.0
                                     #vector[:,row_b,0] = 1.0
                                     #A_matrix =  np.concatenate((A_matrix,vector), axis=2)
-
-        ## ----------------------------------------------------------
-        ## Solve Power Balance System
-        ## ---------------------------------------------------------- 
         
+        ## fill b vector
+        #for propulsor in propulsors:
+            #if propulsor.active and propulsor.assigned_distributors != None: 
+                #for distributor_tag in propulsor.assigned_distributors[0]: 
+                    #for input_power_key in conditions.energy.propulsors[propulsor.tag].inputs.power.keys():
+                        #if distributor.domain == input_power_key: 
+                            #row = distributor_tags.index(distributor_tag) 
+                            #b_vector[:,row,0] += conditions.energy.propulsors[propulsor.tag].inputs.power[input_power_key][:,0] 
+                    #for output_power_key in conditions.energy.propulsors[propulsor.tag].outputs.power.keys():
+                        #if distributor.domain == output_power_key: 
+                            #row = distributor_tags.index(distributor_tag) 
+                            #b_vector[:,row,0] -= conditions.energy.propulsors[propulsor.tag].outputs.power[output_power_key][:,0]
+                            
+        #for system in systems:
+            #if system.active and system.assigned_distributors != None: 
+                #for distributor_tag in system.assigned_distributors[0]: 
+                    #for input_power_key in conditions.energy.systems[system.tag].inputs.power.keys():
+                        #if distributor.domain == power_key: 
+                            #row = distributor_tags.index(distributor_tag) 
+                            #b_vector[:,row,0] += conditions.energy.systems[system.tag].inputs.power[input_power_key][:,0]
+
+                    #for output_power_key in conditions.energy.systems[system.tag].outputs.power.keys():
+                        #if distributor.domain == output_power_key: 
+                            #row = distributor_tags.index(distributor_tag) 
+                            #b_vector[:,row,0] -= conditions.energy.systems[system.tag].outputs.power[output_power_key][:,0]
+        #for converter in converters:
+            #if converter.active and converter.assigned_distributors != None: 
+                #for distributor_tag in converter.assigned_distributors[0]: 
+                    #for input_power_key in conditions.energy.converters[converter.tag].inputs.power.keys():
+                        #if distributor.domain == power_key: 
+                            #row = distributor_tags.index(distributor_tag) 
+                            #b_vector[:,row,0] += conditions.energy.converters[converter.tag].inputs.power[input_power_key][:,0]
+                    #for output_power_key in conditions.energy.converters[converter.tag].outputs.power.keys():
+                        #if distributor.domain == output_power_key: 
+                            #row = distributor_tags.index(distributor_tag) 
+                            #b_vector[:,row,0] -= conditions.energy.converters[converter.tag].outputs.power[output_power_key][:,0]
+         
+        ## Solve Power Balance System 
         #x_solution = np.zeros((n_cpts,len(A_matrix[0, 0, :])))
         #for t_idx in range(n_cpts):   
             #x_solution_t, _, _, _ = np.linalg.lstsq(A_matrix[t_idx], b_vector[t_idx], rcond=None) 
             #x_solution[t_idx] = x_solution_t[:,0] 
- 
-        ## ----------------------------------------------------------
-        ## Save solved unknowns back into conditions.energy
-        ## ----------------------------------------------------------
+  
+        ## Save solved unknowns back into conditions.energy 
         #for key, col in unknown_cols.items():
             #val = x_solution[:,col]
             
-            ##print(key)
             #neg_sign        = val < 0.0
             #pos_sign        = val > 0.0
-            #component_group = key[0]
-            #component_tag   = key[1]             
-            #distributor_tag = key[2]
-            #direction       = key[3]
+            #component_group = key[0]            
+            #distributor_tag = key[2] 
             #side            = key[4].split('_') 
             #power_type      = side[0]
-             
-            #if component_group == "modulators": 
-                #eff = modulators[component_tag].efficiency
-                #if np.all(conditions.energy[component_group][component_tag][direction].power[power_type][:,0] == 0.0):
-                    #conditions.energy[component_group][component_tag][direction].power[power_type][neg_sign,0] = -val[neg_sign] 
-                    #conditions.energy[component_group][component_tag][direction].power[power_type][pos_sign,0] = val[pos_sign] 
-                #if np.all(conditions.energy[component_group][component_tag][direction].power[power_type][:,0] == 0.0):
-                    #conditions.energy[component_group][component_tag][direction].power[power_type][neg_sign,0] = -val[neg_sign]  * eff 
-                    #conditions.energy[component_group][component_tag][direction].power[power_type][pos_sign,0] = val[pos_sign] * eff  
-
-            #elif component_group == "links": 
+              
+            #if component_group == "links": 
                 #name_a = key[1]
                 #name_b = key[2]  
                 #conditions.energy.distributors[name_a].links[name_b].power[power_type][pos_sign,0] = val[pos_sign] 
-                #conditions.energy.distributors[name_b].links[name_a].power[power_type][neg_sign,0] = -val[neg_sign]
-            #elif component_group == "sources":
-                #direction_1 = direction.split('_')[0]
-                #direction_2 = direction.split('_')[1]
-                
-                #distributor =  distributors[distributor_tag]
-                #conditions.energy[component_group][component_tag][direction_1].power[power_type][pos_sign,0] =  val[pos_sign] * distributor.efficiency
-                #conditions.energy[component_group][component_tag][direction_2].power[power_type][neg_sign,0] = -val[neg_sign]  
-            #else:    
-                #conditions.energy[component_group][component_tag][direction].power[power_type][:,0] = val         
-                
+                #conditions.energy.distributors[name_b].links[name_a].power[power_type][neg_sign,0] = -val[neg_sign] 
+        
+        ## ----------------------------------------------------------
+        ## Modulators
+        ## ---------------------------------------------------------- 
+        #stored_results_flag  = False
+        #for modulator in modulator:
+            #if modulator.active:   
+                #inputs, outputs, _, _  = modulator.compute_performance(state,network)   
+                #net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
+                #net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
+                #net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)     
+                #net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)   
+
         # Final aggregation for system level performance 
         conditions.energy.total_force_vector       = total_thrust
         conditions.energy.total_moment_vector      = total_moment

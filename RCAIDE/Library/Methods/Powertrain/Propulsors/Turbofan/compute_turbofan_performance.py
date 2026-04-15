@@ -298,7 +298,7 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
         turbofan_conditions.outputs.power.electrical =  state.unknowns.network['electrical_power'] *(1 - state.conditions.energy.hybrid_power_split_ratio)
        
     external_shaft_work       =  0*state.ones_row(1)
-    net_external_shaft_power =  0*state.ones_row(1)
+    net_external_shaft_power  =  0*state.ones_row(1)
     
     # compute electrical power if generated/supplied   
     if integrated_drive_motor != None and  len(state.numerics.time.differentiate) > 0: 
@@ -311,7 +311,7 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
             
     if integrated_drive_generator != None and len(state.numerics.time.differentiate) > 0:    
         IDG_conditions                           = conditions.energy.converters[integrated_drive_generator.tag] 
-        IDG_conditions.outputs.power.electrical  = turbofan_conditions.outputs.power.electrical * high_pressure_turbine.efficiency
+        IDG_conditions.outputs.power.electrical  = turbofan_conditions.outputs.power.electrical 
         IDG_conditions.outputs.omega             = lpc_conditions.omega # need to check 
         IDG_conditions.outputs.torque            = IDG_conditions.outputs.power.electrical / IDG_conditions.outputs.omega  
         integrated_drive_generator.compute_performance()   

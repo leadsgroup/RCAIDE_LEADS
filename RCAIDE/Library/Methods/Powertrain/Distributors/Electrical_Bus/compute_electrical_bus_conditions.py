@@ -17,18 +17,14 @@ def compute_electrical_bus_conditions(bus, state,network):
     bus_conditions              = state.conditions.energy.distributors[bus.tag]   
     
     # 1. The instantaneous power demand for this specific time step
-    Power = bus_conditions.outputs.power.electrical # CHECK THAT Matthew
-    Voltage = bus_conditions.voltage
+    Power      = bus_conditions.outputs.power.electrical # CHECK THAT Matthew
+    Voltage    = bus_conditions.voltage
     resistance = bus.conductor.resistance 
     
-    # 2. Loss calculation for the whole time array
-    a = resistance
-    b = -Voltage
-    c = Power
-    
-    discriminant = b**2 - 4*a*c
+    # 2. Loss calculation for the whole time array 
+    discriminant = (-Voltage)**2 - 4*resistance*Power
         
-    I_mission_array = (-b - np.sqrt(discriminant)) / (2*a)
+    I_mission_array = (Voltage - np.sqrt(discriminant)) / (2*resistance)
     P_loss = (I_mission_array**2) * resistance
     
     # 3. Write results back to the state arrays

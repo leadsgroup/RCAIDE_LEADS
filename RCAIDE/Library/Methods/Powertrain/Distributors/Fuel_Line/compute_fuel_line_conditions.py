@@ -89,9 +89,16 @@ def compute_fuel_line_conditions(fuel_line,state,network):
     power_ideal_total = hydraulic_power + power_losses
     electrical_power  = power_ideal_total / pump.efficiency 
   
-    fuel_line_conditions.inputs.power.electrical = electrical_power
+    fuel_line_conditions.inputs.power.electrical = electrical_power # THIS REALLY SHOULD NOT BE HERE 
     fuel_line_conditions.mass_flow_rate          = mass_flow_rate
+    
+    
     pump_conditions.inputs.power.electrical      = electrical_power
     pump_conditions.mass_flow_rate               = mass_flow_rate 
+    
+    ## connect converter outputs to distributor inputs
+    #if pump.assigned_distributors != None:  
+        #for distributor_tag in pump.assigned_distributors[0]:
+            #state.conditions.energy.distributors[distributor_tag].outputs.power.electrical += electrical_power
         
     return fuel_line_conditions.inputs, fuel_line_conditions.outputs 

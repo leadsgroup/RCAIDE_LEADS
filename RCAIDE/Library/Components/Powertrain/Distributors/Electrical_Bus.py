@@ -83,12 +83,12 @@ class Electrical_Bus(Distributor):
         self.tag                                       = 'electrical_line' 
         self.domain                                    = 'electrical'  
         self.active                                    = True
-        self.design_power                              = None
+        self.design_power                              = 0.0
         self.design_voltage                            = 0.0  
         self.frequency                                 = 0.0    
         self.current_type                              = 'DC'   
         self.efficiency                                = 1
-        self.length                                    = 0
+        self.length                                    = 1
         self.design_ambient_temperature                = 273 # kelvin
         self.maximum_insulator_electric_field          = 0 # NEED TO CHECK 
         self.maximum_operating_temperature             = 0 # NEED TO CHECK 

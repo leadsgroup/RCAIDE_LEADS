@@ -174,6 +174,7 @@ class Turbofan(Propulsor):
         self.design_thrust                              = 0.0 
         self.design_power_offtake                       = 0.0
         self.mass_flow_rate_design                      = 0.0
+        self.design_voltage                             = 0.0
 
         self.emission_indices                           = Data()  
         self.emission_indices.NOx                       = None
