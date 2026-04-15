@@ -2,6 +2,7 @@
 #
 # Created: Feb 2020,  K. Hamilton - Through New Zealand Ministry of Business Innovation and Employment Research Contract RTVU2004
 # Modified: Jan 2022, S. Claridge
+# Modified: Apr 2026, S. Sharma
 
 #-------------------------------------------------------------------------------
 # Imports
@@ -76,7 +77,7 @@ class Copper(Solid):
         self.density                    =     8960.0        # [kg/(m**3)]
         self.electrical_conductivity    = 58391886.09       # [mhos/m]
         self.thermal_conductivity       =      392.4        # [W/(m*K)]
-        self.electrical_resistivity     = 0
+        self.electrical_resistivity     = 1.68e-8           # [ohm-m]
         self.interpolate                = False
 
         # Lookup table arrays. Temperature in K, thermal conductivity in W/(m*K)
@@ -112,3 +113,11 @@ class Copper(Solid):
         conductivity = self.c_electrical(temperature)
         
         return conductivity
+    
+    # Calculates electrical resistivity [ohm-m] as the inverse of conductivity.
+    def electrical_resistivity(self, temperature):
+        
+        conductivity = self.electrical_conductivity(temperature)
+        resistivity = 1.0 / conductivity
+        
+        return resistivity

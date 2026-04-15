@@ -2,6 +2,7 @@
 # 
 
 # Created: Jan 2025 M. Clarke
+# Modified: Apr 2026, S. Sharma
 
 #-------------------------------------------------------------------------------
 # Imports
@@ -21,8 +22,8 @@ class Polyimide(Solid):
     ----------
     electrical_permittivity : float
         Material electrical permittivity in kg/m³ (3.5)
-    dielectric_strength_range : list
-        Range of dielectric strength in Pa (6E7,8E7)
+    dielectric_strength : float
+        dielectric strength in V/m (6E7)
     density : float
         Material density in kg/m³ (1280)
     thermal_conductivity : float
@@ -48,10 +49,10 @@ class Polyimide(Solid):
             IEEE Transactions on Transportation Electrification (2024).
         """
         self.electrical_permittivity    = 3.5 
-        self.dielectric_strength_range  = [6E7,8E7]  # [V/m] 
+        self.dielectric_strength        = 6E7  # [V/m] 
         self.density                    = 1280 
         self.thermal_conductivity       = 0.4
-        self.thermal_resistivity        =  0
+        self.thermal_resistivity        = 1 / self.thermal_conductivity
         self.melting_point              = 653       # Kelvin
         self.temperature_range          = [33, 533] # Kelvin
         self.modulus_of_elasticity      = 3.1E9
