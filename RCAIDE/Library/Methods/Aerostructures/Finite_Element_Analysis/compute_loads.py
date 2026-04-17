@@ -16,8 +16,8 @@ import numpy as np
 # ----------------------------------------------------------------------
 def compute_loads(lift_total, Y_elems, span_len):
     """ 
-    Temporary elliptical load generator. 
-    Applies forces directly to the neutral axis (0 eccentricity) to prepare for VLM integration.
+    Elliptical load generator. Applies forces to the neutral axis
+    
     """
     L_root = lift_total * 4 / (span_len * np.pi)
     
@@ -27,7 +27,7 @@ def compute_loads(lift_total, Y_elems, span_len):
     
     w_z = L_root * np.sqrt(term)
     
-    # ZERO TORSION (Eccentricity removed. VLM will supply M_y directly later)
+    # ZERO TORSION
     t_y = np.zeros_like(w_z) 
     
     return w_z, t_y

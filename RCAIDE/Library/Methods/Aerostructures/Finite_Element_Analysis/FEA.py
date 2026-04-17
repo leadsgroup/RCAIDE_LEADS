@@ -1,4 +1,4 @@
-# FEA.py
+# RCAIDE/Library/Methods/Aerostructures/Finite_Element_Analysis/FEA.py
 # 
 # Created: Mar 2026, M. Clarke, S. Sharma  
 
