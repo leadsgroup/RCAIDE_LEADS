@@ -96,10 +96,16 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             # 4. MAP AERO TO STRUCTURE
             fea_forces, fea_moments = map_panel_forces_to_fea(vlm_pts, vlm_F, fea_pts)
             
-            load_w_x_aero = fea_forces[:, 0]  # Drag
-            load_w_y_aero = fea_forces[:, 1]  # Spanwise Force (Sideslip)
-            load_w_z_aero = fea_forces[:, 2]  # Lift
-            load_t_y_aero = fea_moments[:, 1] # Pitching Moment
+            load_w_z_aero = 30000 * VD_struct.chord_elems * (VD_struct.spar_r_elems - VD_struct.spar_f_elems) * np.cos(VD_struct.sweep_elems_rad)
+            load_t_y_aero = np.zeros_like(load_w_z_aero)
+            load_w_x_aero = np.zeros_like(load_w_z_aero)
+            load_w_y_aero = np.zeros_like(load_w_z_aero)
+            
+            
+            # load_w_x_aero = fea_forces[:, 0]  # Drag
+            # load_w_y_aero = fea_forces[:, 1]  # Spanwise Force (Sideslip)
+            # load_w_z_aero = fea_forces[:, 2]  # Lift
+            # load_t_y_aero = fea_moments[:, 1] # Pitching Moment
             
             # 5. RUN STRUCTURAL SOLVER
             # Material & Wingbox
@@ -108,15 +114,24 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             # Pass the VD_struct object to your properties calculator
             A_arr, Ixx_arr, Izz_arr, J_arr, w_box_arr, h_arr = compute_wingbox_properties(wing, VD_struct)
             
-            # Gravity & Mass Loads
-            w_z_struct  = -A_arr * Rho * 9.81
+            # COMMENTED OUT TEMPORARY UNIFORM LOAD FOR BENCHMARKING
+            # # Gravity & Mass Loads
+            # w_z_struct  = -A_arr * Rho * 9.81
             
-            Airfoil_Area = 0.7 * VD_struct.chord_elems * h_arr
-            Rib_Mass_Per_Meter = (Airfoil_Area * VD_struct.wing_config['Rib_Thick'] * Rho) / VD_struct.wing_config['Rib_Spacing']
-            w_z_ribs = -Rib_Mass_Per_Meter * 9.81
+            # Airfoil_Area = 0.7 * VD_struct.chord_elems * h_arr
+            # Rib_Mass_Per_Meter = (Airfoil_Area * VD_struct.wing_config['Rib_Thick'] * Rho) / VD_struct.wing_config['Rib_Spacing']
+            # w_z_ribs = -Rib_Mass_Per_Meter * 9.81
+            
+            # REMOVE LATER
+            # Inertial Gravity Load (2.5g)
+            g_load = 2.5 * 9.81
+            # Gravity (Ribs + Wing Structure)
+            # Wing Structure Weight
+            w_z_struct = -A_arr * Rho * g_load
+            # REMOVE UNTIL HERE
             
             # Total Loads
-            load_w_z_total = load_w_z_aero + w_z_struct + w_z_ribs
+            load_w_z_total = load_w_z_aero + w_z_struct # + w_z_ribs
             
             # Matrices Assembly
             twist_elems_rad = ((VD_struct.twist_nodes[:-1] + VD_struct.twist_nodes[1:]) / 2)
