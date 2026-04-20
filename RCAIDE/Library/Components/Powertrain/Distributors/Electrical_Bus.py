@@ -89,6 +89,7 @@ class Electrical_Bus(Distributor):
         self.current_type                              = 'DC'   
         self.efficiency                                = 1
         self.length                                    = 1
+        self.number_of_parallel_wires                  = 1
         self.design_ambient_temperature                = 273 # kelvin
         self.maximum_insulator_electric_field          = 0 # NEED TO CHECK 
         self.maximum_operating_temperature             = 0 # NEED TO CHECK 

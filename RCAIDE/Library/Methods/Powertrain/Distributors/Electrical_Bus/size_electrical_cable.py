@@ -78,6 +78,7 @@ def size_electrical_cable(bus):
     L                   = bus.length 
     theta_a             = bus.design_ambient_temperature
     theta_max           = bus.maximum_temperature 
+    N                   = bus.number_of_parallel_wires  # Number of parallel wires in the cable bundle (assumed)
     rho_elec            = bus.conductor.material.compute_electrical_resistivity(theta_max)
     E0                  = bus.insulator.material.dielectric_strength
     rho_cond            = bus.conductor.material.density
@@ -87,6 +88,7 @@ def size_electrical_cable(bus):
     
     # 1. Max design current
     I_max = P_max_watts / V_sys
+    I_wire = I_max/N
 
     # 2. Iteratively solve for conductor radius (r_cond) based on thermal limits
     def thermal_residual(r):
@@ -95,7 +97,7 @@ def size_electrical_cable(bus):
         # Thermal resistance of insulation (T1) using substitution from Eq 18
         T1 = (rho_theta_insul / (2 * np.pi)) * (V_sys / (E0 * r))
         # The residual should be 0 when thermal equilibrium is met
-        return (theta_max - theta_a) - (I_max**2 * R_prime * (T1 + T4))
+        return (theta_max - theta_a) - (I_wire**2 * R_prime * (T1 + T4))
     
     # Using fsolve with an initial guess of 2mm (0.002 meters)
     r_cond_m = fsolve(thermal_residual, 0.002)[0]

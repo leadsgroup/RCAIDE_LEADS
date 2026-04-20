@@ -17,20 +17,20 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_bus_properties(bus,network):
 
-    for propulsor in network.propulsors:
-        if bus.tag in propulsor.assigned_distributors[0]:
-            bus.design_voltage = np.maximum(bus.design_voltage,propulsor.design_voltage)
-            bus.design_power   = np.maximum(bus.design_power,propulsor.design_power)     
+    # for propulsor in network.propulsors:
+    #     if bus.tag in propulsor.assigned_distributors[0]:
+    #         bus.design_voltage = np.maximum(bus.design_voltage,propulsor.design_voltage)
+    #         bus.design_power   = np.maximum(bus.design_power,propulsor.design_power)     
     
-    for converter in network.converters:
-        if bus.tag in converter.assigned_distributors[0]:
-            bus.design_voltage = np.maximum(bus.design_voltage,converter.design_voltage)
-            bus.design_power   = np.maximum(bus.design_power,converter.design_power) 
+    # for converter in network.converters:
+    #     if bus.tag in converter.assigned_distributors[0]:
+    #         bus.design_voltage = np.maximum(bus.design_voltage,converter.design_voltage)
+    #         bus.design_power   = np.maximum(bus.design_power,converter.design_power) 
         
-    for source in network.sources:
-        if bus.tag in source.assigned_distributors[0]: 
-            bus.design_voltage = np.maximum(bus.design_voltage,source.voltage)
-            bus.design_power   = np.maximum(bus.design_power,source.design_power)
+    # for source in network.sources:
+    #     if bus.tag in source.assigned_distributors[0]: 
+    #         bus.design_voltage = np.maximum(bus.design_voltage,source.voltage)
+    #         bus.design_power   = np.maximum(bus.design_power,source.design_power)
     
     size_electrical_cable(bus)
     
