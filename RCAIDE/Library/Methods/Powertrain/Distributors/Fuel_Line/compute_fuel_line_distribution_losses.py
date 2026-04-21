@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Powertrain/Distributors/Electrical_Bus/compute_electrical_bus_conditions.py
+# RCAIDE/Methods/Powertrain/Distributors/Fuel_Line/compute_fuel_line_distribution_losses.py
 # 
 # 
 # Created: Mar 2026, M. Clarke
@@ -11,9 +11,9 @@ import numpy as np
 from scipy.optimize import fsolve
  
 # ----------------------------------------------------------------------------------------------------------------------
-# compute_bus_conditions
+# compute_fuel_line_distribution_losses
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_fuel_line_conditions(fuel_line,state,network): 
+def compute_fuel_line_distribution_losses(fuel_line,component_conditions,state,network): 
 
     # unpack working fluid properties 
     working_fluid   = fuel_line.working_fluid  
@@ -23,13 +23,12 @@ def compute_fuel_line_conditions(fuel_line,state,network):
     # Extract current conditions for the fuel line
     fuel_line_conditions    = state.conditions.energy.distributors[fuel_line.tag]   
 
-    chemical_power      = fuel_line_conditions.outputs.power.chemical 
-    hydraulic_power     = fuel_line_conditions.outputs.power.hydraulic
+    chemical_power      = abs(component_conditions.outputs.power.chemical - component_conditions.inputs.power.chemical)
+    hydraulic_power     = abs(component_conditions.outputs.power.hydraulic - component_conditions.inputs.power.hydraulic)
     mass_flow_rate      = chemical_power /working_fluid.lower_heating_value  
     
     # unpack pump  
-    pump = fuel_line.pump  
-    pump_conditions = state.conditions.energy.converters[pump.tag]
+    pump = fuel_line.pump   
 
     # unpack fuel line properties  
     length                 = fuel_line.length
@@ -89,16 +88,6 @@ def compute_fuel_line_conditions(fuel_line,state,network):
     power_ideal_total = hydraulic_power + power_losses
     electrical_power  = power_ideal_total / pump.efficiency 
   
-    fuel_line_conditions.inputs.power.electrical = electrical_power # THIS REALLY SHOULD NOT BE HERE 
-    fuel_line_conditions.mass_flow_rate          = mass_flow_rate
-    
-    
-    pump_conditions.inputs.power.electrical      = electrical_power
-    pump_conditions.mass_flow_rate               = mass_flow_rate 
-    
-    ## connect converter outputs to distributor inputs
-    #if pump.assigned_distributors != None:  
-        #for distributor_tag in pump.assigned_distributors[0]:
-            #state.conditions.energy.distributors[distributor_tag].outputs.power.electrical += electrical_power
-        
-    return fuel_line_conditions.inputs, fuel_line_conditions.outputs 
+    fuel_line_conditions.inputs.power.electrical += electrical_power # THIS REALLY SHOULD NOT BE HERE 
+    fuel_line_conditions.mass_flow_rate          += mass_flow_rate 
+    return  

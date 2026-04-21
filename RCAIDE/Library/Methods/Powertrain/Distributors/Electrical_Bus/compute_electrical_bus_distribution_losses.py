@@ -16,15 +16,15 @@ import numpy as np
 def compute_electrical_bus_distribution_losses(bus,component_conditions,state,network): 
     
     Power   = abs(component_conditions.outputs.power.electrical - component_conditions.inputs.power.electrical)
-
+    P_cable = Power/ bus.number_of_parallel_wires 
     bus_conditions = state.conditions.energy.distributors[bus.tag]   
     
     # 1. The instantaneous power demand for this specific time step 
     Voltage    = bus_conditions.voltage
-    resistance = bus.conductor.resistance  
+    resistance = bus.conductor.resistance 
 
     # 2. Loss calculation for the whole time array 
-    discriminant = (-Voltage)**2 - 4*resistance*Power
+    discriminant = (-Voltage)**2 - 4*resistance*P_cable
         
     I_mission_array = (Voltage - np.sqrt(discriminant)) / (2*resistance)
     P_loss = (I_mission_array**2) * resistance 

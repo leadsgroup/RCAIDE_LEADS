@@ -10,7 +10,8 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 
 # RCAIDE imports  
-import RCAIDE  
+import RCAIDE
+from RCAIDE.Library.Methods.Powertrain.Distributors.Fuel_Line.compute_fuel_line_distribution_losses import compute_fuel_line_distribution_losses  
 from .Distributor                                                  import Distributor 
 from RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus import * 
 from RCAIDE.Library.Attributes.Materials                           import Copper, Polyimide 
@@ -99,6 +100,7 @@ class Electrical_Bus(Distributor):
         self.conductor                                 = Component()
         self.conductor.radius                          = None
         self.conductor.material                        = Copper()  # Default conductor material
+        self.conductor.resistance                  = None
         self.insulator                                 = Component()
         self.insulator.radius                          = None
         self.insulator.material                        = Polyimide()  # Default insulator material 
@@ -138,23 +140,12 @@ class Electrical_Bus(Distributor):
             Flight segment data
         """
         append_bus_segment_conditions(self,segment)
-        return     
-        
-    def compute_performance(self,state,network):
-        """
-        Compute electrical conditions during operation
-        
-        Parameters
-        ----------
-        state : Data
-            Current system state
-        t_idx : int
-            Time index
-        delta_t : float
-            Time step
-        """ 
-        inputs, outputs = compute_electrical_bus_conditions(self,state,network)
-        return inputs, outputs, None, None
+        return      
+    
+    
+    def compute_distribution_losses(self, component_conditions, state, network):
+        compute_electrical_bus_distribution_losses(self, component_conditions, state, network) 
+        return
 
     def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
         """

@@ -11,8 +11,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core                                  import Data, Units
 from .Distributor                                           import Distributor   
-from RCAIDE.Library.Methods.Powertrain.Distributors.Fuel_Line import *
-from RCAIDE.Library.Methods.Powertrain.Distributors.Fuel_Line.compute_fuel_line_conditions import compute_fuel_line_conditions
+from RCAIDE.Library.Methods.Powertrain.Distributors.Fuel_Line import * 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Fuel Line
@@ -108,7 +107,10 @@ class Fuel_Line(Distributor):
         """
         append_fuel_line_conditions(self, segment)
         return
-
+    
+    def compute_distribution_losses(self, component_conditions, state, network):
+        compute_fuel_line_distribution_losses(self, component_conditions, state, network) 
+        return
         
     def append_segment_conditions(self, segment):
         """
@@ -122,9 +124,4 @@ class Fuel_Line(Distributor):
             Flight segment data
         """
         append_fuel_line_segment_conditions(self, segment)
-        return   
-
-    def compute_performance(self,state,network):
-
-        inputs, outputs = compute_fuel_line_conditions(self, state,network)
-        return inputs, outputs, None, None
+        return    

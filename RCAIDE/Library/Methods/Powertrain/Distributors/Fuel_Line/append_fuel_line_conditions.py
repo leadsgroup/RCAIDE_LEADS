@@ -124,12 +124,5 @@ def append_fuel_line_segment_conditions(fuel_line,segment):
     fuel_line_conditions.outputs.power.propulsive[:,0]            = 0.0
     fuel_line_conditions.outputs.power.pneumatic[:,0]             = 0.0
     fuel_line_conditions.outputs.power.mechanical[:,0]            = 0.0
-    fuel_line_conditions.outputs.power.chemical[:,0]              = 0.0
-    
-    #fuel_line_conditions.power.chemical[:,0]       = 0.0  
-    #fuel_line_conditions.power.hydraulic[:,0]      = 0.0   
-
-    #if fuel_line.assigned_distributors != None:
-        #for distributor_tag in fuel_line.assigned_distributors[0]:     
-            #fuel_line.links[distributor_tag].power.chemical[:,0] = 0 
+    fuel_line_conditions.outputs.power.chemical[:,0]              = 0.0 
     return

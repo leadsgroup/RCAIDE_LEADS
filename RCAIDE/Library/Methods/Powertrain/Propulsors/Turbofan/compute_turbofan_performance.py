@@ -221,6 +221,49 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     core_nozzle_conditions  = conditions.energy.converters[core_nozzle.tag]
     fan_nozzle_conditions   = conditions.energy.converters[fan_nozzle.tag]    
  
+ 
+    # Set the electrical power output of the turbofan based on the specified power split for hybrid systems. This is used to determine how much power is generated or consumed by electric components in the engine (e.g., electric motors or generators associated with the fan or compressors).
+    if type(network) == RCAIDE.Framework.Networks.Fuel: 
+        P_elec = state.unknowns.network['electrical_power'] 
+        turbofan_conditions.outputs.power.electrical = P_elec  
+    else:
+        P_elec =  state.unknowns.network['electrical_power'] *(1 - state.conditions.energy.hybrid_power_split_ratio)
+        turbofan_conditions.inputs.power.electrical = P_elec   
+
+    external_shaft_work       =  0*state.ones_row(1)  
+
+    # ----------------------------------------------------------------------------
+    # Compute Externally Supplied/Delivered Shaft Power from Electric Motors or Generators
+    # ----------------------------------------------------------------------------
+    
+    # compute electrical power if generated/supplied   
+    if integrated_drive_motor != None and  len(state.numerics.time.differentiate) > 0:   
+        # compute power produced by the generator    
+        compressor_motor_conditions                 = conditions.energy.converters[integrated_drive_motor.tag] 
+        compressor_motor_conditions.outputs.power   = turbofan_conditions.inputs.power.electrical     
+        compressor_motor_conditions.outputs.omega   = lpc_conditions.omega
+        compressor_motor_conditions.outputs.torque  = compressor_motor_conditions.outputs.power / compressor_motor_conditions.outputs.omega
+        inputs, outputs, _, _ = compressor_motor_conditions.compute_performance()  
+
+        # net power delivered to the shaft is negative since this is a motor delivering power
+        external_shaft_work -= outputs.power.electrical
+            
+    if integrated_drive_generator != None and len(state.numerics.time.differentiate) > 0: 
+        # compute power produced by the generator    
+        IDG_conditions                           = conditions.energy.converters[integrated_drive_generator.tag] 
+        IDG_conditions.outputs.power.electrical  = turbofan_conditions.outputs.power.electrical 
+        IDG_conditions.outputs.omega             = lpc_conditions.omega # need to check 
+        IDG_conditions.outputs.torque            = IDG_conditions.outputs.power.electrical / IDG_conditions.outputs.omega  
+        integrated_drive_generator.compute_performance()   
+        inputs, outputs, _, _ = integrated_drive_generator.compute_performance(state,network) 
+
+        # net power delivered to the shaft is positive since this is a generator producing power
+        external_shaft_work +=  inputs.outputs.power.electrical   
+
+    # ----------------------------------------------------------------------------
+    # Compute Turbofan Performance
+    # ----------------------------------------------------------------------------
+
     # Set the working fluid to determine the fluid properties
     ram.working_fluid = turbofan.working_fluid
 
@@ -287,38 +330,6 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
         
     # Flow through the high pressor compressor 
     compute_combustor_performance(combustor,conditions) 
-
-   
-    ''' THIS IS INCORRECT TO DO LINK ELECTRICAL WORK DONE TO SHAFT''' 
-    
-    # Set the electrical power output of the turbofan based on the specified power split for hybrid systems. This is used to determine how much power is generated or consumed by electric components in the engine (e.g., electric motors or generators associated with the fan or compressors).
-    if type(network) == RCAIDE.Framework.Networks.Fuel: 
-        turbofan_conditions.outputs.power.electrical = state.unknowns.network['electrical_power'] 
-    else:
-        turbofan_conditions.outputs.power.electrical =  state.unknowns.network['electrical_power'] *(1 - state.conditions.energy.hybrid_power_split_ratio)
-       
-    external_shaft_work       =  0*state.ones_row(1)
-    net_external_shaft_power  =  0*state.ones_row(1)
-    
-    # compute electrical power if generated/supplied   
-    if integrated_drive_motor != None and  len(state.numerics.time.differentiate) > 0: 
-        compressor_motor_conditions                 = conditions.energy.converters[integrated_drive_motor.tag] 
-        compressor_motor_conditions.outputs.power   = power    
-        compressor_motor_conditions.outputs.omega   = lpc_conditions.omega
-        compressor_motor_conditions.outputs.torque  = compressor_motor_conditions.outputs.power / compressor_motor_conditions.outputs.omega
-        inputs, outputs, _, _ = compressor_motor_conditions.compute_performance()  
-        net_external_shaft_power +=   outputs.power.electrical
-            
-    if integrated_drive_generator != None and len(state.numerics.time.differentiate) > 0:    
-        IDG_conditions                           = conditions.energy.converters[integrated_drive_generator.tag] 
-        IDG_conditions.outputs.power.electrical  = turbofan_conditions.outputs.power.electrical 
-        IDG_conditions.outputs.omega             = lpc_conditions.omega # need to check 
-        IDG_conditions.outputs.torque            = IDG_conditions.outputs.power.electrical / IDG_conditions.outputs.omega  
-        integrated_drive_generator.compute_performance()   
-        inputs, outputs, _, _ = integrated_drive_generator.compute_performance(state,network)  
-        net_external_shaft_power +=  inputs.outputs.power.electrical # CONVERT TO WORK
-                
-    external_shaft_work =  net_external_shaft_power
 
     # Link the high pressure turbine to the combustor
     hpt_conditions.inputs.stagnation_temperature    = combustor_conditions.outputs.stagnation_temperature
@@ -452,7 +463,7 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     lpc_res = Data(
                 angular_velocity    = fan_conditions.omega, 
             )
-
+    
     noise_conditions.fan_nozzle                      = fan_nozzle_res
     noise_conditions.core_nozzle                     = core_nozzle_res  
     noise_conditions.low_pressure_spool              = lpc_res
@@ -516,7 +527,7 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
     
     # deep copy results 
     conditions.energy.propulsors[turbofan.tag]                 = deepcopy(conditions.energy.propulsors[stored_propulsor_tag])
-    conditions.aeroacoustics.propulsors[turbofan.tag]                  = deepcopy(conditions.aeroacoustics.propulsors[stored_propulsor_tag]) 
+    conditions.aeroacoustics.propulsors[turbofan.tag]          = deepcopy(conditions.aeroacoustics.propulsors[stored_propulsor_tag]) 
     conditions.energy.converters[ram.tag]                      = deepcopy(conditions.energy.converters[ram_0.tag]                     )
     conditions.energy.converters[inlet_nozzle.tag]             = deepcopy(conditions.energy.converters[inlet_nozzle_0.tag]            )
     conditions.energy.converters[fan.tag]                      = deepcopy(conditions.energy.converters[fan_0.tag]                     )
@@ -549,6 +560,6 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
     
     if low_pressure_compressor.generator != None and len(state.numerics.time.differentiate) > 0:  
         conditions.energy.converters[low_pressure_compressor.generator.tag] = deepcopy(conditions.energy.converters[low_pressure_compressor_0.generator.tag]) 
-        conditions.energy.propulsors[turbofan.tag].outputs.power.electrical = conditions.energy.converters[low_pressure_compressor.generator.tag].outputs.power
+        conditions.energy.propulsors[turbofan.tag].outputs.power.electrical = conditions.energy.converters[low_pressure_compressor.generator.tag].outputs.power 
         
     return conditions.energy.propulsors[turbofan.tag].inputs, conditions.energy.propulsors[turbofan.tag].outputs
