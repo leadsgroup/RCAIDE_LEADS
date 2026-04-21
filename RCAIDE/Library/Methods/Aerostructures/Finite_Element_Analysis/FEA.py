@@ -55,8 +55,16 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
         vd_idx = 0
         
         # Calculate Dynamic Pressure for this timestep
-        rho = float(np.atleast_1d(conditions.freestream.density[ti])[0])
-        v_inf = float(np.atleast_1d(conditions.freestream.velocity[ti])[0])
+        rho_arr = np.atleast_1d(conditions.freestream.density)
+        v_arr   = np.atleast_1d(conditions.freestream.velocity)
+        
+        # Cases where density or velocity might be provided as a single value or an array
+        rho   = float(rho_arr[ti] if len(rho_arr) > ti else rho_arr[0])
+        v_inf = float(v_arr[ti]   if len(v_arr) > ti   else v_arr[0])
+        
+      #rho = float(np.atleast_1d(conditions.freestream.density[ti])[0])
+        # v_inf = float(np.atleast_1d(conditions.freestream.velocity[ti])[0])
+        
         
         # Override surrogate training conditions
         if rho <= 0.0:
@@ -128,6 +136,7 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             # Gravity (Ribs + Wing Structure)
             # Wing Structure Weight
             w_z_struct = -A_arr * Rho * g_load
+            mass_struct_total = np.sum(A_arr * Rho * VD_struct.Le)
             # REMOVE UNTIL HERE
             
             # Total Loads
