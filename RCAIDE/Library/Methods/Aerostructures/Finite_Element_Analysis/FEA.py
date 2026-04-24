@@ -55,22 +55,12 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
         vd_idx = 0
         
         # Calculate Dynamic Pressure for this timestep
-        rho_arr = np.atleast_1d(conditions.freestream.density)
-        v_arr   = np.atleast_1d(conditions.freestream.velocity)
+        rho  = conditions.freestream.density
+        V    = conditions.freestream.velocity 
         
-        # Cases where density or velocity might be provided as a single value or an array
-        rho   = float(rho_arr[ti] if len(rho_arr) > ti else rho_arr[0])
-        v_inf = float(v_arr[ti]   if len(v_arr) > ti   else v_arr[0])
+        rho[rho==0.0] =  1.225
         
-      #rho = float(np.atleast_1d(conditions.freestream.density[ti])[0])
-        # v_inf = float(np.atleast_1d(conditions.freestream.velocity[ti])[0])
-        
-        
-        # Override surrogate training conditions
-        if rho <= 0.0:
-            rho = 1.225
-        
-        q_dyn = 0.5 * rho * (v_inf ** 2)
+        q_dyn = 0.5 * rho * (V ** 2)
         
         # LOOP OVER WINGS
         for wing in geometry.wings.values():
@@ -94,10 +84,14 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
                 
             vlm_pts = np.column_stack((XC, YC, ZC))
             
-            # 3. EXTRACT VLM FORCES
-            Fx = VLM_results.surface_Fx[ti, start_idx:end_idx]
-            Fy = VLM_results.surface_Fy[ti, start_idx:end_idx]
-            Fz = VLM_results.surface_Fz[ti, start_idx:end_idx]
+            Delta_CP      = VLM_results.CP[ti, start_idx:end_idx] 
+            Delta_Normals = VD.normals
+            
+            # 3. EXTRACT VLM FORCES 
+            F_vec =  Delta_CP * Delta_Normals * q_dyn
+            Fx = F_vec[0]
+            Fy = F_vec[1]  
+            Fz = F_vec[2]
             
             vlm_F = np.column_stack((Fx, Fy, Fz)) 
             

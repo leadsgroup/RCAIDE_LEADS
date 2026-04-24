@@ -145,6 +145,7 @@ def VLM(conditions,settings,geometry):
     settings.vortex_distribution.XB1                      = VD.XB1
     settings.vortex_distribution.XB2                      = VD.XB2
     settings.vortex_distribution.YA1                      = VD.YA1
+    settings.vortex_distribution.normals                  = VD.normals
     settings.vortex_distribution.YA2                      = VD.YA2
     settings.vortex_distribution.YB1                      = VD.YB1
     settings.vortex_distribution.YB2                      = VD.YB2
@@ -533,10 +534,7 @@ def VLM(conditions,settings,geometry):
     results.CLift_wings           = Clift_wings
     results.CDrag_induced_wings   = Cdrag_wings
     results.spanwise_wing_lift    = spanwise_lift 
-    results.surface_wing_lift     = surface_lift   # lift distribution on the surface of the wing 
-    results.surface_Fx            = FX_SURF 
-    results.surface_Fy            = FY_SURF 
-    results.surface_Fz            = FZ_SURF 
+    results.surface_wing_lift     = surface_lift   # lift distribution on the surface of the wing  
     
     return results
 

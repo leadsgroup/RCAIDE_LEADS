@@ -27,3 +27,4 @@ from .estimate_landing_field_length     import estimate_landing_field_length
 from .find_take_off_weight_given_tofl   import find_take_off_weight_given_tofl
 from .generate_V_n_diagram              import generate_V_n_diagram 
 from .rotor_aerodynamic_analysis        import rotor_aerodynamic_analysis  
+from .aircraft_aerostructural_analysis  import aircraft_aerostructural_analysis
