@@ -85,33 +85,28 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             vlm_pts = np.column_stack((XC, YC, ZC))
             
             Delta_CP      = VLM_results.CP[ti, start_idx:end_idx] 
-            Delta_Normals = VD.normals
+            CP = np.tile(Delta_CP[:, np.newaxis], (1, 3)) # Expand to 3D for force calculation
+            Normals = VD.normals[ti, start_idx:end_idx]
             
             # 3. EXTRACT VLM FORCES 
-            F_vec =  Delta_CP * Delta_Normals * q_dyn
-            Fx = F_vec[0]
-            Fy = F_vec[1]  
-            Fz = F_vec[2]
-            
+            F_vec =  CP * Normals * q_dyn
+            Fx = - F_vec[:,1] # The normal is swaped in the VLM code, so Fx is actually the negative of the Y component of the force vector
+            Fy = F_vec[:,0]
+            Fz = F_vec[:,2]
+
             vlm_F = np.column_stack((Fx, Fy, Fz)) 
             
             # 4. MAP AERO TO STRUCTURE
             fea_forces, fea_moments = map_panel_forces_to_fea(vlm_pts, vlm_F, fea_pts)
             
-            load_w_z_aero = 30000 * VD_struct.chord_elems * (VD_struct.spar_r_elems - VD_struct.spar_f_elems) * np.cos(VD_struct.sweep_elems_rad)
-            load_t_y_aero = np.zeros_like(load_w_z_aero)
-            load_w_x_aero = np.zeros_like(load_w_z_aero)
-            load_w_y_aero = np.zeros_like(load_w_z_aero)
-            
-            
-            # load_w_x_aero = fea_forces[:, 0]  # Drag
-            # load_w_y_aero = fea_forces[:, 1]  # Spanwise Force (Sideslip)
-            # load_w_z_aero = fea_forces[:, 2]  # Lift
-            # load_t_y_aero = fea_moments[:, 1] # Pitching Moment
+            load_w_x_aero = fea_forces[:, 0]  # Drag
+            load_w_y_aero = fea_forces[:, 1]  # Spanwise Force (Sideslip)
+            load_w_z_aero = fea_forces[:, 2]  # Lift
+            load_t_y_aero = fea_moments[:, 1] # Pitching Moment
             
             # 5. RUN STRUCTURAL SOLVER
             # Material & Wingbox
-            E, G, Rho, Yield_Stress, Nu = compute_material_properties("Al7075_T6")
+            E, G, Rho, Yield_Stress, Nu = compute_material_properties("CFRP_uCRM")
             
             # Pass the VD_struct object to your properties calculator
             A_arr, Ixx_arr, Izz_arr, J_arr, w_box_arr, h_arr = compute_wingbox_properties(wing, VD_struct)

@@ -141,6 +141,7 @@ def aircraft_aerostructural_analysis(analyses                         = None,
     conditions.freestream.temperature            = T   * np.ones_like(angle_of_attacks)
     conditions.freestream.pressure               = P   * np.ones_like(angle_of_attacks)
     conditions.freestream.dynamic_pressure       = 0.5 * rho * V**2  
+    conditions.freestream.velocity               = V
     conditions.aerodynamics.angles.alpha         = angle_of_attacks  
     conditions.aerodynamics.angles.beta          = angle_of_attacks *0  
     conditions.freestream.u                      = angle_of_attacks *0       
