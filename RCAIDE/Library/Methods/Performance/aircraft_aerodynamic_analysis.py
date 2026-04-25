@@ -21,7 +21,7 @@ import os, sys
 #------------------------------------------------------------------------------
 # aircraft_aerodynamic_analysis
 #------------------------------------------------------------------------------  
-def aircraft_aerodynamic_analysis(aerodynamics_analysis            = None, 
+def aircraft_aerodynamic_analysis(analyses            = None, 
                                   angle_of_attacks                 = None,
                                   mach_numbers                     = None,
                                   non_dimensional_reynolds_numbers = None,
@@ -80,7 +80,7 @@ def aircraft_aerodynamic_analysis(aerodynamics_analysis            = None,
     #------------------------------------------------------------------------  
     # Preprocess Geometry
     #------------------------------------------------------------------------     
-    vehicle =  aerodynamics_analysis.vehicle
+    vehicle =  analyses.vehicle
     
 
     # update fuselage properties
@@ -197,9 +197,9 @@ def aircraft_aerodynamic_analysis(aerodynamics_analysis            = None,
     state.conditions.expand_rows(ctrl_pts)
   
     state.analyses  =  Data()
-    aerodynamics_analysis.filename =  os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "aerodynamic_training_data.pkl" )
-    aerodynamics_analysis.initialize()            
-    state.analyses.aerodynamics = aerodynamics_analysis 
+    state.analyses = analyses 
+    state.analyses.aerodynamics.filename =  os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "aerodynamic_training_data.pkl" )   
+    state.analyses.aerodynamics.initialize()         
      
     state.conditions.freestream.mach_number                 = mach_numbers
     state.conditions.freestream.velocity                    = V
