@@ -134,7 +134,7 @@ def compute_fuel_system_weight(vehicle, NENG,settings):
     for network in vehicle.networks: 
         for source in  network.sources: 
             if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
-                WTANK += source.tank_accesories_weight_factor * (source.mass_properties.insulation_mass + source.mass_properties.structural_mass) # The factor 0.5 covers all the other tank adjustments
+                WTANK += source.mass_properties.mass # The factor 0.5 covers all the other tank adjustments
          
         for distributor in  network.distributor:      
             compute_distributor_center_of_gravity(distributor,vehicle, length=0)

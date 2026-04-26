@@ -276,7 +276,7 @@ def payload_range_mission_setup(analyses):
     segment.descent_rate                                             = 650  * Units['fpm']  
              
     # define flight dynamics to model              
-    segment.flight_dynamics.force_x                                  = True  
+    segment.flight_dynamics.force_x                                  = True
     segment.flight_dynamics.force_z                                  = True     
 
     # define flight controls 
