@@ -559,12 +559,7 @@ def apply_component_weights(analyses):
                     if hasattr(weight_correction_factors.empty.structural, 'nacelle'):
                         propulsor.nacelle.mass_properties.mass *= weight_correction_factors.empty.structural.nacelle
                     if hasattr(weight_correction_factors.empty.propulsion, 'engines'):
-                        propulsor.mass_properties.mass *= weight_correction_factors.empty.propulsion.engines
-                # for fuel_line in network.fuel_lines:
-                #     for converter in fuel_line.converters:
-                #         if isinstance(converter,RCAIDE.Library.Components.Powertrain.Converters.Pump()):
-                #             analyses.vehicle.mass_properties.weight_breakdown.empty.propulsion.converters[converter.tag] = converter.mass_properties.mass
-                    # Add to this nacelles, thrust reversers, etc
+                        propulsor.mass_properties.mass *= weight_correction_factors.empty.propulsion.engines 
         elif key == 'landing_gears':
             for landing_gear in analyses.vehicle.landing_gears:
                 if hasattr(weight_correction_factors.empty.structural, 'landing_gear'):

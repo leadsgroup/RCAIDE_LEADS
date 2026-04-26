@@ -136,7 +136,7 @@ def compute_fuel_system_weight(vehicle, NENG,settings):
             if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
                 WTANK += source.mass_properties.mass # The factor 0.5 covers all the other tank adjustments
          
-        for distributor in  network.distributor:      
+        for distributor in  network.distributors:      
             compute_distributor_center_of_gravity(distributor,vehicle, length=0)
             WLINE += distributor.mass_properties.mass        
         
