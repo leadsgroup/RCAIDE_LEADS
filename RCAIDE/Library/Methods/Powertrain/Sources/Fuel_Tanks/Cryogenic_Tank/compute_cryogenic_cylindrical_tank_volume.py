@@ -18,7 +18,7 @@ from scipy.optimize import minimize, minimize_scalar, brentq
 # ----------------------------------------------------------------------------------------------------------------------
 #  Structural Solver
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_liquid_hydrogen_tank_volume(fuel_tank,fuel_tanks):
+def compute_cryogenic_cylindrical_tank_volume(fuel_tank,fuel_tanks):
     """
     Size a liquid hydrogen tank to meet outer-diameter constraints while satisfying
     structural and thermal limits via nested 1D root solves.
@@ -65,12 +65,12 @@ def compute_liquid_hydrogen_tank_volume(fuel_tank,fuel_tanks):
     fuel_tank.volume_properties.net_volume = None
 
     # Constants
-    safety_factor   = 1.6          # structural factor of safety
-    pressure_factor = 5.0          # internal pressure multiplier for sizing
+    safety_factor   = fuel_tank.safety_factor          # structural factor of safety
+    pressure_factor = fuel_tank.pressure_factor        # internal pressure multiplier for sizing
     T_inlet         = fuel_tank.design_inlet_temperature
 
     # Saturation and design pressures
-    P_sat = fuel_tank.fuel.liquid_hydrogen_properties(T_inlet, "Pressure (MPa)") * Units.MPa
+    P_sat = fuel_tank.fuel.cryogen_properties(T_inlet, "Pressure (MPa)") * Units.MPa
     P_internal = pressure_factor * P_sat
     P_external = fuel_tank.design_external_pressure
 

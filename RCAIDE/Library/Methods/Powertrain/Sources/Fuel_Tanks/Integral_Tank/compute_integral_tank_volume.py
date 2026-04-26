@@ -348,18 +348,21 @@ def compute_wing_integral_tank_volume(fuel_tank,wing,n_points = 101,scale_factor
             origin=centroid
         )
         combinde_mesh.apply_transform(T)
+        
+        if wing.xz_plane_symmetric:
+            # 1. copy the mesh
+            combined_mesh_sym = deepcopy(combinde_mesh)
 
-        # 1. copy the mesh
-        combined_mesh_sym = deepcopy(combinde_mesh)
+            # 2. apply the mirror transform
+            combined_mesh_sym.vertices = (Ry @ combined_mesh_sym.vertices.T).T
 
-        # 2. apply the mirror transform
-        combined_mesh_sym.vertices = (Ry @ combined_mesh_sym.vertices.T).T
+            # 3. fix face orientation (reverse winding)
+            combined_mesh_sym.faces = combined_mesh_sym.faces[:, ::-1]
 
-        # 3. fix face orientation (reverse winding)
-        combined_mesh_sym.faces = combined_mesh_sym.faces[:, ::-1]
-
-        # 4. concatenate original + mirrored
-        combined_mesh_full         = trimesh.util.concatenate([combinde_mesh, combined_mesh_sym]) 
+            # 4. concatenate original + mirrored
+            combined_mesh_full         = trimesh.util.concatenate([combinde_mesh, combined_mesh_sym]) 
+        else:
+            combined_mesh_full = combinde_mesh
         combined_mesh_full.density = fuel_tank.fuel.density 
         centroid = combined_mesh_full.centroid
         cg_x     = centroid[0]

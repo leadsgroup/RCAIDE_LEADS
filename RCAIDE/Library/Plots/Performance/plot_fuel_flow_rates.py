@@ -37,8 +37,8 @@ def plot_fuel_flow_rates(results,
 
     # --- Create 3 subplots ---
     axis_prop   = plt.subplot(3,1,1)
-    axis_fuel   = plt.subplot(3,1,2)
-    axis_conv   = plt.subplot(3,1,3)
+    axis_conv   = plt.subplot(3,1,2)
+    axis_fuel   = plt.subplot(3,1,3)
 
     axis_prop.set_ylabel(r'Fuel Flow Rate (kg/s)')
     axis_fuel.set_ylabel(r'Fuel Flow Rate (kg/s)')
@@ -113,7 +113,7 @@ def plot_fuel_flow_rates(results,
 
     fig.tight_layout()
 
-    fig.suptitle('Fuel Flow Rates')
+    # fig.suptitle('Fuel Flow Rates')
     
     if save_figure:
         plt.savefig(save_filename + file_type)

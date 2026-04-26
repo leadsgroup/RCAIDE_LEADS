@@ -2,6 +2,7 @@
 #
 # 
 # Created: Aug 2025, S. Shekar
+# Modified: Apr 2026, S. Shekar, S. Sharma
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -47,6 +48,7 @@ def main():
     if sys.version_info >= (3, 11):
         non_conformal_lh2_fuel_tank_volume_test()
         conformal_lh2_fuel_tank_volume_test()
+        non_conformal_lng_fuel_tank_volume_test()
     else:
         print("Skipping non_conformal_lh2_fuel_tank_volume_test() and conformal_lh2_fuel_tank_volume_test():\
             Shapely lacks 'maximum_inscribed_circle' support for Python < 3.11.")
@@ -339,6 +341,62 @@ def conformal_lh2_fuel_tank_volume_test():
     assert(abs(error)<5e-2) 
 
     return
+
+def non_conformal_lng_fuel_tank_volume_test():
+
+    fuel_volume_true = 289.5878436558366
+    vehicle          = BWB_vehicle_setup() 
+    fuel_line        = vehicle.networks.fuel.fuel_lines.fuel_line
+    fuel_line.fuel_tanks.clear()
+    
+    #############################################################################################################################    
+     #------------------------------------------------------------------------------------------------------------------------- 
+    #  Energy Source: Fuel Tank
+    #------------------------------------------------------------------------------------------------------------------------- 
+    # fuel tank
+    fuel_tank_1                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Natural_Gas_Tank(vehicle.wings.main_wing)
+    fuel_tank_1.tag                             = 'LNG_Fuel_Tank_1' 
+    fuel_tank_1.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas()  
+    fuel_tank_1.material                        = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank_1.insulation_material             = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
+    fuel_tank_1.fuel.gravimetric_efficiency     = 0.5 
+    fuel_tank_1.segments_bounding_tank          = ['fuselage_section_3', 'wing_section_2']        
+    fuel_tank_1.segments_percent_chord_start    = [0.2,0.2]
+    fuel_tank_1.segments_percent_chord_end      = [0.6,0.6]  
+    fuel_tank_1.wall_thickness                  = 2*Units.inches
+    fuel_line.fuel_tanks.append(fuel_tank_1)
+
+
+    fuel_tank_2                               = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Natural_Gas_Tank(vehicle.wings.main_wing)
+    fuel_tank_2.tag                           = 'LNG_Fuel_Tank_2' 
+    fuel_tank_2.fuel                          = RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas()   
+    fuel_tank_2.material                      = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank_2.insulation_material           = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
+    fuel_tank_2.fuel.gravimetric_efficiency   = 0.5
+    fuel_tank_2.xz_plane_symmetric            = False
+    fuel_tank_2.orientation_euler_angles      = [0,0,np.pi/2]
+    fuel_tank_2.bwb_aft_tank                  = True
+    fuel_tank_2.aft_tank_root_chord_bounds    = [0.65,0.9]
+    fuel_tank_2.aft_tank_segment_bound        = 'fuel_wall'
+    fuel_tank_2.radial_offset                 = 0.2
+
+    fuel_line.fuel_tanks.append(fuel_tank_2)
+  
+    configs  = configs_setup(vehicle)
+    analyses = analyses_setup(configs)
+    for analysis in analyses:
+        analysis.geometry.settings.compute_fuel_volume = True
+        analysis.geometry.settings.update_max_fuel = True
+    mission  = mission_setup(analyses)
+
+    geometry(mission)   
+    
+    error = (fuel_volume_true- mission.segments.cruise.analyses.vehicle.volume_properties.max_fuel)/fuel_volume_true
+    
+    assert(abs(error)<5e-2) 
+
+    return
+
 def configs_setup(vehicle):
     """This function sets up vehicle configurations for use in different parts of the mission.
     Here, this is mostly in terms of high lift settings."""

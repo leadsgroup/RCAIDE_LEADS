@@ -8,7 +8,6 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
 import RCAIDE
-from pylab import fill
 from .Propellant import Propellant 
 
 import os
@@ -93,9 +92,9 @@ class Liquid_Hydrogen(Propellant):
         self.kinetic_mechanism             = '' # [-] Kinetic mechanism for fuel surrogate species
         self.oxidizer                      = ''       
 
-        self.materials_properties = self.liquid_hydrogen_properties()
+        self.materials_properties = self.cryogen_properties()
 
-    def liquid_hydrogen_properties(self, T, prop_name):
+    def cryogen_properties(self, T, prop_name):
         """
             Return interpolated liquid hydrogen property value at a given temperature.
 

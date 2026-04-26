@@ -26,5 +26,5 @@ RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
 
-from .compute_liquid_hydrogen_conformal_tank_volume import compute_liquid_hydrogen_tank_conformal_volume
-from .compute_liquid_hydrogen_tank_volume  import compute_liquid_hydrogen_tank_volume
+from .compute_cryogenic_tank_conformal_tank_volume import compute_cryogenic_tank_conformal_volume
+from .compute_cryogenic_cylindrical_tank_volume  import compute_cryogenic_cylindrical_tank_volume

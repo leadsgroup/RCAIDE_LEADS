@@ -1,6 +1,7 @@
 # RCAIDE/Library/Components/Powertrain/Energy/Sources/Fuel_Tanks/compute_liquid_hydrogen_tank_conformal_volume.py
 # 
 # Created: Feb 2026, S. Shekar
+# Modified: Apr 2026, S. Shekar, S.Sharma
 #
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORTS
@@ -18,7 +19,7 @@ from scipy.optimize import minimize_scalar
 # ----------------------------------------------------------------------------------------------------------------------
 #  Structural Solver
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_liquid_hydrogen_tank_conformal_volume(fuel_tank,fuel_tanks):
+def compute_cryogenic_tank_conformal_volume(fuel_tank,_):
     """
     Size a liquid hydrogen tank to meet outer-diameter constraints while satisfying
     structural and thermal limits via nested 1D root solves.
@@ -30,12 +31,12 @@ def compute_liquid_hydrogen_tank_conformal_volume(fuel_tank,fuel_tanks):
     fuel_tank.volume_properties.net_volume = None
 
     # Constants
-    safety_factor   = 1.6          # structural factor of safety
-    pressure_factor = 5.0          # internal pressure multiplier for sizing
+    safety_factor   = fuel_tank.safety_factor            # structural factor of safety
+    pressure_factor = fuel_tank.pressure_factor          # internal pressure multiplier for sizing
     T_inlet         = fuel_tank.design_inlet_temperature
 
     # Saturation and design pressures
-    P_sat = fuel_tank.fuel.liquid_hydrogen_properties(T_inlet, "Pressure (MPa)") * Units.MPa
+    P_sat = fuel_tank.fuel.cryogen_properties(T_inlet, "Pressure (MPa)") * Units.MPa
     P_internal = pressure_factor * P_sat
     P_external = fuel_tank.design_external_pressure
 
