@@ -175,22 +175,26 @@ def compute_liquid_hydrogen_tank_volume(fuel_tank,fuel_tanks):
     fuel_tank.inner_structure.thickness      = r_outer -r_inner
     fuel_tank.inner_structure.outer_diameter = 2*r_outer
     fuel_tank.inner_structure.inner_diameter = 2*r_inner
-    fuel_tank.inner_structure.inner_length   = L_inner
-    fuel_tank.inner_structure.outer_length   =  (2 * r_outer * fuel_tank.aspect_ratio)-2*r_outer
+    fuel_tank.inner_structure.inner_length   = L_inner + 2*r_inner 
+    fuel_tank.inner_structure.outer_length   =  (2 * r_outer * fuel_tank.aspect_ratio) 
     fuel_tank.insulation_thickness           = t_ins 
 
     # Insulation geometry and mass
-    a_ins = 2 * np.pi * fuel_tank.diameters.external/2 * (fuel_tank.lengths.external) + 4 * np.pi * (fuel_tank.diameters.external/2)**2
-    v_ins = (np.pi * (fuel_tank.diameters.external/2)**2 * (fuel_tank.lengths.external) + (4/3) * np.pi * (fuel_tank.diameters.external/2)**3)-\
-            (np.pi * (fuel_tank.inner_structure.outer_diameter/2)**2 * (fuel_tank.inner_structure.outer_length) + (4/3) * np.pi * (fuel_tank.inner_structure.outer_diameter/2)**3)
+    Di_o  = fuel_tank.inner_structure.outer_diameter
+    L_i   = fuel_tank.inner_structure.outer_length - Di_o
+    D_o   = fuel_tank.diameters.external
+    L_o   = fuel_tank.lengths.external - D_o
+    a_ins = 2 * np.pi * D_o/2 * (L_o) + 4 * np.pi * (D_o/2)**2 
+    v_ins = (np.pi * (D_o/2)**2 * (L_o)  + (4/3) * np.pi * (D_o/2)**3)-\
+            (np.pi * (Di_o/2)**2 * (L_i) + (4/3) * np.pi * (Di_o/2)**3)
          
     mass_ins = (v_ins * fuel_tank.insulation_material.density
                + a_ins * fuel_tank.insulation_material.specific_density)
 
     # Material volume between inner and outer shells (cylinder + two hemispherical caps)
-    L_outer = fuel_tank.inner_structure.outer_length
-    V_outer = np.pi * r_outer**2 * L_outer + (4.0/3.0) * np.pi * r_outer**3
-    V_inner = np.pi * r_inner**2 * L_inner + (4.0/3.0) * np.pi * r_inner**3
+    L_outer    = fuel_tank.inner_structure.outer_length  - Di_o
+    V_outer    = (np.pi * r_outer**2 * L_outer) + (4/3) * np.pi * r_outer**3
+    V_inner    = (np.pi * r_inner**2 * L_inner) + (4/3) * np.pi * r_inner**3
     V_material = V_outer - V_inner
 
     if fuel_tank.xz_plane_symmetric:

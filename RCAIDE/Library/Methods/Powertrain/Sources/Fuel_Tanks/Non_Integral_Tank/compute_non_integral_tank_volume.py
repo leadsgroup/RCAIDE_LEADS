@@ -240,7 +240,7 @@ def compute_bwb_aft_tank_volume(fuel_tank, wing,fuel_tanks):
     
     # Outer Volume
     tank_volume_o                = max_volume
-    fuel_tank.aspect_ratio       = (fuel_tank.lengths.external +fuel_tank.diameters.external )/fuel_tank.diameters.external
+    fuel_tank.aspect_ratio       = (fuel_tank.lengths.external)/fuel_tank.diameters.external
 
     # Inner Volume
     fuel_tank.lengths.internal   = (fuel_tank.aspect_ratio * fuel_tank.diameters.internal) -fuel_tank.diameters.internal
@@ -627,15 +627,12 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank, wing, inner_segment_0,
 
     fuel_tank.diameters.external = D
     fuel_tank.diameters.internal = 2*r_in
-    fuel_tank.lengths.external   = l-D
-    fuel_tank.aspect_ratio       = (fuel_tank.lengths.external+fuel_tank.diameters.external)/fuel_tank.diameters.external
-
-    l_in = fuel_tank.aspect_ratio * fuel_tank.diameters.internal
-
-    fuel_tank.lengths.internal = l_in - fuel_tank.diameters.internal
+    fuel_tank.lengths.external   = l
+    fuel_tank.aspect_ratio       = (fuel_tank.lengths.external)/fuel_tank.diameters.external  
+    fuel_tank.lengths.internal   = fuel_tank.aspect_ratio * fuel_tank.diameters.internal  
     
-    tank_volume_i = np.pi * ( r_in** 2) * (fuel_tank.lengths.internal )  +  4 / 3 * np.pi * ( r_in** 3) 
-    tank_volume_o = np.pi * ( r_out** 2) * (fuel_tank.lengths.external)  +  4 / 3 * np.pi * ( r_out** 3) 
+    tank_volume_i = np.pi * ( r_in** 2) * (fuel_tank.lengths.internal - fuel_tank.diameters.internal )  +  4 / 3 * np.pi * ( r_in** 3) 
+    tank_volume_o = np.pi * ( r_out** 2) * (l - D)  +  4 / 3 * np.pi * ( r_out** 3) 
 
     if fuel_tank.xz_plane_symmetric:
         tank_volume_o *= 2

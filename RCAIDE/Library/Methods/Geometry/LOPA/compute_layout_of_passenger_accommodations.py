@@ -22,6 +22,8 @@ def compute_layout_of_passenger_accommodations(fuselage):
 
     LOPA = np.empty(( 0, 14))
     offset_x_overall = 0
+    offset_y_overall = 0
+    offset_z_overall = 0
     
     if len(fuselage.cabins) > 0: 
         # instantiate dimension of LOPA container 
@@ -39,8 +41,7 @@ def compute_layout_of_passenger_accommodations(fuselage):
                 LOPA = np.vstack((LOPA,seat_data))
                 cabin_LOPA = np.vstack((cabin_LOPA,seat_data))
             cabin.layout_of_passenger_accommodations                     = Data()
-            cabin.layout_of_passenger_accommodations.object_coordinates  = cabin_LOPA      
-            cabin.layout_of_passenger_accommodations.cabin_x_offset      = offset_x_overall
+            cabin.layout_of_passenger_accommodations.object_coordinates  = cabin_LOPA       
             cabin.length = total_cabin_length 
             cabin.number_of_seats = cabin_number_of_seats
         
@@ -48,14 +49,16 @@ def compute_layout_of_passenger_accommodations(fuselage):
         for cabin in fuselage.cabins:
             for cabin_class in cabin.classes:
                 cabin_class.percentage = cabin_class.length/cabin.length
-            if not isinstance(cabin,RCAIDE.Library.Components.Fuselages.Cabins.Side_Cabin):
-                offset_x_overall = cabin.origin[0][0]
+            if not isinstance(cabin,RCAIDE.Library.Components.Fuselages.Cabins.Side_Cabin): 
+                offset_x_overall =  cabin.origin[0][0]
+                offset_y_overall =  cabin.origin[0][1]
+                offset_z_overall =  cabin.origin[0][2]
                  
         fuselage.number_of_seats  = np.sum(LOPA[:,10])
 
     fuselage.layout_of_passenger_accommodations                     = Data()
     fuselage.layout_of_passenger_accommodations.object_coordinates  = LOPA        
-    fuselage.layout_of_passenger_accommodations.cabin_x_offset      = offset_x_overall
+    fuselage.layout_of_passenger_accommodations.origin              = [[offset_x_overall, offset_y_overall, offset_z_overall]]
 
     if LOPA.size > 0 :
         compute_lopa_properties(fuselage, LOPA)    

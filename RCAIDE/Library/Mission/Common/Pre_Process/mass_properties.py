@@ -215,7 +215,7 @@ def mass_properties_preprocess_routine(segment, i = 0):
                 if i == 0:
                     apply_component_weights(analyses)
 
-                new_mtow,diff = iterate_for_mtow(analyses.vehicle.mass_properties.max_takeoff, 
+                new_mtow,diff = iterate_for_mtow(weights_analysis,analyses.vehicle.mass_properties.max_takeoff, 
                                 analyses.vehicle.mass_properties.operating_empty, 
                                 analyses.vehicle.mass_properties.max_payload,
                                 analyses.vehicle.mass_properties.max_fuel,
@@ -611,14 +611,14 @@ def apply_component_weights(analyses):
                     elif hasattr(weight_correction_factors.empty.systems, 'instruments') and system.mass_properties.calculated_flag == False:
                         analyses.vehicle.mass_properties.weight_breakdown.empty.systems.instruments = system.mass_properties.mass  
                       
-def iterate_for_mtow(old_mtow, oew, max_payload, max_fuel,vehicle):
+def iterate_for_mtow(weights_analysis,old_mtow, oew, max_payload, max_fuel,vehicle):
     '''
     Staub factor after, Franco Staub, ex JetZero, is MTOW/(OEW + Max Fuel + Max Payload)
 
     '''
     overall_maximum_weight = max_payload + oew + max_fuel
 
-    target_staub_factor = getattr(vehicle, 'staub_factor', 0)
+    target_staub_factor = weights_analysis.settings.mtow_to_cumulative_weight_fraction
 
     existing_staub_factor = old_mtow / overall_maximum_weight
     diff = existing_staub_factor - target_staub_factor

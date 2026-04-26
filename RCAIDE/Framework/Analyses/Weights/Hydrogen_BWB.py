@@ -57,6 +57,7 @@ class Hydrogen_BWB(Weights):
         self.settings.fuselage_mounted_landing_gear_factor = 1.12 # assumes fuselage mounted landing gear. Change to 1 if False
         self.settings.cargo_doors_number                   = 1 # 0 if no cargo doors, 1 if 1 cargo door, 2 if 2 cargo doors
         self.settings.cargo_doors_clamshell                = False # True if clamshell cargo doors, False if not
+        self.settings.mtow_to_cumulative_weight_fraction   = 0.95
 
         self.settings.FLOPS                                = Data() 
         self.settings.FLOPS.fidelity                       = 'Simple' 

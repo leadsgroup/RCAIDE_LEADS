@@ -129,9 +129,8 @@ def compute_bwb_wing_center_of_gravity(bwb_wing,seg_keys):
     return   
 
 def compute_aft_center_body_center_of_gravity(bwb_wing,seg_keys):
-    mass          = bwb_wing.aft_center_body.mass_properties.mass
-    # origin_x      = bwb_wing.layout_of_passenger_accommodations.object_coordinates[-1][2] + bwb_wing.layout_of_passenger_accommodations.cabin_x_offset
-    cabin_length  = bwb_wing.layout_of_passenger_accommodations.object_coordinates[-1][2] + bwb_wing.layout_of_passenger_accommodations.cabin_x_offset 
+    mass          = bwb_wing.aft_center_body.mass_properties.mass 
+    cabin_length  = bwb_wing.layout_of_passenger_accommodations.object_coordinates[-1][2] + bwb_wing.layout_of_passenger_accommodations.origin[0][0] 
 
     segment_meshes = [] 
     for i in range(len(seg_keys)-1):
@@ -208,7 +207,7 @@ def compute_aft_center_body_center_of_gravity(bwb_wing,seg_keys):
 
 def compute_center_body_center_of_gravity(bwb_wing,seg_keys): 
     mass          = bwb_wing.center_body.mass_properties.mass
-    origin_x      = bwb_wing.layout_of_passenger_accommodations.cabin_x_offset
+    origin_x      = bwb_wing.layout_of_passenger_accommodations.origin[0][0]
     cabin_length  = bwb_wing.layout_of_passenger_accommodations.object_coordinates[-1][2] + origin_x
 
     segment_meshes = [] 

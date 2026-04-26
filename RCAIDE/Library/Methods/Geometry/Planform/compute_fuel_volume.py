@@ -73,24 +73,11 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = False, update_max_fuel = 
     # --------------------------------------------------------------------------
     # Step 1: Check the fuel tanks and updates them if there are duplications
     # this is critical for mass properties  
-    # --------------------------------------------------------------------------
-    fuel_tag = None 
-    for network in vehicle.networks: 
-        for source in  network.sources:
-            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
-                fuel_tank =  source             
-                if fuel_tag == None:
-                    fuel_tag = fuel_tank.fuel.tag
-                else:
-                    if fuel_tag == fuel_tank.fuel.tag:
-                        fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag  
-                        
+    # --------------------------------------------------------------------------                         
     for network in vehicle.networks:
         for source in  network.sources:
             if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
-                fuel_tank =  source            
-                # update fuel tag to ensure no overwriting of mass 
-                fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag          
+                fuel_tank =  source                  
                 try:
                     compute_fuel_tank_volume = fuel_tank.compute_volume
                 except Exception as e:

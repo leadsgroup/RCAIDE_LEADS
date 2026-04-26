@@ -47,7 +47,7 @@ def compute_vehicle_center_of_gravity(vehicle,centre_of_gravity_df, overwrite_ce
     OEW_mass        = np.array([0.0])
     for key in vehicle.keys():
         item = vehicle[key]  
-        OEW_mass,OEW_moment = compute_component_center_of_gravity(centre_of_gravity_df,item,vehicle,OEW_mass,OEW_moment,None,False,False,False)    
+        OEW_mass,OEW_moment = compute_component_center_of_gravity(centre_of_gravity_df,item,vehicle,OEW_mass,OEW_moment,None,True,False,False)    
     
     # center of gravity
     OEW_CG = OEW_moment / OEW_mass 

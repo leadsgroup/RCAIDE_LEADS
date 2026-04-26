@@ -136,7 +136,7 @@ def plot_3d_vehicle(vehicle,
     # Run Geoemtry Analysis
     # -------------------------------------------------------------------------
     L = 0
-    geometry =  deepcopy(vehicle)  
+    geometry = deepcopy(vehicle)  
     for wing in geometry.wings:  
         if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
             if overwrite_geometry: 

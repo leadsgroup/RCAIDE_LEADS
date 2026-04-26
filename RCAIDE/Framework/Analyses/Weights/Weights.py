@@ -62,6 +62,7 @@ class Weights(Analysis):
         self.settings.run_moments_of_inertia_analysis               = False
         self.settings.write_mass_properties                         = False
         self.settings.iterate_mtow                                  = False
+        self.settings.mtow_to_cumulative_weight_fraction            = None
     
         self.settings.weight_correction_factors                     = Data()
         self.settings.weight_correction_factors.empty               = Data()
