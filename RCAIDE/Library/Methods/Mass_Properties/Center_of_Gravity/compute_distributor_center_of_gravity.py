@@ -139,29 +139,30 @@ def compute_distributor_center_of_gravity(component,vehicle, length=0):
      
     # distributor distances  
     for network in  vehicle.networks: 
-        for distributor in network.distributor: 
-            vent_line_length     = distributor.venting_system_length
-            vent_line_centroid   = (max_c_loc[0] + min_c_loc[0] )/2
-            
-            if insulation_cross_sectional_area == 0.0:
-                vent_line_insulation_mass   = 0
-                vent_line_insulation_moment = 0
-            else:  
-                vent_line_insulation_volume  = vent_line_length *  insulation_cross_sectional_area
-                vent_line_insulation_mass    = insulation_fm_ratio * (insulation_rm_density * vent_line_insulation_volume) +  (1 - insulation_fm_ratio) * (insulation_fm_density * vent_line_insulation_volume) 
-                vent_line_insulation_moment  = vent_line_insulation_mass * vent_line_centroid
+        for distributor in network.distributors: 
+            if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
+                vent_line_length     = distributor.venting_system_length
+                vent_line_centroid   = (max_c_loc[0] + min_c_loc[0] )/2
                 
-            if pipe_cross_sectional_area == 0:
-                vent_line_pipe_mass = 0
-                vent_line_pipe_moment = 0
-            else:  
-                vent_line_pipe_volume  = vent_line_length *  pipe_cross_sectional_area
-                vent_line_pipe_mass    = pipe_fm_ratio * (pipe_rm_density * vent_line_pipe_volume) +  (1 - pipe_fm_ratio) * (pipe_fm_density * vent_line_pipe_volume)  
-                vent_line_pipe_moment  =  vent_line_pipe_mass *vent_line_centroid  
-            total_lat_line_length  += redundancy_factor * vent_line_length  
-            total_line_mass        += vent_line_insulation_mass + vent_line_pipe_mass
-            transfer_system_mass   += vent_line_insulation_mass + vent_line_pipe_mass
-            total_line_moment      += vent_line_pipe_moment + vent_line_insulation_moment
+                if insulation_cross_sectional_area == 0.0:
+                    vent_line_insulation_mass   = 0
+                    vent_line_insulation_moment = 0
+                else:  
+                    vent_line_insulation_volume  = vent_line_length *  insulation_cross_sectional_area
+                    vent_line_insulation_mass    = insulation_fm_ratio * (insulation_rm_density * vent_line_insulation_volume) +  (1 - insulation_fm_ratio) * (insulation_fm_density * vent_line_insulation_volume) 
+                    vent_line_insulation_moment  = vent_line_insulation_mass * vent_line_centroid
+                    
+                if pipe_cross_sectional_area == 0:
+                    vent_line_pipe_mass = 0
+                    vent_line_pipe_moment = 0
+                else:  
+                    vent_line_pipe_volume  = vent_line_length *  pipe_cross_sectional_area
+                    vent_line_pipe_mass    = pipe_fm_ratio * (pipe_rm_density * vent_line_pipe_volume) +  (1 - pipe_fm_ratio) * (pipe_fm_density * vent_line_pipe_volume)  
+                    vent_line_pipe_moment  =  vent_line_pipe_mass *vent_line_centroid  
+                total_lat_line_length  += redundancy_factor * vent_line_length  
+                total_line_mass        += vent_line_insulation_mass + vent_line_pipe_mass
+                transfer_system_mass   += vent_line_insulation_mass + vent_line_pipe_mass
+                total_line_moment      += vent_line_pipe_moment + vent_line_insulation_moment
                                     
     # assumulate all masses and  moments 
     transfer_system_mass   += valve_unit_mass +  fuel_probe_unit_mass  +  boost_pump_unit_mass
