@@ -13,8 +13,7 @@ Date   : Feb 18th, 2026
 # ---------------------------------------------------------------------- 
 import RCAIDE
 from RCAIDE.Framework.Core import Units , Data   
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan         import design_turbofan 
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan         import design_turbofan 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan         import design_turbofan  
 from RCAIDE.Library.Methods.Performance                            import aircraft_aerodynamic_analysis 
 from RCAIDE.Library.Plots                                          import *
 
@@ -161,9 +160,7 @@ def vehicle_setup():
     wing.vertical                         = False
     wing.xz_plane_symmetric               = True
     wing.twists.root                      = 2.5 * Units.degrees 
-    wing.twists.tip                       = 3.5  * Units.degrees 
-    wing.transition_x_upper               = 0.5
-    wing.transition_x_lower               = 0.5
+    wing.twists.tip                       = 3.5  * Units.degrees
     
 
     # Wing Segments
@@ -338,9 +335,7 @@ def vehicle_setup():
     wing.vertical                         = True
     wing.xz_plane_symmetric               = False
     wing.t_tail                           = False 
-    wing.dynamic_pressure_ratio           = 1.0
-    wing.transition_x_upper               = 0.5
-    wing.transition_x_lower               = 0.5
+    wing.dynamic_pressure_ratio           = 1.0 
 
     # Wing Segments
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()

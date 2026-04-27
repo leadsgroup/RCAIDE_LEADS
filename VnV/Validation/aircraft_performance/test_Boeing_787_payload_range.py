@@ -9,6 +9,10 @@
 import sys, os
 import numpy as np
 import time
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+import matplotlib as mpl
+from matplotlib.gridspec import GridSpec
 
 import RCAIDE
 from RCAIDE.Framework.Core import Units
@@ -28,8 +32,14 @@ def main():
     missions = missions_setup(mission)
      
     # run payload range analysis 
-    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage = 0.05, delete_training_data = True) 
-    
+    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage = 0.1, delete_training_data = True)
+
+    apm = {
+        "range":            np.array([0., 5500., 9500., 10000.]) * Units.nmi,
+        "payload":          np.array([44000., 44000., 9071.8474, 0.]),
+        "oew_plus_payload": np.array([161025., 161025., 127005.864, 117934.016]),
+    }
+    plot_payload_range(payload_range_results, apm)
 
     # #### DO NOT CHANGE THESE VALUES WITHOUT CONSULTING THE AIRPORT PLANNING MANUAL FIRST ###############
     #  "Airport Planning Manual": {
@@ -44,11 +54,11 @@ def main():
     # #####################################################################################################
         
     truth_values = {
-        "range": np.array([0., 10548232.68, 17639207.32, 18364357.92]),
-        "payload": np.array([44000.        , 44000.        ,  10373.47,     0.        ]),
-        "oew_plus_payload": np.array([ 160233.53, 160233.53, 126607.        , 116233.53]),
-        "fuel": np.array([     0.        ,  67696.47, 101323.        , 101323.        ]),
-        "takeoff_weight": np.array([     0.        , 227930.        , 227930.        , 217556.53]),
+        "range":            np.array([       0.        , 10090424.13008407, 17488065.51305655, 18153977.03778774]),
+        "payload":          np.array([44000.        , 44000.        , 10317.36918343,     0.        ]),
+        "oew_plus_payload": np.array([160289.63081657, 160289.63081657, 126607.        , 116289.63081657]),
+        "fuel":             np.array([     0.        ,  67640.36918343, 101323.        , 101323.        ]),
+        "takeoff_weight":   np.array([     0.        , 227930.        , 227930.        , 217612.63081657]),
     }
     # ########################################### WARNING #################################################
     ###### DO NOT CHANGE THESE VALUES WITHOUT CONSULTING THE AIRPORT PLANNING MANUAL FIRST ################
@@ -73,6 +83,89 @@ def main():
     print('Payload Range simulation Time: ' + str(elapsed_time) + ' seconds') 
             
     return 
+
+def plot_payload_range(payload_range_results, apm):
+    """
+    Plot payload-range and OEW+payload-range against Airport Planning Manual reference.
+
+    Parameters
+    ----------
+    payload_range_results : dict
+        Keys: "range" [m], "payload" [lb], "oew_plus_payload" [lb]
+    apm : dict
+        Keys: "range" [m], "payload" [lb], "oew_plus_payload" [lb]
+    """
+    plt.style.use('bmh')
+    mpl.rcParams["font.family"] = "Times New Roman"
+
+    def nmi_to_km(x): return x * Units.nmi / Units.km
+    def km_to_nmi(x): return x * Units.km / Units.nmi
+    def lb_to_kg(y):  return y * Units.lbs
+    def kg_to_lb(y):  return y / Units.lbs
+
+    cmap   = plt.get_cmap("viridis")
+    series = {
+        "Boeing 787-8":          {"data": payload_range_results, "color": cmap(0.35), "ls": "-"},
+        "Airport Planning Manual":{"data": apm,                  "color": "black",    "ls": "--"},
+    }
+
+    fig = plt.figure(figsize=(16, 8))
+    gs  = GridSpec(1, 2, width_ratios=[1, 1], wspace=0.6)
+    ax1 = fig.add_subplot(gs[0])
+    ax2 = fig.add_subplot(gs[1])
+
+    for label, s in series.items():
+        d     = s["data"]
+        x_nmi = d["range"] / Units.nmi
+        kw    = dict(label=label, linewidth=2.0, marker="o", markersize=5,
+                     color=s["color"], linestyle=s["ls"])
+        ax1.plot(x_nmi, d["payload"],          **kw)
+        ax2.plot(x_nmi, d["oew_plus_payload"],  **kw)
+
+    ax1.set_ylabel("Payload (lb)",        fontsize=22, fontweight="bold")
+    ax1.set_xlabel("Range (nmi)",          fontsize=22, fontweight="bold")
+    ax2.set_ylabel("Payload + OEW (lb)",  fontsize=22, fontweight="bold")
+    ax2.set_xlabel("Range (nmi)",          fontsize=22, fontweight="bold")
+
+    secax1 = ax1.secondary_xaxis("top", functions=(nmi_to_km, km_to_nmi))
+    secax1.set_xlabel("Range (km)", fontsize=22, fontweight="bold")
+    secax2 = ax2.secondary_xaxis("top", functions=(nmi_to_km, km_to_nmi))
+    secax2.set_xlabel("Range (km)", fontsize=22, fontweight="bold")
+
+    secay1 = ax1.secondary_yaxis("right", functions=(lb_to_kg, kg_to_lb))
+    secay1.set_ylabel("Payload (kg)",        fontsize=22, fontweight="bold")
+    secay2 = ax2.secondary_yaxis("right", functions=(lb_to_kg, kg_to_lb))
+    secay2.set_ylabel("Payload + OEW (kg)", fontsize=22, fontweight="bold")
+
+    for ax in [ax1, ax2, secax1, secax2]:
+        ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f"{x:,.0f}"))
+    for ax in [ax1, ax2, secay1, secay2]:
+        ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, _: f"{y:,.0f}"))
+    for ax in [ax1, ax2]:
+        ax.tick_params(axis="both", which="major", labelsize=18)
+        ax.grid(True, linestyle=":", linewidth=0.8, alpha=0.6)
+    for ax in [secax1, secax2, secay1, secay2]:
+        ax.tick_params(axis="both", which="major", labelsize=18)
+
+    ax1.axvline(x=5500, color="gray", linestyle="--", linewidth=1.2)
+    ax1.set_xlim(-200, 12000)
+    ax1.set_ylim(0, 60000)
+    ax1.xaxis.set_major_locator(ticker.MultipleLocator(2000))
+    ax1.yaxis.set_major_locator(ticker.MultipleLocator(5000))
+    ax2.set_xlim(-200, 12000)
+    ax2.set_ylim(110000, 175000)
+    ax2.xaxis.set_major_locator(ticker.MultipleLocator(2000))
+
+    handles, labels = ax1.get_legend_handles_labels()
+    fig.legend(
+        handles, labels,
+        loc="lower center", ncol=2, frameon=True, fontsize=14,
+        bbox_to_anchor=(0.5, 0.03), framealpha=0.95, edgecolor="black",
+    )
+    fig.subplots_adjust(bottom=0.2)
+    plt.tight_layout()
+    plt.show()
+
 
 # ----------------------------------------------------------------------
 #   Define the Mission

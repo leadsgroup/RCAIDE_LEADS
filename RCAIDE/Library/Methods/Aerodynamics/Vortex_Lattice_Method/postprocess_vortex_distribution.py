@@ -1,7 +1,7 @@
- # generate_VD_helpers.py
+# RCAIDE/Library/Methods/Aerodynamics/Vortex_Lattice_Method/postprocess_vortex_distribution.py
 # 
 # Created:  Aug 2025, M. Clarke
-#           
+#           Apr 2026, M. Clarke 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Imports
@@ -11,9 +11,9 @@
 import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  postprocess_VD
+#  postprocess_vortex_distribution
 # ----------------------------------------------------------------------------------------------------------------------
-def postprocess_VD(VD, settings):
+def postprocess_vortex_distribution(VD, settings):
     """ 
     Recomputes data about the VD. Should be called any time VD panel 
     values (e.g. VD.XA1, VD.XCH, etc) are changed.
@@ -40,9 +40,6 @@ def postprocess_VD(VD, settings):
     LE_ind     = VD.leading_edge_indices
     TE_ind     = VD.trailing_edge_indices
     strip_n_cw = VD.panels_per_strip[LE_ind]
-    
-    last_wing_ID = list(VD.VLM_wings.values())[-1].surface_ID # assumes last VLM_wing in its container is last to get discretized
-    is_VLM_wing  = np.abs(VD.surface_ID) <= last_wing_ID
 
     # Compute Panel Areas and Normals
     VD.panel_areas = np.array(compute_panel_area(VD) , dtype=precision)
@@ -88,7 +85,7 @@ def postprocess_VD(VD, settings):
     ZB_TE_wings  = np.repeat(VD.ZB2[TE_ind], strip_n_cw)    
     
     # Compute wing-only values
-    Y_SW = VD.YC[is_VLM_wing*TE_ind]
+    Y_SW = VD.YC[TE_ind]
     
     # Pack VORLAX variables
     VD.SLOPE                   = SLOPE
@@ -106,10 +103,7 @@ def postprocess_VD(VD, settings):
     VD.ZA_TE  = ZA_TE_wings
     VD.XB_TE  = XB_TE_wings
     VD.YB_TE  = YB_TE_wings
-    VD.ZB_TE  = ZB_TE_wings
-
-    VD.is_postprocessed = True
-    
+    VD.ZB_TE  = ZB_TE_wings 
     return VD 
 
 # ----------------------------------------------------------------------

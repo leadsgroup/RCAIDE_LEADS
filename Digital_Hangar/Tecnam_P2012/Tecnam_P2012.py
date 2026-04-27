@@ -550,8 +550,7 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Port Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------   
-    port_propulsor                                  = deepcopy(starboard_propulsor)
-    port_propulsor.active_fuel_tanks                = ['fuel_tank'] 
+    port_propulsor                                  = deepcopy(starboard_propulsor) 
     port_propulsor.tag                              = 'port_propulsor' 
     port_propulsor.origin                           = [[3.36,-2.25,1.15]]
     port_propulsor.nacelle.tag                      = 'port_propulsor_nacelle' 

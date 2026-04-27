@@ -66,7 +66,7 @@ def main():
             print(val)
     
     # Truth values 
-    L_D_truth         = 7.247823909318594
+    L_D_truth         = 7.2591156761399525
     
     # Store errors 
     error = Data() 
@@ -123,10 +123,7 @@ def base_analysis(vehicle):
     
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
-    aerodynamics                                       = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.settings.number_of_spanwise_vortices  = 25
-    aerodynamics.settings.number_of_chordwise_vortices = 5     
-    aerodynamics.settings.model_fuselage               = True 
+    aerodynamics                                       = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
     analyses.append(aerodynamics)
 
 
@@ -380,10 +377,12 @@ def mission_setup(analyses):
     # ------------------------------------------------------------------  
     segment     = Segments.Descent.Linear_Speed_Constant_Rate(base_segment)
     segment.tag = "descent_2" 
-    segment.analyses.extend( analyses.cruise )
+    segment.analyses.extend( analyses.descent )
+    segment.altitude_start    = 60000. * Units.ft
     segment.altitude_end      = 41000. * Units.ft
+    segment.air_speed_start   = 1165 *  Units.knots
     segment.air_speed_end     = 800 *  Units.mph
-    segment.descent_rate      = 1000. * Units['ft/min']  
+    segment.descent_rate      = 4000. * Units['ft/min']  
     
     # define flight dynamics to model 
     segment.flight_dynamics.force_x                      = True  
@@ -402,10 +401,10 @@ def mission_setup(analyses):
       
     segment = Segments.Descent.Linear_Mach_Constant_Rate(base_segment)
     segment.tag = "descent_3" 
-    segment.analyses.extend( analyses.cruise )
+    segment.analyses.extend( analyses.descent )
     segment.altitude_end      = 10000. * Units.ft
     segment.mach_number_end   = 0.4
-    segment.descent_rate      = 1000. * Units['ft/min']  
+    segment.descent_rate      = 2000. * Units['ft/min']  
     
     # define flight dynamics to model 
     segment.flight_dynamics.force_x                      = True  

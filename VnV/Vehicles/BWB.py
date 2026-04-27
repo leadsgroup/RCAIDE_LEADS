@@ -518,8 +518,7 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor: Propulsor 2 (Inner Port Side)
     #------------------------------------------------------------------------------------------------------------------------------------       
-    turbofan2                                  = deepcopy(turbofan1)
-    turbofan2.active_fuel_tanks                = ['fuel_tank'] 
+    turbofan2                                  = deepcopy(turbofan1) 
     turbofan2.tag                              = 'propulsor_2' 
     turbofan2.origin                           = [[30, -3, 3]] 
     turbofan2.nacelle.tag                      = 'propulsor_2_nacelle'

@@ -101,10 +101,10 @@ def plot_propulsor_throttles(results,
         for network in results.segments[i].analyses.vehicle.networks: 
             for j ,  propulsor in enumerate(network.propulsors):
                 eta = results.segments[i].conditions.energy.propulsors[propulsor.tag].throttle[:,0]  
-                if j == 0 and i ==0:               
-                    axis_1.plot(time, eta, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width, label = segment_name + ': '+ propulsor.tag )
+                if i == 0:               
+                    axis_1.plot(time, eta, color = line_colors[i], marker = ps.markers[j], linewidth = ps.line_width, label = propulsor.tag )
                 else:
-                    axis_1.plot(time, eta, color = line_colors[i], marker = ps.markers[0], linewidth = ps.line_width)     
+                    axis_1.plot(time, eta, color = line_colors[i], marker = ps.markers[j], linewidth = ps.line_width)     
     
     if show_legend:
         leg =  fig.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol = 4) 

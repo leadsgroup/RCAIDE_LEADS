@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Energy/Propulsors/Constant_Speed_ICE_Propulsor/compute_cs_ice_performance.py
+# RCAIDE/Methods/Energy/Propulsors/Constant_Speed_ICE_Propulsor/compute_constant_speed_internal_combustion_engine_performance.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke
@@ -108,28 +108,25 @@ def compute_constant_speed_internal_combustion_engine_performance(propulsor, sta
     conditions.energy.converters[propeller.tag].blade_pitch_command  = ice_cs_conditions.throttle - 0.5
     conditions.energy.converters[propeller.tag].throttle             = ice_cs_conditions.throttle
     compute_rotor_performance(propeller,conditions)
+    ice_cs_conditions.thrust      = conditions.energy.converters[propeller.tag].thrust 
+    ice_cs_conditions.power       = conditions.energy.converters[propeller.tag].power  
 
     # Compute moment 
-    moment_vector           = 0*state.ones_row(3)
-    moment_vector[:,0]      = propeller.origin[0][0]  -  center_of_gravity[0][0] 
-    moment_vector[:,1]      = propeller.origin[0][1]  -  center_of_gravity[0][1] 
-    moment_vector[:,2]      = propeller.origin[0][2]  -  center_of_gravity[0][2]
-    moment                  =  np.cross(moment_vector, conditions.energy.converters[propeller.tag].thrust)       
-        
+    moment_vector            = 0*state.ones_row(3)
+    moment_vector[:,0]       = propeller.origin[0][0]  -  center_of_gravity[0][0] 
+    moment_vector[:,1]       = propeller.origin[0][1]  -  center_of_gravity[0][1] 
+    moment_vector[:,2]       = propeller.origin[0][2]  -  center_of_gravity[0][2]
+    moment                   =  np.cross(moment_vector,ice_cs_conditions.thrust)
+    ice_cs_conditions.moment = moment   
 
     # Run the engine to calculate the throttle setting and the fuel burn
-    conditions.energy.converters[engine.tag].power        = conditions.energy.converters[propeller.tag].power 
+    conditions.energy.converters[engine.tag].power  = conditions.energy.converters[propeller.tag].power 
     compute_throttle_from_power(engine,conditions) 
     
     # Create the outputs
     ice_cs_conditions.fuel_mass_flow_rate    = conditions.energy.converters[engine.tag].fuel_mass_flow_rate  
     stored_results_flag                      = True
     stored_propulsor_tag                     = propulsor.tag  
-
-    # compute total forces and moments from propulsor (future work would be to add moments from motors)
-    ice_cs_conditions.thrust      = conditions.energy.converters[propeller.tag].thrust 
-    ice_cs_conditions.moment      = moment
-    ice_cs_conditions.power       = conditions.energy.converters[propeller.tag].power  
 
     # currently, no hybridization
     power_elec =  0*state.ones_row(1)
@@ -172,20 +169,14 @@ def reuse_stored_constant_speed_internal_combustion_engine_data(propulsor,state,
     conditions.energy.converters[propeller.tag]     = deepcopy(conditions.energy.converters[propeller_0.tag])
 
     # compute moment    
-    thrust                  = conditions.energy.converters[propeller.tag].thrust 
-    power                   = conditions.energy.converters[propeller.tag].power  
     moment_vector           = 0*state.ones_row(3) 
     moment_vector[:,0]      = propeller.origin[0][0]  -  center_of_gravity[0][0] 
     moment_vector[:,1]      = propeller.origin[0][1]  -  center_of_gravity[0][1] 
     moment_vector[:,2]      = propeller.origin[0][2]  -  center_of_gravity[0][2]
-    moment                  =  np.cross(moment_vector, thrust)
-    
-    # pack results 
-    conditions.energy.converters[propeller.tag].moment = moment  
-    conditions.energy.propulsors[propulsor.tag].thrust = thrust   
-    conditions.energy.propulsors[propulsor.tag].moment = moment  
-    conditions.energy.propulsors[propulsor.tag].power  = power
+    moment                  = np.cross(moment_vector,conditions.energy.propulsors[propulsor.tag].thrust)
+    conditions.energy.converters[propeller.tag].moment = moment   
+    conditions.energy.propulsors[propulsor.tag].moment = moment 
     
     power_elec =  0*state.ones_row(1)  
-    return thrust,moment,power, power_elec
+    return conditions.energy.propulsors[propulsor.tag].thrust,moment,conditions.energy.propulsors[propulsor.tag].power,power_elec
  

@@ -81,8 +81,11 @@ def general_aviation_aircraft_geometry_test(show_figure):
     fuel_line = vehicle.networks.fuel.fuel_lines.fuel_line
     fuel_line.fuel_tanks.clear()
 
-    wing_tank = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.horizontal_stabilizer)  
-    wing_tank.fuel                 = RCAIDE.Library.Attributes.Propellants.Jet_A() 
+    wing_tank = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)
+    wing_tank.fuel                          = RCAIDE.Library.Attributes.Propellants.Jet_A()
+    wing_tank.segments_bounding_tank        = ['root_segment', 'tip']
+    wing_tank.segments_percent_chord_start  = [0.1, 0.1]
+    wing_tank.segments_percent_chord_end    = [0.7, 0.7]
     fuel_line.fuel_tanks.append(wing_tank)
     
     # plot vehicle 

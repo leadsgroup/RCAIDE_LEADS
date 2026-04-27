@@ -1,21 +1,19 @@
-
-# VLM.py
+# RCAIDE/Library/Methods/Aerodynamics/Vortex_Lattice_Method/VLM.py
 # 
 # Created: Aug 2025, M. Clarke    
+#          Apr 2026, S. Shekar, A. Molloy, M. Clarke
 
 # ----------------------------------------------------------------------
 #  Imports
 # ----------------------------------------------------------------------
 
-# package imports 
-import RCAIDE
+# package imports  
 from RCAIDE.Framework.Core import Data 
 from .compute_wing_induced_velocity      import compute_wing_induced_velocity
 from .generate_vortex_distribution       import generate_vortex_distribution 
 from .compute_RHS_matrix                 import compute_RHS_matrix
 
-from scipy.integrate import trapezoid
-from copy import  deepcopy
+from scipy.integrate import trapezoid 
 import numpy as np
 # ----------------------------------------------------------------------
 #  Vortex Lattice
@@ -79,13 +77,8 @@ def VLM(conditions,settings,geometry):
         fineness.nose                          [Unitless]
         fineness.tail                          [Unitless]
         
-    settings.number_of_spanwise_vortices       [Unitless]  <---|
-    settings.number_of_chordwise_vortices      [Unitless]  <---|
-                                                               |--Either/or; see generate_vortex_distribution() for more details
-    settings.wing_spanwise_vortices            [Unitless]  <---|
-    settings.wing_chordwise_vortices           [Unitless]  <---|
-    settings.fuselage_spanwise_vortices        [Unitless]  <---|
-    settings.fuselage_chordwise_vortices       [Unitless]  <---|  
+    settings.number_of_spanwise_vortices       [Unitless]   
+    settings.number_of_chordwise_vortices      [Unitless]   
        
     settings.use_surrogate                     [Unitless]
     settings.propeller_wake_model              [Unitless] 
@@ -261,8 +254,8 @@ def VLM(conditions,settings,geometry):
     COSINP = COSALF *SINPSI
     COSCOS = COSALF *COPSI
     PITCH  = PITCHQ /VINF
-    ROLL   = ROLLQ /VINF
-    YAW    = YAWQ /VINF    
+    ROLL   = ROLLQ  /VINF
+    YAW    = YAWQ   /VINF    
     
     # reshape CHORD 
     dim_1 = len(np.sum(LE_ind, axis=1))
@@ -453,8 +446,8 @@ def VLM(conditions,settings,geometry):
 
     # moment coefficients 
     CM_mom   = np.atleast_2d(np.sum(MOMENT,axis=1)/S_ref).T/c_ref  
-    CL_mom   = np.atleast_2d(np.sum(RM,axis=1)/S_ref).T    /b_ref*(-1)                             
-    CN_mom   = np.atleast_2d(np.sum(YM,axis=1)/S_ref).T    /b_ref*(-1)                            
+    CL_mom   = np.atleast_2d(np.sum(RM,axis=1)/S_ref).T    /b_ref                            
+    CN_mom   = np.atleast_2d(np.sum(YM,axis=1)/S_ref).T    /b_ref                         
    
     # ---------------------------------------------------------------------------------------
     # STEP 13: Pack outputs
@@ -463,9 +456,9 @@ def VLM(conditions,settings,geometry):
     results.CX                = CX_for 
     results.CY                = CY_for  
     results.CZ                = -CZ_for 
-    results.CL                = CL_mom 
+    results.CL                = -CL_mom 
     results.CM                = CM_mom  
-    results.CN                = CN_mom  
+    results.CN                = -CN_mom  
     results.spanwise_stations = Y 
     results.CLift_wing        = CL_wing   
     results.sectional_CLift   = Clift_y     
@@ -493,7 +486,7 @@ def VLM(conditions,settings,geometry):
         i+=1 
     results.CLift_wings         = Clift_wings
     results.CDrag_induced_wings = Cdrag_wings
-    
+    results.VD = VD
     return results
 
 # ----------------------------------------------------------------------
@@ -566,105 +559,295 @@ def strip_cumsum(arr, chord_breaks, strip_lengths):
     return cumsum - offsets
     
     
-def compute_trefftz_plane_induced_drag(conditions, VD, cl, x_dist, y_dist, z_dist, chord_dist,SREF,b_ref, v_inf=1):
-     
+def compute_trefftz_plane_induced_drag(conditions, VD, cl, x_dist, y_dist, z_dist, chord_dist, SREF, b_ref, v_inf=1):
+    """Compute induced drag using a Trefftz-plane (far-field wake) analysis.
+
+    The Trefftz plane is a control surface placed infinitely far downstream,
+    where the trailing vortex wake has fully rolled up.  In this plane the
+    induced drag can be evaluated as a line integral of the downwash times
+    the local lift, which is computationally cleaner and more accurate than
+    integrating surface pressures in the near field.
+
+    The procedure follows the classical vortex-lattice / lifting-line approach
+    used in codes such as AVL (Drela & Youngren) and VORLAX:
+
+    1.  **Circulation distribution** – The bound-vortex circulation on each
+        spanwise strip is reconstructed from the sectional lift coefficient and
+        the Kutta–Joukowski theorem:
+
+            Γ = 0.5 · c · V∞ · cl · (DS / |ΔY|)
+
+        where DS = √(ΔY² + ΔZ²) is the true arc-length of each strip, and the
+        DS/|ΔY| factor corrects for dihedral (for a flat wing DS = |ΔY| and the
+        factor is unity).
+
+    2.  **Shed vortices** – Horseshoe vortices are shed at the spanwise edges of
+        each strip.  The strength of the shed (trailing) vortex at each node is
+        the *difference* in bound circulation between adjacent strips (Helmholtz
+        vortex theorem).  Tip vortices close the horseshoe with the full
+        circulation at the tip.  Symmetric wings are handled by zeroing the
+        inboard root vortex; asymmetric wings shed a root vortex of full strength.
+
+    3.  **Induced velocity in the Trefftz plane** – Each shed vortex induces a
+        velocity at the centerpoint of every strip.  The 2-D Biot–Savart kernel
+        for a semi-infinite straight vortex filament reduces to:
+
+            w = Γ / (4π r)
+
+        where r is the perpendicular distance from the filament to the field
+        point.  The velocity vector is projected onto the outward normal of the
+        receiving strip so that dihedral is handled correctly.
+
+    4.  **Induced angle of attack** – The local induced downwash angle is:
+
+            α_i = arctan(w_i / V∞)  ≈  w_i / V∞
+
+    5.  **Induced drag** – Integrating along the span (using the composite
+        trapezoid rule over arc-length) gives:
+
+            CDi = ∫ (α_i · cl · c / S_ref) ds
+
+        where s is the spanwise arc-length coordinate.  This integral is
+        evaluated separately for each wing surface and then summed.
+
+    Assumptions:
+        - Incompressible, inviscid flow (Trefftz-plane analysis is exact only in
+          this limit; compressibility corrections are applied elsewhere).
+        - The freestream speed is normalised to v_inf = 1 unless explicitly
+          overridden; lift coefficients and circulation are consistent with this
+          normalisation.
+        - Strip widths are taken from the VLM panel geometry stored in VD; the
+          chordwise discretisation does not affect the Trefftz-plane result.
+        - Each wing is treated as an independent lifting surface when assembling
+          the shed-vortex strengths; mutual induction *between* wings is
+          accounted for in the induced-velocity loop over all panels.
+        - Symmetric wings (xz-plane symmetry) have their inboard root vortex
+          strength set to zero (the image on the other side is implicit).
+
+    Parameters
+    ----------
+    conditions : RCAIDE.Framework.Mission.Common.Results
+        Flight conditions data structure.  The following fields are accessed:
+
+        - ``conditions.aerodynamics.angles.alpha``  (n_cases, 1) [rad]
+          Angle-of-attack for each flight condition.
+
+    VD : RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method.Data
+        Vortex-lattice geometry descriptor populated by the VLM geometry
+        build.  Key arrays (all indexed by case ``k``):
+
+        - ``VD.Y[k]``               – global Y-coordinates of all VLM nodes
+        - ``VD.Z[k]``               – global Z-coordinates of all VLM nodes
+        - ``VD.n_sw[k]``            – number of spanwise strips per wing  (n_wings,)
+        - ``VD.n_cw[k]``            – number of chordwise panels per strip (n_wings,)
+        - ``VD.normals[k]``         – unit panel normal vectors (n_panels, 3)
+        - ``VD.symmetric_wings[k]`` – boolean list; True if wing has xz symmetry
+        - ``VD.wing_areas``         – reference area of each wing (n_wings,)
+
+    cl : ndarray, shape (n_cases, n_strips)
+        Sectional lift coefficient at the chordwise leading-edge panel of each
+        spanwise strip, as computed by the near-field VLM pressure integration.
+
+    x_dist : ndarray, shape (n_cases, n_strips)
+        Chordwise (X) coordinate of the leading-edge control points [m].
+        Currently not used directly inside this function (kept for API
+        consistency and potential future extensions).
+
+    y_dist : ndarray, shape (n_cases, n_strips)
+        Spanwise (Y) coordinate of the leading-edge control points [m].
+        Currently not used directly inside this function.
+
+    z_dist : ndarray, shape (n_cases, n_strips)
+        Vertical (Z) coordinate of the leading-edge control points [m].
+        Currently not used directly inside this function.
+
+    chord_dist : ndarray, shape (n_cases, n_strips)
+        Local chord length at each spanwise strip [m].
+
+    SREF : float
+        Vehicle reference area [m²] used for non-dimensionalising forces.
+
+    b_ref : float
+        Vehicle reference span [m].  Reserved for future use (aspect-ratio
+        corrections, Oswald efficiency output, etc.).
+
+    v_inf : float, optional
+        Freestream speed [m/s].  Default is 1 (non-dimensional).  All
+        circulation and induced-velocity calculations are proportional to
+        v_inf; the resulting drag coefficient is independent of this value
+        in the incompressible, linear limit.
+
+    Returns
+    -------
+    results : RCAIDE.Framework.Core.Data
+        Container with the following fields:
+
+        - ``CDrag_induced``           ndarray (n_cases, 1)
+          Total vehicle induced-drag coefficient.
+
+        - ``sectional_CDrag_induced`` ndarray (n_cases, n_strips)
+          Spanwise distribution of the induced-drag coefficient integrand
+          ``α_i · cl`` at each strip (before chord-weighting and integration).
+
+        - ``CDrag_induced_wing``      ndarray (n_cases, n_wings)
+          Induced-drag coefficient contribution from each individual wing
+          surface (referenced to SREF).
+
+        - ``alpha_induced``           ndarray (n_cases, n_strips)
+          Local induced angle of attack at each strip [rad].
+
+    Notes
+    -----
+    **Arc-length vs. projected-span integration**
+        RCAIDE normalises the sectional lift coefficient by the arc-length area
+        ``c × DS`` rather than the projected area ``c × ΔY``.  The DS/|ΔY|
+        correction in the circulation formula compensates for this convention so
+        that Γ is always the true bound circulation.
+
+    **Integration direction**
+        The sign of the tip shed vortex determines whether the strip ordering runs
+        from root-to-tip or tip-to-root.  The integrand is flipped as needed so
+        that the trapezoid integration always proceeds from smaller to larger
+        arc-length values, which is required for ``scipy.integrate.trapezoid``.
+
+    **Mutual induction**
+        The double loop over wing panels (i, j outer; l, m inner) computes the
+        full mutual induction matrix, including the self-induction of each wing
+        on itself as well as between-wing terms.  This is equivalent to the
+        Trefftz-plane integration in AVL but performed in the body (not wind)
+        frame.
+
+    **Numerical singularity guard**
+        Spanwise strips with zero projected width (ΔY = 0) are given a small
+        floor value of 1e-6 m to avoid division-by-zero in the arc-length
+        correction.  This situation can arise for winglet panels that are
+        oriented in the XZ plane.
+
+    References
+    ----------
+    Drela, M. and Youngren, H., "AVL 3.36 User Primer," MIT, 2017.
+    Katz, J. and Plotkin, A., "Low-Speed Aerodynamics," 2nd ed.,
+        Cambridge University Press, 2001, Chap. 8.
+    Lan, C. E., "A Quasi-Vortex-Lattice Method in Thin Wing Theory,"
+        Journal of Aircraft, Vol. 11, No. 9, 1974, pp. 518–527.
+    """
+    # Initialize results storage
     alpha   = conditions.aerodynamics.angles.alpha 
     n_cases = len(alpha) 
-    n_wings = len(VD.n_sw[0])
-    rho = 1
-    
-    # ------------------------------------------------------------------------------------------
-    # Trefftz Plane Drag 
-    # ------------------------------------------------------------------------------------------
-
-    # Initialize results storage
     CDi_total         = np.zeros(n_cases)
-    CDi_wing          = np.zeros((n_cases, n_wings))
-    D_induced         = np.zeros((n_cases, n_wings))
+    CDi_wing          = np.zeros((n_cases, len(VD.n_sw[0])))
     Cd_i_distribution = np.zeros_like(cl)
-    alpha_i           = np.zeros_like(cl) 
+    alpha_i           = np.zeros_like(cl)    
 
-    # Calculate circulation for this case
-    circulation_dist = 0.5 * chord_dist[0] * v_inf * cl 
-   
-    ws = 0
-    # Induced velocity calculation for this case 
-    for wing_index,wing_segments in enumerate(VD.n_sw[0]):
-        ws_prev = ws
-        ws += wing_segments
-        circulation_segments = circulation_dist[:,ws_prev:ws]
-        cl_segments = cl[:, ws_prev:ws]
+    for k in range(n_cases):
+        alpha   = conditions.aerodynamics.angles.alpha [k]
+        n_wings = len(VD.n_sw[k])
+        divisions_control_point = np.cumsum(VD.n_sw[k]+1)[:-1]
+        divisions = np.cumsum(VD.n_sw[k])[:-1]
+        cl_split = np.stack(np.split(cl[k], divisions))
+        chord_split = np.stack(np.split(chord_dist[k], divisions))
+
+        # ------------------------------------------------------------------------------------------
+        # Trefftz Plane Drag
+        # ------------------------------------------------------------------------------------------
+        # Create centerpoints in body frame
         
-        # Control points 
-        y_control_points = y_dist[:,ws_prev:ws] 
-        z_control_points = z_dist[:,ws_prev:ws] 
-        x_control_points = x_dist[:,ws_prev:ws] 
+        y_control_points = np.stack(np.split(VD.Y[k][::(VD.n_cw[k][0]+1)], divisions_control_point)) #np.stack(np.split(y_dist[0] , divisions))
+        z_control_points = np.stack(np.split(VD.Z[k][::(VD.n_cw[k][0]+1)], divisions_control_point))
 
-        # Centerpoints 
         y_centerpoints = (y_control_points[:,:-1] + y_control_points[:,1:]) / 2
+        # The Trefftz plane is evaluated in body-axis coordinates, meaning no angle-of-attack
+        # rotation is applied to the Z positions.  This is consistent with how AVL's TPFORC
+        # routine handles the Prandtl-Glauert transform (ALFAT = 0 in that context): the wake
+        # lies in the Y-Z body plane and the bound-vortex geometry is already expressed in
+        # body axes, so rotating Z by alpha would double-count the incidence angle.
         z_centerpoints = (z_control_points[:,:-1] + z_control_points[:,1:]) / 2
-        x_centerpoints = (x_control_points[:,:-1] + x_control_points[:,1:]) / 2
 
-        # Shed vortex segments for this case
-        differences = np.diff(y_control_points,axis=1)
-        direction   = np.sign(differences) * np.ones_like(y_centerpoints)
-        shed_vortex_segments = direction * np.diff(circulation_segments, axis=1)
+        # The sectional lift coefficient cl is normalised by arc-length area (chord × DS),
+        # where DS = sqrt(DY² + DZ²) is the true spanwise arc-length of each strip.  The
+        # Kutta–Joukowski theorem requires the actual bound circulation Γ = 0.5·V·c·cl, so
+        # when cl was formed using DS rather than the projected width DY the circulation must
+        # be scaled back by DS/|DY| to recover the physical value.  For a flat, unswept wing
+        # DS = |DY| everywhere and the factor is exactly 1, so this correction is invisible
+        # in that limit.  For dihedral or winglet panels the correction can be significant.
+        dy_strips = np.diff(y_control_points, axis=1)    # (n_wings, n_sw)
+        mask = [dy_strips ==0]
+        # Guard against division by zero for panels whose projected span is zero (e.g. winglets
+        # oriented entirely in the XZ plane).  A floor of 1e-6 m is negligibly small relative
+        # to any physical panel width and does not meaningfully affect the circulation value.
+        dy_strips[mask[0]]= 1e-6
+        dz_strips = np.diff(z_control_points, axis=1)    # (n_wings, n_sw)
+        DS_strips = np.sqrt(dy_strips**2 + dz_strips**2)
+        # Calculate circulation for this case
+        circulation_dist = 0.5 * chord_split * v_inf * cl_split * (DS_strips / np.abs(dy_strips))
 
-        # Trefftz Plane Y-Z location:
-        TP_y_centerpoints   = y_centerpoints
-        TP_z_centerpoints   = np.cos(alpha) * z_centerpoints - np.sin(alpha) * x_centerpoints
-        TP_y_control_points = y_control_points
-        TP_z_control_points = np.cos(alpha) * z_control_points - np.sin(alpha) * x_control_points
-
-        V_induced = np.zeros_like(y_control_points)
-        for j in range(len(y_control_points[0])): # Loop through each control point
-            # Distance from segment to control point
-            A = ( np.tile(TP_y_control_points[:,j][:, None],(1,len(TP_y_centerpoints[0]) ))  - TP_y_centerpoints)**2
-            B = ( np.tile(TP_z_control_points[:,j][:, None],(1,len(TP_z_centerpoints[0]))) - TP_z_centerpoints)**2
-            r = (A + B) ** (0.5)
-            
-            # Calculate normal vector to the wake trace
-            if len(TP_y_control_points[0]) < 2 or len(TP_z_control_points[0]) < 2 : 
-                slope =  np.zeros((n_cases,1)) 
-                V_induced[:,j] = 0                
+        is_symmetric = np.array(VD.symmetric_wings[0], dtype=bool)
+        is_vertical  = np.array(VD.vertical_wing[0],   dtype=bool)
+        symmetric_wing_flags = np.concatenate([np.repeat(is_symmetric & ~is_vertical, 2), np.zeros(np.count_nonzero(~is_symmetric), dtype=bool)])[:n_wings]
+        wing_areas = (symmetric_wing_flags+1)*VD.wing_areas
+        shed_vortices = np.zeros_like(y_control_points)
+        for wing_number in range(n_wings):
+            if symmetric_wing_flags[wing_number]: # symmetric
+                shed_vortices[wing_number,1:-1] = np.sign(y_control_points[wing_number,1]-y_control_points[wing_number,0]) * np.diff(circulation_dist[wing_number])
+                shed_vortices[wing_number,0] = 0
+                shed_vortices[wing_number,-1] = -1*np.sign(y_control_points[wing_number,1]-y_control_points[wing_number,0]) * circulation_dist[wing_number][-1]
+                
             else:
-                slope = np.gradient(TP_z_control_points, TP_y_control_points[0],axis=1)
-            
-                # Normal vector to the wake trace
-                n_hat      = np.zeros((n_cases,2 ))
-                n_hat[:,0] = np.cos(np.arctan2(-1, slope[:,j]))
-                n_hat[:,1] = np.sin(np.arctan2(-1, slope[:,j]))
-                
-                # Calculate induced velocity vector
-                v_hat         =  np.zeros((n_cases ,2, len(TP_z_centerpoints[0]) ))
-                v_hat[:,0,:]  = -1*( np.tile(TP_z_control_points[:,j][:, None],(1,len(TP_z_centerpoints[0]))) - TP_z_centerpoints)/r
-                v_hat[:,1,:]  =    ( np.tile(TP_y_control_points[:,j][:, None],(1,len(TP_y_centerpoints[0]) ))  - TP_y_centerpoints)/r 
-                v = v_hat * np.tile(shed_vortex_segments[:,None,:],(1, 2,1)) / (2*np.pi*np.tile(r[:,None, :],(1, 2, 1)))
-                
-                # Downwash. Dot product of normal vector and induced velocity vector.
-                V_induced[:,j] = np.sum( np.tile(n_hat[:,0][:, None], (1,len(TP_z_centerpoints[0]) )) *v[:,0,:] +  np.tile(n_hat[:,1][:, None], (1,len(TP_z_centerpoints[0]) ))*v[:,1,:], axis=1) 
+                shed_vortices[wing_number,1:-1] = np.sign(y_control_points[wing_number,1]-y_control_points[wing_number,0]) * np.diff(circulation_dist[wing_number])
+                shed_vortices[wing_number,0] = -1*np.sign(y_control_points[wing_number,1]-y_control_points[wing_number,0]) * circulation_dist[wing_number][0]
+                shed_vortices[wing_number,-1] = -1*np.sign(y_control_points[wing_number,1]-y_control_points[wing_number,0]) * circulation_dist[wing_number][-1]
+        
+        induced_velocity = np.zeros_like(y_centerpoints)
+        for i in range(n_wings):
+            for j in range(len(y_centerpoints[i])):
+                # Centerpoints:
+                for l in range(n_wings):
+                    for m in range(len(y_control_points[l])):
+                        distance = np.sqrt((y_centerpoints[i][j] - y_control_points[l][m])**2 + (z_centerpoints[i][j] - z_control_points[l][m])**2)
+                        vortex_direction = 1/distance * np.array([ -1 * (z_centerpoints[i][j] - z_control_points[l][m]),(y_centerpoints[i][j] - y_control_points[l][m])])
+                        # The induced velocity must be projected onto the outward normal of the
+                        # receiving strip to obtain the downwash component that drives induced drag.
+                        # For a flat wing the strip normal is simply [0, 1] (pointing in +Z), and
+                        # the projection reduces to the Z-component of the velocity vector—the
+                        # classical Trefftz-plane downwash.  For a dihedral or winglet strip the
+                        # normal is rotated in the Y-Z plane, so the projection picks up both Y
+                        # and Z components of the induced velocity.  The sign(strip_dy) factor
+                        # ensures the normal always points "outward" (away from the root) regardless
+                        # of whether the strip runs left-to-right or right-to-left.
+                        strip_dy = y_control_points[i][j+1] - y_control_points[i][j]
+                        strip_dz = z_control_points[i][j+1] - z_control_points[i][j]
+                        strip_ds = np.sqrt(strip_dy**2 + strip_dz**2)
+                        v_hat = np.sign(strip_dy) * np.dot(np.array([-strip_dz/strip_ds, strip_dy/strip_ds]), vortex_direction)
 
-        drag_sum = np.sqrt(np.square(y_control_points[:, 0]) + np.square(z_control_points[:, 0]))
-        s_wake   = np.atleast_2d(deepcopy(drag_sum)).T
-        for j in range(1,len(y_control_points[0])): 
-            drag_sum +=  np.sqrt(np.square(y_control_points[:,j] - y_control_points[:,j-1]) + np.square(z_control_points[:,j] - z_control_points[:,j-1]))
-            s_wake    =  np.hstack((s_wake, np.atleast_2d(drag_sum).T))
-        D_induced[:,wing_index] = -0.5 * rho * trapezoid(V_induced * circulation_segments, s_wake, axis=1)
+                        velocity_contribution = shed_vortices[l][m] / (4.0 * np.pi * distance)
+                        induced_velocity[i][j] += velocity_contribution * v_hat
+        
+        alpha_induced_dist = np.arctan(induced_velocity / v_inf)
+        cd_induced_dist = alpha_induced_dist * cl_split
+        CDi = 0
 
-        # Per-wing CDi (using wing's reference area)
-        CDi_wing[:,wing_index] = D_induced[:,wing_index] / (0.5 * rho * v_inf**2 * VD.wing_areas[:,wing_index])
+        # Calulcate distances for line integral
+        line_distance = np.cumsum(np.sqrt(np.diff(y_control_points, axis=1)**2 + np.diff(z_control_points, axis=1)**2),axis=1)
+        for i in range(n_wings):
+            CDi_wing_sum = 0
+            if np.sign(shed_vortices[i,-1]-shed_vortices[i,0])<0:
+                CDi += trapezoid(cd_induced_dist[i] * chord_split[i] / wing_areas[0][i], line_distance[i])
+                CDi_wing_sum += trapezoid(cd_induced_dist[i] * chord_split[i] /  wing_areas[0][i], line_distance[i])
+            else:
+                CDi += trapezoid(np.flip(cd_induced_dist[i]) * np.flip(chord_split[i]) /  wing_areas[0][i], np.flip(-line_distance[i]))
+                CDi_wing_sum += trapezoid(np.flip(cd_induced_dist[i]) * np.flip(chord_split[i]) /  wing_areas[0][i], np.flip(-line_distance[i]))
+            CDi_wing[k][i] = CDi_wing_sum
+        
+        CDi_total[k] = CDi
+        Cd_i_distribution[k] = cd_induced_dist.ravel()
+        alpha_i[k] = alpha_induced_dist.ravel()
 
-        # Store results for this case
-        alpha_i_case = np.arctan(V_induced/ v_inf)
-        Cd_i_distribution[:,ws_prev:ws] = cl_segments * np.sin(-alpha_i_case)
-        alpha_i[:,ws_prev:ws] = alpha_i_case
 
-    CDi_total = np.sum(D_induced, axis=1) / (0.5 * rho * v_inf**2 * SREF) 
- 
     # Package results
     results                          = Data()
-    results.CDrag_induced            = CDi_total[:, np.newaxis]
+    results.CDrag_induced            = CDi_total[:,np.newaxis]
     results.sectional_CDrag_induced  = Cd_i_distribution
     results.CDrag_induced_wing       = CDi_wing
-    results.alpha_induced            = alpha_i 
+    results.alpha_induced            = alpha_i
+
     return results

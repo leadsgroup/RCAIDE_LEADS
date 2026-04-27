@@ -218,10 +218,10 @@ class Control_Surface_Results(Data):
         """   		
         self.tag                 = 'control_surface'
         self.deflection          = 0.0
-        self.CL                  = 0.0
-        self.CY                  = 0.0
-        self.Cl                  = 0.0
-        self.Cm                  = 0.0
-        self.Cn                  = 0.0
-        self.CDff                = 0.0
+        self.CLift_derivative    = 0.0
+        self.CY_derivative       = 0.0
+        self.Cl_derivative       = 0.0
+        self.Cm_derivative       = 0.0
+        self.Cn_derivative       = 0.0
+        self.Cdrag_derivative    = 0.0
         self.e                   = 0.0		

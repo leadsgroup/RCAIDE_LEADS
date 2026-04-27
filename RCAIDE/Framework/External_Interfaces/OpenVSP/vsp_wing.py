@@ -670,12 +670,13 @@ def write_vsp_wing(vehicle,wing, area_tags, fuel_tank_set_ind, OML_set_ind):
         x_sec_id  = vsp.GetXSec(vsp.GetXSecSurf(wing_id, 0),i_segs+adjust)
 
         # Find the parm strings
-        span_parm    = vsp.GetXSecParm(x_sec_id, 'Span')
-        dih_parm     = vsp.GetXSecParm(x_sec_id, 'Dihedral')
-        sweep_parm   = vsp.GetXSecParm(x_sec_id, 'Sweep')
-        swp_loc_parm = vsp.GetXSecParm(x_sec_id, 'Sweep_Location')
-        rt_ch_parm   = vsp.GetXSecParm(x_sec_id, 'Root_Chord')
-        tc_parm      = vsp.GetXSecParm(x_sec_id, 'ThickChord')
+        span_parm      = vsp.GetXSecParm(x_sec_id, 'Span')
+        dih_parm       = vsp.GetXSecParm(x_sec_id, 'Dihedral')
+        sweep_parm     = vsp.GetXSecParm(x_sec_id, 'Sweep')
+        swp_loc_parm   = vsp.GetXSecParm(x_sec_id, 'Sweep_Location')
+        twist_loc_parm = vsp.GetXSecParm(x_sec_id, 'Twist_Location')
+        rt_ch_parm     = vsp.GetXSecParm(x_sec_id, 'Root_Chord')
+        tc_parm        = vsp.GetXSecParm(x_sec_id, 'ThickChord')
 
         # Set the parm values
         vsp.SetParmVal(span_parm, span_i)
@@ -683,6 +684,7 @@ def write_vsp_wing(vehicle,wing, area_tags, fuel_tank_set_ind, OML_set_ind):
         vsp.SetParmVal(swp_loc_parm, sweep_loc)
         vsp.SetParmVal(rt_ch_parm, chord_i)
         vsp.SetParmVal(tc_parm, tc_i)
+        vsp.SetParmVal(twist_loc_parm, 0.0)
         
         # OpenVSP's rotation on vertical segmented wings is opposite of RCAIDE's
         if not wing.vertical:

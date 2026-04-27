@@ -1,0 +1,21 @@
+V-n diagram summary
+-------------------
+Aircraft: Boeing_737-800
+category: normal
+FAR certification: Part 25
+Weight = 174165 lb
+Altitude = 0 ft
+---------------------------------------------------------------
+
+Airspeeds: 
+    Positive stall speed (Vs1)   = 113.2 KEAS
+    Negative stall speed (Vs1)   = 160.1 KEAS
+    Positive maneuver speed (Va) = 179.0 KEAS
+    Negative maneuver speed (Va) = 253.1 KEAS
+    Cruise speed (Vc)            = 516.0 KEAS
+    Dive speed (Vd)              = 644.9 KEAS
+Load factors: 
+    Positive limit load factor (n+) = 2.5
+    Negative limit load factor (n-) = -2.5
+    Positive load factor at Vd      = 2.5
+    Negative load factor at Vd      = 0.0

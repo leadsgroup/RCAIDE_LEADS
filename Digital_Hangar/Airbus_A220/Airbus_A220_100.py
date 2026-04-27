@@ -546,8 +546,7 @@ def vehicle_setup():
     # Propulsor: Starboard Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------         
     turbofan                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
-    turbofan.tag                                = 'starboard_propulsor'
-    turbofan.active_fuel_tanks                  = ['fuel_tank'] 
+    turbofan.tag                                = 'starboard_propulsor' 
     turbofan.origin                             = [[ 10.150,  5.435, -1.087]] 
     turbofan.engine_length                      = 3.175    
     turbofan.eninge_diameter                    = 2.086
@@ -649,8 +648,7 @@ def vehicle_setup():
     # Propulsor: Port Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------      
     # copy turbofan
-    turbofan_2                                  = deepcopy(turbofan)
-    turbofan_2.active_fuel_tanks                = ['fuel_tank'] 
+    turbofan_2                                  = deepcopy(turbofan) 
     turbofan_2.tag                              = 'port_propulsor' 
     turbofan_2.origin                           = [[10.150, -5.435, -1.087]]  
     turbofan_2.nacelle.origin                   = [[10.150, -5.435, -1.087]]

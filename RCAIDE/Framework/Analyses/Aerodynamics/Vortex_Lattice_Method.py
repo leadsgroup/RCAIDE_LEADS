@@ -65,13 +65,8 @@ class Vortex_Lattice_Method(Aerodynamics):
                     
         # settings              
         self.settings.propeller_wake_model                          = False  
-        self.settings.model_fuselage                                = False   
-        self.settings.number_of_spanwise_vortices                   = 15
-        self.settings.number_of_chordwise_vortices                  = 5
-        self.settings.wing_spanwise_vortices                        = None
-        self.settings.wing_chordwise_vortices                       = None
-        self.settings.fuselage_spanwise_vortices                    = None
-        self.settings.fuselage_chordwise_vortices                   = None  
+        self.settings.number_of_spanwise_vortices                   = 30
+        self.settings.number_of_chordwise_vortices                  = 10  
         self.settings.spanwise_cosine_spacing                       = True
         self.settings.vortex_distribution                           = Data()
         self.settings.leading_edge_suction_multiplier               = 1.0  
@@ -79,9 +74,10 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.settings.floating_point_precision                      = np.float32     
     
         # conditions table, used for surrogate model training
-        self.training                                               = Data()
-        self.training.angle_of_attack                               = np.array([-5., -2. , 1E-20 , 2.0, 5.0, 8.0, 12., 45., 75.]) * Units.deg 
-        self.training.Mach                                          = np.array([0.1  ,0.3,  0.5,  0.65 , 0.85 , 0.9, 1.3, 1.35 , 1.5 , 2.0, 2.25 , 2.5  , 3.5])             
+        self.training                                               = Data() 
+        self.training.angle_of_attack                               = np.array([ -2. , 1E-20 , 2.0, 5.0, 8.0, 12., 45.]) * Units.deg   
+        self.training.Mach                                          = np.array([0.1  , 0.3,  0.5,  0.65 , 0.85 , 0.9, 1.3, 1.5 , 2.0  , 2.5  , 3.5])             
+                                
                       
         self.training.subsonic                                      = None
         self.training.supersonic                                    = None
@@ -91,7 +87,7 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.training.speed_of_sound                                = 343 
         self.training.angle_purtubation                             = 10 * Units.deg          
         self.training.speed_purtubation                             = 5  
-        self.training.rate_purtubation                              = 10 * Units.deg / Units.sec   
+        self.training.rate_purtubation                              = 0.05 * Units.deg / Units.sec   # 0.05 * Units.deg / Units.sec   
         self.training.control_surface_purtubation                   = 10 * Units.deg          
         self.training.sideslip_angle                                = np.array([10  , 5.0 ]) * Units.deg
         self.training.aileron_deflection                            = np.array([10  , 5.0 ]) * Units.deg
@@ -102,9 +98,9 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.training.u                                             = np.array([10 , 5 ])  
         self.training.v                                             = np.array([10 , 5 ])  
         self.training.w                                             = np.array([10 , 5 ])    
-        self.training.pitch_rate                                    = np.array([3 ,1.5 ])  * Units.deg / Units.sec
-        self.training.roll_rate                                     = np.array([3 ,1.5 ])  * Units.deg / Units.sec
-        self.training.yaw_rate                                      = np.array([3 ,1.5 ])  * Units.deg / Units.sec 
+        self.training.pitch_rate                                    = np.array([0.05 ,1E-20 ])  * Units.deg / Units.sec
+        self.training.roll_rate                                     = np.array([0.05 ,1E-20 ])  * Units.deg / Units.sec
+        self.training.yaw_rate                                      = np.array([0.05 ,1E-20 ])  * Units.deg / Units.sec 
         
         # control surface flags                  
         self.aileron_flag                                           = False 
@@ -112,15 +108,15 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.rudder_flag                                            = False 
         self.elevator_flag                                          = False 
         self.slat_flag                                              = False
-                         
-        # blending function                  
-        self.hsub_min                                               = 0.85
-        self.hsub_max                                               = 0.95
-        self.hsup_min                                               = 1.05
-        self.hsup_max                                               = 1.15  
                                       
         # surrogoate models                                  
         self.surrogates                                             = Data() 
+                         
+        # blending function                  
+        self.surrogates.subsonic_smoothing_min                      = 0.85
+        self.surrogates.subsonic_smoothing_max                      = 0.95
+        self.surrogates.supersonic_smoothing_min                    = 1.05
+        self.surrogates.supersonic_smoothing_max                    = 1.15  
                  
         # build the evaluation process                 
         compute                                                     = Process() 
@@ -142,8 +138,7 @@ class Vortex_Lattice_Method(Aerodynamics):
         compute.drag.cooling                                        = Common.Drag.cooling_drag        
         compute.drag.compressibility                                = Common.Drag.compressibility_drag 
         compute.drag.miscellaneous                                  = Common.Drag.miscellaneous_drag 
-        compute.drag.form                                           = Common.Drag.form_drag  
-        compute.drag.wave                                           = Common.Drag.wave_drag
+        compute.drag.form                                           = Common.Drag.form_drag   
         compute.drag.trim                                           = Common.Drag.trim_drag 
         compute.drag.total                                          = Common.Drag.total_drag
         self.process.compute                                        = compute
@@ -156,6 +151,7 @@ class Vortex_Lattice_Method(Aerodynamics):
         if use_surrogate == True: 
             #  training data
             if not os.path.exists(self.filename):
+                print("\n Creating aerodynamic surrogate ...")
                 train_VLM_surrogates(self, vehicle)
     
                 if self.settings.store_training_data:

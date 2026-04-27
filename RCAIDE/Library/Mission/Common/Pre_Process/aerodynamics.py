@@ -74,6 +74,12 @@ def aerodynamics(mission):
                     segment.analyses.aerodynamics.process.compute.lift.inviscid_wings = mission.segments[last_tag].analyses.aerodynamics.process.compute.lift.inviscid_wings
                     segment.analyses.aerodynamics.surrogates                          = mission.segments[last_tag].analyses.aerodynamics.surrogates  
                     segment.analyses.aerodynamics.settings.vortex_distribution        = mission.segments[last_tag].analyses.aerodynamics.settings.vortex_distribution 
+                    segment.analyses.aerodynamics.aileron_flag                        = mission.segments[last_tag].analyses.aerodynamics.aileron_flag 
+                    segment.analyses.aerodynamics.flap_flag                           = mission.segments[last_tag].analyses.aerodynamics.flap_flag    
+                    segment.analyses.aerodynamics.rudder_flag                         = mission.segments[last_tag].analyses.aerodynamics.rudder_flag  
+                    segment.analyses.aerodynamics.elevator_flag                       = mission.segments[last_tag].analyses.aerodynamics.elevator_flag
+                    segment.analyses.aerodynamics.slat_flag                           = mission.segments[last_tag].analyses.aerodynamics.slat_flag    
+                    
                 else:  
                     segment.analyses.aerodynamics.filename =  os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), segment.analyses.aerodynamics.tag + "_" + mission.tag+ "_" + os.path.splitext(os.path.basename(sys.argv[0]))[0] +"_aerodynamic_training_data.pkl")
                     segment.analyses.aerodynamics.initialize(segment.analyses.vehicle)   

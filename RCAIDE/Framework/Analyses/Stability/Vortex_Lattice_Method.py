@@ -62,14 +62,9 @@ class Vortex_Lattice_Method(Stability):
                    
         # correction factors  
         self.settings.use_surrogate                                 = True  
-        self.settings.propeller_wake_model                          = False  
-        self.settings.model_fuselage                                = False    
-        self.settings.number_of_spanwise_vortices                   = 15
-        self.settings.number_of_chordwise_vortices                  = 5
-        self.settings.wing_spanwise_vortices                        = None
-        self.settings.wing_chordwise_vortices                       = None
-        self.settings.fuselage_spanwise_vortices                    = None
-        self.settings.fuselage_chordwise_vortices                   = None  
+        self.settings.propeller_wake_model                          = False
+        self.settings.number_of_spanwise_vortices                   = 30
+        self.settings.number_of_chordwise_vortices                  = 10 
         self.settings.spanwise_cosine_spacing                       = True
         self.settings.vortex_distribution                           = Data()
         self.settings.leading_edge_suction_multiplier               = 1.0  
@@ -79,7 +74,7 @@ class Vortex_Lattice_Method(Stability):
         # conditions table, used for surrogate model training
         self.training                                               = Data()  
         self.training.angle_of_attack                               = np.array([-5., -2. , 1E-20 , 2.0, 5.0, 8.0, 12., 45., 75.]) * Units.deg 
-        self.training.Mach                                          = np.array([0.1  ,0.3,  0.5,  0.65 , 0.85 , 0.9, 1.3, 1.35 , 1.5 , 2.0, 2.25 , 2.5  , 3.5])             
+        self.training.Mach                                          = np.array([0.1  ,0.3,  0.5,  0.65 , 0.85 , 0.9, 1.3, 1.35 , 1.5 , 2.0, 2.25 , 2.5  , 3.5])      
                       
         self.training.subsonic                                      = None
         self.training.supersonic                                    = None
@@ -104,7 +99,7 @@ class Vortex_Lattice_Method(Stability):
         
         # compute neutral point 
         if self.settings.compute_neutral_point:
-            print("Computing neutral point (This might take a while)")
+            print("\n Computing neutral point ...")
             compute_neutral_point(self, vehicle)  
         elif vehicle.neutral_point == None:
             raise AttributeError('Neutral point not defined.')

@@ -333,13 +333,11 @@ def compute_turbojet_performance(turbojet, state, center_of_gravity=[[0.0, 0.0, 
     compute_thrust(turbojet,conditions)
     
     # Compute forces and moments
-    moment_vector              = 0*state.ones_row(3)
-    thrust_vector              = 0*state.ones_row(3)
-    thrust_vector[:,0]         = turbojet_conditions.thrust[:,0]
+    moment_vector              = 0*state.ones_row(3)  
     moment_vector[:,0]         = turbojet.origin[0][0] -   center_of_gravity[0][0] 
     moment_vector[:,1]         = turbojet.origin[0][1]  -  center_of_gravity[0][1] 
     moment_vector[:,2]         = turbojet.origin[0][2]  -  center_of_gravity[0][2]
-    M                          = np.cross(moment_vector, thrust_vector)   
+    M                          = np.cross(moment_vector, turbojet_conditions.thrust)   
     moment                     = M 
     power                      = turbojet_conditions.power 
     turbojet_conditions.moment = moment 
@@ -352,7 +350,7 @@ def compute_turbojet_performance(turbojet, state, center_of_gravity=[[0.0, 0.0, 
     h_0                                            = turbojet.working_fluid.compute_cp(T,P) * T 
     h_t4                                           = combustor_conditions.outputs.stagnation_enthalpy
     h_t3                                           = hpc_conditions.outputs.stagnation_enthalpy 
-    turbojet_conditions.overall_efficiency         = thrust_vector* U0 / (mdot_fuel * fuel_enthalpy)  
+    turbojet_conditions.overall_efficiency         = turbojet_conditions.thrust[:, 0]* U0 / (mdot_fuel * fuel_enthalpy)  
     turbojet_conditions.thermal_efficiency         = 1 - ((mdot_air_core +  mdot_fuel)*(h_e_c -  h_0) + mdot_fuel *h_0)/((mdot_air_core +  mdot_fuel)*h_t4 - mdot_air_core *h_t3)  
  
 
@@ -398,7 +396,7 @@ def compute_turbojet_performance(turbojet, state, center_of_gravity=[[0.0, 0.0, 
     
     power_elec =  0*state.ones_row(1)
     
-    return thrust_vector,moment,power,power_elec,stored_results_flag,stored_propulsor_tag 
+    return turbojet_conditions.thrust,moment,power,power_elec,stored_results_flag,stored_propulsor_tag 
 
 def reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one turbojet for identical propulsors
@@ -456,8 +454,7 @@ def reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,cente
 
     # compute moment  
     moment_vector      = 0*state.ones_row(3)
-    thrust_vector      = 0*state.ones_row(3)
-    thrust_vector[:,0] = conditions.energy.propulsors[turbojet.tag].thrust[:,0] 
+    thrust_vector      = conditions.energy.propulsors[turbojet.tag].thrust
     moment_vector[:,0] = turbojet.origin[0][0] -   center_of_gravity[0][0] 
     moment_vector[:,1] = turbojet.origin[0][1]  -  center_of_gravity[0][1] 
     moment_vector[:,2] = turbojet.origin[0][2]  -  center_of_gravity[0][2]

@@ -69,15 +69,23 @@ def append_turboprop_conditions(propulsor, segment, energy_conditions, noise_con
     ones_row          = segment.state.ones_row
     
     # add propulsor conditions    
-    energy_conditions.propulsors[propulsor.tag]                               = Conditions()  
-    energy_conditions.propulsors[propulsor.tag].throttle                      = 0. * ones_row(1)     
-    energy_conditions.propulsors[propulsor.tag].commanded_thrust_vector_angle = 0. * ones_row(1)   
-    energy_conditions.propulsors[propulsor.tag].power                         = 0. * ones_row(1) 
-    energy_conditions.propulsors[propulsor.tag].fuel_mass_flow_rate           = 0. * ones_row(1)
-    energy_conditions.propulsors[propulsor.tag].inputs                        = Conditions()
-    energy_conditions.propulsors[propulsor.tag].outputs                       = Conditions() 
-    noise_conditions.propulsors[propulsor.tag]                                = Conditions()  
-    noise_conditions.propulsors[propulsor.tag].core_nozzle                    = Conditions()
+    energy_conditions.propulsors[propulsor.tag]                                   = Conditions()  
+    energy_conditions.propulsors[propulsor.tag].throttle                          = 0. * ones_row(1)     
+    energy_conditions.propulsors[propulsor.tag].commanded_thrust_vector_angle     = 0. * ones_row(1)   
+    energy_conditions.propulsors[propulsor.tag].power                             = 0. * ones_row(1) 
+    energy_conditions.propulsors[propulsor.tag].fuel_mass_flow_rate               = 0. * ones_row(1)
+    energy_conditions.propulsors[propulsor.tag].thrust_specific_fuel_consumption  = 0. * ones_row(1) 
+    energy_conditions.propulsors[propulsor.tag].non_dimensional_thrust            = 0. * ones_row(1) 
+    energy_conditions.propulsors[propulsor.tag].core_mass_flow_rate               = 0. * ones_row(1) 
+    energy_conditions.propulsors[propulsor.tag].fuel_mass_flow_rate               = 0. * ones_row(1)   
+    energy_conditions.propulsors[propulsor.tag].specific_power                    = 0. * ones_row(1)   
+    energy_conditions.propulsors[propulsor.tag].power_specific_fuel_consumption   = 0. * ones_row(1) 
+    energy_conditions.propulsors[propulsor.tag].thermal_efficiency                = 0. * ones_row(1) 
+    energy_conditions.propulsors[propulsor.tag].propulsive_efficiency             = 0. * ones_row(1) 
+    energy_conditions.propulsors[propulsor.tag].inputs                            = Conditions()
+    energy_conditions.propulsors[propulsor.tag].outputs                           = Conditions() 
+    noise_conditions.propulsors[propulsor.tag]                                    = Conditions()  
+    noise_conditions.propulsors[propulsor.tag].core_nozzle                        = Conditions()
      
     for tag, item in  propulsor.items(): 
         if issubclass(type(item), RCAIDE.Library.Components.Component):

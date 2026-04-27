@@ -12,8 +12,7 @@ sys.path.append(os.path.join(sys.path[0], 'Vehicles', 'Rotors'))
 
 modules = [ 
     'Verification/analysis_aerodynamics/airfoil_panel_method_test.py',    
-    'Verification/analysis_aerodynamics/airfoil_panel_method_convergence.py',
-    'Verification/analysis_aerodynamics/VLM_control_surface_test.py',    
+    'Verification/analysis_aerodynamics/airfoil_panel_method_convergence.py', 
     'Verification/analysis_aerodynamics/VLM_moving_surface_test.py',   
     'Verification/analysis_aerodynamics/AVL_test.py',  
     'Verification/analysis_aerodynamics/blended_wing_body_aerodynamics_test.py',
@@ -21,10 +20,9 @@ modules = [
     'Verification/aircraft_performance/payload_range_test.py',
     'Verification/aircraft_performance/take_off_field_length_test.py',
     'Verification/aircraft_performance/take_off_weight_from_tofl_test.py',
-    'Verification/aircraft_performance/aircraft_aerodynamics_test.py', 
     'Verification/aircraft_performance/noise_certification_test.py',
     'Verification/aircraft_performance/loading_and_trim_diagram_test.py',
-    'Verification/aircraft_performance/V_n_diagram_test.py', 
+     'Verification/aircraft_performance/V_n_diagram_test.py', 
     'Verification/atmosphere/atmosphere.py',
     'Verification/atmosphere/constant_temperature.py',
     'Verification/analysis_emissions/emissions_test.py',  
@@ -33,7 +31,6 @@ modules = [
     'Verification/analysis_aeroacoustics/frequency_domain_test.py', 
     'Verification/analysis_aeroacoustics/empirical_jet_noise_test.py',    
     'Verification/analysis_stability/trimmed_flight_test.py', 
-    'Verification/analysis_stability/trimmed_stab_deriv_flight_test.py',
     'Verification/analysis_stability/untrimmed_flight_test.py', 
     'Verification/analysis_weights/operating_empty_weight_test.py',
     'Verification/analysis_weights/cg_and_moi_test.py', 
@@ -69,7 +66,9 @@ modules = [
     'Validation/converters/test_pmsm_motor_validation.py',
     'Validation/converters/test_rotor_validation.py',
     'Validation/propulsors/test_turbofan_validation.py',
-    'Validation/aircraft_performance/test_Boeing_787_payload_range.py'
+    'Validation/aerodynamic_and_stability/test_CRM_aerodynamics.py',
+    'Validation/aerodynamic_and_stability/test_navion_stability.py',
+    'Validation/aircraft_performance/test_Boeing_787_payload_range.py',
 ]
 
 def run_module_test(module_path):

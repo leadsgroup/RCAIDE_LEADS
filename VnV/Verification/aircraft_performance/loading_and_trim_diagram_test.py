@@ -65,9 +65,9 @@ def tube_and_wing_load_trim_test():
     
     save_results(load_data,'taw_loading_results') 
  
-    CG_Percent_of_LEMAC_truth = np.array([[-0.25688876,  0.67084672,  1.5985822 ],
-       [-0.25688876,  0.67084672,  1.5985822 ],
-       [-0.25688876,  0.67084672,  1.5985822 ]])
+    CG_Percent_of_LEMAC_truth = np.array([[-0.26135411,  0.66526503,  1.59188417],
+                                        [-0.26135411,  0.66526503,  1.59188417],
+                                        [-0.26135411,  0.66526503,  1.59188417]])
     plot_load_diagram(load_data,save_filename  = "TW_Aircraft_Loading_Trim_Dragram") 
 
     LEMAC_error = np.max(abs((load_data.trim_results.CG_percent_of_LEMAC_location - CG_Percent_of_LEMAC_truth)/CG_Percent_of_LEMAC_truth))
@@ -161,15 +161,11 @@ def E190_base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis  
     aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.settings.number_of_spanwise_vortices   = 5
-    aerodynamics.settings.number_of_chordwise_vortices  = 2    
     analyses.append(aerodynamics)
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis  
     stability     = RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method()  
-    stability.settings.number_of_spanwise_vortices   = 5
-    stability.settings.number_of_chordwise_vortices  = 2   
     analyses.append(stability)       
 
     # ------------------------------------------------------------------

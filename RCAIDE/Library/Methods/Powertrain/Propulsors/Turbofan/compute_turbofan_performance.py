@@ -361,13 +361,11 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
 
     # Compute forces and moments
     moment_vector              = 0*state.ones_row(3)
-    thrust_vector              = 0*state.ones_row(3)
-    thrust_vector[:,0]         =  turbofan_conditions.thrust[:,0]
     center_of_gravity = [[0.0, 0.0,0.0]] 
     moment_vector[:,0]         =  turbofan.origin[0][0] -   center_of_gravity[0][0]
     moment_vector[:,1]         =  turbofan.origin[0][1]  -  center_of_gravity[0][1] 
     moment_vector[:,2]         =  turbofan.origin[0][2]  -  center_of_gravity[0][2]
-    M                          =  np.cross(moment_vector, thrust_vector)   
+    M                          =  np.cross(moment_vector, turbofan_conditions.thrust)   
     moment                     = M 
     power                      = turbofan_conditions.power 
     turbofan_conditions.moment = moment 
@@ -382,7 +380,7 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     h_0                                            = turbofan.working_fluid.compute_cp(T,P) * T 
     h_t4                                           = combustor_conditions.outputs.stagnation_enthalpy
     h_t3                                           = hpc_conditions.outputs.stagnation_enthalpy 
-    turbofan_conditions.overall_efficiency         = thrust_vector* U0 / (mdot_fuel * fuel_enthalpy)  
+    turbofan_conditions.overall_efficiency         = turbofan_conditions.thrust[:, 0]* U0 / (mdot_fuel * fuel_enthalpy)  
     turbofan_conditions.thermal_efficiency         = 1 - ((mdot_air_core +  mdot_fuel)*(h_e_c -  h_0) + mdot_air_fan*(h_e_f - h_0) + mdot_fuel *h_0)/((mdot_air_core +  mdot_fuel)*h_t4 - mdot_air_core *h_t3)  
      
     # compute shaft RPMs 
@@ -439,7 +437,7 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     stored_results_flag                     = True
     stored_propulsor_tag                    = turbofan.tag 
     
-    return thrust_vector,moment,power,power_elec,stored_results_flag,stored_propulsor_tag 
+    return turbofan_conditions.thrust,moment,power,power_elec,stored_results_flag,stored_propulsor_tag 
     
 def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one turbofan for identical turbofans

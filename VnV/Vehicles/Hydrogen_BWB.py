@@ -533,8 +533,7 @@ def vehicle_setup(MTOW = 125225.92487939,
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor: Propulsor 2 (Inner Port Side)
     #------------------------------------------------------------------------------------------------------------------------------------       
-    turbofan2                                  = deepcopy(turbofan1)
-    turbofan2.active_fuel_tanks                = ['fuel_tank'] 
+    turbofan2                                  = deepcopy(turbofan1) 
     turbofan2.tag                              = 'propulsor_2' 
     turbofan2.origin                           = [[0.8*vehicle.wings.main_wing.chords.root, -4.2, 2.25]] 
     turbofan2.nacelle.tag                      =  'propulsor_2_nacelle'

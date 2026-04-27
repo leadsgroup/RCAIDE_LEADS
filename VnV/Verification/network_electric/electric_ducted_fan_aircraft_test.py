@@ -39,7 +39,7 @@ def main():
     ducted_fan_type  = ['Blade_Element_Momentum_Theory', 'Rankine_Froude_Momentum_Theory']
     
     # truth values 
-    thrust_truth         = [46.37988724561762, 63.08075015806363]
+    thrust_truth         = [46.37988724561762, 73.32696343062787]
    
     for i in range(len(ducted_fan_type)):  
         # vehicle data
@@ -127,10 +127,7 @@ def base_analysis(vehicle):
     
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
-    aerodynamics                                       = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.settings.number_of_spanwise_vortices  = 25
-    aerodynamics.settings.number_of_chordwise_vortices = 5       
-    aerodynamics.settings.model_fuselage               = False
+    aerodynamics =  RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()      
     analyses.append(aerodynamics)
   
     # ------------------------------------------------------------------

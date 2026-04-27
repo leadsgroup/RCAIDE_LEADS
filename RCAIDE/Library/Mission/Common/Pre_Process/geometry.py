@@ -70,7 +70,7 @@ def geometry_preprocess_routine(analyses):
     vehicle  = analyses.vehicle
     
     # initalize variables 
-    A_fuselage     = 0
+    sectional_area = 0
     defined_cabins = False 
     NPF            = 0
     NPB            = 0
@@ -83,7 +83,7 @@ def geometry_preprocess_routine(analyses):
         compute_layout_of_passenger_accommodations(fuselage) 
         fuselage_planform(fuselage) 
         vehicle.length = np.maximum(vehicle.length, fuselage.lengths.total)
-        A_fuselage     = np.maximum(A_fuselage,fuselage.areas.front_projected) 
+        sectional_area = fuselage.areas.front_projected
         
         for cabin in fuselage.cabins: 
             defined_cabins = True
@@ -99,12 +99,12 @@ def geometry_preprocess_routine(analyses):
             if cabin.number_of_passengers == 0: # if cabin class  passengers are not defined, use ratio of cabin to aircraft
                 cabin.number_of_passengers = min(total_seats,int((cabin.number_of_seats / total_seats) *  vehicle.number_of_passengers))
             
-    # update landing gear properties 
+    # ================================================================================================================================================
+    # update landing gear properties  
+    # ================================================================================================================================================
     for landing_gear in  vehicle.landing_gears: 
         symm               = landing_gear.xz_plane_symmetric
-        landing_gear.wheels = landing_gear.number_of_gear_types_in_tandem * landing_gear.number_of_wheels_in_gear_type * (symm + 1)
-        
-    vehicle.maximum_cross_sectional_area  =  A_fuselage
+        landing_gear.wheels = landing_gear.number_of_gear_types_in_tandem * landing_gear.number_of_wheels_in_gear_type * (symm + 1) 
     
     # ================================================================================================================================================
     # update wing properties 
@@ -156,8 +156,13 @@ def geometry_preprocess_routine(analyses):
         vehicle.length = np.maximum(vehicle.length, wing.chords.root)                         
         
         # max cross sectional area 
-        A_wing_plus_fuselage   = wing.spans.projected * wing.thickness_to_chord *  wing.chords.root +  A_fuselage
-        vehicle.maximum_cross_sectional_area = np.maximum(vehicle.maximum_cross_sectional_area,A_wing_plus_fuselage) 
+        sectional_area +=  wing.areas.front_projected  
+
+    for network in  vehicle.networks: 
+        for propulsor in network.propulsors:  
+            sectional_area += (propulsor.diameter**2) * np.pi / 4.0
+            
+    vehicle.maximum_cross_sectional_area = sectional_area
 
     # --------------------------------------------------------------------------------------------------------------------
     # Update passenger imformation 
@@ -181,8 +186,7 @@ def geometry_preprocess_routine(analyses):
     compute_fuel_volume(vehicle,compute_fuel_volume = settings.compute_fuel_volume, update_max_fuel=settings.update_max_fuel)
 
     if settings.write_geometry_properties:
-        write_geometry_to_excel(vehicle)
-        
+        write_geometry_to_excel(vehicle) 
                
     return
 
@@ -198,19 +202,18 @@ def use_previous_segment_pre_processed_data(mission,segment,i):
             control_surface.deflection = vehicle_0.wings[wing.tag].control_surfaces[control_surface.tag].deflection
     for landing_gear in segment.analyses.vehicle.landing_gears:
         landing_gear.gear_extended = vehicle_0.landing_gears[landing_gear.tag].gear_extended
-    
     for network in segment.analyses.vehicle.networks: 
+        network.reverse_thrust = vehicle_0.networks[network.tag].reverse_thrust
         for bus in network.busses:
             bus.active = vehicle_0.networks[network.tag].busses[bus.tag].active
         for propulsor in network.propulsors:
+            propulsor_0              =  vehicle_0.networks[network.tag].propulsors[propulsor.tag]
+            propulsor.active         = propulsor_0.active
             if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan):
-                propulsor_0 =  vehicle_0.networks[network.tag].propulsors[propulsor.tag]
-                propulsor.fan.angular_velocity        = propulsor_0.fan.angular_velocity        
+                propulsor.fan.angular_velocity        = propulsor_0.fan.angular_velocity   
                 propulsor.fan_nozzle.exit_velocity    = propulsor_0.fan_nozzle.exit_velocity 
                 propulsor.core_nozzle.exit_velocity   = propulsor_0.core_nozzle.exit_velocity
-                
             if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor):
-                propulsor_0 =  vehicle_0.networks[network.tag].propulsors[propulsor.tag]
                 propulsor.rotor.orientation_euler_angles =  propulsor_0.rotor.orientation_euler_angles 
                 propulsor.rotor.blade_pitch_command      =  propulsor_0.rotor.blade_pitch_command
     return
@@ -339,3 +342,4 @@ def write_geometry_to_excel(vehicle):
         pd.DataFrame(prop_rows).to_excel(writer, sheet_name='Propulsors', index=False)
     
     print(f"Geometry Description written to Excel:\n  {excel_filename}")
+    return 

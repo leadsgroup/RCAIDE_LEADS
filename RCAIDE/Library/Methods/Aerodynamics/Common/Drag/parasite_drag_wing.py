@@ -122,8 +122,7 @@ def parasite_drag_wing(state,settings,geometry):
     Mc            = freestream.mach_number
     Tc            = freestream.temperature    
     re            = freestream.reynolds_number 
-    wing          = geometry
-    t_c_w         = wing.thickness_to_chord
+    wing          = geometry 
     Sref          = wing.areas.reference   
     num_segments  = len(wing.segments.keys())
 
@@ -132,58 +131,47 @@ def parasite_drag_wing(state,settings,geometry):
     # if wing has segments, compute and sum parasite drag of each segment 
     xtu       = wing.transition_x_upper
     xtl       = wing.transition_x_lower     
+     
+    seg_tags                     = list(wing.segments.keys())
+    total_segment_parasite_drag  = 0 
+    total_segment_k_w            = 0 
+    total_segment_cf_w_u         = 0
+    total_segment_cf_w_l         = 0 
+    total_segment_k_comp_u       = 0
+    total_segment_k_comp_l       = 0
+    total_k_reyn_u               = 0          
+    total_k_reyn_l               = 0
     
-    if num_segments>0:
-        seg_tags                     = list(wing.segments.keys())
-        total_segment_parasite_drag  = 0 
-        total_segment_k_w            = 0 
-        total_segment_cf_w_u         = 0
-        total_segment_cf_w_l         = 0 
-        total_segment_k_comp_u       = 0
-        total_segment_k_comp_l       = 0
-        total_k_reyn_u               = 0          
-        total_k_reyn_l               = 0
+    for i,segment in enumerate(wing.segments): 
+        if i == num_segments-1:               
+            continue 
+        avg_t_c_s     = (wing.segments[seg_tags[i]].thickness_to_chord + wing.segments[seg_tags[i+1]].thickness_to_chord)/2              
+        mac_seg       = segment.chords.mean_aerodynamic
+        Sref_seg      = segment.areas.reference
+        Swet_seg      = segment.areas.wetted
+        sweep_seg     = segment.sweeps.leading_edge  
+
+        # compute parasite drag coef., form factor, skin friction coef., compressibility factor and reynolds number for segments
+        segment_parasite_drag , segment_k_w, segment_cf_w_u, segment_cf_w_l, segment_k_comp_u, segment_k_comp_l, k_reyn_u ,k_reyn_l = compute_parasite_drag(re,mac_seg,Mc,Tc,xtu,xtl,sweep_seg,avg_t_c_s,Sref_seg,Swet_seg,C)
         
-        for i,segment in enumerate (wing.segments): 
-            if i == num_segments-1:               
-                continue 
-            avg_t_c_s     = (wing.segments[seg_tags[i]].thickness_to_chord + wing.segments[seg_tags[i+1]].thickness_to_chord)/2              
-            mac_seg       = segment.chords.mean_aerodynamic
-            Sref_seg      = segment.areas.reference
-            Swet_seg      = segment.areas.wetted
-            sweep_seg     = segment.sweeps.leading_edge  
-    
-            # compute parasite drag coef., form factor, skin friction coef., compressibility factor and reynolds number for segments
-            segment_parasite_drag , segment_k_w, segment_cf_w_u, segment_cf_w_l, segment_k_comp_u, segment_k_comp_l, k_reyn_u ,k_reyn_l = compute_parasite_drag(re,mac_seg,Mc,Tc,xtu,xtl,sweep_seg,avg_t_c_s,Sref_seg,Swet_seg,C)
+        total_segment_parasite_drag  += segment_parasite_drag*Sref_seg   
+        total_segment_k_w            += segment_k_w*Sref_seg 
+        total_segment_cf_w_u         += segment_cf_w_u*Sref_seg 
+        total_segment_cf_w_l         += segment_cf_w_l*Sref_seg 
+        total_segment_k_comp_u       += segment_k_comp_u*Sref_seg 
+        total_segment_k_comp_l       += segment_k_comp_l*Sref_seg 
+        total_k_reyn_u               += k_reyn_u*Sref_seg                 
+        total_k_reyn_l               += k_reyn_l*Sref_seg  
             
-            total_segment_parasite_drag  += segment_parasite_drag*Sref_seg   
-            total_segment_k_w            += segment_k_w*Sref_seg 
-            total_segment_cf_w_u         += segment_cf_w_u*Sref_seg 
-            total_segment_cf_w_l         += segment_cf_w_l*Sref_seg 
-            total_segment_k_comp_u       += segment_k_comp_u*Sref_seg 
-            total_segment_k_comp_l       += segment_k_comp_l*Sref_seg 
-            total_k_reyn_u               += k_reyn_u*Sref_seg                 
-            total_k_reyn_l               += k_reyn_l*Sref_seg  
-                
-        wing_parasite_drag = total_segment_parasite_drag  / Sref
-        k_w                = total_segment_k_w / Sref
-        cf_w_u             = total_segment_cf_w_u  / Sref
-        cf_w_l             = total_segment_cf_w_l / Sref
-        k_comp_u           = total_segment_k_comp_u  / Sref
-        k_comp_l           = total_segment_k_comp_l  / Sref
-        k_reyn_u           = total_k_reyn_u  / Sref
-        k_reyn_l           = total_k_reyn_l  / Sref
-
-    # if wing has no segments      
-    else:              
-        # wing
-        mac_w      = wing.chords.mean_aerodynamic
-        sweep_w    = wing.sweeps.leading_edge 
-        Sref       = wing.areas.reference 
-        Swet       = wing.areas.wetted                         
-
-        # compute parasite drag coef., form factor, skin friction coef., compressibility factor and reynolds number for wing
-        wing_parasite_drag , k_w, cf_w_u, cf_w_l, k_comp_u, k_comp_l, k_reyn_u, k_reyn_l = compute_parasite_drag(re,mac_w,Mc,Tc,xtu,xtl,sweep_w,t_c_w,Sref,Swet,C)             
+    wing_parasite_drag = total_segment_parasite_drag  / Sref
+    k_w                = total_segment_k_w / Sref
+    cf_w_u             = total_segment_cf_w_u  / Sref
+    cf_w_l             = total_segment_cf_w_l / Sref
+    k_comp_u           = total_segment_k_comp_u  / Sref
+    k_comp_l           = total_segment_k_comp_l  / Sref
+    k_reyn_u           = total_k_reyn_u  / Sref
+    k_reyn_l           = total_k_reyn_l  / Sref
+        
 
     # dump data to conditions
     wing_result = Data(

@@ -3,7 +3,7 @@
  ---------------------------------------------
  Run case  1:   case_0001_0001
 
- alpha        ->  CL       =   0.4        
+ alpha        ->  CL       =   0.3333        
  beta         ->  beta        =   0.0
  pb/2V        ->  pb/2V       =   0.0
  qc/2V        ->  qc/2V       =   0.0
@@ -18,7 +18,7 @@
  pb/2V     =   0.0
  qc/2V     =   0.0
  rb/2V     =   0.00000
- CL        =   0.4                        
+ CL        =   0.33333333333333337                        
  CDo       =   0.0
  bank      =   0.00000     deg
  elevation =   0.00000     deg
@@ -29,7 +29,7 @@
  grav.acc. =   9.80430458268175     m/s^2
  turn_rad. =   0.00000     m
  load_fac. =   0.00000
- X_cg      =   2.239696797     m
+ X_cg      =   2.187     m
  Y_cg      =   0     m
  Z_cg      =   -0.131189711     m
  mass      =   0     kg

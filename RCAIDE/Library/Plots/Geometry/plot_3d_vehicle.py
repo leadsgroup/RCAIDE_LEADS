@@ -160,8 +160,8 @@ def plot_3d_vehicle(vehicle,
     # -------------------------------------------------------------------------  
     for wing in geometry.wings:
         n_segments = len(wing.segments)
-        dim        = n_segments if n_segments > 0 else 2
-        GEOM       = generate_3d_wing_points(wing, number_of_airfoil_points, dim)
+        dim          = n_segments if n_segments > 0 else 2
+        GEOM         = generate_3d_wing_points(wing, number_of_airfoil_points, dim)
         actor        = generate_vtk_object(GEOM.PTS) 
         vtk_data     = actor.GetMapper().GetInput() 
         pyvista_mesh = pv.wrap(vtk_data)                      

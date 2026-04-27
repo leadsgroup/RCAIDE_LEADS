@@ -205,8 +205,11 @@ def compute_thrust(turbofan,conditions):
     # Compute fuel flow rate 
     m_dot_fuel   = np.fmax(FD2*TSFC/g,np.array([0.]))*1./Units.hour
 
+    thrust_vector              = np.zeros((len(FD2), 3))
+    thrust_vector[:,0]         = FD2[:,0]
+    
     # Pack turbofan outouts  
-    turbofan_conditions.thrust                            = FD2 
+    turbofan_conditions.thrust                            = thrust_vector 
     turbofan_conditions.fan_thrust                        = FD2_f 
     turbofan_conditions.core_thrust                       = FD2_c 
     turbofan_conditions.thrust_specific_fuel_consumption  = TSFC

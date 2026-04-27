@@ -133,7 +133,11 @@ def plot_lateral_stability(results,
         axis_3.set_xlabel('Time (mins)')
         axis_3.set_ylabel(r'Rudder Defl. (deg)')
         set_axes(axis_3)         
-         
+    
+    axis_1.set_ylim([-40, 40])  
+    axis_2.set_ylim([-40, 40])    
+    axis_3.set_ylim([-40, 40])
+    
     if show_legend:
         leg =  fig.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol = 4) 
         leg.set_title('Flight Segment', prop={'size': ps.legend_font_size, 'weight': 'heavy'})    

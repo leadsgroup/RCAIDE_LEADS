@@ -10,6 +10,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units , Container
 from RCAIDE.Library.Methods.Performance.compute_payload_range_diagram        import compute_payload_range_diagram
+from RCAIDE.Library.Plots import * 
 
 # python imports     
 import numpy as np  
@@ -59,13 +60,13 @@ def fuel_aircraft_payload_range():
     mission = fuel_aircraft_mission_setup(analyses)
     
     # create mission instances (for multiple types of missions)
-    missions = missions_setup(mission)  
-        
+    missions = missions_setup(mission)
+    
     # run payload range analysis 
     payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage=0.05, delete_training_data = True)
                                 
     fuel_r                 = payload_range_results.range[-1]  
-    fuel_r_true            = 5545050.115614797# Reference ( https://www.embraercommercialaviation.com/wp-content/uploads/2017/06/APM_190.pdf) is 5556000.  
+    fuel_r_true            = 5630617.276393387 # Reference ( https://www.embraercommercialaviation.com/wp-content/uploads/2017/06/APM_190.pdf) is 5556000.  
     
     print('Fuel Range: ' + str(fuel_r))
     fuel_error =  abs(fuel_r - fuel_r_true) /fuel_r_true
@@ -96,10 +97,10 @@ def fuel_aircraft_payload_range_mzfw():
     missions = missions_setup(mission)  
         
     # run payload range analysis 
-    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage=0.1, delete_training_data = True)
+    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage=0.10, delete_training_data = True)
                                 
     fuel_r                 = payload_range_results.range[-1]  
-    fuel_r_true            = 5551991.132322422
+    fuel_r_true            = 5662116.030995269
     # Correct value from reference ( https://www.embraercommercialaviation.com/wp-content/uploads/2017/06/APM_190.pdf) is 5556000. 
     # This value is high due to simplified single segment analysis i.e. only cruise. To compensate, reserve percentage is increased from 5 to 10%
     
@@ -188,9 +189,7 @@ def fuel_aircraft_base_analysis(vehicle):
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis 
-    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
-    aerodynamics.settings.number_of_spanwise_vortices   = 5
-    aerodynamics.settings.number_of_chordwise_vortices  = 2       
+    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()         
     analyses.append(aerodynamics)   
 
     # ------------------------------------------------------------------
@@ -245,9 +244,7 @@ def fuel_aircraft_base_analysis_weights(vehicle):
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis 
-    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
-    aerodynamics.settings.number_of_spanwise_vortices   = 5
-    aerodynamics.settings.number_of_chordwise_vortices  = 2       
+    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()    
     analyses.append(aerodynamics)   
 
     # ------------------------------------------------------------------
@@ -303,10 +300,7 @@ def electric_aircraft_base_analysis(vehicle):
     
     # ------------------------------------------------------------------
     #  Aerodynamics  
-    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
-    aerodynamics.settings.number_of_spanwise_vortices   = 5
-    aerodynamics.settings.number_of_chordwise_vortices  = 2     
-    aerodynamics.training.Mach                          = np.array([0.1  ,0.3,  0.5,  0.65 , 0.95])  
+    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()      
     analyses.append(aerodynamics)   
 
     # ------------------------------------------------------------------

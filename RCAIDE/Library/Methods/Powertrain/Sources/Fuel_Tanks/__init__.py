@@ -20,4 +20,4 @@ from .compute_fuel_tank_properties import compute_fuel_tank_properties
 
 from . import Integral_Tank
 from . import Non_Integral_Tank
-from . import Liquid_Hydrogen_Tank
+from . import Cryogenic_Tank

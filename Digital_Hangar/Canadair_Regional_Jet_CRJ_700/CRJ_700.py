@@ -505,8 +505,7 @@ def vehicle_setup():
     # Propulsor: Starboard Propulsor CF34-8C
     #------------------------------------------------------------------------------------------------------------------------------------         
     turbofan                                       = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
-    turbofan.tag                                   = 'starboard_propulsor'
-    turbofan.active_fuel_tanks                     = ['fuel_tank']   
+    turbofan.tag                                   = 'starboard_propulsor' 
     turbofan.origin                                = [[21.5, -2.2,1.45]]  
     turbofan.engine_length                         = 3.3     
     turbofan.bypass_ratio                          = 5    
@@ -609,8 +608,7 @@ def vehicle_setup():
     # Propulsor: Port Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------      
     # copy turbofan
-    turbofan_2                                  = deepcopy(turbofan)
-    turbofan_2.active_fuel_tanks                = ['fuel_tank'] 
+    turbofan_2                                  = deepcopy(turbofan) 
     turbofan_2.tag                              = 'port_propulsor' 
     turbofan_2.origin                           = [[21.5, 2.2,1.45]]   
     turbofan_2.nacelle.origin                   = [[21.5,2.2,1.45]]

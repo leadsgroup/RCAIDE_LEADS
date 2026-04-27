@@ -36,7 +36,7 @@ def vehicle_setup():
     vehicle.mass_properties.max_takeoff               = 2948 * Units.pounds
     vehicle.mass_properties.takeoff                   = 2948 * Units.pounds
     vehicle.mass_properties.moments_of_inertia.tensor = [[1420.8784,0.0,0.0],[0.0,4067.4,0.0],[0.0,0.0,4785.974]]
-    vehicle.mass_properties.center_of_gravity         = [[2.239696797,0,-0.131189711 ]] 
+    vehicle.mass_properties.center_of_gravity         = [[2.187,0,-0.131189711 ]]
     vehicle.mass_properties.max_fuel                  =  60 * Units.pounds
     vehicle.mass_properties.fuel                      =  60 * Units.pounds
     vehicle.mass_properties.max_payload               =  700 *  Units.lbs 
@@ -104,19 +104,7 @@ def vehicle_setup():
     wing.xz_plane_symmetric               = True
     wing.high_lift                        = True 
     wing.winglet_fraction                 = 0.0  
-    wing.dynamic_pressure_ratio           = 1.0    
-
-    ospath                                = os.path.abspath(__file__)
-    separator                             = os.path.sep
-    rel_path                              = os.path.dirname(ospath) + separator  
-
-    tip_airfoil                           = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
-    tip_airfoil.NACA_4_Series_code        = '6410'      
-    tip_airfoil.coordinate_file           = rel_path + 'Airfoils' + separator + 'NACA_6410.txt' 
-   
-    root_airfoil                          = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
-    root_airfoil.NACA_4_Series_code       = '4415'   
-    root_airfoil.coordinate_file          = rel_path + 'Airfoils' + separator + 'NACA_4415.txt' 
+    wing.dynamic_pressure_ratio           = 1.0     
     
     # Wing Segments 
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -127,6 +115,9 @@ def vehicle_setup():
     segment.dihedral_outboard             = 7.5 * Units.degrees  
     segment.sweeps.quarter_chord          = 0.165 * Units.degrees  
     segment.thickness_to_chord            = .15 
+    root_airfoil                          = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
+    root_airfoil.NACA_4_Series_code       = '4415'           
+    segment.append_airfoil(root_airfoil)
     wing.append_segment(segment)  
          
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -137,6 +128,8 @@ def vehicle_setup():
     segment.dihedral_outboard             = 0 * Units.degrees
     segment.sweeps.quarter_chord          = 0 * Units.degrees  
     segment.thickness_to_chord            = .12
+    tip_airfoil                           = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
+    tip_airfoil.NACA_4_Series_code        = '6410'       
     segment.append_airfoil(tip_airfoil)
     wing.append_segment(segment)     
                                         
@@ -155,7 +148,7 @@ def vehicle_setup():
     aileron.span_fraction_start   = 0.7
     aileron.span_fraction_end     = 0.9 
     aileron.deflection            = 0.0 * Units.degrees
-    aileron.chord_fraction        = 0.2
+    aileron.chord_fraction        = 0.23
     wing.append_control_surface(aileron)      
 
     # add to vehicle
@@ -187,10 +180,10 @@ def vehicle_setup():
     
     elevator                              = RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator()
     elevator.tag                          = 'elevator'
-    elevator.span_fraction_start          = 0.1
-    elevator.span_fraction_end            = 0.9
+    elevator.span_fraction_start          = 0.05
+    elevator.span_fraction_end            = 0.95
     elevator.deflection                   = 0.0  * Units.deg
-    elevator.chord_fraction               = 0.35
+    elevator.chord_fraction               = 0.45
     wing.append_control_surface(elevator)
     
     
@@ -222,6 +215,25 @@ def vehicle_setup():
     wing.t_tail                           = False
     wing.winglet_fraction                 = 0.0  
     wing.dynamic_pressure_ratio           = 1.0  
+
+    segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
+    segment.tag                           = 'segment_1'
+    segment.percent_span_location         = 0.
+    segment.twist                         = 0. * Units.deg
+    segment.root_chord_percent            = 1.0
+    segment.sweeps.leading_edge              = 20 * Units.degrees  
+    segment.thickness_to_chord            = .1
+    wing.append_segment(segment)
+
+    segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
+    segment.tag                           = 'segment_2'
+    segment.percent_span_location         = 1.0
+    segment.twist                         = 0. * Units.deg
+    segment.root_chord_percent            = wing.taper
+    segment.dihedral_outboard             = 0.0 * Units.degrees
+    segment.sweeps.quarter_chord          = 0.0    
+    segment.thickness_to_chord            = .1  
+    wing.append_segment(segment)
     
     rudder                                = RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder()
     rudder.tag                            = 'rudder'

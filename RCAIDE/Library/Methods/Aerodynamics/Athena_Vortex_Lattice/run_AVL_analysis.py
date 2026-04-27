@@ -95,20 +95,26 @@ def run_AVL_analysis(aerodynamics,run_conditions,vehicle):
             wing = populate_control_sections(wing)     
             num_cs_on_wing = len(wing.control_surfaces)
             num_cs +=  num_cs_on_wing
-            for cs in wing.control_surfaces:
-                ctrl_surf = cs    
+            for ctrl_surf in wing.control_surfaces: 
                 cs_names.append(ctrl_surf.tag)  
                 if (type(ctrl_surf) ==  Slat):
                     ctrl_surf_function  = 'slat'
+                    aerodynamics.slat_flag   = True 
                 elif (type(ctrl_surf) ==  Flap):
-                    ctrl_surf_function  = 'flap' 
+                    ctrl_surf_function  = 'flap'  
+                    aerodynamics.flap_flag   = True 
                 elif (type(ctrl_surf) ==  Aileron):
-                    ctrl_surf_function  = 'aileron'                          
+                    ctrl_surf_function  = 'aileron'     
+                    aerodynamics.aileron_flag   = True                      
                 elif (type(ctrl_surf) ==  Elevator):
                     ctrl_surf_function  = 'elevator' 
+                    aerodynamics.elevator_flag   = True 
                 elif (type(ctrl_surf) ==  Rudder):
-                    ctrl_surf_function = 'rudder'                      
+                    ctrl_surf_function = 'rudder'   
+                    aerodynamics.rudder_flag      = True                    
                 cs_functions.append(ctrl_surf_function)  
+    
+    aerodynamics.settings.control_surface_tags =  cs_functions
 
     # translate conditions
     cases = translate_conditions_to_cases(aerodynamics,run_conditions,vehicle)    
@@ -137,7 +143,7 @@ def run_AVL_analysis(aerodynamics,run_conditions,vehicle):
         results_avl = read_results(aerodynamics,vehicle)
         
     # translate results
-    translate_results_to_conditions(cases,run_conditions,results_avl) 
+    translate_results_to_conditions(cases,run_conditions,results_avl,aerodynamics.settings) 
 
     if not aerodynamics.settings.keep_files:
         rmtree( run_folder )
