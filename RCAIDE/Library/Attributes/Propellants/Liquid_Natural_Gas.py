@@ -118,6 +118,7 @@ class Liquid_Natural_Gas(Propellant):
         self.density         = 414.2       # [kg/m^3]  saturated liquid at ~111 K
         self.specific_energy = 48.632e6    # [J/kg]    lower heating value (LHV) 
         self.energy_density  = 22200.0e6   # [J/m^3]
+        self.gravimetric_efficiency = 0.7
         
         self.stoichiometric_fuel_air_ratio = 0   # [-]    stoichiometric fuel-to-air ratio (placeholder)
         self.heat_of_vaporization          = 0   # [J/kg] heat of vaporization at standard conditions (placeholder)

@@ -126,11 +126,6 @@ def compute_operating_empty_weight(vehicle,settings=None):
     ##------------------------------------------------------------------------------- 
     W_oper = compute_operating_items_weight(vehicle)      
     
-    ##-------------------------------------------------------------------------------         
-    # System Weight
-    ##------------------------------------------------------------------------------- 
-    W_systems = compute_systems_weight(vehicle)
-    
     ##-------------------------------------------------------------------------------                 
     # Propulsion Weight 
     ##-------------------------------------------------------------------------------
@@ -163,7 +158,39 @@ def compute_operating_empty_weight(vehicle,settings=None):
     number_of_tanks                    = 0
     W_energy_network_cumulative        = 0 
 
-    for network in vehicle.networks: 
+    for network in vehicle.networks:
+    
+        ##-------------------------------------------------------------------------------         
+        # System Weight
+        ##------------------------------------------------------------------------------- 
+        W_systems = compute_systems_weight(vehicle)
+
+        for system in network.systems:
+            if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Avionics:
+                if system.mass_properties.mass == 0:
+                    system.mass_properties.mass = W_systems.W_avionics 
+            if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls:
+                if system.mass_properties.mass == 0:
+                    system.mass_properties.mass = W_systems.W_flight_control 
+            if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit: 
+                if system.mass_properties.mass == 0:
+                    system.mass_properties.mass = W_systems.W_apu 
+            if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Electrical: 
+                if system.mass_properties.mass == 0:
+                    system.mass_properties.mass = W_systems.W_electrical 
+            if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Hydraulics: 
+                if system.mass_properties.mass == 0:
+                    system.mass_properties.mass = W_systems.W_hyd_pnu 
+            if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls: 
+                if system.mass_properties.mass == 0:
+                    system.mass_properties.mass = W_systems.W_ac + W_systems.W_anti_ice   
+            if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Instruments:
+                if system.mass_properties.mass == 0:     
+                    system.mass_properties.mass = W_systems.W_instruments
+            
+        ##-------------------------------------------------------------------------------         
+        # Propulsion 
+        ##-------------------------------------------------------------------------------                     
         W_energy_network_total   = 0 
         # Fuel-Powered Propulsors  
 
@@ -178,20 +205,12 @@ def compute_operating_empty_weight(vehicle,settings=None):
         W_energy_network.W_pumps            += W_propulsion.W_pumps     
         W_energy_network.W_nacelle          += W_propulsion.W_nacelle
         number_of_engines                   += W_propulsion.number_of_engines
-        number_of_tanks                     += W_propulsion.number_of_fuel_tanks  
-        for propulsor in network.propulsors:
-            propulsor.mass_properties.mass = (W_energy_network.W_engine +W_energy_network.W_thrust_reverser+W_energy_network.W_starter +\
-                                            W_energy_network.W_engine_controls) / number_of_engines
-            propulsor.nacelle.mass_properties.mass = W_energy_network.W_nacelle / number_of_engines
+        number_of_tanks                     += W_propulsion.number_of_fuel_tanks
         
-        for system in network.systems:
-            if isinstance(system, RCAIDE.Library.Components.Powertrain.Systems.Electrical): 
-                # electrical payload 
-                W_systems.W_electrical  += system.mass_properties.mass 
-                
-            elif isinstance(system, RCAIDE.Library.Components.Powertrain.Systems.Avionics):
-                # Avionics Weight 
-                W_systems.W_avionics  += system.mass_properties.mass       
+        for propulsor in network.propulsors:
+            propulsor.mass_properties.mass = (W_energy_network.W_engine +W_energy_network.W_thrust_reverser+W_energy_network.W_starter + W_energy_network.W_engine_controls) / number_of_engines
+            propulsor.nacelle.mass_properties.mass = W_energy_network.W_nacelle / number_of_engines
+             
         
         for source in network.sources:
             if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
