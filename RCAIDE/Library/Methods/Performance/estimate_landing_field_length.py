@@ -18,7 +18,7 @@ import numpy as np
 # ----------------------------------------------------------------------
 #  Compute field length required for landing
 # ----------------------------------------------------------------------
-def estimate_landing_field_length(vehicle,analyses, altitude=0, delta_isa=0):
+def estimate_landing_field_length(analyses, altitude=0, delta_isa=0):
     """
     Computes the landing field length required for a given vehicle configuration at specified airport conditions.
 
@@ -78,7 +78,9 @@ def estimate_landing_field_length(vehicle,analyses, altitude=0, delta_isa=0):
     --------
     RCAIDE.Library.Methods.Aerodynamics.Common.Lift.compute_max_lift_coeff
     """            
-   
+
+    vehicle =  analyses.vehicle
+      
     # ==============================================
     # Unpack
     # ============================================== 

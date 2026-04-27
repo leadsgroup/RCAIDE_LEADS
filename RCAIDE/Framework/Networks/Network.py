@@ -134,27 +134,20 @@ class Network(Component):
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
                 net_chemical_power     += (outputs.power.chemical - inputs.power.chemical) 
-                        
-                state.conditions.energy.inputs.power.propulsive    += inputs.power.propulsive
-                state.conditions.energy.inputs.power.mechanical    += inputs.power.mechanical
-                state.conditions.energy.inputs.power.electrical    += inputs.power.electrical
-                state.conditions.energy.inputs.power.chemical      += inputs.power.chemical
-                state.conditions.energy.inputs.power.pneumatic     += inputs.power.pneumatic
-                state.conditions.energy.inputs.power.hydraulic     += inputs.power.hydraulic 
-                state.conditions.energy.inputs.power.thermal       += inputs.power.thermal 
-                state.conditions.energy.outputs.power.propulsive   += outputs.power.propulsive
-                state.conditions.energy.outputs.power.mechanical   += outputs.power.mechanical
-                state.conditions.energy.outputs.power.electrical   += outputs.power.electrical
-                state.conditions.energy.outputs.power.chemical     += outputs.power.chemical  
-                state.conditions.energy.outputs.power.pneumatic    += outputs.power.pneumatic
-                state.conditions.energy.outputs.power.hydraulic    += outputs.power.hydraulic 
-                state.conditions.energy.outputs.power.thermal      += outputs.power.thermal 
-                        
+                     
+                for input_power_type in inputs.power.keys():
+                    state.conditions.energy.inputs.power[input_power_type] += inputs.power[input_power_type] 
+
+                for output_power_type in outputs.power.keys():
+                    state.conditions.energy.outputs.power[output_power_type] += outputs.power[output_power_type] 
                 # compute losses for assigned distributors
                 if propulsor.assigned_distributors != None:
                     for distributor_tag in propulsor.assigned_distributors[0]: 
                         distributor = network.distributors[distributor_tag]  
-                        distributor.compute_distribution_losses(state.conditions.energy.propulsors[propulsor.tag],state,network)  
+                        distributor.compute_distribution_losses(state.conditions.energy.propulsors[propulsor.tag],state,network)   
+ 
+                        state.conditions.energy.distributors[distributor_tag].outputs.power[distributor.domain]   += inputs.power[distributor.domain]  
+                        state.conditions.energy.distributors[distributor_tag].inputs.power[distributor.domain]    += outputs.power[distributor.domain] 
    
         # ----------------------------------------------------------
         # Systems
@@ -168,26 +161,20 @@ class Network(Component):
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
                 net_chemical_power     += (outputs.power.chemical - inputs.power.chemical) 
 
-                state.conditions.energy.inputs.power.propulsive    += inputs.power.propulsive
-                state.conditions.energy.inputs.power.mechanical    += inputs.power.mechanical
-                state.conditions.energy.inputs.power.electrical    += inputs.power.electrical
-                state.conditions.energy.inputs.power.chemical      += inputs.power.chemical
-                state.conditions.energy.inputs.power.pneumatic     += inputs.power.pneumatic
-                state.conditions.energy.inputs.power.hydraulic     += inputs.power.hydraulic 
-                state.conditions.energy.inputs.power.thermal       += inputs.power.thermal 
-                state.conditions.energy.outputs.power.propulsive   += outputs.power.propulsive
-                state.conditions.energy.outputs.power.mechanical   += outputs.power.mechanical
-                state.conditions.energy.outputs.power.electrical   += outputs.power.electrical
-                state.conditions.energy.outputs.power.chemical     += outputs.power.chemical  
-                state.conditions.energy.outputs.power.pneumatic    += outputs.power.pneumatic
-                state.conditions.energy.outputs.power.hydraulic    += outputs.power.hydraulic 
-                state.conditions.energy.outputs.power.thermal      += outputs.power.thermal 
+                for input_power_type in inputs.power.keys():
+                    state.conditions.energy.inputs.power[input_power_type] += inputs.power[input_power_type] 
+
+                for output_power_type in outputs.power.keys():
+                    state.conditions.energy.outputs.power[output_power_type] += outputs.power[output_power_type] 
 
                 # compute losses for assigned distributors
                 if system.assigned_distributors != None:
                     for distributor_tag in system.assigned_distributors[0]: 
                         distributor = network.distributors[distributor_tag]  
-                        distributor.compute_distribution_losses(state.conditions.energy.systems[system.tag],state,network) 
+                        distributor.compute_distribution_losses(state.conditions.energy.systems[system.tag],state,network)
+                        
+                    state.conditions.energy.distributors[distributor_tag].outputs.power[distributor.domain]   += inputs.power[distributor.domain]  
+                    state.conditions.energy.distributors[distributor_tag].inputs.power[distributor.domain]    += outputs.power[distributor.domain] 
                 
         # ----------------------------------------------------------
         # Converters 
@@ -206,55 +193,19 @@ class Network(Component):
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)       
                 net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)  
 
-                state.conditions.energy.inputs.power.propulsive    += inputs.power.propulsive
-                state.conditions.energy.inputs.power.mechanical    += inputs.power.mechanical
-                state.conditions.energy.inputs.power.electrical    += inputs.power.electrical
-                state.conditions.energy.inputs.power.chemical      += inputs.power.chemical
-                state.conditions.energy.inputs.power.pneumatic     += inputs.power.pneumatic
-                state.conditions.energy.inputs.power.hydraulic     += inputs.power.hydraulic 
-                state.conditions.energy.inputs.power.thermal       += inputs.power.thermal 
-                state.conditions.energy.outputs.power.propulsive   += outputs.power.propulsive
-                state.conditions.energy.outputs.power.mechanical   += outputs.power.mechanical
-                state.conditions.energy.outputs.power.electrical   += outputs.power.electrical
-                state.conditions.energy.outputs.power.chemical     += outputs.power.chemical  
-                state.conditions.energy.outputs.power.pneumatic    += outputs.power.pneumatic
-                state.conditions.energy.outputs.power.hydraulic    += outputs.power.hydraulic 
-                state.conditions.energy.outputs.power.thermal      += outputs.power.thermal 
+                for input_power_type in inputs.power.keys():
+                    state.conditions.energy.inputs.power[input_power_type] += inputs.power[input_power_type] 
+
+                for output_power_type in outputs.power.keys():
+                    state.conditions.energy.outputs.power[output_power_type] += outputs.power[output_power_type] 
                 
                 # compute losses for assigned distributors
                 if converter.assigned_distributors != None:
                     for distributor_tag in converter.assigned_distributors[0]: 
                         distributor = network.distributors[distributor_tag]  
                         distributor.compute_distribution_losses(state.conditions.energy.converters[converter.tag],state,network) 
-                        
-        # ----------------------------------------------------------
-        # Distributors 
-        # ----------------------------------------------------------
-        stored_results_flag  = False
-        for distributor in distributors:
-            if distributor.active:   
-                inputs  = state.conditions.energy.distributors[distributor.tag].inputs
-                outputs = state.conditions.energy.distributors[distributor.tag].outputs 
-                
-                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
-                net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
-                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)     
-                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical) 
-
-                state.conditions.energy.inputs.power.propulsive    += inputs.power.propulsive
-                state.conditions.energy.inputs.power.mechanical    += inputs.power.mechanical
-                state.conditions.energy.inputs.power.electrical    += inputs.power.electrical
-                state.conditions.energy.inputs.power.chemical      += inputs.power.chemical
-                state.conditions.energy.inputs.power.pneumatic     += inputs.power.pneumatic
-                state.conditions.energy.inputs.power.hydraulic     += inputs.power.hydraulic 
-                state.conditions.energy.inputs.power.thermal       += inputs.power.thermal 
-                state.conditions.energy.outputs.power.propulsive   += outputs.power.propulsive
-                state.conditions.energy.outputs.power.mechanical   += outputs.power.mechanical
-                state.conditions.energy.outputs.power.electrical   += outputs.power.electrical
-                state.conditions.energy.outputs.power.chemical     += outputs.power.chemical  
-                state.conditions.energy.outputs.power.pneumatic    += outputs.power.pneumatic
-                state.conditions.energy.outputs.power.hydraulic    += outputs.power.hydraulic 
-                state.conditions.energy.outputs.power.thermal      += outputs.power.thermal 
+                    state.conditions.energy.distributors[distributor_tag].outputs.power[distributor.domain]   += inputs.power[distributor.domain]  
+                    state.conditions.energy.distributors[distributor_tag].inputs.power[distributor.domain]    += outputs.power[distributor.domain]   
 
         # ----------------------------------------------------------
         # Sources 
@@ -266,22 +217,15 @@ class Network(Component):
                 net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)  
-                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)    
+                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)
 
-                state.conditions.energy.inputs.power.propulsive    += inputs.power.propulsive
-                state.conditions.energy.inputs.power.mechanical    += inputs.power.mechanical
-                state.conditions.energy.inputs.power.electrical    += inputs.power.electrical
-                state.conditions.energy.inputs.power.chemical      += inputs.power.chemical
-                state.conditions.energy.inputs.power.pneumatic     += inputs.power.pneumatic
-                state.conditions.energy.inputs.power.hydraulic     += inputs.power.hydraulic 
-                state.conditions.energy.inputs.power.thermal       += inputs.power.thermal 
-                state.conditions.energy.outputs.power.propulsive   += outputs.power.propulsive
-                state.conditions.energy.outputs.power.mechanical   += outputs.power.mechanical
-                state.conditions.energy.outputs.power.electrical   += outputs.power.electrical
-                state.conditions.energy.outputs.power.chemical     += outputs.power.chemical  
-                state.conditions.energy.outputs.power.pneumatic    += outputs.power.pneumatic
-                state.conditions.energy.outputs.power.hydraulic    += outputs.power.hydraulic 
-                state.conditions.energy.outputs.power.thermal      += outputs.power.thermal 
+                if source.assigned_distributors != None:
+                    for distributor_tag in source.assigned_distributors[0]: 
+                        distributor = network.distributors[distributor_tag]  
+                        distributor.compute_distribution_losses(state.conditions.energy.sources[source.tag],state,network)                 
+                    state.conditions.energy.distributors[distributor_tag].outputs.power[distributor.domain]   += inputs.power[distributor.domain]  
+                    state.conditions.energy.distributors[distributor_tag].inputs.power[distributor.domain]    += outputs.power[distributor.domain] 
+                
 
         # Final aggregation for system level performance 
         conditions.energy.total_force_vector       = total_thrust

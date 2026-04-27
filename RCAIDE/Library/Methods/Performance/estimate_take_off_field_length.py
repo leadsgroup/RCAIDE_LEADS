@@ -19,7 +19,7 @@ import numpy as np
 # ----------------------------------------------------------------------
 #  Compute field length required for takeoff
 # ----------------------------------------------------------------------
-def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0, compute_2nd_seg_climb = False):
+def estimate_take_off_field_length(analyses,altitude = 0, delta_isa = 0, compute_2nd_seg_climb = False):
     r"""
     Computes the takeoff field length and optionally the second segment climb gradient for a given vehicle configuration.
 
@@ -91,7 +91,11 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
     RCAIDE.Library.Methods.Aerodynamics.Common.Drag.windmilling_drag
     RCAIDE.Library.Methods.Aerodynamics.Common.Drag.asymmetry_drag
     """        
-
+   
+   
+   
+    vehicle =  analyses.vehicle
+    
     # ==============================================
         # Unpack
     # ============================================== 

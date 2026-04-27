@@ -22,9 +22,7 @@ def compute_fuel_tank_performance(tank,state,distributor):
     I    = state.numerics.time.integrate
     fuel = tank.fuel
      
-    tank_conditions     = state.conditions.energy.sources[tank.tag]
-    
- 
+    tank_conditions     = state.conditions.energy.sources[tank.tag] 
             
     #chemical_power      = state.conditions.energy.distributors['fuel_line'].outputs.power.chemical # state.unknowns.network['chemical_power'] # state.conditions.energy.outputs.power.chemical 
     chemical_power      = tank_conditions.power_split_ratio * state.conditions.energy.distributors[tank.assigned_distributors[0][0]].outputs.power.chemical # state.conditions.energy.outputs.power.chemical 
