@@ -12,6 +12,7 @@
 import  RCAIDE
 from   RCAIDE.Framework.Core import Data, Units
 from   RCAIDE.Library.Methods.Aerodynamics.Common.Lift.compute_max_lift_coeff import compute_max_lift_coeff
+from RCAIDE.Library.Mission.Common.Pre_Process.geometry import geometry_preprocess_routine
 
 import numpy as np
 
@@ -77,13 +78,16 @@ def estimate_landing_field_length(analyses, altitude=0, delta_isa=0):
     See Also
     --------
     RCAIDE.Library.Methods.Aerodynamics.Common.Lift.compute_max_lift_coeff
-    """            
+    """             
+    # ---------------------------------------------- 
+    # Preprocess Geometry 
+    # ---------------------------------------------- 
+    geometry_preprocess_routine(analyses)
 
-    vehicle =  analyses.vehicle
-      
-    # ==============================================
+    # ----------------------------------------------
     # Unpack
-    # ============================================== 
+    # ---------------------------------------------- 
+    vehicle         = analyses.vehicle    
     altitude        = altitude * Units.ft
     delta_isa       = delta_isa
     weight          = vehicle.mass_properties.landing
