@@ -4,7 +4,7 @@
 # RCAIDE imports 
 import RCAIDE 
 from RCAIDE.Framework.Core import Units, Data
-from RCAIDE.Framework.Optimization.Common import * 
+from RCAIDE.Framework.Optimization import * 
 from RCAIDE.Framework.Optimization.Packages.scipy import scipy_setup
 
 # local file imports 

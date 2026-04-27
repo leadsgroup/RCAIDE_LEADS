@@ -20,7 +20,7 @@ except:
     pass
 import sklearn
 from sklearn import gaussian_process
-from RCAIDE.Framework.Optimization.Common import helper_functions as help_fun
+from RCAIDE.Framework.Optimization import helper_functions as help_fun
 from RCAIDE.Library.Methods.Utilities.latin_hypercube_sampling import latin_hypercube_sampling
 from scipy.stats import norm
 import os

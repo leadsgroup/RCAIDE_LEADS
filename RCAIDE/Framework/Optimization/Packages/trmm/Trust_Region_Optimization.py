@@ -14,7 +14,7 @@ try:
 except:
     pass
 from RCAIDE.Framework.Core import Data
-from RCAIDE.Framework.Optimization.Common import helper_functions as help_fun
+from RCAIDE.Framework.Optimization import helper_functions as help_fun
 import os
 import sys
 from scipy.optimize import minimize

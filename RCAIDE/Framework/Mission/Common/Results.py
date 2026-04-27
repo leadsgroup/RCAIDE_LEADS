@@ -429,7 +429,8 @@ class Results(Conditions):
         self.energy.systems                                   = Conditions()
         self.energy.total_force_vector                        = ones_3col * 0
         self.energy.total_moment_vector                       = ones_3col * 0 
-        self.energy.fuel_consumption                          = ones_1col * 0 
+        self.energy.fuel_consumption                          = ones_1col * 0      
+        self.energy.cumulative_fuel_consumption               = ones_1col * 0
         self.energy.inputs                                    = Conditions()
         self.energy.inputs.power                              = Conditions()  
         self.energy.inputs.power.propulsive                   = ones_1col * 0 
@@ -447,8 +448,7 @@ class Results(Conditions):
         self.energy.outputs.power.chemical                    = ones_1col * 0 
         self.energy.outputs.power.pneumatic                   = ones_1col * 0 
         self.energy.outputs.power.hydraulic                   = ones_1col * 0 
-        self.energy.outputs.power.thermal                     = ones_1col * 0      
-        self.energy.cumulative_fuel_consumption               = ones_1col * 0
+        self.energy.outputs.power.thermal                     = ones_1col * 0 
         self.energy.hybrid_power_split_ratio                  = ones_1col * 0 
         self.energy.battery_fuel_cell_power_split_ratio       = ones_1col * 0 
         self.energy.recharging                                = False

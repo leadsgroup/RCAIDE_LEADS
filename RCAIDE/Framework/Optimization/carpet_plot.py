@@ -1,16 +1,10 @@
-## @ingroup Optimization
-# carpet_plot.py
-#
-# Created:  Feb 2016, M. Vegh 
-# Modified: Feb 2017, M. Vegh
-#           May 2021, E. Botero 
+# RCAIDE/Framework/Optimization/line_plot.py 
 
-# ----------------------------------------------------------------------
-#  Imports
-# -------------------------------------------
- 
-from SUAVE.Core import Data
-import numpy as np
+# ----------------------------------------------------------------------------------------------------------------- 
+#  IMPORT
+# -----------------------------------------------------------------------------------------------------------------  
+from RCAIDE.Framework.Core import Data
+import numpy as np  
 import matplotlib.pyplot as plt
 
 # ----------------------------------------------------------------------

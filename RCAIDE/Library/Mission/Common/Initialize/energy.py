@@ -86,6 +86,18 @@ def energy(segment):
             distributor.append_segment_conditions(segment)
             
             
+            ## if network has fuel lines
+            #for fuel_line in  network.fuel_lines:
+                #for fuel_tank in fuel_line.fuel_tanks:
+                    #if segment.state.initials:
+                        #segment.state.conditions.energy.cumulative_fuel_consumption[:,0] = segment.state.initials.conditions.energy.cumulative_fuel_consumption[-1,0]
+                        #fuel_tank.append_segment_conditions(segment,fuel_line)
+    
+                    #elif vehicle.networks[network.tag].fuel_lines[fuel_line.tag].fuel_tanks[fuel_tank.tag].fuel != None:
+                        #segment.state.conditions.energy.cumulative_fuel_consumption[:,0] = 0
+                        
+                    
+                    
             #for battery_module in  bus.battery_modules:
             
             
@@ -99,12 +111,3 @@ def energy(segment):
                         #for reservoir in  item:
                             #reservoir.append_segment_conditions(segment, coolant_line)
 
-        ## if network has fuel lines
-        #for fuel_line in  network.fuel_lines:
-            #for fuel_tank in fuel_line.fuel_tanks:
-                #if segment.state.initials:
-                    #segment.state.conditions.energy.cumulative_fuel_consumption[:,0] = segment.state.initials.conditions.energy.cumulative_fuel_consumption[-1,0]
-                    #fuel_tank.append_segment_conditions(segment,fuel_line)
-
-                #elif vehicle.networks[network.tag].fuel_lines[fuel_line.tag].fuel_tanks[fuel_tank.tag].fuel != None:
-                    #segment.state.conditions.energy.cumulative_fuel_consumption[:,0] = 0

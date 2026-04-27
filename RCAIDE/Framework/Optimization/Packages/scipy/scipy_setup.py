@@ -15,7 +15,7 @@ import numpy as np
 import scipy as sp
 from RCAIDE.Framework.Optimization.Packages.particle_swarm import particle_swarm_optimization 
 from scipy.optimize import NonlinearConstraint
-from RCAIDE.Framework.Optimization.Common import helper_functions as help_fun
+from RCAIDE.Framework.Optimization import helper_functions as help_fun
 
 # ----------------------------------------------------------------------
 #  Something that should become a class at some point

@@ -4,7 +4,7 @@
 
 import RCAIDE
 from RCAIDE.Framework.Core import Units,  Data
-from RCAIDE.Framework.Optimization.Common import Nexus 
+from RCAIDE.Framework.Optimization import Nexus 
 from RCAIDE.Framework.Optimization.Packages.additive import Additive_Solver
 import RCAIDE.Framework.Optimization.Packages.trmm.Trust_Region_Optimization as tro
 from RCAIDE.Framework.Optimization.Packages.trmm.Trust_Region import Trust_Region

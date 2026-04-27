@@ -14,7 +14,7 @@ def set_optimized_parameters(rotor, optimization_problem):
     ----------
     rotor : RCAIDE.Library.Components.Powertrain.Converters.Rotor
         Rotor component to be updated with optimized parameters
-    optimization_problem : RCAIDE.Framework.Optimization.Common.Nexus
+    optimization_problem : RCAIDE.Framework.Optimization.Nexus
         Optimization problem with results and optimized rotor configurations
     
     Returns

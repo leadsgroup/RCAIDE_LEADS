@@ -9,7 +9,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core import  Units, Data
 from RCAIDE.Framework.Optimization.Packages.scipy import scipy_setup
-from RCAIDE.Framework.Optimization.Common         import Nexus
+from RCAIDE.Framework.Optimization         import Nexus
 from RCAIDE.Framework.Analyses.Process            import Process
 
 import scipy 

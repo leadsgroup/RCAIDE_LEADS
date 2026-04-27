@@ -1,23 +1,15 @@
-## @ingroup Optimization
-#  line_plot.py
-#
-# Created:  Oct 2017, M. Vegh 
-# Modified: Nov 2017, M. Vegh
-#           May 2021, E. Botero 
+# RCAIDE/Framework/Optimization/line_plot.py 
 
-# ----------------------------------------------------------------------
-#  Imports
-# -------------------------------------------
- 
-from SUAVE.Core import Data
-import numpy as np
+# ----------------------------------------------------------------------------------------------------------------- 
+#  IMPORT
+# -----------------------------------------------------------------------------------------------------------------  
+from RCAIDE.Framework.Core import Data,  Units 
+import numpy as np  
 import matplotlib.pyplot as plt
 
 # ----------------------------------------------------------------------
 #  line_plot
-# ----------------------------------------------------------------------
-
-
+# ---------------------------------------------------------------------- 
 def line_plot(problem, number_of_points,  plot_obj=1, plot_const=1, sweep_index=0): 
     """
     Takes in an optimization problem and runs a line plot of the first  variable of sweep index
