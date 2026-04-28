@@ -151,20 +151,21 @@ class Liquid_Hydrogen_Tank(Non_Integral_Tank):
                 if hasattr(fuel_tanks,self.tag):
                     compute_cryogenic_cylindrical_tank_volume(self,fuel_tanks)
                   
+            elif self.wing_tag != None and self.bwb_aft_tank == True:
+                wing = wings[self.wing_tag]  
+                compute_bwb_aft_tank_volume(self, wing,fuel_tanks)
+                if hasattr(fuel_tanks,self.tag):
+                    compute_cryogenic_cylindrical_tank_volume(self,fuel_tanks)
             else:
-                if self.bwb_aft_tank == True:
-                    if self.wing_tag != None:
-                        wing = wings[self.wing_tag]  
-                        compute_bwb_aft_tank_volume(self, wing,fuel_tanks)
-                        if hasattr(fuel_tanks,self.tag):
-                            compute_cryogenic_cylindrical_tank_volume(self,fuel_tanks)
+                if hasattr(fuel_tanks,self.tag):
+                    compute_cryogenic_cylindrical_tank_volume(self,fuel_tanks)
         elif self.geometry_type == 'conformal':
-             if self.wing_tag != None and self.bwb_aft_tank is False:
+            if self.wing_tag != None and self.bwb_aft_tank is False:
                 wing = wings[self.wing_tag]  
                 compute_wing_integral_prismatic_tank_volume(self, wing,fuel_tanks)
                 if hasattr(fuel_tanks,self.tag):
                     compute_cryogenic_tank_conformal_volume(self,fuel_tanks)
-             else:
+            else:
                 if self.bwb_aft_tank == True:
                     if self.wing_tag != None:
                         wing = wings[self.wing_tag]  

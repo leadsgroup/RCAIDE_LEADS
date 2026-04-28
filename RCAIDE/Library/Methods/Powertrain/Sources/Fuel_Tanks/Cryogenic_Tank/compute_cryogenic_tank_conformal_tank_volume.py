@@ -135,7 +135,7 @@ def compute_cryogenic_tank_conformal_volume(fuel_tank,_):
     fuel_tank.outer_height  = h_o_o
 
     fuel_tank.insulation_thickness  = t_ins
-    fuel_tank.total_thickness   = t_ins + th
+    fuel_tank.total_thickness       = t_ins + th
 
     fuel_tank.mass_properties.mass = fuel_tank.tank_accesories_weight_factor*(fuel_tank.mass_properties.insulation_mass + fuel_tank.mass_properties.structural_mass)
     
