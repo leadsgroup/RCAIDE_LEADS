@@ -37,7 +37,6 @@ class Cabin(Component):
         self.width = 0
         self.height = 0
         self.wide_body = False
-        self.wall_thickness = 0 * Units.inches
         self.tail = Data()
         self.tail.fineness_ratio = 0
         self.nose = Data()

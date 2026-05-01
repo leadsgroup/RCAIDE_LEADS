@@ -3,13 +3,18 @@ import RCAIDE
 from RCAIDE.Library.Methods.Geometry.Planform.convert_sweep import convert_sweep_segments, convert_sweep 
 from RCAIDE.Library.Methods.Geometry.Airfoil                import  compute_naca_4series, import_airfoil_geometry 
 
-def generate_cabin_geometry(cabin, component, n_points):  
+def generate_cabin_geometry(component, n_points):
+    
+    symbolic_cabin_wing = RCAIDE.Library.Components.Wings.Wing()
+    
     if issubclass(type(component), RCAIDE.Library.Components.Wings.Wing):
 
         wing = component 
+ 
 
-
-        LOPA = wing.layout_of_passenger_accommodations.object_coordinates
+        LOPA_data = wing.layout_of_passenger_accommodations
+        LOPA      = LOPA_data.object_coordinates 
+        
         # Step 1: plot cabin bounds  
         # get points at x min 
         x_min_locs   =  np.where( LOPA[:,2] == min(LOPA[:,2]))[0]
@@ -57,8 +62,8 @@ def generate_cabin_geometry(cabin, component, n_points):
         starboard_x_points = np.delete(x_border_pts, port_idxs) 
         starboard_y_points = np.delete(y_border_pts, port_idxs)
 
-        leading_edge_points = np.vstack((starboard_x_points[:2] + cabin.origin[0][0], starboard_y_points[:2]))
-        trailing_edge_points = np.vstack((starboard_x_points[2:] + cabin.origin[0][0], starboard_y_points[2:]))
+        leading_edge_points  = np.vstack((starboard_x_points[:2] + LOPA_data.cabin_x_offset, starboard_y_points[:2]))
+        trailing_edge_points = np.vstack((starboard_x_points[2:] + LOPA_data.cabin_x_offset, starboard_y_points[2:]))
 
         for wing_segment in wing.segments:
             local_chord = wing.chords.root * wing_segment.root_chord_percent
@@ -84,25 +89,26 @@ def generate_cabin_geometry(cabin, component, n_points):
 
             x_coords = (x_coords - wing_segment.origin[0][0]) / (local_chord)
             
-            y_coords =  geometry.y_coordinates
+            y_coords =  geometry.y_coordinates  * wing.outer_mold_line_cabin_offset_factor 
             y_coords[y_coords<0] =  0
 
             section_y = wing_segment.percent_span_location * wing.spans.projected / 2
 
-            if  section_y < cabin.origin[0][1] + cabin.width:
-                cabin_segment = RCAIDE.Library.Components.Fuselages.Cabins.Segments.Segment()
-                cabin_segment.tag = wing_segment.tag + '_cabin'
-                cabin_segment.origin = wing_segment.origin
-                cabin_segment.percent_span_location = wing_segment.percent_span_location
-                cabin_segment.root_chord_percent = wing_segment.root_chord_percent
-                cabin_segment.thickness_to_chord = wing_segment.thickness_to_chord
-                cabin_segment.sweeps.leading_edge = wing_segment.sweeps.leading_edge
-                cabin_segment.dihedral_outboard = wing_segment.dihedral_outboard
-                cabin_segment.twist = wing_segment.twist
-                cabin_segment.append_airfoil(wing_segment.airfoil)   
-                cabin_segment.airfoil.geometry.x_coordinates = x_coords
-                cabin_segment.airfoil.geometry.y_coordinates = y_coords
+            if  section_y <= max(starboard_y_points):
+                segment = RCAIDE.Library.Components.Wings.Segments.Segment() 
+                segment.tag = wing_segment.tag + '_cabin'
+                segment.origin = wing_segment.origin
+                segment.percent_span_location = wing_segment.percent_span_location
+                segment.root_chord_percent = wing_segment.root_chord_percent
+                segment.thickness_to_chord = wing_segment.thickness_to_chord
+                segment.sweeps.leading_edge = wing_segment.sweeps.leading_edge
+                segment.dihedral_outboard = wing_segment.dihedral_outboard
+                segment.twist = wing_segment.twist
+                segment.append_airfoil(wing_segment.airfoil)   
+                segment.airfoil.geometry.x_coordinates = x_coords
+                segment.airfoil.geometry.y_coordinates = y_coords
                 
-                cabin.append_segment(cabin_segment)
+                symbolic_cabin_wing.append_segment(segment)
+        return symbolic_cabin_wing
 
 

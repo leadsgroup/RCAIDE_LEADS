@@ -204,20 +204,19 @@ def plot_3d_vehicle(vehicle,
             if show_LOPA:
                 lopa_geom = generate_3d_lopa_points(wing)
                 add_lopa_seats(plotter, lopa_geom, lopa_opacity)
+                 
+                GEOM         = generate_3d_cabin_points(wing, number_of_airfoil_points)
+                actor        = generate_vtk_object(GEOM.PTS) 
+                vtk_data     = actor.GetMapper().GetInput() 
+                pyvista_mesh = pv.wrap(vtk_data)                      
+                plotter.add_mesh(pyvista_mesh,color= cabin_rgb_color,opacity= cabin_opacity)
                 
-                for cabin in wing.cabins:
-                    GEOM         = generate_3d_cabin_points(cabin,wing, number_of_airfoil_points)
-                    actor        = generate_vtk_object(GEOM.PTS) 
-                    vtk_data     = actor.GetMapper().GetInput() 
-                    pyvista_mesh = pv.wrap(vtk_data)                      
-                    plotter.add_mesh(pyvista_mesh,color= cabin_rgb_color,opacity= cabin_opacity)
-                    
-                    # Assume X-Z plane symmetric
-                    GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
-                    actor        = generate_vtk_object(GEOM.PTS) 
-                    vtk_data     = actor.GetMapper().GetInput() 
-                    pyvista_mesh = pv.wrap(vtk_data)                      
-                    plotter.add_mesh(pyvista_mesh,color= cabin_rgb_color,opacity= cabin_opacity)
+    
+                GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
+                actor        = generate_vtk_object(GEOM.PTS) 
+                vtk_data     = actor.GetMapper().GetInput() 
+                pyvista_mesh = pv.wrap(vtk_data)                      
+                plotter.add_mesh(pyvista_mesh,color= cabin_rgb_color,opacity= cabin_opacity)                 
                 
 
     # -------------------------------------------------------------------------  
