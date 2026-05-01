@@ -7,16 +7,14 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
-from RCAIDE.Framework.Core import Data
-from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry
-from RCAIDE.Library.Methods.Geometry.Airfoil import compute_naca_4series 
+from RCAIDE.Framework.Core import Data 
 from RCAIDE.Library.Methods.Geometry.Cabin.generate_cabin_geometry import generate_cabin_geometry   
 import numpy as np     
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  generate_3d_cabin_points
 # ----------------------------------------------------------------------------------------------------------------------   
-def generate_3d_cabin_points(cabin, component, n_points, dim):
+def generate_3d_cabin_points(cabin, component, n_points):
     """
     Generates 3D coordinate points that define a cabin surface.
 
@@ -64,81 +62,65 @@ def generate_3d_cabin_points(cabin, component, n_points, dim):
     """    
 
     if issubclass(type(component), RCAIDE.Library.Components.Wings.Wing): 
-        G = generate_3d_wing_cabin_points(cabin,component, n_points, dim)
+        G = generate_3d_wing_cabin_points(cabin,component, n_points)
     else:
         pass
 
     return G
 
-def generate_3d_wing_cabin_points(cabin,wing,dim,n_points): 
+def generate_3d_wing_cabin_points(cabin,wing,n_points): 
   
-    generate_cabin_geometry(cabin, wing, n_points, dim)
-
+    generate_cabin_geometry(cabin, wing, n_points)
+     
     # unpack  
     # obtain the geometry for each segment in a loop                                            
     symm                 = wing.xz_plane_symmetric
     semispan             = wing.spans.projected*0.5 * (2 - symm) 
     root_chord           = wing.chords.root
-    segments             = wing.segments
+    segments             = cabin.segments
     n_segments           = len(segments.keys()) 
     origin               = wing.origin   
          
-    pts              = np.zeros((dim,n_points, 3,1))  
-    section_twist    = np.zeros((dim,n_points, 3,3))
+    pts              = np.zeros((n_segments,n_points, 3,1))  
+    section_twist    = np.zeros((n_segments,n_points, 3,3))
     section_twist[:, :, 0, 0] = 1        
     section_twist[:, :, 1, 1] = 1
     section_twist[:, :, 2, 2] = 1 
-    translation        = np.zeros((dim,n_points, 3,1))  
+    translation        = np.zeros((n_segments,n_points, 3,1))  
     translation[:, :, 0,:] = origin[0][0]  
     translation[:, :, 1,:] = origin[0][1]  
     translation[:, :, 2,:] = origin[0][2]   
     for i in range(n_segments):
         current_seg = list(segments.keys())[i]
-        airfoil = wing.segments[current_seg].airfoil  
+        airfoil  = cabin.segments[current_seg].airfoil  
         geometry = airfoil.geometry 
-        twist    = wing.segments[current_seg].twist 
-        if wing.vertical: 
-            pts[i,:,0,0]   = geometry.x_coordinates * wing.segments[current_seg].root_chord_percent * wing.chords.root 
-            pts[i,:,1,0]   = geometry.y_coordinates * wing.segments[current_seg].root_chord_percent * wing.chords.root 
-            pts[i,:,2,0]   = np.zeros_like(geometry.y_coordinates) 
-            
-            section_twist[i,:,0,0] = np.cos(twist) 
-            section_twist[i,:,0,1] = -np.sin(twist)  
-            section_twist[i,:,1,0] = np.sin(twist) 
-            section_twist[i,:,1,1] = np.cos(twist) 
-        
-        else: 
-            pts[i,:,0,0]   = geometry.x_coordinates * wing.segments[current_seg].root_chord_percent * wing.chords.root
-            pts[i,:,1,0]   = np.zeros_like(geometry.y_coordinates) 
-            pts[i,:,2,0]   = geometry.y_coordinates * wing.segments[current_seg].root_chord_percent * wing.chords.root  
-                                
+        twist    = cabin.segments[current_seg].twist  
+         
+        pts[i,:,0,0]   = geometry.x_coordinates * cabin.segments[current_seg].root_chord_percent * root_chord
+        pts[i,:,1,0]   = np.zeros_like(geometry.y_coordinates) 
+        pts[i,:,2,0]   = geometry.y_coordinates * cabin.segments[current_seg].root_chord_percent * wing.chords.root  
+                            
 
-            section_twist[i,:,0,0] = np.cos(twist) 
-            section_twist[i,:,0,2] = np.sin(twist)  
-            section_twist[i,:,2,0] = -np.sin(twist) 
-            section_twist[i,:,2,2] =  np.cos(twist)   
+        section_twist[i,:,0,0] = np.cos(twist) 
+        section_twist[i,:,0,2] = np.sin(twist)  
+        section_twist[i,:,2,0] = -np.sin(twist) 
+        section_twist[i,:,2,2] =  np.cos(twist)   
 
-        translation[i, :, 0,:] += segments[current_seg].origin[0][0]  
-        translation[i, :, 1,:] += segments[current_seg].origin[0][1]  
-        translation[i, :, 2,:] += segments[current_seg].origin[0][2]             
+        translation[i, :, 0,:] += cabin.segments[current_seg].origin[0][0]  
+        translation[i, :, 1,:] += cabin.segments[current_seg].origin[0][1]  
+        translation[i, :, 2,:] += cabin.segments[current_seg].origin[0][2]             
         if (i == n_segments-1):
             # update origin for next segment
             prev_seg = list(segments.keys())[i-1]  
 
-            sweep    = wing.segments[prev_seg].sweeps.leading_edge
-            dihedral = wing.segments[prev_seg].dihedral_outboard
+            sweep    = cabin.segments[prev_seg].sweeps.leading_edge
+            dihedral = cabin.segments[prev_seg].dihedral_outboard
         
-            segment_percent_span =  wing.segments[current_seg].percent_span_location  -  wing.segments[prev_seg].percent_span_location   
-            if wing.vertical:
-                dz = semispan*segment_percent_span
-                dy = dz*np.tan(dihedral)
-                l  = dz/np.cos(dihedral)
-                dx = l*np.tan(sweep)
-            else:
-                dy = semispan*segment_percent_span
-                dz = dy*np.tan(dihedral)
-                l  = dy/np.cos(dihedral)
-                dx = l*np.tan(sweep)
+            segment_percent_span =  cabin.segments[current_seg].percent_span_location  -  cabin.segments[prev_seg].percent_span_location   
+            dy = semispan*segment_percent_span
+            dz = dy*np.tan(dihedral)
+            l  = dy/np.cos(dihedral)
+            dx = l*np.tan(sweep)
             translation[i,:,0,:] = translation[i-1,:,0,:] + dx
             translation[i,:,1,:] = translation[i-1,:,1,:] + dy
             translation[i,:,2,:] = translation[i-1,:,2,:] + dz  

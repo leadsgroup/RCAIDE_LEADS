@@ -206,16 +206,7 @@ def plot_3d_vehicle(vehicle,
                 add_lopa_seats(plotter, lopa_geom, lopa_opacity)
                 
                 for cabin in wing.cabins:
-                    cabin.spans = wing.spans
-                    cabin.chords = wing.chords
-                    cabin.thickness_to_chord = wing.thickness_to_chord
-                    cabin.airfoil = None
-                    cabin.dihedral = wing.dihedral
-                    cabin.sweeps = wing.sweeps
-                    cabin.vertical = False
-                    cabin.twists = wing.twists
-                    
-                    GEOM         = generate_3d_cabin_points(cabin,wing, number_of_airfoil_points, dim)
+                    GEOM         = generate_3d_cabin_points(cabin,wing, number_of_airfoil_points)
                     actor        = generate_vtk_object(GEOM.PTS) 
                     vtk_data     = actor.GetMapper().GetInput() 
                     pyvista_mesh = pv.wrap(vtk_data)                      
