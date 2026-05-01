@@ -114,6 +114,12 @@ class Segment(Component):
         self.structural.rib                            = False   
         self.structural.front_spar_percent_chord       = 0.1  
         self.structural.rear_spar_percent_chord        = 0.6  
+        self.structural.top_surface_skin_thickness       = 0.01026
+        self.structural.bottom_surface_skin_thickness    = 0.01026
+        self.structural.rib_spacing                    = 0.6
+        self.structural.rib_thickness                  = 0.004  
+
+
         self.airfoil                                   = None
         
         

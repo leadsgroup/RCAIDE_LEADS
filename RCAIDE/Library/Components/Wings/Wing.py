@@ -207,6 +207,15 @@ class Wing(Component):
    
         self.structural                             = Data()  
         self.structural.rib                         = False   
+        self.structural.front_spar.cross_section    = 'Rectangular'
+        self.structural.front_spar.t_web             = 0.0065
+        self.structural.front_spar.w_cap            = 0.0
+        self.structural.front_spar.t_cap            = 0.0
+        self.structural.rear_spar.cross_section     = 'Rectangular'
+        self.structural.rear_spar.t_web              = 0.0065
+        self.structural.rear_spar.w_cap             = 0.0           
+        self.structural.rear_spar.t_cap             = 0.0    
+
         # self.structural.front_spar_percent_chords  = Data()
         # self.structural.front_spar_percent_chords.root    = 0.15  
         # self.structural.front_spar_percent_chords.tip    = 0.15  

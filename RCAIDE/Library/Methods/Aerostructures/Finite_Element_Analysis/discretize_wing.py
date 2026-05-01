@@ -13,8 +13,8 @@ def discretize_wing(wing, num_elements):
     """
     Translates RCAIDE wing geometry into high-resolution FEA nodes.
     """
-    wing_config = translate_rcaide_to_config(wing)
-    geom = compute_multisegment_geometry(wing, wing_config, num_elements)
+    #wing_config = translate_rcaide_to_config(wing)
+    geom = compute_multisegment_geometry(wing, num_elements)
     
     X_nodes, Y_nodes, Z_nodes = geom['X_nodes'], geom['Y_nodes'], geom['Z_nodes']
     Le = np.sqrt(np.diff(X_nodes)**2 + np.diff(Y_nodes)**2 + np.diff(Z_nodes)**2)
@@ -43,7 +43,6 @@ def discretize_wing(wing, num_elements):
         chord_elems         = chord_elems,
         spar_f_elems        = spar_f_elems,
         spar_r_elems        = spar_r_elems,
-        wing_config         = wing_config
     )
     return discretized_params
 
@@ -51,20 +50,11 @@ def translate_rcaide_to_config(wing):
     """
     Reads an RCAIDE Wing object and translates it to our dictionary config.
     """
-    wing_config = {
-        't_c': getattr(wing, 'thickness_to_chord', 0.121),
-        'Skin_Top_Thick': 0.01026, 
-        'Skin_Bot_Thick': 0.01026,
-        'Rib_Spacing': 0.6,
-        'Rib_Thick': 0.004,
-        'Front_Spar': {'type': 'Rectangular', 't_web': 0.0065, 'w_cap': 0.0, 't_cap': 0.0},
-        'Rear_Spar':  {'type': 'Rectangular', 't_web': 0.0065, 'w_cap': 0.0, 't_cap': 0.0},
-        'segments': []
-    }
-    sym = wing.xz_plane_symmetric
+
+    sym      = wing.xz_plane_symmetric
     semi_span = wing.spans.projected / (1 + sym)
-    segments = sorted(wing.segments.values(), key=lambda s: s.percent_span_location)
-    num_segs = len(segments)
+    segments  = sorted(wing.segments.values(), key=lambda s: s.percent_span_location)
+    num_segs  = len(segments)
 
     for i, seg in enumerate(segments):
         y_root = seg.percent_span_location * semi_span
@@ -78,18 +68,15 @@ def translate_rcaide_to_config(wing):
             chord_tip = wing.chords.tip
             twist_tip = getattr(wing.twists, 'tip', seg.twist) 
 
-        seg_dict = {
-            'span': y_tip - y_root,
-            'sweep_LE': (getattr(seg.sweeps, 'leading_edge', wing.sweeps.leading_edge)),
-            'dihedral': (getattr(seg, 'dihedral_outboard', wing.dihedral)),
-            'chord_root': seg.root_chord_percent * wing.chords.root,
-            'chord_tip': chord_tip,
-            'twist_root': seg.twist,
-            'twist_tip': twist_tip,
-            'spar_f_root': getattr(seg, 'front_spar_fraction', 0.15),
-            'spar_f_tip':  getattr(seg, 'front_spar_fraction', 0.15),
-            'spar_r_root': getattr(seg, 'rear_spar_fraction', 0.65),
-            'spar_r_tip':  getattr(seg, 'rear_spar_fraction', 0.65)
+        seg_dict = {   
+            #'chord_root': seg.root_chord_percent * wing.chords.root,
+            #'chord_tip': chord_tip,
+            #'twist_root': seg.twist,
+            #'twist_tip': twist_tip,
+            #'spar_f_root': getattr(seg, 'front_spar_fraction', 0.15),
+            #'spar_f_tip':  getattr(seg, 'front_spar_fraction', 0.15),
+            #'spar_r_root': getattr(seg, 'rear_spar_fraction', 0.65),
+            #'spar_r_tip':  getattr(seg, 'rear_spar_fraction', 0.65)
         }
         wing_config['segments'].append(seg_dict)
 
