@@ -7,7 +7,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE 
-from RCAIDE.Library.Components   import Component   
+from RCAIDE.Library.Components   import Component    
 from RCAIDE.Library.Plots.Geometry.generate_3d_wing_points      import *
 from RCAIDE.Library.Plots.Geometry.generate_3d_fuselage_points  import *
 from RCAIDE.Library.Plots.Geometry.generate_3d_fuel_tank_points import *
@@ -16,8 +16,9 @@ from RCAIDE.Library.Plots.Geometry.generate_3d_nacelle_points   import *
 from RCAIDE.Library.Plots.Geometry.generate_3d_lopa_points      import generate_3d_lopa_points
 from RCAIDE.Library.Plots.Geometry.generate_3d_cuboid_points    import generate_3d_cuboid_points
 from RCAIDE.Library.Plots.Geometry.generate_3d_propulsor_points import generate_3d_propulsor_points
+from RCAIDE.Library.Plots.Geometry.generate_3d_cabin_points     import generate_3d_cabin_points
 from RCAIDE.Library.Methods.Geometry.Planform                   import fuselage_planform, wing_planform , compute_fuel_volume  
-from RCAIDE.Library.Methods.Geometry.LOPA                       import compute_layout_of_passenger_accommodations  
+from RCAIDE.Library.Methods.Geometry.Cabin                       import compute_layout_of_passenger_accommodations  
 
 # python imports 
 import numpy as np  
@@ -214,7 +215,7 @@ def plot_3d_vehicle(vehicle,
                     cabin.vertical = False
                     cabin.twists = wing.twists
                     
-                    GEOM       = generate_3d_wing_points(cabin, number_of_airfoil_points, dim)
+                    GEOM         = generate_3d_cabin_points(cabin,wing, number_of_airfoil_points, dim)
                     actor        = generate_vtk_object(GEOM.PTS) 
                     vtk_data     = actor.GetMapper().GetInput() 
                     pyvista_mesh = pv.wrap(vtk_data)                      

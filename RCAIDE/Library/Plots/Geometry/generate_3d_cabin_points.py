@@ -1,4 +1,4 @@
-# RCAIDE/Library/Plots/Geometry/generate_3d_wing_points.py
+# RCAIDE/Library/Plots/Geometry/generate_3d_cabin_points.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke
@@ -10,20 +10,22 @@ import RCAIDE
 from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry
 from RCAIDE.Library.Methods.Geometry.Airfoil import compute_naca_4series 
+from RCAIDE.Library.Methods.Geometry.Cabin.generate_cabin_geometry import generate_cabin_geometry   
 import numpy as np     
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  generate_3d_wing_points
+#  generate_3d_cabin_points
 # ----------------------------------------------------------------------------------------------------------------------   
-def generate_3d_wing_points(wing, n_points, dim):
+def generate_3d_cabin_points(cabin, component, n_points, dim):
     """
-    Generates 3D coordinate points that define a wing surface.
+    Generates 3D coordinate points that define a cabin surface.
 
     Parameters
     ----------
-    wing : Wing
-        RCAIDE wing data structure containing geometry information
-        
+    cabin : Cabin
+        RCAIDE cabin data structure containing geometry information
+    component : Component
+        RCAIDE component data structure containing geometry information 
     n_points : int
         Number of points used to discretize airfoil sections
         
@@ -60,6 +62,18 @@ def generate_3d_wing_points(wing, n_points, dim):
     'Dihedral'
         Upward angle of wing from horizontal
     """    
+
+    if issubclass(type(component), RCAIDE.Library.Components.Wings.Wing): 
+        G = generate_3d_wing_cabin_points(cabin,component, n_points, dim)
+    else:
+        pass
+
+    return G
+
+def generate_3d_wing_cabin_points(cabin,wing,dim,n_points): 
+  
+    generate_cabin_geometry(cabin, wing, n_points, dim)
+
     # unpack  
     # obtain the geometry for each segment in a loop                                            
     symm                 = wing.xz_plane_symmetric
@@ -81,16 +95,7 @@ def generate_3d_wing_points(wing, n_points, dim):
     for i in range(n_segments):
         current_seg = list(segments.keys())[i]
         airfoil = wing.segments[current_seg].airfoil  
-        
-        if  airfoil !=  None:                 
-            if type(airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
-                geometry = compute_naca_4series(airfoil.NACA_4_Series_code,n_points)
-            elif type(airfoil) == RCAIDE.Library.Components.Airfoils.Airfoil: 
-                geometry     = import_airfoil_geometry(airfoil.coordinate_file,n_points)
-        else:
-            t_c = str(int(wing.segments[current_seg].thickness_to_chord *  100)).zfill(4)
-            geometry = compute_naca_4series(t_c,n_points)
-                
+        geometry = airfoil.geometry 
         twist    = wing.segments[current_seg].twist 
         if wing.vertical: 
             pts[i,:,0,0]   = geometry.x_coordinates * wing.segments[current_seg].root_chord_percent * wing.chords.root 

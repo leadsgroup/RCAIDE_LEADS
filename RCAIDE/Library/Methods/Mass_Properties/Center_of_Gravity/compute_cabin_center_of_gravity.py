@@ -6,7 +6,7 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
 # RCAIDE imports 
-from RCAIDE.Library.Methods.Geometry.LOPA.compute_layout_of_passenger_accommodations import compute_layout_of_passenger_accommodations
+from RCAIDE.Library.Methods.Geometry.Cabin.compute_layout_of_passenger_accommodations import compute_layout_of_passenger_accommodations
 
 # package imports 
 import numpy as np  

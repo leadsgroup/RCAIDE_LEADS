@@ -6,7 +6,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports 
-from RCAIDE.Library.Methods.Geometry.LOPA.compute_layout_of_passenger_accommodations import  compute_layout_of_passenger_accommodations
+from RCAIDE.Library.Methods.Geometry.Cabin.compute_layout_of_passenger_accommodations import  compute_layout_of_passenger_accommodations
 
 # python imports 
 import plotly.graph_objects as go
