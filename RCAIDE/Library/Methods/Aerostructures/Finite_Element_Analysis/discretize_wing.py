@@ -32,6 +32,7 @@ def discretize_wing(wing, num_elements):
         Z_nodes             = Z_nodes,
         chord_nodes         = geom['chord_nodes'],
         twist_nodes         = geom['twist_nodes'],
+        sweep_nodes         = geom['sweep_nodes'],
         sweep_elems_rad     = geom['sweep_mid_elems'],
         dihedral_elems_rad  = geom['dihedral_elems'],
         total_span          = geom['total_span'],

@@ -66,6 +66,7 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
         for wing in geometry.wings.values():
             
             sym = wing.xz_plane_symmetric
+            semi_span = wing.spans.projected / (1 + sym)
             # 1. GENERATE FEA GEOMETRY (Optimize this to run once later)
             VD_struct = discretize_wing(wing, num_elements)
             fea_pts = np.column_stack((VD_struct.X_nodes[:-1], VD_struct.Y_elems, VD_struct.Z_nodes[:-1]))
@@ -168,6 +169,40 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             u_reduced = np.linalg.solve(K_reduced, F_reduced)
             u_full = np.zeros(total_dof)
             u_full[free_dof] = u_reduced
+            
+            w_global = u_full[2::6]
+            theta_x = u_full[3::6]
+            theta_y = u_full[4::6]
+            
+            twist_local = (theta_x * np.sin(VD_struct.sweep_nodes) + theta_y * np.cos(VD_struct.sweep_nodes))
+            
+            # 3D Visualization
+            y_local_path = np.insert(np.cumsum(VD_struct.Le), 0, 0.0)
+            node_aero_loads = np.interp(y_local_path, VD_struct.Y_elems, load_w_z_aero)
+            res = {
+                'y_local': y_local_path, 
+                'chord': VD_struct.chord_nodes, 
+                'X0': VD_struct.X_nodes,                         # Undeformed Baseline
+                'Y0': VD_struct.Y_nodes, 
+                'Z0': VD_struct.Z_nodes,
+                'deflection': w_global,
+                'twist_geo': VD_struct.twist_nodes,              # Geometric Washout
+                'twist_elas': twist_local,                       # Twist due to loading
+                'w_z_load': node_aero_loads,
+                'spar_f': VD_struct.spar_f_nodes, 
+                'spar_r': VD_struct.spar_r_nodes,
+                'params': { 
+                    'tc': VD_struct.wing_config['t_c'], 
+                    'Rib_Spacing': VD_struct.wing_config['Rib_Spacing'], 
+                    'Span': semi_span,
+                    'Front_Spar': VD_struct.wing_config['Front_Spar'], 
+                    'Rear_Spar': VD_struct.wing_config['Rear_Spar']
+                }
+            }
+            
+            # Call the 3D Plotter
+            plot_wingbox(res, scale=1.0)
+            
             
             # Store data securely for RCAIDE's mission solver
             if ti not in structural_results:

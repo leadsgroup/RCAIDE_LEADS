@@ -63,6 +63,8 @@ def build_components(res, scale=1.0, undeformed=False):
     
     # 2. Dynamic Spar Caps
     caps_list = []
+    mesh_caps = pv.PolyData() # Initialize an empty mesh for caps
+    
     def make_cap_strip(line_pts, width, offset_type='center'):
         pts_L, pts_R = line_pts.copy(), line_pts.copy()
         if offset_type == 'center': 
@@ -85,8 +87,11 @@ def build_components(res, scale=1.0, undeformed=False):
     elif r_type == 'C_Channel':
         caps_list.extend([make_cap_strip(corners[1], r_w, 'inward_rear'), make_cap_strip(corners[2], r_w, 'inward_rear')])
 
-    mesh_caps = caps_list[0]
-    for c in caps_list[1:]: mesh_caps = mesh_caps.merge(c)
+    # Merge only if we actually generated caps
+    if len(caps_list) > 0:
+        mesh_caps = caps_list[0]
+        for c in caps_list[1:]: 
+            mesh_caps = mesh_caps.merge(c)
 
     # 3. Ribs
     ribs = pv.PolyData()
@@ -150,7 +155,7 @@ def build_components(res, scale=1.0, undeformed=False):
             
         point_cloud = pv.PolyData(qc_pts)
         point_cloud['forces'] = vectors
-        arrows_mesh = point_cloud.glyph(orient='forces', scale='forces', factor=0.002)
+        arrows_mesh = point_cloud.glyph(orient='forces', scale='forces', factor=0.00002)
 
     return skin_top, skin_bot, spar_f_web, spar_r_web, mesh_caps, ribs, arrows_mesh
 
@@ -192,7 +197,8 @@ def plot_wingbox(res, scale=1.0):
     p.add_mesh(sr, color='#444444', opacity=0.8)
     
     # Spar Caps 
-    p.add_mesh(caps, color='black', opacity=1.0)
+    if caps.n_points > 0:
+        p.add_mesh(caps, color='black', opacity=1.0)
     
     # Ribs 
     p.add_mesh(ribs, color='orange', opacity=1.0, show_edges=True, line_width=2)
@@ -201,7 +207,7 @@ def plot_wingbox(res, scale=1.0):
     p.add_mesh(arrows, color='cyan', opacity=0.5, label='Applied Lift')
     
     # Title
-    p.add_text(f"Version 10: Wingbox Deflection Model\nFront: {res['params']['Front_Spar']['type']}\nRear: {res['params']['Rear_Spar']['type']}\nRib Spacing: {res['params']['Rib_Spacing']}m", 
+    p.add_text(f"Wingbox Deflection Model\nFront: {res['params']['Front_Spar']['type']}\nRear: {res['params']['Rear_Spar']['type']}\nRib Spacing: {res['params']['Rib_Spacing']}m", 
                font_size=11, font='times', color='grey', position='upper_left')
     
     p.view_isometric()
