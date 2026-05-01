@@ -45,6 +45,7 @@ def plot_3d_vehicle(vehicle,
                     battery_color               = 'green',
                     systems_color               = 'black',
                     propulsor_color             = 'black',
+                    cabin_color                 = 'blue',
                     plot_actuator_disc          = False,
                     show_LOPA                   = True, 
                     wing_opacity                = 0.5, 
@@ -57,6 +58,7 @@ def plot_3d_vehicle(vehicle,
                     cargo_bay_opacity           = 0.6, 
                     battery_opacity             = 1.0, 
                     propulsor_opacity           = 0.5,
+                    cabin_opacity               = 0.5,
                     systems_opacity             = 0.8, 
                     number_of_airfoil_points    = 101,
                     tessellation                = 96,
@@ -142,6 +144,7 @@ def plot_3d_vehicle(vehicle,
     battery_rgb_color    = mcolors.to_rgb(battery_color)
     system_rgb_color     = mcolors.to_rgb(systems_color)
     propulsor_rgb_color  = mcolors.to_rgb(propulsor_color)
+    cabin_rgb_color      = mcolors.to_rgb(cabin_color)
      
     # -------------------------------------------------------------------------
     # Run Geoemtry Analysis
@@ -200,6 +203,29 @@ def plot_3d_vehicle(vehicle,
             if show_LOPA:
                 lopa_geom = generate_3d_lopa_points(wing)
                 add_lopa_seats(plotter, lopa_geom, lopa_opacity)
+                
+                for cabin in wing.cabins:
+                    cabin.spans = wing.spans
+                    cabin.chords = wing.chords
+                    cabin.thickness_to_chord = wing.thickness_to_chord
+                    cabin.airfoil = None
+                    cabin.dihedral = wing.dihedral
+                    cabin.sweeps = wing.sweeps
+                    cabin.vertical = False
+                    cabin.twists = wing.twists
+                    
+                    GEOM       = generate_3d_wing_points(cabin, number_of_airfoil_points, dim)
+                    actor        = generate_vtk_object(GEOM.PTS) 
+                    vtk_data     = actor.GetMapper().GetInput() 
+                    pyvista_mesh = pv.wrap(vtk_data)                      
+                    plotter.add_mesh(pyvista_mesh,color= cabin_rgb_color,opacity= cabin_opacity)
+                    
+                    # Assume X-Z plane symmetric
+                    GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
+                    actor        = generate_vtk_object(GEOM.PTS) 
+                    vtk_data     = actor.GetMapper().GetInput() 
+                    pyvista_mesh = pv.wrap(vtk_data)                      
+                    plotter.add_mesh(pyvista_mesh,color= cabin_rgb_color,opacity= cabin_opacity)
                 
 
     # -------------------------------------------------------------------------  
