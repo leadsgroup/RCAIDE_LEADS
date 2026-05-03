@@ -14,11 +14,12 @@ from RCAIDE.Library.Plots.Geometry.generate_3d_fuel_tank_points import *
 from RCAIDE.Library.Plots.Geometry.plot_3d_rotor                import generate_3d_blade_points
 from RCAIDE.Library.Plots.Geometry.generate_3d_nacelle_points   import *
 from RCAIDE.Library.Plots.Geometry.generate_3d_lopa_points      import generate_3d_lopa_points
+from RCAIDE.Library.Plots.Geometry.generate_3d_torus_points     import generate_3d_torus_points
 from RCAIDE.Library.Plots.Geometry.generate_3d_cuboid_points    import generate_3d_cuboid_points
 from RCAIDE.Library.Plots.Geometry.generate_3d_propulsor_points import generate_3d_propulsor_points
 from RCAIDE.Library.Plots.Geometry.generate_3d_cabin_points     import generate_3d_cabin_points
 from RCAIDE.Library.Methods.Geometry.Planform                   import fuselage_planform, wing_planform , compute_fuel_volume  
-from RCAIDE.Library.Methods.Geometry.Cabin                       import compute_layout_of_passenger_accommodations  
+from RCAIDE.Library.Methods.Geometry.LOPA                       import compute_layout_of_passenger_accommodations  
 
 # python imports 
 import numpy as np  
@@ -47,6 +48,7 @@ def plot_3d_vehicle(vehicle,
                     systems_color               = 'black',
                     propulsor_color             = 'black',
                     cabin_color                 = 'blue',
+                    landing_gear_color          = 'grey',
                     plot_actuator_disc          = False,
                     show_LOPA                   = True, 
                     wing_opacity                = 0.5, 
@@ -60,7 +62,8 @@ def plot_3d_vehicle(vehicle,
                     battery_opacity             = 1.0, 
                     propulsor_opacity           = 0.5,
                     cabin_opacity               = 0.5,
-                    systems_opacity             = 0.8, 
+                    systems_opacity             = 0.8,
+                    landing_gear_opacity        = 1.0,
                     number_of_airfoil_points    = 101,
                     tessellation                = 96,
                     camera_eye_x                = -1,
@@ -146,9 +149,10 @@ def plot_3d_vehicle(vehicle,
     system_rgb_color     = mcolors.to_rgb(systems_color)
     propulsor_rgb_color  = mcolors.to_rgb(propulsor_color)
     cabin_rgb_color      = mcolors.to_rgb(cabin_color)
+    landing_gear_rgb_color = mcolors.to_rgb(landing_gear_color)
      
     # -------------------------------------------------------------------------
-    # Run Geoemtry Analysis
+    # Run Geometry Analysis
     # -------------------------------------------------------------------------
     L = 0
     geometry =  deepcopy(vehicle)  
@@ -170,6 +174,50 @@ def plot_3d_vehicle(vehicle,
         fuselage_planform(fuselage) 
         L = np.maximum(L, fuselage.lengths.total)
      
+    # -------------------------------------------------------------------------  
+    # Plot landing gear 
+    # ------------------------------------------------------------------------- 
+    for landing_gear in geometry.landing_gears:
+
+        N_t = landing_gear.number_of_gear_types_in_tandem
+        N_w = landing_gear.number_of_wheels_in_gear_type
+
+        D            = landing_gear.tire_diameter
+        d            = landing_gear.rim_diameter
+        w            = landing_gear.tire_width
+        strut_length = landing_gear.strut_length
+        gear_origin  = landing_gear.origin[0]   # [x, y, z] attachment point on aircraft
+
+        # longitudinal spacing between wheels in the same gear type
+        longitudinal_spacing = landing_gear.longitudinal_wheel_spacing * (N_t - 1) if N_t > 1 else 0
+        total_wheel_x_span   = D * (N_t - 1) + longitudinal_spacing
+        wheel_x_offsets      = np.linspace(-total_wheel_x_span / 2, total_wheel_x_span / 2, N_t) if N_t > 1 else np.array([0.0])
+
+        # lateral spacing between gear types in tandem
+        total_wheel_y_span   = w * (N_w - 1) + landing_gear.lateral_wheel_spacing * (N_w - 1) if N_w > 1 else 0
+        wheel_y_offsets      = np.linspace(-total_wheel_y_span / 2, total_wheel_y_span / 2, N_w) if N_w > 1 else np.array([0.0])
+
+        for i in range(N_t):
+            for j in range(N_w):
+                wheel_origin = [
+                    gear_origin[0] + wheel_x_offsets[i],
+                    gear_origin[1] + wheel_y_offsets[j],
+                    gear_origin[2] - strut_length,
+                ]
+                pts          = generate_3d_torus_points(wheel_origin, D, d, w, n_major=20, n_minor=10)
+                actor        = generate_vtk_object(pts)
+                vtk_data     = actor.GetMapper().GetInput()
+                pyvista_mesh = pv.wrap(vtk_data)
+                plotter.add_mesh(pyvista_mesh, color=landing_gear_rgb_color, opacity=landing_gear_opacity)
+
+
+                if landing_gear.xz_plane_symmetric:
+                    wheel_origin[1] = -wheel_origin[1]
+                    pts             = generate_3d_torus_points(wheel_origin, D, d, w, n_major=20, n_minor=10)
+                    actor           = generate_vtk_object(pts)
+                    vtk_data        = actor.GetMapper().GetInput()
+                    pyvista_mesh    = pv.wrap(vtk_data)
+                    plotter.add_mesh(pyvista_mesh, color=landing_gear_rgb_color, opacity=landing_gear_opacity)
     # -------------------------------------------------------------------------  
     # Plot wings
     # -------------------------------------------------------------------------  
@@ -209,8 +257,7 @@ def plot_3d_vehicle(vehicle,
                 actor        = generate_vtk_object(GEOM.PTS) 
                 vtk_data     = actor.GetMapper().GetInput() 
                 pyvista_mesh = pv.wrap(vtk_data)                      
-                plotter.add_mesh(pyvista_mesh,color= cabin_rgb_color,opacity= cabin_opacity)
-                
+                plotter.add_mesh(pyvista_mesh,color= cabin_rgb_color,opacity= cabin_opacity) 
     
                 GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
                 actor        = generate_vtk_object(GEOM.PTS) 

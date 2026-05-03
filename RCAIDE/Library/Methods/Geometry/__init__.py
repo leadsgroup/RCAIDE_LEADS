@@ -10,4 +10,4 @@
 
 from . import Airfoil
 from . import Planform
-from . import Cabin
+from . import LOPA

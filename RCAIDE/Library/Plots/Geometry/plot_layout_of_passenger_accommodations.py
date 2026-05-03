@@ -6,7 +6,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports 
-from RCAIDE.Library.Methods.Geometry.Cabin.compute_layout_of_passenger_accommodations import  compute_layout_of_passenger_accommodations
+from RCAIDE.Library.Methods.Geometry.LOPA.compute_layout_of_passenger_accommodations import  compute_layout_of_passenger_accommodations
 
 # python imports 
 import plotly.graph_objects as go
@@ -16,7 +16,7 @@ import sys
 # ----------------------------------------------------------------------------------------------------------------------
 #  plot_Layout_of_Passenger_Accommodations
 # ---------------------------------------------------------------------------------------------------------------------- 
-def plot_layout_of_passenger_accommodations(fuselage, 
+def plot_layout_of_passenger_accommodations(component, 
                                             save_figure    = False,
                                             show_axes      = False,
                                             fontsize       = 20, 
@@ -25,10 +25,10 @@ def plot_layout_of_passenger_accommodations(fuselage,
     '''
     Plot aircraft layout of passenger accommodations
     '''  
-    if  type(fuselage.layout_of_passenger_accommodations) != np.ndarray: 
-        compute_layout_of_passenger_accommodations(fuselage)
+    if  type(component.layout_of_passenger_accommodations) != np.ndarray: 
+        compute_layout_of_passenger_accommodations(component)
         
-    LOPA = fuselage.layout_of_passenger_accommodations.object_coordinates
+    LOPA = component.layout_of_passenger_accommodations.object_coordinates
     
     fig = go.Figure() 
     # Set axes properties

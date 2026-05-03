@@ -8,7 +8,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Data,  Units 
 from RCAIDE.Library.Methods.Geometry.Planform.fuselage_planform import fuselage_planform
-from RCAIDE.Library.Methods.Geometry.Cabin.compute_layout_of_passenger_accommodations import compute_layout_of_passenger_accommodations
+from RCAIDE.Library.Methods.Geometry.LOPA.compute_layout_of_passenger_accommodations import compute_layout_of_passenger_accommodations
 from RCAIDE.Library.Plots import *
 
 import numpy as np 
