@@ -141,39 +141,12 @@ def generate_integral_wing_tank_points(wing, n_points, segment_list,fuel_tank):
             section_twist[i,:,0,0] = np.cos(twist)
             section_twist[i,:,0,2] = np.sin(twist)
             section_twist[i,:,2,0] = -np.sin(twist)
-            section_twist[i,:,2,2] =  np.cos(twist)
- 
+            section_twist[i,:,2,2] =  np.cos(twist) 
 
- 
         translation[i, :, 0,:] += segments[current_seg].origin[0][0]
         translation[i, :, 1,:] += segments[current_seg].origin[0][1]
         translation[i, :, 2,:] += segments[current_seg].origin[0][2]  
 
-        # if i == n_segments:
-        #     # compute tip translation from sweep and dihedral
-        #     prev_seg = list(segments.keys())[i-2]
-
-        #     sweep    = wing.segments[prev_seg].sweeps.leading_edge
-        #     dihedral = wing.segments[prev_seg].dihedral_outboard
-
-        #     segment_percent_span =  wing.segments[current_seg].percent_span_location  -  wing.segments[prev_seg].percent_span_location
-        #     if wing.vertical:
-        #         dz = semispan*segment_percent_span
-        #         dy = dz*np.tan(dihedral)
-        #         l  = dz/np.cos(dihedral)
-        #         dx = l*np.tan(sweep)
-        #     else:
-        #         dy = semispan*segment_percent_span
-        #         dz = dy*np.tan(dihedral)
-        #         l  = dy/np.cos(dihedral)
-        #         dx = l*np.tan(sweep)
-        #     translation[i,:,0,:] = translation[i-1,:,0,:] + dx
-        #     translation[i,:,1,:] = translation[i-1,:,1,:] + dy
-        #     translation[i,:,2,:] = translation[i-1,:,2,:] + dz
-
-        # elif i == n_segments + 1:
-        #     translation[i,:,:,:] = translation[i-1,:,:,:]
- 
     mat     = translation + np.matmul(section_twist ,pts)
     
     # ---------------------------------------------------------------------------------------------
