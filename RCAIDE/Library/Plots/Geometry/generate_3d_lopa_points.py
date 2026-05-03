@@ -1,10 +1,19 @@
 # RCAIDE/Library/Plots/Geometry/generate_3d_lopa_points.py
 #
-# Created: Oct 2025, S Shekar
+# Created: Oct 2025, S Shekar 
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------  
+# RCAIDE imports
+from RCAIDE.Framework.Core import Data 
 import numpy as np
 import vtk
 import matplotlib.colors as mcolors
-from RCAIDE.Framework.Core import Data
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  PLOTS
+# ----------------------------------------------------------------------------------------------------------------------  
 def generate_3d_lopa_points(structure):
     """
     Generate VTK geometry for Layout Of Passenger Accommodation (LOPA).

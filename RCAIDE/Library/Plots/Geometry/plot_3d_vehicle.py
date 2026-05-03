@@ -204,7 +204,7 @@ def plot_3d_vehicle(vehicle,
                     gear_origin[1] + wheel_y_offsets[j],
                     gear_origin[2] - strut_length,
                 ]
-                pts          = generate_3d_torus_points(wheel_origin, D, d, w, n_major=20, n_minor=10)
+                pts          = generate_3d_torus_points(wheel_origin, D, d, w, tessellation= 24)
                 actor        = generate_vtk_object(pts)
                 vtk_data     = actor.GetMapper().GetInput()
                 pyvista_mesh = pv.wrap(vtk_data)
@@ -213,11 +213,12 @@ def plot_3d_vehicle(vehicle,
 
                 if landing_gear.xz_plane_symmetric:
                     wheel_origin[1] = -wheel_origin[1]
-                    pts             = generate_3d_torus_points(wheel_origin, D, d, w, n_major=20, n_minor=10)
+                    pts             = generate_3d_torus_points(wheel_origin, D, d, w, tessellation= 24)
                     actor           = generate_vtk_object(pts)
                     vtk_data        = actor.GetMapper().GetInput()
                     pyvista_mesh    = pv.wrap(vtk_data)
                     plotter.add_mesh(pyvista_mesh, color=landing_gear_rgb_color, opacity=landing_gear_opacity)
+
     # -------------------------------------------------------------------------  
     # Plot wings
     # -------------------------------------------------------------------------  
@@ -412,7 +413,7 @@ def plot_3d_vehicle(vehicle,
 
                     if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank:  
                         seg_bounds   = fuel_tank.segments_bounding_tank   
-                        GEOM         = generate_integral_wing_tank_points(wing,5,seg_bounds,fuel_tank)
+                        GEOM         = generate_integral_wing_tank_points(wing,number_of_airfoil_points,seg_bounds,fuel_tank)
                         actor        = generate_vtk_object(GEOM.PTS) 
                         vtk_data     = actor.GetMapper().GetInput() 
                         pyvista_mesh = pv.wrap(vtk_data)                      
