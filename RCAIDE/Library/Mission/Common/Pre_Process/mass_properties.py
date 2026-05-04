@@ -260,7 +260,6 @@ def mass_properties_preprocess_routine(segment, i = 0):
                     apply_correction_factors(analyses)
                     apply_component_weights(analyses)
 
-                    analyses.vehicle.mass_properties.takeoff         = analyses.vehicle.mass_properties.operating_empty + analyses.vehicle.mass_properties.payload + analyses.vehicle.mass_properties.fuel                    
                     mew_max_zero_fuel                                = analyses.vehicle.mass_properties.operating_empty + analyses.vehicle.mass_properties.max_payload
                     residual_max_zero_fuel                           = abs(mew_max_zero_fuel - analyses.vehicle.mass_properties.max_zero_fuel)
                     analyses.vehicle.mass_properties.max_zero_fuel   = mew_max_zero_fuel

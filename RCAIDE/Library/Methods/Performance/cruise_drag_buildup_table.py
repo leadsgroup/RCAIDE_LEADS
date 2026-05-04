@@ -235,23 +235,23 @@ def cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cruise", sav
         )
         for i, (name, val) in enumerate(induced_sub) if abs(val) > eps
     ]
-    if parasite_handles:
-        leg1 = ax.legend(
-            handles=parasite_handles,
-            title="Parasite subcomponents",
-            loc="lower right",
-            bbox_to_anchor=(0.99, 0.02),
-            fontsize=14,
-        )
-        ax.add_artist(leg1)
-    if induced_handles:
-        ax.legend(
-            handles=induced_handles,
-            title="Induced subcomponents",
-            loc="lower right",
-            bbox_to_anchor=(0.99, 0.42),
-            fontsize=14,
-        )
+    # if parasite_handles:
+    #     leg1 = ax.legend(
+    #         handles=parasite_handles,
+    #         title="Parasite subcomponents",
+    #         loc="lower right",
+    #         bbox_to_anchor=(0.99, 0.02),
+    #         fontsize=14,
+    #     )
+    #     ax.add_artist(leg1)
+    # if induced_handles:
+    #     ax.legend(
+    #         handles=induced_handles,
+    #         title="Induced subcomponents",
+    #         loc="lower right",
+    #         bbox_to_anchor=(0.99, 0.42),
+    #         fontsize=14,
+    #     )
     set_axes(ax)
     plt.tight_layout()
     fig.tight_layout()

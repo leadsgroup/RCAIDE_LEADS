@@ -1,271 +1,209 @@
 # RCAIDE/Library/Plots/Geometry/plot_Layout_of_Passenger_Accommodations.py
-#  
-# Created:  Mar 2025, M. Clarke 
+#
+# Created:  Mar 2025, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-# RCAIDE imports 
-from RCAIDE.Library.Methods.Geometry.LOPA.compute_layout_of_passenger_accommodations import  compute_layout_of_passenger_accommodations
+from RCAIDE.Library.Methods.Geometry.LOPA.compute_layout_of_passenger_accommodations import compute_layout_of_passenger_accommodations
 
-# python imports 
-import plotly.graph_objects as go
-import numpy as  np
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+from matplotlib.patches import FancyBboxPatch
+import numpy as np
 import os
 import sys
+
 # ----------------------------------------------------------------------------------------------------------------------
-#  plot_Layout_of_Passenger_Accommodations
-# ---------------------------------------------------------------------------------------------------------------------- 
-def plot_layout_of_passenger_accommodations(fuselage, 
-                                            save_figure    = False,
-                                            show_axes      = False,
-                                            fontsize       = 20, 
-                                            save_filename  = "Aircraft_LOPA", 
-                                            show_figure    = True):
-    '''
-    Plot aircraft layout of passenger accommodations
-    '''  
-    if  type(fuselage.layout_of_passenger_accommodations) != np.ndarray: 
+#  plot_layout_of_passenger_accommodations
+# ----------------------------------------------------------------------------------------------------------------------
+def plot_layout_of_passenger_accommodations(fuselage,
+                                            save_figure   = False,
+                                            show_axes     = False,
+                                            fontsize      = 12,
+                                            save_filename = "Aircraft_LOPA",):
+    '''Plot aircraft layout of passenger accommodations using matplotlib.'''
+
+    if type(fuselage.layout_of_passenger_accommodations) != np.ndarray:
         compute_layout_of_passenger_accommodations(fuselage)
-        
+
     LOPA = fuselage.layout_of_passenger_accommodations.object_coordinates
-    
-    fig = go.Figure() 
-    # Set axes properties
-    fig.update_xaxes(range=[min(LOPA[:,2]) - 1 , max(LOPA[:,2]) + 1], showgrid=True)
-    fig.update_yaxes(range=[ min(LOPA[:,3]) - 1, max(LOPA[:,3])  + 1], showgrid=True)  
-    fig.update_yaxes(
-        scaleanchor = "x",
-        scaleratio = 1,)    
-        
-    # Step 1: plot cabin bounds  
-    # get points at x min 
-    x_min_locs   =  np.where( LOPA[:,2] == min(LOPA[:,2]))[0]
-    x_min        =  LOPA[x_min_locs[0],2] -  LOPA[x_min_locs[0],5]/2
-    x_min_y_max  =  max(LOPA[x_min_locs,3] + LOPA[x_min_locs,6]/2 )
-    x_min_y_min  =  min(LOPA[x_min_locs,3] - LOPA[x_min_locs,6]/2 ) 
-    x_border_pts = [x_min, x_min] 
-    y_border_pts = [x_min_y_min, x_min_y_max] 
 
-    # get points at y max 
-    y_max_locs   =  np.where( LOPA[:,3] == max(LOPA[:,3]))[0]
-    y_max        =  LOPA[y_max_locs[0],3] + LOPA[y_max_locs[0],6]/2 
-    y_max_x_max  =  max(LOPA[y_max_locs,2] + LOPA[y_max_locs[0],5]/2)
-    y_max_x_min  =  min(LOPA[y_max_locs,2] - LOPA[y_max_locs[0],5]/2) 
-    x_border_pts.append(y_max_x_min)
-    x_border_pts.append(y_max_x_max)
-    y_border_pts.append(y_max)
-    y_border_pts.append(y_max) 
+    # ── Color palette ──────────────────────────────────────────────────────────
+    COLORS = {
+        'economy':          '#5B9BD5',   # calm blue
+        'economy_exit':     '#2E75B6',   # darker blue for exit rows
+        'business':         '#70AD47',   # green
+        'business_exit':    '#375623',   # dark green for exit rows
+        'first':            '#ED7D31',   # warm orange
+        'first_exit':       '#843C0C',   # dark orange for exit rows
+        'galley_lav':       '#A5A5A5',   # neutral grey
+        'cabin_fill':       '#F5F5F0',   # off-white cabin interior
+        'cabin_edge':       '#1F3864',   # dark navy outline
+    }
 
-    # get points at x max 
-    x_max_locs   =  np.where( LOPA[:,2] == max(LOPA[:,2]))[0]
-    x_max        =  LOPA[x_max_locs[0],2] + LOPA[x_max_locs[0],5]/2
-    x_max_y_max  =  max(LOPA[x_max_locs,3] + LOPA[x_max_locs,6]/2)
-    x_max_y_min  =  min(LOPA[x_max_locs,3] - LOPA[x_max_locs,6]/2)  
-    x_border_pts.append(x_max)
-    x_border_pts.append(x_max)
-    y_border_pts.append(x_max_y_max)
-    y_border_pts.append(x_max_y_min)
-    
-    # get points at y min  
-    y_min_locs   =  np.where( LOPA[:,3] == min(LOPA[:,3]))[0]
-    y_min        =  LOPA[y_min_locs[0],3] - LOPA[y_min_locs[0],6]/2 
-    y_min_x_max  =  max(LOPA[y_min_locs,2] + LOPA[y_min_locs[0],5]/2)
-    y_min_x_min  =  min(LOPA[y_min_locs,2] - LOPA[y_min_locs[0],5]/2)
-    x_border_pts.append(y_min_x_max)  
-    x_border_pts.append(y_min_x_min)
-    y_border_pts.append(y_min)
-    y_border_pts.append(y_min)    
-    
-    # loop through points and determine if there are duplicates
+    # ── Build cabin boundary ────────────────────────────────────────────────────
+    x_min_locs  = np.where(LOPA[:, 2] == min(LOPA[:, 2]))[0]
+    x_min       = LOPA[x_min_locs[0], 2] - LOPA[x_min_locs[0], 5] / 2
+    x_min_y_max = max(LOPA[x_min_locs, 3] + LOPA[x_min_locs, 6] / 2)
+    x_min_y_min = min(LOPA[x_min_locs, 3] - LOPA[x_min_locs, 6] / 2)
+    x_border_pts = [x_min, x_min]
+    y_border_pts = [x_min_y_min, x_min_y_max]
+
+    y_max_locs  = np.where(LOPA[:, 3] == max(LOPA[:, 3]))[0]
+    y_max       = LOPA[y_max_locs[0], 3] + LOPA[y_max_locs[0], 6] / 2
+    y_max_x_max = max(LOPA[y_max_locs, 2] + LOPA[y_max_locs[0], 5] / 2)
+    y_max_x_min = min(LOPA[y_max_locs, 2] - LOPA[y_max_locs[0], 5] / 2)
+    x_border_pts += [y_max_x_min, y_max_x_max]
+    y_border_pts += [y_max, y_max]
+
+    x_max_locs  = np.where(LOPA[:, 2] == max(LOPA[:, 2]))[0]
+    x_max       = LOPA[x_max_locs[0], 2] + LOPA[x_max_locs[0], 5] / 2
+    x_max_y_max = max(LOPA[x_max_locs, 3] + LOPA[x_max_locs, 6] / 2)
+    x_max_y_min = min(LOPA[x_max_locs, 3] - LOPA[x_max_locs, 6] / 2)
+    x_border_pts += [x_max, x_max]
+    y_border_pts += [x_max_y_max, x_max_y_min]
+
+    y_min_locs  = np.where(LOPA[:, 3] == min(LOPA[:, 3]))[0]
+    y_min       = LOPA[y_min_locs[0], 3] - LOPA[y_min_locs[0], 6] / 2
+    y_min_x_max = max(LOPA[y_min_locs, 2] + LOPA[y_min_locs[0], 5] / 2)
+    y_min_x_min = min(LOPA[y_min_locs, 2] - LOPA[y_min_locs[0], 5] / 2)
+    x_border_pts += [y_min_x_max, y_min_x_min]
+    y_border_pts += [y_min, y_min]
+
     y_border_pts = np.array(y_border_pts)
     x_border_pts = np.array(x_border_pts)
-    # cut where y is negative
-    port_idxs  =  np.where(y_border_pts<0)[0]
-    starboard_x_points = np.delete(x_border_pts, port_idxs) 
-    starboard_y_points = np.delete(y_border_pts, port_idxs)
-     
-    fig.add_trace(go.Scatter(
-        x=starboard_x_points, 
-        y=starboard_y_points, 
-        mode='lines',
-        name='Line 1',
-        line_color="darkblue", 
-        fill=None 
-    ))
-    
-    fig.add_trace(go.Scatter(
-        x=starboard_x_points, 
-        y=-starboard_y_points, 
-        mode='lines',
-        name='Line 2',
-        line_color="darkblue", 
-        fill='tonexty'
-    ))
-    
-     
-    # Step 2: plot seats
-    economoy_seat_colors = ["steelblue", "deepskyblue", "skyblue" ]
-    business_seat_colors = ["seagreen", "mediumseagreen", "lightseagreen" ]
-    first_seat_colors    = ["indianred", "lightcoral", "lightpink" ]
-    lavatory_color       = ["sandybrown"]
-   
+    port_idxs    = np.where(y_border_pts < 0)[0]
+    sb_x = np.delete(x_border_pts, port_idxs)
+    sb_y = np.delete(y_border_pts, port_idxs)
+
+    # ── Figure setup ───────────────────────────────────────────────────────────
+    x_span = max(LOPA[:, 2]) - min(LOPA[:, 2])
+    y_span = max(LOPA[:, 3]) - min(LOPA[:, 3])
+    fig_w  = max(14, x_span * 0.5)
+    fig_h  = max(5,  y_span * 1 + 1.5)   # extra room for legend
+
+    fig, ax = plt.subplots(figsize=(fig_w, fig_h))
+    fig.patch.set_facecolor('white')
+    ax.set_facecolor('white')
+
+    # ── Draw cabin fill ────────────────────────────────────────────────────────
+    cabin_x = np.concatenate([sb_x, sb_x[::-1]])
+    cabin_y = np.concatenate([sb_y, -sb_y[::-1]])
+    ax.fill(cabin_x, cabin_y, color=COLORS['cabin_fill'], zorder=0)
+    ax.plot(sb_x,  sb_y,  color=COLORS['cabin_edge'], linewidth=1.8, zorder=1)
+    ax.plot(sb_x, -sb_y,  color=COLORS['cabin_edge'], linewidth=1.8, zorder=1)
+
+    # ── Draw seats & galleys ────────────────────────────────────────────────────
+    legend_shown = {'economy': False,
+                    'business': False, 'business_exit': False,
+                    'first': False, 'first_exit': False,
+                    'galley_lav': False}
+
+    def _draw_rect(ax, x_c, y_c, s_l, s_w, facecolor, edgecolor, label_key):
+        x0, y0 = x_c - s_l / 2, y_c - s_w / 2
+        rect = FancyBboxPatch(
+            (x0 + 0.01, y0 + 0.01), s_l - 0.02, s_w - 0.02,
+            boxstyle="round,pad=0.01",
+            linewidth=0.8,
+            edgecolor=edgecolor,
+            facecolor=facecolor,
+            zorder=2,
+        )
+        ax.add_patch(rect)
+        legend_shown[label_key] = True
+
     for i in range(len(LOPA)):
-        x_center     = LOPA[i,2]
-        y_center     = LOPA[i,3] 
-        s_l          = LOPA[i,5]
-        s_w          = LOPA[i,6] 
-        F_c          = LOPA[i,7]       
-        B_c          = LOPA[i,8] 
-        E_c          = LOPA[i,9]
-        seat         = LOPA[i,10] 
-        Em_row       = LOPA[i,11]
-        Gal_Lav      = LOPA[i,12]
-        
-        if E_c == 1.0: 
-            if seat == 1.0: 
-                x0_pt = x_center - s_l / 2
-                x1_pt = x_center + s_l / 2
-                y0_pt = y_center - s_w / 2
-                y1_pt = y_center + s_w / 2
-                
-                if Em_row == 1.0:
-                    
-                    fig.add_shape(type="rect",
-                        x0=x0_pt, y0=y0_pt, x1=x1_pt, y1=y1_pt,
-                        line=dict(
-                            color=economoy_seat_colors[0],
-                            width=2,
-                        ),
-                        fillcolor= economoy_seat_colors[1],
-                    )
-                    
-                else: 
-                    fig.add_shape(type="rect",
-                        x0=x0_pt, y0=y0_pt, x1=x1_pt, y1=y1_pt,
-                        line=dict(
-                            color=economoy_seat_colors[0],
-                            width=2,
-                        ),
-                        fillcolor=economoy_seat_colors[2],
-                    )
-        if B_c == 1: 
-            if seat == 1: 
-                x0_pt = x_center - s_l / 2
-                x1_pt = x_center + s_l / 2
-                y0_pt = y_center - s_w / 2
-                y1_pt = y_center + s_w / 2
-                
-                if Em_row == 1:
-                    
-                    fig.add_shape(type="rect",
-                        x0=x0_pt, y0=y0_pt, x1=x1_pt, y1=y1_pt,
-                        line=dict(
-                            color=business_seat_colors[0],
-                            width=2,
-                        ),
-                        fillcolor=business_seat_colors[1],
-                    )
-                    
-                else:
-                    
-                    fig.add_shape(type="rect",
-                        x0=x0_pt, y0=y0_pt, x1=x1_pt, y1=y1_pt,
-                        line=dict(
-                            color=business_seat_colors[0],
-                            width=2,
-                        ),
-                        fillcolor=business_seat_colors[2],
-                    )                    
-    
-        if F_c == 1: 
-            if seat == 1: 
-                x0_pt = x_center - s_l / 2
-                x1_pt = x_center + s_l / 2
-                y0_pt = y_center - s_w / 2
-                y1_pt = y_center + s_w / 2
-                
-                if Em_row == 1:
-                    
-                    fig.add_shape(type="rect",
-                        x0=x0_pt, y0=y0_pt, x1=x1_pt, y1=y1_pt,
-                        line=dict(
-                            color=first_seat_colors[0],
-                            width=2,
-                        ),
-                        fillcolor=first_seat_colors[1],
-                    )
-                    
-                else:
-                    
-                    fig.add_shape(type="rect",
-                        x0=x0_pt, y0=y0_pt, x1=x1_pt, y1=y1_pt,
-                        line=dict(
-                            color=first_seat_colors[0],
-                            width=2,
-                        ),
-                        fillcolor=first_seat_colors[2],
-                    )    
-     
-        if Gal_Lav == 1:
-            x0_pt = x_center - s_l / 2
-            x1_pt = x_center + s_l / 2
-            y0_pt = y_center - s_w / 2
-            y1_pt = y_center + s_w / 2
-             
-            fig.add_shape(type="rect",
-                x0=x0_pt, y0=y0_pt, x1=x1_pt, y1=y1_pt,
-                line=dict(
-                    color=lavatory_color[0],
-                    width=2,
-                ),
-                fillcolor=lavatory_color[0],
-            )
-        
-    # Apply Times New Roman and black text/axes
+        x_c     = LOPA[i, 2]
+        y_c     = LOPA[i, 3]
+        s_l     = LOPA[i, 5]
+        s_w     = LOPA[i, 6]
+        F_c     = LOPA[i, 7]
+        B_c     = LOPA[i, 8]
+        E_c     = LOPA[i, 9]
+        seat    = LOPA[i, 10]
+        em_row  = LOPA[i, 11]
+        gal_lav = LOPA[i, 12]
+
+        if E_c == 1.0 and seat == 1.0:
+            _draw_rect(ax, x_c, y_c, s_l, s_w,
+                       COLORS['economy'], COLORS['economy_exit'], 'economy')
+
+        elif B_c == 1 and seat == 1:
+            key  = 'business_exit' if em_row == 1 else 'business'
+            fc   = COLORS[key]
+            ec   = COLORS['business_exit']
+            _draw_rect(ax, x_c, y_c, s_l, s_w, fc, ec, key)
+
+        elif F_c == 1 and seat == 1:
+            key  = 'first_exit' if em_row == 1 else 'first'
+            fc   = COLORS[key]
+            ec   = COLORS['first_exit']
+            _draw_rect(ax, x_c, y_c, s_l, s_w, fc, ec, key)
+
+        elif gal_lav == 1:
+            _draw_rect(ax, x_c, y_c, s_l, s_w,
+                       COLORS['galley_lav'], '#606060', 'galley_lav')
+
+    # ── Axes formatting ────────────────────────────────────────────────────────
+    ax.set_aspect('equal')
+    pad_x = (max(LOPA[:, 2]) - min(LOPA[:, 2])) * 0.04 + 0.5
+    pad_y = (max(LOPA[:, 3]) - min(LOPA[:, 3])) * 0.15 + 0.5
+    ax.set_xlim(min(LOPA[:, 2]) - pad_x - LOPA[0, 5],
+                max(LOPA[:, 2]) + pad_x + LOPA[0, 5])
+    ax.set_ylim(min(LOPA[:, 3]) - pad_y - LOPA[0, 6],
+                max(LOPA[:, 3]) + pad_y + LOPA[0, 6])
+
+    for spine in ax.spines.values():
+        spine.set_visible(show_axes)
+
     if show_axes:
-        fig.update_layout( 
-            showlegend=False, 
-            xaxis_title= 'x',
-            yaxis_title= 'y', 
-            font=dict(family="Times New Roman", size=fontsize, color="black"),
-            xaxis=dict(
-                showline=True, linewidth=1, linecolor='black',
-                showticklabels=True, tickfont=dict(family="Times New Roman", color="black"),
-                ticks="outside", tickcolor='black'
-            ),
-            yaxis=dict(
-                showline=True, linewidth=1, linecolor='black',
-                showticklabels=True, tickfont=dict(family="Times New Roman", color="black"),
-                ticks="outside", tickcolor='black'
-            ),            
-        )
+        ax.set_xlabel('x (m)', fontsize=fontsize, fontfamily='DejaVu Serif')
+        ax.set_ylabel('y (m)', fontsize=fontsize, fontfamily='DejaVu Serif')
+        ax.tick_params(labelsize=fontsize - 2)
     else:
-        
-        fig.update_layout( 
-            showlegend=False,  
-            font=dict(family="Times New Roman", size=fontsize, color="black"),
-            xaxis=dict(
-                showline=False, linewidth=1, linecolor='white',
-                showticklabels=False, tickfont=dict(family="Times New Roman", color="black"),
-                ticks="outside", tickcolor='white'
-            ),
-            yaxis=dict(
-                showline=False, linewidth=1, linecolor='white',
-                showticklabels=False, tickfont=dict(family="Times New Roman", color="white"),
-                ticks="outside", tickcolor='white'
-            ), 
-            plot_bgcolor="white",  
-            paper_bgcolor="white",           
+        ax.set_xticks([])
+        ax.set_yticks([])
+
+
+
+    # ── Legend ─────────────────────────────────────────────────────────────────
+    legend_labels = {
+        'first':         ('First Class',            COLORS['first'],         COLORS['first_exit']),
+        'first_exit':    ('First Class – Exit Row',  COLORS['first_exit'],    COLORS['first_exit']),
+        'business':      ('Business Class',          COLORS['business'],      COLORS['business_exit']),
+        'business_exit': ('Business Class – Exit Row', COLORS['business_exit'], COLORS['business_exit']),
+        'economy':       ('Economy Class',           COLORS['economy'],       COLORS['economy_exit']),
+        'galley_lav':    ('Galley / Lavatory',       COLORS['galley_lav'],    '#606060'),
+    }
+
+    handles = []
+    for key, (label, fc, ec) in legend_labels.items():
+        if legend_shown[key]:
+            handles.append(mpatches.Patch(
+                facecolor=fc, edgecolor=ec, linewidth=1.2, label=label))
+
+    if handles:
+        leg = ax.legend(
+            handles=handles,
+            loc='upper left',
+            bbox_to_anchor=(1.01, 1.0),
+            borderaxespad=0,
+            frameon=True,
+            framealpha=0.95,
+            edgecolor='#CCCCCC',
+            fontsize=fontsize - 1,
+            title='Seat Class',
+            title_fontsize=fontsize,
         )
-                      
-                    
-    # Use the first path from sys.path
-    save_filename = os.path.join(sys.path[0], save_filename)
+        leg.get_title().set_fontweight('bold')
+
+    fig.tight_layout()
+
+    # ── Save / show ────────────────────────────────────────────────────────────
+    save_path = os.path.join(sys.path[0], save_filename)
     if save_figure:
-        fig.write_image(save_filename + ".png")
-        
-    if show_figure:
-        fig.write_html( save_filename + '.html', auto_open=True) 
-     
-    return 
+        fig.savefig(save_path + '.png', dpi=200, bbox_inches='tight',
+                    facecolor='white')
+
+    return fig, ax
