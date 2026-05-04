@@ -15,7 +15,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  generate_3d_cabin_points
 # ----------------------------------------------------------------------------------------------------------------------   
-def generate_3d_cabin_points(component, n_points):
+def generate_3d_cabin_points(component, n_points,plot_centerline = False):
     """
     Generates 3D coordinate points that define a cabin surface.
 
@@ -63,14 +63,17 @@ def generate_3d_cabin_points(component, n_points):
     """    
 
     if issubclass(type(component), RCAIDE.Library.Components.Wings.Wing): 
-        G = generate_3d_wing_cabin_points(component, n_points)
+        G = generate_3d_wing_cabin_points(component, n_points, plot_centerline)
     else:
         pass
 
     return G
 
-def generate_3d_wing_cabin_points(wing,n_points):  
+def generate_3d_wing_cabin_points(wing, n_points, plot_centerline=False):
     symbolic_cabin_wing =  generate_bwb_cabin_geometry(wing,n_points)
+
+    LOPA_origin   = wing.layout_of_passenger_accommodations.origin
+    LOPA_origin_z = LOPA_origin[0][2]
       
     # obtain the geometry for each segment in a loop                                            
     symm                 = wing.xz_plane_symmetric
@@ -165,7 +168,11 @@ def generate_3d_wing_cabin_points(wing,n_points):
             translation[i,:,2,:] = translation[i-1,:,2,:] + dz  
  
     mat     = translation + np.matmul(section_twist ,pts)
-    
+    mat[:, :, 2, 0] = np.maximum(mat[:, :, 2, 0], LOPA_origin_z)
+
+    if not plot_centerline:
+        mat = mat[1:, :, :, :]
+
     # ---------------------------------------------------------------------------------------------
     # create empty data structure for storing geometry
     G = Data()
@@ -274,9 +281,7 @@ def generate_bwb_cabin_geometry(wing, n_points):
         x_coords[x_coords > x_te] = x_te
 
         x_coords = (x_coords - wing_segment.origin[0][0]) / (local_chord)
-        
         y_coords =  geometry.y_coordinates  * wing.outer_mold_line_cabin_offset_factor 
-        y_coords[y_coords<0] =  0
 
         section_y = wing_segment.percent_span_location * wing.spans.projected / 2
 

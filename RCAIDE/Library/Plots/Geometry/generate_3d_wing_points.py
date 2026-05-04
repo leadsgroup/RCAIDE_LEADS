@@ -15,7 +15,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  generate_3d_wing_points
 # ----------------------------------------------------------------------------------------------------------------------   
-def generate_3d_wing_points(wing, n_points, dim):
+def generate_3d_wing_points(wing, n_points, dim,plot_centerline = False):
     """
     Generates 3D coordinate points that define a wing surface.
 
@@ -29,6 +29,9 @@ def generate_3d_wing_points(wing, n_points, dim):
         
     dim : int
         Number of wing segments plus one
+
+    plot_centerline : bool, optional
+        Include the root centerline cap section in the output, default False
 
     Returns
     -------
@@ -152,7 +155,10 @@ def generate_3d_wing_points(wing, n_points, dim):
             translation[i,:,:,:] = translation[i-1,:,:,:]
  
     mat     = translation + np.matmul(section_twist ,pts)
-    
+
+    if not plot_centerline:
+        mat = mat[1:, :, :, :]
+
     # ---------------------------------------------------------------------------------------------
     # create empty data structure for storing geometry
     G = Data()

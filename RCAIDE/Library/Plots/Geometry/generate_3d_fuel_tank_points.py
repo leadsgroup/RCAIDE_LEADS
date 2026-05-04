@@ -20,7 +20,7 @@ from shapely import Polygon
 # ----------------------------------------------------------------------------------------------------------------------
 #  generate_integral_wing_tank_points
 # ----------------------------------------------------------------------------------------------------------------------  
-def generate_integral_wing_tank_points(wing, n_points, segment_list,fuel_tank):
+def generate_integral_wing_tank_points(wing, n_points, segment_list,fuel_tank,plot_centerline = False):
     """
     Generates 3D coordinate points that define a wing surface.
 
@@ -33,7 +33,10 @@ def generate_integral_wing_tank_points(wing, n_points, segment_list,fuel_tank):
         Number of points used to discretize airfoil sections
         
     dim : int
-        Number of wing segments 
+        Number of wing segments
+
+    plot_centerline : bool, optional
+        Include the root centerline cap section in the output, default False
 
     Returns
     -------
@@ -148,7 +151,10 @@ def generate_integral_wing_tank_points(wing, n_points, segment_list,fuel_tank):
         translation[i, :, 2,:] += segments[current_seg].origin[0][2]  
 
     mat     = translation + np.matmul(section_twist ,pts)
-    
+
+    if not plot_centerline:
+        mat = mat[1:, :, :, :]
+
     # ---------------------------------------------------------------------------------------------
     # create empty data structure for storing geometry
     G = Data()

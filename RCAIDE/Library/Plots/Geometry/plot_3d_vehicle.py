@@ -37,6 +37,7 @@ def plot_3d_vehicle(vehicle,
                     top_view                    = False, 
                     side_view                   = False, 
                     front_view                  = False,   
+                    plot_centerline             = False,
                     wing_color                  = 'grey', 
                     fuselage_color              = 'grey', 
                     boom_color                  = 'grey', 
@@ -47,7 +48,7 @@ def plot_3d_vehicle(vehicle,
                     battery_color               = 'green',
                     systems_color               = 'black',
                     propulsor_color             = 'black',
-                    cabin_color                 = 'blue',
+                    cabin_color                 = 'white',
                     landing_gear_color          = 'grey',
                     plot_actuator_disc          = False,
                     show_LOPA                   = True, 
@@ -61,7 +62,7 @@ def plot_3d_vehicle(vehicle,
                     cargo_bay_opacity           = 0.6, 
                     battery_opacity             = 1.0, 
                     propulsor_opacity           = 0.5,
-                    cabin_opacity               = 0.5,
+                    cabin_opacity               = 0.75,
                     systems_opacity             = 0.8,
                     landing_gear_opacity        = 1.0,
                     number_of_airfoil_points    = 101,
@@ -225,7 +226,7 @@ def plot_3d_vehicle(vehicle,
     for wing in geometry.wings:
         n_segments = len(wing.segments)
         dim        = n_segments if n_segments > 0 else 2
-        GEOM       = generate_3d_wing_points(wing, number_of_airfoil_points, dim)
+        GEOM       = generate_3d_wing_points(wing, number_of_airfoil_points, dim,plot_centerline = False)
         actor        = generate_vtk_object(GEOM.PTS) 
         vtk_data     = actor.GetMapper().GetInput() 
         pyvista_mesh = pv.wrap(vtk_data)                      
@@ -254,7 +255,7 @@ def plot_3d_vehicle(vehicle,
                 lopa_geom = generate_3d_lopa_points(wing)
                 add_lopa_seats(plotter, lopa_geom, lopa_opacity)
                  
-                GEOM         = generate_3d_cabin_points(wing, number_of_airfoil_points)
+                GEOM         = generate_3d_cabin_points(wing, number_of_airfoil_points,plot_centerline = False)
                 actor        = generate_vtk_object(GEOM.PTS) 
                 vtk_data     = actor.GetMapper().GetInput() 
                 pyvista_mesh = pv.wrap(vtk_data)                      
@@ -290,8 +291,7 @@ def plot_3d_vehicle(vehicle,
             actor        = generate_vtk_object(GEOM.PTS) 
             vtk_data     = actor.GetMapper().GetInput() 
             pyvista_mesh = pv.wrap(vtk_data)                      
-            plotter.add_mesh(pyvista_mesh,color= system_rgb_color,opacity= systems_opacity)   
-
+            plotter.add_mesh(pyvista_mesh,color= system_rgb_color,opacity= systems_opacity)    
 
     # -------------------------------------------------------------------------  
     # Plot cargo bay
@@ -385,7 +385,7 @@ def plot_3d_vehicle(vehicle,
                             plotter.add_mesh(pyvista_mesh,color= fuel_tank_rgb_color,opacity= fuel_tank_opacity)  
                         elif issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank) and fuel_tank.geometry_type == 'conformal':
                             seg_bounds   = fuel_tank.segments_bounding_tank   
-                            GEOM         = generate_integral_wing_tank_points(wing,5,seg_bounds,fuel_tank)
+                            GEOM         = generate_integral_wing_tank_points(wing,number_of_airfoil_points,seg_bounds,fuel_tank)
                             actor        = generate_vtk_object(GEOM.PTS) 
                             vtk_data     = actor.GetMapper().GetInput() 
                             pyvista_mesh = pv.wrap(vtk_data)                      
@@ -413,7 +413,7 @@ def plot_3d_vehicle(vehicle,
 
                     if type(fuel_tank) == RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank:  
                         seg_bounds   = fuel_tank.segments_bounding_tank   
-                        GEOM         = generate_integral_wing_tank_points(wing,number_of_airfoil_points,seg_bounds,fuel_tank)
+                        GEOM         = generate_integral_wing_tank_points(wing,number_of_airfoil_points,seg_bounds,fuel_tank,plot_centerline = False)
                         actor        = generate_vtk_object(GEOM.PTS) 
                         vtk_data     = actor.GetMapper().GetInput() 
                         pyvista_mesh = pv.wrap(vtk_data)                      
