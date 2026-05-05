@@ -148,14 +148,16 @@ class Liquid_Hydrogen_Tank(Non_Integral_Tank):
             if self.wing_tag != None and self.bwb_aft_tank is False: 
                 compute_wing_non_integral_tank_volume(self, wings[self.wing_tag],fuel_tanks) 
             elif self.wing_tag != None and self.bwb_aft_tank == True: 
-                compute_bwb_aft_tank_volume(self, wings[self.wing_tag] ,fuel_tanks)  
-            compute_cryogenic_cylindrical_tank_volume(self,fuel_tanks)
+                compute_bwb_aft_tank_volume(self, wings[self.wing_tag] ,fuel_tanks)   
+            if hasattr(fuel_tanks,self.tag):
+                compute_cryogenic_cylindrical_tank_volume(self,fuel_tanks) 
         elif self.geometry_type == 'conformal':
             if self.wing_tag != None and self.bwb_aft_tank is False: 
                 compute_wing_integral_prismatic_tank_volume(self, wings[self.wing_tag],fuel_tanks) 
             elif self.wing_tag != None and self.bwb_aft_tank == True: 
                 compute_bwb_aft_integral_prismatic_tank_volume(self, wings[self.wing_tag],fuel_tanks)  
-            compute_cryogenic_tank_conformal_volume(self,fuel_tanks)
+            if hasattr(fuel_tanks,self.tag):
+                compute_cryogenic_tank_conformal_volume(self,fuel_tanks)
         else:
             raise NotImplementedError 
         return
