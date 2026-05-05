@@ -22,9 +22,10 @@ def discretize_wing(wing, num_elements):
     Y_elems = (Y_nodes[:-1] + Y_nodes[1:]) / 2
     
     # Calculate element-centered arrays
-    chord_elems = (geom['chord_nodes'][:-1] + geom['chord_nodes'][1:]) / 2
-    spar_f_elems = (geom['spar_f_nodes'][:-1] + geom['spar_f_nodes'][1:]) / 2
-    spar_r_elems = (geom['spar_r_nodes'][:-1] + geom['spar_r_nodes'][1:]) / 2
+    chord_elems     = (geom['chord_nodes'][:-1] + geom['chord_nodes'][1:]) / 2
+    spar_f_elems    = (geom['spar_f_nodes'][:-1] + geom['spar_f_nodes'][1:]) / 2
+    spar_r_elems    = (geom['spar_r_nodes'][:-1] + geom['spar_r_nodes'][1:]) / 2
+    t_c_elems       = (geom['t_c_nodes'][:-1] + geom['t_c_nodes'][1:]) / 2
     
     discretized_params = Data(
         X_nodes             = X_nodes,
@@ -43,6 +44,7 @@ def discretize_wing(wing, num_elements):
         chord_elems         = chord_elems,
         spar_f_elems        = spar_f_elems,
         spar_r_elems        = spar_r_elems,
+        t_c_elems           = t_c_elems,
     )
     return discretized_params
 

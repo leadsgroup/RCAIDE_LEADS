@@ -23,15 +23,7 @@ def compute_multisegment_geometry(wing, total_elements):
 
     symmetric = wing.xz_plane_symmetric
     semi_span = wing.spans.projected / (1 + symmetric)
-    #segments = wing_config['segments']
     
-    # 1. VALIDATION CHECK (Ensure C0 Continuity)
-    # for i in range(len(segments) - 1):
-    #     if not np.isclose(segments[i]['chord_tip'], segments[i+1]['chord_root']):
-    #         raise ValueError(f"Geometry Error: Discontinuity at Seg {i+1}-{i+2} boundary. Tip chord ({segments[i]['chord_tip']}m) != Root chord ({segments[i+1]['chord_root']}m).")
-    #     if not np.isclose(segments[i]['twist_tip'], segments[i+1]['twist_root']):
-    #         raise ValueError(f"Geometry Error: Discontinuity at Seg {i+1}-{i+2} boundary. Tip twist ({segments[i]['twist_tip']}°) != Root twist ({segments[i+1]['twist_root']}°).")
-            
     # 2. PROPORTIONAL MESHING
     total_span = semi_span
     # Assign elements proportionally, ensuring a minimum of 5 elements per segment
@@ -87,7 +79,7 @@ def compute_multisegment_geometry(wing, total_elements):
         y_local = np.linspace(0, L_spar, n_nodes)
         c_arr   = np.linspace(inboard_seg.root_chord_percent*wing.chords.root, outboard_seg.root_chord_percent*wing.chords.root, n_nodes)
         tw_arr  = np.linspace(inboard_seg.twist, outboard_seg.twist, n_nodes)
-        t_c_arr = np.linspace(inboard_seg.thickness_ratio, outboard_seg.thickness_ratio, n_nodes)
+        t_c_arr = np.linspace(inboard_seg.thickness_to_chord, outboard_seg.thickness_to_chord, n_nodes)
         
         # Transform local spar distance into Global X, Y, Z
         # We start from the exact (X,Y,Z) where the last segment ended
@@ -106,7 +98,7 @@ def compute_multisegment_geometry(wing, total_elements):
         t_c_nodes = np.hstack(( t_c_nodes , np.atleast_2d(t_c_arr)))
         # Store element-wise angles for the rotation matrices later 
 
-        # onky add sweep and dihedral nodes for the last segment to avoid duplicates at segment boundaries
+        # only add sweep and dihedral nodes for the last segment to avoid duplicates at segment boundaries
         if i+1 == len(wing.segments)-1: 
             sweep_nodes     = np.hstack((sweep_nodes ,np.ones((1, n_nodes))*sweep_mid_rad))
             dihedral_nodes  = np.hstack((dihedral_nodes  ,np.ones((1, n_nodes))*dihedral_rad ))
@@ -120,7 +112,6 @@ def compute_multisegment_geometry(wing, total_elements):
             X_nodes = X_nodes[:, :-1]
             Y_nodes = Y_nodes[:, :-1]
             Z_nodes = Z_nodes[:, :-1]   
-
             spar_f_nodes = spar_f_nodes[:, :-1]       
             spar_r_nodes = spar_r_nodes[:, :-1]
             chord_nodes  = chord_nodes[:, :-1]  
