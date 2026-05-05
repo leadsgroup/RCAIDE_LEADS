@@ -163,6 +163,9 @@ def compute_cryogenic_cylindrical_tank_volume(fuel_tank,fuel_tanks):
         # Compute estimated outer volume of tank based on current inner geometry and insulation thickness
         L_outer = (2 * r_outer * fuel_tank.aspect_ratio)-2*r_outer
         V_outer_estimated =  np.pi * r_outer**2 * L_outer + (4.0/3.0) * np.pi * r_outer**3
+        fuel_tank.fuel.volume_properties.net_volume    = V_guess
+        fuel_tank.fuel.volume_properties.gross_volume  = V_total
+        fuel_tank.fuel.mass_properties.mass            = float(V_guess *  fuel_tank.fuel.density)  
 
         # compute error and update guess
         V_error           = V_outer_true - V_outer_estimated
@@ -180,9 +183,6 @@ def compute_cryogenic_cylindrical_tank_volume(fuel_tank,fuel_tanks):
     fuel_tank.inner_structure.inner_length   = L_inner
     fuel_tank.inner_structure.outer_length   =  (2 * r_outer * fuel_tank.aspect_ratio)-2*r_outer
     fuel_tank.insulation_thickness           = t_ins 
-    fuel_tank.fuel.volume_properties.net_volume    = V_guess
-    fuel_tank.fuel.volume_properties.gross_volume  = V_total
-    fuel_tank.fuel.mass_properties.mass            = float(V_guess *  fuel_tank.fuel.density)  
 
     # Insulation geometry and mass
     a_ins = 2 * np.pi * fuel_tank.diameters.external/2 * (fuel_tank.lengths.external) + 4 * np.pi * (fuel_tank.diameters.external/2)**2
