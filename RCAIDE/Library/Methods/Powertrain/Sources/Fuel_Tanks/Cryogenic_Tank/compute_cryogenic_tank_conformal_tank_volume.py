@@ -96,14 +96,18 @@ def compute_cryogenic_tank_conformal_volume(fuel_tank,_):
         h_o_o =   h_o + 2*t_ins
         l_o_o =   l_o + 2*t_ins
         w_o_o =   w_o + 2*t_ins
-
+        
+        # calculate the volume of the tank based on the outer dimensions after insulation, which is the constraint for this problem
         V_calculated = h_o_o * l_o_o * w_o_o
         
+        # true volume of the tank based on the inner dimensions
         V_cuboid =  fuel_tank.average_outer_width *  fuel_tank.average_outer_height *  fuel_tank.average_outer_length
-        error  = V_cuboid - V_calculated
+
+        # compute error and update guess
+        error      = V_cuboid - V_calculated
         rel_error  = error / (V_cuboid)
-        V_guess  += alpha * rel_error 
-        iteration     += 1
+        V_guess    += alpha * rel_error 
+        iteration  += 1
 
     if abs(error) > tol:
         print("[Warning] compute_liquid_hydrogen_tank_volume did not converge within the iteration limit.")

@@ -13,7 +13,7 @@ from RCAIDE.Framework.Core import Units, Data
 # Python imports
 from copy import deepcopy
 import numpy as np
-from scipy.optimize import minimize, minimize_scalar, brentq
+from scipy.optimize import minimize, minimize_scalar, brentq 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Structural Solver
@@ -59,8 +59,7 @@ def compute_cryogenic_cylindrical_tank_volume(fuel_tank,fuel_tanks):
     * Thermal sizing balances convection/radiation with conduction through insulation.
     * Outer-diameter constraint is enforced by iterating on fuel volume until geometry closes.
     * Symmetry doubles volume and material where specified.
-    """
-    
+    """ 
     fuel_tank.wall_thickness = None
     fuel_tank.volume_properties.net_volume = None
 
@@ -91,12 +90,12 @@ def compute_cryogenic_cylindrical_tank_volume(fuel_tank,fuel_tanks):
 
     # Iterative solver loop
     tol       = 1e-5
-    error     = 1e2
+    V_error   = 1e2
     alpha     = 0.5
     iteration = 0
     max_iter  = 10000
 
-    while abs(error) > tol and iteration < max_iter:
+    while abs(V_error) > tol and iteration < max_iter:
         # Compute internal tank geometry
         V_total = V_guess / (1 - fuel_tank.ullage_volume_fraction)  
         r_inner = ( V_total/(2*np.pi*(fuel_tank.aspect_ratio-1/3)) )**(1/3)
@@ -158,18 +157,21 @@ def compute_cryogenic_cylindrical_tank_volume(fuel_tank,fuel_tanks):
                 args=(Ta, PI_Q, fuel_tank, atmo_data,r_outer,r_inner,L_inner)
             ).x[0]
 
-        # Convergence check
-        error                                          = fuel_tank.diameters.external / 2 - (r_outer+t_ins)
-        rel_error                                      = error / (fuel_tank.diameters.external / 2)
-        fuel_tank.fuel.volume_properties.net_volume    = V_guess
-        fuel_tank.fuel.volume_properties.gross_volume  = V_total
-        fuel_tank.fuel.mass_properties.mass            = float(V_guess *  fuel_tank.fuel.density)  
-        V_guess                                       += alpha * rel_error
-        iteration                                     += 1
+        # Compute true outer volume of tank 
+        V_outer_true = np.pi * (fuel_tank.diameters.external/2)**2 * fuel_tank.lengths.external + (4/3) * np.pi * (fuel_tank.diameters.external/2)**3
 
-    if abs(error) > tol:
+        # Compute estimated outer volume of tank based on current inner geometry and insulation thickness
+        L_outer = (2 * r_outer * fuel_tank.aspect_ratio)-2*r_outer
+        V_outer_estimated =  np.pi * r_outer**2 * L_outer + (4.0/3.0) * np.pi * r_outer**3
+
+        # compute error and update guess
+        V_error           = V_outer_true - V_outer_estimated
+        V_guess           += alpha * V_error
+        iteration         += 1
+
+    if abs(V_error) > tol:
         print("[Warning] compute_liquid_hydrogen_tank_volume did not converge within the iteration limit.")
-
+      
     # Store results
     fuel_tank.inner_structure                = Data()
     fuel_tank.inner_structure.thickness      = r_outer -r_inner
@@ -178,6 +180,9 @@ def compute_cryogenic_cylindrical_tank_volume(fuel_tank,fuel_tanks):
     fuel_tank.inner_structure.inner_length   = L_inner
     fuel_tank.inner_structure.outer_length   =  (2 * r_outer * fuel_tank.aspect_ratio)-2*r_outer
     fuel_tank.insulation_thickness           = t_ins 
+    fuel_tank.fuel.volume_properties.net_volume    = V_guess
+    fuel_tank.fuel.volume_properties.gross_volume  = V_total
+    fuel_tank.fuel.mass_properties.mass            = float(V_guess *  fuel_tank.fuel.density)  
 
     # Insulation geometry and mass
     a_ins = 2 * np.pi * fuel_tank.diameters.external/2 * (fuel_tank.lengths.external) + 4 * np.pi * (fuel_tank.diameters.external/2)**2
