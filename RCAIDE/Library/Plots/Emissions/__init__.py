@@ -11,4 +11,5 @@ data from vehicle and mission simulations. It focuses on greenhouse gas emission
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-from .plot_emissions      import  plot_emissions
+from .plot_emissions                import  plot_emissions
+from .plot_contrails_appleman_chart import  plot_contrails_appleman_chart   
