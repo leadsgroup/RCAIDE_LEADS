@@ -168,8 +168,8 @@ def compute_operating_empty_weight(vehicle, settings=None):
         number_of_engines                   += W_propulsion.number_of_engines
         number_of_tanks                     += W_propulsion.number_of_fuel_tanks  
         for propulsor in network.propulsors:
-            propulsor.mass_properties.mass = (W_energy_network.W_engine +W_energy_network.W_thrust_reverser+W_energy_network.W_starter\
-                                            +W_energy_network.W_engine_controls) / number_of_engines
+            propulsor.mass_properties.mass = (W_energy_network.W_engine +W_energy_network.W_thrust_reverser+W_energy_network.W_starter)\
+                                            +W_energy_network.W_engine_controls / number_of_engines
             propulsor.nacelle.mass_properties.mass = W_energy_network.W_nacelle / number_of_engines
         
         # Electric-Powered Propulsors  
@@ -249,13 +249,11 @@ def compute_operating_empty_weight(vehicle, settings=None):
     # Fuselage 
     ##------------------------------------------------------------------------------- 
     W_fuselage_total = 0
-    num_fuse         = 0
     for fuse in vehicle.fuselages:
         W_fuselage = FLOPS.compute_fuselage_weight(vehicle)
         W_fuselage = W_fuselage 
         fuse.mass_properties.mass = W_fuselage
         W_fuselage_total += W_fuselage
-        num_fuse += 1
     
     ##-------------------------------------------------------------------------------                 
     # Landing Gear Weight
@@ -291,9 +289,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
                                                     + output.empty.systems.electrical + output.empty.systems.avionics \
                                                     + output.empty.systems.hydraulics + output.empty.systems.furnishings \
                                                     + output.empty.systems.air_conditioner + output.empty.systems.instruments
-    for fuse in vehicle.fuselages:
-        fuse.mass_properties.mass += output.empty.systems.furnishings/num_fuse
-   
+ 
     output.payload    = payload 
     output.operational_items    = Data()
     output.operational_items    = W_oper 

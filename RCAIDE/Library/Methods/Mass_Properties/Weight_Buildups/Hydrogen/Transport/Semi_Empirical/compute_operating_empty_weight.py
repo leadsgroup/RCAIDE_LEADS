@@ -8,8 +8,9 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Data ,  Units 
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common import compute_payload_weight 
-import RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS as FLOPS
-import RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Hydrogen.Transport.Semi_Empirical as Hydrogen
+import RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS as FLOPS 
+from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Hydrogen.Common.compute_landing_gear_weight           import compute_landing_gear_weight
+from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Hydrogen.Common.compute_propulsion_system_weight      import compute_propulsion_system_weight
 
 # python imports 
 import numpy as np
@@ -140,38 +141,42 @@ def compute_operating_empty_weight(vehicle, settings=None):
     output.empty.propulsion.fuel_system         = 0
 
     W_energy_network                   = Data()
-    W_energy_network.total             = 0
+    W_energy_network.total             = 0  
     W_energy_network.W_engine          = 0 
     W_energy_network.W_thrust_reverser = 0 
     W_energy_network.W_engine_controls = 0 
     W_energy_network.W_starter         = 0 
-    W_energy_network.W_fuel_system     = 0 
+    W_energy_network.W_tanks           = 0 
+    W_energy_network.W_fuel_lines      = 0 
+    W_energy_network.W_pumps           = 0 
     W_energy_network.W_motors          = 0 
     W_energy_network.W_nacelle         = 0 
     W_energy_network.W_battery         = 0
     W_energy_network.W_motor           = 0
-    number_of_engines                  = 0
-    number_of_tanks                    = 0
-    W_energy_network_cumulative        = 0 
+    
+    number_of_engines                   = 0
+    number_of_tanks                     = 0
+    W_energy_network_cumulative         = 0 
 
     for network in vehicle.networks: 
         W_energy_network_total   = 0 
-        # Fuel-Powered Propulsors  
+        # Fuel-Powered Propulsors 
 
-        W_propulsion                         = Hydrogen.compute_propulsion_system_weight(vehicle, network, settings)
+        W_propulsion                         = compute_propulsion_system_weight(vehicle, network, settings)
         W_energy_network_total              += W_propulsion.W_prop 
         W_energy_network.W_engine           += W_propulsion.W_engine
         W_energy_network.W_thrust_reverser  += W_propulsion.W_thrust_reverser
         W_energy_network.W_engine_controls  += W_propulsion.W_engine_controls
         W_energy_network.W_starter          += W_propulsion.W_starter
-        W_energy_network.W_fuel_system      += W_propulsion.W_fuel_system 
-        W_energy_network.W_nacelle          += W_propulsion.W_nacelle 
+        W_energy_network.W_tanks            += W_propulsion.W_tanks     
+        W_energy_network.W_fuel_lines       += W_propulsion.W_fuel_lines
+        W_energy_network.W_pumps            += W_propulsion.W_pumps     
+        W_energy_network.W_nacelle          += W_propulsion.W_nacelle
         number_of_engines                   += W_propulsion.number_of_engines
         number_of_tanks                     += W_propulsion.number_of_fuel_tanks  
         for propulsor in network.propulsors:
-            propulsor.mass_properties.mass = (W_energy_network.W_engine +W_energy_network.W_thrust_reverser+W_energy_network.W_starter +\
-                                            W_energy_network.W_engine_controls) / number_of_engines
-            propulsor.nacelle.mass_properties.mass = W_energy_network.W_nacelle / number_of_engines
+            propulsor.mass_properties.mass = (W_energy_network.W_engine +W_energy_network.W_thrust_reverser+W_energy_network.W_starter + W_energy_network.W_engine_controls) / number_of_engines
+            propulsor.nacelle.mass_properties.mass = W_energy_network.W_nacelle / number_of_engines 
         
         # Electric-Powered Propulsors  
         for bus in network.busses: 
@@ -200,7 +205,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
         NENG   = number_of_engines
         WTNFA  = W_energy_network.W_engine + W_energy_network.W_thrust_reverser + W_energy_network.W_starter \
                 + 0.25 * W_energy_network.W_engine_controls + 0.11 * W_systems.W_instruments + 0.13 * W_systems.W_electrical \
-                + 0.13 * W_systems.W_hyd_pnu + 0.25 * W_energy_network.W_fuel_system
+                + 0.13 * W_systems.W_hyd_pnu + 0.25 * W_energy_network.W_fuel_lines + W_energy_network.W_tanks + W_energy_network.W_pumps
         WPOD += WTNFA / np.max([1, NENG]) + W_energy_network.W_nacelle/ np.max(
             [1.0, NENG + 1. / 2 * (NENG - 2 * np.floor(NENG / 2.))])
  
@@ -210,7 +215,9 @@ def compute_operating_empty_weight(vehicle, settings=None):
     output.empty.propulsion.engines             = W_energy_network.W_engine
     output.empty.propulsion.thrust_reversers    = W_energy_network.W_thrust_reverser
     output.empty.propulsion.miscellaneous       = W_energy_network.W_engine_controls + W_energy_network.W_starter
-    output.empty.propulsion.fuel_system         = W_energy_network.W_fuel_system
+    output.empty.propulsion.tanks               = W_energy_network.W_tanks     
+    output.empty.propulsion.fuel_lines          = W_energy_network.W_fuel_lines
+    output.empty.propulsion.pumps               = W_energy_network.W_pumps    
 
     ##-------------------------------------------------------------------------------                 
     # Wing Weight 
@@ -220,11 +227,11 @@ def compute_operating_empty_weight(vehicle, settings=None):
     W_tail_horizontal  = 0.0
     W_tail_vertical    = 0.0
     for wing in vehicle.wings:
-        if isinstance(wing, Wings.Main_Wing) or isinstance(wing, Wings.Blended_Wing_Body): 
+        if isinstance(wing, Wings.Main_Wing): 
             num_main_wings += 1
     
     for wing in vehicle.wings:
-        if isinstance(wing, Wings.Main_Wing) or isinstance(wing, Wings.Blended_Wing_Body): 
+        if isinstance(wing, Wings.Main_Wing): 
             fidelity = settings.FLOPS.fidelity
             W_wing = FLOPS.compute_wing_weight(vehicle, wing, WPOD, fidelity, settings, num_main_wings)
 
@@ -259,7 +266,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
     ##-------------------------------------------------------------------------------                 
     # Landing Gear Weight
     ##------------------------------------------------------------------------------- 
-    landing_gear = FLOPS.compute_landing_gear_weight(vehicle)
+    landing_gear = compute_landing_gear_weight(vehicle)
     for LG in vehicle.landing_gears:
         if isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear): 
             LG.mass_properties.mass = landing_gear.main 
@@ -269,9 +276,9 @@ def compute_operating_empty_weight(vehicle, settings=None):
     ##-------------------------------------------------------------------------------                 
     # Accumulate Structural Weight
     ##-------------------------------------------------------------------------------   
-    output.empty.structural                        = Data()
-    output.empty.structural.wings                  = W_main_wing 
-    output.empty.structural.empennage              = W_tail_horizontal +  W_tail_vertical 
+    output.empty.structural                       = Data()
+    output.empty.structural.wings                 = W_main_wing 
+    output.empty.structural.empennage             = W_tail_horizontal +  W_tail_vertical 
     output.empty.structural.fuselage              = W_fuselage_total
     output.empty.structural.landing_gear          = landing_gear.main +  landing_gear.nose  
     output.empty.structural.nacelle               = W_energy_network.W_nacelle
