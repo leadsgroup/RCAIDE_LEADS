@@ -276,11 +276,17 @@ def plot_3d_vehicle(vehicle,
         actor        = generate_vtk_object(GEOM.PTS) 
         vtk_data     = actor.GetMapper().GetInput() 
         pyvista_mesh = pv.wrap(vtk_data)                      
-        plotter.add_mesh(pyvista_mesh,color= fuselage_rgb_color,opacity= fuselage_opacity)        
+        plotter.add_mesh(pyvista_mesh,color= fuselage_rgb_color,opacity= fuselage_opacity)     
+ 
+        GEOM         = generate_3d_cabin_points(fuselage, number_of_airfoil_points,plot_centerline = False)
+        actor        = generate_vtk_object(GEOM.PTS) 
+        vtk_data     = actor.GetMapper().GetInput() 
+        pyvista_mesh = pv.wrap(vtk_data)                      
+        plotter.add_mesh(pyvista_mesh,color= cabin_rgb_color,opacity= cabin_opacity) 
+
         if show_LOPA:
             lopa_geom = generate_3d_lopa_points(fuselage)
-            add_lopa_seats(plotter, lopa_geom, lopa_opacity) 
-    
+            add_lopa_seats(plotter, lopa_geom, lopa_opacity)  
 
     # -------------------------------------------------------------------------  
     # Plot systems 

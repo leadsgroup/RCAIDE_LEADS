@@ -65,7 +65,7 @@ def generate_3d_cabin_points(component, n_points,plot_centerline = False):
     if issubclass(type(component), RCAIDE.Library.Components.Wings.Wing): 
         G = generate_3d_wing_cabin_points(component, n_points, plot_centerline)
     else:
-        pass
+        G = generate_3d_fuselage_cabin_points(component, n_points, plot_centerline)
 
     return G
 
@@ -199,8 +199,6 @@ def generate_3d_wing_cabin_points(wing, n_points, plot_centerline=False):
     
     return G
      
-
-
 def generate_bwb_cabin_geometry(wing, n_points):
     
     symbolic_cabin_wing = RCAIDE.Library.Components.Wings.Wing()  
@@ -302,4 +300,60 @@ def generate_bwb_cabin_geometry(wing, n_points):
             symbolic_cabin_wing.append_segment(segment)
     return symbolic_cabin_wing
 
+def generate_3d_fuselage_cabin_points(fuselage, n_points, plot_centerline=False):
 
+    LOPA_data = fuselage.layout_of_passenger_accommodations
+    LOPA      = LOPA_data.object_coordinates 
+    
+    # Step 1: plot cabin bounds  
+    # get points at x min 
+    x_min_locs   =  np.where( LOPA[:,2] == min(LOPA[:,2]))[0]
+    x_min        =  LOPA[x_min_locs[0],2] -  LOPA[x_min_locs[0],5]/2
+    x_min_y_max  =  max(LOPA[x_min_locs,3] + LOPA[x_min_locs,6]/2 )
+    x_min_y_min  =  min(LOPA[x_min_locs,3] - LOPA[x_min_locs,6]/2 ) 
+    x_border_pts = [x_min, x_min] 
+    y_border_pts = [x_min_y_min, x_min_y_max] 
+
+    # get points at y max 
+    y_max_locs   =  np.where( LOPA[:,3] == max(LOPA[:,3]))[0]
+    y_max        =  LOPA[y_max_locs[0],3] + LOPA[y_max_locs[0],6]/2 
+    y_max_x_max  =  max(LOPA[y_max_locs,2] + LOPA[y_max_locs[0],5]/2)
+    y_max_x_min  =  min(LOPA[y_max_locs,2] - LOPA[y_max_locs[0],5]/2) 
+    x_border_pts.append(y_max_x_min)
+    x_border_pts.append(y_max_x_max)
+    y_border_pts.append(y_max)
+    y_border_pts.append(y_max) 
+
+    # get points at x max 
+    x_max_locs   =  np.where( LOPA[:,2] == max(LOPA[:,2]))[0]
+    x_max        =  LOPA[x_max_locs[0],2] + LOPA[x_max_locs[0],5]/2
+    x_max_y_max  =  max(LOPA[x_max_locs,3] + LOPA[x_max_locs,6]/2)
+    x_max_y_min  =  min(LOPA[x_max_locs,3] - LOPA[x_max_locs,6]/2)  
+    x_border_pts.append(x_max)
+    x_border_pts.append(x_max)
+    y_border_pts.append(x_max_y_max)
+    y_border_pts.append(x_max_y_min)
+
+    # get points at y min  
+    y_min_locs   =  np.where( LOPA[:,3] == min(LOPA[:,3]))[0]
+    y_min        =  LOPA[y_min_locs[0],3] - LOPA[y_min_locs[0],6]/2 
+    y_min_x_max  =  max(LOPA[y_min_locs,2] + LOPA[y_min_locs[0],5]/2)
+    y_min_x_min  =  min(LOPA[y_min_locs,2] - LOPA[y_min_locs[0],5]/2)
+    x_border_pts.append(y_min_x_max)  
+    x_border_pts.append(y_min_x_min)
+    y_border_pts.append(y_min)
+    y_border_pts.append(y_min)    
+
+    # loop through points and determine if there are duplicates
+    y_border_pts = np.array(y_border_pts)
+    x_border_pts = np.array(x_border_pts)
+    # cut where y is negative
+    port_idxs  =  np.where(y_border_pts<0)[0]
+    starboard_x_points = np.delete(x_border_pts, port_idxs) 
+    starboard_y_points = np.delete(y_border_pts, port_idxs)
+
+    leading_edge_points  = np.vstack((starboard_x_points[:2] + LOPA_data.origin[0][0], starboard_y_points[:2]))
+    trailing_edge_points = np.vstack((starboard_x_points[2:] + LOPA_data.origin[0][0], starboard_y_points[2:]))
+
+
+    return 
