@@ -244,7 +244,8 @@ def compute_operating_empty_weight(vehicle, settings=None):
             # Pack and sum
             wing.mass_properties.mass = W_tail
             W_tail_vertical += W_tail
-        
+
+    num_fuse = 0 
     ##-------------------------------------------------------------------------------                 
     # Fuselage 
     ##------------------------------------------------------------------------------- 
@@ -254,6 +255,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
         W_fuselage = W_fuselage 
         fuse.mass_properties.mass = W_fuselage
         W_fuselage_total += W_fuselage
+        num_fuse += 1
     
     ##-------------------------------------------------------------------------------                 
     # Landing Gear Weight
@@ -289,6 +291,9 @@ def compute_operating_empty_weight(vehicle, settings=None):
                                                     + output.empty.systems.electrical + output.empty.systems.avionics \
                                                     + output.empty.systems.hydraulics + output.empty.systems.furnishings \
                                                     + output.empty.systems.air_conditioner + output.empty.systems.instruments
+    
+    for fuse in vehicle.fuselages:
+        fuse.mass_properties.mass += output.empty.systems.furnishings/num_fuse
  
     output.payload    = payload 
     output.operational_items    = Data()
