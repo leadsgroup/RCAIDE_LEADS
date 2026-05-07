@@ -168,8 +168,8 @@ def compute_operating_empty_weight(vehicle, settings=None):
         number_of_engines                   += W_propulsion.number_of_engines
         number_of_tanks                     += W_propulsion.number_of_fuel_tanks  
         for propulsor in network.propulsors:
-            propulsor.mass_properties.mass = (W_energy_network.W_engine +W_energy_network.W_thrust_reverser+W_energy_network.W_starter)\
-                                            +W_energy_network.W_engine_controls / number_of_engines
+            propulsor.mass_properties.mass = (W_energy_network.W_engine +W_energy_network.W_thrust_reverser+W_energy_network.W_starter\
+                                            +W_energy_network.W_engine_controls) / number_of_engines
             propulsor.nacelle.mass_properties.mass = W_energy_network.W_nacelle / number_of_engines
         
         # Electric-Powered Propulsors  
@@ -292,14 +292,15 @@ def compute_operating_empty_weight(vehicle, settings=None):
                                                     + output.empty.systems.hydraulics + output.empty.systems.furnishings \
                                                     + output.empty.systems.air_conditioner + output.empty.systems.instruments
     
-    for fuse in vehicle.fuselages:
-        fuse.mass_properties.mass += output.empty.systems.furnishings/num_fuse
- 
     output.payload    = payload 
     output.operational_items    = Data()
     output.operational_items    = W_oper 
     output.empty.total          = output.empty.structural.total + output.empty.propulsion.total + output.empty.systems.total 
     output.zero_fuel_weight     = output.empty.total + output.operational_items.total + output.payload.total
+
+    for fuse in vehicle.fuselages:
+        fuse.mass_properties.mass += (output.empty.systems.furnishings + output.operational_items.total)/num_fuse
+ 
                     
     #-------------------------------------------------------------------------------                 
     # Assign landing gear weights to landing gear components 
