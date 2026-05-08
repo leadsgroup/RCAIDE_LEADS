@@ -154,6 +154,12 @@ def plot_contrails_appleman_chart(results,
     axis.set_ylim(100,500)
     axis.set_xlim(-60,-30)
     axis.invert_yaxis()
+
+    # create second y-axis for altitude
+    axis2 = axis.twinx()
+    axis2.set_ylabel('Altitude (m)')
+    #axis2.set_ylim(0,12000)
+    #axis2.invert_yaxis()
     
     # start with 0 time in each region
     always_contrails_time_sec  =0
@@ -169,12 +175,14 @@ def plot_contrails_appleman_chart(results,
         no_contrails_time_stamps = []
 
         T = results.segments[i].conditions.freestream.temperature[:,0] - 273.15
+        h = results.segments[i].conditions.freestream.altitude[:,0]
         P = results.segments[i].conditions.freestream.pressure[:,0]/100
         t = results.segments[i].conditions.frames.inertial.time[:,0] 
          
         # rediscretize temperature pressure and time to ensure points are captured within appleman chart
         time        = np.linspace(t[0], t[-1], 200) 
         temperature = np.interp(time, t, T)
+        altitude    = np.interp(time, t, h)
         pressure    = np.interp(time, t, P)
 
         segment_tag  =  results.segments[i].tag
@@ -183,6 +191,8 @@ def plot_contrails_appleman_chart(results,
         # if any of the pressure values are above 500 hPa, print a warning that the conditions are outside the bounds of the Appleman chart
         if np.any(pressure < 500): 
             axis.scatter(temperature, pressure, label =segment_name, color = line_colors[i], s = 50)
+            # add line for altitude on second y-axis but do make it invisible to avoid cluttering the plot
+            axis2.scatter(temperature, altitude, color = line_colors[i], s = 0)  
             
             # compute time spent in each region based in temperature and pressure conditions
             for j in range(len(temperature)):
