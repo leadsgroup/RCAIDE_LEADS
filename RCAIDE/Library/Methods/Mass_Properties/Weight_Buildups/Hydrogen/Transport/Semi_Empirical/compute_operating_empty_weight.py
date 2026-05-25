@@ -306,6 +306,8 @@ def compute_operating_empty_weight(vehicle, settings=None):
     if hasattr(W_systems, 'W_water_tank'):
         output.empty.systems.water_tank             = W_systems.W_water_tank
         output.empty.systems.total                 += output.empty.systems.water_tank 
+    
+    
         
     output.payload    = payload 
     output.operational_items    = Data()
@@ -313,5 +315,6 @@ def compute_operating_empty_weight(vehicle, settings=None):
     output.empty.total          = output.empty.structural.total + output.empty.propulsion.total + output.empty.systems.total 
     output.zero_fuel_weight     = output.empty.total + output.operational_items.total + output.payload.total
     output.max_takeoff          = vehicle.mass_properties.max_takeoff
-                     
+    for fuse in vehicle.fuselages:
+        fuse.mass_properties.mass += (output.empty.systems.furnishings + output.operational_items.total)/1       
     return output
