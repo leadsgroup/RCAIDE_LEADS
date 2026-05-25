@@ -1,37 +1,35 @@
 # RCAIDE/Library/Plots/Mass_Properties/plot_weight_breakdown.py
-# 
-# 
-# Created:  Jul 2023, M. Clarke 
+#
+#
+# Created:  Jul 2023, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-import RCAIDE 
-import numpy as np     
-import plotly.express as px 
-import pandas as pd
+import RCAIDE
+import numpy as np
+import matplotlib.pyplot as plt
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
-# ----------------------------------------------------------------------------------------------------------------------   
+# ----------------------------------------------------------------------------------------------------------------------
 def plot_weight_breakdown(vehicle,
                             save_figure    = False,
-                            show_figure    = True, 
-                            show_legend    = True, 
+                            show_legend    = True,
                             save_filename  = "Weight_Breakdown",
                             aircraft_name  = None,
                             file_type      = ".png",
-                            width          = 10, height = 7.2): 
-  
+                            width          = 10, height = 7.2):
+
 
     """
-    Creates an interactive sunburst visualization of aircraft weight breakdown.
+    Creates a pie chart visualization of aircraft weight breakdown.
 
     Parameters
     ----------
     vehicle : Vehicle
         RCAIDE vehicle data structure containing:
-        
+
         * weight_breakdown : Data
             Hierarchical weight data with structure:
                 * zero_fuel_weight : float
@@ -46,52 +44,49 @@ def plot_weight_breakdown(vehicle,
                             Individual system weights/subcomponents
                 * fuel : float
                     Total fuel weight
-                
+
     save_figure : bool, optional
         Flag for saving the figure (default: False)
-        
+
     show_figure : bool, optional
-        Flag to display interactive plot (default: True)
-        
+        Flag to display plot (default: True)
+
     show_legend : bool, optional
-        Flag to display weight legend (default: True) 
-        
+        Flag to display weight legend (default: True)
+
     save_filename : str, optional
         Name of file for saved figure (default: "Weight_Breakdown")
-        
+
     aircraft_name : str, optional
         Name to display in plot title (default: None)
-        
+
     file_type : str, optional
         File extension for saved figure (default: ".png")
-        
+
     width : float, optional
         Figure width in inches (default: 10)
-        
+
     height : float, optional
         Figure height in inches (default: 7.2)
 
     Returns
     -------
-    fig : plotly.graph_objects.Figure
-        Handle to the generated figure containing:
+    fig : matplotlib.figure.Figure
+        Handle to the generated figure
 
     Notes
     -----
     Creates visualization showing:
-        * Hierarchical weight breakdown
-        * Weight percentages
-        * Multi-level weight relationships
-        * Interactive exploration
-    
+        * Top-level weight breakdown as pie slices
+        * Weight percentages per component
+        * Total mass in title
+
     **Major Assumptions**
         * All weights are positive
         * Hierarchy is properly structured
-        * No duplicate component names
-        * Subcomponent weights sum to totals
-    
+
     **Definitions**
-    
+
     'Weight Breakdown'
         Hierarchical decomposition of vehicle mass
     'Weight Fraction'
@@ -100,65 +95,114 @@ def plot_weight_breakdown(vehicle,
         Aircraft weight excluding fuel
     'Maximum Takeoff Weight'
         Maximum allowable total weight
-    
+
     See Also
     --------
     RCAIDE.Library.Analysis.Weights : Weight analysis tools
     """
 
-    breakdown =  vehicle.mass_properties.weight_breakdown     
-    
-    level_1 = []
-    level_2 = []
-    level_3 = []
-    values  = []
-      
-    for tag ,  item in  breakdown.items():
-        if tag == 'zero_fuel_weight' or   tag == 'max_takeoff':
-            pass
+    breakdown = vehicle.mass_properties.weight_breakdown
+
+    # Tags to skip entirely
+    SKIP_TOP = {'zero_fuel_weight', 'max_takeoff', 'payload'}
+    # Sub-groups inside 'empty' to show as single slices (by total)
+    COLLAPSE = {'structural', 'propulsion', 'systems'}
+
+    labels = []
+    values = []
+
+    def _leaf_sum(data_obj):
+        total = 0.0
+        for k, v in data_obj.items():
+            if k == 'total':
+                continue
+            if isinstance(v, RCAIDE.Framework.Core.Data):
+                total += _leaf_sum(v)
+            else:
+                try:
+                    f = float(v)
+                    if np.isfinite(f) and f > 0:
+                        total += f
+                except (TypeError, ValueError):
+                    pass
+        return total
+
+    for tag, item in breakdown.items():
+        if tag in SKIP_TOP:
+            continue
+
+        if tag == 'empty' and isinstance(item, RCAIDE.Framework.Core.Data):
+            for sub_tag, sub_item in item.items():
+                if sub_tag == 'total':
+                    continue
+                if sub_tag in COLLAPSE and isinstance(sub_item, RCAIDE.Framework.Core.Data):
+                    val = sub_item.total if (hasattr(sub_item, 'total') and sub_item.total) else _leaf_sum(sub_item)
+                    if val > 0:
+                        labels.append(sub_tag.replace('_', ' ').title())
+                        values.append(val)
+        elif isinstance(item, RCAIDE.Framework.Core.Data):
+            val = item.total if (hasattr(item, 'total') and item.total) else _leaf_sum(item)
+            if val > 0:
+                labels.append(tag.replace('_', ' ').title())
+                values.append(val)
         else:
-            if type(item)  == RCAIDE.Framework.Core.Data: 
-                for  sub_tag  , sub_item in item.items():
-                    if type(sub_item) == RCAIDE.Framework.Core.Data: 
-                        for sub_sub_tag ,  sub_sub_item in sub_item.items():
-                            if sub_sub_tag != 'total':
-                                level_1.append(tag.replace("_", " "))
-                                level_2.append(sub_tag.replace("_", " "))
-                                level_3.append(sub_sub_tag.replace("_", " "))
-                                values.append(sub_sub_item )
-                    elif sub_tag != 'total':
-                        level_1.append(tag.replace("_", " "))
-                        level_2.append(sub_tag.replace("_", " "))
-                        level_3.append(np.nan)
-                        values.append(sub_item) 
-            elif tag == 'fuel':
-                level_1.append(tag.replace("_", " "))
-                level_2.append(np.nan)
-                level_3.append(np.nan)
-                values.append(sub_item) 
-                  
-    df = pd.DataFrame(
-        dict(level_1=level_1, level_2=level_2, level_3=level_3, values=values)
-    ) 
-    fig = px.sunburst(df,
-                      path=['level_1', 'level_2', 'level_3'], 
-                      values='values',  
-                      color_discrete_sequence=px.colors.qualitative.G10)
-    
-    # Add a dummy inner layer for the hole
-    fig.update_traces(
-        textfont=dict(size=20), 
-        insidetextorientation='horizontal', 
-        textinfo='label+percent entry', 
-        marker=dict(colors=['rgba(0,0,0,0)'] + px.colors.qualitative.G10)
+            try:
+                val = float(item)
+            except (TypeError, ValueError):
+                continue
+            if np.isfinite(val) and val > 0:
+                labels.append(tag.replace('_', ' ').title())
+                values.append(val)
+
+    values = np.array(values, dtype=float)
+    total_lbs = np.sum(values) / 0.453592  # kg to lbs
+
+    palette = ['#5B9BD5', '#C0504D', '#4BACC6', '#8064A2', '#F79646',
+               '#9BBB59', '#4F81BD', '#1F497D', '#E46C0A', '#76923C', '#17375E', '#833C00']
+    colors = [palette[i % len(palette)] for i in range(len(labels))]
+
+    fig, ax = plt.subplots(figsize=(width, height))
+
+    wedges, _, autotexts = ax.pie(
+        values,
+        labels=None,
+        colors=colors,
+        autopct=lambda pct: f'({pct:.2f}%)' if pct > 0.5 else '',
+        startangle=90,
+        pctdistance=0.75,
+        wedgeprops=dict(linewidth=0.8, edgecolor='white'),
     )
-    fig.update_layout( 
-    uniformtext=dict(minsize=12, mode='hide'),
-    )
- 
+
+    # Style autotext (percentage labels inside slices)
+    for at in autotexts:
+        at.set_fontsize(11)
+        at.set_color('white')
+
+    # Place labels pointing outward from each wedge
+    for wedge, label in zip(wedges, labels):
+        angle = (wedge.theta2 + wedge.theta1) / 2
+        x = np.cos(np.radians(angle))
+        y = np.sin(np.radians(angle))
+        ha = 'left' if x >= 0 else 'right'
+        ax.annotate(
+            label,
+            xy=(x * 1.02, y * 1.02),
+            xytext=(x * 1.25, y * 1.25),
+            ha=ha,
+            va='center',
+            fontsize=12,
+            arrowprops=dict(arrowstyle='-', color='gray', lw=0.6),
+        )
+
+    title = f'All (OEW) Mass Collection: Mass = {total_lbs:,.0f} lbs'
+    if aircraft_name:
+        title = f'{aircraft_name} — ' + title
+    # ax.set_title(title, fontsize=15, fontweight='bold', pad=20)
+
+    fig.tight_layout()
+
     if save_figure:
-        fig.write_image(save_filename + file_type)
-    
-    if show_figure:
-        fig.write_html( save_filename + '.html', auto_open=True)        
-    return  fig 
+        fig.savefig(save_filename + file_type, dpi=150, bbox_inches='tight')
+
+
+    return fig
