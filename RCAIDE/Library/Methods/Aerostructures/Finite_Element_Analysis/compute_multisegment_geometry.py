@@ -54,8 +54,8 @@ def compute_multisegment_geometry(wing, total_elements):
     for i in range(len(wing.segments)-1):
          
         # current segment 
-        inboard_seg =  wing.segments[seg_list[seg_i]]
-        outboard_seg = wing.segments[seg_list[seg_i + 1]]
+        inboard_seg =  wing.segments[seg_list[i]]
+        outboard_seg = wing.segments[seg_list[i + 1]]
         
         # number of elements 
         n_elem  = int(seg_elements[i])
