@@ -12,8 +12,7 @@ from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.compute_multi
 def discretize_wing(wing, num_elements):
     """
     Translates RCAIDE wing geometry into high-resolution FEA nodes.
-    """
-    #wing_config = translate_rcaide_to_config(wing)
+    """ 
     geom = compute_multisegment_geometry(wing, num_elements)
     
     X_nodes, Y_nodes, Z_nodes = geom['X_nodes'], geom['Y_nodes'], geom['Z_nodes']
@@ -25,7 +24,8 @@ def discretize_wing(wing, num_elements):
     chord_elems     = (geom['chord_nodes'][:-1] + geom['chord_nodes'][1:]) / 2
     spar_f_elems    = (geom['spar_f_nodes'][:-1] + geom['spar_f_nodes'][1:]) / 2
     spar_r_elems    = (geom['spar_r_nodes'][:-1] + geom['spar_r_nodes'][1:]) / 2
-    t_c_elems       = (geom['t_c_nodes'][:-1] + geom['t_c_nodes'][1:]) / 2
+    t_c_elems       = (geom['t_c_nodes'][:-1] + geom['t_c_nodes'][1:]) / 2 
+    y_local_path    = np.insert(np.cumsum(Le), 0, 0.0)
     
     discretized_params = Data(
         X_nodes             = X_nodes,
@@ -39,51 +39,17 @@ def discretize_wing(wing, num_elements):
         total_span          = geom['total_span'],
         spar_f_nodes        = geom['spar_f_nodes'],
         spar_r_nodes        = geom['spar_r_nodes'],
+        t_c_nodes           = geom['t_c_nodes'],
         Le                  = Le,
         Y_elems             = Y_elems,
         chord_elems         = chord_elems,
         spar_f_elems        = spar_f_elems,
         spar_r_elems        = spar_r_elems,
         t_c_elems           = t_c_elems,
+        y_local              = y_local_path,
     )
     return discretized_params
-
-def translate_rcaide_to_config(wing):
-    """
-    Reads an RCAIDE Wing object and translates it to our dictionary config.
-    """
-
-    sym      = wing.xz_plane_symmetric
-    semi_span = wing.spans.projected / (1 + sym)
-    segments  = sorted(wing.segments.values(), key=lambda s: s.percent_span_location)
-    num_segs  = len(segments)
-
-    for i, seg in enumerate(segments):
-        y_root = seg.percent_span_location * semi_span
-        if i < num_segs - 1:
-            next_seg = segments[i+1]
-            y_tip = next_seg.percent_span_location * semi_span
-            chord_tip = next_seg.root_chord_percent * wing.chords.root
-            twist_tip = next_seg.twist
-        else:
-            y_tip = semi_span
-            chord_tip = wing.chords.tip
-            twist_tip = getattr(wing.twists, 'tip', seg.twist) 
-
-        seg_dict = {   
-            #'chord_root': seg.root_chord_percent * wing.chords.root,
-            #'chord_tip': chord_tip,
-            #'twist_root': seg.twist,
-            #'twist_tip': twist_tip,
-            #'spar_f_root': getattr(seg, 'front_spar_fraction', 0.15),
-            #'spar_f_tip':  getattr(seg, 'front_spar_fraction', 0.15),
-            #'spar_r_root': getattr(seg, 'rear_spar_fraction', 0.65),
-            #'spar_r_tip':  getattr(seg, 'rear_spar_fraction', 0.65)
-        }
-        wing_config['segments'].append(seg_dict)
-
-    return wing_config
-
+ 
 def map_panel_forces_to_fea(vlm_pts, vlm_F, fea_pts):
     """
     Translates 3D VLM panel forces onto 1D FEA beam elements using 

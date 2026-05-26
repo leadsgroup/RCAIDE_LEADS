@@ -181,10 +181,12 @@ def aircraft_aerostructural_analysis(analyses                         = None,
                 conditions.control_surfaces.flap.static_stability = Data()
                 conditions.control_surfaces.flap.static_stability.coefficients = Data()
             
- 
+    # run aerodynamics analyses
     VLM_results =  VLM(conditions,
                       analyses.aerodynamics.settings,
                       analyses.vehicle)
+    
+    # run aerostructures analyses
     FEA_results = FEA(conditions,
                       VLM_results,
                       analyses.aerodynamics.settings.vortex_distribution,

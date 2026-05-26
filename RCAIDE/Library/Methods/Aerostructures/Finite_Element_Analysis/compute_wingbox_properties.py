@@ -25,26 +25,28 @@ def compute_wingbox_properties(wing,discretized_params):
     spar_r_loc  = discretized_params.spar_r_elems
     
     # 2. Extract structural properties from our saved config dictiona`ry  
-    skin_t_top  = wing. config['Skin_Top_Thick']
-    skin_t_bot  = config['Skin_Bot_Thick']
-    f_spar_data = config['Front_Spar']
-    r_spar_data = config['Rear_Spar']
+    skin_t_top  = wing.structural.top_skin_thickness
+    skin_t_bot  = wing.structural.bottom_skin_thickness 
     h_arr       = chord_arr * t_c_arr
 
     # Geometry Arrays 
     w_box_arr   = chord_arr * (spar_r_loc - spar_f_loc)
     
     # 1. Front Spar (Get Ixx and Iyy)
-    A_fs, I_fs_xx, I_fs_yy = get_spar_properties(
-        f_spar_data['type'], h_arr, 
-        f_spar_data['t_web'], f_spar_data['w_cap'], f_spar_data['t_cap']
-    )
+    A_fs, I_fs_xx, I_fs_yy = get_spar_properties(wing.structural.front_spar.type,
+                                                h_arr, 
+                                                wing.structural.front_spar.t_web,
+                                                wing.structural.front_spar.w_cap ,
+                                                wing.structural.front_spar.t_cap)
     
     # 2. Rear Spar (Get Ixx and Iyy)
-    A_rs, I_rs_xx, I_rs_yy = get_spar_properties(
-        r_spar_data['type'], h_arr, 
-        r_spar_data['t_web'], r_spar_data['w_cap'], r_spar_data['t_cap']
-    )
+    A_rs, I_rs_xx, I_rs_yy = get_spar_properties(wing.structural.rear_spar.type,
+                                                h_arr, 
+                                                wing.structural.rear_spar.t_web,
+                                                wing.structural.rear_spar.w_cap,
+                                                wing.structural.rear_spar.t_cap )
+
+ 
     
     # 3. Skins
     # Top Skin
@@ -68,8 +70,8 @@ def compute_wingbox_properties(wing,discretized_params):
     Am = w_box_arr * h_arr
     integral_ds_t = (w_box_arr / skin_t_top) + \
                     (w_box_arr / skin_t_bot) + \
-                    (h_arr / f_spar_data['t_web']) + \
-                    (h_arr / r_spar_data['t_web'])
+                    (h_arr / wing.structural.front_spar.t_web) + \
+                    (h_arr / wing.structural.rear_spar.t_web)
     
     J_total = 4 * Am**2 / integral_ds_t
     

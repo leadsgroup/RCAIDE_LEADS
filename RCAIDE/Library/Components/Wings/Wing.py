@@ -207,26 +207,21 @@ class Wing(Component):
    
         self.structural                             = Data()  
         self.structural.rib                         = False   
-        self.structural.front_spar.cross_section    = 'Rectangular'
-        self.structural.front_spar.t_web             = 0.0065
+        self.structural.front_spar                  = Data() 
+        self.structural.front_spar.type             = 'Rectangular'
+        self.structural.front_spar.t_web            = 0.0065
         self.structural.front_spar.w_cap            = 0.0
         self.structural.front_spar.t_cap            = 0.0
-        self.structural.rear_spar.cross_section     = 'Rectangular'
-        self.structural.rear_spar.t_web              = 0.0065
+        self.structural.rear_spar                   = Data() 
+        self.structural.rear_spar.type               = 'Rectangular'
+        self.structural.rear_spar.t_web             = 0.0065
         self.structural.rear_spar.w_cap             = 0.0           
-        self.structural.rear_spar.t_cap             = 0.0    
-
-        # self.structural.front_spar_percent_chords  = Data()
-        # self.structural.front_spar_percent_chords.root    = 0.15  
-        # self.structural.front_spar_percent_chords.tip    = 0.15  
-        # self.structural.rear_spar_percent_chords   = Data()
-        # self.structural.rear_spar_percent_chord.root      = 0.65  
-        # self.structural.rear_spar_percent_chord.tip      = 0.65  
-        self.structural.stringer_percent_chords            = []       
-        self.structural.skin_top_thick = 0.0065
-        self.structural.skin_bot_thick = 0.0065  
-        self.structural.rib_spacing = 0.6 # in Meters space between two ribs
-        self.structural.rib_thickness = 0.004
+        self.structural.rear_spar.t_cap             = 0.0     
+        self.structural.stringer_percent_chords      = []       
+        self.structural.top_skin_thickness           = 0.0065
+        self.structural.bottom_skin_thickness        = 0.0065 
+        self.structural.rib_spacing                  = 0.6 # in Meters space between two ribs
+        self.structural.rib_thickness                = 0.004
 
     def append_segment(self, segment):
         """

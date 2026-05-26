@@ -40,11 +40,21 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
     """ 
     n_cpts = len(VLM_results.CLift) # Number of timesteps/flight conditions
     # 1. Discretize Geometry
-    num_elements = settings.discretiation
-    num_nodes = num_elements + 1
+    num_elements       = settings.discretiation
+    num_nodes          = num_elements + 1
     structural_results = Data()
     
-    # LOOP OVER FLIGHT CONDITIONS (Timesteps)
+    # generate structural node distribution  
+    structural_results = Data()
+    for wing in geometry.wings.values():
+        structural_results[wing.tag]                      = Data()
+        structural_results[wing.tag].structural_node_data = discretize_wing(wing, num_elements)     
+        structural_results[wing.tag].load          = np.zeros((n_cpts,num_nodes,3))   # load x,y,z (formally w_z_load)
+        structural_results[wing.tag].deflection    = np.zeros((n_cpts,num_nodes,3))   # deflection x,y,z
+        structural_results[wing.tag].elastic_twist = np.zeros((n_cpts,num_nodes,3))     # twist x,y,z 
+        
+  
+    # Loop over control points 
     for ti in range(n_cpts):
         
         # Array indices for panel flattening (Logic from plot_surface_pressures.py)
@@ -64,12 +74,11 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
         
         # LOOP OVER WINGS
         for wing in geometry.wings.values():
-            
-            sym = wing.xz_plane_symmetric
-            semi_span = wing.spans.projected / (1 + sym)
+            VD_structural_wing = structural_results[wing.tag].structural_node_data
+
+            sym = wing.xz_plane_symmetric 
             # 1. GENERATE FEA GEOMETRY (Optimize this to run once later)
-            VD_struct = discretize_wing(wing, num_elements)
-            fea_pts = np.column_stack((VD_struct.X_nodes[:-1], VD_struct.Y_elems, VD_struct.Z_nodes[:-1]))
+            fea_pts = np.column_stack((VD_structural_wing.X_nodes[:-1], VD_structural_wing.Y_elems, VD_structural_wing.Z_nodes[:-1]))
             
             # 2. EXTRACT VLM CONTROL POINTS (For this specific wing and timestep)
             start_idx = int(b_pts[vd_idx])
@@ -110,7 +119,7 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             E, G, Rho, Yield_Stress, Nu = compute_material_properties("CFRP_uCRM")
             
             # Pass the VD_struct object to your properties calculator
-            A_arr, Ixx_arr, Izz_arr, J_arr, w_box_arr, h_arr = compute_wingbox_properties(wing, VD_struct)
+            A_arr, Ixx_arr, Izz_arr, J_arr, w_box_arr, h_arr = compute_wingbox_properties(wing, VD_structural_wing)
             
             # COMMENTED OUT TEMPORARY UNIFORM LOAD FOR BENCHMARKING
             # # Gravity & Mass Loads
@@ -120,26 +129,26 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             # Rib_Mass_Per_Meter = (Airfoil_Area * VD_struct.wing_config['Rib_Thick'] * Rho) / VD_struct.wing_config['Rib_Spacing']
             # w_z_ribs = -Rib_Mass_Per_Meter * 9.81
             
-            # REMOVE LATER
+            # REMOVE LATER---------------------------- 
             # Inertial Gravity Load (2.5g)
             g_load = 2.5 * 9.81
             # Gravity (Ribs + Wing Structure)
             # Wing Structure Weight
             w_z_struct = -A_arr * Rho * g_load
-            mass_struct_total = np.sum(A_arr * Rho * VD_struct.Le)
-            # REMOVE UNTIL HERE
+            mass_struct_total = np.sum(A_arr * Rho * VD_structural_wing.Le)
+            # REMOVE UNTIL HERE ---------------------------- 
             
             # Total Loads
             load_w_z_total = load_w_z_aero + w_z_struct # + w_z_ribs
             
             # Matrices Assembly
-            twist_elems_rad = ((VD_struct.twist_nodes[:-1] + VD_struct.twist_nodes[1:]) / 2)
-            T_all = compute_3d_transformation_matrix(VD_struct.sweep_elems_rad, VD_struct.dihedral_elems_rad, twist_elems_rad, num_elements)
-            K_local = compute_element_stiffness_arrays(E, G, A_arr, J_arr, Ixx_arr, Izz_arr, VD_struct.Le, num_elements)
+            twist_elems_rad = ((VD_structural_wing.twist_nodes[:-1] + VD_structural_wing.twist_nodes[1:]) / 2)
+            T_all = compute_3d_transformation_matrix(VD_structural_wing.sweep_elems_rad, VD_structural_wing.dihedral_elems_rad, twist_elems_rad, num_elements)
+            K_local = compute_element_stiffness_arrays(E, G, A_arr, J_arr, Ixx_arr, Izz_arr, VD_structural_wing.Le, num_elements)
             
             K_temp = np.matmul(K_local, T_all)
             K_global_elem = np.matmul(np.transpose(T_all, (0, 2, 1)), K_temp)
-            F_global_elem = compute_force_vector(load_w_x_aero, load_w_y_aero, load_w_z_total, load_t_y_aero, VD_struct.Le, num_elements, T_all)
+            F_global_elem = compute_force_vector(load_w_x_aero, load_w_y_aero, load_w_z_total, load_t_y_aero, VD_structural_wing.Le, num_elements, T_all)
             
             # Global Assembly
             num_nodes = num_elements + 1
@@ -169,53 +178,26 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             u_reduced = np.linalg.solve(K_reduced, F_reduced)
             u_full = np.zeros(total_dof)
             u_full[free_dof] = u_reduced
-            
-            w_global = u_full[2::6]
+             
             theta_x = u_full[3::6]
             theta_y = u_full[4::6]
             
-            twist_local = (theta_x * np.sin(VD_struct.sweep_nodes) + theta_y * np.cos(VD_struct.sweep_nodes))
+            twist_local = (theta_x * np.sin(VD_structural_wing.sweep_nodes) + theta_y * np.cos(VD_structural_wing.sweep_nodes))
             
-            # 3D Visualization
-            y_local_path = np.insert(np.cumsum(VD_struct.Le), 0, 0.0)
-            node_aero_loads = np.interp(y_local_path, VD_struct.Y_elems, load_w_z_aero)
-            res = {
-                'y_local': y_local_path, 
-                'chord': VD_struct.chord_nodes, 
-                'X0': VD_struct.X_nodes,                         # Undeformed Baseline
-                'Y0': VD_struct.Y_nodes, 
-                'Z0': VD_struct.Z_nodes,
-                'deflection': w_global,
-                'twist_geo': VD_struct.twist_nodes,              # Geometric Washout
-                'twist_elas': twist_local,                       # Twist due to loading
-                'w_z_load': node_aero_loads,
-                'spar_f': VD_struct.spar_f_nodes, 
-                'spar_r': VD_struct.spar_r_nodes,
-                'params': { 
-                    'tc': VD_struct.wing_config['t_c'], 
-                    'Rib_Spacing': VD_struct.wing_config['Rib_Spacing'], 
-                    'Span': semi_span,
-                    'Front_Spar': VD_struct.wing_config['Front_Spar'], 
-                    'Rear_Spar': VD_struct.wing_config['Rear_Spar']
-                }
-            }
-            
-            # Call the 3D Plotter
-            plot_wingbox(res, scale=1.0)
-            
-            
-            # Store data securely for RCAIDE's mission solver
-            if ti not in structural_results:
-                structural_results[ti] = Data()
-                
-            structural_results[ti][wing.tag] = Data(
-                deflection_z = u_full[2::6],
-                twist_y      = u_full[4::6],
-                deflection_x = u_full[0::6]
-            )
-            
+            # store results  
+            node_aero_loads = np.interp(VD_structural_wing.y_local, VD_structural_wing.Y_elems, load_w_z_aero)
+
+ 
+            structural_results[wing.tag].load[ti,:,2]           =  node_aero_loads
+            structural_results[wing.tag].elastic_twist[ti,:,1]  = u_full[4::6] # twist y 
+            structural_results[wing.tag].deflection[ti,:,2]     = u_full[2::6] # deflection z
+            structural_results[wing.tag].deflection[ti,:,0]     = u_full[0::6] # deflection x
+ 
             vd_idx += 1
             if sym:
                 vd_idx += 1
+            
+    # Call the 3D Plotter  - TO REMOVE and CHANGE SO THAT ALL WINGS ARE PLOTTED 
+    plot_wingbox(structural_results, wing, 0 , scale=1.0)
             
     return structural_results
