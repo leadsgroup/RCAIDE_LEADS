@@ -45,6 +45,9 @@ def compute_multisegment_geometry(wing, total_elements):
     t_c_nodes       = np.empty((1, 0))
     sweep_nodes     = np.empty((1, 0))
     dihedral_nodes  = np.empty((1, 0))
+    X_0 = 0
+    Y_0 = 0
+    Z_0 = 0
       
     for i in range(len(wing.segments)-1):
          
@@ -78,9 +81,9 @@ def compute_multisegment_geometry(wing, total_elements):
         
         # Transform local spar distance into Global X, Y, Z
         # We start from the exact (X,Y,Z) where the last segment ended
-        local_pts_x = inboard_seg.origin[0][0] +  y_local * np.sin(sweep_mid_rad) * np.cos(dihedral_rad)
-        local_pts_y = inboard_seg.origin[0][1] +  y_local * np.cos(sweep_mid_rad) * np.cos(dihedral_rad)
-        local_pts_z = inboard_seg.origin[0][2] +  y_local * np.sin(dihedral_rad)
+        local_pts_x = X_0 +  y_local * np.sin(sweep_mid_rad) * np.cos(dihedral_rad)
+        local_pts_y = Y_0 +  y_local * np.cos(sweep_mid_rad) * np.cos(dihedral_rad)
+        local_pts_z = Z_0 +  y_local * np.sin(dihedral_rad)
          
         X_nodes = np.hstack((X_nodes,np.atleast_2d(local_pts_x)))    
         Y_nodes = np.hstack((Y_nodes,np.atleast_2d(local_pts_y)))   
@@ -104,9 +107,14 @@ def compute_multisegment_geometry(wing, total_elements):
             # remove last node 
             sweep_nodes  = sweep_nodes[:, :-1]
             dihedral_nodes = dihedral_nodes[:, :-1]
+            X_0 = X_nodes[:,-1]
+            Y_0 = Y_nodes[:,-1]
+            Z_0 = Z_nodes[:,-1]
+            
             X_nodes = X_nodes[:, :-1]
             Y_nodes = Y_nodes[:, :-1]
-            Z_nodes = Z_nodes[:, :-1]   
+            Z_nodes = Z_nodes[:, :-1]
+
             spar_f_nodes = spar_f_nodes[:, :-1]       
             spar_r_nodes = spar_r_nodes[:, :-1]
             chord_nodes  = chord_nodes[:, :-1]  
