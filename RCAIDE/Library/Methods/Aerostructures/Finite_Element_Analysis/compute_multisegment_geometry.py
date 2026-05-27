@@ -29,9 +29,9 @@ def compute_multisegment_geometry(wing, total_elements):
 
     seg_list = list(wing.segments.keys())
     for seg_i in range(len(wing.segments) - 1):
-        inboard_seg =  wing.segments[seg_list[seg_i]]
+        inboard_seg  =  wing.segments[seg_list[seg_i]]
         outboard_seg = wing.segments[seg_list[seg_i + 1]]
-        seg_span = (outboard_seg.percent_span_location - inboard_seg.percent_span_location) * semi_span
+        seg_span     = (outboard_seg.percent_span_location - inboard_seg.percent_span_location) * semi_span
         seg_elements[seg_i] = ((seg_span / semi_span) * total_elements)
  
     seg_elements    = np.round(seg_elements)
