@@ -31,11 +31,11 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
     Main Aero-Structural integration bridge.
     """
     # compute freestream properties 
-    rho  = conditions.freestream.density
-    V    = conditions.freestream.velocity  
+    rho           = conditions.freestream.density
+    V             = conditions.freestream.velocity  
     rho[rho==0.0] =  1.225 
     q_dyn         = 0.5 * rho * (V ** 2)
-    
+    n             = settings.load_factor  
     
     n_cpts = len(VLM_results.CLift)
     
@@ -48,11 +48,10 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
     for wing in geometry.wings.values():
         structural_results[wing.tag]                      = Data()
         structural_results[wing.tag].structural_node_data = discretize_wing(wing, num_elements)     
-        structural_results[wing.tag].load          = np.zeros((n_cpts,num_nodes,3))   # load x,y,z (formally w_z_load)
-        structural_results[wing.tag].deflection    = np.zeros((n_cpts,num_nodes,3))   # deflection x,y,z
-        structural_results[wing.tag].elastic_twist = np.zeros((n_cpts,num_nodes,1))   # twist x,y,z 
+        structural_results[wing.tag].load                 = np.zeros((n_cpts,num_nodes,3))   # load x,y,z (formally w_z_load)
+        structural_results[wing.tag].deflection           = np.zeros((n_cpts,num_nodes,3))   # deflection x,y,z
+        structural_results[wing.tag].elastic_twist        = np.zeros((n_cpts,num_nodes,1))   # twist x,y,z 
         
-  
     # Loop over control points 
     for ti in range(n_cpts):
          
@@ -76,12 +75,15 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             F_vec    = np.tile(Delta_CP[:, np.newaxis], (1, 3))  * Normals * q_dyn
             Fx       = - F_vec[:,1] # The normal is swaped in the VLM code, so Fx is actually the negative of the Y component of the force vector
             Fy       = F_vec[:,0]
-            Fz       = F_vec[:,2] 
-            
-            # Map aero to structure
-            vlm_F   = np.column_stack((Fx, Fy, Fz)) 
-            vlm_pts = np.column_stack((VD.XC[ti, start_idx:end_idx], VD.YC[ti, start_idx:end_idx], VD.ZC[ti, start_idx:end_idx]))
-            fea_forces, fea_moments = map_panel_forces_to_fea(vlm_pts, vlm_F, fea_pts)
+            Fz       = F_vec[:,2]  
+            total_loads = np.column_stack((Fx, Fy, Fz)) 
+            total_pts   = np.column_stack((VD.XC[ti, start_idx:end_idx], VD.YC[ti, start_idx:end_idx], VD.ZC[ti, start_idx:end_idx]))
+      
+            # FUTURE: ADD FUNCTION HERE TO APPEND THE LOADS AND POINTS DATA STRUCTURE WIHT ADDITIONAL LOADS (BATTERIES, MOTORS/PROPELLERS,TANKS ETC)
+            # FUTURE WORK 
+
+            # Map aerodynamic loads to structure
+            fea_forces, fea_moments = map_panel_forces_to_fea(total_pts, total_loads, fea_pts)
             
             load_w_x_aero = fea_forces[:, 0]  # Drag
             load_w_y_aero = fea_forces[:, 1]  # Spanwise Force (Sideslip)
@@ -94,26 +96,16 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             Rho  = wing.structural.material.density       
             
             # Pass the VD_struct object to your properties calculator
-            A_arr, Ixx_arr, Izz_arr, J_arr, w_box_arr, h_arr = compute_wingbox_properties(wing, VD_structural_wing)
-            
-            # COMMENTED OUT TEMPORARY UNIFORM LOAD FOR BENCHMARKING
-            # # Gravity & Mass Loads
-            # w_z_struct  = -A_arr * Rho * 9.81
-            
-            # Airfoil_Area = 0.7 * VD_struct.chord_elems * h_arr
-            # Rib_Mass_Per_Meter = (Airfoil_Area * VD_struct.wing_config['Rib_Thick'] * Rho) / VD_struct.wing_config['Rib_Spacing']
-            # w_z_ribs = -Rib_Mass_Per_Meter * 9.81
-            
-            # REMOVE LATER---------------------------- 
-            # Inertial Gravity Load (2.5g)
-            g_load = 2.5 * 9.81
-            # Gravity (Ribs + Wing Structure)
-            # Wing Structure Weight
-            w_z_struct = -A_arr * Rho * g_load 
-            # REMOVE UNTIL HERE ---------------------------- 
-            
+            A_arr, Ixx_arr, Izz_arr, J_arr, w_box_arr = compute_wingbox_properties(wing, VD_structural_wing)
+           
+            # Gravity & Mass Loads
+            w_z_struct         = -A_arr * Rho * 9.81 * n 
+            airfoil_Area       = 0.7 * VD_structural_wing.chord_elems * VD_structural_wing.t_elems # approximation 
+            Rib_Mass_Per_Meter = (airfoil_Area * wing.structural.rib_thickness  * Rho) / wing.structural.rib_spacing
+            w_z_ribs           = -Rib_Mass_Per_Meter * 9.81 * n 
+
             # Total Loads
-            load_w_z_total = load_w_z_aero + w_z_struct # + w_z_ribs
+            load_w_z_total = load_w_z_aero + w_z_struct + w_z_ribs
             
             # Matrices Assembly
             twist_elems     = ((VD_structural_wing.twist_nodes[:-1] + VD_structural_wing.twist_nodes[1:]) / 2)

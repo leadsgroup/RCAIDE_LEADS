@@ -9,67 +9,94 @@ pv.global_theme.font.title_size = 16
 
 def plot_aerostructural_deflection(vehicle,structural_results, cpt = 0, scale=1.0):
     
-    for wing in vehicle.wings:
-        plot_wing_deflection(structural_results,wing,cpt,scale)
-
-def plot_wing_deflection(structural_results,wing,cpt,scale):
-    
-    # 1. Build Geometry
-    st, sb, sf, sr, caps, ribs, arrows = build_components(structural_results,wing,cpt, scale, undeformed=False)
-    st0, sb0, sf0, sr0, caps0, _, _    = build_components(structural_results, wing,cpt, scale, undeformed=True)
-    ghost_mesh = st0.merge([sb0, sf0, sr0, caps0])
-    
     plot = pv.Plotter()
     plot.set_background('white')
-    
+
     # Set dynamic limits for the color bar
     min_def = 0.0
-    max_def = np.max(structural_results[wing.tag].deflection[cpt,:,2])
+    max_def = 0.0
+
     cmap = 'turbo'
-    
+
     sbar_args = {
         'title': "Vertical Deflection (m)",
         'n_labels': 5,
         'interactive': False,
         'label_font_size': 14,
         'title_font_size': 16
-    }
+    } 
     
+    for wing in vehicle.wings:  
+        max_def = np.maximum(max_def,np.max(structural_results[wing.tag].deflection[cpt,:,2]))
+
+    for wing in vehicle.wings:
+        plot_wing_deflection(plot,cmap,min_def,max_def,structural_results,wing,cpt,scale) 
+    
+    # Cartesian reference grid
+    plot.show_grid(
+        xlabel='X (m)', ylabel='Y (m)', zlabel='Z (m)',
+        ticks='outside',
+        font_size=12,
+        color='black',
+    )
+
+    plot.view_isometric()
+    plot.show_axes()
+    plot.show()
+
+def plot_wing_deflection(plot,cmap,min_def,max_def,structural_results,wing,cpt,scale):
+
+    # 1. Build Geometry
+    st, sb, sf, sr, caps, ribs, arrows = build_components(structural_results,wing,cpt, scale, undeformed=False)
+    st0, sb0, sf0, sr0, caps0, _, _    = build_components(structural_results,wing,cpt, scale, undeformed=True)
+    ghost_mesh = st0.merge([sb0, sf0, sr0, caps0])
+
+    # Mirror geometry about the wing's Y-origin plane for symmetric wings.
+    # discretize_wing only solves the exposed semi-span; this reflects it to
+    # produce the full wing including the correct root offset on both sides.
+    if wing.xz_plane_symmetric:
+        ref_pt = (wing.origin[0][0], wing.origin[0][1], wing.origin[0][2])
+        nrm    = (0, 1, 0)
+        st         = st.merge(        st.reflect(        nrm, point=ref_pt))
+        sb         = sb.merge(        sb.reflect(        nrm, point=ref_pt))
+        sf         = sf.merge(        sf.reflect(        nrm, point=ref_pt))
+        sr         = sr.merge(        sr.reflect(        nrm, point=ref_pt))
+        ghost_mesh = ghost_mesh.merge(ghost_mesh.reflect(nrm, point=ref_pt))
+        ribs       = ribs.merge(      ribs.reflect(      nrm, point=ref_pt))
+        arrows     = arrows.merge(    arrows.reflect(    nrm, point=ref_pt))
+        if caps.n_points > 0:
+            caps = caps.merge(caps.reflect(nrm, point=ref_pt))
+
     # 2. Add Meshes
     # Ghost
     plot.add_mesh(ghost_mesh, color='grey', opacity=0.1, style='wireframe')
-    
+
     # Skins
-    plot.add_mesh(st, cmap=cmap, clim=[min_def, max_def], opacity=0.6, show_edges=False, show_scalar_bar=True, scalar_bar_args=sbar_args)
+    plot.add_mesh(st, cmap=cmap, clim=[min_def, max_def], opacity=0.6, show_edges=False, show_scalar_bar=True)
     plot.add_mesh(sb, cmap=cmap, clim=[min_def, max_def], opacity=0.6, show_edges=False, show_scalar_bar=False)
-    
-    # Spar Webs 
+
+    # Spar Webs
     plot.add_mesh(sf, color="#444444", opacity=0.8)
     plot.add_mesh(sr, color='#444444', opacity=0.8)
-    
-    # Spar Caps 
+
+    # Spar Caps
     if caps.n_points > 0:
         plot.add_mesh(caps, color='black', opacity=1.0)
-    
-    # Ribs 
+
+    # Ribs
     plot.add_mesh(ribs, color='orange', opacity=1.0, show_edges=True, line_width=2)
-    
+
     # Load Vectors (Arrows)
-    plot.add_mesh(arrows, color='cyan', opacity=0.5, label='Applied Lift') 
-    
-    plot.view_isometric()
-     
-    plot.show_axes()
-    plot.show() 
-    
-    return 
+    plot.add_mesh(arrows, color='cyan', opacity=0.5, label='Applied Lift')
+
+
+    return
     
     
 def build_components(structural_results,wing,cpt, scale=1.0, undeformed=False):
     
-    res = structural_results[wing.tag]
-    
-    corners = get_cross_section_corners(res,cpt,scale, undeformed)
+    res     = structural_results[wing.tag] 
+    corners = get_cross_section_corners(res,wing,cpt,scale, undeformed)
     n       = corners.shape[1]
     
     def make_strip(pts1, pts2):
@@ -176,9 +203,9 @@ def build_components(structural_results,wing,cpt, scale=1.0, undeformed=False):
             rot_z = -local_x_qc * si + local_z_qc * co
             
             # Map to Global 3D space
-            qc_pts[i, 0] = x0_a + rot_x
-            qc_pts[i, 1] = y0_a
-            qc_pts[i, 2] = z0_a + rot_z + (def_a * scale)
+            qc_pts[i, 0] = x0_a + rot_x + wing.origin[0][0]
+            qc_pts[i, 1] = y0_a + wing.origin[0][1]
+            qc_pts[i, 2] = z0_a + rot_z + (def_a * scale) +  wing.origin[0][2]
             
             # Vector magnitude based on load
             vectors[i, 2] = load_a
@@ -190,12 +217,12 @@ def build_components(structural_results,wing,cpt, scale=1.0, undeformed=False):
     return skin_top, skin_bot, spar_f_web, spar_r_web, mesh_caps, ribs, arrows_mesh
 
     
-def get_cross_section_corners(res, cpt, scale=1.0, undeformed=False):
+def get_cross_section_corners(res,wing,cpt, scale=1.0, undeformed=False):
     y_loc  = res.structural_node_data.y_local 
     c      = res.structural_node_data.chord_nodes 
-    X0     = res.structural_node_data.X_nodes
-    Y0     = res.structural_node_data.Y_nodes
-    Z0     = res.structural_node_data.Z_nodes 
+    X0     = res.structural_node_data.X_nodes + wing.origin[0][0]
+    Y0     = res.structural_node_data.Y_nodes + wing.origin[0][1]
+    Z0     = res.structural_node_data.Z_nodes + wing.origin[0][2]
     Tw_geo = res.structural_node_data.twist_nodes
     spar_f = res.structural_node_data.spar_f_nodes
     spar_r = res.structural_node_data.spar_r_nodes

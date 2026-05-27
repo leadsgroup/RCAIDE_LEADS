@@ -45,11 +45,10 @@ class Aerostructures(Analysis):
         Properties Used:
         N/A
         """           
-        self.tag                                                         = 'aerostructures'   
-        self.settings                                                    = Data() 
+        self.tag                    = 'aerostructures'   
+        self.settings               = Data() 
         self.settings.discretiation = 400
-        
-        
+        self.settings.load_factor   = 1.0  
         
     def evaluate(self,state, vehicle):
         """The default evaluate function.

@@ -23,7 +23,11 @@ def discretize_wing(wing, num_elements):
     for seg_i in range(len(wing.segments) - 1):
         inboard_seg  =  wing.segments[seg_list[seg_i]]
         outboard_seg = wing.segments[seg_list[seg_i + 1]]
-        seg_span     = (outboard_seg.percent_span_location - inboard_seg.percent_span_location) * semi_span
+        
+        if seg_i == 0:
+            seg_span =  (outboard_seg.percent_span_location - (inboard_seg.percent_span_location + wing.percent_span_unexposed)) * semi_span  
+        else: 
+            seg_span  = (outboard_seg.percent_span_location - inboard_seg.percent_span_location) * semi_span
         seg_elements[seg_i] = ((seg_span / semi_span) * num_elements)
  
     seg_elements    = np.round(seg_elements)
@@ -37,9 +41,23 @@ def discretize_wing(wing, num_elements):
     t_c_nodes       = np.empty((1, 0))
     sweep_nodes     = np.empty((1, 0))
     dihedral_nodes  = np.empty((1, 0))
-    X_0 = 0
-    Y_0 = 0
-    Z_0 = 0
+    
+    
+    # account for any offset from the root
+    # X_0/Z_0 are computed along the spar path (not the leading edge) to stay
+    # consistent with how the loop advances positions using spar_sweep.
+    first_inboard_seg  = wing.segments[seg_list[0]]
+    next_seg           = wing.segments[seg_list[1]]
+    dih_0              = first_inboard_seg.dihedral_outboard
+    inboard_x_fs       = first_inboard_seg.origin[0][0] + first_inboard_seg.structural.front_spar_percent_chord * first_inboard_seg.root_chord_percent * wing.chords.root
+    inboard_y_fs       = first_inboard_seg.origin[0][1]
+    outboard_x_fs      = next_seg.origin[0][0] + next_seg.structural.front_spar_percent_chord * next_seg.root_chord_percent * wing.chords.root
+    outboard_y_fs      = next_seg.origin[0][1]
+    spar_sweep_0       = np.arctan((outboard_x_fs - inboard_x_fs) / (outboard_y_fs - inboard_y_fs))
+    del_y              = wing.percent_span_unexposed * semi_span
+    X_0 = inboard_x_fs + del_y * np.tan(spar_sweep_0)
+    Y_0 = inboard_y_fs + del_y
+    Z_0 = del_y * np.tan(dih_0) / np.cos(spar_sweep_0)
       
     for i in range(len(wing.segments)-1):
          
@@ -67,14 +85,30 @@ def discretize_wing(wing, num_elements):
         dihedral_rad  = inboard_seg.dihedral_outboard  
         
         # Calculate True Spar Length for this segment
-        seg_span = (outboard_seg.percent_span_location - inboard_seg.percent_span_location) * semi_span
-        L_spar = (seg_span / np.cos(spar_sweep)) / np.cos(dihedral_rad)
+        if i == 0:
+            seg_span = (outboard_seg.percent_span_location - (inboard_seg.percent_span_location + wing.percent_span_unexposed)) * semi_span
+            L_spar   = (seg_span / np.cos(spar_sweep)) / np.cos(dihedral_rad)
+           
+            c_diff          =  outboard_seg.root_chord_percent*wing.chords.root - inboard_seg.root_chord_percent*wing.chords.root
+            y_local_non_dim =  wing.percent_span_unexposed * semi_span / seg_span
+            c_root          = inboard_seg.root_chord_percent*wing.chords.root + c_diff * y_local_non_dim
+            tw_start        = inboard_seg.twist + (outboard_seg.twist - inboard_seg.twist) * y_local_non_dim
+            t_c_start       = inboard_seg.thickness_to_chord + (outboard_seg.thickness_to_chord - inboard_seg.thickness_to_chord) * y_local_non_dim
+
+            # Local 1D arrays
+            y_local = np.linspace(0, L_spar, n_nodes)
+            c_arr   = np.linspace(c_root,    outboard_seg.root_chord_percent*wing.chords.root, n_nodes)
+            tw_arr  = np.linspace(tw_start,  outboard_seg.twist,                               n_nodes)
+            t_c_arr = np.linspace(t_c_start, outboard_seg.thickness_to_chord,                  n_nodes)
+        else:
+            seg_span = (outboard_seg.percent_span_location - inboard_seg.percent_span_location) * semi_span
+            L_spar = (seg_span / np.cos(spar_sweep)) / np.cos(dihedral_rad)
         
-        # Local 1D arrays
-        y_local = np.linspace(0, L_spar, n_nodes)
-        c_arr   = np.linspace(inboard_seg.root_chord_percent*wing.chords.root, outboard_seg.root_chord_percent*wing.chords.root, n_nodes)
-        tw_arr  = np.linspace(inboard_seg.twist, outboard_seg.twist, n_nodes)
-        t_c_arr = np.linspace(inboard_seg.thickness_to_chord, outboard_seg.thickness_to_chord, n_nodes)
+            # Local 1D arrays
+            y_local = np.linspace(0, L_spar, n_nodes)
+            c_arr   = np.linspace(inboard_seg.root_chord_percent*wing.chords.root, outboard_seg.root_chord_percent*wing.chords.root, n_nodes)
+            tw_arr  = np.linspace(inboard_seg.twist, outboard_seg.twist, n_nodes)
+            t_c_arr = np.linspace(inboard_seg.thickness_to_chord, outboard_seg.thickness_to_chord, n_nodes)
         
         # Transform local spar distance into Global X, Y, Z
         # We start from the exact (X,Y,Z) where the last segment ended
@@ -132,9 +166,9 @@ def discretize_wing(wing, num_elements):
         sweep_nodes     = sweep_nodes[0],  
         twist_nodes     = twist_nodes[0], 
         t_c_nodes       = t_c_nodes[0], 
-        sweep_mid_elems =  sweep_mid_elems,
-        dihedral_elems  =  dihedral_elems,
-        total_span      =  semi_span) 
+        sweep_mid_elems = sweep_mid_elems,
+        dihedral_elems  = dihedral_elems,
+        total_span      = semi_span) 
     
     X_nodes, Y_nodes, Z_nodes = geom.X_nodes, geom.Y_nodes, geom.Z_nodes
     Le = np.sqrt(np.diff(X_nodes)**2 + np.diff(Y_nodes)**2 + np.diff(Z_nodes)**2)
@@ -147,6 +181,7 @@ def discretize_wing(wing, num_elements):
     spar_r_elems    = (geom.spar_r_nodes[:-1] + geom.spar_r_nodes[1:]) / 2
     t_c_elems       = (geom.t_c_nodes[:-1] + geom.t_c_nodes[1:]) / 2 
     y_local_path    = np.insert(np.cumsum(Le), 0, 0.0)
+    t_elems         = chord_elems*t_c_elems
      
     # Append additional variables 
     geom.Le            = Le
@@ -156,6 +191,7 @@ def discretize_wing(wing, num_elements):
     geom.spar_r_elems  = spar_r_elems
     geom.t_c_elems     = t_c_elems
     geom.y_local       = y_local_path 
+    geom.t_elems       = t_elems 
     return geom
  
 def map_panel_forces_to_fea(vlm_pts, vlm_F, fea_pts):

@@ -18,7 +18,7 @@ def compute_wingbox_properties(wing,discretized_params):
     # 2. Extract structural properties from our saved config dictiona`ry  
     skin_t_top  = wing.structural.top_skin_thickness
     skin_t_bot  = wing.structural.bottom_skin_thickness 
-    h_arr       = chord_arr * t_c_arr
+    h_arr       = chord_arr * t_c_arr 
 
     # Geometry Arrays 
     w_box_arr   = chord_arr * (spar_r_loc - spar_f_loc)
@@ -69,7 +69,7 @@ def compute_wingbox_properties(wing,discretized_params):
     # 7. Total Area
     A_total = A_fs + A_rs + A_sk_top + A_sk_bot
     
-    return A_total, Ixx_total, Izz_total, J_total, w_box_arr, h_arr
+    return A_total, Ixx_total, Izz_total, J_total, w_box_arr 
 
 
 def get_spar_properties(spar_type, h, t_web, w_cap=0, t_cap=0):
