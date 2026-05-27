@@ -66,15 +66,12 @@ def compute_multisegment_geometry(wing, total_elements):
         rear_spar_pts  = np.linspace(inboard_seg.structural.rear_spar_percent_chord, outboard_seg.structural.rear_spar_percent_chord, n_nodes)
         
         # Calculate Sweep of the Elastic Axis using physical distances
-        inboard_x_fs  = inboard_seg.origin[0][0] +  inboard_seg.structural.front_spar_percent_chord * inboard_seg.root_chord_percent*wing.chords.root
+        inboard_x_fs  = inboard_seg.origin[0][0] + inboard_seg.structural.front_spar_percent_chord * inboard_seg.root_chord_percent*wing.chords.root
         inboard_y_fs  = inboard_seg.origin[0][1]   
-        outboard_x_fs = outboard_seg.origin[0][0] +  outboard_seg.structural.front_spar_percent_chord * outboard_seg.root_chord_percent*wing.chords.root
+        outboard_x_fs = outboard_seg.origin[0][0] + outboard_seg.structural.front_spar_percent_chord * outboard_seg.root_chord_percent*wing.chords.root
         outboard_y_fs = outboard_seg.origin[0][1]
         
-        spar_sweep = np.arctan((outboard_x_fs-inboard_x_fs) / ( outboard_y_fs - inboard_y_fs))
-        
-        
-        sweep_mid_rad = convert_sweep_segments(inboard_seg.sweeps.quarter_chord, inboard_seg, outboard_seg, wing, old_ref_chord_fraction=0.25, new_ref_chord_fraction=0.5)
+        spar_sweep = np.arctan((outboard_x_fs-inboard_x_fs) / ( outboard_y_fs - inboard_y_fs)) 
         dihedral_rad  = inboard_seg.dihedral_outboard  
         
         # Calculate True Spar Length for this segment
