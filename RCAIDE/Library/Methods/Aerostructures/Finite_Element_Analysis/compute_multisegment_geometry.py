@@ -52,7 +52,7 @@ def compute_multisegment_geometry(wing, total_elements):
     for i in range(len(wing.segments)-1):
          
         # current segment 
-        inboard_seg =  wing.segments[seg_list[i]]
+        inboard_seg  = wing.segments[seg_list[i]]
         outboard_seg = wing.segments[seg_list[i + 1]]
         
         # number of elements 
@@ -63,15 +63,23 @@ def compute_multisegment_geometry(wing, total_elements):
         
         # Interpolate the spars
         front_spar_pts = np.linspace(inboard_seg.structural.front_spar_percent_chord, outboard_seg.structural.front_spar_percent_chord, n_nodes)
-        rear_spar_pts = np.linspace(inboard_seg.structural.rear_spar_percent_chord, outboard_seg.structural.rear_spar_percent_chord, n_nodes)
+        rear_spar_pts  = np.linspace(inboard_seg.structural.rear_spar_percent_chord, outboard_seg.structural.rear_spar_percent_chord, n_nodes)
         
-        # Calculate Sweep of the Elastic Axis using physical distances 
+        # Calculate Sweep of the Elastic Axis using physical distances
+        inboard_x_fs  = inboard_seg.origin[0][0] +  inboard_seg.structural.front_spar_percent_chord * inboard_seg.root_chord_percent*wing.chords.root
+        inboard_y_fs  = inboard_seg.origin[0][1]   
+        outboard_x_fs = outboard_seg.origin[0][0] +  outboard_seg.structural.front_spar_percent_chord * outboard_seg.root_chord_percent*wing.chords.root
+        outboard_y_fs = outboard_seg.origin[0][1]
+        
+        spar_sweep = np.arctan((outboard_x_fs-inboard_x_fs) / ( outboard_y_fs - inboard_y_fs))
+        
+        
         sweep_mid_rad = convert_sweep_segments(inboard_seg.sweeps.quarter_chord, inboard_seg, outboard_seg, wing, old_ref_chord_fraction=0.25, new_ref_chord_fraction=0.5)
         dihedral_rad  = inboard_seg.dihedral_outboard  
         
         # Calculate True Spar Length for this segment
         seg_span = (outboard_seg.percent_span_location - inboard_seg.percent_span_location) * semi_span
-        L_spar = (seg_span / np.cos(sweep_mid_rad)) / np.cos(dihedral_rad)
+        L_spar = (seg_span / np.cos(spar_sweep)) / np.cos(dihedral_rad)
         
         # Local 1D arrays
         y_local = np.linspace(0, L_spar, n_nodes)
@@ -81,27 +89,27 @@ def compute_multisegment_geometry(wing, total_elements):
         
         # Transform local spar distance into Global X, Y, Z
         # We start from the exact (X,Y,Z) where the last segment ended
-        local_pts_x = X_0 +  y_local * np.sin(sweep_mid_rad) * np.cos(dihedral_rad)
-        local_pts_y = Y_0 +  y_local * np.cos(sweep_mid_rad) * np.cos(dihedral_rad)
+        local_pts_x = X_0 +  y_local * np.sin(spar_sweep) * np.cos(dihedral_rad)
+        local_pts_y = Y_0 +  y_local * np.cos(spar_sweep) * np.cos(dihedral_rad)
         local_pts_z = Z_0 +  y_local * np.sin(dihedral_rad)
          
         X_nodes = np.hstack((X_nodes,np.atleast_2d(local_pts_x)))    
         Y_nodes = np.hstack((Y_nodes,np.atleast_2d(local_pts_y)))   
         Z_nodes = np.hstack((Z_nodes,np.atleast_2d(local_pts_z)))
           
-        spar_f_nodes= np.hstack(( spar_f_nodes, np.atleast_2d(front_spar_pts)))
-        spar_r_nodes= np.hstack(( spar_r_nodes, np.atleast_2d(rear_spar_pts)))
-        chord_nodes = np.hstack(( chord_nodes , np.atleast_2d(c_arr)))
-        twist_nodes = np.hstack(( twist_nodes , np.atleast_2d(tw_arr)))
-        t_c_nodes = np.hstack(( t_c_nodes , np.atleast_2d(t_c_arr)))
+        spar_f_nodes = np.hstack(( spar_f_nodes, np.atleast_2d(front_spar_pts)))
+        spar_r_nodes = np.hstack(( spar_r_nodes, np.atleast_2d(rear_spar_pts)))
+        chord_nodes  = np.hstack(( chord_nodes , np.atleast_2d(c_arr)))
+        twist_nodes  = np.hstack(( twist_nodes , np.atleast_2d(tw_arr)))
+        t_c_nodes    = np.hstack(( t_c_nodes , np.atleast_2d(t_c_arr)))
         # Store element-wise angles for the rotation matrices later 
 
         # only add sweep and dihedral nodes for the last segment to avoid duplicates at segment boundaries
         if i+1 == len(wing.segments)-1: 
-            sweep_nodes     = np.hstack((sweep_nodes ,np.ones((1, n_nodes))*sweep_mid_rad))
+            sweep_nodes     = np.hstack((sweep_nodes ,np.ones((1, n_nodes))*spar_sweep))
             dihedral_nodes  = np.hstack((dihedral_nodes  ,np.ones((1, n_nodes))*dihedral_rad ))
         else: 
-            sweep_nodes     = np.hstack((sweep_nodes ,np.ones((1, n_nodes))*sweep_mid_rad))
+            sweep_nodes     = np.hstack((sweep_nodes ,np.ones((1, n_nodes))*spar_sweep))
             dihedral_nodes  = np.hstack((dihedral_nodes  ,np.ones((1, n_nodes))*dihedral_rad ))
 
             # remove last node 
@@ -119,7 +127,7 @@ def compute_multisegment_geometry(wing, total_elements):
             spar_r_nodes = spar_r_nodes[:, :-1]
             chord_nodes  = chord_nodes[:, :-1]  
             twist_nodes  = twist_nodes[:, :-1]  
-            t_c_nodes  = t_c_nodes[:, :-1]  
+            t_c_nodes    = t_c_nodes[:, :-1]  
 
     sweep_mid_elems =  (sweep_nodes[0,  :-1] +  sweep_nodes[0, 1:] ) /2     
     dihedral_elems  =   (dihedral_nodes[0,  :-1] +  dihedral_nodes[0, 1:] ) /2     
