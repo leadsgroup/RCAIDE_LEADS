@@ -52,8 +52,8 @@ def plot_wingbox(structural_results, wing, cpt = 0, scale=1.0):
     p.add_mesh(arrows, color='cyan', opacity=0.5, label='Applied Lift')
     
     # Title
-    p.add_text(f"Wingbox Deflection Model\nFront: {res['params']['Front_Spar']['type']}\nRear: {res['params']['Rear_Spar']['type']}\nRib Spacing: {res['params']['Rib_Spacing']}m", 
-               font_size=11, font='times', color='grey', position='upper_left')
+    #p.add_text(f"Wingbox Deflection Model\nFront: {res['params']['Front_Spar']['type']}\nRear: {res['params']['Rear_Spar']['type']}\nRib Spacing: {res['params']['Rib_Spacing']}m", 
+               #font_size=11, font='times', color='grey', position='upper_left')
     
     p.view_isometric()
     
@@ -148,7 +148,7 @@ def build_components(structural_results,wing,cpt, scale=1.0, undeformed=False):
             # Interpolate the physics at this arrow location
             c_a    = np.interp(y_a, res.structural_node_data.y_local, res.structural_node_data.chord_nodes )
             tw_g_a = np.interp(y_a, res.structural_node_data.y_local, res.structural_node_data.twist_nodes)
-            tw_e_a = np.interp(y_a, res.structural_node_data.y_local, res.elastic_twist[cpt, :, 1])
+            tw_e_a = np.interp(y_a, res.structural_node_data.y_local, res.elastic_twist[cpt, :, 0])
             x0_a   = np.interp(y_a, res.structural_node_data.y_local, res.structural_node_data.X_nodes)
             y0_a   = np.interp(y_a, res.structural_node_data.y_local, res.structural_node_data.Y_nodes)
             z0_a   = np.interp(y_a, res.structural_node_data.y_local, res.structural_node_data.Z_nodes)
@@ -201,11 +201,11 @@ def get_cross_section_corners(res, cpt, scale=1.0, undeformed=False):
     t_c    = res.structural_node_data.t_c_nodes
      
     if undeformed:
-        W         = np.zeros_like(res.deflection[cpt,:,2]),
-        Tw_elas   = np.zeros_like(res.elastic_twist[cpt,:,2])
+        W         = np.zeros_like(res.deflection[cpt,:,2])
+        Tw_elas   = np.zeros_like(res.elastic_twist[cpt,:,0])
     else:
         W         = res.deflection[cpt, :, 2]
-        Tw_elas   = res.elastic_twist[cpt,:,2]
+        Tw_elas   = res.elastic_twist[cpt,:,0]
           
     n = len(y_loc)
     corners = np.zeros((4, n, 3))

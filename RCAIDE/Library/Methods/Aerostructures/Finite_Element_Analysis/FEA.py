@@ -41,8 +41,7 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
     n_cpts = len(VLM_results.CLift) # Number of timesteps/flight conditions
     # 1. Discretize Geometry
     num_elements       = settings.discretiation
-    num_nodes          = num_elements + 1
-    structural_results = Data()
+    num_nodes          = num_elements + 1 
     
     # generate structural node distribution  
     structural_results = Data()
@@ -51,7 +50,7 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
         structural_results[wing.tag].structural_node_data = discretize_wing(wing, num_elements)     
         structural_results[wing.tag].load          = np.zeros((n_cpts,num_nodes,3))   # load x,y,z (formally w_z_load)
         structural_results[wing.tag].deflection    = np.zeros((n_cpts,num_nodes,3))   # deflection x,y,z
-        structural_results[wing.tag].elastic_twist = np.zeros((n_cpts,num_nodes,3))     # twist x,y,z 
+        structural_results[wing.tag].elastic_twist = np.zeros((n_cpts,num_nodes,1))     # twist x,y,z 
         
   
     # Loop over control points 
@@ -186,12 +185,11 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             
             # store results  
             node_aero_loads = np.interp(VD_structural_wing.y_local, VD_structural_wing.Y_elems, load_w_z_aero)
-
- 
+            
             structural_results[wing.tag].load[ti,:,2]           =  node_aero_loads
-            structural_results[wing.tag].elastic_twist[ti,:,1]  = u_full[4::6] # twist y 
-            structural_results[wing.tag].deflection[ti,:,2]     = u_full[2::6] # deflection z
+            structural_results[wing.tag].elastic_twist[ti,:,0]  = twist_local
             structural_results[wing.tag].deflection[ti,:,0]     = u_full[0::6] # deflection x
+            structural_results[wing.tag].deflection[ti,:,2]     = u_full[2::6] # deflection z
  
             vd_idx += 1
             if sym:

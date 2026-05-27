@@ -22,10 +22,8 @@ def compute_multisegment_geometry(wing, total_elements):
     """
 
     symmetric = wing.xz_plane_symmetric
-    semi_span = wing.spans.projected / (1 + symmetric)
+    semi_span = wing.spans.projected / (1 + symmetric) 
     
-    # 2. PROPORTIONAL MESHING
-    total_span = semi_span
     # Assign elements proportionally, ensuring a minimum of 5 elements per segment
     seg_elements = np.zeros(len(wing.segments) - 1)
 
@@ -34,23 +32,20 @@ def compute_multisegment_geometry(wing, total_elements):
         inboard_seg =  wing.segments[seg_list[seg_i]]
         outboard_seg = wing.segments[seg_list[seg_i + 1]]
         seg_span = (outboard_seg.percent_span_location - inboard_seg.percent_span_location) * semi_span
-        seg_elements[seg_i] = ((seg_span / total_span) * total_elements)
-
-     # TO DO ; MAKE SURE THIS CODE DOES NOT BREAK 
-
-    seg_elements = np.round(seg_elements)
-    X_nodes= np.empty((1, 0))
-    Y_nodes= np.empty((1, 0))
-    Z_nodes= np.empty((1, 0))
-    spar_f_nodes= np.empty((1, 0))
-    spar_r_nodes = np.empty((1, 0))
-    chord_nodes= np.empty((1, 0))
-    twist_nodes= np.empty((1, 0))
-    t_c_nodes= np.empty((1, 0))
-    sweep_nodes = np.empty((1, 0))
+        seg_elements[seg_i] = ((seg_span / semi_span) * total_elements)
+ 
+    seg_elements    = np.round(seg_elements)
+    X_nodes         = np.empty((1, 0))
+    Y_nodes         = np.empty((1, 0))
+    Z_nodes         = np.empty((1, 0))
+    spar_f_nodes    = np.empty((1, 0))
+    spar_r_nodes    = np.empty((1, 0))
+    chord_nodes     = np.empty((1, 0))
+    twist_nodes     = np.empty((1, 0))
+    t_c_nodes       = np.empty((1, 0))
+    sweep_nodes     = np.empty((1, 0))
     dihedral_nodes  = np.empty((1, 0))
-     
-    seg_keys = list(wing.segments.keys()) 
+      
     for i in range(len(wing.segments)-1):
          
         # current segment 
@@ -133,8 +128,8 @@ def compute_multisegment_geometry(wing, total_elements):
         twist_nodes  = twist_nodes[0], 
         t_c_nodes    = t_c_nodes[0], 
         sweep_mid_elems =  sweep_mid_elems,
-        dihedral_elems =  dihedral_elems,
-        total_span =  total_span)
+        dihedral_elems  =  dihedral_elems,
+        total_span      =  semi_span)
         
     # 4. PACKAGE THE DATA
     return multi_seg_points
