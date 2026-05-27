@@ -549,7 +549,7 @@ def vehicle_setup(MTOW = 125225.92487939,
     #------------------------------------------------------------------------------------------------------------------------- 
     fuel_tank_1                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
     fuel_tank_1.tag                                    = 'tank_1l_1r' 
-    fuel_tank_1.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank_1.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219_Alloy()
     fuel_tank_1.insulation_material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_1.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']                
     fuel_tank_1.segments_percent_chord_bounds          = [0.1 ,0.1] 
@@ -559,7 +559,7 @@ def vehicle_setup(MTOW = 125225.92487939,
 
     fuel_tank_2                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
     fuel_tank_2.tag                                    = 'tank_2l_2r' 
-    fuel_tank_2.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank_2.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219_Alloy()
     fuel_tank_2.insulation_material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation() 
     fuel_tank_2.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']                
     fuel_tank_2.segments_percent_chord_bounds          = [0.1 ,0.1] 
@@ -569,7 +569,7 @@ def vehicle_setup(MTOW = 125225.92487939,
     fuel_line.fuel_tanks.append(fuel_tank_2)
     fuel_tank_3                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
     fuel_tank_3.tag                                    = 'tank_3l_3r' 
-    fuel_tank_3.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank_3.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219_Alloy()
     fuel_tank_3.insulation_material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_3.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']                     
     fuel_tank_3.segments_percent_chord_bounds          = [0.1 ,0.1] 
@@ -594,7 +594,7 @@ def vehicle_setup(MTOW = 125225.92487939,
         fuel_tank_4                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
         fuel_tank_4.tag                                    = 'aft_tank' 
         fuel_tank_4.geometry_type                          = 'conformal'
-        fuel_tank_4.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+        fuel_tank_4.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219_Alloy()
         fuel_tank_4.insulation_material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
         fuel_tank_4.xz_plane_symmetric                     = False
         fuel_tank_4.orientation_euler_angles               = [0,0,np.pi/2]

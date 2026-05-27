@@ -535,7 +535,7 @@ def vehicle_setup():
     fuel_tank_1                                                = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
     fuel_tank_1.tag                                            = 'H2_Fuel_Tank_1' 
     fuel_tank_1.fuel                                           = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()   
-    fuel_tank_1.material                                       = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank_1.material                                       = RCAIDE.Library.Attributes.Materials.Aluminum_2219_Alloy()
     fuel_tank_1.insulation_material                            = RCAIDE.Library.Attributes.Materials.Vacuum_Jacketed_Multilayer_Insulation()
     fuel_tank_1.fuel.gravimetric_efficiency                    = 0.5
     fuel_tank_1.segments_bounding_tank                         = ['fuel_wall', 'wing_section_1']  

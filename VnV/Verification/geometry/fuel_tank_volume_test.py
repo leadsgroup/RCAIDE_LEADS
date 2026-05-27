@@ -166,7 +166,7 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_tank_1                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
     fuel_tank_1.tag                             = 'H2_Fuel_Tank_1' 
     fuel_tank_1.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()  
-    fuel_tank_1.material                        = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank_1.material                        = RCAIDE.Library.Attributes.Materials.Aluminum_2219_Alloy()
     fuel_tank_1.insulation_material             = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_1.fuel.gravimetric_efficiency     = 0.5 
     fuel_tank_1.segments_bounding_tank          = ['fuselage_section_3', 'wing_section_2']        
@@ -204,7 +204,7 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_tank_3                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.wings.main_wing)
     fuel_tank_3.tag                             = 'H2_Fuel_Tank_3' 
     fuel_tank_3.fuel                            = RCAIDE.Library.Attributes.Propellants.Jet_A1()   
-    fuel_tank_3.material                        = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank_3.material                        = RCAIDE.Library.Attributes.Materials.Aluminum_2219_Alloy()
     fuel_tank_3.insulation_material             = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_3.fuel.gravimetric_efficiency     = 0.5
     fuel_tank_3.wall_thickness                  = 2*Units.inches
@@ -217,7 +217,7 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_tank_4                               = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
     fuel_tank_4.tag                           = 'H2_Fuel_Tank_4' 
     fuel_tank_4.fuel                          = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()   
-    fuel_tank_4.material                      = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank_4.material                      = RCAIDE.Library.Attributes.Materials.Aluminum_2219_Alloy()
     fuel_tank_4.insulation_material           = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_4.fuel.gravimetric_efficiency   = 0.5
     fuel_tank_4.xz_plane_symmetric            = False
@@ -232,7 +232,7 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_tank_4a                               = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.wings.main_wing)
     fuel_tank_4a.tag                           = 'H2_Fuel_Tank_4a' 
     fuel_tank_4a.fuel                          = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()   
-    fuel_tank_4a.material                      = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank_4a.material                      = RCAIDE.Library.Attributes.Materials.Aluminum_2219_Alloy()
     fuel_tank_4a.insulation_material           = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_4a.fuel.gravimetric_efficiency   = 0.5
     fuel_tank_4a.xz_plane_symmetric            = False
@@ -246,7 +246,7 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_tank_5                               = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
     fuel_tank_5.tag                           = 'H2_Fuel_Tank_5' 
     fuel_tank_5.fuel                          = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()   
-    fuel_tank_5.material                      = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank_5.material                      = RCAIDE.Library.Attributes.Materials.Aluminum_2219_Alloy()
     fuel_tank_5.insulation_material           = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_5.fuel.gravimetric_efficiency   = 0.5
     fuel_tank_5.xz_plane_symmetric            = False
@@ -263,7 +263,7 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_tank_6                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.wings.main_wing)
     fuel_tank_6.tag                             = 'H2_Fuel_Tank_6' 
     fuel_tank_6.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()  
-    fuel_tank_6.material                        = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank_6.material                        = RCAIDE.Library.Attributes.Materials.Aluminum_2219_Alloy()
     fuel_tank_6.insulation_material             = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_6.fuel.gravimetric_efficiency     = 0.5
     fuel_tank_6.wall_thickness                  = 2*Units.inches
@@ -304,7 +304,7 @@ def conformal_lh2_fuel_tank_volume_test():
     fuel_tank.tag = 'wing_tanks'
     fuel_tank.geometry_type     = 'conformal'
     fuel_tank.fuel  = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()   
-    fuel_tank.material              = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank.material              = RCAIDE.Library.Attributes.Materials.Aluminum_2219_Alloy()
     fuel_tank.insulation_material   = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank.segments_bounding_tank    = ['fuel_wall', 'wing_section_1']  
     fuel_tank.segments_percent_chord_start  = [0.2,0.2] 
@@ -314,7 +314,7 @@ def conformal_lh2_fuel_tank_volume_test():
     fuel_tank_2                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
     fuel_tank_2.tag                                    = 'aft_tank' 
     fuel_tank_2.geometry_type                          = 'conformal'
-    fuel_tank_2.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank_2.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219_Alloy()
     fuel_tank_2.insulation_material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_2.xz_plane_symmetric                     = False
     fuel_tank_2.orientation_euler_angles               = [0,0,np.pi/2]

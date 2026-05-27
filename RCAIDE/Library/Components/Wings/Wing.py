@@ -206,7 +206,7 @@ class Wing(Component):
    
         self.structural                             = Data()  
         self.structural.rib                         = False
-        self.structural.material                    = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+        self.structural.material                    = RCAIDE.Library.Attributes.Materials.Aluminum_2219_Alloy()
         self.structural.front_spar                  = Data() 
         self.structural.front_spar.type             = 'Rectangular'
         self.structural.front_spar.t_web            = 0.0065

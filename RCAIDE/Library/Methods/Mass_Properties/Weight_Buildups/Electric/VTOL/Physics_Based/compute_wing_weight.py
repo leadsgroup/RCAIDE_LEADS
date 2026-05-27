@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE 
-from RCAIDE.Library.Attributes.Materials import Bidirectional_Carbon_Fiber, Carbon_Fiber_Honeycomb, Paint, Unidirectional_Carbon_Fiber, Aluminum_Alloy, Epoxy 
+from RCAIDE.Library.Attributes.Materials import Bidirectional_Carbon_Fiber, Carbon_Fiber_Honeycomb, Paint, Unidirectional_Carbon_Fiber, Aluminum_6061_Alloy, Epoxy
 
 # package imports 
 import numpy as np
@@ -151,7 +151,7 @@ def compute_wing_weight(wing,
     try:
         ribMat = wing.rib_materials.structural
     except AttributeError:
-        ribMat = Aluminum_Alloy()
+        ribMat = Aluminum_6061_Alloy()
     ribWid = ribMat.minimum_width
     ribMGT = ribMat.minimum_gage_thickness
     ribDen = ribMat.density

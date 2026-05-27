@@ -6,7 +6,7 @@
 #-------------------------------------------------------------------------------
 # Imports
 #-------------------------------------------------------------------------------
-from RCAIDE.Library.Attributes.Materials import  Bidirectional_Carbon_Fiber, Carbon_Fiber_Honeycomb, Paint, Unidirectional_Carbon_Fiber, Epoxy, Nickel, Aluminum_Alloy
+from RCAIDE.Library.Attributes.Materials import  Bidirectional_Carbon_Fiber, Carbon_Fiber_Honeycomb, Paint, Unidirectional_Carbon_Fiber, Epoxy, Nickel, Aluminum_6061_Alloy
 import numpy as np
 import copy as cp
 
@@ -119,7 +119,7 @@ def compute_rotor_weight(rotor,
     try:
         ribMat = rotor.materials.rib_materials.structural
     except AttributeError:
-        ribMat = Aluminum_Alloy()
+        ribMat = Aluminum_6061_Alloy()
     ribWid = ribMat.minimum_width
     ribMGT = ribMat.minimum_gage_thickness
     ribDen = ribMat.density
@@ -127,7 +127,7 @@ def compute_rotor_weight(rotor,
     try:
         rootMat = rotor.materials.root_materials.structural
     except AttributeError:
-        rootMat = Aluminum_Alloy()
+        rootMat = Aluminum_6061_Alloy()
     rootDen = rootMat.density
     rootUTS = rootMat.ultimate_tensile_strength
 

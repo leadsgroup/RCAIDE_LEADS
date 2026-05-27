@@ -5,7 +5,7 @@
 This module provides material handling capabilities for RCAIDE. It includes classes for managing different types of materials 
 and their physical properties, with implementations for various structural and aerospace materials including:
     - Metals (Aluminum, Steel, Nickel, Titanium, Magnesium)
-    - Composites (Unidirectional and Bidirectional Carbon Fiber, Carbon Fiber Honeycomb)
+    - Composites (Unidirectional and Bidirectional Carbon Fiber, Carbon Fiber Honeycomb, Carbon Fiber Reinforced Polymer)
     - Polymers (Epoxy, Polyetherimide, Acrylic)
     - Surface Treatments (Paint)
 
@@ -25,9 +25,12 @@ RCAIDE.Library.Attributes.Cryogens : Related module for cryogenic material prope
 from .Solid                                 import Solid
 from .Acrylic                               import Acrylic
 from .Aluminum                              import Aluminum
-from .Aluminum_Alloy                        import Aluminum_Alloy
-from .Aluminum_2219                         import Aluminum_2219
+from .Aluminum_2024_Alloy                   import Aluminum_2024_Alloy
+from .Aluminum_2219_Alloy                   import Aluminum_2219_Alloy
+from .Aluminum_6061_Alloy                   import Aluminum_6061_Alloy
+from .Aluminum_7075_Alloy                   import Aluminum_7075_Alloy
 from .Bidirectional_Carbon_Fiber            import Bidirectional_Carbon_Fiber
+from .Carbon_Fiber_Reinforced_Polymer       import Carbon_Fiber_Reinforced_Polymer
 from .CrossLinked_Polyethylene              import CrossLinked_Polyethylene
 from .Copper                                import Copper
 from .Cycom_5320                            import Cycom_5320

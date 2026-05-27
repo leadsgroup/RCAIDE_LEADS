@@ -337,7 +337,7 @@ def BWB_Hydrogen_Aircraft_Test(update_regression_values,show_figure):
                 fuel_tank                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
                 fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()   
                 fuel_tank.fuel.gravimetric_efficiency            = 0.5
-                fuel_tank.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+                fuel_tank.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219_Alloy()
                 fuel_tank.insulation_material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
                 fuel_tank.segments_bounding_tank                = ['fuel_wall', 'wing_section_1']
                 fuel_line.fuel_tanks.append(fuel_tank)
