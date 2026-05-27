@@ -11,7 +11,6 @@ from RCAIDE.Framework.Core      import Data,Container
 from RCAIDE.Library.Components  import Component   
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_wing_moment_of_inertia import  compute_wing_moment_of_inertia
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_wing_center_of_gravity import  compute_wing_center_of_gravity
-
 import numpy as np
 
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -206,22 +205,23 @@ class Wing(Component):
         self.control_surfaces                       = Container()
    
         self.structural                             = Data()  
-        self.structural.rib                         = False   
+        self.structural.rib                         = False
+        self.structural.material                    = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
         self.structural.front_spar                  = Data() 
         self.structural.front_spar.type             = 'Rectangular'
         self.structural.front_spar.t_web            = 0.0065
         self.structural.front_spar.w_cap            = 0.0
         self.structural.front_spar.t_cap            = 0.0
         self.structural.rear_spar                   = Data() 
-        self.structural.rear_spar.type               = 'Rectangular'
+        self.structural.rear_spar.type              = 'Rectangular'
         self.structural.rear_spar.t_web             = 0.0065
         self.structural.rear_spar.w_cap             = 0.0           
         self.structural.rear_spar.t_cap             = 0.0     
-        self.structural.stringer_percent_chords      = []       
-        self.structural.top_skin_thickness           = 0.0065
-        self.structural.bottom_skin_thickness        = 0.0065 
-        self.structural.rib_spacing                  = 0.6 # in Meters space between two ribs
-        self.structural.rib_thickness                = 0.004
+        self.structural.stringer_percent_chords     = []       
+        self.structural.top_skin_thickness          = 0.0065
+        self.structural.bottom_skin_thickness       = 0.0065 
+        self.structural.rib_spacing                 = 0.6 # in Meters space between two ribs
+        self.structural.rib_thickness               = 0.004
 
     def append_segment(self, segment):
         """

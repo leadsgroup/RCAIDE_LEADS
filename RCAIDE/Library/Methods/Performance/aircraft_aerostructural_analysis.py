@@ -15,8 +15,7 @@ from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM       import 
 from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.FEA   import FEA 
  
 # Pacakge imports 
-import numpy as np  
-import os, sys 
+import numpy as np   
 
 #------------------------------------------------------------------------------
 # aircraft_aerodynamic_analysis
@@ -192,4 +191,4 @@ def aircraft_aerostructural_analysis(analyses                         = None,
                       analyses.aerodynamics.settings.vortex_distribution,
                       analyses.aerostructures.settings,analyses.vehicle)  
           
-    return VLM_results ,FEA_results 
+    return FEA_results 

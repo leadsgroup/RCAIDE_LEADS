@@ -7,14 +7,20 @@ pv.global_theme.font.label_size = 14
 pv.global_theme.font.title_size = 16
 
 
-def plot_wingbox(structural_results, wing, cpt = 0, scale=1.0): 
+def plot_aerostructural_deflection(vehicle,structural_results, cpt = 0, scale=1.0):
+    
+    for wing in vehicle.wings:
+        plot_wing_deflection(structural_results,wing,cpt,scale)
+
+def plot_wing_deflection(structural_results,wing,cpt,scale):
+    
     # 1. Build Geometry
     st, sb, sf, sr, caps, ribs, arrows = build_components(structural_results,wing,cpt, scale, undeformed=False)
     st0, sb0, sf0, sr0, caps0, _, _    = build_components(structural_results, wing,cpt, scale, undeformed=True)
     ghost_mesh = st0.merge([sb0, sf0, sr0, caps0])
     
-    p = pv.Plotter()
-    p.set_background('white')
+    plot = pv.Plotter()
+    plot.set_background('white')
     
     # Set dynamic limits for the color bar
     min_def = 0.0
@@ -31,35 +37,30 @@ def plot_wingbox(structural_results, wing, cpt = 0, scale=1.0):
     
     # 2. Add Meshes
     # Ghost
-    p.add_mesh(ghost_mesh, color='grey', opacity=0.1, style='wireframe')
+    plot.add_mesh(ghost_mesh, color='grey', opacity=0.1, style='wireframe')
     
     # Skins
-    p.add_mesh(st, cmap=cmap, clim=[min_def, max_def], opacity=0.6, show_edges=False, show_scalar_bar=True, scalar_bar_args=sbar_args)
-    p.add_mesh(sb, cmap=cmap, clim=[min_def, max_def], opacity=0.6, show_edges=False, show_scalar_bar=False)
+    plot.add_mesh(st, cmap=cmap, clim=[min_def, max_def], opacity=0.6, show_edges=False, show_scalar_bar=True, scalar_bar_args=sbar_args)
+    plot.add_mesh(sb, cmap=cmap, clim=[min_def, max_def], opacity=0.6, show_edges=False, show_scalar_bar=False)
     
     # Spar Webs 
-    p.add_mesh(sf, color="#444444", opacity=0.8)
-    p.add_mesh(sr, color='#444444', opacity=0.8)
+    plot.add_mesh(sf, color="#444444", opacity=0.8)
+    plot.add_mesh(sr, color='#444444', opacity=0.8)
     
     # Spar Caps 
     if caps.n_points > 0:
-        p.add_mesh(caps, color='black', opacity=1.0)
+        plot.add_mesh(caps, color='black', opacity=1.0)
     
     # Ribs 
-    p.add_mesh(ribs, color='orange', opacity=1.0, show_edges=True, line_width=2)
+    plot.add_mesh(ribs, color='orange', opacity=1.0, show_edges=True, line_width=2)
     
     # Load Vectors (Arrows)
-    p.add_mesh(arrows, color='cyan', opacity=0.5, label='Applied Lift')
+    plot.add_mesh(arrows, color='cyan', opacity=0.5, label='Applied Lift') 
     
-    # Title
-    #p.add_text(f"Wingbox Deflection Model\nFront: {res['params']['Front_Spar']['type']}\nRear: {res['params']['Rear_Spar']['type']}\nRib Spacing: {res['params']['Rib_Spacing']}m", 
-               #font_size=11, font='times', color='grey', position='upper_left')
-    
-    p.view_isometric()
-    
-    # p.show_grid(color='black', fmt='%.1f', n_zlabels=3)
-    p.show_axes()
-    p.show() # to remove 
+    plot.view_isometric()
+     
+    plot.show_axes()
+    plot.show() 
     
     return 
     
@@ -69,7 +70,7 @@ def build_components(structural_results,wing,cpt, scale=1.0, undeformed=False):
     res = structural_results[wing.tag]
     
     corners = get_cross_section_corners(res,cpt,scale, undeformed)
-    n = corners.shape[1]
+    n       = corners.shape[1]
     
     def make_strip(pts1, pts2):
         grid = pv.StructuredGrid()

@@ -5,8 +5,6 @@
 # ----------------------------------------------------------------------
 #  Imports
 # ----------------------------------------------------------------------
-# Import Supporting Functions
-import RCAIDE 
 
 # Python Imports
 import numpy as np 

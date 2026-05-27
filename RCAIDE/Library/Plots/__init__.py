@@ -15,7 +15,8 @@ RCAIDE.Library.Analysis : Analysis tools generating data for plots
 # ----------------------------------------------------------------------------------------------------------------------
 
 from .Geometry           import *  
-from .Aeroacoustics      import *
+from .Aeroacoustics      import * 
+from .Aerostructures     import *
 from .Aerodynamics       import * 
 from .Common             import *
 from .Emissions          import *  

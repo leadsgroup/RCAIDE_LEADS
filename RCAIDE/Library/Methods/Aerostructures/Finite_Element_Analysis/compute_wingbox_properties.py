@@ -3,15 +3,6 @@
 # Created: Mar 2026, M. Clarke, S. Sharma  
 
 # ----------------------------------------------------------------------
-#  Imports
-# ----------------------------------------------------------------------
-# Import Supporting Functions
-import RCAIDE 
-
-# Python Imports
-import numpy as np 
-
-# ----------------------------------------------------------------------
 #  Wingbox Assembly Function
 # ----------------------------------------------------------------------
 def compute_wingbox_properties(wing,discretized_params):

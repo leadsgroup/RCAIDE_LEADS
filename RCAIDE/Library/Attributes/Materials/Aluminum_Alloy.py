@@ -83,6 +83,9 @@ class Aluminum_Alloy(Solid):
         self.yield_tensile_strength     = 276e6 * Units.Pa
         self.yield_shear_strength       = 206e6 * Units.Pa
         self.yield_bearing_strength     = 386e6 * Units.Pa
+        self.youngs_modulus             = 70e9  * Units.Pa
+        self.poissons_ratio             = 0.33 
+        self.shear_modulus              = self.youngs_modulus / (2 * (1 + self.poissons_ratio))
         self.minimum_gage_thickness     = 0.0   * Units.m
         self.minimum_gage_thickness     = 1.5e-3   * Units.m
         self.minimum_width              = 25.4e-3  * Units.m        
