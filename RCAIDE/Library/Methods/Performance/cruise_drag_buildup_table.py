@@ -85,11 +85,13 @@ def cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cruise", sav
         val = val * (1 - settings.drag_reduction_factors.parasite_drag)
 
         if abs(val) > eps:
-            parasite_sub.append((key, val))
+            if key != 'wings' and key != 'nacelles':
+                parasite_sub.append((key, val))
 
     cd_parasite_total = 0.0
-    for _, val in parasite_sub:
-        cd_parasite_total += val
+    for key, val in parasite_sub:
+        if key != 'wings' and key != 'nacelles':
+            cd_parasite_total += val
 
     # --- totals (mean over cruise nodes)
     cd_total          = float(np.mean(drag.total[:, 0]))
