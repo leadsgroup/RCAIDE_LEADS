@@ -18,6 +18,8 @@ def discretize_wing(wing, num_elements):
     
     # Assign elements proportionally, ensuring a minimum of 5 elements per segment
     seg_elements = np.zeros(len(wing.segments) - 1)
+    # Assign any remaining elements to the last segment to ensure total matches num_elements
+    seg_elements[-1] += num_elements - np.sum(seg_elements)
 
     seg_list = list(wing.segments.keys())
     for seg_i in range(len(wing.segments) - 1):
@@ -152,9 +154,9 @@ def discretize_wing(wing, num_elements):
             twist_nodes  = twist_nodes[:, :-1]  
             t_c_nodes    = t_c_nodes[:, :-1]  
 
-    sweep_mid_elems =  (sweep_nodes[0,  :-1] +  sweep_nodes[0, 1:] ) /2     
-    dihedral_elems  =   (dihedral_nodes[0,  :-1] +  dihedral_nodes[0, 1:] ) /2     
-    
+    sweep_mid_elems = (sweep_nodes[0,  :-1]    +  sweep_nodes[0, 1:]    ) /2     
+    dihedral_elems  = (dihedral_nodes[0,  :-1] +  dihedral_nodes[0, 1:] ) /2     
+    twist_elems     = (twist_nodes[0,  :-1]    +  twist_nodes[0, 1:]    ) /2
          
     geom = Data( 
         X_nodes         = X_nodes[0],
@@ -168,30 +170,36 @@ def discretize_wing(wing, num_elements):
         t_c_nodes       = t_c_nodes[0], 
         sweep_mid_elems = sweep_mid_elems,
         dihedral_elems  = dihedral_elems,
+        twist_elems     = twist_elems,
         total_span      = semi_span) 
     
     X_nodes, Y_nodes, Z_nodes = geom.X_nodes, geom.Y_nodes, geom.Z_nodes
-    Le = np.sqrt(np.diff(X_nodes)**2 + np.diff(Y_nodes)**2 + np.diff(Z_nodes)**2)
-    Le = np.maximum(Le, 1e-6)
+    Le      = np.sqrt(np.diff(X_nodes)**2 + np.diff(Y_nodes)**2 + np.diff(Z_nodes)**2)
+    Le      = np.maximum(Le, 1e-6)
+    X_elems = (X_nodes[:-1] + X_nodes[1:]) / 2
     Y_elems = (Y_nodes[:-1] + Y_nodes[1:]) / 2
+    Z_elems = (Z_nodes[:-1] + Z_nodes[1:]) / 2
     
     # Calculate element-centered arrays
-    chord_elems     = (geom.chord_nodes[:-1]  + geom.chord_nodes[1:]) / 2
+    chord_elems     = (geom.chord_nodes[:-1]  + geom.chord_nodes[1:])  / 2
     spar_f_elems    = (geom.spar_f_nodes[:-1] + geom.spar_f_nodes[1:]) / 2
     spar_r_elems    = (geom.spar_r_nodes[:-1] + geom.spar_r_nodes[1:]) / 2
-    t_c_elems       = (geom.t_c_nodes[:-1] + geom.t_c_nodes[1:]) / 2 
+    t_c_elems       = (geom.t_c_nodes[:-1]    + geom.t_c_nodes[1:])    / 2 
     y_local_path    = np.insert(np.cumsum(Le), 0, 0.0)
     t_elems         = chord_elems*t_c_elems
      
     # Append additional variables 
     geom.Le            = Le
+    geom.X_elems       = X_elems
     geom.Y_elems       = Y_elems
+    geom.Z_elems       = Z_elems
     geom.chord_elems   = chord_elems
     geom.spar_f_elems  = spar_f_elems
     geom.spar_r_elems  = spar_r_elems
     geom.t_c_elems     = t_c_elems
     geom.y_local       = y_local_path 
-    geom.t_elems       = t_elems 
+    geom.t_elems       = t_elems
+    
     return geom
  
 def map_panel_forces_to_fea(vlm_pts, vlm_F, fea_pts):

@@ -138,7 +138,7 @@ def VLM(conditions,settings,geometry):
     settings.vortex_distribution.n_sw                     = VD.n_sw 
     settings.vortex_distribution.n_cw                     = VD.n_cw 
     settings.vortex_distribution.n_w                      = VD.n_w 
-    settings.vortex_distribution.chord_widths             = VD.chord_widths 
+    settings.vortex_distribution.chord_widths             = VD.chord_widths
     settings.vortex_distribution.leading_edge_sweeps      = VD.leading_edge_sweeps 
     settings.vortex_distribution.XA1                      = VD.XA1
     settings.vortex_distribution.XA2                      = VD.XA2
@@ -146,6 +146,7 @@ def VLM(conditions,settings,geometry):
     settings.vortex_distribution.XB2                      = VD.XB2
     settings.vortex_distribution.YA1                      = VD.YA1
     settings.vortex_distribution.normals                  = VD.normals
+    settings.vortex_distribution.panel_areas              = VD.panel_areas
     settings.vortex_distribution.YA2                      = VD.YA2
     settings.vortex_distribution.YB1                      = VD.YB1
     settings.vortex_distribution.YB2                      = VD.YB2

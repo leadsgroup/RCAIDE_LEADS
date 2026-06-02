@@ -1,7 +1,7 @@
-# RCAIDE/Methods/Performance/aircraft_aerodynamic_analysis.py
+# RCAIDE/Methods/Performance/aircraft_aerostructural_analysis.py
 # 
 # 
-# Created:  Dec 2024, M. Clarke
+# Created:  Apr 2025, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -18,15 +18,15 @@ from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.FEA   import 
 import numpy as np   
 
 #------------------------------------------------------------------------------
-# aircraft_aerodynamic_analysis
+# aircraft_aerostructural_analysis
 #------------------------------------------------------------------------------  
 def aircraft_aerostructural_analysis(analyses                         = None, 
-                                  angle_of_attacks                 = None,
-                                  mach_numbers                     = None,
-                                  non_dimensional_reynolds_numbers = None,
-                                  temperatures                     = None, 
-                                  overwrite_reference              = True,  
-                                  altitude = None ):
+                                     angle_of_attacks                 = None,
+                                     mach_numbers                     = None,
+                                     non_dimensional_reynolds_numbers = None,
+                                     temperatures                     = None, 
+                                     overwrite_reference              = True,  
+                                     altitude                         = None ):
     """
     Computes aerodynamic coefficients across ranges of angle of attack and Mach numbers using vortex lattice methods.
  

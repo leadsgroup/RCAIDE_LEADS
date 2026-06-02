@@ -206,7 +206,7 @@ class Wing(Component):
    
         self.structural                             = Data()  
         self.structural.rib                         = False
-        self.structural.material                    = RCAIDE.Library.Attributes.Materials.Aluminum_2219_Alloy()
+        self.structural.material                    = RCAIDE.Library.Attributes.Materials.Aluminum_7075_Alloy()
         self.structural.front_spar                  = Data() 
         self.structural.front_spar.type             = 'Rectangular'
         self.structural.front_spar.t_web            = 0.0065
@@ -220,7 +220,7 @@ class Wing(Component):
         self.structural.stringer_percent_chords     = []       
         self.structural.top_skin_thickness          = 0.0065
         self.structural.bottom_skin_thickness       = 0.0065 
-        self.structural.rib_spacing                 = 0.6 # in Meters space between two ribs
+        self.structural.rib_spacing                 = 0.6 # in Meters - space between two ribs
         self.structural.rib_thickness               = 0.004
 
     def append_segment(self, segment):
