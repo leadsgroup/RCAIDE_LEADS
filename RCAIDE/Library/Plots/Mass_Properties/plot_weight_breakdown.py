@@ -175,7 +175,7 @@ def plot_weight_breakdown(vehicle,
 
     # Style autotext (percentage labels inside slices)
     for at in autotexts:
-        at.set_fontsize(11)
+        at.set_fontsize(14)
         at.set_color('white')
 
     # Place labels pointing outward from each wedge
@@ -190,7 +190,7 @@ def plot_weight_breakdown(vehicle,
             xytext=(x * 1.25, y * 1.25),
             ha=ha,
             va='center',
-            fontsize=12,
+            fontsize=15,
             arrowprops=dict(arrowstyle='-', color='gray', lw=0.6),
         )
 
