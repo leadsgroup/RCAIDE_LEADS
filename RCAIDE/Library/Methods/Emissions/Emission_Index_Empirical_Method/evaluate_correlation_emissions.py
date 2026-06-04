@@ -167,13 +167,14 @@ def evaluate_correlation_emissions(segment, settings, vehicle):
     state      = segment.state
     I          = state.numerics.time.integrate 
     emissions  = state.conditions.emissions 
-    NOx_total  = 0 * state.ones_row(1)  
-    CO2_total  = 0 * state.ones_row(1) 
-    CO_total   = 0 * state.ones_row(1) 
-    SO2_total  = 0 * state.ones_row(1) 
-    H2O_total  = 0 * state.ones_row(1) 
-    Soot_total = 0 * state.ones_row(1)
-    total_gCO2e = 0 * state.ones_row(1)
+    NOx_total    = 0 * state.ones_row(1)
+    CO2_total    = 0 * state.ones_row(1)
+    CO_total     = 0 * state.ones_row(1)
+    SO2_total    = 0 * state.ones_row(1)
+    H2O_total    = 0 * state.ones_row(1)
+    Soot_total   = 0 * state.ones_row(1)
+    total_gCO2e  = 0 * state.ones_row(1)
+    contrail_gwp = 11.0  # kg CO2e/km; default matches all current fuel definitions
 
     if segment.state.initials:
         initial_cumulative_gCO2e = segment.state.initials.conditions.emissions.cumulative_gCO2e[-1]
@@ -193,6 +194,7 @@ def evaluate_correlation_emissions(segment, settings, vehicle):
                     propulsor_conditions = state.conditions.energy.propulsors[propulsor.tag]
 
                     fuel = combustor.fuel_data
+                    contrail_gwp = fuel.global_warming_potential_100.Contrails
 
                     EI_NOx  = fuel.emission_indices.NOx
                     EI_CO2  = fuel.emission_indices.CO2
@@ -235,21 +237,25 @@ def evaluate_correlation_emissions(segment, settings, vehicle):
     # Contrails
     # Only accumulate range flown above the Schmidt-Appleman altitude
     # threshold (~8,000 m).  Below that, temperatures are too warm for
-    # persistent ice-crystal formation. 
+    # persistent ice-crystal formation.
     # ------------------------------------------------------------------
-    flight_altitude = state.conditions.freestream.altitude          # (N,1) metres
+    flight_altitude = state.conditions.freestream.altitude             # (N,1) metres
     flight_range    = state.conditions.frames.inertial.aircraft_range  # (N,1) metres
- 
-    # Minimum altitude for contrail formation (Schmidt-Appleman threshold, approx.)
+
     contrail_altitude_threshold = 8000.0   # metres (~26,247 ft)
-    
-    range_above = np.where(flight_altitude >= contrail_altitude_threshold, flight_range, 0.0)
 
-    # km of range flown above threshold during this segment
-    Contrails_total = (range_above - range_above[0]) / 1000.0       # m → km
+    # Build a cumulative km-above-threshold time series for this segment.
+    # Use step-by-step range increments masked by the altitude gate so that
+    # below-threshold steps contribute zero regardless of where they appear
+    # in the segment (climb, cruise, or descent).  This avoids the sign-flip
+    # that occurs when np.where zeros out flight_range for below-threshold
+    # points and the result is then differenced against the segment-start value.
+    above_mask    = (flight_altitude >= contrail_altitude_threshold).astype(float)
+    d_range       = np.vstack([np.zeros((1, 1)), np.diff(flight_range, axis=0)])  # (N,1) m
+    Contrails_total = np.cumsum(d_range * above_mask, axis=0) / 1000.0           # (N,1) km
 
-    # kg CO2e  (GWP_contrails units: kg CO2e / km)
-    total_gCO2e += Contrails_total * fuel.global_warming_potential_100.Contrails
+    # kg CO2e  (contrail_gwp units: kg CO2e / km)
+    total_gCO2e += Contrails_total * contrail_gwp
 
     # Convert gas + contrail total from kg CO2e → g CO2e
     emissions.gCO2e            = total_gCO2e * 1000

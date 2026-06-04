@@ -165,9 +165,9 @@ class Jet_A1(Propellant):
         self.emission_indices.CO2         = 3.16    # kg/kg  fuel
         self.emission_indices.CO          = 0.00201 # kg/kg  fuel
         self.emission_indices.H2O         = 1.23    # kg/kg  fuel 
-        self.emission_indices.SO2         = 0.0012  # kg/kg  fuel
-        self.emission_indices.NOx         = 0.01514 # kg/kg  fuel
-        self.emission_indices.Soot        = 0.0012  # kg/kg  fuel
+        self.emission_indices.SO2         = 0.0012   # kg/kg  fuel  (2 × ~600 ppm sulfur content)
+        self.emission_indices.NOx         = 0.01514  # kg/kg  fuel
+        self.emission_indices.Soot        = 0.000025 # kg/kg  fuel  (0.025 g/kg, Lee et al. 2021 Table 2)
 
         self.global_warming_potential_100.CO2       = 1     # CO2e/kg  
         self.global_warming_potential_100.H2O       = 0.06  # CO2e/kg  
