@@ -1,6 +1,9 @@
 # RCAIDE/Library/Methods/Emissions/evaluate_correlation_emissions_indices.py
 #  
 # Created:  Jul 2024, M. Clarke
+# Modified: Jun 2026 - Fixed GWP accumulation bug in propulsor loop;
+#                      Fixed contrails ×1000 unit error;
+#                      Added altitude threshold gate for contrail formation.
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -9,12 +12,12 @@ import RCAIDE
 from   RCAIDE.Framework.Core import Data
  
 # package imports
-import  numpy as np
+import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  evaluate_correlation_emissions_indices
 # ---------------------------------------------------------------------------------------------------------------------- 
-def evaluate_correlation_emissions_indices(segment,settings,vehicle):
+def evaluate_correlation_emissions(segment, settings, vehicle):
     """
     Computes emission indices using empirical correlations.
 
@@ -120,6 +123,9 @@ def evaluate_correlation_emissions_indices(segment,settings,vehicle):
     * Emission indices are constant for each fuel type
     * Indices are independent of operating conditions
     * Linear scaling with fuel flow rate
+    * Contrails only form above the Schmidt-Appleman altitude threshold (~8,000 m /
+      26,247 ft).  Below that altitude, temperatures are too warm for persistent
+      ice-crystal formation, so no contrail radiative forcing is accumulated.
 
     **Theory**
     Total emissions are computed by:
@@ -129,20 +135,20 @@ def evaluate_correlation_emissions_indices(segment,settings,vehicle):
 
     Where:
 
-    * :math:`E_{i,total}` = Total emissions for species i
-    * :math:`\dot{m}_{fuel}` = Fuel mass flow rate
-    * :math:`EI_i` = Emission index for species i
-    * :math:`GWP_i` = Global warming potential for species i
+    * :math:`E_{i,total}` = Total emissions for species i [kg CO2e]
+    * :math:`\dot{m}_{fuel}` = Fuel mass flow rate [kg/s]
+    * :math:`EI_i` = Emission index for species i [kg_i/kg_fuel]
+    * :math:`GWP_i` = Global warming potential for species i [kg CO2e / kg_i]
     
     Contrail effects are estimated by:
     
     .. math::
-        E_{contrails} = \Delta R \cdot GWP_{contrails}
+        E_{contrails} = \Delta R_{above} \cdot GWP_{contrails}
 
     Where:
 
-    * :math:`\Delta R` = Flight range [km]
-    * :math:`GWP_{contrails}` = Contrail global warming potential
+    * :math:`\Delta R_{above}` = Flight range flown above CONTRAIL_ALT_THRESHOLD_M [km]
+    * :math:`GWP_{contrails}` = Contrail global warming potential [kg CO2e / km]
 
     **Extra modules required**
 
@@ -154,21 +160,28 @@ def evaluate_correlation_emissions_indices(segment,settings,vehicle):
 
     References
     ----------
-    [1] Lee, D. S., et al. (2021). The contribution of global aviation to anthropogenic climate forcing for 2000 to 2018. Atmospheric Environment, 244, 117834.
+    [1] Lee, D. S., et al. (2021). The contribution of global aviation to anthropogenic
+        climate forcing for 2000 to 2018. Atmospheric Environment, 244, 117834.
     """  
     # unpack
     state      = segment.state
-    I          = state.numerics.time.integrate
+    I          = state.numerics.time.integrate 
+    emissions  = state.conditions.emissions 
     NOx_total  = 0 * state.ones_row(1)  
     CO2_total  = 0 * state.ones_row(1) 
     CO_total   = 0 * state.ones_row(1) 
     SO2_total  = 0 * state.ones_row(1) 
     H2O_total  = 0 * state.ones_row(1) 
-    Soot_total = 0 * state.ones_row(1) 
+    Soot_total = 0 * state.ones_row(1)
+    total_gCO2e = 0 * state.ones_row(1)
 
+    if segment.state.initials:
+        initial_cumulative_gCO2e = segment.state.initials.conditions.emissions.cumulative_gCO2e[-1]
+    else:
+        initial_cumulative_gCO2e = 0.0
 
     for network in vehicle.networks:
-        for p_i ,  propulsor in enumerate(network.propulsors):
+        for p_i, propulsor in enumerate(network.propulsors):
             if propulsor.active == True:
                 if (type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or \
                     type(propulsor) == RCAIDE.Library.Components.Powertrain.Converters.Turboshaft or \
@@ -179,54 +192,80 @@ def evaluate_correlation_emissions_indices(segment,settings,vehicle):
                     combustor = propulsor.combustor
                     propulsor_conditions = state.conditions.energy.propulsors[propulsor.tag]
 
-                    fuel =  combustor.fuel_data
+                    fuel = combustor.fuel_data
 
                     EI_NOx  = fuel.emission_indices.NOx
-                    EI_CO2  = fuel.emission_indices.CO2 
+                    EI_CO2  = fuel.emission_indices.CO2
                     EI_CO   = fuel.emission_indices.CO
                     EI_H2O  = fuel.emission_indices.H2O
                     EI_SO2  = fuel.emission_indices.SO2
-                    EI_Soot = fuel.emission_indices.Soot  
+                    EI_Soot = fuel.emission_indices.Soot
 
                     mdot_fuel = propulsor_conditions.fuel_mass_flow_rate
-                     
-                    # Integrate them over the entire segment
-                    NOx_total  += np.dot(I,mdot_fuel*EI_NOx)
-                    CO2_total  += np.dot(I,mdot_fuel*EI_CO2)
-                    CO_total   += np.dot(I,mdot_fuel*EI_CO)
-                    SO2_total  += np.dot(I,mdot_fuel*EI_SO2)
-                    H2O_total  += np.dot(I,mdot_fuel*EI_H2O)
-                    Soot_total += np.dot(I,mdot_fuel*EI_Soot)
-                                     
-         
-    flight_range    =  state.conditions.frames.inertial.aircraft_range 
-    Contrails_total =  (flight_range -   flight_range[0]) /1000 
 
-    emissions                       = Data()
-    emissions.GWP_100               = Data()
-    emissions.mass                  = Data()
-    emissions.index                 = Data() 
-    emissions.GWP_100.NOx           = NOx_total   * fuel.global_warming_potential_100.NOx 
-    emissions.GWP_100.CO2           = CO2_total   * fuel.global_warming_potential_100.CO2
-    emissions.GWP_100.CO            = CO_total    * fuel.global_warming_potential_100.CO
-    emissions.GWP_100.H2O           = H2O_total   * fuel.global_warming_potential_100.H2O  
-    emissions.GWP_100.SO2           = SO2_total   * fuel.global_warming_potential_100.SO2  
-    emissions.GWP_100.Soot          = Soot_total  * fuel.global_warming_potential_100.Soot 
-    emissions.GWP_100.Contrails     = Contrails_total * fuel.global_warming_potential_100.Contrails  
-    emissions.mass.NOx              = NOx_total    
-    emissions.mass.CO2              = CO2_total    
-    emissions.mass.CO               = CO_total     
-    emissions.mass.H2O              = H2O_total    
-    emissions.mass.SO2              = SO2_total    
-    emissions.mass.Soot             = Soot_total   
-    emissions.mass.Contrails        = Contrails_total
-    emissions.index.NOx             = EI_NOx   * state.ones_row(1)
-    emissions.index.CO2             = EI_CO2   * state.ones_row(1)
-    emissions.index.CO              = EI_CO    * state.ones_row(1)
-    emissions.index.H2O             = EI_H2O   * state.ones_row(1)
-    emissions.index.SO2             = EI_SO2   * state.ones_row(1)
-    emissions.index.Soot            = EI_Soot  * state.ones_row(1)
+                    # Integrate each species over the segment for this propulsor
+                    # FIX: use per-propulsor segment integrals (NOx_seg etc.) so the
+                    # GWP sum below adds only this propulsor's contribution, not the
+                    # running cumulative total (which double-counts on multi-engine configs).
+                    NOx_seg  = np.dot(I, mdot_fuel * EI_NOx)
+                    CO2_seg  = np.dot(I, mdot_fuel * EI_CO2)
+                    CO_seg   = np.dot(I, mdot_fuel * EI_CO)
+                    SO2_seg  = np.dot(I, mdot_fuel * EI_SO2)
+                    H2O_seg  = np.dot(I, mdot_fuel * EI_H2O)
+                    Soot_seg = np.dot(I, mdot_fuel * EI_Soot)
+
+                    # Accumulate species mass totals across all propulsors
+                    NOx_total  += NOx_seg
+                    CO2_total  += CO2_seg
+                    CO_total   += CO_seg
+                    SO2_total  += SO2_seg
+                    H2O_total  += H2O_seg
+                    Soot_total += Soot_seg
+
+                    # Accumulate GWP-weighted CO2e for this propulsor's segment emissions.
+                    # Units: kg_species * (kg CO2e / kg_species) = kg CO2e
+                    total_gCO2e += NOx_seg  * fuel.global_warming_potential_100.NOx  + \
+                                   CO2_seg  * fuel.global_warming_potential_100.CO2  + \
+                                   CO_seg   * fuel.global_warming_potential_100.CO   + \
+                                   H2O_seg  * fuel.global_warming_potential_100.H2O  + \
+                                   SO2_seg  * fuel.global_warming_potential_100.SO2  + \
+                                   Soot_seg * fuel.global_warming_potential_100.Soot
+
+    # ------------------------------------------------------------------
+    # Contrails
+    # Only accumulate range flown above the Schmidt-Appleman altitude
+    # threshold (~8,000 m).  Below that, temperatures are too warm for
+    # persistent ice-crystal formation. 
+    # ------------------------------------------------------------------
+    flight_altitude = state.conditions.freestream.altitude          # (N,1) metres
+    flight_range    = state.conditions.frames.inertial.aircraft_range  # (N,1) metres
+ 
+    # Minimum altitude for contrail formation (Schmidt-Appleman threshold, approx.)
+    contrail_altitude_threshold = 8000.0   # metres (~26,247 ft)
     
-    state.conditions.emissions = emissions
-    return   
+    range_above = np.where(flight_altitude >= contrail_altitude_threshold, flight_range, 0.0)
 
+    # km of range flown above threshold during this segment
+    Contrails_total = (range_above - range_above[0]) / 1000.0       # m → km
+
+    # kg CO2e  (GWP_contrails units: kg CO2e / km)
+    total_gCO2e += Contrails_total * fuel.global_warming_potential_100.Contrails
+
+    # Convert gas + contrail total from kg CO2e → g CO2e
+    emissions.gCO2e            = total_gCO2e * 1000
+    emissions.cumulative_gCO2e = initial_cumulative_gCO2e + total_gCO2e * 1000
+    emissions.mass.NOx         = NOx_total
+    emissions.mass.CO2         = CO2_total
+    emissions.mass.CO          = CO_total
+    emissions.mass.H2O         = H2O_total
+    emissions.mass.SO2         = SO2_total
+    emissions.mass.Soot        = Soot_total
+    emissions.mass.Contrails   = Contrails_total
+    emissions.index.NOx        = EI_NOx  * state.ones_row(1)
+    emissions.index.CO2        = EI_CO2  * state.ones_row(1)
+    emissions.index.CO         = EI_CO   * state.ones_row(1)
+    emissions.index.H2O        = EI_H2O  * state.ones_row(1)
+    emissions.index.SO2        = EI_SO2  * state.ones_row(1)
+    emissions.index.Soot       = EI_Soot * state.ones_row(1)
+
+    return

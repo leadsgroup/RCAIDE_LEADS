@@ -417,7 +417,12 @@ class Results(Conditions):
         # ----------------------------------------------------------------------------------------------------------------------         
         # Freestream 
         # ----------------------------------------------------------------------------------------------------------------------    
-        self.emissions                                       = Conditions()         
+        self.emissions                                                = Conditions()       
+        self.emissions.mass                                           = Conditions()    
+        self.emissions.index                                          = Conditions()    
+        self.emissions.gCO2e                                          =  ones_1col * 0  
+        self.emissions.cumulative_gCO2e                               =  ones_1col * 0 
+    
         
         # ----------------------------------------------------------------------------------------------------------------------         
         # Noise
