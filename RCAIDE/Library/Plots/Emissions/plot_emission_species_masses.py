@@ -83,17 +83,18 @@ def plot_emission_species_masses(results,
 
     time_all = []
     mass     = {k: [] for k in ['CO2', 'CO', 'NOx', 'H2O']}
+    running  = {k: 0.0 for k in ['CO2', 'CO', 'NOx', 'H2O']}
     for seg in results.segments:
         t = seg.conditions.frames.inertial.time[:, 0] / Units.min
         time_all.append(t)
-        mass['CO2'].append(seg.conditions.emissions.mass.CO2[:, 0] / 1E3)
-        mass['CO' ].append(seg.conditions.emissions.mass.CO[:, 0]  / 1E3)
-        mass['NOx'].append(seg.conditions.emissions.mass.NOx[:, 0] / 1E3)
-        mass['H2O'].append(seg.conditions.emissions.mass.H2O[:, 0] / 1E3)
+        for k, attr in [('CO2', 'CO2'), ('CO', 'CO'), ('NOx', 'NOx'), ('H2O', 'H2O')]:
+            seg_vals = getattr(seg.conditions.emissions.mass, attr)[:, 0] / 1E3
+            mass[k].append(seg_vals + running[k])
+            running[k] += seg_vals[-1]
 
     time_all = np.concatenate(time_all)
     for k in mass:
-        mass[k] = np.cumsum(np.concatenate(mass[k]))
+        mass[k] = np.concatenate(mass[k])
 
     axis_1 = plt.subplot(1, 1, 1)
     bottom = np.zeros_like(time_all)
@@ -103,7 +104,7 @@ def plot_emission_species_masses(results,
                             color=species_colors[species], alpha=0.85)
         bottom += mass[species]
 
-    axis_1.set_ylabel(r'Cumulative Emissions Mass (Metric Tons)')
+    axis_1.set_ylabel(r'Species Mass (Metric Tons)')
     axis_1.set_xlabel(r'Time (mins)')
     set_axes(axis_1)
 

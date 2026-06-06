@@ -76,10 +76,10 @@ def plot_CO2e_emissions(results,
                        
         segment_tag  =  results.segments[i].tag
         segment_name = segment_tag.replace('_', ' ')
-        axis_1 = plt.subplot(2,2,1) 
+        axis_1 = plt.subplot(1,1,1) 
         axis_1.plot(time, gCO2e, color = line_colors[i], marker = ps.markers[0],markersize = ps.marker_size, linewidth = ps.line_width, label = segment_name)            
         axis_1.set_ylim([0, max(gCO2e)*1.1])
-        axis_1.set_ylabel(r'Cumulative $CO_2e$ (Metric Tons)')    
+        axis_1.set_ylabel(r'$CO_2e$ (Metric Tons)')    
         axis_1.set_xlabel('Time (mins)') 
         set_axes(axis_1)   
 
