@@ -17,4 +17,4 @@ RCAIDE.Library.Methods.Emissions.Emission_Index_Empirical_Method.evaluate_correl
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-from .evaluate_correlation_emissions_indices  import evaluate_correlation_emissions_indices
+from .evaluate_correlation_emissions  import evaluate_correlation_emissions

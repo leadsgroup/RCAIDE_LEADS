@@ -96,7 +96,7 @@ class Emission_Index_Correlation_Method(Emissions):
         """         
         
         compute   =  self.process.compute     
-        compute.emissions  = evaluate_correlation_emissions_indices
+        compute.emissions  = evaluate_correlation_emissions
         return 
 
 
