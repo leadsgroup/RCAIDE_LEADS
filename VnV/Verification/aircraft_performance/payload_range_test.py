@@ -10,7 +10,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units , Container
 from RCAIDE.Library.Methods.Performance.compute_payload_range_diagram        import compute_payload_range_diagram
-
+from RCAIDE.Library.Plots.Performance.plot_payload_range_diagram import plot_payload_range_diagram
 # python imports     
 import numpy as np  
 import sys
@@ -63,7 +63,7 @@ def fuel_aircraft_payload_range():
         
     # run payload range analysis 
     payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage=0.05, delete_training_data = True)
-                                
+    plot_payload_range_diagram(payload_range_results, save_figure = False)
     fuel_r                 = payload_range_results.range[-1]  
     fuel_r_true            = 5545050.115614797# Reference ( https://www.embraercommercialaviation.com/wp-content/uploads/2017/06/APM_190.pdf) is 5556000.  
     

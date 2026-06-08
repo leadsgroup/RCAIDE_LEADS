@@ -12,11 +12,9 @@ import RCAIDE
 from RCAIDE.Framework.Core import Units , Data  
 from RCAIDE.Library.Plots.Common import set_axes, plot_style    
 from RCAIDE.Library.Mission.Common.Pre_Process import mass_properties,geometry
-from RCAIDE.Library.Plots import *
  
 # Pacakge imports 
-import numpy as np
-from matplotlib import pyplot as plt
+import numpy as np 
 import os,sys
  
 # ----------------------------------------------------------------------
@@ -392,24 +390,5 @@ def electric_payload_range_diagram(vehicle,mission,cruise_segment_tag,plot_diagr
     payload_range.range             = np.array(R)
     payload_range.payload           = np.array(PLD)
     payload_range.takeoff_weight    = np.array(TOW)
-    
-    if plot_diagram: 
-        # get plotting style 
-        ps      = plot_style()  
-    
-        parameters = {'axes.labelsize': ps.axis_font_size,
-                      'xtick.labelsize': ps.axis_font_size,
-                      'ytick.labelsize': ps.axis_font_size,
-                      'axes.titlesize': ps.title_font_size}
-        plt.rcParams.update(parameters)
-
-        fig  = plt.figure('Electric_Payload_Range_Diagram')
-        axis = fig.add_subplot(1,1,1)        
-        axis.plot(payload_range.range /Units.nmi, payload_range.payload,color = 'k', linewidth = ps.line_width )
-        axis.set_xlabel('Range (nautical miles)')
-        axis.set_ylabel('Payload (kg)')
-        axis.set_title('Payload Range Diagram')
-        set_axes(axis) 
-        fig.tight_layout()
 
     return payload_range
