@@ -164,7 +164,7 @@ def approach_mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle.active             = True                
 
     mission.append_segment(segment)
  
@@ -214,7 +214,7 @@ def takeoff_mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
-    segment.assigned_control_variables.body_angle.active             = True                 
+    segment.assigned_control_variables.pitch_angle.active             = True                 
 
     mission.append_segment(segment) 
 
@@ -236,7 +236,7 @@ def takeoff_mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
-    segment.assigned_control_variables.body_angle.active             = True                 
+    segment.assigned_control_variables.pitch_angle.active             = True                 
 
     mission.append_segment(segment)
  

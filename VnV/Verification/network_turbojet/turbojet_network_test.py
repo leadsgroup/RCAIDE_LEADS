@@ -213,7 +213,7 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']] 
-    segment.assigned_control_variables.body_angle.active             = True                   
+    segment.assigned_control_variables.pitch_angle.active             = True                   
       
     mission.append_segment(segment)
     
@@ -236,7 +236,7 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']] 
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle.active             = True                
     
     mission.append_segment(segment)
     
@@ -258,7 +258,7 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']] 
-    segment.assigned_control_variables.body_angle.active             = True                 
+    segment.assigned_control_variables.pitch_angle.active             = True                 
     
     mission.append_segment(segment)    
 
@@ -281,7 +281,7 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']] 
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle.active             = True                
     
     mission.append_segment(segment) 
 
@@ -303,7 +303,7 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']] 
-    segment.assigned_control_variables.body_angle.active             = True                 
+    segment.assigned_control_variables.pitch_angle.active             = True                 
     
     mission.append_segment(segment)
     
@@ -325,7 +325,7 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']] 
-    segment.assigned_control_variables.body_angle.active             = True                  
+    segment.assigned_control_variables.pitch_angle.active             = True                  
     
     mission.append_segment(segment)     
     
@@ -347,7 +347,7 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']] 
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle.active             = True                
     
     mission.append_segment(segment)
     
@@ -368,7 +368,7 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']] 
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle.active             = True                
     
     mission.append_segment(segment)    
     
@@ -392,7 +392,7 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']] 
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle.active             = True                
     
     mission.append_segment(segment)
      
@@ -414,7 +414,7 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']] 
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle.active             = True                
     
     mission.append_segment(segment)     
     
@@ -434,7 +434,7 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['inner_right_turbojet','outer_right_turbojet','outer_left_turbojet','inner_left_turbojet']] 
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle.active             = True                
     
     mission.append_segment(segment)      
     

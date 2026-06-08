@@ -214,7 +214,7 @@ def AVL_Surrogate_mission_setup(analyses):
     segment.flight_dynamics.force_z                                 = True     
     
     # define flight controls 
-    segment.assigned_control_variables.body_angle.active             = True     
+    segment.assigned_control_variables.pitch_angle.active             = True     
     segment.assigned_control_variables.throttle.active               = True
     segment.assigned_control_variables.throttle.initial_guess_values = [[0.5]]
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['ice_propeller']]    
@@ -255,7 +255,7 @@ def AVL_Single_Point_mission_setup(analyses):
     segment.flight_dynamics.force_z                                 = True     
     
     # define flight controls 
-    segment.assigned_control_variables.body_angle.active             = True     
+    segment.assigned_control_variables.pitch_angle.active             = True     
     segment.assigned_control_variables.throttle.active               = True
     segment.assigned_control_variables.throttle.initial_guess_values = [[0.5]]
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['ice_propeller']]   

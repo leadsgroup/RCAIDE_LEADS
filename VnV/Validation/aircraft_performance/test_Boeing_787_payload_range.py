@@ -224,7 +224,7 @@ def payload_range_mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['propulsor_1','propulsor_2']] 
-    segment.assigned_control_variables.body_angle.active             = True                 
+    segment.assigned_control_variables.pitch_angle.active             = True                 
 
     mission.append_segment(segment) 
 
@@ -247,7 +247,7 @@ def payload_range_mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['propulsor_1','propulsor_2']] 
-    segment.assigned_control_variables.body_angle.active             = True                 
+    segment.assigned_control_variables.pitch_angle.active             = True                 
 
     mission.append_segment(segment)
 
@@ -271,7 +271,7 @@ def payload_range_mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['propulsor_1','propulsor_2']] 
-    segment.assigned_control_variables.body_angle.active             = True                  
+    segment.assigned_control_variables.pitch_angle.active             = True                  
 
     mission.append_segment(segment)
 
@@ -289,7 +289,7 @@ def payload_range_mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['propulsor_1','propulsor_2']] 
-    segment.assigned_control_variables.body_angle.active             = True                  
+    segment.assigned_control_variables.pitch_angle.active             = True                  
 
     mission.append_segment(segment)
 
@@ -308,7 +308,7 @@ def payload_range_mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['propulsor_1','propulsor_2']] 
-    segment.assigned_control_variables.body_angle.active             = True                  
+    segment.assigned_control_variables.pitch_angle.active             = True                  
 
     mission.append_segment(segment) 
 
@@ -330,7 +330,7 @@ def payload_range_mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['propulsor_1','propulsor_2']] 
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle.active             = True                
 
     mission.append_segment(segment)
 
@@ -353,7 +353,7 @@ def payload_range_mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['propulsor_1','propulsor_2']] 
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle.active             = True                
 
     mission.append_segment(segment)
 
@@ -376,7 +376,7 @@ def payload_range_mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['propulsor_1','propulsor_2']] 
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle.active             = True                
 
     mission.append_segment(segment)
 
@@ -399,7 +399,7 @@ def payload_range_mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['propulsor_1','propulsor_2']] 
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle.active             = True                
 
     mission.append_segment(segment) 
 

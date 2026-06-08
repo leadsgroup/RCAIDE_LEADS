@@ -190,8 +190,8 @@ def mission_setup(analyses):
     segment.assigned_control_variables.throttle.active                  = True           
     segment.assigned_control_variables.throttle.assigned_propulsors     = [['center_propulsor','starboard_propulsor','port_propulsor']] 
     segment.assigned_control_variables.throttle.initial_guess_values    = [[0.95]]    
-    segment.assigned_control_variables.body_angle.active                = True        
-    segment.assigned_control_variables.body_angle.initial_guess_values  = [[2.05 * Units.degree]]                   
+    segment.assigned_control_variables.pitch_angle.active                = True        
+    segment.assigned_control_variables.pitch_angle.initial_guess_values  = [[2.05 * Units.degree]]                   
       
     mission.append_segment(segment) 
     return mission
