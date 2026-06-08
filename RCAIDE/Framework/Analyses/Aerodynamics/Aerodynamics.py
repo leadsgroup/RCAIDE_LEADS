@@ -63,6 +63,7 @@ class Aerodynamics(Analysis):
         self.settings.oswald_efficiency_factor                           = None
         self.settings.span_efficiency                                    = None
         self.settings.store_training_data                                = False
+        self.settings.reuse_training_data                                = False
         self.settings.use_surrogate                                      = True  
 
         self.settings.subsonic                                           = Data() 

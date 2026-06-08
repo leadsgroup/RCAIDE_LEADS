@@ -36,8 +36,8 @@ def main():
          
     battery_types = ['lithium_ion_nmc', 'lithium_ion_lfp']
     btms_types    = ['Liquid_Cooled_Wavy_Channel', 'Air_Cooled', None] 
-    CL_true       = [[0.8284881157752424,  0.8284881157752424 ,   0.8284881157752424],
-                     [ 0.8284881157752421,  0.8284881157752421,  0.8284881157752421]] 
+    CL_true       = [[0.8283889051940404,  0.8283889051940404 ,   0.8283889051940404],
+                     [ 0.8283889051940401,  0.8283889051940401,  0.8283889051940401]] 
     # vehicle data
     for i , battery_type in enumerate(battery_types):
         for j , btms_type in enumerate(btms_types):
@@ -97,6 +97,8 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis  
     aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
+    aerodynamics.settings.number_of_spanwise_vortices    = 10 # reducing the number of vortices to speed up the test 
+    aerodynamics.settings.number_of_chordwise_vortices   = 5  # reducing the number of vortices to speed up the test 
     analyses.append(aerodynamics)
 
     # ------------------------------------------------------------------

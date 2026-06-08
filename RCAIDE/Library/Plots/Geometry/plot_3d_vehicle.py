@@ -363,18 +363,17 @@ def plot_3d_vehicle(vehicle,
     else:
         plotter.camera_position = [(L * camera_eye_x, L * camera_eye_y, L * camera_eye_z), (L /2, 0, 0), (0, 0, 1)]
     
-    plotter.window_size = [1500, 1500] # Set resolution
-    plotter.set_background('white') # Set background color
-        
+    plotter.window_size = [1500, 1500]
+    plotter.set_background('white')
+
     if export_gltf:
         plotter.export_gltf(save_filename + ".gltf")
-        
-    if save_figure:  
-        # 4. Save the plot as a PNG image
-        plotter.screenshot(save_filename + ".png")          
+
+    if save_figure:
+        plotter.screenshot(save_filename + ".png", transparent_background=True)
     else:
-        if show_figure: 
-            plotter.show()  
+        if show_figure:
+            plotter.show()
     return plotter
 
 def add_lopa_seats(plotter, lopa_geometry, opacity):

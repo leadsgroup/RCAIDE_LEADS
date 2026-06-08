@@ -54,11 +54,10 @@ def main():
     # mission analysis 
     results = missions.base_mission.evaluate()   
     plot_mission(results)    
- 
-    CL          = results.segments.level_cruise.conditions.aerodynamics.coefficients.lift.total[2][0] 
-    CD          = results.segments.level_cruise.conditions.aerodynamics.coefficients.drag.total[2][0] 
-    L_D  = CL / CD
-    #print values for resetting regression
+
+    CL   = results.segments.level_cruise.conditions.aerodynamics.coefficients.lift.total 
+    CD   = results.segments.level_cruise.conditions.aerodynamics.coefficients.drag.total 
+    L_D  = (CL / CD).mean()
     show_vals = True
     if show_vals:
         data = [L_D]
@@ -66,7 +65,7 @@ def main():
             print(val)
     
     # Truth values 
-    L_D_truth         = 7.2591156761399525
+    L_D_truth         = 7.440457937848301
     
     # Store errors 
     error = Data() 
@@ -167,6 +166,8 @@ def plot_mission(results):
     plot_drag_components(results) 
  
     plot_emissions(results) 
+    
+    plot_contrails_appleman_chart(results)
   
     plot_aerodynamic_forces(results)
     

@@ -318,6 +318,16 @@ def wing_planform(wing):
         segment.percent_span_location         = 1.0
         segment.root_chord_percent            = taper  
         segment.thickness_to_chord            = t_c_w
+        
+        if vertical:
+            dx = np.tan(le_sweep) * semispan
+            dy = np.tan(dihedral) * semispan
+            dz = semispan
+            segment.origin   = [[dx,  dy , semispan ]]
+        else:
+            dx = np.tan(le_sweep) * semispan 
+            dz = np.tan(dihedral) * semispan
+            segment.origin   = [[dx, semispan  , dz ]] 
         wing.append_segment(segment)     
 
         segment_properties(wing) 

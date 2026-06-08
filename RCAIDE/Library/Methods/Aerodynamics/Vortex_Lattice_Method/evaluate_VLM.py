@@ -345,7 +345,7 @@ def evaluate_no_surrogate(state,settings,vehicle):
  
     conditions.aerodynamics.coefficients.lift.inviscid.wings          = VLM_results.CLift_wings 
     conditions.aerodynamics.coefficients.lift.inviscid.total          = Clift
-    conditions.aerodynamics.coefficients.lift.spanwise       = VLM_results.sectional_CLift
+    conditions.aerodynamics.coefficients.lift.spanwise                = VLM_results.sectional_CLift
     conditions.aerodynamics.coefficients.drag.induced.wings           = VLM_results.CDrag_induced_wings
     conditions.aerodynamics.coefficients.drag.induced.spanwise        = VLM_results.sectional_CDrag_induced
     conditions.aerodynamics.coefficients.drag.induced.inviscid        = Cdrag
@@ -415,7 +415,7 @@ def evaluate_no_surrogate(state,settings,vehicle):
     # Dimensionalize the lift and drag for each wing   
     equilibrium_conditions.aerodynamics.coefficients.lift.inviscid.wings          = VLM_results.CLift_wings 
     equilibrium_conditions.aerodynamics.coefficients.lift.inviscid.total          = VLM_results.CLift
-    equilibrium_conditions.aerodynamics.coefficients.lift.spanwise       = VLM_results.sectional_CLift
+    equilibrium_conditions.aerodynamics.coefficients.lift.spanwise                = VLM_results.sectional_CLift
     equilibrium_conditions.aerodynamics.coefficients.drag.induced.wings           = VLM_results.CDrag_induced_wings
     equilibrium_conditions.aerodynamics.coefficients.drag.induced.spanwise        = VLM_results.sectional_CDrag_induced
     equilibrium_conditions.aerodynamics.coefficients.drag.induced.inviscid        = VLM_results.CDrag_induced
@@ -472,7 +472,7 @@ def evaluate_no_surrogate(state,settings,vehicle):
  
     pertubation_conditions.aerodynamics.coefficients.lift.inviscid.total     = Clift_i_alpha_prime     
     pertubation_conditions.aerodynamics.coefficients.lift.inviscid.wings     = VLM_results.CLift_wings  
-    pertubation_conditions.aerodynamics.coefficients.lift.spanwise  = VLM_results.sectional_CLift        
+    pertubation_conditions.aerodynamics.coefficients.lift.spanwise           = VLM_results.sectional_CLift        
     pertubation_conditions.aerodynamics.coefficients.drag.induced.wings      = VLM_results.CDrag_induced_wings 
     pertubation_conditions.aerodynamics.coefficients.drag.induced.total      = Cdrag_i_alpha_prime
      
@@ -536,7 +536,7 @@ def evaluate_no_surrogate(state,settings,vehicle):
     conditions.static_stability.derivatives.CX_beta    =   (CX_beta_prime      - CX_0) / (delta_angle)  
     conditions.static_stability.derivatives.CY_beta    =   (CY_beta_prime      - CY_0) / (delta_angle) 
     conditions.static_stability.derivatives.CZ_beta    =   (CZ_beta_prime      - CZ_0) / (delta_angle) 
-    conditions.static_stability.derivatives.CL_beta    =   -(CL_beta_prime      - CL_0) / (delta_angle)   
+    conditions.static_stability.derivatives.CL_beta    =   (CL_beta_prime      - CL_0) / (delta_angle)   
     conditions.static_stability.derivatives.CM_beta    =   (CM_beta_prime      - CM_0) / (delta_angle)  
     conditions.static_stability.derivatives.CN_beta    =   (CN_beta_prime      - CN_0) / (delta_angle) 
 
@@ -686,14 +686,14 @@ def evaluate_no_surrogate(state,settings,vehicle):
     CM_p_prime    = VLM_results.CM
     CN_p_prime    = VLM_results.CN
     
-    conditions.static_stability.derivatives.Clift_p  = (Clift_p_prime   - Clift_0) / (p_hat)
-    conditions.static_stability.derivatives.Cdrag_p  = (Cdrag_p_prime   - Cdrag_0) / (p_hat) 
-    conditions.static_stability.derivatives.CX_p     = (CX_p_prime      - CX_0)    / (p_hat)  
-    conditions.static_stability.derivatives.CY_p     = (CY_p_prime      - CY_0)    / (p_hat) 
-    conditions.static_stability.derivatives.CZ_p     = (CZ_p_prime      - CZ_0)    / (p_hat) 
-    conditions.static_stability.derivatives.CL_p     = (CL_p_prime      - CL_0)    / (p_hat)  
-    conditions.static_stability.derivatives.CM_p     = (CM_p_prime      - CM_0)    / (p_hat)  
-    conditions.static_stability.derivatives.CN_p     = (CN_p_prime      - CN_0)    / (p_hat)
+    conditions.static_stability.derivatives.Clift_p  =  (Clift_p_prime   - Clift_0) / (p_hat)
+    conditions.static_stability.derivatives.Cdrag_p  =  (Cdrag_p_prime   - Cdrag_0) / (p_hat) 
+    conditions.static_stability.derivatives.CX_p     =  (CX_p_prime      - CX_0)    / (p_hat)  
+    conditions.static_stability.derivatives.CY_p     =  (CY_p_prime      - CY_0)    / (p_hat) 
+    conditions.static_stability.derivatives.CZ_p     =  (CZ_p_prime      - CZ_0)    / (p_hat) 
+    conditions.static_stability.derivatives.CL_p     =  (CL_p_prime      - CL_0)    / (p_hat)  
+    conditions.static_stability.derivatives.CM_p     =  (CM_p_prime      - CM_0)    / (p_hat)  
+    conditions.static_stability.derivatives.CN_p     = -(CN_p_prime      - CN_0)    / (p_hat)
 
     # ---------------------------------------------------------------------------------------------------      
     # Pitch Rate (q) Purtubation

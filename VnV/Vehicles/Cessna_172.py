@@ -374,7 +374,7 @@ def vehicle_setup():
     prop.hub_radius                         = 8.     * Units.inches
     prop.cruise.design_freestream_velocity  = 119.   * Units.knots
     prop.cruise.design_angular_velocity     = 2650.  * Units.rpm
-    prop.cruise.design_Cl                   = 0.8
+    prop.cruise.design_lift_coefficient                   = 0.8
     prop.cruise.design_altitude             = 12000. * Units.feet
     prop.cruise.design_power                = .64 * 180. * Units.horsepower
     prop.variable_pitch                     = True  

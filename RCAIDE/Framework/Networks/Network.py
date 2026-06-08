@@ -9,8 +9,7 @@
 import  RCAIDE 
 from RCAIDE.Framework.Mission.Common                      import Residuals 
 from RCAIDE.Library.Mission.Common.Unpack_Unknowns.energy import unknowns
-from RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw                import compute_avionics_power_draw
-from RCAIDE.Library.Methods.Powertrain.Systems.compute_systems_power_draw                 import compute_systems_power_draw
+from RCAIDE.Library.Methods.Powertrain.Systems               import *
 from RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance         import *
 from RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance import * 
 from RCAIDE.Library.Components import Component
@@ -80,10 +79,11 @@ class Network(Component):
         self.system_voltage               = None  
         
     # linking the different network components
-    def evaluate(network,state,center_of_gravity):
+    def evaluate(network,state,vehicle):
         """ Computes the performance of the network
         """  
         # unpack   
+        center_of_gravity    = vehicle.mass_properties.center_of_gravity
         conditions           = state.conditions 
         busses               = network.busses 
         fuel_lines           = network.fuel_lines 
@@ -129,10 +129,26 @@ class Network(Component):
         for bus in busses:            
             avionics             = bus.avionics 
             systems              = bus.systems 
+            ecs                  = bus.environmental_controls
+            ice_protection       = bus.ice_protection
+            hydraulics           = bus.hydraulics
+            flight_controls      = bus.flight_controls
+            cabin_loads          = bus.cabin_loads
     
-            # Avionics Power Consumtion 
-            compute_avionics_power_draw(avionics,bus,conditions) 
-            compute_systems_power_draw(systems,bus,conditions) 
+            if avionics != None:
+                compute_avionics_power_draw(avionics,vehicle,bus,state)
+            if flight_controls != None:
+                compute_flight_controls_power_draw(flight_controls,vehicle,bus,state)
+            if systems != None: 
+                compute_systems_power_draw(systems,vehicle,bus,state)
+            if ecs != None:
+                compute_ecs_power_draw(ecs,vehicle,bus,state)
+            if ice_protection != None:
+                compute_ice_protection_power_draw(ice_protection,vehicle,bus,state)
+            if hydraulics != None:
+                compute_hydraulics_power_draw(hydraulics,vehicle,bus,state)
+            if cabin_loads != None:
+                compute_cabin_loads_power_draw(cabin_loads,vehicle,bus,state)
     
             # Bus Voltage 
             bus_voltage = bus.voltage * state.ones_row(1)       
@@ -484,7 +500,7 @@ class Network(Component):
 class Container(Component.Container):
     """ The Network container class 
     """
-    def evaluate(self,state,center_of_gravity):
+    def evaluate(self,state,vehicle):
         """ This is used to evaluate the thrust and moments produced by the network.
 
             Assumptions:  
@@ -494,7 +510,7 @@ class Container(Component.Container):
                 None 
         """ 
         for net in self.values():             
-            net.evaluate(state,center_of_gravity)  
+            net.evaluate(state,vehicle)  
         return   
 
 # ----------------------------------------------------------------------

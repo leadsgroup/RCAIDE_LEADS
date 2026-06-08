@@ -54,33 +54,33 @@ def main():
     '''Values are different from trimmed stability derivative test because stability derivatives are different.'''
     elevator_deflection        = results.segments.cruise.conditions.control_surfaces.elevator.deflection[0,0] / Units.deg
     print('Elevator Defection',elevator_deflection)
-    elevator_deflection_true   = 1.4877866750722837
+    elevator_deflection_true   = -2.5151578364353555
     elevator_deflection_diff   = np.abs(elevator_deflection - elevator_deflection_true)
     print('Elevator Error 1: ',elevator_deflection_diff)
     assert np.abs(elevator_deflection_diff/elevator_deflection_true) < 5e-3
 
     aileron_deflection        = results.segments.cruise.conditions.control_surfaces.aileron.deflection[0,0] / Units.deg
     print('Aileron Defection',aileron_deflection)
-    aileron_deflection_true   = 3.043403012867304
+    aileron_deflection_true   = -7.799351008039411
     aileron_deflection_diff   = np.abs(aileron_deflection - aileron_deflection_true)
     print('Aileron Error 2: ',aileron_deflection_diff)
     assert np.abs(aileron_deflection_diff/aileron_deflection_true) < 5e-3
 
     rudder_deflection        = results.segments.cruise.conditions.control_surfaces.rudder.deflection[0,0] / Units.deg
     print('Rudder Defection',rudder_deflection)
-    rudder_deflection_true   = -23.62037548016846
+    rudder_deflection_true   = 14.017583131023938
     rudder_deflection_diff   = np.abs(rudder_deflection - rudder_deflection_true)
     print('Rudder Error 3: ',rudder_deflection_diff)
     assert np.abs(rudder_deflection_diff/rudder_deflection_true) < 5e-3  
 
     throttle        = results.segments.cruise_2.conditions.energy.propulsors['ice_propeller'].throttle[0,0]
-    throttle_true   = 0.37537152645136324
+    throttle_true   = 0.48137503331478093
     throttle_diff   = np.abs(throttle - throttle_true)
     print('Throttle Error 1: ',throttle_diff)
     assert np.abs(throttle_diff/throttle_true) < 5e-3    
 
     throttle3        = results.segments.cruise_3.conditions.energy.propulsors['ice_propeller'].throttle[0,0]
-    throttle3_true   = 0.4845433366671214
+    throttle3_true   = 0.3771964497239476
     throttle3_diff   = np.abs(throttle3 - throttle3_true)
     print('Throttle Error 2: ',throttle3_diff)
     assert np.abs(throttle3_diff/throttle3_true) < 5e-3   

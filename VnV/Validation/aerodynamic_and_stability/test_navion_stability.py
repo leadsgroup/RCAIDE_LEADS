@@ -61,45 +61,56 @@ def main():
                                                                           altitude          =  1000. * Units.feet ) 
  
     SSD = results.static_stability.derivatives
-    # Display the stability derivatives
-    print(f"CLift_alpha: {SSD.Clift_alpha[0,0]:.3f}")
-    print(f"CY_beta: {SSD.CY_beta[0,0]:.3f}")
-    print(f"CL_beta: {SSD.CL_beta[0,0]:.4f}")
-    print(f"CM_alpha: {SSD.CM_alpha[0,0]:.3f}")
-    print(f"CN_beta: {SSD.CN_beta[0,0]:.3f}")
-    print(f"CL_p: {SSD.CL_p[0,0]:.5f}")
-    print(f"CL_r: {SSD.CL_r[0,0]:.5f}")
-    print(f"CM_q: {SSD.CM_q[0,0]:.5f}")
-    print(f"CN_p: {SSD.CN_p[0,0]:.5f}")
-    print(f"CN_r: {SSD.CN_r[0,0]:.5f}")
-    print(f"CM_delta_e: {SSD.CM_delta_e[0,0]:.5f}")
-    print(f"CL_delta_a: {SSD.CL_delta_a[0,0]:.5f}")
-    print(f"CN_delta_a: {SSD.CN_delta_a[0,0]:.5f}")
-    print(f"CN_delta_r: {SSD.CN_delta_r[0,0]:.5f}") 
-    
-
+  
     print('Literature Validation ')
-    for key, val in list(truth_vals.items()):
-        computed = SSD[key][0, 0]
-        in_range = truth_vals[key][0] <= computed <= truth_vals[key][1]
-
-        lower_bound_percent_error = 100 * abs((truth_vals[key][0] - computed) / truth_vals[key][0])
-        upper_bound_percent_error = 100 * abs((truth_vals[key][1] - computed) / truth_vals[key][1])
+    rows = []
+    for key in truth_vals.keys():
+        computed  = SSD[key][0, 0]
+        lo, hi    = truth_vals[key][0], truth_vals[key][1]
+        in_range  = lo <= computed <= hi
 
         if not in_range:
-            if computed < truth_vals[key][0]:
-                max_percent_error = lower_bound_percent_error
-            else:
-                max_percent_error = upper_bound_percent_error
-            print(key, round(computed, 5), ' outside range by ', round(max_percent_error, 2), ' % error')
+            lower_err = 100 * abs((lo - computed) / lo)
+            upper_err = 100 * abs((hi - computed) / hi)
+            pct_err   = lower_err if computed < lo else upper_err
+            status    = 'OUTSIDE'
+            sign_note = 'opposite sign' if (computed * lo < 0) else 'same sign'
+            err_str   = f'{pct_err:.2f}%'
         else:
-            print(key, round(computed, 5), ' inside range')
+            status    = 'inside'
+            sign_note = ''
+            err_str   = ''
+
+        rows.append((key, f'{computed:.5f}', f'[{lo}, {hi}]', status, err_str, sign_note))
+
+    col_headers = ('Derivative', 'Computed', 'Range', 'Status', '% Error', 'Sign')
+    col_widths  = [max(len(h), max(len(r[i]) for r in rows)) for i, h in enumerate(col_headers)]
+    fmt         = '  '.join(f'{{:<{w}}}' for w in col_widths)
+    sep         = '  '.join('-' * w for w in col_widths)
+
+    print(fmt.format(*col_headers))
+    print(sep)
+    for row in rows:
+        print(fmt.format(*row))
 
     print('Code Verification ')
 
-    RCAIDE_vals = Data()
-    for key in truth_vals.keys():
-        RCAIDE_vals[key] = SSD[key][0, 0]
+    RCAIDE_vals = Data() 
+    RCAIDE_vals.Clift_alpha = 5.71836275727471
+    RCAIDE_vals.CY_beta = -0.14312877260856274
+    RCAIDE_vals.CL_beta = -0.07529640050767267
+    RCAIDE_vals.CM_alpha = -1.1788082925116026
+    RCAIDE_vals.CN_beta = 0.10219800736234788
+    RCAIDE_vals.CL_p = -0.4331829968640342
+    RCAIDE_vals.CL_r = 0.06303177725789796
+    RCAIDE_vals.CM_q = -13.318912390825936
+    RCAIDE_vals.CN_p = -0.07239626725266779
+    RCAIDE_vals.CN_r = -0.09868917917133957
+    RCAIDE_vals.CM_delta_e = -1.6100758451817097
+    RCAIDE_vals.CL_delta_a = -0.11580752428597008
+    RCAIDE_vals.CN_delta_a = -0.008238547197219613
+    RCAIDE_vals.CN_delta_r = -0.07718356528882132
+ 
 
     RCAIDE_error = Data()
     for key, val in list(RCAIDE_vals.items()):

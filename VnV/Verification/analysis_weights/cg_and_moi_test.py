@@ -98,9 +98,9 @@ def BWB_Test():
     geometry(mission)   
     mass_properties(mission)
 
-    truth_moi = np.array([[ 3.58809772e+06,  2.09092723e+06, -6.63490042e+05],
-                          [ 2.09092723e+06,  2.55119296e+07,  9.57721836e+03],
-                          [-6.63490042e+05,  9.57721836e+03,  2.78709759e+07]])
+    truth_moi = np.array([[ 3.58319661e+06,  2.03392371e+06, -6.74086276e+05],
+                          [ 2.03392371e+06,  2.42973677e+07,  9.20231432e+03],
+                          [-6.74086276e+05,  9.20231432e+03,  2.66460352e+07]])
     computed_moi = mission.segments[0].analyses.vehicle.mass_properties.moments_of_inertia.tensor
     error_matrix = abs((computed_moi - truth_moi) / truth_moi)
     assert np.all(error_matrix < 1e-2),\
@@ -235,9 +235,9 @@ def General_Aviation_Test():
     print(vehicle.tag + ' Moment of Inertia')
     print(MOI)
 
-    accepted  = np.array([[2213.58651629,    0.        ,  -95.86139613],
-                          [   0.        , 4733.73447153,    0.        ],
-                          [ -95.86139613,    0.        , 2717.82190841]])
+    accepted  = np.array([[2213.58651621,    0.        , -100.21249467],
+                          [   0.        , 4772.52702827,    0.        ],
+                          [-100.21249467,    0.        , 2756.61446524]])
 
     MOI_error     = MOI - accepted
 
@@ -312,9 +312,9 @@ def EVTOL_Aircraft_Test(update_regression_values):
 
     print(vehicle.tag + ' Moment of Inertia')
     print(MOI) 
-    accepted  = np.array([[ 9439.70980302,  -432.78287632,  -285.54130702],
-                          [ -432.78287632,  9813.07098438,  -101.63196553],
-                          [ -285.54130702,  -101.63196553, 17475.15176533]])
+    accepted  = np.array([[ 9445.05900029,  -432.23307422,  -317.48560422],
+                          [ -432.23307422,  9878.2899165 ,  -101.09561206],
+                          [ -317.48560422,  -101.09561206, 17535.02150018]])
     MOI_error     = (MOI - accepted) / accepted
 
     # Check the errors

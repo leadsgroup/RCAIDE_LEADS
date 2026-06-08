@@ -48,7 +48,6 @@ class Energy(Analysis):
         """ 
             
         networks = vehicle.networks
-        cg       = vehicle.mass_properties.center_of_gravity
-        networks.evaluate(state,cg)
+        networks.evaluate(state,vehicle)
         return  
     

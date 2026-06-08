@@ -51,11 +51,16 @@ def main():
     # mission analysis 
     results = missions.base_mission.evaluate()  
 
-    P_truth     = 64843.272571198715
-    mdot_truth  = 0.005697277396236769
+    P_truth     = 61264.08298406276
+    mdot_truth  = 0.005382801659231894
     
     P    = results.segments.cruise.state.conditions.energy.converters['internal_combustion_engine'].power[-1,0]
     mdot = results.segments.cruise.state.conditions.weights.vehicle.mass_rate[-1,0]
+
+    # Print the results
+    print('Power: ' + str(P))
+    print('Mass Flow Rate: ' + str(mdot))
+
 
     # Check the errors
     error = Data()
@@ -139,6 +144,8 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Aerodynamics  
     aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
+    aerodynamics.settings.number_of_spanwise_vortices    = 10 # reducing the number of vortices to speed up the test 
+    aerodynamics.settings.number_of_chordwise_vortices   = 5  # reducing the number of vortices to speed up the test 
     analyses.append(aerodynamics) 
 
     # ------------------------------------------------------------------

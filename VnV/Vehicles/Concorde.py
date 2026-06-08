@@ -110,7 +110,7 @@ def vehicle_setup():
     wing.areas.affected            = .6*wing.areas.reference
     
     wing.twists.root               = 0.0 * Units.degrees
-    wing.twists.tip                = -3.0 * Units.degrees
+    wing.twists.tip                = 0.0 * Units.degrees
     
     wing.origin                    = [[14,0,-.8]]
     wing.aerodynamic_center        = [35,0,0] 
@@ -231,9 +231,8 @@ def vehicle_setup():
     wing.vertical                = True 
     wing.xz_plane_symmetric      = False
     wing.t_tail                  = False
-    wing.high_mach               = True     
-    
-    wing.dynamic_pressure_ratio  = 1.0
+    wing.high_mach               = True  
+     
     
     tail_airfoil = RCAIDE.Library.Components.Airfoils.Airfoil() 
     tail_airfoil.coordinate_file = rel_path + 'Airfoils' + separator + 'supersonic_tail.txt' 

@@ -53,9 +53,7 @@ def generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,precision):
         span = span/2
         VD.vortex_lift.append(wing.vortex_lift)
         
-    VD.counter  +=1
-    wing.surface_ID = VD.counter*1
-
+    VD.counter  +=1 
     # ---------------------------------------------------------------------------------------
     # STEP 3: Get discretization control variables  
     # --------------------------------------------------------------------------------------- 
@@ -169,50 +167,21 @@ def generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,precision):
                 
             dihedral = inboard_segment.dihedral_outboard
             LE_sweep = inboard_segment.sweeps.leading_edge
-            delta_z  = inboard_segment.origin[0][2] +  np.tan(dihedral) * local_y_val
-            delta_x  = inboard_segment.origin[0][0] +  np.tan(LE_sweep) * local_y_val 
-             
-            # Step 4. get points of airfoil
-            airfoil_x_pts_0 , airfoil_z_pts_0 = generate_interplated_airfoil_points(inboard_segment, outboard_segment,local_percent_y_val, ncpts=100)  
-             
-
-            airfoil_x_pts_1   = np.linspace(0, 1, n_cw+1) 
-            del_x         = np.diff(airfoil_x_pts_1)
-            airfoil_x_pts_1_h = (airfoil_x_pts_1[:-1] + del_x*0.25) 
-            airfoil_x_pts_1_c = (airfoil_x_pts_1[:-1] + del_x*0.75) 
             
-            # lines 701-710 (dimensionalizing x)
-            airfoil_x_pts_2   = delta_x + airfoil_x_pts_1*local_chord 
-            airfoil_x_pts_2_h = delta_x + airfoil_x_pts_1_h*local_chord 
-            airfoil_x_pts_2_c = delta_x + airfoil_x_pts_1_c*local_chord  
+            if wing.vertical:
+                delta_z  = inboard_segment.origin[0][1] +  np.tan(dihedral) * local_y_val
+                delta_x  = inboard_segment.origin[0][0] +  np.tan(LE_sweep) * local_y_val 
+            else:
+                delta_z  = inboard_segment.origin[0][2] +  np.tan(dihedral) * local_y_val
+                delta_x  = inboard_segment.origin[0][0] +  np.tan(LE_sweep) * local_y_val
+                
+            # Get points of airfoil
+            airfoil_x_pts_non_dim , airfoil_z_pts_non_dim = generate_interplated_airfoil_points(inboard_segment, outboard_segment,local_percent_y_val, n_cw+1)  
             
-            # lines 731 - 740 (dimensionalizing z)
-            airfoil_z_pts_2   =  np.interp(airfoil_x_pts_1, airfoil_x_pts_0, airfoil_z_pts_0)*local_chord
-            airfoil_z_pts_2_h =  np.interp(airfoil_x_pts_1_h, airfoil_x_pts_0, airfoil_z_pts_0)*local_chord
-            airfoil_z_pts_2_c =  np.interp(airfoil_x_pts_1_c, airfoil_x_pts_0, airfoil_z_pts_0)*local_chord
-
-            # lines 743 to 753 
-            airfoil_z_pts_3 = airfoil_z_pts_2 + delta_z
-            airfoil_z_pts_3_h = airfoil_z_pts_2_h + delta_z
-            airfoil_z_pts_3_c = airfoil_z_pts_2_c + delta_z
-            
-            # lines 755 to 758 
-            pivot_x = delta_x
-            pivot_z = delta_z 
-
-
-            # lines 776 to 785 
-            airfoil_x_pts_4  = pivot_x + np.cos(local_twist)*(airfoil_x_pts_2-pivot_x) + np.sin(local_twist)*( airfoil_z_pts_3- pivot_z) 
-            airfoil_x_pts_4_h  = pivot_x + np.cos(local_twist)*(airfoil_x_pts_2_h-pivot_x) + np.sin(local_twist)*( airfoil_z_pts_3_h- pivot_z) 
-            airfoil_x_pts_4_c  = pivot_x + np.cos(local_twist)*(airfoil_x_pts_2_c-pivot_x) + np.sin(local_twist)*( airfoil_z_pts_3_c- pivot_z) 
-
-            # lines 787 - lines 796  
-            airfoil_z_pts_4   = pivot_z - np.sin(local_twist)*(airfoil_x_pts_2-pivot_x) + np.cos(local_twist)*( airfoil_z_pts_3- pivot_z)
-            airfoil_z_pts_4_h = pivot_z - np.sin(local_twist)*(airfoil_x_pts_2_h-pivot_x) + np.cos(local_twist)*( airfoil_z_pts_3_h- pivot_z)
-            airfoil_z_pts_4_c = pivot_z - np.sin(local_twist)*(airfoil_x_pts_2_c-pivot_x) + np.cos(local_twist)*( airfoil_z_pts_3_c- pivot_z)       
-              
- 
-            # Step 6. get control surface deflection and modify airfoil 
+            # Dimensionalize x and z locations of airfoil points and shift to local strip coordinates (x along chord, y along span, z normal to wing plane)
+            airfoil_x_pts_dim = airfoil_x_pts_non_dim*local_chord
+            airfoil_z_pts_dim = airfoil_z_pts_non_dim*local_chord
+              # Step 6. get control surface deflection and modify airfoil 
             LE_angle          = 0.0
             LE_chord_fraction = 0.0
             TE_angle          = 0.0 
@@ -229,44 +198,72 @@ def generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,precision):
                         TE_angle          = -cs.deflection * sym_sign 
                         TE_chord_fraction = cs.chord_fraction 
                     elif type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Rudder: 
-                        TE_angle          = -cs.deflection * xz_sym_sign 
+                        TE_angle          = cs.deflection * xz_sym_sign 
                         TE_chord_fraction = cs.chord_fraction                        
                     else:
                         TE_angle          = cs.deflection 
                         TE_chord_fraction = cs.chord_fraction 
                 
-            airfoil_x_pts_5, airfoil_z_pts_5 = apply_control_surface_deflections(airfoil_x_pts_4, airfoil_z_pts_4,LE_angle, LE_chord_fraction, TE_angle, TE_chord_fraction)
-            airfoil_x_pts_5_c, airfoil_z_pts_5_c = apply_control_surface_deflections(airfoil_x_pts_4_c, airfoil_z_pts_4_c,LE_angle, LE_chord_fraction, TE_angle, TE_chord_fraction)
-            airfoil_x_pts_5_h, airfoil_z_pts_5_h = apply_control_surface_deflections(airfoil_x_pts_4_h, airfoil_z_pts_4_h,LE_angle, LE_chord_fraction, TE_angle, TE_chord_fraction)      
+            airfoil_x_pts_1, airfoil_z_pts_1 = apply_control_surface_deflections(airfoil_x_pts_dim, airfoil_z_pts_dim,LE_angle, LE_chord_fraction, TE_angle, TE_chord_fraction) 
+            
+            # place horshoe vortex location at quarter chord of the airfoil points. This is a common choice for the location of the bound vortex in VLM.
+            diff_x = np.diff(airfoil_x_pts_1)
+            diff_z = np.diff(airfoil_z_pts_1)
+            airfoil_x_pts_1_h = airfoil_x_pts_1[:-1] + diff_x/4
+            airfoil_z_pts_1_h = airfoil_z_pts_1[:-1] + diff_z/4
+            
+            # place control point at 3/4 chord of the airfoil points. This is a common choice for the location of the control point in VLM.
+            airfoil_x_pts_1_c = airfoil_x_pts_1[:-1] + 3*diff_x/4
+            airfoil_z_pts_1_c = airfoil_z_pts_1[:-1] + 3*diff_z/4
+            
+            # Dimensionalize x locations of vortex points amnd shift to local strip coordinates (x along chord, y along span, z normal to wing plane)
+            airfoil_x_pts_2   = delta_x + airfoil_x_pts_1 
+            airfoil_x_pts_2_h = delta_x + airfoil_x_pts_1_h 
+            airfoil_x_pts_2_c = delta_x + airfoil_x_pts_1_c 
+             
+            # Shift vortex points to global coordinates (x along chord, y along span, z normal to wing plane)
+            airfoil_z_pts_3 = airfoil_z_pts_1 + delta_z
+            airfoil_z_pts_3_h = airfoil_z_pts_1_h + delta_z
+            airfoil_z_pts_3_c = airfoil_z_pts_1_c + delta_z
+            
+            # Twist vortex points to account for local twist of strip. 
+            # Note that twist is a rotation about the y-axis in the local strip coordinate system, 
+            # which corresponds to a rotation about the z-axis in the global coordinate system 
+            # for vertical wings and a rotation about the x-axis in the global coordinate system for non-vertical wings.
+            # Twist occures about the leading edge   
+            pivot_x = delta_x
+            pivot_z = delta_z   
+           
+            airfoil_x_pts_4    = pivot_x + np.cos(local_twist)*(airfoil_x_pts_2-pivot_x) + np.sin(local_twist)*( airfoil_z_pts_3- pivot_z) 
+            airfoil_x_pts_4_h  = pivot_x + np.cos(local_twist)*(airfoil_x_pts_2_h-pivot_x) + np.sin(local_twist)*( airfoil_z_pts_3_h- pivot_z) 
+            airfoil_x_pts_4_c  = pivot_x + np.cos(local_twist)*(airfoil_x_pts_2_c-pivot_x) + np.sin(local_twist)*( airfoil_z_pts_3_c- pivot_z) 
+
+            airfoil_z_pts_4   = pivot_z - np.sin(local_twist)*(airfoil_x_pts_2-pivot_x) + np.cos(local_twist)*( airfoil_z_pts_3- pivot_z)
+            airfoil_z_pts_4_h = pivot_z - np.sin(local_twist)*(airfoil_x_pts_2_h-pivot_x) + np.cos(local_twist)*( airfoil_z_pts_3_h- pivot_z)
+            airfoil_z_pts_4_c = pivot_z - np.sin(local_twist)*(airfoil_x_pts_2_c-pivot_x) + np.cos(local_twist)*( airfoil_z_pts_3_c- pivot_z)      
              
             # store coordinates of panels, horseshoeces vortices and control points relative to wing root----------
             if wing.vertical:
-                x_w[y_i,:] = airfoil_x_pts_5 
-                y_w[y_i,:] = airfoil_z_pts_5
-                z_w[y_i,:] = np.ones(len(airfoil_x_pts_5))*delta_y 
-                x_c[y_i,:] = airfoil_x_pts_5_c 
-                y_c[y_i,:] = airfoil_z_pts_5_c 
-                z_c[y_i,:] = np.ones(len(airfoil_x_pts_5_c))*delta_y 
-                x_h[y_i,:] = airfoil_x_pts_5_h 
-                y_h[y_i,:] = airfoil_z_pts_5_h 
-                z_h[y_i,:] = np.ones(len(airfoil_x_pts_5_h))*delta_y           
+                x_w[y_i,:] = airfoil_x_pts_4 
+                y_w[y_i,:] = airfoil_z_pts_4
+                z_w[y_i,:] = np.ones(len(airfoil_x_pts_4))*delta_y 
+                x_c[y_i,:] = airfoil_x_pts_4_c 
+                y_c[y_i,:] = airfoil_z_pts_4_c 
+                z_c[y_i,:] = np.ones(len(airfoil_x_pts_4_c))*delta_y 
+                x_h[y_i,:] = airfoil_x_pts_4_h 
+                y_h[y_i,:] = airfoil_z_pts_4_h 
+                z_h[y_i,:] = np.ones(len(airfoil_x_pts_4_h))*delta_y           
                 
             else:
-                x_w[y_i,:] = airfoil_x_pts_5 
-                y_w[y_i,:] = np.ones(len(airfoil_x_pts_5))*delta_y 
-                z_w[y_i,:] = airfoil_z_pts_5
-                x_c[y_i,:] = airfoil_x_pts_5_c 
-                y_c[y_i,:] = np.ones(len(airfoil_x_pts_5_c))*delta_y 
-                z_c[y_i,:] = airfoil_z_pts_5_c 
-                x_h[y_i,:] = airfoil_x_pts_5_h 
-                y_h[y_i,:] = np.ones(len(airfoil_x_pts_5_h))*delta_y 
-                z_h[y_i,:] = airfoil_z_pts_5_h           
-
-            # # handle flips for symmetric wings 
-            # if side_idx == 1:
-            #     x_w[y_i,:] = x_w[y_i,:] * yz_sym_sign
-            #     y_w[y_i,:] = y_w[y_i,:] * xz_sym_sign
-            #     z_w[y_i,:] = z_w[y_i,:] * xy_sym_sign  
+                x_w[y_i,:] = airfoil_x_pts_4 
+                y_w[y_i,:] = np.ones(len(airfoil_x_pts_4))*delta_y 
+                z_w[y_i,:] = airfoil_z_pts_4
+                x_c[y_i,:] = airfoil_x_pts_4_c 
+                y_c[y_i,:] = np.ones(len(airfoil_x_pts_4_c))*delta_y 
+                z_c[y_i,:] = airfoil_z_pts_4_c 
+                x_h[y_i,:] = airfoil_x_pts_4_h 
+                y_h[y_i,:] = np.ones(len(airfoil_x_pts_4_h))*delta_y 
+                z_h[y_i,:] = airfoil_z_pts_4_h            
             
             cs_ws[y_i] = local_chord
             
@@ -475,11 +472,7 @@ def generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,precision):
     area = wing.areas.projected
     VD.wing_areas.append(area/(sym+1))
     if sym:
-        VD.wing_areas.append(area/(sym+1))
-        
-    # Pack wing data
-    wing.n_sw = n_sw
-    wing.n_cw = n_cw    
+        VD.wing_areas.append(area/(sym+1)) 
     
     return VD
 
@@ -544,33 +537,40 @@ def generate_interplated_airfoil_points(inboard_segment,outboard_segment,local_p
         return airfoil_x_coords, airfoil_z_coords
     
     
-def apply_control_surface_deflections(airfoil_x_pts_2, airfoil_z_pts_2,LE_angle, LE_chord_fraction, TE_angle, TE_chord_fraction):
+def apply_control_surface_deflections(airfoil_x_pts, airfoil_z_pts,LE_angle, LE_chord_fraction, TE_angle, TE_chord_fraction):
 
-    chord = airfoil_x_pts_2[-1]
+    chord = airfoil_x_pts[-1]
     LE_chord_loc = chord*LE_chord_fraction
     TE_chord_loc = chord*(1-TE_chord_fraction)
  
-    LE_hinge_distance = LE_chord_loc - airfoil_x_pts_2
-    LE_hinge_distance[airfoil_x_pts_2>LE_chord_loc] = 0
+    LE_hinge_distance = LE_chord_loc - airfoil_x_pts
+    LE_hinge_distance[airfoil_x_pts >LE_chord_loc] = 0
 
-    TE_hinge_distance = airfoil_x_pts_2 - TE_chord_loc 
-    TE_hinge_distance[airfoil_x_pts_2<TE_chord_loc] = 0
+    # if hinge distance is all 0, print warning that control surface is not actually deflecting anything. 
+    if np.all(LE_hinge_distance == 0) and (LE_angle != 0):
+        print("Warning: Control surface deflection angle is non-zero but control surface is not actually deflecting any points. \n Check control surface chord fraction and airfoil discretization.")  
 
+    TE_hinge_distance = airfoil_x_pts - TE_chord_loc 
+    TE_hinge_distance[airfoil_x_pts<TE_chord_loc] = 0
+
+    # if hinge distance is all 0, print warning that control surface is not actually deflecting anything. 
+    if np.all(TE_hinge_distance == 0) and (TE_angle !=  0):
+        print("Warning: Control surface deflection angle is non-zero but control surface is not actually deflecting any points. \n Check control surface chord fraction and airfoil discretization.")
     LE_x_deflection = LE_chord_loc - np.tan(LE_angle)*LE_hinge_distance
-    LE_x_deflection[airfoil_x_pts_2>LE_chord_loc] = 0
+    LE_x_deflection[airfoil_x_pts >LE_chord_loc] = 0
     TE_x_deflection = - np.sin(TE_angle)*TE_hinge_distance 
-    TE_x_deflection[airfoil_x_pts_2<TE_chord_loc] = 0
+    TE_x_deflection[airfoil_x_pts <TE_chord_loc] = 0
 
     LE_z_deflection = -np.sin(LE_angle)*LE_hinge_distance
-    LE_z_deflection[airfoil_x_pts_2>LE_chord_loc] = 0
+    LE_z_deflection[airfoil_x_pts >LE_chord_loc] = 0
     TE_z_deflection = -np.sin(TE_angle)*TE_hinge_distance
-    TE_z_deflection[airfoil_x_pts_2<TE_chord_loc] = 0
+    TE_z_deflection[airfoil_x_pts <TE_chord_loc] = 0
     
     Total_CS_z_deflection = LE_z_deflection + TE_z_deflection
-    Total_CS_x_deflection = LE_x_deflection - TE_x_deflection
+    Total_CS_x_deflection = LE_x_deflection + TE_x_deflection
 
     # shift points of airfoil by control surface deflection 
-    airfoil_x_pts_3 = airfoil_x_pts_2 + Total_CS_x_deflection
-    airfoil_z_pts_3 = airfoil_z_pts_2 + Total_CS_z_deflection        
+    airfoil_x_pts_defl = airfoil_x_pts + Total_CS_x_deflection
+    airfoil_z_pts_defl = airfoil_z_pts + Total_CS_z_deflection        
 
-    return airfoil_x_pts_3, airfoil_z_pts_3
+    return airfoil_x_pts_defl, airfoil_z_pts_defl

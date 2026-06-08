@@ -69,8 +69,8 @@ def main():
             print(val)
     
     # Truth values
-    thrust_truth     = 22800.585128611958
-    throttle_truth   = 0.6221227341880605
+    thrust_truth     = 22849.679172145035
+    throttle_truth   = 0.6234622840471041
     
     # Store errors 
     error = Data()
@@ -121,6 +121,8 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     aerodynamics            = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
+    aerodynamics.settings.number_of_spanwise_vortices    = 10 # reducing the number of vortices to speed up the test 
+    aerodynamics.settings.number_of_chordwise_vortices   = 5  # reducing the number of vortices to speed up the test 
     analyses.append(aerodynamics) 
 
     # ------------------------------------------------------------------
