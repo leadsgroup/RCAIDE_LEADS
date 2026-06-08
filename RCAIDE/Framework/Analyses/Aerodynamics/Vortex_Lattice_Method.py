@@ -98,9 +98,9 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.training.rudder_deflection                             = np.array([10  , 1E-3 ]) * Units.deg
         self.training.flap_deflection                               = np.array([10  , 1E-3 ]) * Units.deg 
         self.training.slat_deflection                               = np.array([10  , 1E-3 ]) * Units.deg                      
-        self.training.u                                             = np.array([10 , 5 ])  
-        self.training.v                                             = np.array([10 , 5 ])  
-        self.training.w                                             = np.array([10 , 5 ])    
+        self.training.u                                             = np.array([10 , 5 ])  * Units.m / Units.sec 
+        self.training.v                                             = np.array([10 , 5 ])  * Units.m / Units.sec 
+        self.training.w                                             = np.array([10 , 5 ])  * Units.m / Units.sec   
         self.training.pitch_rate                                    = np.array([0.05 ,1E-20 ])  * Units.deg / Units.sec
         self.training.roll_rate                                     = np.array([0.05 ,1E-20 ])  * Units.deg / Units.sec
         self.training.yaw_rate                                      = np.array([0.05 ,1E-20 ])  * Units.deg / Units.sec 

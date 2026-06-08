@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------------------------------------------------------      
 
 import json
+import os
 import pickle
 from RCAIDE.Framework.Core import Data, DataOrdered
 import numpy as np
@@ -54,11 +55,11 @@ def load(filename, pickle_format=False):
         load_file = filename + '.pkl' 
         with open(load_file, 'rb') as file:
             data = pickle.load(file)  
-    else: 
-        # Get JSON string
-        f = open(filename)
-        res_string = f.readline()
-        f.close()    
+    else:
+        # Support both explicit extensions (legacy .res files) and save()'s .json output
+        json_path = filename if os.path.exists(filename) else filename + '.json'
+        with open(json_path) as f:
+            res_string = f.read()
         
         # Convert to dictionary
         res_dict = json.loads(res_string,object_pairs_hook=OrderedDict)    
