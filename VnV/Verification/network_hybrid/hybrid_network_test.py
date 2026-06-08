@@ -116,7 +116,7 @@ def main():
         powertrain_labels.append("Parallel Hybrid")
          
 
-    # add remaining networks MATTEO          
+    # add remaining networks           
     print("Elapsed Time", (time.time()-t0)/60)         
 
     print('Errors:')

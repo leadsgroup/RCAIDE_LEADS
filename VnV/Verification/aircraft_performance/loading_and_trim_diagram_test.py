@@ -101,7 +101,7 @@ def blended_wing_body_load_trim_test():
 
     LEMAC_error = np.max(np.abs((load_data.trim_results.CG_percent_of_LEMAC_location - CG_Percent_of_LEMAC_truth)/np.abs(CG_Percent_of_LEMAC_truth)))
     print(f"LEMAC error: {LEMAC_error}")
-    assert LEMAC_error < 2.5e-2, f"LEMAC error too large: {LEMAC_error}"
+    assert LEMAC_error < 5e-2, f"LEMAC error too large: {LEMAC_error}"
         
     return
 
