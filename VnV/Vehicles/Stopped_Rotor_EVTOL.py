@@ -11,8 +11,8 @@ import RCAIDE
 from RCAIDE.Framework.Core import Units 
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor                          import design_electric_rotor 
 from RCAIDE.Library.Plots                                                                 import *  
-from RCAIDE.load    import load as load_propulsor
-from RCAIDE.save    import save as save_propulsor 
+from RCAIDE.Input_Output import load as load_propulsor
+from RCAIDE.Input_Output import save as save_propulsor
  
 import os
 import numpy as np 

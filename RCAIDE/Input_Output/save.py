@@ -58,15 +58,10 @@ def save(data, filename, pickle_format=False):
             pickle.dump(data, file) 
     else: 
         # Create a dictionary structure with the results
-        res_dict = build_dict_base(data)
-        
-        # Convert the dictionary to a JSON string
-        res_string = json.dumps(res_dict)
-        
-        # Write results to a file
-        f = open(filename,'w')   
-        f.write(res_string)
-        f.close()  
+        res_dict = build_dict_base(data) 
+
+        with open( filename + '.json', 'w') as f:
+            json.dump(res_dict, f, indent=4) 
     return  
         
 def build_dict_base(base):
@@ -87,14 +82,17 @@ def build_dict_base(base):
     """      
     
     keys = base.keys() # keys from top level
-    base_dict = OrderedDict() # initialize dictionary
+    base_dict = {} # initialize dictionary
     # Ordered is used because some post processing currently
     # relies on the segments being in order
     
     # Assign all values
-    for k in keys:
-        v = base[k]
-        base_dict[k] = build_dict_r(v) # recursive function
+    for k in keys: 
+        if k == '_component_root_map': 
+            pass
+        else:
+            v = base[k]
+            base_dict[k] = build_dict_r(v) # recursive function 
     return base_dict
      
 def build_dict_r(v):
@@ -142,7 +140,7 @@ def build_dict_r(v):
             else:
                 raise TypeError('Unexpected data type in RCAIDE data structure')
         # Recursively assign values
-        ret = OrderedDict()
+        ret = {} # OrderedDict()
         for k in keys:
             ret[k] = build_dict_r(v[k])        
     

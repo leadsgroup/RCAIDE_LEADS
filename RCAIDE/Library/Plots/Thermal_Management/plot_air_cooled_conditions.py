@@ -8,9 +8,8 @@
 # ----------------------------------------------------------------------------------------------------------------------  
 
 from RCAIDE.Framework.Core import Units
-from RCAIDE.Library.Plots.Common import set_axes, plot_style
+from RCAIDE.Library.Plots.Common import set_axes, plot_style, segment_colors
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
 import numpy as np 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -104,7 +103,7 @@ def plot_air_cooled_conditions(air_cooled, results, coolant_line,
     plt.rcParams.update(parameters)
      
     # get line colors for plots 
-    line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))     
+    line_colors   = segment_colors(len(results.segments))     
 
     fig = plt.figure(save_filename)
     fig.set_size_inches(width,height)  

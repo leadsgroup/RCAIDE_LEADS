@@ -1,17 +1,16 @@
 # Regression/scripts/Tests/turbofan_network_test.py
 # (c) Copyright 2023 Aerospace Research Community LLC
-# 
-# Created:  Jul 2023, M. Clarke 
+#
+# Created:  Jul 2023, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-# RCAIDE imports  
+# RCAIDE imports
 import RCAIDE
-from RCAIDE.Framework.Core                          import Units , Data 
-from RCAIDE.Library.Plots                           import *   
-from RCAIDE.load    import load 
-from RCAIDE.save    import save     
+from RCAIDE.Framework.Core                          import Units , Data
+from RCAIDE.Library.Plots                           import *
+from RCAIDE.Input_Output                            import save, load, export, import_data, save_results, load_results
 
 # python imports     
 import numpy as np  
@@ -35,53 +34,94 @@ from Concorde    import configs_setup as configs_setup
 #   Main
 # ----------------------------------------------------------------------------------------------------------------------
 
-def main(): 
+def main():
     # vehicle data
     vehicle  = vehicle_setup()
-    
+
     # Set up vehicle configs
     configs  = configs_setup(vehicle)
 
     # create analyses
     analyses = analyses_setup(configs)
 
-    # mission analyses 
+    # mission analyses
     mission = mission_setup(analyses)
-    
-    # create mission instances (for multiple types of missions)
-    missions = missions_setup(mission) 
-     
-    # mission analysis 
-    results = missions.base_mission.evaluate()   
-    plot_mission(results)    
 
-    CL   = results.segments.level_cruise.conditions.aerodynamics.coefficients.lift.total 
-    CD   = results.segments.level_cruise.conditions.aerodynamics.coefficients.drag.total 
-    L_D  = (CL / CD).mean()
-    show_vals = True
-    if show_vals:
-        data = [L_D]
-        for val in data:
-            print(val)
-    
-    # Truth values 
-    L_D_truth         = 7.440457937848301
-    
-    # Store errors 
-    error = Data() 
-    error.CL        = np.max(np.abs(L_D - L_D_truth   )/L_D_truth)
-    
-    # Save and Load Test 
-    save(error, 'turbojet_network_errors.res')
-    old_errors = load('turbojet_network_errors.res')  
-     
+    # create mission instances (for multiple types of missions)
+    missions = missions_setup(mission)
+
+    # mission analysis
+    results = missions.base_mission.evaluate()
+    plot_mission(results)
+
+    CL  = results.segments.level_cruise.conditions.aerodynamics.coefficients.lift.total
+    CD  = results.segments.level_cruise.conditions.aerodynamics.coefficients.drag.total
+    L_D = (CL / CD).mean()
+
+    # Truth values
+    L_D_truth = 7.440457937848301
+
+    # Store errors
+    error     = Data()
+    error.L_D = np.max(np.abs(L_D - L_D_truth) / L_D_truth)
+
     print('Errors:')
     print(error)
-     
-    for k,v in list(error.items()): 
-        assert(np.abs(v)<1e-6)
-        
-    return 
+
+    for k, v in list(error.items()):
+        assert np.abs(v) < 1e-6
+
+    # IO round-trip tests
+    io_test(vehicle, configs, analyses, missions, results, CL)
+
+    return
+
+
+def io_test(vehicle, configs, analyses, missions, results, CL_ref):
+    """Exercise all six RCAIDE.Input_Output functions."""
+
+    # ------------------------------------------------------------------
+    #  1. save / load  (JSON round-trip)
+    # ------------------------------------------------------------------
+    save_base = os.path.join(base_dir, '_turbojet_io_test')
+    d         = Data()
+    d.check   = 3.14159
+    save(d, save_base)
+    d_back = load(save_base)
+    assert np.abs(d_back.check - d.check) < 1e-12, "save/load round-trip failed"
+    os.remove(save_base + '.json')
+
+    # ------------------------------------------------------------------
+    #  2. export / import_data  (JSON round-trip — structural checks)
+    # ------------------------------------------------------------------
+    json_base = os.path.join(base_dir, '_turbojet_io_test')
+    export(vehicle, configs, analyses, missions, json_base)
+    imported  = import_data(json_base)
+
+    assert imported.vehicle.tag == vehicle.tag, \
+        f"import_data: vehicle tag mismatch ('{imported.vehicle.tag}' vs '{vehicle.tag}')"
+
+    orig_span = vehicle.wings.main_wing.spans.projected
+    imp_span  = imported.vehicle.wings.main_wing.spans.projected
+    assert np.abs(orig_span - imp_span) / orig_span < 1e-6, \
+        f"import_data: wing span mismatch ({orig_span:.4f} vs {imp_span:.4f})"
+
+    os.remove(json_base + '.json')
+
+    # ------------------------------------------------------------------
+    #  3. save_results / load_results  (HDF5 round-trip)
+    # ------------------------------------------------------------------
+    h5_path   = os.path.join(base_dir, '_turbojet_io_test.h5')
+    save_results(results, h5_path)
+    loaded    = load_results(h5_path)
+
+    CL_loaded = loaded.level_cruise.aerodynamics.coefficients.lift.total
+    assert np.allclose(CL_ref, CL_loaded, rtol=1e-6), \
+        "save_results/load_results: CL round-trip mismatch"
+
+    os.remove(h5_path)
+
+    return
 
 # ----------------------------------------------------------------------
 #   Define the Vehicle Analyses

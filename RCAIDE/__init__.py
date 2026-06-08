@@ -46,10 +46,14 @@ from components and analyzed through various mission profiles.
 # ----------------------------------------------------------------------------------------------------------------------
 from . import Framework
 from . import Library
+from . import Input_Output
 
-from .Vehicle  import Vehicle
-from .load     import load 
-from .save     import save
+from .Vehicle        import Vehicle
+from .Input_Output   import save, load, export, import_data, save_results, load_results
+
+# backward-compatibility aliases
+from .Input_Output.export      import export as export_rcaide_data
+from .Input_Output.import_data import import_data as import_rcaide_data
 
 import os
 from warnings import simplefilter

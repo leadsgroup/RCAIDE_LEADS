@@ -25,10 +25,11 @@ def main():
     #  Define airfoil geometry and polar files 
     # ---------------------------------------------------------------------------------------------------------------- 
     separator     = os.path.sep
+    test_dir      = os.path.dirname(os.path.abspath(__file__)) + separator
     airfoils_path = os.path.abspath(
         os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "Vehicles", "Airfoils")
     ) + separator
-    airfoil_geometry_with_selig =  [airfoils_path + 'NACA_4412.txt','airfoil_geometry_2.txt', 'airfoil_geometry_2-selig.txt']        
+    airfoil_geometry_with_selig =  [airfoils_path + 'NACA_4412.txt', test_dir + 'airfoil_geometry_2.txt', test_dir + 'airfoil_geometry_2-selig.txt']
     airfoil_geometry_files      = airfoils_path + 'NACA_4412.txt'
     airfoil_polar_files         =  [airfoils_path + 'Polars' + separator + 'NACA_4412_polar_Re_50000.txt',
                                      airfoils_path + 'Polars' + separator + 'NACA_4412_polar_Re_100000.txt',
