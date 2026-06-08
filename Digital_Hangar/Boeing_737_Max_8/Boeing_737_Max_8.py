@@ -24,12 +24,12 @@ def main():
     try:
         import vsp as vsp
         from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
-        export_vsp_vehicle(vehicle, 'Boeing_737_Max_8')
+        export_vsp_vehicle(vehicle, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Boeing_737_Max_8'))
     except ImportError:
         pass 
     
     # Step 2: plot vehicle 
-    plot_3d_vehicle(vehicle,export_gltf=True)  
+    plot_3d_vehicle(vehicle,save_filename=os.path.join(os.path.dirname(os.path.abspath(__file__)),'Boeing_737_Max_8'),export_gltf=True,show_figure=True)  
     
     return 
     
@@ -151,7 +151,7 @@ def vehicle_setup():
     segment.root_chord_percent            = 0.220
     segment.thickness_to_chord            = 0.1
     segment.dihedral_outboard             = 70  * Units.degrees
-    segment.sweeps.quarter_chord          = 35  * Units.degrees
+    segment.sweeps.quarter_chord          = 65  * Units.degrees
     segment.thickness_to_chord            = .1
     mid_airfoil                           = RCAIDE.Library.Components.Airfoils.Airfoil()
     mid_airfoil.coordinate_file           = airfoil_file_path + 'transonic_wing_outboard_section_airfoil.txt'
@@ -228,7 +228,7 @@ def vehicle_setup():
     scimitar_segment.root_chord_percent            = 0.220
     scimitar_segment.thickness_to_chord            = 0.1
     scimitar_segment.dihedral_outboard             = -55  * Units.degrees
-    scimitar_segment.sweeps.quarter_chord          = 45  * Units.degrees
+    scimitar_segment.sweeps.quarter_chord          = 65  * Units.degrees
     scimitar_segment.thickness_to_chord            = .1
     mid_airfoil                                    = RCAIDE.Library.Components.Airfoils.Airfoil()
     mid_airfoil.coordinate_file                    = airfoil_file_path + 'transonic_wing_outboard_section_airfoil.txt'

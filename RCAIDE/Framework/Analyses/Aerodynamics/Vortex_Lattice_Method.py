@@ -66,7 +66,10 @@ class Vortex_Lattice_Method(Aerodynamics):
         # settings              
         self.settings.propeller_wake_model                          = False  
         self.settings.number_of_spanwise_vortices                   = 30
-        self.settings.number_of_chordwise_vortices                  = 10  
+        self.settings.number_of_chordwise_vortices                  = 15  
+        self.settings.number_of_fuselage_spanwise_vortices          = 4
+        self.settings.number_of_fuselage_chordwise_vortices         = 10 
+        self.settings.model_fuselage                                = False 
         self.settings.spanwise_cosine_spacing                       = True
         self.settings.vortex_distribution                           = Data()
         self.settings.leading_edge_suction_multiplier               = 1.0  
@@ -145,24 +148,25 @@ class Vortex_Lattice_Method(Aerodynamics):
         
 
     def initialize(self, vehicle): 
-        
-        use_surrogate   = self.settings.use_surrogate   
+         
+        use_surrogate        = self.settings.use_surrogate 
+        reuse_training_data  = self.settings.reuse_training_data   
+
         # If we are using the surrogate
         if use_surrogate == True: 
             #  training data
-            if not os.path.exists(self.filename):
+            if reuse_training_data: 
+                with open(self.filename, 'rb') as file:
+                    self.training = pickle.load(file) 
+                print("\n Aerodynamic training data loaded. Delete the file and rerun to regenerate.")
+            else:
                 print("\n Creating aerodynamic surrogate ...")
                 train_VLM_surrogates(self, vehicle)
     
                 if self.settings.store_training_data:
                     with open(self.filename, 'wb') as file:
-                        pickle.dump(self.training, file)
-            else:
-                with open(self.filename, 'rb') as file:
-                    self.training = pickle.load(file)
-                print(r""" 
-                [INFO] Aerodynamic training data loaded. Delete the file and rerun to regenerate. """)
-            # build surrogate
+                        pickle.dump(self.training, file) 
+
             build_VLM_surrogates(self, vehicle)        
     
         # build the evaluation process

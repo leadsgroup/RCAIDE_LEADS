@@ -25,12 +25,12 @@ def main():
     try:
         import vsp as vsp
         from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
-        export_vsp_vehicle(vehicle, 'Concorde')
+        export_vsp_vehicle(vehicle, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Concorde'))
     except ImportError:
         pass 
     
     # Step 2: plot vehicle 
-    plot_3d_vehicle(vehicle,export_gltf=True)  
+    plot_3d_vehicle(vehicle,save_filename=os.path.join(os.path.dirname(os.path.abspath(__file__)),'Concorde'),export_gltf=True,show_figure=True)  
     return  
 
 def vehicle_setup(): 
@@ -253,7 +253,7 @@ def vehicle_setup():
     wing.dynamic_pressure_ratio  = 1.0
     
     tail_airfoil = RCAIDE.Library.Components.Airfoils.Airfoil() 
-    tail_airfoil.coordinate_file = rel_path + 'Airfoils' + separator + 'supersonic_tail.txt' 
+    tail_airfoil.coordinate_file = airfoil_file_path + 'supersonic_tail.txt' 
     
     wing.append_airfoil(tail_airfoil)  
 

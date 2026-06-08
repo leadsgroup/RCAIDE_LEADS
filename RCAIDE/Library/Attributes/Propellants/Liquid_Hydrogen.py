@@ -92,6 +92,23 @@ class Liquid_Hydrogen(Propellant):
         self.kinetic_mechanism             = '' # [-] Kinetic mechanism for fuel surrogate species
         self.oxidizer                      = ''       
 
+        self.emission_indices.Production  = 0.0      # kg/kg 
+        self.emission_indices.CO2         = 0.0      # kg/kg
+        self.emission_indices.CO          = 0.0      # kg/kg
+        self.emission_indices.H2O         = 8.21     # kg/kg  
+        self.emission_indices.SO2         = 0.0      # kg/kg
+        self.emission_indices.NOx         = 0.0539   # kg/kg
+        self.emission_indices.Soot        = 0.0      # kg/kg
+        
+        self.global_warming_potential_100.CO2       = 1     # CO2e/kg  
+        self.global_warming_potential_100.H2O       = 0.06  # CO2e/kg  
+        self.global_warming_potential_100.CO        = 1     # CO2e/kg  
+        self.global_warming_potential_100.SO2       = -226  # CO2e/kg  
+        self.global_warming_potential_100.NOx       = 52    # CO2e/kg  
+        self.global_warming_potential_100.CO        = 1     # CO2e/kg  
+        self.global_warming_potential_100.Soot      = 1166  # CO2e/kg    
+        self.global_warming_potential_100.Contrails = 11 #  kg/CO2e/km
+        
         self.materials_properties = self.cryogen_properties()
 
     def cryogen_properties(self, T, prop_name):

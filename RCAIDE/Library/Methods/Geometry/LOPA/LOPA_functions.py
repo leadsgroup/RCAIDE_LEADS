@@ -14,6 +14,7 @@ def get_seat_y_coords(cabin,cabin_class,cabin_class_origin):
     s_w    = cabin_class.seat_width
     ar_w   = cabin_class.seat_arm_rest_width
     a_w    = cabin_class.aisle_width
+    
     # determine number of aisles
     if n > 7:
         n_a = 1
@@ -110,8 +111,10 @@ def get_seat_y_coords(cabin,cabin_class,cabin_class_origin):
         y_9 = y_7 + s_w + ar_w
         y_10 = -y_9
         s_y_coord = np.array([ y_1, y_2, y_3,y_4, y_5,y_6,y_7,y_8,y_9,y_10 ])
+        
     cabin.width = 2 * (np.max(s_y_coord) + s_w /2 + ar_w)
     s_y_coord   += cabin_class_origin[1]
+    
     return s_y_coord , cabin_class_origin
 # ----------------------------------------------------------------------------------------------------------------------
 #  get_seat_x_coords
@@ -125,12 +128,15 @@ def get_seat_x_coords(cabin,cabin_class,cabin_class_origin,cabin_length):
     gl_loc  = cabin_class.galley_lavatory_percent_x_locations
     ex_loc  = cabin_class.emergency_exit_percent_x_locations
     A_loc   = cabin_class.type_A_exit_percent_x_locations
+    
     # place seats
     s_x_coord = np.arange(0, n_r) * (s_p)
     normalized_s_x_coord = s_x_coord / s_x_coord[-1]
+    
     # create vector of object types (seat,emergency exit,galley/lav,type-A exit)
     object_type = np.zeros((len(s_x_coord),4))
     object_type[:,0] =  1 # assign all seats
+    
     # shift for galley and lavatories
     for i in range(len(gl_loc)):
         var =  normalized_s_x_coord -gl_loc[i]
@@ -145,6 +151,7 @@ def get_seat_x_coords(cabin,cabin_class,cabin_class_origin,cabin_length):
             s_x_coord   = np.insert(s_x_coord, loc, s_x_coord[loc] - gl_l)
             if object_type[loc+1, 0] == 1:
                 s_x_coord[loc+1:] +=  s_p / 2
+                
     # shift for type A exit
     for i in range(len(A_loc)):
         var = normalized_s_x_coord -A_loc[i]
@@ -186,10 +193,12 @@ def get_seat_x_coords(cabin,cabin_class,cabin_class_origin,cabin_length):
         offset_end=   gl_l / 2
     if object_type[-1, 3] == 1:
         offset_end = A_l / 2
+        
     cabin_class.length    =  s_x_coord[-1] + offset_end
     cabin_length          += s_x_coord[-1] + offset_end
     s_x_coord             += cabin_class_origin[0]
     cabin_class_origin[0] = s_x_coord[-1] + offset_end
+    
     return s_x_coord , object_type, cabin_class_origin,cabin_length
 # ----------------------------------------------------------------------------------------------------------------------
 #  update_seat_map_layout_using_cabin_taper
@@ -200,6 +209,7 @@ def update_seat_map_layout_using_cabin_taper(seat_data,cabin):
     nose_length = cabin.width * n_fr
     t_fr        = cabin.tail.fineness_ratio
     tail_length = cabin.width * t_fr
+    
     # remove components that fall outside of tapered nose region
     theta1 = np.arctan(cabin_width/nose_length)
     n_idxs =  np.where(nose_length > seat_data[:,2])[0]
@@ -215,6 +225,7 @@ def update_seat_map_layout_using_cabin_taper(seat_data,cabin):
         if np.any( y_pts > y_border):
             removed_indexes.append(n_idxs[n_i])
     seat_data = np.delete(seat_data,(removed_indexes), axis=0)
+    
     # remove components that fall outside of tapered tail region
     theta2     = np.arctan(cabin_width/tail_length)
     tail_start = seat_data[-1,2] -  tail_length

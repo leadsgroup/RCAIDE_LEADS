@@ -112,7 +112,6 @@ def compute_operating_empty_weight(vehicle, settings=None):
                     fuselage - a data dictionary with the fields:
                         areas             - a data dictionary with the fields:
                             wetted - wetted area of the fuselage [meters**2]
-                        differential_pressure  - Maximum fuselage pressure differential   [Pascal]
                         width             - width of the fuselage                         [meters]
                         heights - a data dictionary with the fields:
                             maximum - height of the fuselage                              [meters]

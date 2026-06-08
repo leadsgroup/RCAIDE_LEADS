@@ -9,8 +9,9 @@
 # ----------------------------------------------------------------------
 import RCAIDE
 from RCAIDE.Framework.Core    import  Data 
-from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.postprocess_vortex_distribution      import postprocess_vortex_distribution
-from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.generate_wing_vortex_distribution         import generate_wing_vortex_distribution  
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.postprocess_vortex_distribution       import postprocess_vortex_distribution
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.generate_wing_vortex_distribution     import generate_wing_vortex_distribution  
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.generate_fuseform_vortex_distribution import generate_fuseform_vortex_distribution  
   
 # package imports 
 import numpy as np
@@ -291,6 +292,8 @@ def generate_aircraft_vortex_distribution(geometry,settings):
     # unpack discretization settings------------------------------------------
     n_sw           = settings.number_of_spanwise_vortices
     n_cw           = settings.number_of_chordwise_vortices 
+    n_sw_f         = settings.number_of_fuselage_spanwise_vortices
+    n_cw_f         = settings.number_of_fuselage_chordwise_vortices 
     # ---------------------------------------------------------------------------------------
     # STEP 1: Define empty vectors for coordinates of panes, control points and bound vortices
     # ---------------------------------------------------------------------------------------
@@ -343,7 +346,8 @@ def generate_aircraft_vortex_distribution(geometry,settings):
     VD.DY     = np.empty(shape=[0,1], dtype=precision) 
 
     # empty vectors necessary for arbitrary discretization dimensions
-    VD.n_w              = 0                            # number of wings counter (refers to wings, fuselages or other structures)  
+    VD.n_w              = 0                            # number of wings counter (refers to ALL surfaces) 
+    VD.n_f              = 0                            # number of fuselage counter (refers to ONLY fuselages)  
     VD.n_cp             = 0                            # number of bound vortices (panels) counter 
     VD.n_sw             = np.array([], dtype=np.int16) # array of the number of spanwise  strips in each wing
     VD.n_cw             = np.array([], dtype=np.int16) # array of the number of chordwise panels per strip in each wing
@@ -371,8 +375,11 @@ def generate_aircraft_vortex_distribution(geometry,settings):
     VD.counter     = 0
             
     for wing in geometry.wings:         
-        VD = generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,precision)  
-                    
+        VD = generate_wing_vortex_distribution(VD,wing,n_cw,n_sw,spc,precision)   
+    
+    if settings.model_fuselage:
+        for fuselage in geometry.fuselages: 
+            VD = generate_fuseform_vortex_distribution(VD,fuselage,n_cw_f,n_sw_f,spc,precision)                      
     # ---------------------------------------------------------------------------------------
     # Postprocess VD information
     # ---------------------------------------------------------------------------------------   

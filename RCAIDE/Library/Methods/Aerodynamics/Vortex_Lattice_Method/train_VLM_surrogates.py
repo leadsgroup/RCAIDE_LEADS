@@ -249,7 +249,7 @@ def train_model(aerodynamics,Mach, vehicle):
     # -------------------------------------------------------               
     # Roll  Rate 
     # -------------------------------------------------------    
-    p_s           = -1 * np.atleast_2d(np.tile(roll_rate, len_Mach).T.flatten()).T 
+    p_s           = 1 * np.atleast_2d(np.tile(roll_rate, len_Mach).T.flatten()).T 
     Machs         = np.atleast_2d(np.repeat(Mach,len_p)).T 
     conditions                                      = RCAIDE.Framework.Mission.Common.Results()  
     conditions.freestream.mach_number               = Machs  
@@ -259,13 +259,13 @@ def train_model(aerodynamics,Mach, vehicle):
     conditions.static_stability.pitch_rate          = np.zeros_like(Machs) 
     conditions.static_stability.roll_rate           = np.ones_like(Machs)*p_s     
     conditions.static_stability.yaw_rate            = np.zeros_like(Machs)         
-    VLM_results = call_VLM(conditions,settings,clean_wing_vehicle)
-    CL_res      = VLM_results.CL
-    CN_res      = VLM_results.CN
-    CY_res      = VLM_results.CY
-    CL_p        = np.reshape(CL_res,(len_Mach,len_p)).T    - CL_alpha_0    
-    CN_p        = np.reshape(CN_res,(len_Mach,len_p)).T    - CN_alpha_0    
-    CY_p        = np.reshape(CY_res,(len_Mach,len_p)).T    - CY_alpha_0    
+    VLM_results =  call_VLM(conditions,settings,clean_wing_vehicle)
+    CL_res      =  VLM_results.CL
+    CN_res      =  VLM_results.CN
+    CY_res      =  VLM_results.CY
+    CL_p        =  np.reshape(CL_res,(len_Mach,len_p)).T    - CL_alpha_0    
+    CN_p        = -(np.reshape(CN_res,(len_Mach,len_p)).T    - CN_alpha_0)    
+    CY_p        =  np.reshape(CY_res,(len_Mach,len_p)).T    - CY_alpha_0    
 
     # -------------------------------------------------------               
     # Yaw Rate 
@@ -339,7 +339,7 @@ def train_model(aerodynamics,Mach, vehicle):
     training.dCZ_du     = (CZ_u[0,:] - CZ_u[1,:]) / (u[0] - u[1])    
     training.dCZ_dq     = (CZ_q[0,:] - CZ_q[1,:]) / ((pitch_rate[0]-pitch_rate[1])* MAC / (2 *V[0,:]))    
     
-    training.dCL_dbeta  = -(CL_beta[0,:] - CL_beta[1,:]) / (Beta[0] - Beta[1])  
+    training.dCL_dbeta  = (CL_beta[0,:] - CL_beta[1,:]) / (Beta[0] - Beta[1])  
     training.dCL_dp     = (CL_p[0,:] - CL_p[1,:]) / ((roll_rate[0]-roll_rate[1])* b / (2 *V[0,:]))  
     training.dCL_dr     = (CL_r[0,:] - CL_r[1,:]) / ((yaw_rate[0]-yaw_rate[1])* b / (2 *V[0,:]))   
 

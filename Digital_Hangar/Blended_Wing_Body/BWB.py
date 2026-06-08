@@ -24,12 +24,12 @@ def main():
     try:
         import vsp as vsp
         from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
-        export_vsp_vehicle(vehicle, 'BWB')
+        export_vsp_vehicle(vehicle, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'BWB'))
     except ImportError:
         pass 
     
     # Step 2: plot vehicle 
-    plot_3d_vehicle(vehicle,export_gltf=True) 
+    plot_3d_vehicle(vehicle,save_filename=os.path.join(os.path.dirname(os.path.abspath(__file__)),'BWB'),export_gltf=True,show_figure=True) 
     
     return 
 
@@ -63,7 +63,7 @@ def vehicle_setup():
     # Carbo Bays 
     # ------------------------------------------------------------------ 
     center_cargo_bay = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
-    center_cargo_bay.cargo.mass_properties.mass  = 0 
+    center_cargo_bay.mass_properties.mass        = 0 
     center_cargo_bay.origin                      = [[6, 0, -22.5  * Units.inches]]  
     center_cargo_bay.length                      = 60.4 *  Units.inches *  9
     center_cargo_bay.width                       = 96   *  Units.inches
@@ -71,7 +71,7 @@ def vehicle_setup():
     vehicle.cargo_bays.append(center_cargo_bay) 
  
     left_cargo_bay  = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
-    left_cargo_bay.cargo.mass_properties.mass  = 0  
+    left_cargo_bay.mass_properties.mass        = 0  
     left_cargo_bay.origin                      = [[10, 100   *  Units.inches, -22.5* Units.inches]] 
     left_cargo_bay.length                      =  60.4 *  Units.inches *  5
     left_cargo_bay.width                       =  96   *  Units.inches
@@ -79,7 +79,7 @@ def vehicle_setup():
     vehicle.cargo_bays.append(left_cargo_bay)  
  
     right_cargo_bay  = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
-    right_cargo_bay.cargo.mass_properties.mass  = 0  
+    right_cargo_bay.mass_properties.mass        = 0  
     right_cargo_bay.origin                      = [[10 ,  -100   *  Units.inches, -22.5* Units.inches]]  
     right_cargo_bay.length                      = 60.4 *  Units.inches  *  5
     right_cargo_bay.width                       = 96   *  Units.inches
@@ -115,8 +115,7 @@ def vehicle_setup():
     wing.t_tail                  = False 
     wing.dynamic_pressure_ratio  = 1.0
      
-    cabin                                                  = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-    cabin.offset_x                                         = 2.54
+    cabin                                                  = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
     cabin.origin                                           = [[2.54, 0, 0]]
     
     business_class                                         = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business() 
@@ -138,6 +137,7 @@ def vehicle_setup():
     wing.append_cabin(cabin)  
 
     side_cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Side_Cabin()
+    side_cabin.origin                                           = [[2.54, 0, 0]]
     side_cabin.nose.fineness_ratio                         = 1.75
    
     business_class                                         = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business() 
@@ -169,7 +169,7 @@ def vehicle_setup():
     segment.dihedral_outboard                      = 0  *  Units.degrees 
     segment.sweeps.quarter_chord                   = 10.037 *  Units.degrees
     airfoil                                        = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file                        = 's1014.txt'
+    airfoil.coordinate_file                        = airfoil_file_path + 's1014.txt'
     segment.append_airfoil(airfoil )         
     wing.append_segment(segment)         
          
@@ -183,7 +183,7 @@ def vehicle_setup():
     segment.dihedral_outboard                      = 0 *  Units.degrees   
     segment.sweeps.quarter_chord                   = 46.9023 *  Units.degrees  
     airfoil                                        = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file                        = 's1014.txt'
+    airfoil.coordinate_file                        = airfoil_file_path + 's1014.txt'
     segment.append_airfoil(airfoil )
     wing.append_segment(segment)
     
@@ -197,7 +197,7 @@ def vehicle_setup():
     segment.dihedral_outboard                      = 2 *  Units.degrees  
     segment.sweeps.quarter_chord                   = 51.027  *  Units.degrees   
     airfoil                                        = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file                        = 's1014.txt'
+    airfoil.coordinate_file                        = airfoil_file_path + 's1014.txt'
     segment.append_airfoil(airfoil )         
     wing.append_segment(segment)         
          
@@ -210,7 +210,7 @@ def vehicle_setup():
     segment.dihedral_outboard                      = 12 *  Units.degrees   
     segment.sweeps.quarter_chord                   = 42.5  *  Units.degrees   
     airfoil                                        = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file                        = 's1014.txt'
+    airfoil.coordinate_file                        = airfoil_file_path +'s1014.txt'
     segment.append_airfoil(airfoil )
     wing.append_segment(segment) 
 

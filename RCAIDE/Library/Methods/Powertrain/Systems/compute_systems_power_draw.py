@@ -6,7 +6,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------    
 # package imports
-def compute_systems_power_draw(system,bus,conditions):
+def compute_systems_power_draw(system,vehicle,bus,state):
     """
     Computes the power draw of a generic system.
     
@@ -41,7 +41,7 @@ def compute_systems_power_draw(system,bus,conditions):
     --------
     RCAIDE.Library.Methods.Powertrain.Systems.append_system_conditions
     """
-    bus_conditions                 = conditions.energy.busses[bus.tag]
+    bus_conditions                 = state.conditions.energy.busses[bus.tag]
     system_conditions              = bus_conditions[system.tag]    
     system_conditions.power[:,0]   = system.power_draw 
     bus_conditions.power_draw      += system_conditions.power*bus.power_split_ratio /bus.efficiency    

@@ -27,9 +27,9 @@ def generate_3d_lopa_points(structure):
     emergency_row_count = 0
     for row in coords:
         # Parse row variables
-        x = row[2] + layout.cabin_x_offset
+        x = row[2] + layout.origin[0][0]
         y = row[3]
-        z = row[4] if row.shape[0] > 4 else 0.0
+        z = row[4] if row.shape[0] > 4 else 0.0 + layout.origin[0][2]
         length = abs(row[5])
         width  = abs(row[6])
         F_c     = row[7]  if row.shape[0] > 7  else 0.0

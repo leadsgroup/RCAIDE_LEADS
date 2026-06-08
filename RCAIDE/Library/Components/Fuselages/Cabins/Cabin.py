@@ -12,7 +12,7 @@ from RCAIDE.Library.Components.Component  import Container
 from RCAIDE.Library.Components            import Component 
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_cabin_moment_of_inertia import compute_cabin_moment_of_inertia
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_cabin_center_of_gravity import compute_cabin_center_of_gravity 
-
+from RCAIDE.Library.Components.Powertrain.Converters.Compressor import Compressor
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Fuselage
 # ---------------------------------------------------------------------------------------------------------------------- 

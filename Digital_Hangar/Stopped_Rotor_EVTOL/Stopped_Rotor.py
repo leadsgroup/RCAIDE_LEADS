@@ -28,12 +28,12 @@ def main():
     try:
         import vsp as vsp
         from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
-        export_vsp_vehicle(vehicle, 'Stopped_Rotor')
+        export_vsp_vehicle(vehicle, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Stopped_Rotor'))
     except ImportError:
         pass
         
     # Step 2: plot vehicle 
-    plot_3d_vehicle(vehicle,export_gltf=True)  
+    plot_3d_vehicle(vehicle,save_filename=os.path.join(os.path.dirname(os.path.abspath(__file__)),'Stopped_Rotor'),export_gltf=True,show_figure=True)  
     
     return 
  
@@ -516,7 +516,7 @@ def vehicle_setup(redesign_rotors = False):
     propeller.cruise.design_freestream_velocity            = 130.* Units['mph'] 
     propeller.cruise.design_tip_mach                       = 0.65
     propeller.cruise.design_angular_velocity               = propeller.cruise.design_tip_mach *speed_of_sound/propeller.tip_radius
-    propeller.cruise.design_Cl                             = 0.7
+    propeller.cruise.design_lift_coefficient               = 0.7
     propeller.cruise.design_altitude                       = 1500 * Units.feet
     propeller.cruise.design_thrust                         = 3150
     propeller.clockwise_rotation                           = True

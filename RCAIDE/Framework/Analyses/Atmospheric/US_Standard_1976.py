@@ -158,16 +158,20 @@ class US_Standard_1976(Atmospheric):
         mu    = gas.compute_absolute_viscosity(T)
         K     = gas.compute_thermal_conductivity(T)  
         Pr    = gas.compute_prandtl_number(T)
+        Cp    = gas.compute_cp(T,p)
+        gamma = gas.compute_gamma(T,p)
         
         atmo_data = Conditions()
         atmo_data.expand_rows(zs.shape[0])
-        atmo_data.pressure                     = p
-        atmo_data.temperature                  = T
-        atmo_data.density                      = rho
-        atmo_data.speed_of_sound               = a
-        atmo_data.dynamic_viscosity            = mu
-        atmo_data.kinematic_viscosity          = mu/rho
-        atmo_data.thermal_conductivity         = K
-        atmo_data.prandtl_number               = Pr 
+        atmo_data.pressure                        = p
+        atmo_data.temperature                     = T
+        atmo_data.density                         = rho
+        atmo_data.speed_of_sound                  = a
+        atmo_data.dynamic_viscosity               = mu
+        atmo_data.kinematic_viscosity             = mu/rho
+        atmo_data.thermal_conductivity            = K
+        atmo_data.prandtl_number                  = Pr 
+        atmo_data.constant_pressure_specific_heat = Cp
+        atmo_data.specific_heat                   = gamma
         
         return atmo_data

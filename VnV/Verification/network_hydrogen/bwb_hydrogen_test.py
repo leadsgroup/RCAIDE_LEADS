@@ -49,7 +49,7 @@ def main():
     
     # Step 5 execute flight profile
     results = missions.base_mission.evaluate()
-    CL_truth = 0.3975726457797412
+    CL_truth = 0.39712057266000705
     CL    = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[0, 0]
 
     abs_error = np.abs((CL - CL_truth)) 
@@ -132,6 +132,8 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
+    aerodynamics.settings.number_of_spanwise_vortices          = 10 # reducing the number of vortices to speed up the test 
+    aerodynamics.settings.number_of_chordwise_vortices         = 5  # reducing the number of vortices to speed up the test 
     aerodynamics.settings.drag_reduction_factors.parasite_drag = 0.16
     aerodynamics.settings.store_training_data                  = False
     aerodynamics.training.Mach                                 = np.array([0.1  ,0.3,  0.5,  0.65 , 0.85 , 0.9])

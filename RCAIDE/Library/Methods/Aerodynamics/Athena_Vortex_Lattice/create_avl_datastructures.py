@@ -192,11 +192,12 @@ def populate_wing_sections(avl_wing,rcaide_wing):
                 inverted_wing = np.sign(dihedral)
                 if inverted_wing  == 0:
                     inverted_wing  = 1
-                dy = inverted_wing*semispan*segment_percent_span
+                dy = semispan*segment_percent_span
                 dz = dy*np.tan(dihedral)
                 l  = dy/np.cos(dihedral)
                 dx = l*np.tan(sweep)
             origin= [[origin[0][0] + dx , origin[0][1] + dy, origin[0][2] + dz]]  
+            print(f"origin: {origin}")
         
     else:    
         dihedral              = rcaide_wing.dihedral
@@ -323,7 +324,7 @@ def append_avl_wing_control_surfaces(rcaide_wing,avl_wing,semispan,root_chord_pe
         else:
             inverted_wing = np.sign(dihedral)
             if inverted_wing  == 0: inverted_wing  = 1
-            dy = ordered_section_spans[section_count] - inverted_wing*semispan*root_percent_span
+            dy = ordered_section_spans[section_count] - semispan*root_percent_span
             dz = dy*np.tan(dihedral)
             l  = dy/np.cos(dihedral)
             dx = l*np.tan(sweep)

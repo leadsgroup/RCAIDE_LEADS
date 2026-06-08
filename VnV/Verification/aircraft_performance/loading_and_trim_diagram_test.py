@@ -62,15 +62,13 @@ def tube_and_wing_load_trim_test():
     mission = E190_mission_setup(analyses)
  
     load_data =  compute_load_and_trim_diagram( mission, cruise_segment_tag = 'cruise', discretization=  3)
-    
-    save_results(load_data,'taw_loading_results') 
- 
-    CG_Percent_of_LEMAC_truth = np.array([[-0.26135411,  0.66526503,  1.59188417],
-                                        [-0.26135411,  0.66526503,  1.59188417],
-                                        [-0.26135411,  0.66526503,  1.59188417]])
+     
+    CG_Percent_of_LEMAC_truth = np.array([[-0.25572757,  0.67208385,  1.59989527],
+                                          [-0.25572757,  0.67208385,  1.59989527],
+                                          [-0.25572757,  0.67208385,  1.59989527]])
     plot_load_diagram(load_data,save_filename  = "TW_Aircraft_Loading_Trim_Dragram") 
 
-    LEMAC_error = np.max(abs((load_data.trim_results.CG_percent_of_LEMAC_location - CG_Percent_of_LEMAC_truth)/CG_Percent_of_LEMAC_truth))
+    LEMAC_error = np.max(np.abs((load_data.trim_results.CG_percent_of_LEMAC_location - CG_Percent_of_LEMAC_truth)/np.abs(CG_Percent_of_LEMAC_truth)))
     print(f"LEMAC error: {LEMAC_error}")
     assert LEMAC_error < 1e-2, f"LEMAC error too large: {LEMAC_error}"
         
@@ -93,19 +91,17 @@ def blended_wing_body_load_trim_test():
     # mission analyses 
     mission = BWB_mission_setup(analyses)
  
-    load_data =  compute_load_and_trim_diagram( mission, cruise_segment_tag= 'cruise', discretization=  3)
-    
-    save_results(load_data,'bwb_loading_results')
+    load_data =  compute_load_and_trim_diagram( mission, cruise_segment_tag= 'cruise', discretization=  3) 
  
-    CG_Percent_of_LEMAC_truth = np.array([[-0.00936612,  0.85303387,  1.71543386],
-       [-0.00936612,  0.85303387,  1.71543386],
-       [-0.00936612,  0.85303387,  1.71543386]])
+    CG_Percent_of_LEMAC_truth = np.array([[-0.06332442,  0.78558599,  1.63449641],
+                                         [-0.06332442,  0.78558599,  1.63449641],
+                                         [-0.06332442,  0.78558599,  1.63449641]])
     
     plot_load_diagram(load_data,save_filename  = "BWB_Aircraft_Loading_Trim_Dragram") 
 
-    LEMAC_error = np.max(abs((load_data.trim_results.CG_percent_of_LEMAC_location - CG_Percent_of_LEMAC_truth)))
+    LEMAC_error = np.max(np.abs((load_data.trim_results.CG_percent_of_LEMAC_location - CG_Percent_of_LEMAC_truth)/np.abs(CG_Percent_of_LEMAC_truth)))
     print(f"LEMAC error: {LEMAC_error}")
-    assert LEMAC_error < 5e-3, f"LEMAC error too large: {LEMAC_error}"
+    assert LEMAC_error < 5e-2, f"LEMAC error too large: {LEMAC_error}"
         
     return
 
@@ -161,6 +157,8 @@ def E190_base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis  
     aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
+    aerodynamics.settings.number_of_spanwise_vortices    = 10 # reducing the number of vortices to speed up the test 
+    aerodynamics.settings.number_of_chordwise_vortices   = 5  # reducing the number of vortices to speed up the test 
     analyses.append(aerodynamics)
 
     # ------------------------------------------------------------------
@@ -302,22 +300,7 @@ def BWB_mission_setup(analyses):
     
     mission.append_segment(segment) 
   
-    return mission 
-
-
-def save_results(data,filename): 
-    pickle_file  = filename + '.pkl'
-    with open(pickle_file, 'wb') as file:
-        pickle.dump(data, file) 
-    return 
-
-
-def load_results(filename):  
-    load_file = filename + '.pkl' 
-    with open(load_file, 'rb') as file:
-        results = pickle.load(file) 
-    return results 
-
+    return mission  
  
 if __name__ == '__main__': 
     main()

@@ -26,12 +26,12 @@ def main():
     try:
         import vsp as vsp
         from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
-        export_vsp_vehicle(vehicle, 'Vahana')
+        export_vsp_vehicle(vehicle, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Vahana'))
     except ImportError:
         pass
     
     # Step 2: plot vehicle 
-    plot_3d_vehicle(vehicle,export_gltf=True)  
+    plot_3d_vehicle(vehicle,save_filename=os.path.join(os.path.dirname(os.path.abspath(__file__)),'Vahana'),export_gltf=True,show_figure=True)  
     
     return  
 
@@ -351,11 +351,11 @@ def vehicle_setup(redesign_rotors=True):
     
     if redesign_rotors:
         design_electric_rotor(prop_rotor_propulsor, print_iterations=True)
-        save_propulsor(prop_rotor_propulsor, os.path.join(airfoil_file_path, 'vahana_tilt_rotor_propulsor.res'))
+        save_propulsor(prop_rotor_propulsor, os.path.join(sys.path[0],'vahana_tilt_rotor_propulsor.res'))
     else:
         regression_prop_rotor_propulsor = deepcopy(prop_rotor_propulsor)        
         design_electric_rotor(regression_prop_rotor_propulsor, iterations=2)
-        loaded_propulsor = load_propulsor(os.path.join(airfoil_file_path, 'vahana_tilt_rotor_propulsor.res'))  
+        loaded_propulsor = load_propulsor(os.path.join(sys.path[0], 'vahana_tilt_rotor_propulsor.res'))  
         for key,item in prop_rotor_propulsor.rotor.items():
             prop_rotor_propulsor.rotor[key] = loaded_propulsor.rotor[key] 
         for key,item in prop_rotor_propulsor.motor.items():

@@ -65,7 +65,7 @@ class Lift_Rotor(Rotor):
         - design_SPL_dBA : float
             Design point sound pressure level [dBA]. Default is None.
 
-        - design_Cl : float
+        - design_lift_coefficient : float
             Design point lift coefficient. Default is None.
 
         - design_thrust_coefficient : float
@@ -110,7 +110,7 @@ class Lift_Rotor(Rotor):
         - design_SPL_dBA : float
             OEI sound pressure level [dBA]. Default is None.
 
-        - design_Cl : float
+        - design_lift_coefficient : float
             OEI lift coefficient. Default is None.
 
         - design_thrust_coefficient : float
@@ -180,7 +180,7 @@ class Lift_Rotor(Rotor):
         self.hover.design_blade_pitch_command = 0.0
         self.hover.design_efficiency          = 0.86  
         self.hover.design_SPL_dBA             = None
-        self.hover.design_Cl                  = None
+        self.hover.design_lift_coefficient                  = None
         self.hover.design_thrust_coefficient  = None
         self.hover.design_power_coefficient   = None 
         self.hover.design_torque_coefficient  = None
@@ -197,7 +197,7 @@ class Lift_Rotor(Rotor):
         self.oei.design_blade_pitch_command         = 0.0
         self.oei.design_performance           = None
         self.oei.design_SPL_dBA               = None
-        self.oei.design_Cl                    = None
+        self.oei.design_lift_coefficient                    = None
         self.oei.design_thrust_coefficient    = None
         self.oei.design_power_coefficient     = None         
 

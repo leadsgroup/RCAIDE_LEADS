@@ -32,14 +32,13 @@ def main():
     missions = missions_setup(mission)
      
     # run payload range analysis 
-    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage = 0.1, delete_training_data = True)
+    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage = 0.09)
 
     apm = {
         "range":            np.array([0., 5500., 9500., 10000.]) * Units.nmi,
         "payload":          np.array([44000., 44000., 9071.8474, 0.]),
         "oew_plus_payload": np.array([161025., 161025., 127005.864, 117934.016]),
     }
-    plot_payload_range(payload_range_results, apm)
 
     # #### DO NOT CHANGE THESE VALUES WITHOUT CONSULTING THE AIRPORT PLANNING MANUAL FIRST ###############
     #  "Airport Planning Manual": {
@@ -80,7 +79,9 @@ def main():
         assert error < 5e-3, f"{key} error too large: {error}"
     tf                   = time.time()
     elapsed_time         = round((tf-ti),2)
-    print('Payload Range simulation Time: ' + str(elapsed_time) + ' seconds') 
+    print('Payload Range simulation Time: ' + str(elapsed_time) + ' seconds')
+
+    plot_payload_range(payload_range_results, apm)    
             
     return 
 
