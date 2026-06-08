@@ -72,7 +72,7 @@ def AVL_Surrogate_Mission(use_surrogate,trim_aircraft,keep_regression_files,new_
  
     # Extract sample values from computation   
     cruise_CL        = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0] 
-    cruise_CL_thruth = 0.4207404923969484
+    cruise_CL_thruth = 0.4210736644793703
     # Truth values  
     error = Data()  
     error.cruise_CL   = np.max(np.abs(cruise_CL - cruise_CL_thruth))   
@@ -106,7 +106,7 @@ def AVL_Single_Point_Trim_Mission(use_surrogate,trim_aircraft,keep_regression_fi
  
     # Extract sample values from computation   
     cruise_CL        = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[0][0]
-    cruise_CL_thruth = 0.48
+    cruise_CL_thruth = 0.399996
     
     # Truth values  
     error = Data()  
@@ -157,8 +157,7 @@ def base_analysis(vehicle,use_surrogate,trim_aircraft,keep_regression_files,new_
     aerodynamics.settings.filenames.avl_bin_name     = '/Users/matthewclarke/Documents/LEADS/CODES/AVL/avl3.35'
     aerodynamics.settings.filenames.run_folder       = os.path.join(os.path.dirname(__file__),'avl_files' +  folder_name)
     aerodynamics.settings.use_surrogate              = use_surrogate
-    aerodynamics.settings.trim_aircraft              = trim_aircraft 
-    aerodynamics.settings.model_fuselage             = False 
+    aerodynamics.settings.trim_aircraft              = trim_aircraft  
     aerodynamics.settings.print_output               = False 
     aerodynamics.settings.keep_files                 = keep_regression_files          
     aerodynamics.settings.new_regression_results     = new_regression_results
@@ -249,7 +248,7 @@ def AVL_Single_Point_mission_setup(analyses):
     segment.analyses.extend(analyses.base) 
     segment.altitude                                                = 2500 * Units.feet
     segment.air_speed                                               = 120 * Units['mph']
-    segment.trim_lift_coefficient                                   = 0.4
+    segment.lift_coefficient                                        = 0.4
                 
     # define flight dynamics to model             
     segment.flight_dynamics.force_x                                 = True  

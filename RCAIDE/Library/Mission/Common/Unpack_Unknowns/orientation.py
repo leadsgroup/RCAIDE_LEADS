@@ -23,7 +23,7 @@ def orientation(segment):
                         Velocity control settings
                     - altitude : Control
                         Altitude control settings
-            - trim_lift_coefficient : float, optional
+            - lift_coefficient : float, optional
                 Target lift coefficient for trim
             - angle_of_attack : float
                 Fixed angle of attack [rad]
@@ -90,8 +90,9 @@ def orientation(segment):
     ctrls    = segment.assigned_control_variables 
 
     # Body Angle Control 
-    if segment.trim_lift_coefficient !=  None:
-        segment.state.conditions.aerodynamics.coefficients.lift.total  = segment.trim_lift_coefficient * segment.state.ones_row(1)
+    if segment.lift_coefficient !=  None:
+        segment.state.conditions.aerodynamics.coefficients.lift.total          = segment.lift_coefficient * segment.state.ones_row(1) 
+        segment.state.conditions.aerodynamics.coefficients.lift.inviscid.total = segment.lift_coefficient / segment.analyses.aerodynamics.settings.fuselage_lift_correction   * segment.state.ones_row(1)    
     else: 
         if ctrls.body_angle.active: 
             segment.state.conditions.frames.body.inertial_rotations[:,1] = segment.state.unknowns.body_angle[:,0]  

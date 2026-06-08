@@ -19,8 +19,12 @@ def compute_layout_of_passenger_accommodations(fuselage):
     '''
     Creates the layout of passenger accommodations for a vehicle
     '''
-
+    
+    # lopa of entire vehicle 
     LOPA = np.empty(( 0, 14))
+    lopa_origin_x = []
+    lopa_origin_y = []
+    lopa_origin_z = []
     
     if len(fuselage.cabins) > 0: 
         # instantiate dimension of LOPA container 
@@ -28,37 +32,53 @@ def compute_layout_of_passenger_accommodations(fuselage):
         
         side_cabin_offset = 0
         for cabin in fuselage.cabins:
-            cabin_LOPA = np.empty(( 0, 14))
+         
+            # store locations for cabins : to be used in the future to define the collective origin of the LOPA
+            lopa_origin_x.append(cabin.origin[0][0])
+            lopa_origin_y.append(cabin.origin[0][1])
+            lopa_origin_z.append(cabin.origin[0][2])
+            
+            
+            # create empty data structures 
+            cabin_LOPA            = np.empty(( 0, 14))
             cabin_number_of_seats = 0
             cabin_class_origin    = [0, 0, 0]
             total_cabin_length    = 0
+
+            # loop through cabins
             for cabin_class in cabin.classes:
+                
+                # compute LOPA 
                 seat_data ,cabin_class_origin,cabin_number_of_seats,total_cabin_length  = create_class_seating_map_layout(cabin, cabin_class,cabin_class_origin, side_cabin_offset,cabin_number_of_seats,total_cabin_length)
+                
+                # determine offset if a side cabin (i.e. for a BWB) is defined   
                 side_cabin_offset = cabin.width / 2
-                LOPA = np.vstack((LOPA,seat_data))
-                cabin_LOPA = np.vstack((cabin_LOPA,seat_data))
+                
+                # append to entire vehicle LOPA data structure 
+                LOPA = np.vstack((LOPA,seat_data)) 
+
+                # append to cabin vehicle LOPA data structure                 
+                cabin_LOPA = np.vstack((cabin_LOPA,seat_data)) 
+                
+            
+            # store cabin loba onto cabin lopa data structure 
             cabin.layout_of_passenger_accommodations                     = Data()
-            cabin.layout_of_passenger_accommodations.object_coordinates  = cabin_LOPA       
-            cabin.length = total_cabin_length 
+            cabin.layout_of_passenger_accommodations.object_coordinates  = cabin_LOPA
+
+            # store cabin properties
+            cabin.length          = total_cabin_length
             cabin.number_of_seats = cabin_number_of_seats
-        
+
         # determine offset of LOPA from reference point on aircraft (nose)
-        offset_x_overall = 0
-        offset_z_overall = 0
         for cabin in fuselage.cabins:
             for cabin_class in cabin.classes:
                 cabin_class.percentage = cabin_class.length/cabin.length
-            if not isinstance(cabin,RCAIDE.Library.Components.Fuselages.Cabins.Side_Cabin):
-                offset_x_overall = cabin.origin[0][0]
-                offset_z_overall = cabin.origin[0][2]
-
-        fuselage.number_of_seats  = np.sum(LOPA[:,10])
-
-    fuselage.layout_of_passenger_accommodations                     = Data()
-    fuselage.layout_of_passenger_accommodations.object_coordinates  = LOPA        
-    fuselage.layout_of_passenger_accommodations.origin              = [[offset_x_overall, 0, offset_z_overall]] 
 
     if LOPA.size > 0 :
+        fuselage.number_of_seats  = np.sum(LOPA[:,10])
+        fuselage.layout_of_passenger_accommodations                     = Data() 
+        fuselage.layout_of_passenger_accommodations.object_coordinates  = LOPA 
+        fuselage.layout_of_passenger_accommodations.origin              = [[min(lopa_origin_x),min(lopa_origin_y), min(lopa_origin_z)]]
         compute_lopa_properties(fuselage, LOPA)    
         
     return 

@@ -1,6 +1,7 @@
 # RCAIDE/Library/Components/Powertrain/Energy/Sources/Fuel_Tanks/Liquid_Hydrogen_Tank.py
 # 
 # Created: Aug 2025, S. Shekar
+# Modified: Apr 2026, S. Shekar, S. Sharma
 #
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -12,8 +13,8 @@ import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Integral_Tank.compute_integral_tank_volume               import *
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_non_integral_tank_volume       import *
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank.compute_liquid_hydrogen_tank_volume import compute_liquid_hydrogen_tank_volume
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank.compute_liquid_hydrogen_conformal_tank_volume import compute_liquid_hydrogen_tank_conformal_volume
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_cylindrical_tank_volume import compute_cryogenic_cylindrical_tank_volume
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_tank_conformal_tank_volume import compute_cryogenic_tank_conformal_volume
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_cylinder_center_of_gravity
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_rounded_end_cylinder_moment_of_inertia, compute_cuboid_moment_of_inertia
 
@@ -92,20 +93,22 @@ class Liquid_Hydrogen_Tank(Non_Integral_Tank):
         -------
         None  
         """
-        self.tag                      = 'Liquid_Hydrogen_Tank'
-        self.fuel                     = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
-        self.material                 = None
-        self.insulation_material      = None
-        self.geometry_type            = 'cylindrical' # conformal
-        self.design_inlet_temperature = 20
-        self.design_altitiude         = 0
-        self.acceptable_heat_leak     = 20
-        self.acceptable_total_heat_leak= 2000
-        self.design_altitude          = 30000 * Units.ft
-        self.design_isa_deviation     = 0
-        self.ullage_volume_fraction   = 0.07
-        self.design_external_pressure = 0 
+        self.tag                           = 'Liquid_Hydrogen_Tank'
+        self.fuel                          = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+        self.material                      = None
+        self.insulation_material           = None
+        self.geometry_type                 = 'cylindrical' # conformal
+        self.design_inlet_temperature      = 20
+        self.design_altitiude              = 0
+        self.acceptable_heat_leak          = 20
+        self.acceptable_total_heat_leak    = 2000
+        self.design_altitude               = 30000 * Units.ft
+        self.design_isa_deviation          = 0
+        self.ullage_volume_fraction        = 0.07
+        self.design_external_pressure      = 0 
         self.tank_accesories_weight_factor = 1.5
+        self.safety_factor                 = 1.6 # structural factor of safety
+        self.pressure_factor               = 5   # internal pressure multiplier for sizing
 
     def compute_volume(self, wings, fuselages,fuel_tanks):
         """
@@ -146,7 +149,7 @@ class Liquid_Hydrogen_Tank(Non_Integral_Tank):
                 wing = wings[self.wing_tag]  
                 compute_wing_non_integral_tank_volume(self, wing,fuel_tanks)
                 if hasattr(fuel_tanks,self.tag):
-                    compute_liquid_hydrogen_tank_volume(self,fuel_tanks)
+                    compute_cryogenic_cylindrical_tank_volume(self,fuel_tanks)
                   
             else:
                 if self.bwb_aft_tank == True:
@@ -154,20 +157,20 @@ class Liquid_Hydrogen_Tank(Non_Integral_Tank):
                         wing = wings[self.wing_tag]  
                         compute_bwb_aft_tank_volume(self, wing,fuel_tanks)
                         if hasattr(fuel_tanks,self.tag):
-                            compute_liquid_hydrogen_tank_volume(self,fuel_tanks)
+                            compute_cryogenic_cylindrical_tank_volume(self,fuel_tanks)
         elif self.geometry_type == 'conformal':
-             if self.wing_tag != None and self.bwb_aft_tank is False:
+            if self.wing_tag != None and self.bwb_aft_tank is False:
                 wing = wings[self.wing_tag]  
                 compute_wing_integral_prismatic_tank_volume(self, wing,fuel_tanks)
                 if hasattr(fuel_tanks,self.tag):
-                    compute_liquid_hydrogen_tank_conformal_volume(self,fuel_tanks)
-             else:
+                    compute_cryogenic_tank_conformal_volume(self,fuel_tanks)
+            else:
                 if self.bwb_aft_tank == True:
                     if self.wing_tag != None:
                         wing = wings[self.wing_tag]  
                         compute_bwb_aft_integral_prismatic_tank_volume(self, wing,fuel_tanks)
                         if hasattr(fuel_tanks,self.tag):
-                            compute_liquid_hydrogen_tank_conformal_volume(self,fuel_tanks)
+                            compute_cryogenic_tank_conformal_volume(self,fuel_tanks)
         else:
             raise NotImplementedError
 

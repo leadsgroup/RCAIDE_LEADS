@@ -14,6 +14,7 @@ from RCAIDE.Library.Methods.Mass_Properties.estimate_maximum_landing_weight impo
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_vehicle_center_of_gravity 
 from RCAIDE.Library.Mission.Common.Pre_Process import  geometry, mass_properties
 import pandas as pd
+
 # Pacakge imports 
 import numpy as np
 from copy import  deepcopy
@@ -46,10 +47,10 @@ def compute_load_and_trim_diagram(mission = None, cruise_segment_tag = "cruise",
         segment.analyses.geometry.settings.compute_fuel_volume             = True 
         segment.analyses.weights.print_weight_analysis_report              = True 
         segment.analyses.weights.settings.run_center_of_gravity_analysis   = True
+        segment.analyses.weights.settings.overwrite_center_of_gravity      = True
         segment.analyses.weights.settings.run_moments_of_inertia_analysis  = True  
         segment.analyses.stability.print_stability_analysis_report         = True
         segment.analyses.stability.settings.compute_neutral_point          = True
-        segment.analyses.weights.settings.overwrite_center_of_gravity      = True
     
     #------------------------------------------------------------------------  
     # Check Input Args

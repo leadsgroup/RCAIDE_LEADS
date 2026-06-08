@@ -64,14 +64,12 @@ def generate_3d_wing_points(wing, n_points, dim,plot_centerline = False):
         Upward angle of wing from horizontal
     """    
     # unpack  
-    # obtain the geometry for each segment in a loop                                            
-    symm                 = wing.xz_plane_symmetric
-    semispan             = wing.spans.projected*0.5 * (2 - symm) 
-    root_chord           = wing.chords.root
+    # obtain the geometry for each segment in a loop            
     segments             = wing.segments
-    n_segments           = len(segments.keys()) 
-    origin               = wing.origin   
-         
+    n_segments           = len(segments.keys())
+    origin               = wing.origin
+    semispan             = wing.spans.projected / 2
+
     pts              = np.zeros((n_segments+2,n_points, 3,1))
     section_twist    = np.zeros((n_segments+2,n_points, 3,3))
     section_twist[:, :, 0, 0] = 1

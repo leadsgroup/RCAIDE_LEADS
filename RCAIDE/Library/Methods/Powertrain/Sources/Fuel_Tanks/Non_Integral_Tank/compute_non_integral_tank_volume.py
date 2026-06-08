@@ -410,39 +410,38 @@ def compute_wing_non_integral_tank_volume(fuel_tank, wing,fuel_tanks):
         * At least one wing segment has fuel tank capability
         * Tank placement constraints are reasonable
     """ 
-    if len(wing.segments) > 1: 
-        seg_tags = fuel_tank.segments_bounding_tank  
-        for i in range(len(seg_tags)-1):
-            inner_segment = wing.segments[seg_tags[i]]
-            outer_segment = wing.segments[seg_tags[i+1]] 
+    seg_tags = fuel_tank.segments_bounding_tank  
+    for i in range(len(seg_tags)-1):
+        inner_segment = wing.segments[seg_tags[i]]
+        outer_segment = wing.segments[seg_tags[i+1]] 
+        try:
             try:
-                try:
-                    tank_percent_span_location = inner_segment.tank_percent_span_location    
-                except:
-                    tank_percent_span_location = 0
-                inner_segment.tank_percent_span_location, tank_volume_o, tank_volume_i\
-                                        = compute_wing_non_integral_tank_fuel_volume(fuel_tank,wing,inner_segment,outer_segment,tank_percent_span_location)
+                tank_percent_span_location = inner_segment.tank_percent_span_location    
             except:
-                print(f"[WARNING] Tank '{fuel_tank.tag}' does not fit in the segment. Removing from list.")
-                fuel_tanks.pop(fuel_tank.tag)
-                return 
-             
-        fuel_tank.volume_properties.net_volume         = tank_volume_i
-        fuel_tank.volume_properties.gross_volume       = tank_volume_o
+                tank_percent_span_location = 0
+            inner_segment.tank_percent_span_location, tank_volume_o, tank_volume_i\
+                                    = compute_wing_non_integral_tank_fuel_volume(fuel_tank,wing,inner_segment,outer_segment,tank_percent_span_location)
+        except:
+            print(f"[WARNING] Tank '{fuel_tank.tag}' does not fit in the segment. Removing from list.")
+            fuel_tanks.pop(fuel_tank.tag)
+            return 
+            
+    fuel_tank.volume_properties.net_volume         = tank_volume_i
+    fuel_tank.volume_properties.gross_volume       = tank_volume_o
 
-        fuel_tank.mass_properties.center_of_gravity       =  [[(fuel_tank.lengths.external + fuel_tank.diameters.external) /2, 0,0]]     
-        fuel_tank.fuel.mass_properties.center_of_gravity  =  [[(fuel_tank.lengths.external + fuel_tank.diameters.external) /2, 0,0]]     
-        fuel_tank.mass_properties.center_of_gravity       =  [[(fuel_tank.lengths.external + fuel_tank.diameters.external) /2, 0,0]]   
+    fuel_tank.mass_properties.center_of_gravity       =  [[(fuel_tank.lengths.external + fuel_tank.diameters.external) /2, 0,0]]     
+    fuel_tank.fuel.mass_properties.center_of_gravity  =  [[(fuel_tank.lengths.external + fuel_tank.diameters.external) /2, 0,0]]     
+    fuel_tank.mass_properties.center_of_gravity       =  [[(fuel_tank.lengths.external + fuel_tank.diameters.external) /2, 0,0]]   
 
-        if not isinstance(fuel_tank, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank):
-            if fuel_tank.fuel.mass_properties.mass != 0:
-                actual_fuel_volume = fuel_tank.fuel.mass_properties.mass /  fuel_tank.fuel.density  
-                if actual_fuel_volume > fuel_tank.volume_properties.net_volume + 1e-8 :
-                    print('Warning:Specified fuel mass greater than mass of fuel capable of being stored in fuel tank') 
-                fuel_tank.fuel.volume_properties.net_volume = tank_volume_i
-            else:
-                fuel_tank.fuel.mass_properties.mass         = tank_volume_i *  fuel_tank.fuel.density 
-                fuel_tank.fuel.volume_properties.net_volume = tank_volume_i
+    if not isinstance(fuel_tank, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank):
+        if fuel_tank.fuel.mass_properties.mass != 0:
+            actual_fuel_volume = fuel_tank.fuel.mass_properties.mass /  fuel_tank.fuel.density  
+            if actual_fuel_volume > fuel_tank.volume_properties.net_volume + 1e-8 :
+                print('Warning:Specified fuel mass greater than mass of fuel capable of being stored in fuel tank') 
+            fuel_tank.fuel.volume_properties.net_volume = tank_volume_i
+        else:
+            fuel_tank.fuel.mass_properties.mass         = tank_volume_i *  fuel_tank.fuel.density 
+            fuel_tank.fuel.volume_properties.net_volume = tank_volume_i
              
     return 
 

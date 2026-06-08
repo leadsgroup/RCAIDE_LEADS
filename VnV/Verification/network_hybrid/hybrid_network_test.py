@@ -46,10 +46,10 @@ def main():
     series_hybrid    = True
     parallel_hybrid  = True
     
-    convetional_cruise_CL_truth      = 0.6872203267789949
-    electric_cruise_CL_truth         = 0.6935502862338622
-    series_hybrid_cruise_CL_truth    = 0.6920675183906465
-    parallel_hybrid_cruise_CL_truth  = 0.6932038207255684
+    convetional_cruise_CL_truth      = 0.6862607106468576
+    electric_cruise_CL_truth         = 0.6926405588108964
+    series_hybrid_cruise_CL_truth    = 0.6907950151213047
+    parallel_hybrid_cruise_CL_truth  = 0.6922148639178914
 
     error = Data()
     
@@ -116,7 +116,7 @@ def main():
         powertrain_labels.append("Parallel Hybrid")
          
 
-    # add remaining networks MATTEO          
+    # add remaining networks           
     print("Elapsed Time", (time.time()-t0)/60)         
 
     print('Errors:')
@@ -174,7 +174,9 @@ def base_analysis(vehicle,weights_method):
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     # ------------------------------------------------------------------     
-    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
+    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()   
+    aerodynamics.settings.number_of_spanwise_vortices    = 10 # reducing the number of vortices to speed up the test 
+    aerodynamics.settings.number_of_chordwise_vortices   = 5  # reducing the number of vortices to speed up the test 
     analyses.append(aerodynamics) 
 
     # ------------------------------------------------------------------

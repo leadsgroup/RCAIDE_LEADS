@@ -70,7 +70,7 @@ def geometry_preprocess_routine(analyses):
     vehicle  = analyses.vehicle
     
     # initalize variables 
-    A_fuselage     = 0
+    sectional_area = 0
     defined_cabins = False 
     NPF            = 0
     NPB            = 0
@@ -83,7 +83,7 @@ def geometry_preprocess_routine(analyses):
         compute_layout_of_passenger_accommodations(fuselage) 
         fuselage_planform(fuselage) 
         vehicle.length = np.maximum(vehicle.length, fuselage.lengths.total)
-        A_fuselage     = np.maximum(A_fuselage,fuselage.areas.front_projected) 
+        sectional_area = fuselage.areas.front_projected
         
         for cabin in fuselage.cabins: 
             defined_cabins = True
@@ -97,14 +97,14 @@ def geometry_preprocess_routine(analyses):
             total_seats += cabin.number_of_seats 
         for cabin in fuselage.cabins:     
             if cabin.number_of_passengers == 0: # if cabin class  passengers are not defined, use ratio of cabin to aircraft
-                cabin.number_of_passengers = min(total_seats,int((cabin.number_of_seats / total_seats) *  vehicle.number_of_passengers))
+                cabin.number_of_passengers = min(total_seats,int( np.round((cabin.number_of_seats / total_seats) *  vehicle.number_of_passengers)))
             
-    # update landing gear properties 
+    # ================================================================================================================================================
+    # update landing gear properties  
+    # ================================================================================================================================================
     for landing_gear in  vehicle.landing_gears: 
         symm               = landing_gear.xz_plane_symmetric
-        landing_gear.wheels = landing_gear.number_of_gear_types_in_tandem * landing_gear.number_of_wheels_in_gear_type * (symm + 1)
-        
-    vehicle.maximum_cross_sectional_area  =  A_fuselage
+        landing_gear.wheels = landing_gear.number_of_gear_types_in_tandem * landing_gear.number_of_wheels_in_gear_type * (symm + 1) 
     
     # ================================================================================================================================================
     # update wing properties 
@@ -135,7 +135,7 @@ def geometry_preprocess_routine(analyses):
                 total_seats += cabin.number_of_seats 
                 
                 if cabin.number_of_passengers == 0: # if cabin class  passengers are not defined, use ratio of cabin to aircraft
-                    cabin.number_of_passengers = int((cabin.number_of_seats / total_seats) *  vehicle.number_of_passengers)
+                    cabin.number_of_passengers =  min(total_seats,int( np.round((cabin.number_of_seats / total_seats) *  vehicle.number_of_passengers)))
                         
         # --------------------------------------------------------------------------------------------------------------------
         # All other wing surfaces
@@ -156,8 +156,13 @@ def geometry_preprocess_routine(analyses):
         vehicle.length = np.maximum(vehicle.length, wing.chords.root)                         
         
         # max cross sectional area 
-        A_wing_plus_fuselage   = wing.spans.projected * wing.thickness_to_chord *  wing.chords.root +  A_fuselage
-        vehicle.maximum_cross_sectional_area = np.maximum(vehicle.maximum_cross_sectional_area,A_wing_plus_fuselage) 
+        sectional_area +=  wing.areas.front_projected  
+
+    for network in  vehicle.networks: 
+        for propulsor in network.propulsors:  
+            sectional_area += (propulsor.diameter**2) * np.pi / 4.0
+            
+    vehicle.maximum_cross_sectional_area = sectional_area
 
     # --------------------------------------------------------------------------------------------------------------------
     # Update passenger imformation 

@@ -7,7 +7,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
 from RCAIDE.Framework.Core import Units
-from RCAIDE.Library.Plots.Common import set_axes, plot_style
+from RCAIDE.Library.Plots.Common import set_axes, plot_style, segment_colors
 
 # python imports 
 import matplotlib.pyplot as plt
@@ -232,7 +232,7 @@ def plot_quantity(ap, q, qaxis, qname, ylim_low, ylim_high, file_type, show_lege
     axis  = fig.add_subplot(1,1,1)   
     
     # get line colors for plots 
-    line_colors   = cm.inferno(np.linspace(0,0.9,n_cases))      
+    line_colors   = segment_colors(n_cases)      
     
     for i in range(n_cpts):   
         for j in range(n_cases): 

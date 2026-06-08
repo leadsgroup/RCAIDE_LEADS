@@ -119,10 +119,10 @@ def vehicle_setup():
     wing.origin                  = [[13.3,0,-1.]]
     wing.vertical                = False
     wing.xz_plane_symmetric      = True       
-    wing.high_lift               = True
+    wing.high_lift               = True 
     wing.areas.exposed           = 0.80 * wing.areas.wetted        
     wing.twists.root             = 2.0 * Units.degrees
-    wing.twists.tip              = 0.0 * Units.degrees    
+    wing.twists.tip              = -1.0 * Units.degrees  
     wing.dynamic_pressure_ratio  = 1.0
      
     ospath                                = os.path.abspath(__file__)
@@ -136,7 +136,7 @@ def vehicle_setup():
     segment.thickness_to_chord            = .11
     segment.dihedral_outboard             = 5. * Units.degrees
     segment.sweeps.quarter_chord          = 20.6 * Units.degrees 
-    segment.twist                        =  2. * Units.degrees 
+    segment.twist                         = wing.twists.root  -  (wing.twists.root - wing.twists.tip) * segment.percent_span_location
     root_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
     root_airfoil.coordinate_file          = rel_path  + 'Airfoils' + separator + 'transonic_wing_root_section_airfoil.txt'
     segment.append_airfoil(root_airfoil)
@@ -148,6 +148,7 @@ def vehicle_setup():
     segment.root_chord_percent            = 0.60 
     segment.dihedral_outboard             = 4 * Units.degrees
     segment.sweeps.quarter_chord          = 24.1 * Units.degrees  
+    segment.twist                         = wing.twists.root  -  (wing.twists.root - wing.twists.tip) * segment.percent_span_location
     yehudi_airfoil                        = RCAIDE.Library.Components.Airfoils.Airfoil()
     yehudi_airfoil.coordinate_file        = rel_path+ 'Airfoils' + separator + 'transonic_wing_inboard_section_airfoil.txt' 
     segment.append_airfoil(yehudi_airfoil)
@@ -155,8 +156,9 @@ def vehicle_setup():
     
     segment = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                          = 'section_2'
-    segment.percent_span_location        = 0.961
+    segment.percent_span_location        = 0.95
     segment.root_chord_percent           = 0.25 
+    segment.twist                         = wing.twists.root  -  (wing.twists.root - wing.twists.tip) * segment.percent_span_location
     segment.dihedral_outboard            = 70. * Units.degrees
     segment.sweeps.quarter_chord         = 40. * Units.degrees  
     mid_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
@@ -169,7 +171,7 @@ def vehicle_setup():
     segment.percent_span_location        = 1.
     segment.root_chord_percent           = 0.070 
     segment.dihedral_outboard            = 0.
-    segment.twist                        = -2. * Units.degrees
+    segment.twist                        = wing.twists.root  -  (wing.twists.root - wing.twists.tip) * segment.percent_span_location
     segment.sweeps.quarter_chord         = 0.  
     tip_airfoil                          =  RCAIDE.Library.Components.Airfoils.Airfoil()
     tip_airfoil.coordinate_file          = rel_path + 'Airfoils' + separator + 'transonic_wing_tip_section_airfoil.txt'
@@ -226,7 +228,7 @@ def vehicle_setup():
     wing.aspect_ratio            = 5.5
     wing.spans.projected         = 12
     wing.sweeps.quarter_chord    = 34.5 * Units.deg
-    wing.thickness_to_chord      = 0.16
+    wing.thickness_to_chord      = 0.14
     wing.taper                   = 0.2
     wing.dihedral                = 8.4 * Units.degrees
     wing.origin                  = [[31,0,1.5]]
@@ -253,7 +255,7 @@ def vehicle_setup():
     wing.sweeps.quarter_chord    = 35. * Units.deg
     wing.chords.root             = 4.68
     wing.chords.tip              = 1.45
-    wing.thickness_to_chord      = 0.16
+    wing.thickness_to_chord      = 0.14
     wing.taper                   = 0.31
     wing.dihedral                = 0.00
     wing.origin                  = [[30.4,0,1.675]]
@@ -483,7 +485,7 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Fuel Distrubition Line 
     #------------------------------------------------------------------------------------------------------------------------------------  
-    fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    fuel_line                                      = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
     fuel_line.pipe.rigid_material                  = RCAIDE.Library.Attributes.Materials.Aluminum()
     fuel_line.pipe.flexible_material               = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304()
     fuel_line.pipe.flexible_material_ratio         = 0.25

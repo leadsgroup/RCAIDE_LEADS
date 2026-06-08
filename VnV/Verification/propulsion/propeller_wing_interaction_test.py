@@ -54,39 +54,28 @@ def Propeller_Slipstream(wake_fidelity,identical_props):
        
     # Regression for Stopped Rotor Test (using Fidelity Zero wake model)
     lift_coefficient            = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[1][0]
-    sectional_lift_coeff        = results.segments.cruise.conditions.aerodynamics.coefficients.lift.inviscid.spanwise[0]
+    sectional_lift_coeff        = results.segments.cruise.conditions.aerodynamics.coefficients.lift.spanwise[0,0:40]
     
     # lift coefficient and sectional lift coefficient check
-    lift_coefficient_true       = 0.7471442722450158
-    sectional_lift_coeff_true   = np.array([7.11702984e-01, 6.91720619e-01, 6.48390130e-01, 5.20527453e-01,
-                                            6.20553156e-01, 6.70745402e-01, 6.27849971e-01, 6.15422147e-01,
-                                            5.97612552e-01, 5.72167349e-01, 5.37742801e-01, 4.92328554e-01,
-                                            4.26108478e-01, 9.02284446e-02, 1.01668869e-01, 7.11702982e-01,
-                                            6.91720737e-01, 6.48390436e-01, 5.20527957e-01, 6.20553804e-01,
-                                            6.70746628e-01, 6.27851015e-01, 6.15423252e-01, 5.97612484e-01,
-                                            5.72165425e-01, 5.37740845e-01, 4.92327347e-01, 4.26107493e-01,
-                                            9.02282009e-02, 1.01668538e-01, 2.55344378e-02, 2.60801812e-02,
-                                            2.71392250e-02, 2.86075232e-02, 3.03048140e-02, 3.20152237e-02,
-                                            3.34897142e-02, 3.44198192e-02, 3.44663431e-02, 3.33326640e-02,
-                                            3.08266897e-02, 2.69016374e-02, 2.16812251e-02, 1.54802117e-02,
-                                            9.08448588e-03, 2.55344523e-02, 2.60802148e-02, 2.71392800e-02,
-                                            2.86075780e-02, 3.03048365e-02, 3.20152223e-02, 3.34897236e-02,
-                                            3.44198658e-02, 3.44664456e-02, 3.33328233e-02, 3.08268350e-02,
-                                            2.69017405e-02, 2.16813354e-02, 1.54803762e-02, 9.08480152e-03,
-                                            6.62571210e-17, 5.84147883e-16, 1.05090799e-15, 1.09055515e-15,
-                                            1.68211654e-15, 2.64490362e-15, 3.27207240e-15, 3.74732084e-15,
-                                            4.22264533e-15, 4.05347485e-15, 3.79628797e-15, 3.29544394e-15,
-                                            2.62388100e-15, 1.85539643e-15, 1.08013074e-15])
+    lift_coefficient_true       = 0.7944994554508983
+    sectional_lift_coeff_true   = np.array([0.7147468 , 0.67342342, 0.51334893, 0.84067887, 0.6836172 ,
+                                            0.63624763, 0.58749353, 0.523184  , 0.36028242, 0.10329725,
+                                            0.71474679, 0.67342348, 0.51334911, 0.84067859, 0.68361625,
+                                            0.63624639, 0.5874937 , 0.52318651, 0.3602854 , 0.10329809,
+                                            0.03767618, 0.03852107, 0.04029459, 0.04257655, 0.04420888,
+                                            0.044047  , 0.04128749, 0.03535978, 0.0263186 , 0.01570089,
+                                            0.03767618, 0.03852107, 0.04029459, 0.04257654, 0.04420887,
+                                            0.044047  , 0.04128751, 0.03535972, 0.02631842, 0.01570065])
 
-    diff_CL = np.abs(lift_coefficient  - lift_coefficient_true)
+    diff_CL = np.abs(lift_coefficient  - lift_coefficient_true) / lift_coefficient_true
     print('CL difference')
     print(diff_CL)
 
-    diff_Cl_y   = max(np.abs(sectional_lift_coeff - sectional_lift_coeff_true))
-    print('Cl difference')
+    diff_Cl_y   = np.max(np.abs((sectional_lift_coeff - sectional_lift_coeff_true) /sectional_lift_coeff_true))
+    print('Sectional Cl difference')
     print(diff_Cl_y)
     
-    assert diff_CL/lift_coefficient < 1e-6
+    assert diff_CL< 1e-6
     assert diff_Cl_y < 1e-6
 
     # plot results, vehicle, and vortex distribution
@@ -96,10 +85,7 @@ def Propeller_Slipstream(wake_fidelity,identical_props):
  
 
 def plot_mission(results):
-
-    # Plot surface pressure coefficient
-    plot_surface_pressures(results)
-
+    
     # Plot lift distribution
     plot_lift_distribution(results) 
     return 
@@ -140,6 +126,8 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     aerodynamics                               = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
+    aerodynamics.settings.number_of_spanwise_vortices    = 10 # reducing the number of vortices to speed up the test 
+    aerodynamics.settings.number_of_chordwise_vortices   = 5  # reducing the number of vortices to speed up the test 
     aerodynamics.settings.use_surrogate        = False 
     aerodynamics.settings.propeller_wake_model = True
     analyses.append(aerodynamics)   

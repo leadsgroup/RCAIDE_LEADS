@@ -103,7 +103,7 @@ def write_run_cases(avl_object,trim_aircraft, vehicle):
             # extract flight conditions 
             index = case.index
             name  = case.tag
-            CL    = case.conditions.aerodynamics.coefficients.lift.total
+            CL    = case.conditions.aerodynamics.coefficients.lift.inviscid.total
             CDp   = 0.
             AoA   = round(case.conditions.aerodynamics.angles.alpha,4)
             beta  = round(case.conditions.aerodynamics.angles.beta,4)

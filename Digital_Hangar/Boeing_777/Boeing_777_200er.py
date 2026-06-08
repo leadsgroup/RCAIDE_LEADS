@@ -26,12 +26,12 @@ def main():
     try:
         import vsp as vsp
         from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
-        export_vsp_vehicle(vehicle, 'Boeing_777_200er')
+        export_vsp_vehicle(vehicle, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Boeing_777_200er'))
     except ImportError:
         pass 
     
     # Step 2: plot vehicle 
-    plot_3d_vehicle(vehicle,export_gltf=True)  
+    plot_3d_vehicle(vehicle,save_filename=os.path.join(os.path.dirname(os.path.abspath(__file__)),'Boeing_777_200er'),export_gltf=True,show_figure=True)  
     return  
 
 def vehicle_setup(): 
@@ -578,8 +578,7 @@ def vehicle_setup():
     # Propulsor: Starboard Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------         
     turbofan                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
-    turbofan.tag                                = 'propulsor_1'
-    turbofan.active_fuel_tanks                  = ['b777_fuel_tank']   
+    turbofan.tag                                = 'propulsor_1' 
     turbofan.origin                             = [[ 25.72797886 , 9.69802 , -2.04  ]]
     turbofan.mass_properties.mass               = 7893
     turbofan.engine_length                      = 7.29
@@ -715,8 +714,7 @@ def vehicle_setup():
     # Propulsor: Port Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------      
     # copy turbofan
-    turbofan_2                                  = deepcopy(turbofan)
-    turbofan_2.active_fuel_tanks                = ['b777_fuel_tank'] 
+    turbofan_2                                  = deepcopy(turbofan) 
     turbofan_2.tag                              = 'propulsor_2' 
     turbofan_2.origin                           = [[ 25.72797886 , -9.69802 , -2.04  ]]   # change origin 
     turbofan_2.nacelle.origin                   = [[26.72797886 , -9.69802 , -2.04 ]]  

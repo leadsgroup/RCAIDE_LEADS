@@ -152,6 +152,7 @@ class Boom(Component):
         self.x_rotation                             = 0.0
         self.y_rotation                             = 0.0
         self.z_rotation                             = 0.0
+        self.supersonic                             = False
              
         self.lengths                                = Data()
         self.lengths.nose                           = 0.0 

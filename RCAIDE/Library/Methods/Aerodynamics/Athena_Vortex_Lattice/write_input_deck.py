@@ -188,12 +188,12 @@ c1
 {1}
 '''     
     # if Angle of Attack command is specified, write A 
-    if case.conditions.aerodynamics.coefficients.lift.total == None:
+    if case.conditions.aerodynamics.coefficients.lift.inviscid.total== None:
         condition = 'A'
         val       = case.conditions.aerodynamics.angles.alpha
-    elif case.conditions.aerodynamics.coefficients.lift.total > 0:  
+    elif case.conditions.aerodynamics.coefficients.lift.inviscid.total > 0:  
         condition = 'C'
-        val       = case.conditions.aerodynamics.coefficients.lift.total 
+        val       = case.conditions.aerodynamics.coefficients.lift.inviscid.total
     else:   
         trim_command = ''
         return trim_command

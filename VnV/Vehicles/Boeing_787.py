@@ -56,15 +56,15 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', number_of_passengers = 248) :
     wing.aspect_ratio                     = 8.61650
     wing.sweeps.quarter_chord             = 35 * Units.deg
     wing.thickness_to_chord               = 0.115
-    wing.spans.projected                  = 60 * Units.meter
+    wing.spans.projected                  = 60.12 * Units.meter
     wing.chords.root                      = 14.0 * Units.meter
     wing.chords.tip                       = 2.1 * Units.meter
     wing.taper                            = wing.chords.tip / wing.chords.root
     wing.chords.mean_aerodynamic          = 5.75 * Units.meter 
     wing.areas.reference                  = 392.27 * Units['meters**2']
     wing.areas.wetted                     = 825.0 * Units['meters**2']
-    wing.twists.root                      = 0.0 * Units.degrees 
-    wing.twists.tip                       = -3.0 * Units.degrees 
+    wing.twists.root                      = 3.2 * Units.degrees 
+    wing.twists.tip                       = -2.0 * Units.degrees 
     wing.origin                           = [[16.59,0,-0.492]]
     wing.aerodynamic_center               = [0,0,0] 
     wing.vertical                         = False
@@ -85,6 +85,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', number_of_passengers = 248) :
     segment.root_chord_percent            = 1.
     segment.dihedral_outboard             = 8.0 * Units.degrees
     segment.sweeps.quarter_chord          = 27.57 * Units.degrees
+    segment.twist                         = wing.twists.root  -  (wing.twists.root - wing.twists.tip) * segment.percent_span_location 
     segment.append_airfoil(root_airfoil)
     wing.append_segment(segment)
 
@@ -96,7 +97,8 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', number_of_passengers = 248) :
     segment.root_chord_percent            = 0.53 
     segment.dihedral_outboard             = 7.0 * Units.degrees
     segment.sweeps.quarter_chord          = 31. * Units.degrees
-    segment.thickness_to_chord            = 0.125
+    segment.thickness_to_chord            = 0.125 
+    segment.twist                         = wing.twists.root  -  (wing.twists.root - wing.twists.tip) * segment.percent_span_location
     segment.append_airfoil(yehudi_airfoil)
     wing.append_segment(segment)
 
@@ -108,7 +110,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', number_of_passengers = 248) :
     segment.root_chord_percent            = 0.155 
     segment.dihedral_outboard             = 12.0 * Units.degrees
     segment.sweeps.quarter_chord          = 42.0 * Units.degrees
-    segment.twist                         = -0.95 * Units.degrees
+    segment.twist                         = wing.twists.root  -  (wing.twists.root - wing.twists.tip) * segment.percent_span_location
     segment.append_airfoil(tip_airfoil)
     wing.append_segment(segment)
 
@@ -117,10 +119,11 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', number_of_passengers = 248) :
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'Winglet'
     segment.percent_span_location         = 1.00
-    segment.twist                         = -1.0 * Units.degrees
+    segment.twist                         = 0.0 * Units.degrees
     segment.root_chord_percent            = 0.093 
     segment.dihedral_outboard             = 0.0 * Units.degrees
-    segment.sweeps.quarter_chord          = 0.0 * Units.degrees
+    segment.sweeps.quarter_chord          = 0.0 * Units.degrees 
+    segment.twist                         = wing.twists.root  -  (wing.twists.root - wing.twists.tip) * segment.percent_span_location
     segment.append_airfoil(tip_airfoil)
     wing.append_segment(segment)
 
@@ -545,7 +548,6 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', number_of_passengers = 248) :
     # Carbo Bays 
     # ------------------------------------------------------------------ 
     cargo_bay = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
-    cargo_bay.mass_properties.mass  = 4500 * Units.kilogram
     vehicle.cargo_bays.append(cargo_bay) 
 
     # ################################################# Energy Network #######################################################          
@@ -674,8 +676,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', number_of_passengers = 248) :
     # Propulsor: Propulsor 2 (Inner Port Side)
     #------------------------------------------------------------------------------------------------------------------------------------      
     # copy turbofan
-    turbofan2                                  = deepcopy(turbofan1)
-    turbofan2.active_fuel_tanks                = ['fuel_tank'] 
+    turbofan2                                  = deepcopy(turbofan1) 
     turbofan2.tag                              = 'propulsor_2' 
     turbofan2.origin                           = [[17.818, -10.000,-0.953]]
     turbofan2.nacelle.origin                   = [[17.818, -10.000,-0.953]]

@@ -24,12 +24,12 @@ def main():
     try:
         import vsp as vsp
         from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
-        export_vsp_vehicle(vehicle, 'Boeing_747_100')
+        export_vsp_vehicle(vehicle, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Boeing_747_100'))
     except ImportError:
         pass 
     
     # Step 2: plot vehicle 
-    plot_3d_vehicle(vehicle,export_gltf=True)  
+    plot_3d_vehicle(vehicle,save_filename=os.path.join(os.path.dirname(os.path.abspath(__file__)),'Boeing_747_100'),export_gltf=True,show_figure=True)  
     return  
 
 def vehicle_setup(): 
@@ -543,8 +543,7 @@ def vehicle_setup():
     # Propulsor: Starboard Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------         
     turbofan_1                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
-    turbofan_1.tag                                = 'propulsor_1'
-    turbofan_1.active_fuel_tanks                  = ['fuel_tank']   
+    turbofan_1.tag                                = 'propulsor_1' 
     turbofan_1.origin                             = [[13.72, 4.86,-1.1]] 
     turbofan_1.engine_length                      = 3.934     
     turbofan_1.bypass_ratio                       = 5.0   
@@ -652,8 +651,7 @@ def vehicle_setup():
     # Propulsor: Propulsor 2 (Inner Port Side)
     #------------------------------------------------------------------------------------------------------------------------------------      
     # copy turbofan
-    turbofan_2                                  = deepcopy(turbofan_1)
-    turbofan_2.active_fuel_tanks                = ['fuel_tank'] 
+    turbofan_2                                  = deepcopy(turbofan_1) 
     turbofan_2.tag                              = 'propulsor_2' 
     turbofan_2.origin                           = [[24.72,-11.685,-2.6]]
     turbofan_2.nacelle.origin                   = [[24.72,-11.685,-2.6]]
@@ -665,8 +663,7 @@ def vehicle_setup():
     # Propulsor: Propulsor 3 (Inner Starboard Side)
     #------------------------------------------------------------------------------------------------------------------------------------      
     # copy turbofan
-    turbofan_3                                  = deepcopy(turbofan_1)
-    turbofan_3.active_fuel_tanks                = ['fuel_tank'] 
+    turbofan_3                                  = deepcopy(turbofan_1) 
     turbofan_3.tag                              = 'propulsor_3' 
     turbofan_3.origin                           = [[24.72, 11.685,-2.6]]
     turbofan_3.nacelle.origin                   = [[24.72, 11.685,-2.6]]
@@ -678,8 +675,7 @@ def vehicle_setup():
     # Propulsor: Propulsor 4 (Outer Starboard Side)
     #------------------------------------------------------------------------------------------------------------------------------------      
     # copy turbofan
-    turbofan_4                                  = deepcopy(turbofan_1)
-    turbofan_4.active_fuel_tanks                = ['fuel_tank'] 
+    turbofan_4                                  = deepcopy(turbofan_1) 
     turbofan_4.tag                              = 'propulsor_4' 
     turbofan_4.origin                           = [[32.483, 21.000,-1.95]]
     turbofan_4.nacelle.origin                   = [[32.483, 21.000,-1.95]]

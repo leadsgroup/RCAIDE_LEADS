@@ -95,7 +95,7 @@ def vehicle_setup():
     wing.spans.projected                  = 10.166
     wing.chords.root                      = 2.1944 
     wing.chords.tip                       = 1.1850
-    wing.twists.root                      = 2 * Units.degrees  
+    wing.twists.root                      = 1 * Units.degrees  
     wing.twists.tip                       = -1 * Units.degrees   
     wing.dihedral                         = 7.5 * Units.degrees   
     wing.origin                           = [[1.652555594, 0.,-0.6006666]]
@@ -122,7 +122,7 @@ def vehicle_setup():
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'root_segment'
     segment.percent_span_location         = 0.0
-    segment.twist                         = 2 * Units.degrees  
+    segment.twist                         = 0 * Units.degrees  
     segment.root_chord_percent            = 1.0
     segment.dihedral_outboard             = 7.5 * Units.degrees  
     segment.sweeps.quarter_chord          = 0.165 * Units.degrees  
@@ -132,7 +132,7 @@ def vehicle_setup():
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                           = 'tip'
     segment.percent_span_location         = 1.0
-    segment.twist                         = -1.0 * Units.degrees
+    segment.twist                         = 0.0 * Units.degrees
     segment.root_chord_percent            = 0.54  
     segment.dihedral_outboard             = 0 * Units.degrees
     segment.sweeps.quarter_chord          = 0 * Units.degrees  
@@ -155,7 +155,7 @@ def vehicle_setup():
     aileron.span_fraction_start   = 0.7
     aileron.span_fraction_end     = 0.9 
     aileron.deflection            = 0.0 * Units.degrees
-    aileron.chord_fraction        = 0.2
+    aileron.chord_fraction        = 0.15
     wing.append_control_surface(aileron)      
 
     # add to vehicle
@@ -228,7 +228,7 @@ def vehicle_setup():
     rudder.span_fraction_start            = 0.1
     rudder.span_fraction_end              = 0.9
     rudder.deflection                     = 0.0  * Units.deg
-    rudder.chord_fraction                 = 0.4
+    rudder.chord_fraction                 = 0.45
     wing.append_control_surface(rudder) 
     
     # add to vehicle
@@ -382,7 +382,7 @@ def vehicle_setup():
     prop.hub_radius                         = 8.     * Units.inches
     prop.cruise.design_freestream_velocity  = 119.   * Units.knots
     prop.cruise.design_angular_velocity     = 2650.  * Units.rpm
-    prop.cruise.design_Cl                   = 0.8
+    prop.cruise.design_lift_coefficient                   = 0.8
     prop.cruise.design_altitude             = 12000. * Units.feet
     prop.cruise.design_power                = .64 * 180. * Units.horsepower
     prop.variable_pitch                     = True    

@@ -13,8 +13,7 @@ Date   : Feb 18th, 2026
 # ---------------------------------------------------------------------- 
 import RCAIDE
 from RCAIDE.Framework.Core import Units , Data   
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan         import design_turbofan 
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan         import design_turbofan 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan         import design_turbofan  
 from RCAIDE.Library.Methods.Performance                            import aircraft_aerodynamic_analysis 
 from RCAIDE.Library.Plots                                          import *
 
@@ -123,7 +122,7 @@ def vehicle_setup():
     # Carbo Bays 
     # ------------------------------------------------------------------ 
     forward_cargo_bay = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
-    forward_cargo_bay.cargo.mass_properties.mass  = 1850
+    forward_cargo_bay.mass_properties.mass        = 1850
     forward_cargo_bay.origin                      = [[5.82, 0, -0.6]]
     forward_cargo_bay.length                      = 7.82
     forward_cargo_bay.width                       = 2.5
@@ -131,7 +130,7 @@ def vehicle_setup():
     vehicle.append_component(forward_cargo_bay) 
  
     aft_cargo_bay  = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
-    aft_cargo_bay.cargo.mass_properties.mass  = 1440
+    aft_cargo_bay.mass_properties.mass        = 1440
     aft_cargo_bay.origin                      = [[23.43, 0, -0.6]]
     aft_cargo_bay.length                      =  5.5
     aft_cargo_bay.width                       =  2.5
@@ -161,9 +160,7 @@ def vehicle_setup():
     wing.vertical                         = False
     wing.xz_plane_symmetric               = True
     wing.twists.root                      = 2.5 * Units.degrees 
-    wing.twists.tip                       = 3.5  * Units.degrees 
-    wing.transition_x_upper               = 0.5
-    wing.transition_x_lower               = 0.5
+    wing.twists.tip                       = 3.5  * Units.degrees
     
 
     # Wing Segments
@@ -338,9 +335,7 @@ def vehicle_setup():
     wing.vertical                         = True
     wing.xz_plane_symmetric               = False
     wing.t_tail                           = False 
-    wing.dynamic_pressure_ratio           = 1.0
-    wing.transition_x_upper               = 0.5
-    wing.transition_x_lower               = 0.5
+    wing.dynamic_pressure_ratio           = 1.0 
 
     # Wing Segments
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
