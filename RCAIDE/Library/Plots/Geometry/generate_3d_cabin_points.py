@@ -355,5 +355,44 @@ def generate_3d_fuselage_cabin_points(fuselage, n_points, plot_centerline=False)
     leading_edge_points  = np.vstack((starboard_x_points[:2] + LOPA_data.origin[0][0], starboard_y_points[:2]))
     trailing_edge_points = np.vstack((starboard_x_points[2:] + LOPA_data.origin[0][0], starboard_y_points[2:]))
 
+    # Cabin longitudinal extent in absolute fuselage x coordinates
+    x_cabin_min = x_min + LOPA_data.origin[0][0]
+    x_cabin_max = x_max + LOPA_data.origin[0][0]
 
-    return 
+    # Scale factor for cabin interior surface relative to outer fuselage mold line
+    if hasattr(fuselage, 'outer_mold_line_cabin_offset_factor'):
+        cabin_factor = fuselage.outer_mold_line_cabin_offset_factor
+    else:
+        cabin_factor = 0.95
+
+    # Collect segments whose x position falls within the cabin range
+    cabin_segs = []
+    for segment in fuselage.segments:
+        seg_x = segment.percent_x_location * fuselage.lengths.total + fuselage.origin[0][0]
+        if x_cabin_min <= seg_x <= x_cabin_max:
+            cabin_segs.append(segment)
+
+    if not cabin_segs:
+        cabin_segs = list(fuselage.segments)
+
+    theta        = np.linspace(0, 2 * np.pi, n_points)
+    cabin_points = np.zeros((len(cabin_segs), n_points, 3))
+
+    for i, segment in enumerate(cabin_segs):
+        a = segment.width  / 2 * cabin_factor
+        b = segment.height / 2 * cabin_factor
+        n = segment.curvature
+        cabin_points[i, :, 0] = (segment.percent_x_location * fuselage.lengths.total
+                                  + fuselage.origin[0][0])
+        cabin_points[i, :, 1] = ((abs(np.cos(theta)) ** (2 / n)) * a
+                                  * ((np.cos(theta) > 0) * 1 - (np.cos(theta) < 0) * 1)
+                                  + segment.percent_y_location * fuselage.lengths.total
+                                  + fuselage.origin[0][1])
+        cabin_points[i, :, 2] = ((abs(np.sin(theta)) ** (2 / n)) * b
+                                  * ((np.sin(theta) > 0) * 1 - (np.sin(theta) < 0) * 1)
+                                  + segment.percent_z_location * fuselage.lengths.total
+                                  + fuselage.origin[0][2])
+
+    G      = Data()
+    G.PTS  = cabin_points
+    return G
