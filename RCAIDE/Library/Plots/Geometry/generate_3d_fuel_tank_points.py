@@ -456,11 +456,11 @@ def generate_aft_integral_wing_tank_points(wing, n_points, segment_list, fuel_ta
 
     for seg_i in range(1, num_tank_sections):
         if seg_i == 1:
-            inner_polygon = Polygon(polygon_points[seg_i - 1])
+            inner_polygon = Polygon(polygon_points[seg_i - 1]).buffer(0)
         else:
             inner_polygon = intersection_polygon
 
-        outer_polygon = Polygon(polygon_points[seg_i])
+        outer_polygon = Polygon(polygon_points[seg_i]).buffer(0)
         intersection_polygon = inner_polygon.intersection(outer_polygon)
 
         if intersection_polygon.is_empty:
@@ -469,8 +469,14 @@ def generate_aft_integral_wing_tank_points(wing, n_points, segment_list, fuel_ta
             intersection_polygons.append(None)
             continue
 
-        if intersection_polygon.geom_type == 'MultiPolygon':
-            intersection_polygon = max(intersection_polygon.geoms, key=lambda g: g.area)
+        if not isinstance(intersection_polygon, geom.Polygon):
+            polys = [g for g in getattr(intersection_polygon, 'geoms', []) if isinstance(g, geom.Polygon)]
+            intersection_polygon = max(polys, key=lambda g: g.area) if polys else None
+        if intersection_polygon is None:
+            tank_volumes[seg_i - 1] = 0.0
+            tank_lengths[seg_i - 1] = 0.0
+            intersection_polygons.append(None)
+            continue
 
         area = intersection_polygon.area
         y_curr = segments[seg_names[seg_i]].percent_span_location * wing_span

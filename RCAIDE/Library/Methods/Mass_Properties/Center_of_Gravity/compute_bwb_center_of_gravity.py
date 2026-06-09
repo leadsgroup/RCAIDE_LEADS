@@ -147,12 +147,19 @@ def compute_aft_center_body_center_of_gravity(bwb_wing,seg_keys):
 
         cabin_seperation = box(cabin_length, -1e9, 1e9, 1e9)
         points_out = list(zip(x_out, y_out))
-        poly_out = Polygon(points_out)
-        poly_out = poly_out.intersection(cabin_seperation)
+        poly_out = Polygon(points_out).buffer(0).intersection(cabin_seperation)
+        if not isinstance(poly_out, geom.Polygon):
+            polys = [g for g in getattr(poly_out, 'geoms', [poly_out]) if isinstance(g, geom.Polygon)]
+            poly_out = max(polys, key=lambda p: p.area) if polys else None
 
         points_in = list(zip(x_in, y_in))
-        poly_in = Polygon(points_in)
-        poly_in = poly_in.intersection(cabin_seperation) 
+        poly_in = Polygon(points_in).buffer(0).intersection(cabin_seperation)
+        if not isinstance(poly_in, geom.Polygon):
+            polys = [g for g in getattr(poly_in, 'geoms', [poly_in]) if isinstance(g, geom.Polygon)]
+            poly_in = max(polys, key=lambda p: p.area) if polys else None
+
+        if poly_in is None or poly_out is None:
+            continue
 
         # Compute segment span length
         L = (outer_segment.percent_span_location - inner_segment.percent_span_location) * bwb_wing.spans.projected/2

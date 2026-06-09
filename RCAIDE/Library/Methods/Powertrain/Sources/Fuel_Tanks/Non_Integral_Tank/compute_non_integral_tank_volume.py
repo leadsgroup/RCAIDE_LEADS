@@ -202,13 +202,19 @@ def compute_bwb_aft_tank_volume(fuel_tank, wing,fuel_tanks):
     circle_origins = np.zeros((num_tank_sections-1, 2))
     for seg_i in  range(1,num_tank_sections):
         if seg_i == 1:
-            inner_polygon =  Polygon( polygon_points[seg_i-1] )
+            inner_polygon = Polygon(polygon_points[seg_i - 1]).buffer(0)
         else:
             inner_polygon = intersection_polygon
-        outer_polygon =  Polygon(  polygon_points[seg_i] )
+        outer_polygon = Polygon(polygon_points[seg_i]).buffer(0)
         # intersection polygon
         intersection_polygon = inner_polygon.intersection(outer_polygon)
-        intersection_polygon.exterior.coords.xy
+        if intersection_polygon.is_empty:
+            continue
+        if not isinstance(intersection_polygon, Polygon):
+            polys = [g for g in getattr(intersection_polygon, 'geoms', []) if isinstance(g, Polygon)]
+            intersection_polygon = max(polys, key=lambda g: g.area) if polys else None
+        if intersection_polygon is None:
+            continue
         # maximum radius
         poly             = Polygon(intersection_polygon)
         inscribed_circle =  shapely.maximum_inscribed_circle(poly)
