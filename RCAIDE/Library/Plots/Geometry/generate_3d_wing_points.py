@@ -15,7 +15,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  generate_3d_wing_points
 # ----------------------------------------------------------------------------------------------------------------------   
-def generate_3d_wing_points(wing, n_points, dim,plot_centerline = False):
+def generate_3d_wing_points(wing, n_points,plot_centerline = False):
     """
     Generates 3D coordinate points that define a wing surface.
 
@@ -68,7 +68,7 @@ def generate_3d_wing_points(wing, n_points, dim,plot_centerline = False):
     segments             = wing.segments
     n_segments           = len(segments.keys())
     origin               = wing.origin
-    semispan             = wing.spans.projected / 2
+    semispan             = wing.spans.projected / (1+ wing.xz_plane_symmetric)
 
     pts              = np.zeros((n_segments+2,n_points, 3,1))
     section_twist    = np.zeros((n_segments+2,n_points, 3,3))

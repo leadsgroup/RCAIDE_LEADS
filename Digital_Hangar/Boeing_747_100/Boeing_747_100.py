@@ -63,6 +63,61 @@ def vehicle_setup():
     vehicle.systems.control                           = "fully powered"
     vehicle.systems.accessories                       = "long range" 
     
+
+    # ################################################# Landing Gear #############################################################   
+    # ------------------------------------------------------------------        
+    # Landing Gear
+    # Source: https://www.boeing.com/content/dam/boeing/boeingdotcom/commercial/airports/acaps/747_123sp.pdf 
+    # ------------------------------------------------------------------  
+    # ------------------------------------------------------------------
+    #  Main Body Gear  (2 bogies, fuselage-mounted, symmetric about XZ)
+    # ------------------------------------------------------------------
+    main_body_gear                                 = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
+    main_body_gear.tag                             = 'main_body_gear'
+    main_body_gear.tire_diameter                   = 50.0 * Units.inches
+    main_body_gear.rim_diameter                    = 22.0 * Units.inches
+    main_body_gear.tire_width                      = 20.0 * Units.inches
+    main_body_gear.strut_length                    = 10.0 * Units.ft
+    main_body_gear.wheels                          = 4
+    main_body_gear.number_of_gear_types_in_tandem  = 2
+    main_body_gear.number_of_wheels_in_gear_type   = 2
+    main_body_gear.origin                          = [[34.4, 3/2, -2.0]]
+    main_body_gear.xz_plane_symmetric              = True
+    vehicle.append_component(main_body_gear)
+
+    # ------------------------------------------------------------------
+    #  Main Wing Gear  (2 bogies, wing-mounted, symmetric about XZ)
+    # ------------------------------------------------------------------
+    main_wing_gear                                 = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
+    main_wing_gear.tag                             = 'main_wing_gear'
+    main_wing_gear.tire_diameter                   = 50.0 * Units.inches
+    main_wing_gear.rim_diameter                    = 22.0 * Units.inches
+    main_wing_gear.tire_width                      = 20.0 * Units.inches
+    main_wing_gear.strut_length                    = 10.0 * Units.ft
+    main_wing_gear.wheels                          = 4
+    main_wing_gear.number_of_gear_types_in_tandem  = 2
+    main_wing_gear.number_of_wheels_in_gear_type   = 2
+    main_wing_gear.origin                          = [[34.4, 10.06/2, -2.0]]
+    main_wing_gear.xz_plane_symmetric              = True
+    vehicle.append_component(main_wing_gear)
+
+    # ------------------------------------------------------------------
+    #  Nose Gear
+    # ------------------------------------------------------------------
+    nose_gear                                      = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()
+    nose_gear.tire_diameter                        = 40.0 * Units.inches
+    nose_gear.rim_diameter                         = 19.0 * Units.inches
+    nose_gear.tire_width                           = 14.5 * Units.inches
+    nose_gear.strut_length                         = 8.0  * Units.ft
+    nose_gear.wheels                               = 2
+    nose_gear.number_of_gear_types_in_tandem       = 1
+    nose_gear.number_of_wheels_in_gear_type        = 2
+    nose_gear.origin                               = [[8.5, 0, -2.0]]
+    vehicle.append_component(nose_gear)
+     
+ 
+     # ################################################# Wings #############################################################   
+
     # ------------------------------------------------------------------
     #   Main Wing
     # ------------------------------------------------------------------
@@ -507,26 +562,6 @@ def vehicle_setup():
     # add to vehicle
     vehicle.append_component(fuselage) 
 
-    # ################################################# Landing Gear #############################################################   
-    # ------------------------------------------------------------------        
-    # Landing Gear
-    # Source: https://www.boeing.com/content/dam/boeing/boeingdotcom/commercial/airports/acaps/747_123sp.pdf 
-    # ------------------------------------------------------------------  
-    main_gear               = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
-    main_gear.tire_diameter = 50.0 * Units.inches
-    main_gear.strut_length  = 10.0 * Units.ft 
-    main_gear.units         = 4    # Number of main landing gear
-    main_gear.wheels        = 4    # Number of wheels on the main landing gear
-    vehicle.append_component(main_gear)  
-
-    nose_gear               = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()       
-    nose_gear.tire_diameter = 40. * Units.inches
-    nose_gear.units         = 1    # Number of nose landing gear
-    nose_gear.wheels        = 2    # Number of wheels on the nose landing gear
-    nose_gear.strut_length  = 8.0 * Units.ft 
-    vehicle.append_component(nose_gear)
-     
- 
     # ################################################# Energy Network #######################################################          
     #------------------------------------------------------------------------------------------------------------------------- 
     #  Turbofan Network

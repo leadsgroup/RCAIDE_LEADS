@@ -8,9 +8,10 @@ from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop  import design_turbo
 from RCAIDE.Library.Plots                 import *      
 from RCAIDE.Library.Methods.Performance   import *  
 
-# python imports 
-import numpy as np   
-from copy import deepcopy 
+# python imports
+import numpy as np
+import os
+from copy import deepcopy
 
 # ----------------------------------------------------------------------
 #   Main
@@ -73,18 +74,18 @@ def vehicle_setup():
   
 
     # ################################################# Landing Gear #############################################################    
-
     # ------------------------------------------------------------------
     #  Main Gear 
     # ------------------------------------------------------------------       
     main_gear                                 = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
-    main_gear.tire_diameter                   = 34  *  Units.inches 
-    main_gear.rim_diameter                    = 16  *  Units.inches 
-    main_gear.tire_width                      = 10  *  Units.inches 
+    main_gear.tire_diameter                   = 30   *  Units.inches
+    main_gear.rim_diameter                    = 14   *  Units.inches
+    main_gear.tire_width                      = 9.75 *  Units.inches
     main_gear.strut_length                    = 1 *  Units.meter 
     main_gear.wheels                          = 4   
     main_gear.number_of_gear_types_in_tandem  = 1
     main_gear.number_of_wheels_in_gear_type   = 2  
+    main_gear.origin                          = [[13.0, 2.05, -0.5]]
     main_gear.xz_plane_symmetric              = True
     vehicle.append_component(main_gear)  
 
@@ -93,15 +94,16 @@ def vehicle_setup():
     #  Nose Gear 
     # ------------------------------------------------------------------    
     nose_gear                                 = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
-    nose_gear.tire_diameter                   = 17   *  Units.inches   
-    nose_gear.rim_diameter                    = 7    *  Units.inches 
-    nose_gear.tire_width                      = 17   *  Units.inches 
+    nose_gear.tire_diameter                   = 18   *  Units.inches
+    nose_gear.rim_diameter                    = 8    *  Units.inches
+    nose_gear.tire_width                      = 5.5  *  Units.inches
     nose_gear.strut_length                    = 1 *  Units.meter 
     nose_gear.wheels                          = 2   
-    nose_gear.number_of_gear_types_in_tandem  = 1
+    nose_gear.number_of_gear_types_in_tandem  = 1 
+    nose_gear.origin                          = [[5,0,-0.5]]  
     nose_gear.number_of_wheels_in_gear_type   = 2    
-    vehicle.append_component(nose_gear)
-
+    vehicle.append_component(nose_gear) 
+  
     # ------------------------------------------------------------------
     #  Landing Gear Pod 
     # ------------------------------------------------------------------      

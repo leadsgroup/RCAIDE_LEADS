@@ -17,6 +17,7 @@ from RCAIDE.Library.Plots.Geometry.generate_3d_lopa_points      import generate_
 from RCAIDE.Library.Plots.Geometry.generate_3d_torus_points     import generate_3d_torus_points
 from RCAIDE.Library.Plots.Geometry.generate_3d_cuboid_points    import generate_3d_cuboid_points
 from RCAIDE.Library.Plots.Geometry.generate_3d_propulsor_points import generate_3d_propulsor_points
+from RCAIDE.Library.Plots.Geometry.generate_3d_cargo_bay_points import generate_3d_cargo_bay_points
 from RCAIDE.Library.Plots.Geometry.generate_3d_cabin_points     import generate_3d_cabin_points
 from RCAIDE.Library.Methods.Geometry.Planform                   import fuselage_planform, wing_planform , compute_fuel_volume  
 from RCAIDE.Library.Methods.Geometry.LOPA                       import compute_layout_of_passenger_accommodations  
@@ -51,6 +52,7 @@ def plot_3d_vehicle(vehicle,
                     landing_gear_color          = 'grey',
                     plot_actuator_disc          = False,
                     show_LOPA                   = True, 
+                    show_Cabin                  = False,
                     wing_opacity                = 0.5, 
                     fuselage_opacity            = 0.5,
                     boom_opacity                = 1.0,
@@ -215,10 +217,8 @@ def plot_3d_vehicle(vehicle,
     # -------------------------------------------------------------------------
     # Plot wings
     # -------------------------------------------------------------------------
-    for wing in geometry.wings:
-        n_segments = len(wing.segments)
-        dim        = n_segments if n_segments > 0 else 2
-        GEOM       = generate_3d_wing_points(wing, number_of_airfoil_points, dim, plot_centerline=False)
+    for wing in geometry.wings: 
+        GEOM       = generate_3d_wing_points(wing, number_of_airfoil_points, plot_centerline=False)
         plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=wing_rgb_color, opacity=wing_opacity)
         if wing.yz_plane_symmetric:
             GEOM.PTS[:, :, 0] = -GEOM.PTS[:, :, 0]
@@ -233,6 +233,7 @@ def plot_3d_vehicle(vehicle,
             if show_LOPA:
                 lopa_geom = generate_3d_lopa_points(wing)
                 add_lopa_seats(plotter, lopa_geom, lopa_opacity)
+            if show_Cabin:
                 GEOM = generate_3d_cabin_points(wing, number_of_airfoil_points, plot_centerline=False)
                 plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=cabin_rgb_color, opacity=cabin_opacity)
                 GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
@@ -244,8 +245,9 @@ def plot_3d_vehicle(vehicle,
     for fuselage in geometry.fuselages:
         GEOM = generate_3d_fuselage_points(fuselage, tessellation)
         plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=fuselage_rgb_color, opacity=fuselage_opacity)
-        GEOM = generate_3d_cabin_points(fuselage, number_of_airfoil_points, plot_centerline=False)
-        plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=cabin_rgb_color, opacity=cabin_opacity)
+        if show_Cabin: 
+            GEOM = generate_3d_cabin_points(fuselage, number_of_airfoil_points, plot_centerline=False)
+            plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=cabin_rgb_color, opacity=cabin_opacity)
         if show_LOPA:
             lopa_geom = generate_3d_lopa_points(fuselage)
             add_lopa_seats(plotter, lopa_geom, lopa_opacity)
@@ -262,7 +264,7 @@ def plot_3d_vehicle(vehicle,
     # Plot cargo bay
     # -------------------------------------------------------------------------
     for cargo_bay in geometry.cargo_bays:
-        GEOM = generate_3d_cuboid_points(cargo_bay)
+        GEOM = generate_3d_cargo_bay_points(cargo_bay)
         plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=cargo_bay_rgb_color, opacity=cargo_bay_opacity)
 
     # -------------------------------------------------------------------------
@@ -277,9 +279,13 @@ def plot_3d_vehicle(vehicle,
     # -------------------------------------------------------------------------
     for network in geometry.networks:
         for propulsor in network.propulsors:
-            GEOM = generate_3d_propulsor_points(propulsor, tessellation)
-            plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=propulsor_rgb_color, opacity=propulsor_opacity)
 
+            if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() or type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet():
+       
+                GEOM = generate_3d_propulsor_points(propulsor, tessellation)
+                plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=propulsor_rgb_color, opacity=propulsor_opacity)
+                
+            # if nacelle geometry is defined, plot nacelle
             if propulsor.nacelle != None:
                 if type(propulsor.nacelle) == RCAIDE.Library.Components.Nacelles.Stack_Nacelle:
                     GEOM = generate_3d_stack_nacelle_points(propulsor.nacelle, tessellation=tessellation, number_of_airfoil_points=number_of_airfoil_points)
