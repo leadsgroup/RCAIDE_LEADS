@@ -68,6 +68,33 @@ def vehicle_setup():
     vehicle.design_mach_number                      =  mach_number
 
    
+    # ################################################# Landing Gear #############################################################   
+    # ------------------------------------------------------------------        
+    #  Landing Gear
+    # ------------------------------------------------------------------  
+    main_gear                   = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
+    main_gear.tire_diameter     = 40  *  Units.inches 
+    main_gear.rim_diameter      = 16   *  Units.inches 
+    main_gear.tire_width        = 16.5  *  Units.inches 
+    main_gear.strut_length      = 1.8  * Units.m
+    main_gear.origin            = [[14,4.5/2,-0.5]]  
+    main_gear.wheels            = 4   
+    main_gear.number_of_gear_types_in_tandem  = 1
+    main_gear.number_of_wheels_in_gear_type  = 2  
+    main_gear.xz_plane_symmetric= True
+    vehicle.append_component(main_gear)  
+
+    nose_gear                   = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
+    nose_gear.tire_diameter     = 39    *  Units.inches   
+    nose_gear.rim_diameter      = 15    *  Units.inches 
+    nose_gear.tire_width        = 12  *  Units.inches 
+    nose_gear.strut_length      = 1.8   * Units.m  
+    nose_gear.origin            = [[3,0,-0.5]]  
+    nose_gear.wheels            = 2   
+    nose_gear.number_of_gear_types_in_tandem  = 1
+    nose_gear.number_of_wheels_in_gear_type  = 2    
+    vehicle.append_component(nose_gear) 
+
     # ################################################# Wings #############################################################
     # ------------------------------------------------------------------
     #   Main Wing
@@ -320,33 +347,6 @@ def vehicle_setup():
     # add to vehicle
     vehicle.append_component(wing)
 
-
-    # ################################################# Landing Gear #############################################################   
-    # ------------------------------------------------------------------        
-    #  Landing Gear
-    # ------------------------------------------------------------------  
-    main_gear                   = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
-    main_gear.tire_diameter     = 40  *  Units.inches 
-    main_gear.rim_diameter      = 16   *  Units.inches 
-    main_gear.tire_width        = 16.5  *  Units.inches 
-    main_gear.strut_length      = 1.8  * Units.m
-    main_gear.origin            = [[14,4.5/2,-0.5]]  
-    main_gear.wheels            = 4   
-    main_gear.number_of_gear_types_in_tandem  = 1
-    main_gear.number_of_wheels_in_gear_type  = 2  
-    main_gear.xz_plane_symmetric= True
-    vehicle.append_component(main_gear)  
-
-    nose_gear                   = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
-    nose_gear.tire_diameter     = 39    *  Units.inches   
-    nose_gear.rim_diameter      = 15    *  Units.inches 
-    nose_gear.tire_width        = 12  *  Units.inches 
-    nose_gear.strut_length      = 1.8   * Units.m  
-    nose_gear.origin            = [[3,0,-0.5]]  
-    nose_gear.wheels            = 2   
-    nose_gear.number_of_gear_types_in_tandem  = 1
-    nose_gear.number_of_wheels_in_gear_type  = 2    
-    vehicle.append_component(nose_gear) 
 
 
     # ##########################################################   Fuselage  ############################################################    
