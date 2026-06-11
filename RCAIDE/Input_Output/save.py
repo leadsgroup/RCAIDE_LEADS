@@ -60,8 +60,8 @@ def save(data, filename, pickle_format=False):
         # Create a dictionary structure with the results
         res_dict = build_dict_base(data) 
 
-        with open( filename + '.json', 'w') as f:
-            json.dump(res_dict, f, indent=4) 
+        with open(filename, 'w') as f:
+            json.dump(res_dict, f, indent=4)
     return  
         
 def build_dict_base(base):

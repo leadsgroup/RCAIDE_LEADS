@@ -89,7 +89,7 @@ def io_test(vehicle, configs, analyses, missions, results, CL_ref):
     save(d, save_base)
     d_back = load(save_base)
     assert np.abs(d_back.check - d.check) < 1e-12, "save/load round-trip failed"
-    os.remove(save_base + '.json')
+    os.remove(save_base)
 
     # ------------------------------------------------------------------
     #  2. export / import_data  (JSON round-trip — structural checks)

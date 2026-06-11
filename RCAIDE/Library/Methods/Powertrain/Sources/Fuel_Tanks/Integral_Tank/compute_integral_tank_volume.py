@@ -105,7 +105,7 @@ def compute_fuselage_integral_tank_fuel_volume(fuel_tank,fuselage):
             # volume of truncated cylinder 
             A_1_o    = np.pi * inner_segment.height /2  *  inner_segment.width/2
             A_2_o    = np.pi * outer_segment.height/2   *  outer_segment.width/2
-            volume_o = (1 /3) * ( A_1_o + A_2_o + np.sqrt(A_2_o*A_2_o)) *h
+            volume_o = (1 /3) * ( A_1_o + A_2_o + np.sqrt(A_1_o*A_2_o)) *h
 
             A_1_i    = np.pi * inner_segment.height /2  *  inner_segment.width/2
             A_2_i    = np.pi * outer_segment.height/2   *  outer_segment.width/2 
@@ -877,8 +877,8 @@ def compute_bwb_aft_integral_prismatic_tank_volume(fuel_tank, wing,_):
             intersection_polygons.append(None)
             continue
 
-        if not isinstance(intersection_polygon, geom.Polygon):
-            polys = [g for g in getattr(intersection_polygon, 'geoms', []) if isinstance(g, geom.Polygon)]
+        if not isinstance(intersection_polygon, shapely.geometry.Polygon):
+            polys = [g for g in getattr(intersection_polygon, 'geoms', []) if isinstance(g, shapely.geometry.Polygon)]
             intersection_polygon = max(polys, key=lambda g: g.area) if polys else None
         if intersection_polygon is None:
             tank_volumes[seg_i - 1] = 0.0
