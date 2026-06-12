@@ -117,8 +117,7 @@ def vehicle_setup():
     wing.t_tail                  = False 
     wing.dynamic_pressure_ratio  = 1.0
      
-    cabin                                                  = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-    cabin.offset_x                                         = 2.54
+    cabin                                                  = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
     cabin.origin                                           = [[2.54, 0, 0]]
     
     business_class                                         = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business() 
@@ -140,8 +139,8 @@ def vehicle_setup():
     wing.append_cabin(cabin)  
 
     side_cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Side_Cabin()
-    side_cabin.nose.fineness_ratio                         = 1.75
-    side_cabin.offset_x                                    = 2.54
+    side_cabin.nose.fineness_ratio                         = 1.75 
+    cabin.segments_bounding_cabin                          = ['Fuselage_Section_1','Cabin_Wall']
     side_cabin.origin                                      = [[2.54, 0, 0]]
    
     business_class                                         = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business() 
@@ -390,7 +389,7 @@ def vehicle_setup():
     nose_gear.tire_diameter                       = 40. *  Units.inches   
     nose_gear.rim_diameter                        = 16  *  Units.inches 
     nose_gear.tire_width                          = 16  *  Units.inches 
-    nose_gear.strut_length                        = 9.0 * Units.ft 
+    nose_gear.strut_length                        = 5.5 * Units.ft 
     nose_gear.wheels                              = 2   
     nose_gear.number_of_gear_types_in_tandem      = 1
     nose_gear.number_of_wheels_in_gear_type       = 2  

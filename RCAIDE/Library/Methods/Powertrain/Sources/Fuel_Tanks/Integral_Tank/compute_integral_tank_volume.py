@@ -826,9 +826,13 @@ def compute_bwb_aft_integral_prismatic_tank_volume(fuel_tank, wing,_):
         # Use interpolant to evaluate polygon points
         upper_y_function = interp1d(x_points_upper_positioned, y_points_upper_positioned, kind='linear')
         lower_y_function = interp1d(x_points_lower_positioned, y_points_lower_positioned, kind='linear')
-        upper_y_points   = upper_y_function(x_tank_bounds)
-        lower_y_points   = lower_y_function(x_tank_bounds)
-        
+        upper_y_raw      = upper_y_function(x_tank_bounds)
+        lower_y_raw      = lower_y_function(x_tank_bounds)
+        # Reflexed airfoils can have upper_y < lower_y near the trailing edge;
+        # clamp so the polygon is always non-self-intersecting.
+        upper_y_points   = np.maximum(upper_y_raw, lower_y_raw)
+        lower_y_points   = np.minimum(upper_y_raw, lower_y_raw)
+
         # Create polygon
         polygon = []
         # upper points

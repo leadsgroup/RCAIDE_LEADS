@@ -113,6 +113,7 @@ def vehicle_setup():
      
     cabin                                              = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
     cabin.origin                                       = [[2.5, 0, 0]]
+    cabin.segments_bounding_cabin                      = ['Fuselage_Section_1','Cabin_Wall']
     business_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business() 
     business_class.number_of_seats_abrest              = 4
     business_class.number_of_rows                      = 4

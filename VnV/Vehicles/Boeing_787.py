@@ -339,7 +339,8 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', number_of_passengers = 248) :
     fuselage.heights.at_three_quarters_length   = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_wing_root_quarter_chord = fuselage.heights.maximum* Units.meter
     
-    cabin                                              = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
+    cabin                                              = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
+    cabin.segments_bounding_cabin                      = ['segment_7','segment_13']
     first_class                                        = RCAIDE.Library.Components.Fuselages.Cabins.Classes.First() 
     first_class.number_of_seats_abrest                 = 6
     first_class.number_of_rows                         = 6

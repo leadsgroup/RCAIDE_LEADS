@@ -351,20 +351,6 @@ def vehicle_setup():
 
     # ##########################################################   Fuselage  ############################################################    
     fuselage = RCAIDE.Library.Components.Fuselages.Fuselage() 
-
-    cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
-    cabin.origin                                      = [[3.5, 0, 0]]
-    cabin.offset_x = 3.5
-    economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
-    economy_class.number_of_seats_abrest              = 5
-    economy_class.seat_pitch                          = 29 *  Units.inches
-    economy_class.number_of_rows                      = 27
-    economy_class.galley_lavatory_percent_x_locations = [0, 1]      
-    economy_class.emergency_exit_percent_x_locations  = [0.5, 0.5]      
-    economy_class.type_A_exit_percent_x_locations     = [0, 1]     
-    cabin.append_cabin_class(economy_class)
-    fuselage.append_cabin(cabin) 
-
     fuselage.seats_abreast                      = 5
     fuselage.fineness.nose                      = 0.58
     fuselage.fineness.tail                      = 1.75
@@ -522,7 +508,20 @@ def vehicle_setup():
     segment.width                               = 0.0000 
     fuselage.append_segment(segment)    
 
- 
+  
+    cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
+    cabin.origin                                      = [[3.5, 0, 0]] 
+    cabin.segments_bounding_cabin                     = ['segment_7', 'segment_11']
+    economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
+    economy_class.number_of_seats_abrest              = 5
+    economy_class.seat_pitch                          = 29 *  Units.inches
+    economy_class.number_of_rows                      = 27
+    economy_class.galley_lavatory_percent_x_locations = [0, 1]      
+    economy_class.emergency_exit_percent_x_locations  = [0.5, 0.5]      
+    economy_class.type_A_exit_percent_x_locations     = [0, 1]     
+    cabin.append_cabin_class(economy_class)
+    fuselage.append_cabin(cabin) 
+
 
     # add to vehicle
     vehicle.append_component(fuselage) 

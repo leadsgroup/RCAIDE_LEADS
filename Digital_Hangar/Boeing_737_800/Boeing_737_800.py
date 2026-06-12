@@ -384,30 +384,6 @@ def vehicle_setup():
     fuselage.heights.at_three_quarters_length          = 3.65 * Units.meter
     fuselage.heights.at_wing_root_quarter_chord        = 3.74 * Units.meter
     
-    cabin                                              = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-    cabin.origin                                       = [[5, 0, 0]]
-    first_class                                        = RCAIDE.Library.Components.Fuselages.Cabins.Classes.First() 
-    first_class.number_of_seats_abrest                 = 4
-    first_class.number_of_rows                         = 4
-    first_class.galley_lavatory_percent_x_locations    = [0]       
-    first_class.type_A_exit_percent_x_locations        = [0.2]
-    cabin.append_cabin_class(first_class) 
-
-    business_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business() 
-    business_class.number_of_seats_abrest              = 6
-    business_class.number_of_rows                      = 3  
-    cabin.append_cabin_class(business_class) 
-    
-    economy_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
-    economy_class.number_of_seats_abrest              = 6
-    economy_class.number_of_rows                      = 18
-    economy_class.galley_lavatory_percent_x_locations = [1]      
-    economy_class.emergency_exit_percent_x_locations  = [0.1,0.15] 
-    economy_class.type_A_exit_percent_x_locations     = [0.99]
-    cabin.append_cabin_class(economy_class)
-    
-    fuselage.append_cabin(cabin)          
-    
 
     # Segment  
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment() 
@@ -540,8 +516,33 @@ def vehicle_setup():
     segment.percent_z_location                  = 0.04593
     segment.height                              = 1.09130
     segment.width                               = 0.21826
-    fuselage.append_segment(segment)
+    fuselage.append_segment(segment) 
     
+    # define cabin 
+    cabin                                              = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
+    cabin.origin                                       = [[5, 0, 0]]
+    cabin.segments_bounding_cabin                      = ['segment_6','segment_12']
+    first_class                                        = RCAIDE.Library.Components.Fuselages.Cabins.Classes.First() 
+    first_class.number_of_seats_abrest                 = 4
+    first_class.number_of_rows                         = 4
+    first_class.galley_lavatory_percent_x_locations    = [0]       
+    first_class.type_A_exit_percent_x_locations        = [0.2]
+    cabin.append_cabin_class(first_class) 
+
+    business_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business() 
+    business_class.number_of_seats_abrest              = 6
+    business_class.number_of_rows                      = 3  
+    cabin.append_cabin_class(business_class) 
+    
+    economy_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
+    economy_class.number_of_seats_abrest              = 6
+    economy_class.number_of_rows                      = 18
+    economy_class.galley_lavatory_percent_x_locations = [1]      
+    economy_class.emergency_exit_percent_x_locations  = [0.1,0.15] 
+    economy_class.type_A_exit_percent_x_locations     = [0.99]
+    cabin.append_cabin_class(economy_class)
+    
+    fuselage.append_cabin(cabin)          
     
     # add to vehicle
     vehicle.append_component(fuselage)

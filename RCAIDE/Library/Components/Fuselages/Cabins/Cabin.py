@@ -25,25 +25,24 @@ class Cabin(Component):
         Sets default values for all fuselage attributes.
         """
 
-        self.tag = 'cabin'
-        self.number_of_passengers = 0
-        self.number_of_seats = 0
-        # ['random','ascending','descending']
-        self.filled_seats_arrangement = 'random'
-        self.type_A_door_length = 36 * Units.inches
-        self.galley_lavatory_length = 32 * Units.inches
+        self.tag                       = 'cabin'
+        self.number_of_passengers      = 0
+        self.number_of_seats           = 0
+        self.segments_bounding_cabin   = 0
+        self.filled_seats_arrangement  = 'random'
+        self.type_A_door_length        = 36 * Units.inches
+        self.galley_lavatory_length    = 32 * Units.inches
         self.emergency_exit_seat_pitch = 36 * Units.inches
-        self.length = 0
-        self.width = 0
-        self.height = 0
-        self.wide_body = False
-        self.tail = Data()
-        self.tail.fineness_ratio = 0
-        self.nose = Data()
-        self.nose.fineness_ratio = 0
-        self.classes = Container()
-
-        self.segments = Container()
+        self.length                    = 0
+        self.width                     = 0
+        self.height                    = 0
+        self.wide_body                 = False
+        self.tail                      = Data()
+        self.tail.fineness_ratio       = 0
+        self.nose                      = Data()
+        self.nose.fineness_ratio       = 0
+        self.classes                   = Container() 
+        self.segments                  = Container()
 
     def append_segment(self, segment):
         """

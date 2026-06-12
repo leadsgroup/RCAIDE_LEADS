@@ -16,6 +16,7 @@ from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry, com
 import numpy as np
 from scipy.interpolate import interp1d
 from shapely import Polygon
+import shapely.geometry as geom
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  generate_integral_wing_tank_points
@@ -436,10 +437,14 @@ def generate_aft_integral_wing_tank_points(wing, n_points, segment_list, fuel_ta
         z_points_upper = segment_chord * geometry.y_upper_surface + wing_segment_origins[seg_i][2] - fuel_tank.wall_clearance
         z_points_lower = segment_chord * geometry.y_lower_surface + wing_segment_origins[seg_i][2] + fuel_tank.wall_clearance
 
-        upper_fn = interp1d(x_points_upper, z_points_upper, kind='linear')
-        lower_fn = interp1d(x_points_lower, z_points_lower, kind='linear')
-        upper_z = upper_fn(x_tank_bounds)
-        lower_z = lower_fn(x_tank_bounds)
+        upper_fn  = interp1d(x_points_upper, z_points_upper, kind='linear')
+        lower_fn  = interp1d(x_points_lower, z_points_lower, kind='linear')
+        upper_raw = upper_fn(x_tank_bounds)
+        lower_raw = lower_fn(x_tank_bounds)
+        # Reflexed airfoils can have upper_z < lower_z near the trailing edge;
+        # clamp so the polygon is always non-self-intersecting.
+        upper_z   = np.maximum(upper_raw, lower_raw)
+        lower_z   = np.minimum(upper_raw, lower_raw)
 
         polygon = [
             (x_tank_bounds[0], upper_z[0]),
