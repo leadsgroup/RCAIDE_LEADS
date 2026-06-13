@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Emissions/Chemical_Reactor_Network_Method/evaluate_CRN_emission_indices.py
+# RCAIDE/Library/Methods/Emissions/Chemical_Reactor_Network_Method/evaluate_CRN_emissions.py
 #  
 # Created: Jul 2024, M. Clarke, M. Guidotti
 
@@ -13,9 +13,9 @@ from    RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluat
 import  numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  evaluate_correlation_emissions_indices
+#  evaluate_CRN_emission_no_surrogate
 # ---------------------------------------------------------------------------------------------------------------------- 
-def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
+def evaluate_CRN_emissions_no_surrogate(segment,settings,vehicle):
 
     """
     Computes emission indices directly using Chemical Reactor Network without surrogate models.
@@ -91,11 +91,19 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
     # unpack
     state     = segment.state
     I         = state.numerics.time.integrate
-    
-    CO2_total = 0 * state.ones_row(1)  
-    CO_total  = 0 * state.ones_row(1) 
-    H2O_total = 0 * state.ones_row(1) 
-    NOx_total  = 0 * state.ones_row(1) 
+
+    CO2_total   = 0 * state.ones_row(1)
+    CO_total    = 0 * state.ones_row(1)
+    H2O_total   = 0 * state.ones_row(1)
+    NOx_total   = 0 * state.ones_row(1)
+    SO2_total   = 0 * state.ones_row(1)
+    Soot_total  = 0 * state.ones_row(1)
+    total_gCO2e = 0 * state.ones_row(1)
+
+    if segment.state.initials is not None:
+        initial_cumulative_gCO2e = segment.state.initials.conditions.emissions.cumulative_gCO2e[-1]
+    else:
+        initial_cumulative_gCO2e = 0.0
 
 
     for network in vehicle.networks:
@@ -264,24 +272,59 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
                             combustor_SZ_joint_EI_H2O_prev  = combustor_SZ_joint_EI_H2O
                             combustor_SZ_joint_EI_NOx_prev  = combustor_SZ_joint_EI_NOx
 
-                    CO2_total  += np.dot(I,mdot_fuel*EI_CO2_comb)
-                    CO_total   += np.dot(I,mdot_fuel *EI_CO_comb )
-                    H2O_total  += np.dot(I,mdot_fuel*EI_H2O_comb)
-                    NOx_total   += np.dot(I,mdot_fuel *EI_NOx_comb )
-                           
+                    # Per-propulsor segment integrals (avoids GWP double-count on multi-engine)
+                    CO2_seg  = np.dot(I, mdot_fuel * EI_CO2_comb)
+                    CO_seg   = np.dot(I, mdot_fuel * EI_CO_comb)
+                    H2O_seg  = np.dot(I, mdot_fuel * EI_H2O_comb)
+                    NOx_seg  = np.dot(I, mdot_fuel * EI_NOx_comb)
+                    SO2_seg  = np.dot(I, mdot_fuel * combustor.fuel_data.emission_indices.SO2)
+                    Soot_seg = np.dot(I, mdot_fuel * combustor.fuel_data.emission_indices.Soot)
+
+                    CO2_total  += CO2_seg
+                    CO_total   += CO_seg
+                    H2O_total  += H2O_seg
+                    NOx_total  += NOx_seg
+                    SO2_total  += SO2_seg
+                    Soot_total += Soot_seg
+
+                    total_gCO2e += CO2_seg  * combustor.fuel_data.global_warming_potential_100.CO2  + \
+                                   CO_seg   * combustor.fuel_data.global_warming_potential_100.CO   + \
+                                   H2O_seg  * combustor.fuel_data.global_warming_potential_100.H2O  + \
+                                   NOx_seg  * combustor.fuel_data.global_warming_potential_100.NOx  + \
+                                   SO2_seg  * combustor.fuel_data.global_warming_potential_100.SO2  + \
+                                   Soot_seg * combustor.fuel_data.global_warming_potential_100.Soot
+
+    # ------------------------------------------------------------------
+    # Contrails (Schmidt-Appleman altitude threshold ~8,000 m)
+    # Only accumulate range flown above threshold; below that, temperatures
+    # are too warm for persistent ice-crystal formation.
+    # ------------------------------------------------------------------
+    flight_altitude = state.conditions.freestream.altitude
+    flight_range    = state.conditions.frames.inertial.aircraft_range
+    contrail_altitude_threshold = 8000.0   # metres (~26,247 ft)
+    range_above     = np.where(flight_altitude >= contrail_altitude_threshold, flight_range, 0.0)
+    Contrails_total = (range_above - range_above[0]) / 1000.0   # m → km
+
+    # kg CO2e  (GWP_contrails units: kg CO2e / km)
+    total_gCO2e += Contrails_total * combustor.fuel_data.global_warming_potential_100.Contrails
 
     emissions                        = Data()
     emissions.GWP_100                = Data()
     emissions.mass                   = Data()
-    emissions.index                  = Data() 
-    emissions.mass.CO2               = CO2_total  
-    emissions.mass.CO                = CO_total   
-    emissions.mass.H2O               = H2O_total  
-    emissions.mass.NOx               = NOx_total  
-    emissions.GWP_100.CO2            = CO2_total  * combustor.fuel_data.global_warming_potential_100.CO2 
+    emissions.index                  = Data()
+    emissions.gCO2e                  = total_gCO2e * 1000
+    emissions.cumulative_gCO2e       = initial_cumulative_gCO2e + total_gCO2e * 1000
+    emissions.mass.CO2               = CO2_total
+    emissions.mass.CO                = CO_total
+    emissions.mass.H2O               = H2O_total
+    emissions.mass.NOx               = NOx_total
+    emissions.mass.SO2               = SO2_total
+    emissions.mass.Soot              = Soot_total
+    emissions.mass.Contrails         = Contrails_total
+    emissions.GWP_100.CO2            = CO2_total * combustor.fuel_data.global_warming_potential_100.CO2
     emissions.GWP_100.CO             = CO_total  * combustor.fuel_data.global_warming_potential_100.CO
-    emissions.GWP_100.H2O            = H2O_total  * combustor.fuel_data.global_warming_potential_100.H2O
-    emissions.GWP_100.NOx            = NOx_total * combustor.fuel_data.global_warming_potential_100.NOx 
+    emissions.GWP_100.H2O            = H2O_total * combustor.fuel_data.global_warming_potential_100.H2O
+    emissions.GWP_100.NOx            = NOx_total * combustor.fuel_data.global_warming_potential_100.NOx
     emissions.index.CO2              = EI_CO2_comb
     emissions.index.CO               = EI_CO_comb 
     emissions.index.H2O              = EI_H2O_comb
@@ -319,7 +362,7 @@ def evaluate_CRN_emission_indices_no_surrogate(segment,settings,vehicle):
     return   
     
 
-def evaluate_CRN_emission_indices_surrogate(segment,settings,vehicle): 
+def evaluate_CRN_emissions_surrogate(segment,settings,vehicle): 
 
     """
     Computes emission indices using pre-trained Chemical Reactor Network surrogate models.
@@ -408,13 +451,22 @@ def evaluate_CRN_emission_indices_surrogate(segment,settings,vehicle):
     [1] Goodwin, D. G., Speth, R. L., Moffat, H. K., & Weber, B. W. (2023). Cantera: An object-oriented software toolkit for chemical kinetics, thermodynamics, and transport processes (Version 3.0.0) [Computer software]. https://www.cantera.org
     """
   
-    I          = segment.state.numerics.time.integrate
+    state      = segment.state
+    I          = state.numerics.time.integrate
     surrogates = segment.analyses.emissions.surrogates
-    
-    CO2_total = 0 * segment.state.ones_row(1)  
-    CO_total  = 0 * segment.state.ones_row(1) 
-    H2O_total = 0 * segment.state.ones_row(1) 
-    NOx_total  = 0 * segment.state.ones_row(1) 
+
+    CO2_total   = 0 * state.ones_row(1)
+    CO_total    = 0 * state.ones_row(1)
+    H2O_total   = 0 * state.ones_row(1)
+    NOx_total   = 0 * state.ones_row(1)
+    SO2_total   = 0 * state.ones_row(1)
+    Soot_total  = 0 * state.ones_row(1)
+    total_gCO2e = 0 * state.ones_row(1)
+
+    if segment.state.initials is not None:
+        initial_cumulative_gCO2e = segment.state.initials.conditions.emissions.cumulative_gCO2e[-1]
+    else:
+        initial_cumulative_gCO2e = 0.0
 
 
     for network in vehicle.networks:    
@@ -445,20 +497,61 @@ def evaluate_CRN_emission_indices_surrogate(segment,settings,vehicle):
                     EI_H2O_comb  = np.atleast_2d(surrogates.EI_H2O(pts)).T 
                     EI_NOx_comb  = np.atleast_2d(surrogates.EI_NOx(pts)).T 
                           
-                    CO2_total += np.dot(I,mdot_fuel*EI_CO2_comb)
-                    CO_total  += np.dot(I,mdot_fuel *EI_CO_comb )
-                    H2O_total += np.dot(I,mdot_fuel*EI_H2O_comb)
-                    NOx_total  += np.dot(I,mdot_fuel *EI_NOx_comb ) 
+                    # Per-propulsor segment integrals (avoids GWP double-count on multi-engine)
+                    CO2_seg  = np.dot(I, mdot_fuel * EI_CO2_comb)
+                    CO_seg   = np.dot(I, mdot_fuel * EI_CO_comb)
+                    H2O_seg  = np.dot(I, mdot_fuel * EI_H2O_comb)
+                    NOx_seg  = np.dot(I, mdot_fuel * EI_NOx_comb)
+                    SO2_seg  = np.dot(I, mdot_fuel * combustor.fuel_data.emission_indices.SO2)
+                    Soot_seg = np.dot(I, mdot_fuel * combustor.fuel_data.emission_indices.Soot)
 
+                    CO2_total  += CO2_seg
+                    CO_total   += CO_seg
+                    H2O_total  += H2O_seg
+                    NOx_total  += NOx_seg
+                    SO2_total  += SO2_seg
+                    Soot_total += Soot_seg
+
+                    total_gCO2e += CO2_seg  * combustor.fuel_data.global_warming_potential_100.CO2  + \
+                                   CO_seg   * combustor.fuel_data.global_warming_potential_100.CO   + \
+                                   H2O_seg  * combustor.fuel_data.global_warming_potential_100.H2O  + \
+                                   NOx_seg  * combustor.fuel_data.global_warming_potential_100.NOx  + \
+                                   SO2_seg  * combustor.fuel_data.global_warming_potential_100.SO2  + \
+                                   Soot_seg * combustor.fuel_data.global_warming_potential_100.Soot
+
+    # ------------------------------------------------------------------
+    # Contrails (Schmidt-Appleman altitude threshold ~8,000 m)
+    # Only accumulate range flown above threshold; below that, temperatures
+    # are too warm for persistent ice-crystal formation.
+    # ------------------------------------------------------------------
+    flight_altitude = state.conditions.freestream.altitude
+    flight_range    = state.conditions.frames.inertial.aircraft_range
+    contrail_altitude_threshold = 8000.0   # metres (~26,247 ft)
+    range_above     = np.where(flight_altitude >= contrail_altitude_threshold, flight_range, 0.0)
+    Contrails_total = (range_above - range_above[0]) / 1000.0   # m → km
+
+    # kg CO2e  (GWP_contrails units: kg CO2e / km)
+    total_gCO2e += Contrails_total * combustor.fuel_data.global_warming_potential_100.Contrails
 
     emissions                 = Data()
-    emissions.total           = Data()
-    emissions.index           = Data() 
-    emissions.total.CO2       = CO2_total * combustor.fuel_data.global_warming_potential_100.CO2 
-    emissions.total.H2O       = H2O_total * combustor.fuel_data.global_warming_potential_100.H2O  
-    emissions.total.NOx       = NOx_total * combustor.fuel_data.global_warming_potential_100.NOx 
+    emissions.GWP_100         = Data()
+    emissions.mass            = Data()
+    emissions.index           = Data()
+    emissions.gCO2e           = total_gCO2e * 1000
+    emissions.cumulative_gCO2e = initial_cumulative_gCO2e + total_gCO2e * 1000
+    emissions.mass.CO2        = CO2_total
+    emissions.mass.CO         = CO_total
+    emissions.mass.H2O        = H2O_total
+    emissions.mass.NOx        = NOx_total
+    emissions.mass.SO2        = SO2_total
+    emissions.mass.Soot       = Soot_total
+    emissions.mass.Contrails  = Contrails_total
+    emissions.GWP_100.CO2     = CO2_total * combustor.fuel_data.global_warming_potential_100.CO2
+    emissions.GWP_100.CO      = CO_total  * combustor.fuel_data.global_warming_potential_100.CO
+    emissions.GWP_100.H2O     = H2O_total * combustor.fuel_data.global_warming_potential_100.H2O
+    emissions.GWP_100.NOx     = NOx_total * combustor.fuel_data.global_warming_potential_100.NOx
     emissions.index.CO2       = EI_CO2_comb
-    emissions.index.CO        = EI_CO_comb 
+    emissions.index.CO        = EI_CO_comb
     emissions.index.H2O       = EI_H2O_comb
     emissions.index.NOx       = EI_NOx_comb 
  

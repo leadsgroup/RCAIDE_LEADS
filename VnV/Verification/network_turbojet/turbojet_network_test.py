@@ -205,7 +205,11 @@ def plot_mission(results):
     
     plot_drag_components(results) 
  
-    plot_emissions(results) 
+    plot_emission_indices(results)
+    
+    plot_emission_species_masses(results)
+    
+    plot_CO2e_emissions(results)
     
     plot_contrails_appleman_chart(results)
   

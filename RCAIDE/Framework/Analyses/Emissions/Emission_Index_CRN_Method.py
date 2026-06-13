@@ -79,9 +79,9 @@ class Emission_Index_CRN_Method(Emissions):
         # build the evaluation process
         compute   =  self.process.compute                  
         if use_surrogate == True: 
-            compute.emissions  = evaluate_CRN_emission_indices_surrogate
+            compute.emissions  = evaluate_CRN_emissions_surrogate
         else:
-            compute.emissions  = evaluate_CRN_emission_indices_no_surrogate
+            compute.emissions  = evaluate_CRN_emissions_no_surrogate
         return 
 
 

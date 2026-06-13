@@ -33,4 +33,4 @@ RCAIDE.Library.Components.Powertrain.Converters.Combustor
 from .build_CRN_EI_surrogates       import build_CRN_EI_surrogates
 from .train_CRN_EI_surrogates       import train_CRN_EI_surrogates
 from .evaluate_cantera              import evaluate_cantera
-from .evaluate_CRN_emission_indices import *  
+from .evaluate_CRN_emissions import *  
