@@ -231,9 +231,10 @@ def plot_3d_vehicle(vehicle,
             plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=wing_rgb_color, opacity=wing_opacity)
         if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
             if show_LOPA:
-                lopa_geom = generate_3d_lopa_points(wing)
-                add_lopa_seats(plotter, lopa_geom, lopa_opacity)
-            if show_Cabin:
+                if len(wing.cabins) > 0 and len(list(wing.cabins.values())[0].segments_bounding_cabin) > 1:
+                    lopa_geom = generate_3d_lopa_points(wing)
+                    add_lopa_seats(plotter, lopa_geom, lopa_opacity)
+            if show_Cabin and len(wing.cabins) > 0:
                 GEOM = generate_3d_cabin_points(wing, number_of_airfoil_points, plot_centerline=False)
                 plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=cabin_rgb_color, opacity=cabin_opacity)
                 GEOM.PTS[:, :, 1] = -GEOM.PTS[:, :, 1]
@@ -245,9 +246,10 @@ def plot_3d_vehicle(vehicle,
     for fuselage in geometry.fuselages:
         GEOM = generate_3d_fuselage_points(fuselage, tessellation)
         plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=fuselage_rgb_color, opacity=fuselage_opacity)
-        if show_Cabin: 
-            GEOM = generate_3d_cabin_points(fuselage, number_of_airfoil_points, plot_centerline=False)
-            plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=cabin_rgb_color, opacity=cabin_opacity)
+        if show_Cabin:
+            if len(fuselage.cabins) > 0 and len(list(fuselage.cabins.values())[0].segments_bounding_cabin) > 1:
+                GEOM = generate_3d_cabin_points(fuselage, number_of_airfoil_points, plot_centerline=False)
+                plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=cabin_rgb_color, opacity=cabin_opacity)
         if show_LOPA:
             lopa_geom = generate_3d_lopa_points(fuselage)
             add_lopa_seats(plotter, lopa_geom, lopa_opacity)
