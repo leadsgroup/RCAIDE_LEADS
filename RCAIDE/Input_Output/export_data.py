@@ -249,7 +249,7 @@ def _build_mission_data(missions):
     return result
 
 
-def export(vehicle, configurations, analyses, missions, filename):
+def export_data(vehicle, configurations, analyses, missions, filename):
     """Export a RCAIDE study to a compact, type-annotated JSON file.
 
     Parameters

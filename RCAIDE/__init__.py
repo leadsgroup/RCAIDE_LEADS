@@ -49,10 +49,10 @@ from . import Library
 from . import Input_Output
 
 from .Vehicle        import Vehicle
-from .Input_Output   import save, load, export, import_data, save_results, load_results
+from .Input_Output   import save, load, export_data, import_data, save_results, load_results
 
 # backward-compatibility aliases
-from .Input_Output.export      import export as export_rcaide_data
+from .Input_Output.export_data import export_data as export_rcaide_data
 from .Input_Output.import_data import import_data as import_rcaide_data
 
 import os
