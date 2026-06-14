@@ -69,7 +69,7 @@ def main():
     # Multiple meshes use too much memory on AppVeyor 
     A_MASK_1 = convert_airfoil_to_meshgrid(airfoil_geometry_1) 
 
-    #assert (len(np.where(A_MASK_1)[0]) == 811) 
+    assert (len(np.where(A_MASK_1)[0]) == 811) 
 
     plot_airfoil(airfoil_geometry_with_selig[1])
 

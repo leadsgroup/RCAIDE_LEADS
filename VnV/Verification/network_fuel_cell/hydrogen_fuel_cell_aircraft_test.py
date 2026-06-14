@@ -65,7 +65,7 @@ def main():
         print('Mass Flow Rate: ' + str(mdot_H2))
         mdot_H2_diff   = np.abs(mdot_H2 - mdot_H2_true[i]) 
         print(mdot_H2_diff) 
-        #assert np.abs((mdot_H2_diff)/mdot_H2_true[i]) < 1e-6
+        assert np.abs((mdot_H2_diff)/mdot_H2_true[i]) < 1e-6
         
         if i == 0: 
             plot_results(results)
