@@ -119,19 +119,19 @@ def set_residuals_and_unknowns(mission):
             segment.state.number_of_residuals += 1
            
         # Body Angle  
-        if ctrls.body_angle.active:
+        if ctrls.pitch_angle.active:
             segment.state.number_of_unknowns  += 1 
-            if ctrls.body_angle.initial_guess_values !=  None:
-                segment.state.unknowns.body_angle = ones_row(1) * ctrls.body_angle.initial_guess_values[0][0]
+            if ctrls.pitch_angle.initial_guess_values !=  None:
+                segment.state.unknowns.pitch_angle = ones_row(1) * ctrls.pitch_angle.initial_guess_values[0][0]
             else:
-                segment.state.unknowns.body_angle = ones_row(1) * 3.0 * Units.degrees
+                segment.state.unknowns.pitch_angle = ones_row(1) * 3.0 * Units.degrees
                 
-            if ctrls.body_angle.bounds !=  None:
-                segment.state.numerics.solver.lower_bounds.body_angle = ctrls.body_angle.bounds[0][0] * ones_row(1)
-                segment.state.numerics.solver.upper_bounds.body_angle = ctrls.body_angle.bounds[0][1] * ones_row(1)
+            if ctrls.pitch_angle.bounds !=  None:
+                segment.state.numerics.solver.lower_bounds.pitch_angle = ctrls.pitch_angle.bounds[0][0] * ones_row(1)
+                segment.state.numerics.solver.upper_bounds.pitch_angle = ctrls.pitch_angle.bounds[0][1] * ones_row(1)
             else:
-                segment.state.numerics.solver.lower_bounds.body_angle =  -np.inf * ones_row(1) 
-                segment.state.numerics.solver.upper_bounds.body_angle =   np.inf * ones_row(1)
+                segment.state.numerics.solver.lower_bounds.pitch_angle =  -np.inf * ones_row(1) 
+                segment.state.numerics.solver.upper_bounds.pitch_angle =   np.inf * ones_row(1)
     
         # Bank Angle  
         if ctrls.bank_angle.active:
@@ -149,20 +149,35 @@ def set_residuals_and_unknowns(mission):
                 segment.state.numerics.solver.upper_bounds.bank_angle =   np.inf * ones_row(1)                
                 
         # Wing Angle  
-        if ctrls.wind_angle.active:
+        if ctrls.angle_of_attack.active:
             segment.state.number_of_unknowns  += 1 
-            if ctrls.wind_angle.initial_guess_values !=  None:
-                segment.state.unknowns.wind_angle = ones_row(1) * ctrls.wind_angle.initial_guess_values[0][0]
+            if ctrls.angle_of_attack.initial_guess_values !=  None:
+                segment.state.unknowns.angle_of_attack = ones_row(1) * ctrls.angle_of_attack.initial_guess_values[0][0]
             else:
-                segment.state.unknowns.wind_angle = ones_row(1) * 1.0 * Units.degrees
+                segment.state.unknowns.angle_of_attack = ones_row(1) * 1.0 * Units.degrees
     
-            if ctrls.wind_angle.bounds !=  None:
-                segment.state.numerics.solver.lower_bounds.wind_angle = ctrls.wind_angle.bounds[0][0] * ones_row(1)
-                segment.state.numerics.solver.upper_bounds.wind_angle = ctrls.wind_angle.bounds[0][1] * ones_row(1)
+            if ctrls.angle_of_attack.bounds !=  None:
+                segment.state.numerics.solver.lower_bounds.angle_of_attack = ctrls.angle_of_attack.bounds[0][0] * ones_row(1)
+                segment.state.numerics.solver.upper_bounds.angle_of_attack = ctrls.angle_of_attack.bounds[0][1] * ones_row(1)
             else:
-                segment.state.numerics.solver.lower_bounds.wind_angle =  -np.inf * ones_row(1) 
-                segment.state.numerics.solver.upper_bounds.wind_angle =   np.inf * ones_row(1)                 
-            
+                segment.state.numerics.solver.lower_bounds.angle_of_attack =  -np.inf * ones_row(1)
+                segment.state.numerics.solver.upper_bounds.angle_of_attack =   np.inf * ones_row(1)
+
+        # Sideslip Angle
+        if ctrls.sideslip_angle.active:
+            segment.state.number_of_unknowns  += 1
+            if ctrls.sideslip_angle.initial_guess_values != None:
+                segment.state.unknowns.sideslip_angle = ones_row(1) * ctrls.sideslip_angle.initial_guess_values[0][0]
+            else:
+                segment.state.unknowns.sideslip_angle = ones_row(1) * 0.0 * Units.degrees
+
+            if ctrls.sideslip_angle.bounds != None:
+                segment.state.numerics.solver.lower_bounds.sideslip_angle = ctrls.sideslip_angle.bounds[0][0] * ones_row(1)
+                segment.state.numerics.solver.upper_bounds.sideslip_angle = ctrls.sideslip_angle.bounds[0][1] * ones_row(1)
+            else:
+                segment.state.numerics.solver.lower_bounds.sideslip_angle = -np.inf * ones_row(1)
+                segment.state.numerics.solver.upper_bounds.sideslip_angle =  np.inf * ones_row(1)
+
         # Throttle
         if ctrls.throttle.active: 
             for i in range(len(ctrls.throttle.assigned_propulsors)):

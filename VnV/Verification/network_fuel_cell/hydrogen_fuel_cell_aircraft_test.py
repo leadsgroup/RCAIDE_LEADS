@@ -65,7 +65,7 @@ def main():
         print('Mass Flow Rate: ' + str(mdot_H2))
         mdot_H2_diff   = np.abs(mdot_H2 - mdot_H2_true[i]) 
         print(mdot_H2_diff) 
-        #assert np.abs((mdot_H2_diff)/mdot_H2_true[i]) < 1e-6
+        assert np.abs((mdot_H2_diff)/mdot_H2_true[i]) < 1e-6
         
         if i == 0: 
             plot_results(results)
@@ -172,7 +172,7 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
-    segment.assigned_control_variables.body_angle.active             = True                  
+    segment.assigned_control_variables.pitch_angle.active             = True                  
        
     mission.append_segment(segment) 
     
