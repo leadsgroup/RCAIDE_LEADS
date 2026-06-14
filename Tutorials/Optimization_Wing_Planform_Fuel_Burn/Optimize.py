@@ -28,7 +28,7 @@ def main():
     problem = define_optimization_problem()
     
     # create carpet plot  
-    carpet_plot(problem,
+    generate_carpet_plot(problem,
                 design_input_1_index            = 0, 
                 design_input_2_index            = 1,                
                 number_of_points                = 5,
@@ -37,7 +37,7 @@ def main():
                 generate_constraint_plots       = True)
     
     # create line plot 
-    line_plot(problem,
+    generate_line_plot(problem,
               design_input_1_index = 0, 
               number_of_points     = 3, 
               plot_objective       = True,
@@ -47,7 +47,7 @@ def main():
     ti = time.time()
     
     # solve optimization problem
-    solution = scipy_setup.SciPy_Solve(problem,solver='SLSQP')
+    #solution = scipy_setup.SciPy_Solve(problem,solver='SLSQP')
     
     # stop clock 
     tf                   = time.time()

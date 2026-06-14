@@ -506,7 +506,6 @@ def configs_setup(vehicle):
     configs.append(base_config)
     return configs
 
->>>>>>> 6f04b72118c5f63837bcb8fbde3ed393ec4a9466:RCAIDE/Library/Methods/Performance/generate_V_n_diagram.py
 def base_mission_setup(analyses,altitude,Vc):
     '''
     This sets up the nominal cruise of the aircraft
@@ -616,7 +615,6 @@ def stall_maneuver_speeds(V_n_data):
     V_n_data.Va.positive                  = airspeeds_pos[2]
     V_n_data.Va.negative                  = airspeeds_neg[2]
     
-#------------------------------------------------------------------------------------------------------------
 
 def stall_line(V_n_data, upper_bound, lower_bound, Num_of_points, sign_flag):
     
@@ -690,7 +688,7 @@ def stall_line(V_n_data, upper_bound, lower_bound, Num_of_points, sign_flag):
         V_n_data.airspeeds.negative        = airspeeds
     
     return 
-#--------------------------------------------------------------------------------------------------------------
+
 
 def gust_loads(category_tag, V_n_data, Kg, CLa, Num_of_points, FAR_part_number, sign_flag):
 
