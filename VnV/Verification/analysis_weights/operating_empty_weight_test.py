@@ -4,8 +4,8 @@ from RCAIDE.Framework.Analyses.Weights import Electric_General_Aviation, Electri
 from RCAIDE.Framework.Core import Data, Units 
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan   import design_turbofan  
 from RCAIDE.Library.Plots import * 
-from RCAIDE.load import load as load_results
-from RCAIDE.save import save as save_results 
+from RCAIDE.Input_Output import load as load_results
+from RCAIDE.Input_Output import save as save_results
 from RCAIDE.Library.Methods.Geometry.LOPA import compute_layout_of_passenger_accommodations
 from RCAIDE.Library.Methods.Geometry.Planform import compute_fuel_volume, wing_planform
 import numpy as  np 

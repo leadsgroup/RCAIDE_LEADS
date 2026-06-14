@@ -73,27 +73,27 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------
     # ##################################################### Landing Gear ################################################################    
     #------------------------------------------------------------------------------------------------------------------------------------ 
-    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
-    main_gear.tire_diameter                  = 6  *  Units.inches 
-    main_gear.rim_diameter                   = 3  *  Units.inches 
-    main_gear.tire_width                     = 6  *  Units.inches 
-    main_gear.strut_length                   = 12  * Units.ft 
-    main_gear.wheels                         = 4   
+    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
+    main_gear.tire_diameter                  = 22.0 *  Units.inches
+    main_gear.rim_diameter                   = 10.0 *  Units.inches
+    main_gear.tire_width                     = 8.5  *  Units.inches
+    main_gear.strut_length                   = 0.65 * Units.m
+    main_gear.origin                         = [[5.7, 2.055, 0]]
+    main_gear.wheels                         = 4
     main_gear.number_of_gear_types_in_tandem = 1
-    main_gear.number_of_wheels_in_gear_type  = 2  
+    main_gear.number_of_wheels_in_gear_type  = 2
     main_gear.symmetric                      = True
-    main_gear.origin = [[8.0, 0, 0]]
-    vehicle.append_component(main_gear)  
+    vehicle.append_component(main_gear)
 
-    nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
-    nose_gear.tire_diameter                  =  5 *  Units.inches   
-    nose_gear.rim_diameter                   =  3 *  Units.inches 
-    nose_gear.tire_width                     =  5 *  Units.inches 
-    nose_gear.strut_length                   =  6.* Units.ft 
-    nose_gear.origin = [[2.0, 0, 0]]
-    nose_gear.wheels                         = 2   
+    nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()
+    nose_gear.tire_diameter                  = 22.0 *  Units.inches
+    nose_gear.rim_diameter                   = 10.0 *  Units.inches
+    nose_gear.tire_width                     = 8.5  *  Units.inches
+    nose_gear.strut_length                   = 0.65 * Units.m
+    nose_gear.origin                         = [[2.0, 0, 0]]
+    nose_gear.wheels                         = 2
     nose_gear.number_of_gear_types_in_tandem = 1
-    nose_gear.number_of_wheels_in_gear_type  = 2    
+    nose_gear.number_of_wheels_in_gear_type  = 1
     vehicle.append_component(nose_gear)
             
 

@@ -77,18 +77,18 @@ def vehicle_setup():
 
 
     # ################################################# Landing Gear #############################################################    
-
     # ------------------------------------------------------------------
     #  Main Gear 
     # ------------------------------------------------------------------       
     main_gear                                 = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
-    main_gear.tire_diameter                   = 34  *  Units.inches 
-    main_gear.rim_diameter                    = 16  *  Units.inches 
-    main_gear.tire_width                      = 10  *  Units.inches 
+    main_gear.tire_diameter                   = 30   *  Units.inches
+    main_gear.rim_diameter                    = 14   *  Units.inches
+    main_gear.tire_width                      = 9.75 *  Units.inches
     main_gear.strut_length                    = 1 *  Units.meter 
     main_gear.wheels                          = 4   
     main_gear.number_of_gear_types_in_tandem  = 1
     main_gear.number_of_wheels_in_gear_type   = 2  
+    main_gear.origin                          = [[13.0, 2.05, -0.5]]
     main_gear.xz_plane_symmetric              = True
     vehicle.append_component(main_gear)  
 
@@ -97,14 +97,15 @@ def vehicle_setup():
     #  Nose Gear 
     # ------------------------------------------------------------------    
     nose_gear                                 = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
-    nose_gear.tire_diameter                   = 17   *  Units.inches   
-    nose_gear.rim_diameter                    = 7    *  Units.inches 
-    nose_gear.tire_width                      = 17   *  Units.inches 
+    nose_gear.tire_diameter                   = 18   *  Units.inches
+    nose_gear.rim_diameter                    = 8    *  Units.inches
+    nose_gear.tire_width                      = 5.5  *  Units.inches
     nose_gear.strut_length                    = 1 *  Units.meter 
     nose_gear.wheels                          = 2   
-    nose_gear.number_of_gear_types_in_tandem  = 1
+    nose_gear.number_of_gear_types_in_tandem  = 1 
+    nose_gear.origin                          = [[5,0,-0.5]]  
     nose_gear.number_of_wheels_in_gear_type   = 2    
-    vehicle.append_component(nose_gear)
+    vehicle.append_component(nose_gear) 
 
     # ------------------------------------------------------------------
     #  Landing Gear Pod 
@@ -416,19 +417,6 @@ def vehicle_setup():
     fuselage.heights.at_quarter_length          = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_three_quarters_length   = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_wing_root_quarter_chord = fuselage.heights.maximum* Units.meter
-
-    # define cabin    
-    cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-    cabin.origin                                      = [[2,0,0]] 
-    economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
-    economy_class.number_of_seats_abrest              = 4
-    economy_class.number_of_rows                      = 18
-    economy_class.galley_lavatory_percent_x_locations = [0, 9]  
-    economy_class.emergency_exit_percent_x_locations  = []      
-    economy_class.type_A_exit_percent_x_locations     = [0.01,1] 
-    economy_class.number_of_seats                     = economy_class.number_of_rows  * economy_class.number_of_seats_abrest 
-    cabin.append_cabin_class(economy_class)
-    fuselage.append_cabin(cabin)
     
      # Segment  
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment() 
@@ -556,6 +544,21 @@ def vehicle_setup():
     segment.width                               = 0.401839552  
     fuselage.append_segment(segment) 
     
+    # define cabin    
+    cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
+    cabin.origin                                      = [[2,0,0]] 
+    cabin.segments_bounding_cabin                     = ['segment_9','segment_13'] 
+    economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
+    economy_class.number_of_seats_abrest              = 4
+    economy_class.number_of_rows                      = 18
+    economy_class.galley_lavatory_percent_x_locations = [0, 9]  
+    economy_class.emergency_exit_percent_x_locations  = []      
+    economy_class.type_A_exit_percent_x_locations     = [0.01,1] 
+    economy_class.number_of_seats                     = economy_class.number_of_rows  * economy_class.number_of_seats_abrest 
+    cabin.append_cabin_class(economy_class)
+    fuselage.append_cabin(cabin) 
+
+
     # add to vehicle
     vehicle.append_component(fuselage) 
  

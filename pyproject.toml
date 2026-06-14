@@ -45,6 +45,7 @@ dependencies = [
     "python-dateutil",
     "pytz",
     "shapely",
+    "h5py",
     "trimesh",
     "triangle",
     "pyvista",

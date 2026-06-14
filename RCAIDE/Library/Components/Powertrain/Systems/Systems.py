@@ -65,6 +65,9 @@ class Systems(Component):
         """        
         self.tag         = 'System' 
         self.power_draw  = 0.0
+        self.length      = 0
+        self.width       = 0
+        self.height      = 0
         self.control     = None
         self.accessories = None 
         self.mass_properties.calculated_flag = False
