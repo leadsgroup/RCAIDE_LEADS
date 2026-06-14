@@ -1,15 +1,15 @@
-# RCAIDE/Framework/Optmizaition/Common/print_optimization_results.py 
+# RCAIDE/Framework/Optimization/Common/print_optimization_results.py
 
-# ----------------------------------------------------------------------------------------------------------------- 
+# -----------------------------------------------------------------------------------------------------------------
 #  IMPORT
-# ----------------------------------------------------------------------------------------------------------------- 
-from .helper_functions import get_values, scale_obj_values, scale_const_values
+# -----------------------------------------------------------------------------------------------------------------
+from .helper_functions import get_values
 
-# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 #  print_optimization_results
-# ---------------------------------------------------------------------- 
-def print_optimization_results(nexus, filename):
-    """ Writes the optimization outputs to a file
+# ----------------------------------------------------------------------------------------------------------------------
+def print_optimization_results(nexus):
+    """Prints a formatted summary of the optimization problem state to the console.
 
     Assumptions:
     N/A
@@ -18,54 +18,84 @@ def print_optimization_results(nexus, filename):
     N/A
 
     Inputs:
-    nexus            [nexus()]
-    filename         [str]
+    nexus   [Nexus]  optimization problem instance
 
     Outputs:
-    N/A
+    N/A  (prints to stdout)
 
     Properties Used:
     N/A
-    """       
- 
-    #unpack optimization problem values
-    objective          = nexus.optimization_problem.objective
-    aliases            = nexus.optimization_problem.aliases
-    constraints        = nexus.optimization_problem.constraints
-    
-    #inputs
-    unscaled_inputs    = nexus.optimization_problem.inputs[:,1] #use optimization problem inputs here
-    input_scaling      = nexus.optimization_problem.inputs[:,3]
-    scaled_inputs      = unscaled_inputs/input_scaling
-    
-    #objective
-    objective_value    = get_values(nexus,objective,aliases)
-    scaled_objective   = scale_obj_values(objective , objective_value)
-    
-    #constraints
-    constraint_values  = get_values(nexus,constraints,aliases) 
-    scaled_constraints = scale_const_values(constraints,constraint_values)
-    
-    problem_inputs  = []
-    problem_constraints = []
-    for value in scaled_inputs:
-        problem_inputs.append(value)  #writing to file is easier when you use list
-    for value in scaled_constraints:
-        problem_constraints.append(value)
-    
-    
-    file=open(filename, 'a')
-    file.write('iteration = ')
-    file.write(str(nexus.total_number_of_iterations))
-    file.write(' , ')
-    file.write('objective = ')
-    file.write(str(scaled_objective[0]))
-    file.write(', inputs = ')
-    file.write(str(problem_inputs))
-    file.write(', constraints = ')
-    file.write(str(problem_constraints))
-    
-    file.write('\n') 
-    file.close()
-    
+    """
+
+    opt_prob    = nexus.optimization_problem
+    inputs      = opt_prob.inputs
+    aliases     = opt_prob.aliases
+    objective   = opt_prob.objective
+    constraints = opt_prob.constraints
+
+    obj_value  = get_values(nexus, objective,   aliases)[0]
+    con_values = get_values(nexus, constraints, aliases)
+
+    W = 64
+
+    feasible = all(
+        _is_feasible(con_values[i], constraints[i, 1], float(constraints[i, 2]))
+        for i in range(len(constraints))
+    )
+    status = 'SUCCESSFUL' if feasible else 'CONSTRAINTS VIOLATED'
+
+    print()
+    print('=' * W)
+    print(f"{'  OPTIMIZATION RESULTS':<{W}}")
+    print('=' * W)
+    print(f"  Status     : {status}")
+    print(f"  Iterations : {nexus.total_number_of_iterations}")
+
+    # ------------------------------------------------------------------
+    # Design Inputs
+    # ------------------------------------------------------------------
+    print(f"\n  {'DESIGN INPUTS'}")
+    print('  ' + '-' * (W - 2))
+    print(f"  {'Variable':<24}  {'Value':>12}   {'Lower':>10} - {'Upper':<10}")
+    print('  ' + '-' * (W - 2))
+    for row in inputs:
+        tag = _fmt(row[0])
+        val, lb, ub = float(row[1]), float(row[2]), float(row[3])
+        print(f"  {tag:<24}  {val:>12.4f}   {lb:>10.4f} - {ub:<10.4f}")
+
+    # ------------------------------------------------------------------
+    # Objective
+    # ------------------------------------------------------------------
+    print(f"\n  {'OBJECTIVE'}")
+    print('  ' + '-' * (W - 2))
+    print(f"  {_fmt(objective[0][0]):<24}  {obj_value:>12.4f}")
+
+    # ------------------------------------------------------------------
+    # Constraints
+    # ------------------------------------------------------------------
+    print(f"\n  {'CONSTRAINTS'}")
+    print('  ' + '-' * (W - 2))
+    print(f"  {'Constraint':<24}  {'Value':>10}  {'':>2}  {'Limit':>10}  {'Status'}")
+    print('  ' + '-' * (W - 2))
+    for i, row in enumerate(constraints):
+        tag, sense, edge = row[0], row[1], float(row[2])
+        val    = con_values[i]
+        status = 'SATISFIED' if _is_feasible(val, sense, edge) else 'VIOLATED '
+        print(f"  {_fmt(tag):<24}  {val:>10.4f}  {sense:>2}  {edge:>10.4f}  {status}")
+
+    print('=' * W)
+    print()
+
     return
+
+
+def _fmt(tag):
+    return tag.replace('_', ' ').title()
+
+
+def _is_feasible(value, sense, edge):
+    if sense == '>':
+        return value >= edge
+    if sense == '<':
+        return value <= edge
+    return abs(value - edge) < 1e-6

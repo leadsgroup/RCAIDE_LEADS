@@ -1,20 +1,22 @@
-# RCAIDE/Framework/Optmizaition/Common/generate_line_plot.py 
+# RCAIDE/Framework/Optimization/Common/generate_line_plot.py
 
-# ----------------------------------------------------------------------------------------------------------------- 
+# -----------------------------------------------------------------------------------------------------------------
 #  IMPORT
-# ----------------------------------------------------------------------------------------------------------------- 
-from RCAIDE.Framework.Core import Data
-import numpy as np
-import matplotlib.pyplot as plt
+# -----------------------------------------------------------------------------------------------------------------
+from RCAIDE.Framework.Core                                      import Data
+from RCAIDE.Framework.Optimization.Common.generate_carpet_plot import _fmt, _axis_label
+import numpy              as np
+import matplotlib.pyplot  as plt
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  generate_line_plot
-# ---------------------------------------------------------------------------------------------------------------------- 
+# ----------------------------------------------------------------------------------------------------------------------
 def generate_line_plot(problem,
                        design_input_1_index = 0,
                        number_of_points     = 5,
                        plot_objective       = True,
-                       plot_constraint      = True):
+                       plot_constraint      = True,
+                       unit_labels          = None):
     """Sweeps one design variable across its bounds and produces line plots
     of the objective and constraints.
 
@@ -30,6 +32,8 @@ def generate_line_plot(problem,
     number_of_points      [int]    number of evaluation points along the sweep
     plot_objective        [bool]   if True, plot the objective vs the swept variable
     plot_constraint       [bool]   if True, plot each constraint vs the swept variable
+    unit_labels           [list]   optional unit strings aligned with problem.inputs rows,
+                                  e.g. ['m²', 'km', 'nmi']. If None, tag name only is shown.
 
     Outputs:
     outputs.inputs          [array]  (2, number_of_points) swept variable values
@@ -40,51 +44,47 @@ def generate_line_plot(problem,
     N/A
     """
 
-    # unpack
-    idx0             = design_input_1_index
-    opt_prob         = problem.optimization_problem
-    base_inputs      = opt_prob.inputs
-    names            = base_inputs[:, 0]
-    bndl             = base_inputs[:, 2]
-    bndu             = base_inputs[:, 3]
-    base_objective   = opt_prob.objective
-    obj_name         = base_objective[0][0]
-    base_constraints = opt_prob.constraints
-    constraint_names = base_constraints[:, 0]
+    idx0      = design_input_1_index
+    opt_prob  = problem.optimization_problem
+    inp       = opt_prob.inputs
+    names     = inp[:, 0]
+    con_names = opt_prob.constraints[:, 0]
+    obj_name  = opt_prob.objective[0][0]
+    n_con     = len(con_names)
+    units     = unit_labels if unit_labels is not None else [None] * len(names)
 
-    # define sweep arrays
-    inputs         = np.zeros([2, number_of_points])
-    obj            = np.zeros([number_of_points])
-    constraint_num = np.shape(base_constraints)[0]
-    constraint_val = np.zeros([constraint_num, number_of_points])
+    x   = np.linspace(float(inp[idx0, 2]), float(inp[idx0, 3]), number_of_points)
+    obj = np.zeros(number_of_points)
+    con = np.zeros((n_con, number_of_points))
 
-    inputs[0, :] = np.linspace(bndl[idx0], bndu[idx0], number_of_points)
-
-    # evaluate problem across sweep
     for i in range(number_of_points):
-        opt_prob.inputs[:, 1][idx0] = inputs[0, i]
-        obj[i]                      = problem.objective()[0]
-        constraint_val[:, i]        = problem.all_constraints().tolist()
+        inp[idx0, 1] = x[i]
+        obj[i]       = problem.objective()[0]
+        con[:, i]    = problem.all_constraints()
+
+    x_lbl    = _axis_label(names[idx0], units[idx0])
+    con_lbls = [_fmt(n) for n in con_names]
 
     if plot_objective:
-        plt.figure(0)
-        plt.plot(inputs[0, :], obj, lw=2)
-        plt.xlabel(names[idx0])
-        plt.ylabel(obj_name)
+        fig, ax = plt.subplots(num=0)
+        ax.plot(x, obj, lw=2)
+        ax.set_xlabel(x_lbl)
+        ax.set_ylabel(_fmt(obj_name))
+        fig.tight_layout()
 
     if plot_constraint:
-        for i in range(constraint_num):
-            plt.figure(i + 1)
-            plt.plot(inputs[0, :], constraint_val[i, :], lw=2)
-            plt.xlabel(names[idx0])
-            plt.ylabel(constraint_names[i])
+        for i in range(n_con):
+            fig, ax = plt.subplots(num=i + 1)
+            ax.plot(x, con[i], lw=2)
+            ax.axhline(0, color='gray', linewidth=1, linestyle='--')
+            ax.set_xlabel(x_lbl)
+            ax.set_ylabel(con_lbls[i])
+            fig.tight_layout()
 
     plt.show(block=True)
 
-    # pack outputs
     outputs                = Data()
-    outputs.inputs         = inputs
+    outputs.inputs         = np.vstack([x, np.zeros_like(x)])
     outputs.objective      = obj
-    outputs.constraint_val = constraint_val
-
+    outputs.constraint_val = con
     return outputs
