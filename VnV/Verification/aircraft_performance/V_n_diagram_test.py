@@ -9,8 +9,8 @@
 # SUave Imports
 import RCAIDE
 from RCAIDE.Framework.Core   import Data,Units 
-from RCAIDE.Library.Methods.Performance  import compute_V_n_diagram 
-from RCAIDE.Library.Plots import  * 
+from RCAIDE.Library.Methods.Performance  import generate_V_n_diagram
+from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
 import matplotlib.pyplot as plt
 
 # package imports
@@ -30,42 +30,73 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 
 from  Cessna_172 import vehicle_setup   as GA_vehicle_setup  
-from  Cessna_172 import configs_setup   as GA_configs_setup  
-from  Boeing_737 import vehicle_setup   as Transport_vehicle_setup 
-from  Boeing_737 import configs_setup   as Transport_configs_setup    
+from  Boeing_737 import vehicle_setup   as Transport_vehicle_setup  
 
 def main():
-    part_25_V_n_Diagram()
+    part_35_V_n_Diagram()
     part_23_V_n_Diagram()
     
     return
 
-def part_25_V_n_Diagram():
+def part_35_V_n_Diagram():
 
     
-    vehicle  = Transport_vehicle_setup()
-    
-    configs  = Transport_configs_setup(vehicle)
-    
-    analyses = Transport_analyses_setup(configs) 
+    vehicle  = Transport_vehicle_setup() 
 
-    V_n_data = compute_V_n_diagram(analyses.cruise)
-    
-    plot_V_n_diagram(V_n_data, save_filename='Transport_Vn')  
+    vehicle.flight_envelope.category                  = 'normal'
+    vehicle.flight_envelope.FAR_part_number           = '25' 
+    vehicle.flight_envelope.maximum_lift_coefficient  = 3
+    vehicle.flight_envelope.minimum_lift_coefficient  = -1.5 
+
+    for wing in vehicle.wings: 
+        wing_planform(wing) 
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
+            vehicle.reference_area = wing.areas.reference
+
+    analyses = RCAIDE.Framework.Analyses.Vehicle()
+
+    # ------------------------------------------------------------------
+    #  Planet Analysis
+    planet = RCAIDE.Framework.Analyses.Planets.Earth()
+    analyses.append(planet)
+
+    # ------------------------------------------------------------------
+    #  Atmosphere Analysis
+    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
+    analyses.append(atmosphere)   
+
+    V_n_data = generate_V_n_diagram(vehicle,analyses)
     
     return    
     
     
 def part_23_V_n_Diagram():
     
-    vehicle  = GA_vehicle_setup()
+    vehicle  = GA_vehicle_setup() 
 
-    configs = GA_configs_setup(vehicle)
-    
-    analyses = GA_analyses_setup(configs) 
+    vehicle.flight_envelope.category                  = 'normal'
+    vehicle.flight_envelope.FAR_part_number           = '23' 
+    vehicle.flight_envelope.maximum_lift_coefficient  = 3
+    vehicle.flight_envelope.minimum_lift_coefficient  = -1.5 
 
-    V_n_data = compute_V_n_diagram(analyses.cruise) 
-    plot_V_n_diagram(V_n_data, save_filename='GA_Vn')    
+    for wing in vehicle.wings: 
+        wing_planform(wing) 
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
+            vehicle.reference_area = wing.areas.reference
+
+    analyses = RCAIDE.Framework.Analyses.Vehicle()
+
+    # ------------------------------------------------------------------
+    #  Planet Analysis
+    planet = RCAIDE.Framework.Analyses.Planets.Earth()
+    analyses.append(planet)
+
+    # ------------------------------------------------------------------
+    #  Atmosphere Analysis
+    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
+    analyses.append(atmosphere)   
+
+    V_n_data = generate_V_n_diagram(vehicle,analyses) 
 
     print(V_n_data.Vs1.positive)
     print(V_n_data.Vs1.negative) 
@@ -80,23 +111,16 @@ def part_23_V_n_Diagram():
 
     # regression values    
     actual                          = Data()
-    actual.Vs1_pos                  = 37.98585717834934
-    actual.Vs1_neg                  = 53.720114399989036
-    actual.Va_pos                   = 74.04806758573127
-    actual.Va_neg                   = 66.23060508967755
-    actual.Vc                       = 126.33084642567567
+    actual.Vs1_pos                  = 37.98585717834934 
+    actual.Vs1_neg                  = 53.720114399989036 
+    actual.Va_pos                   = 74.04806758573127 
+    actual.Va_neg                   = 104.71978144726074
+    actual.Vc                       = 126.33084642567567 
     actual.Vd                       = 176.86318499594594
-<<<<<<< HEAD
-    actual.limit_load_pos           = 3.9679267738475836
-    actual.limit_load_neg           = -1.9679267738475836
-    actual.dive_limit_load_pos      = 3.8
-    actual.dive_limit_load_neg      = -1.0775487416933083
-=======
-    actual.limit_load_pos           = 4.059278694685615
-    actual.limit_load_neg           = -3.8
-    actual.dive_limit_load_pos      = 3.8
-    actual.dive_limit_load_neg      = -1.1414950862799302
->>>>>>> 6f04b72118c5f63837bcb8fbde3ed393ec4a9466
+    actual.limit_load_pos           = 4.36963924775701 
+    actual.limit_load_neg           = -3.8 
+    actual.dive_limit_load_pos      = 3.8 
+    actual.dive_limit_load_neg      = -1.3587474734299074 
 
     # error calculations
     error                         = Data()
@@ -109,124 +133,13 @@ def part_23_V_n_Diagram():
     error.limit_load_pos          = (actual.limit_load_pos - V_n_data.positive_limit_load)/actual.limit_load_pos
     error.limit_load_neg          = (actual.limit_load_neg - V_n_data.negative_limit_load)/actual.limit_load_neg
     error.dive_limit_load_pos     = (actual.dive_limit_load_pos - V_n_data.limit_loads.dive.positive)/actual.dive_limit_load_pos
-    error.dive_limit_load_neg     = (actual.dive_limit_load_neg - V_n_data.limit_loads.dive.negative)/actual.dive_limit_load_neg
+    error.dive_limit_load_neg     = (actual.dive_limit_load_neg - V_n_data.limit_loads.dive.negative)
 
 
     for k,v in error.items():
         assert(np.abs(v)<1E-6)  
 
-    return
-
-
-def GA_analyses_setup(configs):
-
-    analyses = RCAIDE.Framework.Analyses.Analysis.Container()
-
-    # build a base analysis for each config
-    for tag,config in configs.items():
-        analysis = GA_base_analysis(config)
-        analyses[tag] = analysis
-
-    return analyses
-
-def GA_base_analysis(vehicle):
-
-    # ------------------------------------------------------------------
-    #   Initialize the Analyses
-    # ------------------------------------------------------------------     
-    analyses = RCAIDE.Framework.Analyses.Vehicle()
-    analyses.vehicle    = vehicle 
-
-    # ------------------------------------------------------------------
-    #  Geometry
-    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    analyses.append(geometry)
-
-    # ------------------------------------------------------------------
-    #  Weights
-    weights = RCAIDE.Framework.Analyses.Weights.Conventional_General_Aviation()
-    weights.method = 'Raymer'
-    analyses.append(weights)     
-    
-    # ------------------------------------------------------------------
-    #  Aerodynamics  
-    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    analyses.append(aerodynamics)
-
-    # ------------------------------------------------------------------
-    #  Energy
-    energy= RCAIDE.Framework.Analyses.Energy.Energy() 
-    analyses.append(energy)
-
-    # ------------------------------------------------------------------
-    #  Planet Analysis
-    planet = RCAIDE.Framework.Analyses.Planets.Earth()
-    analyses.append(planet)
-
-    # ------------------------------------------------------------------
-    #  Atmosphere Analysis
-    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    analyses.append(atmosphere)   
-
-    # done!
-    return analyses
-
-
-# ----------------------------------------------------------------------
-#   Define the Vehicle Analyses
-# ----------------------------------------------------------------------
-def Transport_analyses_setup(configs):
-    
-    analyses = RCAIDE.Framework.Analyses.Analysis.Container()
-    
-    # build a base analysis for each config
-    for tag,config in list(configs.items()):
-        analysis = Transport_base_analysis(config)
-        analyses[tag] = analysis
-    
-    return analyses
-
-def Transport_base_analysis(vehicle):
-
-    # ------------------------------------------------------------------
-    #   Initialize the Analyses
-    # ------------------------------------------------------------------     
-    analyses = RCAIDE.Framework.Analyses.Vehicle()
-    analyses.vehicle = vehicle
-
-    #  Geometry
-    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    analyses.append(geometry)
-    
-    # ------------------------------------------------------------------
-    #  Weights
-    weights         = RCAIDE.Framework.Analyses.Weights.Conventional_Transport() 
-    analyses.append(weights)
-    
-    # ------------------------------------------------------------------
-    #  Aerodynamics Analysis 
-    aerodynamics                                       = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
-    analyses.append(aerodynamics)  
-    
-    # ------------------------------------------------------------------
-    #  Energy
-    energy= RCAIDE.Framework.Analyses.Energy.Energy() 
-    analyses.append(energy)
-    
-    # ------------------------------------------------------------------
-    #  Planet Analysis
-    planet = RCAIDE.Framework.Analyses.Planets.Earth()
-    analyses.append(planet)
-    
-    # ------------------------------------------------------------------
-    #  Atmosphere Analysis
-    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    analyses.append(atmosphere)   
-    
-    # done!
-    return analyses    
- 
-
+    return 
 # ----------------------------------------------------------------------        
 #   Call Main
 # ----------------------------------------------------------------------    

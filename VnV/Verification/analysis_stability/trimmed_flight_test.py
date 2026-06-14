@@ -83,7 +83,33 @@ def main():
     throttle3_true   = 0.3771964497239476
     throttle3_diff   = np.abs(throttle3 - throttle3_true)
     print('Throttle Error 2: ',throttle3_diff)
-    assert np.abs(throttle3_diff/throttle3_true) < 5e-3   
+    assert np.abs(throttle3_diff/throttle3_true) < 5e-3
+
+    # ------------------------------------------------------------------
+    # Mode 1: crosswind_speed → β computed kinematically
+    # crosswind = 50 * sin(10 deg) gives same effective β as cruise segment
+    # results must match cruise within tolerance
+    # ------------------------------------------------------------------
+    elevator_cw      = results.segments.cruise_crosswind.conditions.control_surfaces.elevator.deflection[0,0] / Units.deg
+    aileron_cw       = results.segments.cruise_crosswind.conditions.control_surfaces.aileron.deflection[0,0]  / Units.deg
+    rudder_cw        = results.segments.cruise_crosswind.conditions.control_surfaces.rudder.deflection[0,0]   / Units.deg
+    print('Crosswind elevator:', elevator_cw, 'aileron:', aileron_cw, 'rudder:', rudder_cw)
+    assert np.abs((elevator_cw - elevator_deflection_true) / elevator_deflection_true) < 5e-3
+    assert np.abs((aileron_cw  - aileron_deflection_true)  / aileron_deflection_true)  < 5e-3
+    assert np.abs((rudder_cw   - rudder_deflection_true)   / rudder_deflection_true)   < 5e-3
+
+    # ------------------------------------------------------------------
+    # Mode 2: sideslip_angle as solver unknown
+    # symmetric aircraft, no crosswind → solver must find β ≈ 0
+    # bank_angle fixed at 0 to keep system well-determined (6×6)
+    # ------------------------------------------------------------------
+    sideslip_free    = results.segments.cruise_free_sideslip.conditions.frames.wind.body_rotations[0,2] / Units.deg
+    rudder_free      = results.segments.cruise_free_sideslip.conditions.control_surfaces.rudder.deflection[0,0]  / Units.deg
+    aileron_free     = results.segments.cruise_free_sideslip.conditions.control_surfaces.aileron.deflection[0,0] / Units.deg
+    print('Free sideslip β:', sideslip_free, 'rudder:', rudder_free, 'aileron:', aileron_free)
+    assert np.abs(sideslip_free) < 1e-1
+    assert np.abs(rudder_free)   < 1e-1
+    assert np.abs(aileron_free)  < 1e-1
 
     # plt results
     plot_mission(results)
@@ -208,7 +234,7 @@ def mission_setup(analyses):
     # flight controls              
     segment.assigned_control_variables.throttle.active                          = True           
     segment.assigned_control_variables.throttle.assigned_propulsors             = [['ice_propeller']]   
-    segment.assigned_control_variables.body_angle.active                        = True       
+    segment.assigned_control_variables.pitch_angle.active                        = True       
     segment.assigned_control_variables.elevator_deflection.active               = True    
     segment.assigned_control_variables.elevator_deflection.assigned_surfaces    = [['elevator']] 
     segment.assigned_control_variables.aileron_deflection.active                = True    
@@ -235,7 +261,7 @@ def mission_setup(analyses):
     # flight controls              
     segment.assigned_control_variables.throttle.active                          = True           
     segment.assigned_control_variables.throttle.assigned_propulsors             = [['ice_propeller']]   
-    segment.assigned_control_variables.body_angle.active                        = True     
+    segment.assigned_control_variables.pitch_angle.active                        = True     
     mission.append_segment(segment)
  
     # ------------------------------------------------------------------    
@@ -259,17 +285,77 @@ def mission_setup(analyses):
     # flight controls              
     segment.assigned_control_variables.throttle.active                          = True           
     segment.assigned_control_variables.throttle.assigned_propulsors             = [['ice_propeller']]   
-    segment.assigned_control_variables.body_angle.active                        = True       
+    segment.assigned_control_variables.pitch_angle.active                        = True       
     segment.assigned_control_variables.elevator_deflection.active               = True    
     segment.assigned_control_variables.elevator_deflection.assigned_surfaces    = [['elevator']] 
     segment.assigned_control_variables.aileron_deflection.active                = True    
     segment.assigned_control_variables.aileron_deflection.assigned_surfaces     = [['aileron']] 
     segment.assigned_control_variables.rudder_deflection.active                 = True    
     segment.assigned_control_variables.rudder_deflection.assigned_surfaces      = [['rudder']] 
-    segment.assigned_control_variables.bank_angle.active                        = True                 
-    mission.append_segment(segment)  
+    segment.assigned_control_variables.bank_angle.active                        = True
+    mission.append_segment(segment)
 
-    return mission 
+    # ------------------------------------------------------------------
+    #   Mode 1: crosswind_speed → β computed kinematically
+    #   crosswind = air_speed * sin(10 deg), identical physics to cruise
+    # ------------------------------------------------------------------
+    segment     = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
+    segment.tag = "cruise_crosswind"
+    segment.analyses.extend( analyses.base )
+    segment.altitude                                                            = 1000. * Units.feet
+    segment.air_speed                                                           = 50.00
+    segment.crosswind_speed                                                     = 50.00 * np.sin(10.0 * Units.deg)
+
+    segment.flight_dynamics.force_x                                             = True
+    segment.flight_dynamics.force_z                                             = True
+    segment.flight_dynamics.force_y                                             = True
+    segment.flight_dynamics.moment_x                                            = True
+    segment.flight_dynamics.moment_z                                            = True
+    segment.flight_dynamics.moment_y                                            = True
+
+    segment.assigned_control_variables.throttle.active                          = True
+    segment.assigned_control_variables.throttle.assigned_propulsors             = [['ice_propeller']]
+    segment.assigned_control_variables.pitch_angle.active                       = True
+    segment.assigned_control_variables.elevator_deflection.active               = True
+    segment.assigned_control_variables.elevator_deflection.assigned_surfaces    = [['elevator']]
+    segment.assigned_control_variables.aileron_deflection.active                = True
+    segment.assigned_control_variables.aileron_deflection.assigned_surfaces     = [['aileron']]
+    segment.assigned_control_variables.rudder_deflection.active                 = True
+    segment.assigned_control_variables.rudder_deflection.assigned_surfaces      = [['rudder']]
+    segment.assigned_control_variables.bank_angle.active                        = True
+    mission.append_segment(segment)
+
+    # ------------------------------------------------------------------
+    #   Mode 2: sideslip_angle as free solver unknown
+    #   symmetric aircraft, no crosswind → solver finds β ≈ 0
+    #   bank_angle fixed at 0 to keep the system well-determined (6×6)
+    # ------------------------------------------------------------------
+    segment     = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
+    segment.tag = "cruise_free_sideslip"
+    segment.analyses.extend( analyses.base )
+    segment.altitude                                                            = 1000. * Units.feet
+    segment.air_speed                                                           = 50.00
+
+    segment.flight_dynamics.force_x                                             = True
+    segment.flight_dynamics.force_z                                             = True
+    segment.flight_dynamics.force_y                                             = True
+    segment.flight_dynamics.moment_x                                            = True
+    segment.flight_dynamics.moment_z                                            = True
+    segment.flight_dynamics.moment_y                                            = True
+
+    segment.assigned_control_variables.throttle.active                          = True
+    segment.assigned_control_variables.throttle.assigned_propulsors             = [['ice_propeller']]
+    segment.assigned_control_variables.pitch_angle.active                       = True
+    segment.assigned_control_variables.elevator_deflection.active               = True
+    segment.assigned_control_variables.elevator_deflection.assigned_surfaces    = [['elevator']]
+    segment.assigned_control_variables.aileron_deflection.active                = True
+    segment.assigned_control_variables.aileron_deflection.assigned_surfaces     = [['aileron']]
+    segment.assigned_control_variables.rudder_deflection.active                 = True
+    segment.assigned_control_variables.rudder_deflection.assigned_surfaces      = [['rudder']]
+    segment.assigned_control_variables.sideslip_angle.active                    = True
+    mission.append_segment(segment)
+
+    return mission
 
 def missions_setup(mission): 
  

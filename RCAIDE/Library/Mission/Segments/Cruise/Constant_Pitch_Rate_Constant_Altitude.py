@@ -98,8 +98,8 @@ def initialize_conditions(segment):
     time      = t_nondim * (t_final-t_initial) + t_initial
     
     # set the body angle
-    body_angle = theta_dot*time + T0
-    segment.state.conditions.frames.body.inertial_rotations[:,1] = body_angle[:,0]    
+    pitch_angle = theta_dot*time + T0
+    segment.state.conditions.frames.body.inertial_rotations[:,1] = pitch_angle[:,0]    
     
     # pack
     segment.state.conditions.freestream.altitude[:,0]             = alt
