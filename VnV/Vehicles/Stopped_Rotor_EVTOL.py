@@ -11,8 +11,8 @@ import RCAIDE
 from RCAIDE.Framework.Core import Units 
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor                          import design_electric_rotor 
 from RCAIDE.Library.Plots                                                                 import *  
-from RCAIDE.load    import load as load_propulsor
-from RCAIDE.save    import save as save_propulsor 
+from RCAIDE.Input_Output import load as load_propulsor
+from RCAIDE.Input_Output import save as save_propulsor
  
 import os
 import numpy as np 
@@ -494,7 +494,7 @@ def vehicle_setup(new_regression=True) :
     propeller.cruise.design_freestream_velocity            = 130.* Units['mph'] 
     propeller.cruise.design_tip_mach                       = 0.65
     propeller.cruise.design_angular_velocity               = propeller.cruise.design_tip_mach *speed_of_sound/propeller.tip_radius
-    propeller.cruise.design_Cl                             = 0.7
+    propeller.cruise.design_lift_coefficient               = 0.7
     propeller.cruise.design_altitude                       = 1500 * Units.feet
     propeller.cruise.design_thrust                         = 3150
     propeller.clockwise_rotation                           = True

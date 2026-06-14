@@ -108,12 +108,12 @@ def read_results(avl_object, vehicle):
                     ctrl_surf = Control_Surface_Results()
                     ctrl_surf.tag                 = str(lines[29+ctrl_idx][2:11].strip())
                     ctrl_surf.deflection          = float(lines[29+ctrl_idx][21:32].strip())
-                    ctrl_surf.CL                  = float(lines[52+num_ctrl][(20*ctrl_idx + 23):(20*ctrl_idx + 34)].strip())
-                    ctrl_surf.CY                  = float(lines[53+num_ctrl][(20*ctrl_idx + 23):(20*ctrl_idx + 34)].strip())
-                    ctrl_surf.Cl                  = float(lines[54+num_ctrl][(20*ctrl_idx + 23):(20*ctrl_idx + 34)].strip())
-                    ctrl_surf.Cm                  = float(lines[55+num_ctrl][(20*ctrl_idx + 23):(20*ctrl_idx + 34)].strip())
-                    ctrl_surf.Cn                  = float(lines[56+num_ctrl][(20*ctrl_idx + 23):(20*ctrl_idx + 34)].strip())
-                    ctrl_surf.CDff                = float(lines[57+num_ctrl][(20*ctrl_idx + 23):(20*ctrl_idx + 34)].strip())
+                    ctrl_surf.CLift_derivative    = float(lines[52+num_ctrl][(20*ctrl_idx + 23):(20*ctrl_idx + 34)].strip())
+                    ctrl_surf.Cdrag_derivative    = float(lines[57+num_ctrl][(20*ctrl_idx + 23):(20*ctrl_idx + 34)].strip())
+                    ctrl_surf.CY_derivative       = float(lines[53+num_ctrl][(20*ctrl_idx + 23):(20*ctrl_idx + 34)].strip())
+                    ctrl_surf.Cl_derivative       = float(lines[54+num_ctrl][(20*ctrl_idx + 23):(20*ctrl_idx + 34)].strip())
+                    ctrl_surf.CM_derivative       = float(lines[55+num_ctrl][(20*ctrl_idx + 23):(20*ctrl_idx + 34)].strip())
+                    ctrl_surf.CN_derivative       = float(lines[56+num_ctrl][(20*ctrl_idx + 23):(20*ctrl_idx + 34)].strip())
                     ctrl_surf.e                   = float(lines[58+num_ctrl][(20*ctrl_idx + 23):(20*ctrl_idx + 34)].strip())
                     case_res.stability.control_surfaces.append_control_surface_result(ctrl_surf)             
             case_res.stability.neutral_point      = float(lines[50+12*(num_ctrl>0)+num_ctrl][22:33].strip())    
@@ -121,19 +121,21 @@ def read_results(avl_object, vehicle):
         
         # get number of wings, spanwise discretization for surface and strip force result extraction
         n_sw    = avl_object.settings.number_of_spanwise_vortices
-        n_wings = 0 
-        for wing in vehicle.wings:
-            n_wings += 1
-            if wing.xz_plane_symmetric:
-                n_wings += 1   
-        n_fus_sec = 0
-        for fuselage in vehicle.fuselages: 
-            if avl_object.settings.model_fuselage:          
-                n_fus_sec += 2
+        n_wings = 0
         
+        
+        wing_list =  [] 
+        for wing in vehicle.wings:         
+            n_wings += 1
+            wing_list.append(wing.tag)
+            if wing.xz_plane_symmetric:
+                wing_list.append(wing.tag)
+                n_wings += 1   
+        n_fus_sec = 0  
         wing_area            = np.zeros(n_wings)
         wing_CL              = np.zeros(n_wings)
         wing_CD              = np.zeros(n_wings)  
+        leading_edge_sweeps  = np.zeros((n_wings,n_sw))        
         wing_local_span      = np.zeros((n_wings,n_sw))
         wing_sectional_chord = np.zeros((n_wings,n_sw))
         wing_cl              = np.zeros((n_wings,n_sw))
@@ -160,12 +162,21 @@ def read_results(avl_object, vehicle):
             line_idx         = 0
             header           = 20
             divider_header   = 15    
-            
+            seg_idx = 0
             for i in range(n_wings): 
                 for j in range(n_sw):
                     wing_local_span[i,j]      = float(aero_lines_2[header + j + line_idx][8:16].strip())
                     wing_sectional_chord[i,j] = float(aero_lines_2[header + j + line_idx][16:24].strip()) 
-                    wing_cl[i,j]              = float(aero_lines_2[header + j + line_idx][61:69].strip())  
+                    wing_cl[i,j]              = float(aero_lines_2[header + j + line_idx][61:69].strip()) 
+                    
+                    wing =  vehicle.wings[wing_list[i]]
+                    seg_list = list(wing.segments.keys())
+                    if wing_local_span[i,j] < wing.spans.projected * wing.segments[seg_list[seg_idx+1]].percent_span_location:
+                        leading_edge_sweeps[i, j] =  wing.segments[seg_list[seg_idx]].sweeps.leading_edge
+                    else: 
+                        seg_idx += 1
+                        leading_edge_sweeps[i, j] =  wing.segments[seg_list[seg_idx]].sweeps.leading_edge
+                        
                     # At high angle of attacks, AVL does not give an answer 
                     try:
                         alpha_i[i,j]              = float(aero_lines_2[header + j + line_idx][43:51].strip())
@@ -175,7 +186,8 @@ def read_results(avl_object, vehicle):
                         wing_cd[i,j]              = 0.
                 line_idx = divider_header +  n_sw + line_idx            
             case_res.aerodynamics.wing_local_spans         = wing_local_span
-            case_res.aerodynamics.wing_section_chords      = wing_sectional_chord 
+            case_res.aerodynamics.wing_section_chords      = wing_sectional_chord
+            case_res.aerodynamics.leading_edge_sweeps      = leading_edge_sweeps
             case_res.aerodynamics.wing_section_cls         = wing_cl 
             case_res.aerodynamics.wing_section_aoa_i       = alpha_i 
             case_res.aerodynamics.wing_section_cds         = wing_cd 

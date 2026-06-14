@@ -90,9 +90,9 @@ class Athena_Vortex_Lattice(Aerodynamics):
         settings.filenames.log_filename              = 'avl_log.txt'
         settings.filenames.err_filename              = 'avl_err.txt'        
         settings.number_of_spanwise_vortices         = 30
-        settings.number_of_chordwise_vortices        = 10
-        settings.trim_aircraft                       = False 
-        settings.model_fuselage                      = False 
+        settings.number_of_chordwise_vortices        = 10 
+        settings.control_surface_tags                = []  
+        settings.trim_aircraft                       = False  
         settings.print_output                        = False 
         settings.keep_files                          = False        
         settings.new_regression_results              = False  
@@ -104,14 +104,7 @@ class Athena_Vortex_Lattice(Aerodynamics):
         # conditions table, used for surrogate model training
         self.training                               = Data()
         self.training.angle_of_attack               = np.array([-2.,0., 2.,5., 7., 10.])*Units.degrees
-        self.training.Mach                          = np.array([0.05,0.15,0.25, 0.45,0.65,0.85]) 
-        self.training.lift_coefficient              = None
-        self.training.drag_coefficient              = None
-        self.training.span_efficiency_factor        = None
-        self.training.moment_coefficient            = None
-        self.training.Cm_alpha_moment_coefficient   = None
-        self.training.Cn_beta_moment_coefficient    = None
-        self.training.neutral_point                 = None
+        self.training.Mach                          = np.array([0.05,0.15,0.25, 0.45,0.65,0.85])  
         self.training_file                          = None 
 
         self.current_status                         = Data()        
@@ -121,11 +114,7 @@ class Athena_Vortex_Lattice(Aerodynamics):
         self.current_status.cases                   = None 
         
         # surrogoate models                 
-        self.surrogates                             = Data()
-        self.surrogates.moment_coefficient          = None
-        self.surrogates.Cm_alpha_moment_coefficient = None
-        self.surrogates.Cn_beta_moment_coefficient  = None      
-        self.surrogates.neutral_point               = None       
+        self.surrogates                             = Data()       
 
         # build the evaluation process
         compute                                    = Process() 
@@ -147,8 +136,7 @@ class Athena_Vortex_Lattice(Aerodynamics):
         compute.drag.cooling                       = Common.Drag.cooling_drag        
         compute.drag.compressibility               = Common.Drag.compressibility_drag 
         compute.drag.miscellaneous                 = Common.Drag.miscellaneous_drag 
-        compute.drag.form                          = Common.Drag.form_drag  
-        compute.drag.wave                          = Common.Drag.wave_drag
+        compute.drag.form                          = Common.Drag.form_drag   
         compute.drag.trim                          = Common.Drag.trim_drag 
         compute.drag.total                         = Common.Drag.total_drag        
         self.process.compute                       = compute
@@ -159,6 +147,7 @@ class Athena_Vortex_Lattice(Aerodynamics):
 
         # If we are using the surrogate
         if use_surrogate == True: 
+            print("\n Creating aerodynamic surrogate ...")
             # sample training data
             train_AVL_surrogates(self, vehicle)
 

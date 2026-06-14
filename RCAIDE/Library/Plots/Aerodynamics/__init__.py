@@ -28,4 +28,4 @@ from .plot_lift_distribution                    import plot_lift_distribution
 from .plot_rotor_disc_performance               import plot_rotor_disc_performance
 from .plot_rotor_performance                    import plot_rotor_performance    
 from .plot_rotor_conditions                     import plot_rotor_conditions
-from .plot_surface_pressures                    import plot_surface_pressures
+from .plot_pressure_coefficient_distribution    import plot_pressure_coefficient_distribution

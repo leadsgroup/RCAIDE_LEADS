@@ -7,9 +7,8 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
 from RCAIDE.Framework.Core import Units
-from RCAIDE.Library.Plots.Common import set_axes, plot_style
+from RCAIDE.Library.Plots.Common import set_axes, plot_style, segment_colors
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
 import numpy as np 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -103,7 +102,7 @@ def plot_drag_components(results,
     plt.rcParams.update(parameters)
      
     # get line colors for plots 
-    line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))     
+    line_colors   = segment_colors(len(results.segments))     
      
     fig   = plt.figure(save_filename)
     axis_1 = plt.subplot(1,1,1)
@@ -116,7 +115,6 @@ def plot_drag_components(results,
         cdi    = drag.induced.total[:,0]
         cdc    = drag.compressible.total[:,0]
         cdm    = drag.miscellaneous.total[:,0] 
-        cdw    = drag.wave.total[:,0] 
         cdf    = drag.form.total[:,0] 
         cdk    = drag.cooling.total[:,0] 
         cd     = drag.total[:,0]  
@@ -126,7 +124,6 @@ def plot_drag_components(results,
             axis_1.plot(time,cdi, color = line_colors[i], marker = ps.markers[1], linewidth = ps.line_width,  label = r'$C_{Dind}$')  
             axis_1.plot(time, cdc, color = line_colors[i], marker = ps.markers[2], linewidth = ps.line_width,  label =r'$C_{Dcomp}$')  
             axis_1.plot(time, cdm, color = line_colors[i], marker = ps.markers[3], linewidth = ps.line_width,  label =r'$C_{Dmisc}$')  
-            axis_1.plot(time,cdw, color = line_colors[i], marker = ps.markers[4], linewidth = ps.line_width,  label = r'$C_{Dwave}$')  
             axis_1.plot(time, cdk, color = line_colors[i], marker = ps.markers[5], linewidth = ps.line_width,  label =r'$C_{Dcool}$')  
             axis_1.plot(time, cdf, color = line_colors[i], marker = ps.markers[6], linewidth = ps.line_width,  label =r'$C_{Dform}$')  
             axis_1.plot(time, cd, color = line_colors[i], marker = ps.markers[7], linewidth = ps.line_width,  label =r'$C_D$')
@@ -135,7 +132,6 @@ def plot_drag_components(results,
             axis_1.plot(time,cdi, color = line_colors[i], marker = ps.markers[1], linewidth = ps.line_width, )
             axis_1.plot(time, cdc, color = line_colors[i], marker = ps.markers[2], linewidth = ps.line_width,)
             axis_1.plot(time, cdm, color = line_colors[i], marker = ps.markers[3], linewidth = ps.line_width,)
-            axis_1.plot(time,cdw, color = line_colors[i], marker = ps.markers[4], linewidth = ps.line_width, )
             axis_1.plot(time, cdk, color = line_colors[i], marker = ps.markers[5], linewidth = ps.line_width,)
             axis_1.plot(time, cdf, color = line_colors[i], marker = ps.markers[6], linewidth = ps.line_width,)
             axis_1.plot(time, cd, color = line_colors[i], marker = ps.markers[7], linewidth = ps.line_width, )

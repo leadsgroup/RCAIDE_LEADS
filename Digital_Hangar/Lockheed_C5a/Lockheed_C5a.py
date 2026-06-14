@@ -24,12 +24,12 @@ def main():
     try:
         import vsp as vsp
         from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
-        export_vsp_vehicle(vehicle, 'Lockheed_C_5a')
+        export_vsp_vehicle(vehicle, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Lockheed_C_5a'))
     except ImportError:
         pass
     
     # Step 2: plot vehicle 
-    plot_3d_vehicle(vehicle,export_gltf=True)  
+    plot_3d_vehicle(vehicle,save_filename=os.path.join(os.path.dirname(os.path.abspath(__file__)),'Lockheed_C5a'),export_gltf=True,show_figure=True)  
     
     return  
 
@@ -71,25 +71,27 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------
     # ##################################################### Landing Gear ################################################################    
     #------------------------------------------------------------------------------------------------------------------------------------ 
-    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
-    main_gear.tire_diameter                  = 49 *  Units.inches 
-    main_gear.rim_diameter                   = 20 *  Units.inches 
-    main_gear.tire_width                     = 17 *  Units.inches  
-    main_gear.strut_length                   = 0.80* Units.m
-    main_gear.wheels                         = 14    
-    main_gear.number_of_gear_types_in_tandem = 4 
-    main_gear.number_of_wheels_in_gear_type  = 4   
+    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
+    main_gear.tire_diameter                  = 49.0 *  Units.inches
+    main_gear.rim_diameter                   = 20.0 *  Units.inches
+    main_gear.tire_width                     = 17.0 *  Units.inches
+    main_gear.strut_length                   = 0.90 * Units.m
+    main_gear.origin                         = [[26.0, 4.5, 0.0]]
+    main_gear.wheels                         = 24
+    main_gear.number_of_gear_types_in_tandem = 6
+    main_gear.number_of_wheels_in_gear_type  = 2
     main_gear.xz_plane_symmetric             = True
-    vehicle.append_component(main_gear) 
+    vehicle.append_component(main_gear)
 
-    nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
-    nose_gear.tire_diameter                  = 49 *  Units.inches
-    nose_gear.rim_diameter                   = 20 *  Units.inches
-    nose_gear.tire_width                     = 17 *  Units.inches
-    nose_gear.strut_length                   = 0.80* Units.m
-    nose_gear.wheels                         = 4 
-    nose_gear.number_of_gear_types_in_tandem = 1
-    nose_gear.number_of_wheels_in_gear_type  = 4 
+    nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()
+    nose_gear.tire_diameter                  = 37.0 *  Units.inches
+    nose_gear.rim_diameter                   = 15.0 *  Units.inches
+    nose_gear.tire_width                     = 14.0 *  Units.inches
+    nose_gear.strut_length                   = 1.1  * Units.m
+    nose_gear.origin                         = [[7.0, 0.0, 0.0]]
+    nose_gear.wheels                         = 4
+    nose_gear.number_of_gear_types_in_tandem = 2
+    nose_gear.number_of_wheels_in_gear_type  = 2
     vehicle.append_component(nose_gear)
 
 

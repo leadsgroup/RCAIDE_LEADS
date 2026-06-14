@@ -36,37 +36,37 @@ def vehicle_setup(deflection_config=None):
     vehicle.append_component(stabilator)
     vehicle.append_component(v_tail_right)
     
-    #deflection if sepcified-------------------
+    # deflection if sepcified -------------------
     if deflection_config is not None:
         #sign_duplicate
-        stabilator  .sign_duplicate = deflection_config.  stabilator_sign_duplicate
+        stabilator.sign_duplicate   = deflection_config.stabilator_sign_duplicate
         v_tail_right.sign_duplicate = deflection_config.v_tail_right_sign_duplicate
         
-        #hinge_fraction
-        stabilator  .hinge_fraction = deflection_config.  stabilator_hinge_fraction
+        # hinge_fraction
+        stabilator  .hinge_fraction = deflection_config.stabilator_hinge_fraction
         v_tail_right.hinge_fraction = deflection_config.v_tail_right_hinge_fraction
         
-        #hinge_vector
-        stabilator  .use_constant_hinge_fraction = deflection_config.  stabilator_use_constant_hinge_fraction
+        # hinge_vector
+        stabilator.use_constant_hinge_fraction = deflection_config.stabilator_use_constant_hinge_fraction
         v_tail_right.use_constant_hinge_fraction = deflection_config.v_tail_right_use_constant_hinge_fraction
         
-        stabilator  .hinge_vector   = deflection_config.  stabilator_hinge_vector
+        stabilator.hinge_vector     = deflection_config.  stabilator_hinge_vector
         v_tail_right.hinge_vector   = deflection_config.v_tail_right_hinge_vector        
         
-        #deflection
+        # deflection
         deflection                  = deflection_config.deflection
         stab_def                    = deflection_config.stab_def
         vt_r_def                    = deflection_config.vt_r_def
 
-        stabilator  .deflection     = (stab_def + deflection) *Units.degrees
+        stabilator.deflection       = (stab_def + deflection) *Units.degrees
         v_tail_right.deflection     = (vt_r_def + deflection) *Units.degrees
 
-    #make left v-tail--------------------------
+    # make left v-tail--------------------------
     v_tail_left  = v_tail_right.make_x_z_reflection()
     vehicle.append_component(v_tail_left)
     
     return vehicle    
-    
+
 # ------------------------------------------------------------------
 #   Stabilator Construction Function
 # ------------------------------------------------------------------ 

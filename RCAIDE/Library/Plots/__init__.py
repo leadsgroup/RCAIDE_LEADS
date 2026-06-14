@@ -18,7 +18,7 @@ from .Geometry           import *
 from .Aeroacoustics      import *
 from .Aerodynamics       import * 
 from .Common             import *
-from .Emissions          import *  
+from .Emissions          import *
 from .Performance        import * 
 from .Powertrain         import * 
 from .Mission            import *  

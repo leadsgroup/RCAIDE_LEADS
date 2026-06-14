@@ -28,12 +28,12 @@ def main():
     try:
         import vsp as vsp
         from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
-        export_vsp_vehicle(vehicle, 'Tilt_Stopped_Rotor_V_Tail')
+        export_vsp_vehicle(vehicle, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Tilt_Stopped_Rotor_V_Tail'))
     except ImportError:
         pass
         
     # Step 2: plot vehicle 
-    plot_3d_vehicle(vehicle,export_gltf=True)  
+    plot_3d_vehicle(vehicle,save_filename=os.path.join(os.path.dirname(os.path.abspath(__file__)),'Tilt_Stopped_Rotor_V_Tail'),export_gltf=True,show_figure=True)  
     
     return 
  
@@ -258,8 +258,7 @@ def vehicle_setup(redesign_rotors = False):
 
     # define cabin    
     cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-    cabin.origin                                      = [[1, 0, 0]]
-    cabin.offset_x = 1.0
+    cabin.origin                                      = [[1, 0, 0]] 
     economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
     economy_class.number_of_seats_abrest              = 2
     economy_class.number_of_rows                      = 3 

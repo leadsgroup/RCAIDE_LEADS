@@ -114,6 +114,14 @@ class Liquid_Petroleum_Gas(Propellant):
         self.fuel_surrogate_S1             = {} # [-] Mole fractions of fuel surrogate species
         self.kinetic_mechanism             = '' # [-] Kinetic mechanism for fuel surrogate species
         self.oxidizer                      = ''  
+
+        self.emission_indices.Production  = 0.0       # kg/kg  Unknown
+        self.emission_indices.CO2         = 2.96      # kg/kg
+        self.emission_indices.CO          = 0.000210  # kg/kg
+        self.emission_indices.H2O         = 1.60      # kg/kg  
+        self.emission_indices.SO2         = 0.0       # kg/kg   Unknown
+        self.emission_indices.NOx         = 0.0154    # kg/kg
+        self.emission_indices.Soot        = 0.0       # kg/kg   Unknown
         
         self.global_warming_potential_100.CO2       = 1     # CO2e/kg  
         self.global_warming_potential_100.H2O       = 0.06  # CO2e/kg  

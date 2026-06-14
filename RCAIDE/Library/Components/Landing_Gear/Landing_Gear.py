@@ -91,7 +91,9 @@ class Landing_Gear(Component):
         self.wheels                          = 0
         self.length                          = 0 
         self.width                           = 0 
-        self.height                          = 0
+        self.height                          = 0 
+        self.longitudinal_wheel_spacing      = 0.25
+        self.lateral_wheel_spacing           = 0.25
         self.wheel_clearance_factor          = 1.1
         self.number_of_gear_types_in_tandem  = 1
         self.number_of_wheels_in_gear_type   = 1  

@@ -56,25 +56,27 @@ def vehicle_setup():
     # ------------------------------------------------------------------        
     #  Landing Gear
     # ------------------------------------------------------------------  
-    main_gear                                  = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
-    main_gear.tire_diameter                    = 44.5 *  Units.inches 
-    main_gear.rim_diameter                     = 21   *  Units.inches 
-    main_gear.tire_width                       = 16.5  *  Units.inches 
-    main_gear.strut_length                     = 1.8  * Units.m  
-    main_gear.wheels                           = 4   
-    main_gear.number_of_gear_types_in_tandem   = 1
-    main_gear.number_of_wheels_in_gear_type    = 2  
-    main_gear.xz_plane_symmetric               = True
+    main_gear                   = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
+    main_gear.tire_diameter     = 44.5 *  Units.inches 
+    main_gear.rim_diameter      = 21   *  Units.inches 
+    main_gear.tire_width        = 16.5  *  Units.inches 
+    main_gear.strut_length      = 1.8  * Units.m
+    main_gear.origin            = [[18,5.72/2,-0.5]]  
+    main_gear.wheels            = 4   
+    main_gear.number_of_gear_types_in_tandem  = 1
+    main_gear.number_of_wheels_in_gear_type  = 2  
+    main_gear.xz_plane_symmetric= True
     vehicle.append_component(main_gear)  
 
-    nose_gear                                 = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
-    nose_gear.tire_diameter                   = 27    *  Units.inches   
-    nose_gear.rim_diameter                    = 15    *  Units.inches 
-    nose_gear.tire_width                      = 7.75  *  Units.inches 
-    nose_gear.strut_length                    = 1.8   * Units.m  
-    nose_gear.wheels                          = 2   
+    nose_gear                   = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
+    nose_gear.tire_diameter     = 27    *  Units.inches   
+    nose_gear.rim_diameter      = 15    *  Units.inches 
+    nose_gear.tire_width        = 7.75  *  Units.inches 
+    nose_gear.strut_length      = 1.8   * Units.m  
+    nose_gear.origin            = [[5,0,-0.5]]  
+    nose_gear.wheels            = 2   
     nose_gear.number_of_gear_types_in_tandem  = 1
-    nose_gear.number_of_wheels_in_gear_type   = 2    
+    nose_gear.number_of_wheels_in_gear_type  = 2    
     vehicle.append_component(nose_gear)
 
     # ################################################# Wings ##################################################################### 
@@ -99,10 +101,8 @@ def vehicle_setup():
     wing.vertical                         = False
     wing.xz_plane_symmetric               = True
     wing.high_lift                        = True
-    wing.twists.root                      = 2.5 * Units.degrees 
-    wing.twists.tip                       = 3.5  * Units.degrees 
-    wing.transition_x_upper               = 0.5
-    wing.transition_x_lower               = 0.5
+    wing.twists.root                      = 3.5 * Units.degrees 
+    wing.twists.tip                       = -1  * Units.degrees  
     
 
     # Wing Segments
@@ -116,7 +116,7 @@ def vehicle_setup():
     segment.percent_span_location         = 0.0 
     segment.root_chord_percent            = 1.
     segment.dihedral_outboard             = 2.5 * Units.degrees
-    segment.twist                         = 3.5   * Units.degrees
+    segment.twist                         = wing.twists.root - (wing.twists.root - wing.twists.tip) *  segment.percent_span_location
     segment.sweeps.quarter_chord          = 28.225 * Units.degrees 
     segment.append_airfoil(root_airfoil)
     wing.append_segment(segment)
@@ -127,7 +127,7 @@ def vehicle_setup():
     segment.tag                           = 'Yehudi'
     segment.percent_span_location         = 0.324 
     segment.root_chord_percent            = 0.5
-    segment.twist                         = 2.5  * Units.degrees
+    segment.twist                         = wing.twists.root - (wing.twists.root - wing.twists.tip) *  segment.percent_span_location
     segment.dihedral_outboard             = 5.5 * Units.degrees
     segment.sweeps.quarter_chord          = 25. * Units.degrees  
     segment.append_airfoil(yehudi_airfoil)
@@ -141,7 +141,7 @@ def vehicle_setup():
     segment.root_chord_percent            = 0.220  
     segment.dihedral_outboard             = 5.5 * Units.degrees
     segment.sweeps.quarter_chord          = 56.75 * Units.degrees 
-    segment.twist                         = 0 * Units.degrees
+    segment.twist                         = wing.twists.root - (wing.twists.root - wing.twists.tip) *  segment.percent_span_location
     segment.append_airfoil(mid_airfoil)
     wing.append_segment(segment)
 
@@ -152,8 +152,8 @@ def vehicle_setup():
     segment.percent_span_location         = 1. 
     segment.root_chord_percent            = 0.10077
     segment.dihedral_outboard             = 0.
-    segment.twist                         = 0 * Units.degrees
-    segment.sweeps.quarter_chord          = 56.75 * Units.degrees 
+    segment.twist                         = wing.twists.root - (wing.twists.root - wing.twists.tip) *  segment.percent_span_location
+    segment.sweeps.quarter_chord          = 0 * Units.degrees 
     segment.append_airfoil(tip_airfoil)
     wing.append_segment(segment)
     
@@ -280,9 +280,7 @@ def vehicle_setup():
     wing.vertical                         = True
     wing.xz_plane_symmetric               = False
     wing.t_tail                           = False 
-    wing.dynamic_pressure_ratio           = 1.0
-    wing.transition_x_upper               = 0.5
-    wing.transition_x_lower               = 0.5
+    wing.dynamic_pressure_ratio           = 1.0 
 
     # Wing Segments
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -344,7 +342,8 @@ def vehicle_setup():
 
     
     cabin                                              = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-    cabin.origin                                       = [[4, 0, 0]]
+    cabin.origin                                       = [[6.5, 0, 0]]
+    cabin.segments_bounding_cabin                      = ['segment_6','segment_12']
     first_class                                        = RCAIDE.Library.Components.Fuselages.Cabins.Classes.First() 
     first_class.number_of_seats_abrest                 = 4
     first_class.number_of_rows                         = 4
@@ -504,6 +503,38 @@ def vehicle_setup():
     vehicle.append_component(fuselage)
      
 
+    ##------------------------------------------------------------------------------------------------------------------------- 
+    ##  Systems
+    ##-------------------------------------------------------------------------------------------------------------------------   
+    avionics =  RCAIDE.Library.Components.Powertrain.Systems.Avionics()
+    avionics.origin                   = [[4,0,0]]   
+    vehicle.append_component(avionics)
+
+    flight_controls =  RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()    
+    flight_controls.origin            = [[28,0,0]]  
+    vehicle.append_component(flight_controls)
+    
+    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit()  
+    auxillary_power_unit.origin       = [[35,0,0]] 
+    vehicle.append_component(auxillary_power_unit)
+
+    electrical =  RCAIDE.Library.Components.Powertrain.Systems.Electrical()      
+    electrical.origin                 = [[36,0,0]]  
+    vehicle.append_component(electrical)
+    
+    hydraulics =  RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()  
+    hydraulics.origin                 = [[30,0,0]]  
+    vehicle.append_component(hydraulics)
+    
+    environmental_controls =  RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()  
+    environmental_controls.origin     = [[36,0,0]]   
+    vehicle.append_component(environmental_controls)
+    
+    instruments =  RCAIDE.Library.Components.Powertrain.Systems.Instruments()  
+    instruments.origin                = [[30,0,0]]  
+    vehicle.append_component(instruments)
+        
+
     # ################################################# Energy Network #######################################################          
     #------------------------------------------------------------------------------------------------------------------------- 
     #  Turbofan Network
@@ -520,7 +551,7 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------         
     turbofan                                       = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
     turbofan.tag                                   = 'propulsor_1' 
-    turbofan.origin                                = [[13.72, 4.86,-1.1]] 
+    turbofan.origin                                = [[14.8, 4.86,-1.1]] 
     turbofan.length                                = 2.71     
     turbofan.bypass_ratio                          = 5.4          
     turbofan.diameter                              = 1.5494
@@ -618,7 +649,7 @@ def vehicle_setup():
     nacelle.length                              = 2.71
     nacelle.tag                                 = 'nacelle_1'
     nacelle.inlet_diameter                      = 2.0
-    nacelle.origin                              = [[13.5,4.38,-1.5]] 
+    nacelle.origin                              = [[13.8,4.38,-1.5]] 
     nacelle.areas.wetted                        = 1.1*np.pi*nacelle.diameter*nacelle.length 
     nacelle_airfoil                             = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
     nacelle_airfoil.NACA_4_Series_code          = '2410'
@@ -633,8 +664,8 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------   
     turbofan_2                                  = deepcopy(turbofan) 
     turbofan_2.tag                              = 'propulsor_2' 
-    turbofan_2.origin                           = [[13.72,-4.38,-1.1]]   
-    turbofan_2.nacelle.origin                   = [[13.5,-4.38,-1.5]]
+    turbofan_2.origin                           = [[14.8,-4.38,-1.1]]   
+    turbofan_2.nacelle.origin                   = [[13.8,-4.38,-1.5]]
          
     # append propulsor to network
     net.propulsors.append(turbofan_2)

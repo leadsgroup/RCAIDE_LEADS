@@ -96,7 +96,7 @@ def plot_lift_distribution(results,
             axes = plt.subplot(1,1,1)
             for i in range(VD.n_w[ti][0]): 
                 y_pts = VD.Y_SW[ti,b_sw[i]:b_sw[i+1]]
-                z_pts = segment.conditions.aerodynamics.coefficients.lift.inviscid.spanwise[ti,b_sw[i]:b_sw[i+1]]
+                z_pts = segment.conditions.aerodynamics.coefficients.lift.spanwise[ti,b_sw[i]:b_sw[i+1]]
                 axes.plot(y_pts, z_pts, line[i] ) 
             axes.set_xlabel("Spanwise Location (m)")
             axes.set_ylabel('$C_{Ly}$')  

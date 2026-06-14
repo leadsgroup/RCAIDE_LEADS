@@ -24,12 +24,12 @@ def main():
     try:
         import vsp as vsp
         from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
-        export_vsp_vehicle(vehicle, 'BWB')
+        export_vsp_vehicle(vehicle, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'BWB'))
     except ImportError:
         pass 
     
     # Step 2: plot vehicle 
-    plot_3d_vehicle(vehicle,export_gltf=True) 
+    plot_3d_vehicle(vehicle,save_filename=os.path.join(os.path.dirname(os.path.abspath(__file__)),'Cessna_172'),export_gltf=True,show_figure=True) 
     
     return 
 
@@ -67,29 +67,31 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------
     # ##################################################### Landing Gear ################################################################    
     #------------------------------------------------------------------------------------------------------------------------------------ 
-    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
-    main_gear.tire_diameter                  = 6  *  Units.inches 
-    main_gear.rim_diameter                   = 3  *  Units.inches 
-    main_gear.tire_width                     = 6  *  Units.inches 
-    main_gear.strut_length                   = 12  * Units.ft 
-    main_gear.wheels                         = 4   
+    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
+    main_gear.tire_diameter                  = 21.0 *  Units.inches
+    main_gear.rim_diameter                   = 6.0  *  Units.inches
+    main_gear.tire_width                     = 6.0  *  Units.inches
+    main_gear.strut_length                   = 0.46 * Units.m
+    main_gear.origin                         = [[2.0, 1.265, -0.5]]
+    main_gear.wheels                         = 2
     main_gear.number_of_gear_types_in_tandem = 1
-    main_gear.number_of_wheels_in_gear_type  = 2
+    main_gear.number_of_wheels_in_gear_type  = 1
     main_gear.fairing                        = True
     main_gear.xz_plane_symmetric             = True
     main_gear.gear_extended                  = True
-    vehicle.append_component(main_gear)  
+    vehicle.append_component(main_gear)
 
-    nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
-    nose_gear.tire_diameter                  =  5 *  Units.inches   
-    nose_gear.rim_diameter                   =  3 *  Units.inches 
-    nose_gear.tire_width                     =  5 *  Units.inches 
-    nose_gear.strut_length                   =  6.* Units.ft 
-    nose_gear.wheels                         = 2  
-    nose_gear.fairing                        = True 
+    nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()
+    nose_gear.tire_diameter                  = 15.0 *  Units.inches
+    nose_gear.rim_diameter                   = 5.0  *  Units.inches
+    nose_gear.tire_width                     = 5.0  *  Units.inches
+    nose_gear.strut_length                   = 0.50 * Units.m
+    nose_gear.origin                         = [[0.35, 0, -0.5]]
+    nose_gear.wheels                         = 1
+    nose_gear.fairing                        = True
     nose_gear.gear_extended                  = True
     nose_gear.number_of_gear_types_in_tandem = 1
-    nose_gear.number_of_wheels_in_gear_type  = 2    
+    nose_gear.number_of_wheels_in_gear_type  = 1
     vehicle.append_component(nose_gear)
     
 
@@ -390,7 +392,7 @@ def vehicle_setup():
     prop.hub_radius                         = 8.     * Units.inches
     prop.cruise.design_freestream_velocity  = 119.   * Units.knots
     prop.cruise.design_angular_velocity     = 2650.  * Units.rpm
-    prop.cruise.design_Cl                   = 0.8
+    prop.cruise.design_lift_coefficient                   = 0.8
     prop.cruise.design_altitude             = 12000. * Units.feet
     prop.cruise.design_power                = .64 * 180. * Units.horsepower
     prop.variable_pitch                     = True   

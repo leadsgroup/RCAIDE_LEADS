@@ -780,9 +780,7 @@ def base_analysis(vehicle):
     
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
-    aerodynamics                                       = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.settings.number_of_spanwise_vortices  = 25
-    aerodynamics.settings.number_of_chordwise_vortices = 5      
+    aerodynamics                                       = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
     aerodynamics.vortex_lift                           = True
     analyses.append(aerodynamics)
 
@@ -826,7 +824,11 @@ def plot_mission(results):
     
     plot_drag_components(results) 
  
-    plot_emissions(results) 
+    plot_emission_indices(results)
+    
+    plot_emission_species_masses(results)
+    
+    plot_CO2e_emissions(results)
   
     plot_aerodynamic_forces(results) 
      

@@ -9,14 +9,24 @@
 from .Systems import Systems
  
 # ----------------------------------------------------------------------
-# Auxillary_Power_Unit
+# Water_Tank
 # ----------------------------------------------------------------------
-class Water_Tank(Systems): 
+class Water_Tank(Systems):
     """
-    A class representing auxillary power unit and their power requirements. 
-    """        
+    A class representing an onboard water tank used to store water for
+    injection into the propulsion system or for cabin/auxiliary use.
+
+    Attributes
+    ----------
+    tag : str
+        Unique identifier for the component. Default is 'water_tank'.
+
+    See Also
+    --------
+    RCAIDE.Library.Components.Powertrain.Systems.Systems
+    """
     def __defaults__(self):
         """
-        Sets default values for the auxillary power unit attributes.
-        """                  
+        Sets default values for the water tank attributes.
+        """
         self.tag        = 'water_tank'

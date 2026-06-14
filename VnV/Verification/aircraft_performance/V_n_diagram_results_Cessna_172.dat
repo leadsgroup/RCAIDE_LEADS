@@ -1,0 +1,21 @@
+V-n diagram summary
+-------------------
+Aircraft: Cessna_172
+category: normal
+FAR certification: Part 23
+Weight = 2550 lb
+Altitude = 0 ft
+---------------------------------------------------------------
+
+Airspeeds: 
+    Positive stall speed (Vs1)   = 38.0 KEAS
+    Negative stall speed (Vs1)   = 53.7 KEAS
+    Positive maneuver speed (Va) = 74.0 KEAS
+    Negative maneuver speed (Va) = 104.7 KEAS
+    Cruise speed (Vc)            = 126.3 KEAS
+    Dive speed (Vd)              = 176.9 KEAS
+Load factors: 
+    Positive limit load factor (n+) = 4.06
+    Negative limit load factor (n-) = -3.8
+    Positive load factor at Vd      = 3.8
+    Negative load factor at Vd      = -1.14

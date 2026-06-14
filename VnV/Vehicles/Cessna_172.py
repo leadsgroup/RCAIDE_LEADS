@@ -110,7 +110,7 @@ def vehicle_setup():
     flap.tag                                    = 'flap' 
     flap.span_fraction_start                    = 0.15 
     flap.span_fraction_end                      = 0.324    
-    flap.deflection                             = 1.0 * Units.deg
+    flap.deflection                             = 0.0 * Units.deg
     flap.chord_fraction                         = 0.19    
     wing.append_control_surface(flap)           
                                                 
@@ -118,7 +118,7 @@ def vehicle_setup():
     slat.tag                                    = 'slat' 
     slat.span_fraction_start                    = 0.324 
     slat.span_fraction_end                      = 0.963     
-    slat.deflection                             = 1.0 * Units.deg
+    slat.deflection                             = 0.0 * Units.deg
     slat.chord_fraction                         = 0.1      
     wing.append_control_surface(slat)   
 
@@ -376,7 +376,7 @@ def vehicle_setup():
     prop.hub_radius                         = 8.     * Units.inches
     prop.cruise.design_freestream_velocity  = 119.   * Units.knots
     prop.cruise.design_angular_velocity     = 2650.  * Units.rpm
-    prop.cruise.design_Cl                   = 0.8
+    prop.cruise.design_lift_coefficient                   = 0.8
     prop.cruise.design_altitude             = 12000. * Units.feet
     prop.cruise.design_power                = .64 * 180. * Units.horsepower
     prop.variable_pitch                     = True  

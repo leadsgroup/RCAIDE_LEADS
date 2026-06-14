@@ -2,9 +2,9 @@
 # 
 
 """
-Energy plotting module providing visualization tools for energy-related components and analysis.
+Powertrain plotting module providing visualization tools for powertrain-related components and analysis.
 
-This module contains functions for plotting various energy-related metrics and characteristics
+This module contains functions for plotting various powertrain-related metrics and characteristics
 including battery performance, propulsion system efficiency, and
 fuel consumption patterns.
 """

@@ -6,8 +6,8 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor import design_lift_rotor
-from RCAIDE.load    import load as load_rotor
-from RCAIDE.save    import save as save_rotor  
+from RCAIDE.Input_Output import load as load_rotor
+from RCAIDE.Input_Output import save as save_rotor
  
 import os
 import numpy as np 
