@@ -29,7 +29,7 @@ from Boeing_737    import configs_setup as configs_setup
 
 #from RCAIDE.Library.Methods.Performance.compute_load_and_trim_diagram        import compute_load_and_trim_diagram
  
-from RCAIDE.Input_Output import export, import_data
+from RCAIDE.Input_Output import export_data, import_data
 from copy import deepcopy
 import matplotlib.pyplot as plt
 import shutil
@@ -49,6 +49,57 @@ _CMP_SKIP = frozenset({
     'process',
 })
 
+
+
+# ----------------------------------------------------------------------
+#   Main
+# ----------------------------------------------------------------------
+def main():
+    
+    # Step 1 design a vehicle
+    vehicle  = vehicle_setup() 
+      
+    # Step 2 create aircraft configuration based on vehicle 
+    configs  = configs_setup(vehicle)
+    
+    # Step 3 set up analysis
+    analyses = analyses_setup(configs)
+    
+    # Step 4 set up a flight mission
+    mission  = mission_setup(analyses)
+    missions = missions_setup(mission) 
+    
+
+    _script_dir = os.path.dirname(os.path.abspath(__file__))
+    _test_file  = os.path.join(_script_dir, 'RCAIDE_JSON_Test')
+
+    export_data(vehicle=vehicle,
+           configurations=configs,
+           analyses=analyses,
+           missions=missions,
+           filename=_test_file)
+
+    RCAIDE_JSON_Test = import_data(_test_file)
+    compare_rcaide_data(vehicle, configs, analyses, missions, RCAIDE_JSON_Test) 
+
+    
+    # Step 5 execute flight profile
+    results_original = missions.base_mission.evaluate()  
+    results_loaded   = RCAIDE_JSON_Test.missions.base_mission.evaluate()  
+
+    # Compare results 
+    cruise_CL_original       = results_original.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0]
+    cruise_CL_loaded        = results_loaded.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0] 
+    
+    print(f"Original cruise CL: {cruise_CL_original:.6f}")
+    print(f"Loaded cruise CL:   {cruise_CL_loaded:.6f}")
+    delta_CL = cruise_CL_loaded - cruise_CL_original
+    print(f"Difference in cruise CL: {delta_CL:.6e}")
+
+    # if different is more than 1e-6, consider it a failure 
+    assert(np.abs(delta_CL)<1e-6)
+
+    return 
 
 def _walk_compare(orig, imp, path, mismatches, rtol=1e-6):
     """Recurse into two RCAIDE Data trees; collect (path, orig, imp) for each mismatch."""
@@ -164,56 +215,6 @@ def compare_rcaide_data(vehicle, configs, analyses, missions, imported):
 
     print("===========================================\n")
 
-
-# ----------------------------------------------------------------------
-#   Main
-# ----------------------------------------------------------------------
-def main():
-    
-    # Step 1 design a vehicle
-    vehicle  = vehicle_setup() 
-      
-    # Step 2 create aircraft configuration based on vehicle 
-    configs  = configs_setup(vehicle)
-    
-    # Step 3 set up analysis
-    analyses = analyses_setup(configs)
-    
-    # Step 4 set up a flight mission
-    mission  = mission_setup(analyses)
-    missions = missions_setup(mission) 
-    
-
-    _script_dir = os.path.dirname(os.path.abspath(__file__))
-    _test_file  = os.path.join(_script_dir, 'RCAIDE_JSON_Test')
-
-    export(vehicle=vehicle,
-           configurations=configs,
-           analyses=analyses,
-           missions=missions,
-           filename=_test_file)
-
-    RCAIDE_JSON_Test = import_data(_test_file)
-    compare_rcaide_data(vehicle, configs, analyses, missions, RCAIDE_JSON_Test) 
-
-    
-    # Step 5 execute flight profile
-    results_original = missions.base_mission.evaluate()  
-    results_loaded   = RCAIDE_JSON_Test.missions.base_mission.evaluate()  
-
-    # Compare results 
-    cruise_CL_original       = results_original.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0]
-    cruise_CL_loaded        = results_loaded.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0] 
-    
-    print(f"Original cruise CL: {cruise_CL_original:.6f}")
-    print(f"Loaded cruise CL:   {cruise_CL_loaded:.6f}")
-    delta_CL = cruise_CL_loaded - cruise_CL_original
-    print(f"Difference in cruise CL: {delta_CL:.6e}")
-
-    # if different is more than 1e-6, consider it a failure 
-    assert(np.abs(delta_CL)<1e-6)
-
-    return 
     
  
 # ----------------------------------------------------------------------

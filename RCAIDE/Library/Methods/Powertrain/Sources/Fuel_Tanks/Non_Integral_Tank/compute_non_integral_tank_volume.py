@@ -165,9 +165,13 @@ def compute_bwb_aft_tank_volume(fuel_tank, wing,fuel_tanks):
                 # Use interpolant to evaluate polygon points
                 upper_y_function = interp1d(x_points_upper_positioned, y_points_upper_positioned, kind='linear')
                 lower_y_function = interp1d(x_points_lower_positioned, y_points_lower_positioned, kind='linear')
-                upper_y_points   = upper_y_function(x_tank_bounds)
-                lower_y_points   = lower_y_function(x_tank_bounds)
-                
+                upper_y_raw      = upper_y_function(x_tank_bounds)
+                lower_y_raw      = lower_y_function(x_tank_bounds)
+                # Reflexed airfoils can have upper_y < lower_y near the trailing edge;
+                # clamp so the polygon is always non-self-intersecting.
+                upper_y_points   = np.maximum(upper_y_raw, lower_y_raw)
+                lower_y_points   = np.minimum(upper_y_raw, lower_y_raw)
+
                 # Create polygon
                 polygon = []
                 # upper points
@@ -202,13 +206,19 @@ def compute_bwb_aft_tank_volume(fuel_tank, wing,fuel_tanks):
     circle_origins = np.zeros((num_tank_sections-1, 2))
     for seg_i in  range(1,num_tank_sections):
         if seg_i == 1:
-            inner_polygon =  Polygon( polygon_points[seg_i-1] )
+            inner_polygon = Polygon(polygon_points[seg_i - 1]).buffer(0)
         else:
             inner_polygon = intersection_polygon
-        outer_polygon =  Polygon(  polygon_points[seg_i] )
+        outer_polygon = Polygon(polygon_points[seg_i]).buffer(0)
         # intersection polygon
         intersection_polygon = inner_polygon.intersection(outer_polygon)
-        intersection_polygon.exterior.coords.xy
+        if intersection_polygon.is_empty:
+            continue
+        if not isinstance(intersection_polygon, Polygon):
+            polys = [g for g in getattr(intersection_polygon, 'geoms', []) if isinstance(g, Polygon)]
+            intersection_polygon = max(polys, key=lambda g: g.area) if polys else None
+        if intersection_polygon is None:
+            continue
         # maximum radius
         poly             = Polygon(intersection_polygon)
         inscribed_circle =  shapely.maximum_inscribed_circle(poly)

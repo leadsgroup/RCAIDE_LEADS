@@ -258,8 +258,7 @@ def vehicle_setup(redesign_rotors = False):
 
     # define cabin    
     cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-    cabin.origin                                      = [[1, 0, 0]]
-    cabin.offset_x = 1.0
+    cabin.origin                                      = [[1, 0, 0]] 
     economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
     economy_class.number_of_seats_abrest              = 2
     economy_class.number_of_rows                      = 3 

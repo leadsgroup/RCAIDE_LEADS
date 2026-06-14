@@ -16,11 +16,12 @@ from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry, com
 import numpy as np
 from scipy.interpolate import interp1d
 from shapely import Polygon
+import shapely.geometry as geom
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  generate_integral_wing_tank_points
 # ----------------------------------------------------------------------------------------------------------------------  
-def generate_integral_wing_tank_points(wing, n_points, segment_list,fuel_tank):
+def generate_integral_wing_tank_points(wing, n_points, segment_list,fuel_tank,plot_centerline = False):
     """
     Generates 3D coordinate points that define a wing surface.
 
@@ -33,7 +34,10 @@ def generate_integral_wing_tank_points(wing, n_points, segment_list,fuel_tank):
         Number of points used to discretize airfoil sections
         
     dim : int
-        Number of wing segments 
+        Number of wing segments
+
+    plot_centerline : bool, optional
+        Include the root centerline cap section in the output, default False
 
     Returns
     -------
@@ -65,162 +69,93 @@ def generate_integral_wing_tank_points(wing, n_points, segment_list,fuel_tank):
     'Dihedral'
         Upward angle of wing from horizontal
     """    
+
     # unpack  
     # obtain the geometry for each segment in a loop                                            
     symm                 = wing.xz_plane_symmetric
-    semispan             = wing.spans.projected*0.5 * (2 - symm)  
+    semispan             = wing.spans.projected*0.5 * (2 - symm) 
+    root_chord           = wing.chords.root
     segments             = wing.segments
-    n_segments           = len(segment_list) 
-    origin               = wing.origin   
-        
-    if len(segments) > 0: 
-        if segment_list[0] == None or  segment_list[1] == None:
-            raise Exception('Tank segments must be defined')
-        pts              = np.zeros((2,n_points, 3,1))  
-        section_twist    = np.zeros((2,n_points, 3,3))
-        section_twist[:, :, 0, 0] = 1        
-        section_twist[:, :, 1, 1] = 1
-        section_twist[:, :, 2, 2] = 1 
-        translation        = np.zeros((2,n_points, 3,1))    
-        translation[:, :, 0,:] = origin[0][0]  
-        translation[:, :, 1,:] = origin[0][1]  
-        translation[:, :, 2,:] = origin[0][2]  
-        for i in range(len(segment_list)):
-            current_seg = segments[segment_list[i]]
-            fs = fuel_tank.segments_percent_chord_start
-            rs = fuel_tank.segments_percent_chord_end  
-            front_rib_yu,rear_rib_yu,front_rib_yl,rear_rib_yl = compute_non_dimensional_rib_coordinates(current_seg,fuel_tank,fs[i], rs[i])
-            x_coordinates =  np.array([rs[i], rs[i], fs[i], fs[i], rs[i]])
-            y_coordinates =  np.array([rear_rib_yl, rear_rib_yu, front_rib_yu,front_rib_yl,rear_rib_yl ])   
-            twist    = current_seg.twist 
-            if wing.vertical:  
-                pts[i,:,0,0]   = x_coordinates * current_seg.root_chord_percent * wing.chords.root 
-                pts[i,:,1,0]   = y_coordinates * current_seg.root_chord_percent * wing.chords.root 
-                pts[i,:,2,0]   = np.zeros_like(y_coordinates) 
-              
-                section_twist[i,:,0,0] = np.cos(twist) 
-                section_twist[i,:,0,1] = -np.sin(twist)  
-                section_twist[i,:,1,0] = np.sin(twist) 
-                section_twist[i,:,1,1] = np.cos(twist)  
-            else: 
-                pts[i,:,0,0]   = x_coordinates * current_seg.root_chord_percent * wing.chords.root
-                pts[i,:,1,0]   = np.zeros_like(y_coordinates) 
-                pts[i,:,2,0]   = y_coordinates * current_seg.root_chord_percent * wing.chords.root   
-
-                section_twist[i,:,0,0] = np.cos(twist) 
-                section_twist[i,:,0,2] = np.sin(twist)  
-                section_twist[i,:,2,0] = -np.sin(twist) 
-                section_twist[i,:,2,2] =  np.cos(twist)  
+    n_segments           = len(segment_list)    
+    origin               = wing.origin
     
-            translation[i, :, 0,:] += current_seg.origin[0][0]  
-            translation[i, :, 1,:] += current_seg.origin[0][1]  
-            translation[i, :, 2,:] += current_seg.origin[0][2]
-                
-            if (i == n_segments-1):  
-                # update origin for next segment 
-                prev_seg             = segments[segment_list[i-1]]                
-                segment_percent_span = current_seg.percent_span_location -  prev_seg.percent_span_location
-
-                sweep    = prev_seg.sweeps.leading_edge
-                dihedral = prev_seg.dihedral_outboard
-            
-                if wing.vertical:
-                    dz = semispan*segment_percent_span
-                    dy = dz*np.tan(dihedral)
-                    l  = dz/np.cos(dihedral)
-                    dx = l*np.tan(sweep)
-                else:
-                    dy = semispan*segment_percent_span
-                    dz = dy*np.tan(dihedral)
-                    l  = dy/np.cos(dihedral)
-                    dx = l*np.tan(sweep)
-                    
-                translation[i,:,0,:] = translation[i-1,:,0,:] + dx
-                translation[i,:,1,:] = translation[i-1,:,1,:] + dy
-                translation[i,:,2,:] = translation[i-1,:,2,:] + dz 
-    else:
-
-        pts                       = np.zeros((2,n_points, 3,1))  
-        section_twist             = np.zeros((2,n_points, 3,3))
-        section_twist[:, :, 0, 0] = 1        
-        section_twist[:, :, 1, 1] = 1
-        section_twist[:, :, 2, 2] = 1
-        translation               = np.zeros((2,n_points, 3,1))
-
-        fs                = fuel_tank.segments_percent_chord_start
-        rs                = fuel_tank.segments_percent_chord_end       
-        front_rib_yu_i,rear_rib_yu_i,front_rib_yl_i,rear_rib_yl_i = compute_non_dimensional_rib_coordinates(wing,fuel_tank,fs[0],rs[0])
-        front_rib_yu_o,rear_rib_yu_o,front_rib_yl_o,rear_rib_yl_o = compute_non_dimensional_rib_coordinates(wing,fuel_tank,fs[1],rs[1])
-        x_coordinates_i   =  np.array([rs[0], rs[0], fs[0], fs[0], rs[0]])
-        x_coordinates_o   =  np.array([rs[1], rs[1], fs[1], fs[1], rs[1]])
-        y_coordinates_i   =  np.array([rear_rib_yl_i, rear_rib_yu_i, front_rib_yu_i,front_rib_yl_i,rear_rib_yl_i ]) 
-        y_coordinates_o   =  np.array([rear_rib_yl_o, rear_rib_yu_o, front_rib_yu_o,front_rib_yl_o,rear_rib_yl_o ]) 
-            
-        dihedral              = wing.dihedral
-        if wing.sweeps.leading_edge  is not None: 
-            sweep      = wing.sweeps.leading_edge
-        else:  
-            sweep_quarter_chord = wing.sweeps.quarter_chord 
-            chord_fraction      = 0.25                          
-            segment_root_chord  = wing.chords.root
-            segment_tip_chord   = wing.chords.tip
-            segment_span        = semispan 
-            sweep       = np.arctan(((segment_root_chord*chord_fraction) + (np.tan(sweep_quarter_chord )*segment_span - chord_fraction*segment_tip_chord)) /segment_span)  
-           
-        # append root section     
-        translation[:, :, 0,:] = origin[0][0]  
-        translation[:, :, 1,:] = origin[0][1]  
-        translation[:, :, 2,:] = origin[0][2] 
-       
-        if wing.vertical: 
-            pts[0,:,0,0]   = x_coordinates_i *  wing.chords.root
-            pts[0,:,1,0]   = y_coordinates_i *  wing.chords.root
-            pts[0,:,2,0]   = np.zeros_like(y_coordinates_i)
-            
-            pts[1,:,0,0]   = x_coordinates_o *  wing.chords.tip  
-            pts[1,:,1,0]   = y_coordinates_o *  wing.chords.tip  
-            pts[1,:,2,0]   = np.zeros_like(y_coordinates_o)   
-            
-            translation[1, :, 0,:] += semispan*np.tan(sweep)
-            translation[1, :, 1,:] += semispan*np.tan(dihedral) 
-            translation[1, :, 2,:] += semispan 
-
-            section_twist[0,:,0,0] = np.cos(wing.twists.root) 
-            section_twist[0,:,0,1] = -np.sin(wing.twists.root)  
-            section_twist[0,:,1,0] = np.sin(wing.twists.root) 
-            section_twist[0,:,1,1] = np.cos(wing.twists.root)
-             
-            section_twist[1,:,0,0] = np.cos(wing.twists.tip) 
-            section_twist[1,:,0,1] = -np.sin(wing.twists.tip)  
-            section_twist[1,:,1,0] = np.sin(wing.twists.tip) 
-            section_twist[1,:,1,1] = np.cos(wing.twists.tip)
-            
-            
+    pts              = np.zeros((n_segments+2,n_points, 3,1))
+    section_twist    = np.zeros((n_segments+2,n_points, 3,3))
+    section_twist[:, :, 0, 0] = 1
+    section_twist[:, :, 1, 1] = 1
+    section_twist[:, :, 2, 2] = 1
+    translation        = np.zeros((n_segments+2,n_points, 3,1))
+    translation[:, :, 0,:] = origin[0][0]
+    translation[:, :, 1,:] = origin[0][1]
+    translation[:, :, 2,:] = origin[0][2]
+     
+    for i in range(n_segments+2):
+        if i == 0:
+            current_seg = segment_list[0] 
+            fs = fuel_tank.segments_percent_chord_start[0]
+            rs = fuel_tank.segments_percent_chord_end[0]
+        elif i == n_segments + 1:
+            current_seg = segment_list[-1]
+            fs = fuel_tank.segments_percent_chord_start[-1]
+            rs = fuel_tank.segments_percent_chord_end[-1] 
         else:
-            pts[0,:,0,0]   = x_coordinates_i *  wing.chords.root
-            pts[0,:,1,0]   = np.zeros_like(y_coordinates_i) 
-            pts[0,:,2,0]   = y_coordinates_i *  wing.chords.root
-            
-            pts[1,:,0,0]   = x_coordinates_o *  wing.chords.tip  
-            pts[1,:,1,0]   = np.zeros_like(y_coordinates_o)  
-            pts[1,:,2,0]   = y_coordinates_o *  wing.chords.tip   
-    
-            translation[1, :, 0,:] += semispan*np.tan(sweep)
-            translation[1, :, 1,:] += semispan 
-            translation[1, :, 2,:] += semispan*np.tan(dihedral)     
+            current_seg = segment_list[i-1]
+            fs = fuel_tank.segments_percent_chord_start[i-1]
+            rs = fuel_tank.segments_percent_chord_end[i-1]
 
-            section_twist[0,:,0,0] = np.cos(wing.twists.root) 
-            section_twist[0,:,0,2] = np.sin(wing.twists.root)  
-            section_twist[0,:,2,0] = -np.sin(wing.twists.root) 
-            section_twist[0,:,2,2] =  np.cos(wing.twists.root)
+        airfoil = wing.segments[current_seg].airfoil
+
+        if  airfoil !=  None:
+            if type(airfoil) == RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil:
+                geometry = compute_naca_4series(airfoil.NACA_4_Series_code,n_points)
+            elif type(airfoil) == RCAIDE.Library.Components.Airfoils.Airfoil:
+                geometry     = import_airfoil_geometry(airfoil.coordinate_file,n_points)
+        else:
+            t_c = str(int(wing.segments[current_seg].thickness_to_chord *  100)).zfill(4)
+            geometry = compute_naca_4series(t_c,n_points)
+
+
+        twist    = wing.segments[current_seg].twist
+        is_end_cap = (i == 0 or i == n_segments + 1)
+
+        if wing.vertical:
+            # trim airfoil geometry to fuel tank segment start and end locations but setting points outside the segment to the segment start/end locations to maintain closed section 
+            x_coordinates = geometry.x_coordinates
+            x_coordinates[x_coordinates <= fs] = fs
+            x_coordinates[x_coordinates >= rs] = rs 
+            y_coordinates = geometry.y_coordinates
+            pts[i,:,1,0]   = (y_coordinates + y_coordinates[::-1]) / 2 if is_end_cap else y_coordinates * wing.segments[current_seg].root_chord_percent * wing.chords.root
+            pts[i,:,2,0]   = np.zeros_like(geometry.y_coordinates)
+
+            section_twist[i,:,0,0] = np.cos(twist)
+            section_twist[i,:,0,1] = -np.sin(twist)
+            section_twist[i,:,1,0] = np.sin(twist)
+            section_twist[i,:,1,1] = np.cos(twist)
+
+        else:
+            # trim airfoil geometry to fuel tank segment start and end locations but setting points outside the segment to the segment start/end locations to maintain closed section   
+            x_coordinates = geometry.x_coordinates
+            x_coordinates[x_coordinates <= fs] = fs
+            x_coordinates[x_coordinates >= rs] = rs 
+            y_coordinates = geometry.y_coordinates
+            pts[i,:,0,0]   = x_coordinates * wing.segments[current_seg].root_chord_percent * wing.chords.root
+            pts[i,:,1,0]   = np.zeros_like(geometry.y_coordinates)       
+            pts[i,:,2,0]   = (y_coordinates + y_coordinates[::-1]) / 2 if is_end_cap else y_coordinates * wing.segments[current_seg].root_chord_percent * wing.chords.root
              
-            section_twist[1,:,0,0] = np.cos(wing.twists.tip) 
-            section_twist[1,:,0,2] = np.sin(wing.twists.tip)  
-            section_twist[1,:,2,0] = -np.sin(wing.twists.tip) 
-            section_twist[1,:,2,2] =  np.cos(wing.twists.tip) 
- 
+            section_twist[i,:,0,0] = np.cos(twist)
+            section_twist[i,:,0,2] = np.sin(twist)
+            section_twist[i,:,2,0] = -np.sin(twist)
+            section_twist[i,:,2,2] =  np.cos(twist) 
+
+        translation[i, :, 0,:] += segments[current_seg].origin[0][0]
+        translation[i, :, 1,:] += segments[current_seg].origin[0][1]
+        translation[i, :, 2,:] += segments[current_seg].origin[0][2]  
+
     mat     = translation + np.matmul(section_twist ,pts)
-    
+
+    if not plot_centerline:
+        mat = mat[1:, :, :, :]
+
     # ---------------------------------------------------------------------------------------------
     # create empty data structure for storing geometry
     G = Data()
@@ -243,8 +178,7 @@ def generate_integral_wing_tank_points(wing, n_points, segment_list,fuel_tank):
     G.ZB1  = mat[1:,:-1,2,0]  
     G.XB2  = mat[1:,1:,0,0]   
     G.YB2  = mat[1:,1:,1,0]   
-    G.ZB2  = mat[1:,1:,2,0]      
-    
+    G.ZB2  = mat[1:,1:,2,0]    
     return G
 
 def generate_integral_fuel_tank_points(fuselage,fuel_tank, segment_list, tessellation = 24):
@@ -503,10 +437,14 @@ def generate_aft_integral_wing_tank_points(wing, n_points, segment_list, fuel_ta
         z_points_upper = segment_chord * geometry.y_upper_surface + wing_segment_origins[seg_i][2] - fuel_tank.wall_clearance
         z_points_lower = segment_chord * geometry.y_lower_surface + wing_segment_origins[seg_i][2] + fuel_tank.wall_clearance
 
-        upper_fn = interp1d(x_points_upper, z_points_upper, kind='linear')
-        lower_fn = interp1d(x_points_lower, z_points_lower, kind='linear')
-        upper_z = upper_fn(x_tank_bounds)
-        lower_z = lower_fn(x_tank_bounds)
+        upper_fn  = interp1d(x_points_upper, z_points_upper, kind='linear')
+        lower_fn  = interp1d(x_points_lower, z_points_lower, kind='linear')
+        upper_raw = upper_fn(x_tank_bounds)
+        lower_raw = lower_fn(x_tank_bounds)
+        # Reflexed airfoils can have upper_z < lower_z near the trailing edge;
+        # clamp so the polygon is always non-self-intersecting.
+        upper_z   = np.maximum(upper_raw, lower_raw)
+        lower_z   = np.minimum(upper_raw, lower_raw)
 
         polygon = [
             (x_tank_bounds[0], upper_z[0]),
@@ -523,11 +461,11 @@ def generate_aft_integral_wing_tank_points(wing, n_points, segment_list, fuel_ta
 
     for seg_i in range(1, num_tank_sections):
         if seg_i == 1:
-            inner_polygon = Polygon(polygon_points[seg_i - 1])
+            inner_polygon = Polygon(polygon_points[seg_i - 1]).buffer(0)
         else:
             inner_polygon = intersection_polygon
 
-        outer_polygon = Polygon(polygon_points[seg_i])
+        outer_polygon = Polygon(polygon_points[seg_i]).buffer(0)
         intersection_polygon = inner_polygon.intersection(outer_polygon)
 
         if intersection_polygon.is_empty:
@@ -536,8 +474,14 @@ def generate_aft_integral_wing_tank_points(wing, n_points, segment_list, fuel_ta
             intersection_polygons.append(None)
             continue
 
-        if intersection_polygon.geom_type == 'MultiPolygon':
-            intersection_polygon = max(intersection_polygon.geoms, key=lambda g: g.area)
+        if not isinstance(intersection_polygon, geom.Polygon):
+            polys = [g for g in getattr(intersection_polygon, 'geoms', []) if isinstance(g, geom.Polygon)]
+            intersection_polygon = max(polys, key=lambda g: g.area) if polys else None
+        if intersection_polygon is None:
+            tank_volumes[seg_i - 1] = 0.0
+            tank_lengths[seg_i - 1] = 0.0
+            intersection_polygons.append(None)
+            continue
 
         area = intersection_polygon.area
         y_curr = segments[seg_names[seg_i]].percent_span_location * wing_span

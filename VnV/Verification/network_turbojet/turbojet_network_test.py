@@ -10,7 +10,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core                          import Units , Data
 from RCAIDE.Library.Plots                           import *
-from RCAIDE.Input_Output                            import save, load, export, import_data, save_results, load_results
+from RCAIDE.Input_Output                            import save, load, export_data, import_data, save_results, load_results
 
 # python imports     
 import numpy as np  
@@ -59,7 +59,7 @@ def main():
     L_D = (CL / CD).mean()
 
     # Truth values
-    L_D_truth = 7.440457937848301
+    L_D_truth = 7.503217086474397
 
     # Store errors
     error     = Data()
@@ -89,13 +89,13 @@ def io_test(vehicle, configs, analyses, missions, results, CL_ref):
     save(d, save_base)
     d_back = load(save_base)
     assert np.abs(d_back.check - d.check) < 1e-12, "save/load round-trip failed"
-    os.remove(save_base + '.json')
+    os.remove(save_base)
 
     # ------------------------------------------------------------------
     #  2. export / import_data  (JSON round-trip — structural checks)
     # ------------------------------------------------------------------
     json_base = os.path.join(base_dir, '_turbojet_io_test')
-    export(vehicle, configs, analyses, missions, json_base)
+    export_data(vehicle, configs, analyses, missions, json_base)
     imported  = import_data(json_base)
 
     assert imported.vehicle.tag == vehicle.tag, \

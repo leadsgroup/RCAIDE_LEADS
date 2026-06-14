@@ -1,6 +1,12 @@
 # RCAIDE/Library/Plots/Geometry/generate_3d_lopa_points.py
 #
-# Created: Oct 2025, S Shekar
+# Created: Oct 2025, S Shekar 
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------  
+# RCAIDE imports
+from RCAIDE.Framework.Core import Data 
 import numpy as np
 import pyvista as pv
 from RCAIDE.Framework.Core import Data
