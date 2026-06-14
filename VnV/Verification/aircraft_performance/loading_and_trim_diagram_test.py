@@ -62,19 +62,10 @@ def tube_and_wing_load_trim_test():
     mission = E190_mission_setup(analyses)
  
     load_data =  compute_load_and_trim_diagram( mission, cruise_segment_tag = 'cruise', discretization=  3)
-<<<<<<< HEAD
     
-    save_results(load_data,'taw_loading_results') 
- 
-    CG_Percent_of_LEMAC_truth = np.array([[-0.25688876,  0.67084672,  1.5985822 ],
-                                          [-0.25688876,  0.67084672,  1.5985822 ],
-                                          [-0.25688876,  0.67084672,  1.5985822 ]])
-=======
-     
     CG_Percent_of_LEMAC_truth = np.array([[-0.25572757,  0.67208385,  1.59989527],
                                           [-0.25572757,  0.67208385,  1.59989527],
-                                          [-0.25572757,  0.67208385,  1.59989527]])
->>>>>>> 6f04b72118c5f63837bcb8fbde3ed393ec4a9466
+                                          [-0.25572757,  0.67208385,  1.59989527]]) 
     plot_load_diagram(load_data,save_filename  = "TW_Aircraft_Loading_Trim_Dragram") 
 
     LEMAC_error = np.max(np.abs((load_data.trim_results.CG_percent_of_LEMAC_location - CG_Percent_of_LEMAC_truth)/np.abs(CG_Percent_of_LEMAC_truth)))
@@ -101,16 +92,10 @@ def blended_wing_body_load_trim_test():
     mission = BWB_mission_setup(analyses)
  
     load_data =  compute_load_and_trim_diagram( mission, cruise_segment_tag= 'cruise', discretization=  3) 
- 
-<<<<<<< HEAD
-    CG_Percent_of_LEMAC_truth = np.array([[-0.00936612,  0.85303387,  1.71543386],
-                                          [-0.00936612,  0.85303387,  1.71543386],
-                                          [-0.00936612,  0.85303387,  1.71543386]])
-=======
+  
     CG_Percent_of_LEMAC_truth = np.array([[-0.06332442,  0.78558599,  1.63449641],
                                          [-0.06332442,  0.78558599,  1.63449641],
-                                         [-0.06332442,  0.78558599,  1.63449641]])
->>>>>>> 6f04b72118c5f63837bcb8fbde3ed393ec4a9466
+                                         [-0.06332442,  0.78558599,  1.63449641]]) 
     
     plot_load_diagram(load_data,save_filename  = "BWB_Aircraft_Loading_Trim_Dragram") 
 
