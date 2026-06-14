@@ -32,6 +32,7 @@ def base_analysis(vehicle):
     
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
+    geometry.settings.update_max_fuel           = True
     analyses.append(geometry)
 
     # ------------------------------------------------------------------
