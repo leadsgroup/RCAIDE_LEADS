@@ -135,7 +135,12 @@ def compute_operating_empty_weight(vehicle, settings=None):
     W_fuselage_total = 0
     for fuse in vehicle.fuselages:
         W_fuselage = Raymer.compute_fuselage_weight(vehicle, fuse, settings)
-        fuse.mass_properties.mass = W_fuselage + W_systems.W_furnish
+        fuse.mass_properties.mass = W_fuselage
+        if hasattr(settings.weight_correction_factors.empty.systems, 'furnishings'):
+            fuse.mass_properties.mass += W_systems.W_furnish * settings.weight_correction_factors.empty.systems.furnishings
+        else:
+            fuse.mass_properties.mass += W_systems.W_furnish 
+        
         W_fuselage_total += W_fuselage
     ##-------------------------------------------------------------------------------                 
     # Landing Gear Weight
