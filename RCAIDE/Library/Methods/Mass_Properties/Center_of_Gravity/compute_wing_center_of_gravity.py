@@ -72,6 +72,7 @@ def compute_wing_center_of_gravity(wing,vehicle,n_points = 101):
         
         solid_segment =  compute_segment_meshes(x_in,y_in, x_out, y_out, L, spanwise_shift) 
         segment_meshes.append(solid_segment)
+        inner_segment.volume_properties.gross_volume = solid_segment.volume
     
     combinde_mesh = trimesh.util.concatenate(segment_meshes)
 
