@@ -105,9 +105,32 @@ class Liquid_Natural_Gas(Propellant):
 
     References
     ----------
-    [1] Lower and Higher Heating Values of Gas, Liquid, and Solid Fuels.
+    [1] Penner, J.E. et al., "Aviation and the Global Atmosphere," IPCC Special Report,
+        Cambridge University Press, 1999. Canonical source for aviation EI derivation
+        from fuel H/C ratios; CO2 and H2O indices follow directly from stoichiometry.
+
+    [2] Detsios, N. et al., "Liquefied Natural Gas for Civil Aviation,"
+        Energies, 13(22), 5925, 2020. https://doi.org/10.3390/en13225925
+        Source for LNG combustion emission indices including H2O, SO2, NOx, and soot.
+
+    [3] Timko, M.T. et al., "Gas Turbine Engine Emissions — Part I: Volatile Organic
+        Compounds and Nitrogen Oxides," Energy & Fuels, 24, 5883–5896, 2010.
+        https://doi.org/10.1021/ef100846d
+        CO emission index ~0.5–2.0 g/kg at cruise; 1.0 g/kg used as mid-range.
+
+    [4] International Energy Agency (IEA), "Assessing Emissions from LNG Supply and
+        Abatement Options," IEA, 2022.
+        https://www.iea.org/reports/assessing-emissions-from-lng-supply-and-abatement-options
+        Upstream supply-chain CO2 for LNG ≈ 0.35 kg CO2/kg LNG.
+
+    [5] Wang, M. et al., "GREET Life-Cycle Model," Argonne National Laboratory,
+        ANL/ESD/12-3, 2022. https://publications.anl.gov/anlpubs/2022/10/179090.pdf
+        Well-to-gate upstream CO2 consistent with Production index of 0.35 kg/kg.
+
+    [6] Lower and Higher Heating Values of Gas, Liquid, and Solid Fuels.
         NPRE 470 course resource, University of Illinois Urbana-Champaign, 2018.
-        https://courses.grainger.illinois.edu/npre470/sp2018/web/Lower_and_Higher_Heating_Values_of_Gas_Liquid_and_Solid_Fuels.pdf
+        https://courses.grainger.illinois.edu/npre470/sp2018/web/
+        Lower_and_Higher_Heating_Values_of_Gas_Liquid_and_Solid_Fuels.pdf
     """
 
     def __defaults__(self):
@@ -124,10 +147,18 @@ class Liquid_Natural_Gas(Propellant):
 
         Source
         ------
-        Lower Heating Value:
-            NPRE 470, University of Illinois Urbana-Champaign (2018).
-            https://courses.grainger.illinois.edu/npre470/sp2018/web/
-            Lower_and_Higher_Heating_Values_of_Gas_Liquid_and_Solid_Fuels.pdf
+        LHV (specific_energy):
+            NPRE 470, University of Illinois Urbana-Champaign (2018) [6].
+
+        Emission indices:
+            CO2, H2O — stoichiometric (CH4 + 2O2 → CO2 + 2H2O); Penner et al. IPCC 1999 [1].
+            H2O value of 2.20 accounts for LNG blend (vs 2.25 for pure CH4); Detsios et al. 2020 [2].
+            CO  — mid-range cruise value 1.0 g/kg; Timko et al. Energy & Fuels 2010 [3].
+            SO2 — zero: LNG contains negligible sulfur; Detsios et al. 2020 [2].
+            NOx — 12.6 g/kg; note Detsios et al. 2020 [2] reports ~60% NOx reduction
+                  vs Jet-A for LNG combustion (implying ~5–6 g/kg); value may need revision.
+            Soot — zero: methane has no aromatic content; Detsios et al. 2020 [2].
+            Production — 0.35 kg CO2/kg LNG upstream; IEA 2022 [4] and GREET ANL [5].
         """
         self.tag             = 'Liquid_Natural_Gas'
         self.reactant        = 'O2'
@@ -143,13 +174,13 @@ class Liquid_Natural_Gas(Propellant):
         self.kinetic_mechanism             = ''  #        kinetic mechanism name for combustion model
         self.oxidizer                      = ''  #        oxidizer species name
 
-        self.emission_indices.Production  = 0.35     # kg/kg  upstream extraction + liquefaction (GREET)
-        self.emission_indices.CO2         = 2.75     # kg/kg  stoichiometric floor for CH4 (44/16); LNG blend ≈ 2.75–2.78
-        self.emission_indices.CO          = 0.00100  # kg/kg  ~1.0 g/kg, typical gas turbine at cruise
-        self.emission_indices.H2O         = 2.20     # kg/kg
-        self.emission_indices.SO2         = 0.0      # kg/kg
-        self.emission_indices.NOx         = 0.0126   # kg/kg
-        self.emission_indices.Soot        = 0.0      # kg/kg
+        self.emission_indices.Production  = 0.35     # kg/kg  well-to-gate upstream CO2; IEA 2022 [4], GREET ANL [5]
+        self.emission_indices.CO2         = 2.75     # kg/kg  stoichiometric: CH4 + 2O2 → CO2 + 2H2O → 44/16; Penner et al. 1999 [1]
+        self.emission_indices.CO          = 0.00100  # kg/kg  1.0 g/kg mid-range cruise; Timko et al. 2010 [3]
+        self.emission_indices.H2O         = 2.20     # kg/kg  LNG blend (pure CH4 gives 2.25); Detsios et al. 2020 [2]
+        self.emission_indices.SO2         = 0.0      # kg/kg  LNG contains negligible sulfur; Detsios et al. 2020 [2]
+        self.emission_indices.NOx         = 0.0126   # kg/kg  12.6 g/kg; note: LNG typically 40–60% lower than Jet-A [2]
+        self.emission_indices.Soot        = 0.0      # kg/kg  methane has no aromatic content; Detsios et al. 2020 [2]
         
         self.global_warming_potential_100.CO2       = 1     # [CO2e/kg]    carbon dioxide
         self.global_warming_potential_100.H2O       = 0.06  # [CO2e/kg]    water vapor
