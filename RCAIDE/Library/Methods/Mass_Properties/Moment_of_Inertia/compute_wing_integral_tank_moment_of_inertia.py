@@ -42,9 +42,9 @@ def compute_wing_integral_tank_moment_of_inertia(fuel_tank,wing, center_of_gravi
     Properties Used:
     N/A
     '''   
-    mass         = fuel_tank.fuel.mass_properties.mass 
-    I_local_fuel = fuel_tank.fuel.mass_properties.moments_of_inertia.tensor  
-    I_local_fuel_non_dim = I_local_fuel / mass
+    mass                  = fuel_tank.fuel.mass_properties.mass
+    I_local_fuel_non_dim  = fuel_tank.fuel.mass_properties.moments_of_inertia.non_dimensional_tensor
+    I_local_fuel           = I_local_fuel_non_dim * mass
 
     # intialize matrices  
     I_local_tank        = np.zeros((3, 3))

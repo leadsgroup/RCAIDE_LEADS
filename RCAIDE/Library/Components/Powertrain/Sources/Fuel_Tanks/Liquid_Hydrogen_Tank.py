@@ -160,8 +160,8 @@ class Liquid_Hydrogen_Tank(Non_Integral_Tank):
                             compute_cryogenic_cylindrical_tank_volume(self,fuel_tanks)
         elif self.geometry_type == 'conformal':
             if self.wing_tag != None and self.bwb_aft_tank is False:
-                wing = wings[self.wing_tag]  
-                compute_wing_integral_prismatic_tank_volume(self, wing,fuel_tanks)
+                wing = wings[self.wing_tag]
+                compute_wing_integral_tank_volume(self,wing)
                 if hasattr(fuel_tanks,self.tag):
                     compute_cryogenic_tank_conformal_volume(self,fuel_tanks)
             else:
@@ -204,7 +204,7 @@ class Liquid_Hydrogen_Tank(Non_Integral_Tank):
             pass
         elif self.geometry_type == 'conformal' and self.bwb_aft_tank == False:
             thickness = self.inner_structure.thickness + self.insulation_thickness
-            _, _ = compute_cuboid_moment_of_inertia(self, outer_length = self.average_outer_length, outer_width = self.average_outer_width, outer_height = self.average_outer_height, inner_length = self.average_outer_length - 2 *thickness, inner_width = self.average_outer_width - 2*thickness, inner_height=self.average_outer_height - 2 * thickness, center_of_gravity=center_of_gravity, fuel_tank=True)
+            _, _ = compute_cuboid_moment_of_inertia(self, outer_length = self.lengths.external, outer_width = self.widths.external, outer_height = self.heights.external, inner_length = self.lengths.external - 2 *thickness, inner_width = self.widths.external - 2*thickness, inner_height=self.heights.external - 2 * thickness, center_of_gravity=center_of_gravity, fuel_tank=True)
         
         return
     

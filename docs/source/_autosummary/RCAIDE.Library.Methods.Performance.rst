@@ -38,7 +38,7 @@ Performance
    estimate_stall_speed
    estimate_take_off_field_length
    estimate_take_off_weight_given_TOFL
-   compute_V_n_diagram
+   generate_V_n_diagram
    propeller_aerodynamic_analysis
    rotor_aerodynamic_analysis
 

@@ -44,6 +44,7 @@ class Geometry(Analysis):
         self.settings.compute_fuel_volume       = True
         self.settings.unique_geometry           = False
         self.settings.update_max_fuel           = False
+        self.settings.update_fuel_mass          = True
         self.settings.write_geometry_properties = False
 
         
