@@ -22,98 +22,88 @@ import sys
 # ----------------------------------------------------------------------------------------------------------------------  
 def mass_properties(mission):
     """Calculate and update mass properties for all mission segments.
-
-    Performs weight analysis, center of gravity computation, and moment of inertia
+    
+    Performs weight analysis, center of gravity computation, and moment of inertia 
     calculations for each mission segment. Handles multiple analysis scenarios including
-    MTOW-based fallbacks, iterative MTOW convergence, and full weight buildups.
-
+    user-defined weights, MTOW-based calculations, and iterative weight convergence.
+    
     Parameters
     ----------
     mission : RCAIDE.Framework.Mission
         Mission object containing segments with weight analysis requirements.
-
+        
     Raises
     ------
     AttributeError
         If max_takeoff weight is not defined.
     AssertionError
         If payload exceeds max_payload or fuel exceeds max_fuel.
-
+        
     Notes
     -----
-    The function operates in three main modes depending on what is defined on the vehicle
-    and the weights analysis settings:
-
-    1. **No aircraft type** (``aircraft_type = None``): weight analysis cannot be
-       performed; takeoff weight falls back to MTOW.
-    2. **No payload or fuel** (both ``None``): takeoff weight cannot be computed from
-       a buildup; falls back to MTOW.
-    3. **Full weight analysis** (``settings.run_weights_analysis = True``): a complete
-       OEW buildup is performed every call. Takeoff weight is always recomputed as
-       ``OEW + payload + fuel`` so that repeated calls — as occur during carpet-plot
-       sweeps and gradient-based optimizations — produce consistent results. Do **not**
-       pre-set ``mass_properties.takeoff`` on the vehicle when using this mode; the
-       buildup result will overwrite it on every evaluation.
-
-    Required vehicle mass property inputs for a full weight analysis:
-
-    * ``max_takeoff`` — must always be defined.
-    * ``payload`` and/or ``fuel`` — at least one must be non-zero/non-None.
-    * ``max_zero_fuel`` or ``max_fuel`` — if both are ``None``, regression estimates
-      are used as an initial guess and the analysis iterates to convergence.
+    The function operates in three main modes:
+    
+    1. **Pre-defined weights**: Uses existing takeoff weight if provided
+    2. **Simple MTOW**: Falls back to MTOW if aircraft_type undefined
+    3. **Full analysis**: Performs complete weight buildup with iterations, if the 
+          setting update_takeoff_weight is True then it updates the aircraft takeoff weight 
+          with the new one based on the buildup. otherwise the takeoff weight is not adjusted
+    
+    To complete a weight breakdown the methods require an aircraft to have the following
+    defined: MTOW, payload and/or fuel weight, aircraft method type (included in the weights 
+    analysis type most times), max fuel and max zero fuel weights or neither. If
+    the user desires to have the takeoff weight calculated by the weight breakdown
+    used for further analyses then specify under the weight analysis settings 
+    "update_takeoff_weight == True".
 
     Algorithm Flow
     ~~~~~~~~~~~~~~
-
+    
     .. code-block:: text
-
+    
         For each segment:
-        ├── Check weights analysis is defined (raises if not)
-        ├── Validate MTOW defined (raises if not)
-        ├── If aircraft_type undefined → takeoff = MTOW (warn)
-        ├── Else if payload and fuel both None → takeoff = MTOW (warn)
-        ├── Else if run_weights_analysis == True:
-        │   ├── If iterate_mtow == True:
-        │   │   └── Outer MTOW convergence loop
-        │   │       ├── If max_zero_fuel undefined: regression guess + inner loop
-        │   │       └── Iterate Staub-factor until MTOW converges
-        │   └── Else (default):
-        │       ├── If max_zero_fuel undefined: regression guess + convergence loop
-        │       └── Single weights_analysis.evaluate() call
-        │   ├── Compute OEW from weight breakdown (if overwrite_operating_empty_weight)
-        │   ├── Apply correction factors
-        │   └── takeoff = OEW + payload + fuel  (always recomputed)
-        ├── Update CG if run_center_of_gravity_analysis == True
-        └── Update MOI if run_moments_of_inertia_analysis == True
-
+        ├── Check if weights analysis exists
+        ├── Validate MTOW defined (required)
+        ├── If aircraft_type undefined → Use MTOW for takeoff weight
+        ├── Else if no payload/fuel → Use MTOW  
+        ├── Else → Perform weight analysis:
+        │   ├── Check payload/fuel limits
+        │   ├── If max_fuel/max_zero_fuel undefined:
+        │   │   └── Iterate to convergence (max 100 iterations)
+        │   │       ├── Initial guess from regression
+        │   │       ├── Evaluate weights
+        │   │       ├── Apply corrections
+        │   │       └── Check convergence (<10 kg residual)
+        │   ├── Single evaluation
+        |   └── Apply correction factors if specified
+        ├── Update takeoff weight if requested
+        ├── Update CG if requested
+        ├── Update MOI if requested
+        └── Copy vehicle to aerodynamics
+    
     Weight Equations
     ~~~~~~~~~~~~~~~~
-
+    
     .. math::
-
+    
         W_{takeoff} = W_{OEW} + W_{payload} + W_{fuel}
-
+        
         W_{OEW} = W_{empty} + W_{operational}
-
+        
         W_{max\\_zero\\_fuel} = W_{OEW} + W_{max\\_payload}
-
+        
         W_{max\\_fuel} = W_{MTOW} - W_{OEW} - W_{min\\_payload}
-
+    
     Initial Regression Estimates
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    When max_fuel or max_zero_fuel are undefined, the following regression-based
-    initial guesses are used before iterating to convergence:
-
+    
+    When max_fuel or max_zero_fuel undefined:
+    
     .. math::
-
+    
         W_{max\\_fuel}^{(0)} = 0.477 \\cdot W_{MTOW} - 13455
-
+        
         W_{max\\_zero\\_fuel}^{(0)} = 0.6269 \\cdot W_{MTOW} + 20505
-
-    See Also
-    --------
-    RCAIDE.Framework.Analyses.Weights.Weights : settings that control analysis behaviour
     """
  
     for i ,  segment in enumerate(mission.segments):
@@ -311,10 +301,13 @@ def mass_properties_preprocess_routine(segment, i = 0):
                                                         (analyses.vehicle.mass_properties.operating_empty + analyses.vehicle.mass_properties.payload)
 
 
-        # Compute takeoff weight and max zero fuel weight
-        analyses.vehicle.mass_properties.takeoff = analyses.vehicle.mass_properties.operating_empty \
-                                                            + analyses.vehicle.mass_properties.payload\
-                                                            + analyses.vehicle.mass_properties.fuel
+        # Compute takeoff weight and max zero fuel weight 
+        if analyses.vehicle.mass_properties.takeoff == None:
+            analyses.vehicle.mass_properties.takeoff = analyses.vehicle.mass_properties.operating_empty \
+                                                                + analyses.vehicle.mass_properties.payload\
+                                                                + analyses.vehicle.mass_properties.fuel    
+        elif i == 0:
+            print('\n Using user defined takeoff weight')                
         analyses.vehicle.mass_properties.max_zero_fuel = analyses.vehicle.mass_properties.operating_empty\
                                                                     + analyses.vehicle.mass_properties.max_payload 
         
