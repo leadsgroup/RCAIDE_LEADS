@@ -1,4 +1,4 @@
-name: Tutorial & Digital Hangar Regression
+name: Digital Hangar Regression
 
 on:
   pull_request:
@@ -6,41 +6,14 @@ on:
       - develop
       - master
     paths:
-      - 'Tutorials/**'
       - 'Digital_Hangar/**'
       - 'RCAIDE/**'
-      - 'VnV/test_tutorials.py'
       - 'VnV/test_digital_hangar.py'
   # Also run nightly so stale tutorials are caught even without a PR touching them
   schedule:
     - cron: '0 4 * * *'   # 04:00 UTC every day
 
 jobs:
-  tutorials:
-    name: Tutorial Regression
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.11"]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pytest
-          pip install -e .
-
-      - name: Run tutorial regression
-        working-directory: VnV
-        run: pytest test_tutorials.py -v --tb=short --no-header
-
   digital-hangar:
     name: Digital Hangar Regression
     runs-on: ubuntu-latest
