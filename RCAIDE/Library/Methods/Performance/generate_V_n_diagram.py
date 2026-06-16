@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Performance/compute_V_n_diagram.py
+# RCAIDE/Library/Methods/Performance/generate_V_n_diagram.py
 #
 # Created:  Nov 2018, S. Karpuk
 # Modified:
@@ -20,7 +20,7 @@ import numpy as np
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Compute a V-n diagram
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_V_n_diagram(analyses,altitude = 0,delta_ISA = 0):
+def generate_V_n_diagram(analyses,altitude = 0,delta_ISA = 0):
     
     """
     Computes a V-n (velocity-load factor) diagram for an aircraft according to FAR requirements.

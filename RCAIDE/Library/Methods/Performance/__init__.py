@@ -22,7 +22,7 @@ from .aircraft_aerodynamic_analysis         import aircraft_aerodynamic_analysis
 from .compute_load_and_trim_diagram         import compute_load_and_trim_diagram
 from .compute_noise_certification_metrics   import compute_noise_certification_metrics
 from .compute_payload_range_diagram         import compute_payload_range_diagram
-from .compute_V_n_diagram                   import compute_V_n_diagram 
+from .generate_V_n_diagram                  import generate_V_n_diagram 
 from .estimate_landing_field_length         import estimate_landing_field_length
 from .estimate_stall_speed                  import estimate_stall_speed
 from .estimate_take_off_field_length        import estimate_take_off_field_length
