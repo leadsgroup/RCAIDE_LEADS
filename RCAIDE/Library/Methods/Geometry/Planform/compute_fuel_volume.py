@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_fuel_volume 
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_fuel_volume(vehicle, update_fuel_mass = True, compute_fuel_volume = False, update_max_fuel = False):
+def compute_fuel_volume(vehicle, compute_fuel_volume = False, update_max_fuel = False):
     """
     Computes the total fuel volume and mass for all fuel tanks in a vehicle.
 
@@ -81,17 +81,11 @@ def compute_fuel_volume(vehicle, update_fuel_mass = True, compute_fuel_volume = 
                 else:
                     # if no error getting the method, run it normally
                     if compute_fuel_volume:
-                        compute_fuel_tank_volume(wings, fuselages, fuel_tanks)
-
-                    # update fuel mass if desired (this will update the fuel volume as well since they are linked by density)
-                    if update_fuel_mass: 
-                        fuel_tank.fuel.mass_properties.mass = fuel_tank.volume_properties.net_volume * fuel_tank.fuel.density 
-                    else:
+                        compute_fuel_tank_volume(wings, fuselages, fuel_tanks) 
                         fuel_tank.fuel.volume_properties.net_volume = fuel_tank.fuel.mass_properties.mass / fuel_tank.fuel.density
-                        
-                    total_fuel_volume += fuel_tank.fuel.volume_properties.net_volume
+                    total_fuel_volume += fuel_tank.fuel.volume_properties.net_volume 
                     total_fuel_mass   += fuel_tank.fuel.mass_properties.mass
-
+        
         for bus in network.busses:
             fuel_tanks = bus.fuel_tanks
             for fuel_tank in fuel_tanks:
@@ -107,22 +101,17 @@ def compute_fuel_volume(vehicle, update_fuel_mass = True, compute_fuel_volume = 
                 else:
                     # if no error getting the method, run it normally
                     if compute_fuel_volume:
-                        compute_fuel_tank_volume(wings, fuselages, fuel_tanks)
-
-                    # update fuel mass if desired (this will update the fuel volume as well since they are linked by density)
-                    if update_fuel_mass: 
-                        fuel_tank.fuel.mass_properties.mass = fuel_tank.volume_properties.net_volume * fuel_tank.fuel.density 
-                    else:
+                        compute_fuel_tank_volume(wings, fuselages, fuel_tanks) 
                         fuel_tank.fuel.volume_properties.net_volume = fuel_tank.fuel.mass_properties.mass / fuel_tank.fuel.density
-                    total_fuel_volume += fuel_tank.fuel.volume_properties.net_volume
+                    total_fuel_volume += fuel_tank.fuel.volume_properties.net_volume 
                     total_fuel_mass   += fuel_tank.fuel.mass_properties.mass
-
-    # Assign Total Fuel Volume and to Vehicle
+                
+    # Assign Total Fuel Volume and to Vehicle 
     if compute_fuel_volume:
-        vehicle.volume_properties.max_fuel   = total_fuel_volume 
+        vehicle.volume_properties.max_fuel   = total_fuel_volume
+
     
     if update_max_fuel:
         vehicle.mass_properties.max_fuel = total_fuel_mass
 
-    return
- 
+    return 
