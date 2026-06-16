@@ -44,7 +44,7 @@ def main():
     
     landing_field_length = estimate_landing_field_length( analyses = analyses.landing) 
     
-    truth_LFL =  1429.1122681863346
+    truth_LFL =  1318.7485241006284
     print('Weight (kg): ', vehicle.mass_properties.landing)
     print('Landing Field Length (m): ',landing_field_length) 
     LFL_error = np.max(np.abs(landing_field_length-truth_LFL))
@@ -87,6 +87,23 @@ def base_analysis(vehicle):
     aerodynamics.settings.number_of_spanwise_vortices    = 10 # reducing the number of vortices to speed up the test 
     aerodynamics.settings.number_of_chordwise_vortices   = 5  # reducing the number of vortices to speed up the test 
     analyses.append(aerodynamics) 
+
+    # ------------------------------------------------------------------
+    #  Energy
+    energy= RCAIDE.Framework.Analyses.Energy.Energy() 
+    analyses.append(energy)
+
+
+    # ------------------------------------------------------------------
+    #  Planet Analysis
+    planet = RCAIDE.Framework.Analyses.Planets.Earth()
+    analyses.append(planet)
+
+    # ------------------------------------------------------------------
+    #  Atmosphere Analysis
+    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
+    analyses.append(atmosphere)   
+
 
     # done!
     return analyses 

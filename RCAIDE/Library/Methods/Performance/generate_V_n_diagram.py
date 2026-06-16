@@ -20,7 +20,7 @@ import numpy as np
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Compute a V-n diagram
 # ---------------------------------------------------------------------------------------------------------------------- 
-def generate_V_n_diagram(analyses,altitude = 0,delta_ISA = 0):
+def generate_V_n_diagram(analyses=None,altitude = 0,delta_ISA = 0):
     
     """
     Computes a V-n (velocity-load factor) diagram for an aircraft according to FAR requirements.

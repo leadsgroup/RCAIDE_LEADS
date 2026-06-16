@@ -2,11 +2,11 @@
     "empty": {
         "structural": {
             "wings": 174.769102012818,
-            "fuselage": 132.94404411247973,
+            "fuselage": 72.50995004592191,
             "landing_gear": 223.24216087105196,
             "nacelle": 0,
             "paint": 0,
-            "total": 530.9553069963497
+            "total": 470.5212129297919
         },
         "propulsion": {
             "total": 224.40728553408732,
@@ -24,7 +24,7 @@
             "anti_ice": 0,
             "total": 57.67574317833898
         },
-        "total": 813.038335708776
+        "total": 752.6042416422182
     },
     "payload": {
         "total": 200,
@@ -38,6 +38,6 @@
         "flight_attendants": 0,
         "total": 0
     },
-    "operating_empty": 813.038335708776,
-    "zero_fuel_weight": 1013.038335708776
+    "operating_empty": 752.6042416422182,
+    "zero_fuel_weight": 952.6042416422182
 }

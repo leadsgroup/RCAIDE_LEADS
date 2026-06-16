@@ -115,7 +115,6 @@ def plot_V_n_diagram(V_n_data,
     # Formating the plot
     ax.set_xlabel('Airspeed, KEAS')
     ax.set_ylabel('Load Factor')
-    ax.set_title(V_n_data.tag + '  Weight=' + str(round(weight)) + 'lb  ' + ' Altitude=' + str(round(altitude)) + 'ft ')
     ax.legend()
     ax.grid() 
 
