@@ -747,9 +747,18 @@ def vehicle_setup(redesign_rotors = False):
         design_electric_rotor(regression_lift_propulsor, iterations=2)
         loaded_lift_propulsor = load_propulsor(os.path.join(airfoil_file_path, 'stopped_rotor_lift_rotor.res'))
         for key,item in lift_propulsor_1.rotor.items():
-            lift_propulsor_1.rotor[key] = loaded_lift_propulsor.rotor[key] 
+            lift_propulsor_1.rotor[key] = loaded_lift_propulsor.rotor[key]
         for key,item in lift_propulsor_1.motor.items():
             lift_propulsor_1.motor[key] = loaded_lift_propulsor.motor[key]
+        lift_propulsor_1.rotor.airfoils.airfoil.coordinate_file  =   airfoil_file_path + 'NACA_4412.txt'
+        lift_propulsor_1.rotor.airfoils.airfoil.polar_files      = [ polar_file_path  + 'NACA_4412_polar_Re_50000.txt' ,
+                                                                      polar_file_path  + 'NACA_4412_polar_Re_100000.txt' ,
+                                                                      polar_file_path  + 'NACA_4412_polar_Re_200000.txt' ,
+                                                                      polar_file_path  + 'NACA_4412_polar_Re_500000.txt' ,
+                                                                      polar_file_path  + 'NACA_4412_polar_Re_1000000.txt',
+                                                                      polar_file_path  + 'NACA_4412_polar_Re_3500000.txt',
+                                                                      polar_file_path  + 'NACA_4412_polar_Re_5000000.txt',
+                                                                      polar_file_path  + 'NACA_4412_polar_Re_7500000.txt' ]
             
     network.propulsors.append(lift_propulsor_1)    
             

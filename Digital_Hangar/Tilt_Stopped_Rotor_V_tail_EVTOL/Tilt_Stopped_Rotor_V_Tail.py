@@ -617,10 +617,19 @@ def vehicle_setup(redesign_rotors = False):
         loaded_propulsor = load_propulsor(os.path.join(local_path, 'tilt_rotor_propulsor.res'))
 
         for key,item in prop_rotor_propulsor.rotor.items():
-            prop_rotor_propulsor.rotor[key] = loaded_propulsor.rotor[key] 
+            prop_rotor_propulsor.rotor[key] = loaded_propulsor.rotor[key]
         for key,item in prop_rotor_propulsor.motor.items():
-            prop_rotor_propulsor.motor[key] = loaded_propulsor.motor[key]        
-        
+            prop_rotor_propulsor.motor[key] = loaded_propulsor.motor[key]
+        prop_rotor_propulsor.rotor.airfoils.airfoil.coordinate_file  =   airfoil_file_path+ 'NACA_4412.txt'
+        prop_rotor_propulsor.rotor.airfoils.airfoil.polar_files      = [polar_file_path + 'NACA_4412_polar_Re_50000.txt' ,
+                                                                         polar_file_path + 'NACA_4412_polar_Re_100000.txt' ,
+                                                                         polar_file_path + 'NACA_4412_polar_Re_200000.txt' ,
+                                                                         polar_file_path + 'NACA_4412_polar_Re_500000.txt' ,
+                                                                         polar_file_path + 'NACA_4412_polar_Re_1000000.txt',
+                                                                         polar_file_path + 'NACA_4412_polar_Re_3500000.txt',
+                                                                         polar_file_path + 'NACA_4412_polar_Re_5000000.txt',
+                                                                         polar_file_path + 'NACA_4412_polar_Re_7500000.txt' ]
+
     # Front Rotors Locations 
     origins       =  [[0.5, -1.75 ,1.4],  [0.5, 1.75 ,1.4] , [ 0.5 , -3.25  , 1.4] ,[ 0.5 ,  3.25, 1.4], [ 0.5 , -4.75  , 1.4] ,[ 0.5,4.75, 1.4]]
     rotor_origins =  [[0.5, -1.75 ,1.3],  [0.5, 1.75 ,1.3] , [ 0.5 , -3.25  , 1.3] ,[ 0.5 ,  3.25, 1.3], [ 0.5 , -4.75  , 1.3] ,[ 0.5,4.75, 1.3]]
@@ -743,10 +752,19 @@ def vehicle_setup(redesign_rotors = False):
         loaded_propulsor = load_propulsor(os.path.join(local_path, 'lift_rotor_propulsor.res'))
 
         for key,item in lift_propulsor.rotor.items():
-            lift_propulsor.rotor[key] = loaded_propulsor.rotor[key] 
+            lift_propulsor.rotor[key] = loaded_propulsor.rotor[key]
         for key,item in lift_propulsor.motor.items():
-            lift_propulsor.motor[key] = loaded_propulsor.motor[key]  
- 
+            lift_propulsor.motor[key] = loaded_propulsor.motor[key]
+        lift_propulsor.rotor.airfoils.airfoil.coordinate_file  =  airfoil_file_path+'NACA_4412.txt'
+        lift_propulsor.rotor.airfoils.airfoil.polar_files      = [polar_file_path + 'NACA_4412_polar_Re_50000.txt' ,
+                                                                   polar_file_path + 'NACA_4412_polar_Re_100000.txt' ,
+                                                                   polar_file_path + 'NACA_4412_polar_Re_200000.txt' ,
+                                                                   polar_file_path + 'NACA_4412_polar_Re_500000.txt' ,
+                                                                   polar_file_path + 'NACA_4412_polar_Re_1000000.txt',
+                                                                   polar_file_path + 'NACA_4412_polar_Re_3500000.txt',
+                                                                   polar_file_path + 'NACA_4412_polar_Re_5000000.txt',
+                                                                   polar_file_path + 'NACA_4412_polar_Re_7500000.txt' ]
+
     # Front Rotors Locations
     origins       =  [[ 4.7, -1.75 ,1.4],  [ 4.7, 1.75 ,1.4] , [ 4.7, -3.25  , 1.4] ,[ 4.7,  3.25, 1.4], [ 4.7, -4.75  , 1.4] ,[  4.7 , 4.75, 1.4]]   
     rotor_origins =  [[ 4.7, -1.75 ,1.3],  [ 4.7, 1.75 ,1.3] , [ 4.7, -3.25  , 1.3] ,[ 4.7,  3.25, 1.3], [ 4.7, -4.75  , 1.3] ,[  4.7 , 4.75, 1.3]]   
