@@ -25,6 +25,7 @@ from RCAIDE.Library.Methods.Geometry.LOPA                       import compute_l
 # python imports 
 import numpy as np
 from copy import deepcopy
+import os
 import pyvista as pv
 import matplotlib.colors as mcolors
 
@@ -132,10 +133,12 @@ def plot_3d_vehicle(vehicle,
     # -------------------------------------------------------------------------  
     # Initalize Renderer
     # ------------------------------------------------------------------------- 
-    if save_figure: 
-        plotter = pv.Plotter(off_screen=True)
-    else:
-        plotter = pv.Plotter()     
+    is_ci = os.environ.get("CI", "").lower() == "true"
+    pyvista_off_screen = os.environ.get("PYVISTA_OFF_SCREEN", "").lower() in ("1", "true", "yes")
+    if is_ci or pyvista_off_screen:
+        show_figure = False
+
+    plotter = pv.Plotter(off_screen=(save_figure or not show_figure))
     
     # -------------------------------------------------------------------------
     # Object RGB Colors  
