@@ -88,7 +88,7 @@ def vehicle_setup(redesign_rotors = False):
     wing.xz_plane_symmetric       = True
     wing.vertical                 = False
     airfoil                       = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file       = 'NACA_63_412.txt'
+    airfoil.coordinate_file       = airfoil_file_path+ 'NACA_63_412.txt'
     
     # Segment                                  
     segment                       = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -480,10 +480,11 @@ def vehicle_setup(redesign_rotors = False):
     #------------------------------------------------------------------------------------------------------------------------------------ 
     battery_module                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC() 
     battery_module.tag                                                = 'bus_battery'
+    battery_module.origin                                             = [[2.5, 0,  0.]]
     battery_module.electrical_configuration.series                    = 140  
     battery_module.electrical_configuration.parallel                  = 30  
-    battery_module.geometrtic_configuration.normal_count              = 168
-    battery_module.geometrtic_configuration.parallel_count            = 25
+    battery_module.geometrtic_configuration.normal_count              = 210
+    battery_module.geometrtic_configuration.parallel_count            = 20
      
     modules_origins = [[0.25 , 0.0, 0.0],[1.5 , 0.0, 0.0]]  # large prop-rotor modules are beneath floor
     for m_i in range(prop_rotor_bus.number_of_battery_modules):
@@ -665,10 +666,10 @@ def vehicle_setup(redesign_rotors = False):
     battery_module.tag                                                = 'lift_bus_battery'
     battery_module.electrical_configuration.series                    = 140   
     battery_module.electrical_configuration.parallel                  = 10  
-    battery_module.geometrtic_configuration.normal_count              = 56
-    battery_module.geometrtic_configuration.parallel_count            = 25
+    battery_module.geometrtic_configuration.normal_count              = 140 
+    battery_module.geometrtic_configuration.parallel_count            = 10
 
-    modules_origins = [[4, 0.0, 0.0],[4, 0.0, 0.2 ]]  # rear modules are stacked inside cabin
+    modules_origins = [[3.5, 0.0, 0.5],[3.5, 0.0, 0.5 ]]  # rear modules are stacked inside cabin
     for m_i in range(lift_rotor_bus.number_of_battery_modules):
         module =  deepcopy(battery_module)
         module.tag = 'nmc_module_' + str(m_i+1) 

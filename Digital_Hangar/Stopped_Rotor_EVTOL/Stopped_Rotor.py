@@ -59,38 +59,6 @@ def vehicle_setup(redesign_rotors = False):
     vehicle.flight_envelope.positive_limit_load = 3.  
     vehicle.number_of_passengers                = 5
     
-
-
-    #------------------------------------------------------------------------------------------------------------------------------------
-    # ##################################################### Landing Gear ################################################################    
-    #------------------------------------------------------------------------------------------------------------------------------------ 
-    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
-    main_gear.tire_diameter                  = 6  *  Units.inches 
-    main_gear.rim_diameter                   = 3  *  Units.inches 
-    main_gear.tire_width                     = 6  *  Units.inches 
-    main_gear.strut_length                   = 12  * Units.ft 
-    main_gear.wheels                         = 1   
-    main_gear.number_of_gear_types_in_tandem = 1
-    main_gear.number_of_wheels_in_gear_type  = 1
-    main_gear.origin                         = [[4.0,0, 0]]
-    main_gear.fairing                        = True
-    main_gear.xz_plane_symmetric             = True
-    main_gear.gear_extended                  = True
-    vehicle.append_component(main_gear)  
-
-    nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
-    nose_gear.tire_diameter                  =  5 *  Units.inches   
-    nose_gear.rim_diameter                   =  3 *  Units.inches 
-    nose_gear.tire_width                     =  5 *  Units.inches 
-    nose_gear.strut_length                   =  6.* Units.ft 
-    nose_gear.wheels                         = 1
-    nose_gear.origin                         = [[0.5,0, 0]]
-    nose_gear.fairing                        = True 
-    nose_gear.gear_extended                  = True
-    nose_gear.number_of_gear_types_in_tandem = 1
-    nose_gear.number_of_wheels_in_gear_type  = 1    
-    vehicle.append_component(nose_gear)
-    
         
     #------------------------------------------------------------------------------------------------------------------------------------
     # ######################################################## Wings ####################################################################  
@@ -478,14 +446,20 @@ def vehicle_setup(redesign_rotors = False):
     #------------------------------------------------------------------------------------------------------------------------------------ 
     battery_module                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC() 
     battery_module.tag                                                = 'cruise_bus_battery'
-    battery_module.electrical_configuration.series                     = 140  
-    battery_module.electrical_configuration.parallel                   = 60  
-    battery_module.geometrtic_configuration.normal_count               = 140  
-    battery_module.geometrtic_configuration.parallel_count             = 60  
-    for _ in range( cruise_bus.number_of_battery_modules):
-        cruise_bus.battery_modules.append(deepcopy(battery_module))    
+    battery_module.origin                                             = [[2.5, 0,  0.]]
+    battery_module.electrical_configuration.series                    = 140  
+    battery_module.electrical_configuration.parallel                  = 30  
+    battery_module.geometrtic_configuration.normal_count              = 210
+    battery_module.geometrtic_configuration.parallel_count            = 20
+     
+    modules_origins = [[0.25 , 0.0, 0.0],[1.5 , 0.0, 0.0]]  # large prop-rotor modules are beneath floor
+    for m_i in range(cruise_bus.number_of_battery_modules):
+        module =  deepcopy(battery_module)
+        module.tag = 'nmc_module_' + str(m_i+1) 
+        module.origin = [modules_origins[m_i]]
+        cruise_bus.battery_modules.append(module) 
     cruise_bus.initialize_bus_properties()
-    
+
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Forward Bus Propulsors  
     #------------------------------------------------------------------------------------------------------------------------------------       
@@ -678,23 +652,27 @@ def vehicle_setup(redesign_rotors = False):
     #==================================================================================================================================== 
     # Lift Bus 
     #====================================================================================================================================          
-    lift_bus                                               = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
-    lift_bus.tag                                           = 'lift_bus' 
-    lift_bus.number_of_battery_modules =  1     
+    lift_bus                           = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
+    lift_bus.tag                       = 'lift_bus' 
+    lift_bus.number_of_battery_modules =  2     
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus Battery
     #------------------------------------------------------------------------------------------------------------------------------------ 
     battery_module                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC() 
     battery_module.tag                                                = 'lift_bus_battery'
-    battery_module.electrical_configuration.series                    = 140
-    battery_module.origin                                             = [[4.2, 0.0, 0.0]]
-    battery_module.electrical_configuration.parallel                  = 20 
-    battery_module.geometrtic_configuration.normal_count              = 140   
-    battery_module.geometrtic_configuration.parallel_count            = 20 
-    for _ in range( lift_bus.number_of_battery_modules):
-        lift_bus.battery_modules.append(deepcopy(battery_module))
-    lift_bus.initialize_bus_properties()
+    battery_module.electrical_configuration.series                    = 140   
+    battery_module.electrical_configuration.parallel                  = 10  
+    battery_module.geometrtic_configuration.normal_count              = 140 
+    battery_module.geometrtic_configuration.parallel_count            = 10
+
+    modules_origins = [[3.5, 0.0, 0.5],[3.5, 0.0, 0.5 ]]  # rear modules are stacked inside cabin
+    for m_i in range(lift_bus.number_of_battery_modules):
+        module =  deepcopy(battery_module)
+        module.tag = 'nmc_module_' + str(m_i+1) 
+        module.origin = [modules_origins[m_i]]
+        lift_bus.battery_modules.append(module) 
+    lift_bus.initialize_bus_properties() 
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Lift Propulsors 

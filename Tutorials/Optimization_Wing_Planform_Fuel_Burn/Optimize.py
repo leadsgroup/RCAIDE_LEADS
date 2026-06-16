@@ -49,8 +49,12 @@ def main():
     # start clock 
     ti = time.time()
     
+    '''This optimization call below is set to run only 2 iterations with a large tolerance to speed up 
+    the optimization for tutorial and server regression purposes. '''
+    regression_solution = scipy_setup.SciPy_Solve(problem,solver='SLSQP', sense_step = 1.e-2, iter =2, tolerance = 1e-1)
+    
     # solve optimization problem
-    solution = scipy_setup.SciPy_Solve(problem,solver='SLSQP', sense_step = 1.e-4, iter =10, tolerance = 1e-2)
+    #solution = scipy_setup.SciPy_Solve(problem,solver='SLSQP', sense_step = 1.e-4, iter =10, tolerance = 1e-2)
     
     # stop clock 
     tf                   = time.time()

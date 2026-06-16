@@ -1,11 +1,17 @@
 # VnV/test_tutorials.py
 
+import os
+os.environ['PYVISTA_OFF_SCREEN'] = 'true'
+
 import pytest
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import pyvista as pv
+pv.OFF_SCREEN = True
+pv.Plotter.show = lambda self, *args, **kwargs: None
 
-import sys, os, traceback, time
+import sys, traceback, time
 
 # Each path is relative to this file's directory (VnV/).
 # Only files that define a main() function are listed.

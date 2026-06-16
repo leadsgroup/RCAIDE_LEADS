@@ -1,5 +1,5 @@
 {
-    "tag": "cruise_propulsor_1",
+    "tag": "electric_rotor",
     "mass_properties": {
         "mass": 0,
         "center_of_gravity": [
@@ -66,9 +66,9 @@
     "xy_plane_symmetric": false,
     "yz_plane_symmetric": false,
     "active": true,
-    "wing_mounted": false,
+    "wing_mounted": true,
     "nacelle": {
-        "tag": "propeller_nacelle",
+        "tag": "nacelle",
         "mass_properties": {
             "mass": 0,
             "center_of_gravity": [
@@ -126,9 +126,9 @@
         },
         "origin": [
             [
-                5.583,
-                1.3,
-                1.092
+                -0.073,
+                1.95,
+                1.2
             ]
         ],
         "xz_plane_symmetric": false,
@@ -144,734 +144,21 @@
             "side_projected": 0.0,
             "wetted": 0.0
         },
-        "diameter": 0.4,
+        "diameter": 0.3,
         "inlet_diameter": 0.0,
-        "length": 1.24,
+        "length": 0.45,
         "orientation_euler_angles": [
-            0.0,
-            0.0,
+            0,
+            -1.5707963267948966,
             0.0
         ],
         "flow_through": false,
         "has_pylon": true,
         "differential_pressure": 0.0,
-        "cowling_airfoil_angle": 0.0,
-        "segments": {
-            "segment_1": {
-                "tag": "segment_1",
-                "mass_properties": {
-                    "mass": 0,
-                    "center_of_gravity": [
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "moments_of_inertia": {
-                        "center": [
-                            0.0,
-                            0.0,
-                            0.0
-                        ],
-                        "tensor": [
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ]
-                        ],
-                        "non_dimensional_tensor": [
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ]
-                        ]
-                    }
-                },
-                "volume_properties": {
-                    "net_volume": 0.0,
-                    "gross_volume": 0.0
-                },
-                "origin": [
-                    [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
-                ],
-                "xz_plane_symmetric": false,
-                "xy_plane_symmetric": false,
-                "yz_plane_symmetric": false,
-                "orientation_euler_angles": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "percent_x_location": 0.0,
-                "percent_y_location": 0,
-                "percent_z_location": 0,
-                "height": 0.0,
-                "width": 0.0,
-                "curvature": 2
-            },
-            "segment_2": {
-                "tag": "segment_2",
-                "mass_properties": {
-                    "mass": 0,
-                    "center_of_gravity": [
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "moments_of_inertia": {
-                        "center": [
-                            0.0,
-                            0.0,
-                            0.0
-                        ],
-                        "tensor": [
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ]
-                        ],
-                        "non_dimensional_tensor": [
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ]
-                        ]
-                    }
-                },
-                "volume_properties": {
-                    "net_volume": 0.0,
-                    "gross_volume": 0.0
-                },
-                "origin": [
-                    [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
-                ],
-                "xz_plane_symmetric": false,
-                "xy_plane_symmetric": false,
-                "yz_plane_symmetric": false,
-                "orientation_euler_angles": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "percent_x_location": 0.08064516129032259,
-                "percent_y_location": 0,
-                "percent_z_location": 0,
-                "height": 0.2,
-                "width": 0.2,
-                "curvature": 2
-            },
-            "segment_22": {
-                "tag": "segment_22",
-                "mass_properties": {
-                    "mass": 0,
-                    "center_of_gravity": [
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "moments_of_inertia": {
-                        "center": [
-                            0.0,
-                            0.0,
-                            0.0
-                        ],
-                        "tensor": [
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ]
-                        ],
-                        "non_dimensional_tensor": [
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ]
-                        ]
-                    }
-                },
-                "volume_properties": {
-                    "net_volume": 0.0,
-                    "gross_volume": 0.0
-                },
-                "origin": [
-                    [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
-                ],
-                "xz_plane_symmetric": false,
-                "xy_plane_symmetric": false,
-                "yz_plane_symmetric": false,
-                "orientation_euler_angles": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "percent_x_location": 0.12096774193548386,
-                "percent_y_location": 0,
-                "percent_z_location": 0,
-                "height": 0.25,
-                "width": 0.25,
-                "curvature": 2
-            },
-            "segment_4": {
-                "tag": "segment_4",
-                "mass_properties": {
-                    "mass": 0,
-                    "center_of_gravity": [
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "moments_of_inertia": {
-                        "center": [
-                            0.0,
-                            0.0,
-                            0.0
-                        ],
-                        "tensor": [
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ]
-                        ],
-                        "non_dimensional_tensor": [
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ]
-                        ]
-                    }
-                },
-                "volume_properties": {
-                    "net_volume": 0.0,
-                    "gross_volume": 0.0
-                },
-                "origin": [
-                    [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
-                ],
-                "xz_plane_symmetric": false,
-                "xy_plane_symmetric": false,
-                "yz_plane_symmetric": false,
-                "orientation_euler_angles": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "percent_x_location": 0.16129032258064518,
-                "percent_y_location": 0,
-                "percent_z_location": 0,
-                "height": 0.3,
-                "width": 0.3,
-                "curvature": 2
-            },
-            "segment_5": {
-                "tag": "segment_5",
-                "mass_properties": {
-                    "mass": 0,
-                    "center_of_gravity": [
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "moments_of_inertia": {
-                        "center": [
-                            0.0,
-                            0.0,
-                            0.0
-                        ],
-                        "tensor": [
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ]
-                        ],
-                        "non_dimensional_tensor": [
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ]
-                        ]
-                    }
-                },
-                "volume_properties": {
-                    "net_volume": 0.0,
-                    "gross_volume": 0.0
-                },
-                "origin": [
-                    [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
-                ],
-                "xz_plane_symmetric": false,
-                "xy_plane_symmetric": false,
-                "yz_plane_symmetric": false,
-                "orientation_euler_angles": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "percent_x_location": 0.20161290322580647,
-                "percent_y_location": 0,
-                "percent_z_location": 0,
-                "height": 0.35,
-                "width": 0.35,
-                "curvature": 2
-            },
-            "segment_6": {
-                "tag": "segment_6",
-                "mass_properties": {
-                    "mass": 0,
-                    "center_of_gravity": [
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "moments_of_inertia": {
-                        "center": [
-                            0.0,
-                            0.0,
-                            0.0
-                        ],
-                        "tensor": [
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ]
-                        ],
-                        "non_dimensional_tensor": [
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ]
-                        ]
-                    }
-                },
-                "volume_properties": {
-                    "net_volume": 0.0,
-                    "gross_volume": 0.0
-                },
-                "origin": [
-                    [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
-                ],
-                "xz_plane_symmetric": false,
-                "xy_plane_symmetric": false,
-                "yz_plane_symmetric": false,
-                "orientation_euler_angles": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "percent_x_location": 0.40322580645161293,
-                "percent_y_location": 0,
-                "percent_z_location": 0,
-                "height": 0.4,
-                "width": 0.4,
-                "curvature": 2
-            },
-            "segment_7": {
-                "tag": "segment_7",
-                "mass_properties": {
-                    "mass": 0,
-                    "center_of_gravity": [
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "moments_of_inertia": {
-                        "center": [
-                            0.0,
-                            0.0,
-                            0.0
-                        ],
-                        "tensor": [
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ]
-                        ],
-                        "non_dimensional_tensor": [
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ]
-                        ]
-                    }
-                },
-                "volume_properties": {
-                    "net_volume": 0.0,
-                    "gross_volume": 0.0
-                },
-                "origin": [
-                    [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
-                ],
-                "xz_plane_symmetric": false,
-                "xy_plane_symmetric": false,
-                "yz_plane_symmetric": false,
-                "orientation_euler_angles": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "percent_x_location": 0.6048387096774194,
-                "percent_y_location": 0,
-                "percent_z_location": 0,
-                "height": 0.35,
-                "width": 0.35,
-                "curvature": 2
-            },
-            "segment_8": {
-                "tag": "segment_8",
-                "mass_properties": {
-                    "mass": 0,
-                    "center_of_gravity": [
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "moments_of_inertia": {
-                        "center": [
-                            0.0,
-                            0.0,
-                            0.0
-                        ],
-                        "tensor": [
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ]
-                        ],
-                        "non_dimensional_tensor": [
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ]
-                        ]
-                    }
-                },
-                "volume_properties": {
-                    "net_volume": 0.0,
-                    "gross_volume": 0.0
-                },
-                "origin": [
-                    [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
-                ],
-                "xz_plane_symmetric": false,
-                "xy_plane_symmetric": false,
-                "yz_plane_symmetric": false,
-                "orientation_euler_angles": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "percent_x_location": 0.7903225806451613,
-                "percent_y_location": 0,
-                "percent_z_location": 0,
-                "height": 0.3,
-                "width": 0.3,
-                "curvature": 2
-            },
-            "segment_9": {
-                "tag": "segment_9",
-                "mass_properties": {
-                    "mass": 0,
-                    "center_of_gravity": [
-                        [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
-                    ],
-                    "moments_of_inertia": {
-                        "center": [
-                            0.0,
-                            0.0,
-                            0.0
-                        ],
-                        "tensor": [
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ]
-                        ],
-                        "non_dimensional_tensor": [
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            [
-                                0.0,
-                                0.0,
-                                0.0
-                            ]
-                        ]
-                    }
-                },
-                "volume_properties": {
-                    "net_volume": 0.0,
-                    "gross_volume": 0.0
-                },
-                "origin": [
-                    [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
-                ],
-                "xz_plane_symmetric": false,
-                "xy_plane_symmetric": false,
-                "yz_plane_symmetric": false,
-                "orientation_euler_angles": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "percent_x_location": 1.0,
-                "percent_y_location": 0,
-                "percent_z_location": 0,
-                "height": 0.0,
-                "width": 0.0,
-                "curvature": 2
-            }
-        }
+        "cowling_airfoil_angle": 0.0
     },
     "sealevel_static_thrust": [
-        6192.393656063721
+        9664.62634511829
     ],
     "diameter": 0.0,
     "length": 0.0,
@@ -897,9 +184,9 @@
         "kinetic_mechanism": "Air.yaml"
     },
     "motor": {
-        "tag": "propeller_motor_1",
+        "tag": "motor",
         "mass_properties": {
-            "mass": 46.995026558550954,
+            "mass": 42.528853329140595,
             "center_of_gravity": [
                 [
                     0.0,
@@ -955,9 +242,9 @@
         },
         "origin": [
             [
-                6.583,
-                1.3,
-                1.092
+                0.0,
+                0.0,
+                0.0
             ]
         ],
         "xz_plane_symmetric": false,
@@ -967,23 +254,23 @@
         "active": true,
         "diameter": 0.0,
         "length": 0.0,
-        "resistance": 0.07618996086121761,
-        "no_load_current": 0.001,
-        "speed_constant": 0.34402687970133916,
-        "efficiency": 0.95,
+        "resistance": 0.6604656891365065,
+        "no_load_current": 0.01,
+        "speed_constant": 0.18344863202960124,
+        "efficiency": 0.9,
         "gearbox": {
             "gear_ratio": 1.0
         },
-        "design_angular_velocity": 192.17391304347828,
-        "design_torque": 1121.5914561942334,
-        "design_current": 385.8586089741799,
+        "design_angular_velocity": 145.63243681979714,
+        "design_torque": 727.4083689034837,
+        "design_current": 133.45207020222765,
         "inverse_calculation": false,
         "interpolated_func": null,
-        "nominal_voltage": 588.0,
-        "wing_tag": "horizontal_tail"
+        "nominal_voltage": 882.0,
+        "propeller_radius": 1.4
     },
     "rotor": {
-        "tag": "propeller_1",
+        "tag": "lift_rotor",
         "mass_properties": {
             "mass": 0,
             "center_of_gravity": [
@@ -1041,61 +328,61 @@
         },
         "origin": [
             [
-                6.583,
-                1.3,
-                1.092
+                -0.073,
+                1.95,
+                1.2
             ]
         ],
         "xz_plane_symmetric": false,
         "xy_plane_symmetric": false,
         "yz_plane_symmetric": false,
         "number_of_blades": 3,
-        "tip_radius": 1.15,
-        "hub_radius": 0.11499999999999999,
+        "tip_radius": 1.4,
+        "hub_radius": 0.1,
         "twist_distribution": [
-            1.2858001219480846,
-            1.1582492970311906,
-            1.0442917586489076,
-            0.9444683956520885,
-            0.858067161290893,
-            0.7836133725611228,
-            0.7194144512783092,
-            0.6639209016481162,
-            0.6157552599841788,
-            0.5737406914123029,
-            0.5368931139356415,
-            0.5043985341063237,
-            0.4755866658934704,
-            0.4499058626865057,
-            0.4269012596338416,
-            0.40619652761930636,
-            0.38747899970815813,
-            0.37048771660062596,
-            0.3550039477106991,
-            0.34090429809360334
+            0.33417308624099046,
+            0.3296195639522895,
+            0.32426516228129554,
+            0.31896820002068693,
+            0.3135986899159153,
+            0.30815959056409936,
+            0.3024816993690489,
+            0.2966589822322658,
+            0.2905673416078448,
+            0.2840964110275308,
+            0.27732504297358007,
+            0.27009931064502357,
+            0.26216678966285817,
+            0.2535722149999231,
+            0.24410799714324147,
+            0.23344735829924054,
+            0.2210510705595782,
+            0.2059730486594304,
+            0.18641680603044852,
+            0.1578377530398842
         ],
         "sweep_distribution": 0.0,
         "chord_distribution": [
-            0.05734547492806923,
-            0.10179378482846743,
-            0.1424460499520111,
-            0.17392695563242955,
-            0.19515355674578658,
-            0.2073509810298643,
-            0.21248451184642214,
-            0.2124541648939738,
-            0.20879110996809608,
-            0.2026165012049558,
-            0.19469706553420355,
-            0.1855206933798622,
-            0.175362234999023,
-            0.16433061903459759,
-            0.15239531816761623,
-            0.1393894449423898,
-            0.1249786983138569,
-            0.10855956485404965,
-            0.08895043005400863,
-            0.06314537296638266
+            0.2514134999322788,
+            0.24589815033791057,
+            0.2396083512085617,
+            0.23434919667394796,
+            0.22933210998344808,
+            0.22454721928994653,
+            0.21990197580184626,
+            0.2152661313882306,
+            0.21060851478836798,
+            0.20581703452631978,
+            0.20089488484537477,
+            0.19575046348935315,
+            0.19020670711711246,
+            0.18426373529459397,
+            0.17777970648009978,
+            0.17052989040759461,
+            0.16214576582960066,
+            0.15198722868477474,
+            0.13885286712857556,
+            0.11974723689442786
         ],
         "thickness_to_chord": [
             0.12019145780605714,
@@ -1106,87 +393,87 @@
             0.12019145780605714,
             0.12019145780605714,
             0.12019145780605714,
+            0.12019145780605713,
+            0.12019145780605714,
+            0.12019145780605715,
             0.12019145780605714,
             0.12019145780605714,
             0.12019145780605714,
+            0.12019145780605715,
             0.12019145780605714,
             0.12019145780605714,
             0.12019145780605714,
-            0.12019145780605714,
-            0.12019145780605714,
-            0.12019145780605714,
-            0.12019145780605714,
-            0.12019145780605714,
+            0.12019145780605713,
             0.12019145780605714
         ],
         "max_thickness_distribution": [
-            0.0068924362301853405,
-            0.012234743394129603,
-            0.01712079840244665,
-            0.02090453434923113,
-            0.023455790481313184,
-            0.024921816687495487,
-            0.025538823240029894,
-            0.025535175795575158,
-            0.025094907884010257,
-            0.024352772655386372,
-            0.023400924137117366,
-            0.02229800259051617,
-            0.02107704266866095,
-            0.019751136663940086,
-            0.0183166154533837,
-            0.016753420590402968,
-            0.015021371945045875,
-            0.013047932358599431,
-            0.010691081860667015,
-            0.007589534430536723
+            0.030217755068983637,
+            0.029554857160926474,
+            0.028798877034262763,
+            0.028166771583920204,
+            0.027563760620649656,
+            0.02698865763275507,
+            0.0264303390460562,
+            0.025873150147821673,
+            0.02531334441878249,
+            0.02473744942103797,
+            0.02414584907534557,
+            0.02352753357299672,
+            0.02286122141289549,
+            0.022146926965846674,
+            0.021367602090176137,
+            0.020496236127595956,
+            0.01948853597213927,
+            0.01826756658352566,
+            0.016688928520734246,
+            0.014392594970588554
         ],
         "radius_distribution": [
-            0.11499999999999999,
-            0.16675,
-            0.21849999999999997,
-            0.27025,
-            0.322,
-            0.3737499999999999,
-            0.4255,
-            0.47725,
-            0.5289999999999999,
-            0.58075,
-            0.6324999999999998,
-            0.6842499999999999,
-            0.736,
-            0.7877499999999998,
-            0.8394999999999999,
-            0.8912499999999999,
-            0.9429999999999998,
-            0.9947499999999999,
-            1.0464999999999998,
-            1.09825
+            0.1,
+            0.165,
+            0.23,
+            0.29500000000000004,
+            0.36000000000000004,
+            0.42500000000000004,
+            0.49,
+            0.555,
+            0.62,
+            0.685,
+            0.7499999999999999,
+            0.8149999999999998,
+            0.8799999999999999,
+            0.945,
+            1.01,
+            1.0749999999999997,
+            1.14,
+            1.205,
+            1.27,
+            1.3349999999999997
         ],
         "blade_pitch_command": 0.0,
         "mid_chord_alignment": [
             0.0,
-            0.01111207747509955,
-            0.021275143755985465,
-            0.029145370176090077,
-            0.034452020454429334,
-            0.037501376525448764,
-            0.038784759229588225,
-            0.03877717249147614,
-            0.03786140876000671,
-            0.03631775656922164,
-            0.034337897651533576,
-            0.03204380461294824,
-            0.029504190017738442,
-            0.026746286026632086,
-            0.023762460809886747,
-            0.02051099250358014,
-            0.016908305846446918,
-            0.012803522481495104,
-            0.007901238781484849,
-            0.0014499745095783566
+            -0.001378837398592056,
+            -0.0029512871809292754,
+            -0.004266075814582708,
+            -0.005520347487207679,
+            -0.006716570160583066,
+            -0.007877881032608135,
+            -0.009036842136012045,
+            -0.010201246285977704,
+            -0.011399116351489755,
+            -0.012629653771726007,
+            -0.01391575911073141,
+            -0.015301698203791583,
+            -0.016787441159421206,
+            -0.018408448363044755,
+            -0.020220902381171045,
+            -0.022316933525669533,
+            -0.024856567811876014,
+            -0.02814015820092581,
+            -0.03291656575946274
         ],
-        "blade_solidity": 0.11402285267735066,
+        "blade_solidity": 0.11981240288385385,
         "flap_angle": 0.0,
         "number_azimuthal_stations": 16,
         "vtk_airfoil_points": 40,
@@ -14908,26 +14195,20 @@
         ],
         "fidelity": "Blade_Element_Momentum_Theory_Helmholtz_Wake",
         "cruise": {
-            "design_power": 215540.6189729788,
-            "design_thrust": 3150,
-            "design_torque": 1121.5914561942334,
-            "design_power_coefficient": [
-                0.09985504896335906
-            ],
-            "design_thrust_coefficient": [
-                0.10265825033362035
-            ],
+            "design_power": null,
+            "design_thrust": null,
+            "design_torque": null,
+            "design_power_coefficient": 0.01,
+            "design_thrust_coefficient": 0.01,
             "design_torque_coefficient": 0.005,
             "design_lift_coefficient": 0.7,
             "design_efficiency": 0.86,
-            "design_angular_velocity": 192.17391304347828,
-            "design_tip_mach": 0.65,
+            "design_angular_velocity": null,
+            "design_tip_mach": null,
             "design_acoustics": null,
             "design_performance": null,
             "design_SPL_dBA": null,
-            "design_blade_pitch_command": 0.0,
-            "design_freestream_velocity": 58.1152,
-            "design_altitude": 457.20000000000005
+            "design_blade_pitch_command": 0.0
         },
         "induced_power_factor": 1.48,
         "profile_drag_coefficient": 0.03,
@@ -14935,7 +14216,7 @@
         "phase_offset_angle": 0.0,
         "orientation_euler_angles": [
             0.0,
-            0.0,
+            1.5707963267948966,
             0.0
         ],
         "ducted": false,
@@ -14963,10 +14244,44 @@
             "ideal_efficiency": 1.0,
             "ideal_figure_of_merit": 1.0
         },
-        "variable_pitch": true
+        "hover": {
+            "design_thrust": 3641.9625,
+            "design_torque": 727.4083689034837,
+            "design_power": 105934.25332652828,
+            "design_angular_velocity": 145.63243681979714,
+            "design_tip_mach": null,
+            "design_freestream_velocity": 15.698535592238565,
+            "design_acoustics": null,
+            "design_performance": null,
+            "design_blade_pitch_command": 0.0,
+            "design_efficiency": 0.86,
+            "design_SPL_dBA": 0,
+            "design_lift_coefficient": 0.4770115579877582,
+            "design_thrust_coefficient": 0.09014546152409883,
+            "design_power_coefficient": 0.0404002280038537,
+            "design_torque_coefficient": null,
+            "design_altitude": 12.192
+        },
+        "oei": {
+            "design_thrust": 4156.987690776541,
+            "design_torque": 940.9988574634517,
+            "design_power": 129672.89892836394,
+            "design_angular_velocity": 137.80346054607236,
+            "design_freestream_velocity": 16.782440474352303,
+            "design_tip_mach": null,
+            "design_altitude": 12.192,
+            "design_acoustics": null,
+            "design_blade_pitch_command": 0.059152899555267154,
+            "design_performance": null,
+            "design_SPL_dBA": null,
+            "design_lift_coefficient": null,
+            "design_thrust_coefficient": null,
+            "design_power_coefficient": null
+        },
+        "active": true
     },
     "electronic_speed_controller": {
-        "tag": "propeller_esc_1",
+        "tag": "electronic_speed_controller",
         "mass_properties": {
             "mass": 0,
             "center_of_gravity": [
@@ -15024,17 +14339,17 @@
         },
         "origin": [
             [
-                6.583,
-                1.3,
-                1.092
+                -0.073,
+                1.95,
+                1.2
             ]
         ],
         "xz_plane_symmetric": false,
         "xy_plane_symmetric": false,
         "yz_plane_symmetric": false,
-        "bus_voltage": 588.0,
+        "bus_voltage": 1176.0,
         "efficiency": 0.95
     },
     "active_crypgenic_tanks_tanks": null,
-    "sealevel_static_power": 221695.6747145595
+    "sealevel_static_power": 287287.41636622604
 }

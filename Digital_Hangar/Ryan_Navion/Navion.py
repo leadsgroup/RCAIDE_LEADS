@@ -10,6 +10,7 @@ from RCAIDE.Library.Methods.Performance   import *
 
 # python imports 
 import numpy as np    
+import os
 
 # ----------------------------------------------------------------------
 #   Main

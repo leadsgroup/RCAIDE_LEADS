@@ -574,12 +574,13 @@ def vehicle_setup():
     # Battery
     #------------------------------------------------------------------------------------------------------------------------------------  
     bat_module                                             = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC()
+    bat_module.origin                                      = [[10, 0,  -0.5]]
     bat_module.electrical_configuration.series             = 135
     bat_module.electrical_configuration.parallel           = 250
     bat_module.cell.nominal_capacity                       = 6
     bat_module.cell.mass                                   = 0.03 * Units.kg
-    bat_module.geometrtic_configuration.normal_count       = 135
-    bat_module.geometrtic_configuration.parallel_count     = 250 
+    bat_module.geometrtic_configuration.normal_count       = 224
+    bat_module.geometrtic_configuration.parallel_count     = 75
     for _ in range(4):
         bat_copy = deepcopy(bat_module)
         bus.battery_modules.append(bat_copy)
