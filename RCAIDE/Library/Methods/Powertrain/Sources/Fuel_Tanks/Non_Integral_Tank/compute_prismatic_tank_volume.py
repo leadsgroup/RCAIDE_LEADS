@@ -50,26 +50,24 @@ def compute_prismatic_tank_volume(fuel_tank):
     h = fuel_tank.heights.external
     t = fuel_tank.wall_thickness
      
+    # determine inner dimensions of the fuel tank
     inner_length = l - 2 * t 
     inner_width  = w - 2 * t  
     inner_height = h - 2 * t            
 
-    tank_volume_o = l * w * h
-    tank_volume_i = inner_length * inner_width *  inner_height
- 
-    fuel_tank.volume_properties.net_volume         = tank_volume_i
-    fuel_tank.volume_properties.gross_volume       = tank_volume_o
-
-    if fuel_tank.fuel.mass_properties.mass != 0:
-        actual_fuel_volume = fuel_tank.fuel.mass_properties.mass /  fuel_tank.fuel.density  
-        if actual_fuel_volume > fuel_tank.volume_properties.net_volume + 1e-8 :
-            print('Warning: Specified fuel mass greater than mass of fuel capable of being stored in fuel tank') 
-    else:
-        fuel_tank.fuel.mass_properties.mass         = tank_volume_i *  fuel_tank.fuel.density 
-        fuel_tank.fuel.volume_properties.net_volume = tank_volume_i 
-    
-    fuel_tank.fuel.mass_properties.center_of_gravity  =  [[fuel_tank.lengths.external /2, 0, 0]] 
+    # compute net volume and gross volume
+    fuel_tank.volume_properties.net_volume            = inner_length * inner_width *  inner_height
+    fuel_tank.volume_properties.gross_volume          = l * w * h
+    fuel_tank.fuel.mass_properties.center_of_gravity  =  [[fuel_tank.lengths.external /2, 0, 0]]
     fuel_tank.mass_properties.center_of_gravity       =  [[fuel_tank.lengths.external /2, 0, 0]]
     fuel_tank.fuel.origin                             = fuel_tank.origin
-         
+
+    # non-dimensional moment of inertia tensor for fuel (solid cuboid)
+    I_fuel_nd = np.zeros((3, 3))
+    if inner_length > 0 and inner_width > 0 and inner_height > 0:
+        I_fuel_nd[0][0] = (inner_width**2  + inner_height**2) / 12
+        I_fuel_nd[1][1] = (inner_length**2 + inner_height**2) / 12
+        I_fuel_nd[2][2] = (inner_length**2 + inner_width**2)  / 12
+    fuel_tank.fuel.mass_properties.moments_of_inertia.non_dimensional_tensor = I_fuel_nd
+
     return

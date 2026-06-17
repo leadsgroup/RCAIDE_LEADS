@@ -80,24 +80,28 @@ def compute_wing_non_integral_tank_volume(fuel_tank, wing,fuel_tanks):
             fuel_tanks.pop(fuel_tank.tag)
             return 
             
-    fuel_tank.volume_properties.net_volume         = tank_volume_i
-    fuel_tank.volume_properties.gross_volume       = tank_volume_o
+    fuel_tank.volume_properties.net_volume            = tank_volume_i
+    fuel_tank.volume_properties.gross_volume          = tank_volume_o
+    fuel_tank.fuel.mass_properties.center_of_gravity  =  [[(fuel_tank.lengths.external + fuel_tank.diameters.external) /2, 0,0]]
+    fuel_tank.mass_properties.center_of_gravity       =  [[(fuel_tank.lengths.external + fuel_tank.diameters.external) /2, 0,0]]
 
-    fuel_tank.mass_properties.center_of_gravity       =  [[(fuel_tank.lengths.external + fuel_tank.diameters.external) /2, 0,0]]     
-    fuel_tank.fuel.mass_properties.center_of_gravity  =  [[(fuel_tank.lengths.external + fuel_tank.diameters.external) /2, 0,0]]     
-    fuel_tank.mass_properties.center_of_gravity       =  [[(fuel_tank.lengths.external + fuel_tank.diameters.external) /2, 0,0]]   
+    # non-dimensional moment of inertia tensor for fuel (solid rounded-end cylinder)
+    r_in  = fuel_tank.diameters.internal / 2
+    l_in  = fuel_tank.lengths.internal
+    I_fuel_nd = np.zeros((3, 3))
+    V_cyl_f   = np.pi * r_in**2 * l_in
+    V_sph_f   = 4 / 3 * np.pi * r_in**3
+    V_fuel    = V_cyl_f + V_sph_f
+    if V_fuel > 0:
+        f_cyl = V_cyl_f / V_fuel
+        f_sph = V_sph_f / V_fuel
+        d_h   = l_in / 2 + (3 / 8) * r_in
+        I_fuel_nd[0][0] = 0.5 * f_cyl * r_in**2 + 2 / 5 * f_sph * r_in**2
+        I_fuel_nd[1][1] = f_cyl * (r_in**2 / 4 + l_in**2 / 12) + 2 / 5 * f_sph * r_in**2 + f_sph * d_h**2
+        I_fuel_nd[2][2] = I_fuel_nd[1][1]
+    fuel_tank.fuel.mass_properties.moments_of_inertia.non_dimensional_tensor = I_fuel_nd
 
-    if not isinstance(fuel_tank, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank):
-        if fuel_tank.fuel.mass_properties.mass != 0:
-            actual_fuel_volume = fuel_tank.fuel.mass_properties.mass /  fuel_tank.fuel.density  
-            if actual_fuel_volume > fuel_tank.volume_properties.net_volume + 1e-8 :
-                print('Warning:Specified fuel mass greater than mass of fuel capable of being stored in fuel tank') 
-            fuel_tank.fuel.volume_properties.net_volume = tank_volume_i
-        else:
-            fuel_tank.fuel.mass_properties.mass         = tank_volume_i *  fuel_tank.fuel.density 
-            fuel_tank.fuel.volume_properties.net_volume = tank_volume_i
-             
-    return 
+    return
 
 def compute_wing_non_integral_tank_fuel_volume(fuel_tank, wing, inner_segment_0, outer_segment, tank_percent_span_location):
     """

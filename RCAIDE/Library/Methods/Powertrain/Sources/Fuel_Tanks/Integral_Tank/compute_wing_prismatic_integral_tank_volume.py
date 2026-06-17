@@ -156,19 +156,19 @@ def compute_wing_prismatic_integral_tank_volume(fuel_tank,wing,fuel_tanks):
     fuel_tank.aspect_ratio = fuel_tank.average_outer_length / fuel_tank.average_outer_height
     
     fuel_tank.fuel.mass_properties.center_of_gravity  = [[x_cg, y_cg, 0]]
-    fuel_tank.mass_properties.center_of_gravity  = [[x_cg, y_cg, 0]]
+    fuel_tank.mass_properties.center_of_gravity       = [[x_cg, y_cg, 0]]
     fuel_tank.volume_properties.net_volume            = total_fuel_volume
     fuel_tank.volume_properties.gross_volume          = total_fuel_volume
         
 
-    if fuel_tank.fuel.mass_properties.mass != 0:
-        actual_fuel_volume = fuel_tank.fuel.mass_properties.mass /  fuel_tank.fuel.density  
-        if actual_fuel_volume > fuel_tank.volume_properties.net_volume + 1e-8:
-            raise AttributeError('Specified fuel mass greater than mass of fuel capable of being stored in fuel tank') 
-        fuel_tank.fuel.volume_properties.net_volume = actual_fuel_volume
-    else:
-        fuel_tank.fuel.mass_properties.mass         = total_fuel_volume *  fuel_tank.fuel.density   
-        fuel_tank.fuel.volume_properties.net_volume = total_fuel_volume    
+    # if fuel_tank.fuel.mass_properties.mass != 0:
+    #     actual_fuel_volume = fuel_tank.fuel.mass_properties.mass /  fuel_tank.fuel.density  
+    #     if actual_fuel_volume > fuel_tank.volume_properties.net_volume + 1e-8:
+    #         raise AttributeError('Specified fuel mass greater than mass of fuel capable of being stored in fuel tank') 
+    #     fuel_tank.fuel.volume_properties.net_volume = actual_fuel_volume
+    # else:
+    #     fuel_tank.fuel.mass_properties.mass         = total_fuel_volume *  fuel_tank.fuel.density   
+    #     fuel_tank.fuel.volume_properties.net_volume = total_fuel_volume    
     return 
 
 def compute_segmented_wing_integral_tank_fuel_volume(wing,inner_segment,outer_segment,fuel_tank):   

@@ -11,6 +11,7 @@ from copy import deepcopy
 import RCAIDE 
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_vehicle_moment_of_inertia
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_vehicle_center_of_gravity 
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.compute_fuel_mass import compute_fuel_mass
 from RCAIDE.Library.Methods.Mass_Properties.mass_correction_factors   import apply_correction_factors, apply_component_weights
 from RCAIDE.Library.Methods.Mass_Properties.mass_properties_report import print_mass_report, write_mass_report  
 from scipy.optimize import fsolve
@@ -125,9 +126,16 @@ def mass_properties(mission):
 def mass_properties_preprocess_routine(segment, i = 0):
     analyses         = segment.analyses
     weights_analysis = analyses.weights 
-
+    
     # ---------------------------------------------------------------------------------------------------------------------------
-    # STEP 1:  Pre-checks for weights analysis 
+    # STEP 1: Compute fuel mass and max fuel mass for the vehicle based on the fuel tanks defined in the vehicle
+    # ---------------------------------------------------------------------------------------------------------------------------    
+    update_max_fuel_mass = weights_analysis.settings.update_max_fuel_mass                       
+    update_fuel_mass     = weights_analysis.settings.update_fuel_mass   
+    compute_fuel_mass(analyses.vehicle, update_fuel_mass, update_max_fuel_mass)    
+    
+    # ---------------------------------------------------------------------------------------------------------------------------
+    # STEP 2:  Pre-checks for weights analysis 
     # ---------------------------------------------------------------------------------------------------------------------------      
     if analyses.vehicle.mass_properties.max_takeoff == None:
         # For all weights analysis a maximum take off weight needs to be defined by the user
@@ -148,7 +156,7 @@ def mass_properties_preprocess_routine(segment, i = 0):
     elif weights_analysis.settings.run_weights_analysis:
     
         # ---------------------------------------------------------------------------------------------------------------------------
-        # STEP 2: Run weights analysis 
+        # STEP 3: Run weights analysis 
         # ---------------------------------------------------------------------------------------------------------------------------         
         if analyses.vehicle.mass_properties.payload > analyses.vehicle.mass_properties.max_payload:
             print('Warning:Prescribed payload weight is greater than maxmimum payload weight')
@@ -234,7 +242,7 @@ def mass_properties_preprocess_routine(segment, i = 0):
                                                                     + analyses.vehicle.mass_properties.max_payload 
         
         # ---------------------------------------------------------------------------------------------------------------------------
-        # STEP 3: Print weight statements and apply weight factors  
+        # STEP 4: Print weight statements and apply weight factors  
         # --------------------------------------------------------------------------------------------------------------------------- 
         if i == 0: 
             if weights_analysis.print_weight_analysis_report and type(weights_analysis) != RCAIDE.Framework.Analyses.Weights.Weights:  
@@ -243,7 +251,7 @@ def mass_properties_preprocess_routine(segment, i = 0):
                 excel_filename = write_mass_report(analyses)     
     
     # ---------------------------------------------------------------------------------------------------------------------------     
-    #  STEP 4: Compute Center of Gravity   
+    #  STEP 5: Compute Center of Gravity   
     # --------------------------------------------------------------------------------------------------------------------------- 
     if weights_analysis.settings.run_center_of_gravity_analysis: 
         centre_of_gravity_df = pd.DataFrame(columns=["Component", "Mass (kg)", "CG x (m)", "CG y (m)", "CG z (m)" ])
@@ -265,7 +273,7 @@ def mass_properties_preprocess_routine(segment, i = 0):
         analyses.vehicle.mass_properties.center_of_gravity_breakdown = centre_of_gravity_df  
 
     # ---------------------------------------------------------------------------------------------------------------------------         
-    # STEP 5: Compute Moment of Inertia 
+    # STEP 6: Compute Moment of Inertia 
     # --------------------------------------------------------------------------------------------------------------------------- 
     if weights_analysis.settings.run_moments_of_inertia_analysis:
         moment_of_inertia_df = pd.DataFrame(columns=["Component", "Mass (kg)","Ixx (kg·m²)","Iyy (kg·m²)","Izz (kg·m²)","Ixy (kg·m²)","Ixz (kg·m²)","Iyz (kg·m²)", ])

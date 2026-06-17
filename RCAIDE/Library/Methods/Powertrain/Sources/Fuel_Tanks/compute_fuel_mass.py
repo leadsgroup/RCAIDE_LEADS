@@ -1,13 +1,13 @@
-# RCAIDE/Library/Methods/Geometry/Planform/compute_fuel_volume.py
+# RCAIDE/Library/Methods/Powertrain/Sources/Fuel_Tanks/compute_fuel_mass.py
 # 
 # 
-# Created:  Jul 2024, M. Clarke 
-# Modified: Aug 2025, S. Shekar 
+# Created:  Jun 2026, M. Clarke  
 
 # ----------------------------------------------------------------------------------------------------------------------
-# compute_fuel_volume 
+# compute_fuel_mass 
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_fuel_volume(vehicle, compute_fuel_volume = True):
+def compute_fuel_mass(vehicle, update_fuel_mass = True, update_max_fuel_mass=True):
+
     """
     Computes the total fuel volume and mass for all fuel tanks in a vehicle.
 
@@ -63,26 +63,32 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = True):
     --------
     Vehicle : RCAIDE.Vehicle
     """
-    wings             = vehicle.wings
-    fuselages         = vehicle.fuselages 
-    total_fuel_volume = 0    
+    
+    max_fuel_tank_mass = 0
+    fuel_mass          = 0
     for network in vehicle.networks: 
         for fuel_line in network.fuel_lines:
             fuel_tanks = fuel_line.fuel_tanks
-            for fuel_tank in fuel_tanks: 
-                fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag 
-                if compute_fuel_volume:     
-                    fuel_tank.compute_volume(wings, fuselages, fuel_tanks)    
-                total_fuel_volume += fuel_tank.fuel.volume_properties.net_volume
-        
+            for fuel_tank in fuel_tanks:
+                    max_fuel_tank_mass += fuel_tank.fuel.volume_properties.net_volume * fuel_tank.fuel.density  
+                    if update_fuel_mass:
+                        fuel_tank.fuel.mass_properties.mass  += fuel_tank.fuel.volume_properties.net_volume * fuel_tank.fuel.density 
+                    fuel_mass  += fuel_tank.fuel.mass_properties.mass   
         for bus in network.busses:
             fuel_tanks = bus.fuel_tanks
-            for fuel_tank in fuel_tanks: 
-                fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag
-                if compute_fuel_volume:
-                    fuel_tank.compute_volume(wings, fuselages, fuel_tanks)  
-                total_fuel_volume += fuel_tank.fuel.volume_properties.net_volume 
+            for fuel_tank in fuel_tanks:
+                    max_fuel_tank_mass += fuel_tank.fuel.volume_properties.net_volume * fuel_tank.fuel.density
+
+                    if update_fuel_mass:
+                        fuel_tank.fuel.mass_properties.mass  += fuel_tank.fuel.volume_properties.net_volume * fuel_tank.fuel.density 
+                    fuel_mass  += fuel_tank.fuel.mass_properties.mass
+                
+    # Assign Total Fuel Volume and to Vehicle 
+    if update_max_fuel_mass:
+        vehicle.mass_properties.max_fuel   = max_fuel_tank_mass 
     
-    if compute_fuel_volume:     
-        vehicle.volume_properties.max_fuel = total_fuel_volume 
+    if update_fuel_mass:
+        vehicle.mass_properties.fuel = fuel_mass
+
     return 
+ 

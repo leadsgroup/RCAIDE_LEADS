@@ -40,27 +40,30 @@ def compute_rounded_end_cylindrical_tank_volume(fuel_tank):
          
     # volume of external tank
     V_i_cyl = (np.pi * R_i ** 2 * L_i )  
-    V_i_sph = ( 4 / 3 * np.pi * R_i ** 3)  
-    tank_volume_i     = V_i_cyl + V_i_sph
+    V_i_sph = ( 4 / 3 * np.pi * R_i ** 3)   
     
     # volume of interal walls 
     V_o_cyl = (np.pi * R_o ** 2 * L_o )  
-    V_o_sph = ( 4 / 3 * np.pi * R_o ** 3)  
-    tank_volume_o     = V_o_cyl + V_o_sph    
- 
-    fuel_tank.volume_properties.net_volume         = tank_volume_i
-    fuel_tank.volume_properties.gross_volume       = tank_volume_o
-
-    if fuel_tank.fuel.mass_properties.mass != 0:
-        actual_fuel_volume = fuel_tank.fuel.mass_properties.mass /  fuel_tank.fuel.density  
-        if actual_fuel_volume > fuel_tank.volume_properties.net_volume + 1e-8 :
-            print('Warning:Specified fuel mass greater than mass of fuel capable of being stored in fuel tank') 
-    else:
-        fuel_tank.fuel.mass_properties.mass         = tank_volume_i *  fuel_tank.fuel.density 
-        fuel_tank.fuel.volume_properties.net_volume = tank_volume_i 
-    
-    fuel_tank.fuel.mass_properties.center_of_gravity  =  [[(L_o + D)/2, 0, 0]] 
+    V_o_sph = ( 4 / 3 * np.pi * R_o ** 3)   
+   
+    # store the center of gravity and origin of the fuel mass for use in mass properties calculations
+    fuel_tank.volume_properties.net_volume            = V_i_cyl + V_i_sph
+    fuel_tank.volume_properties.gross_volume          = V_o_cyl + V_o_sph
+    fuel_tank.fuel.mass_properties.center_of_gravity  =  [[(L_o + D)/2, 0, 0]]
     fuel_tank.mass_properties.center_of_gravity       =  [[(L_o + D)/2, 0, 0]]
-    fuel_tank.fuel.origin                             = fuel_tank.origin    
-    return 
+    fuel_tank.fuel.origin                             = fuel_tank.origin
+
+    # non-dimensional moment of inertia tensor for fuel (solid rounded-end cylinder)
+    I_fuel_nd = np.zeros((3, 3))
+    V_fuel    = V_i_cyl + V_i_sph
+    if V_fuel > 0:
+        f_cyl = V_i_cyl / V_fuel
+        f_sph = V_i_sph / V_fuel
+        d_h   = L_i / 2 + (3 / 8) * R_i
+        I_fuel_nd[0][0] = 0.5 * f_cyl * R_i**2 + 2 / 5 * f_sph * R_i**2
+        I_fuel_nd[1][1] = f_cyl * (R_i**2 / 4 + L_i**2 / 12) + 2 / 5 * f_sph * R_i**2 + f_sph * d_h**2
+        I_fuel_nd[2][2] = I_fuel_nd[1][1]
+    fuel_tank.fuel.mass_properties.moments_of_inertia.non_dimensional_tensor = I_fuel_nd
+
+    return
     

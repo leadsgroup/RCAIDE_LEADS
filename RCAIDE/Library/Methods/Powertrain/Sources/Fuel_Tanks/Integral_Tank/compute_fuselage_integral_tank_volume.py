@@ -198,8 +198,8 @@ def compute_fuselage_integral_tank_volume(fuel_tank,fuselage):
         
     # Store moment of inertia tensors of tank and fuel 
     fuel_tank.fuel.mass_properties.moments_of_inertia.tensor                 = I_local_fuel
-    fuel_tank.fuel.mass_properties.moments_of_inertia.non_dimensional_tensor = I_local_fuel / tank_mass
+    fuel_tank.fuel.mass_properties.moments_of_inertia.non_dimensional_tensor = I_local_fuel /  fuel_mass 
     fuel_tank.mass_properties.moments_of_inertia.tensor                      = I_local_tank 
-    fuel_tank.mass_properties.moments_of_inertia.non_dimensional_tensor      = I_local_tank  / fuel_mass
+    fuel_tank.mass_properties.moments_of_inertia.non_dimensional_tensor      = I_local_tank  / tank_mass
 
     return 

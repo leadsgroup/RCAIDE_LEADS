@@ -189,24 +189,24 @@ def compute_wing_integral_tank_volume(fuel_tank,wing,n_points = 101,scale_factor
     cg_z     = centroid[2] 
     
     # Shift inertia tensor from origin to the requested (actual) centroid
-    I = combined_mesh_full.moment_inertia 
-    total_fuel_volume   = combined_mesh_full.volume 
+    I = combined_mesh_full.moment_inertia  
     
     fuel_tank.fuel.mass_properties.center_of_gravity          = [[cg_x, cg_y, cg_z]]
-    fuel_tank.fuel.mass_properties.moments_of_inertia.tensor  = I
+    fuel_tank.fuel.mass_properties.moments_of_inertia.tensor  = I 
+    fuel_tank.volume_properties.gross_volume                  = combined_mesh_full.volume 
+    fuel_tank.volume_properties.net_volume                    = combined_mesh_full.volume 
 
-    fuel_tank.volume_properties.gross_volume          = total_fuel_volume
-    fuel_tank.volume_properties.net_volume            = total_fuel_volume
-
-    if fuel_tank.fuel.mass_properties.mass != 0:
-        actual_fuel_volume = fuel_tank.fuel.mass_properties.mass /  fuel_tank.fuel.density  
-        if actual_fuel_volume > fuel_tank.volume_properties.net_volume + 1e-8:
-            raise AttributeError('Specified fuel mass greater than mass of fuel capable of being stored in fuel tank') 
-        fuel_tank.fuel.volume_properties.net_volume = actual_fuel_volume
-    else:
-        fuel_tank.fuel.mass_properties.mass         = total_fuel_volume *  fuel_tank.fuel.density   
-        fuel_tank.fuel.volume_properties.net_volume = total_fuel_volume    
+    # if fuel_tank.fuel.mass_properties.mass != 0:
+    #     actual_fuel_volume = fuel_tank.fuel.mass_properties.mass /  fuel_tank.fuel.density  
+    #     if actual_fuel_volume > fuel_tank.volume_properties.net_volume + 1e-8:
+    #         raise AttributeError('Specified fuel mass greater than mass of fuel capable of being stored in fuel tank') 
+    #     fuel_tank.fuel.volume_properties.net_volume = actual_fuel_volume
+    # else:
+    #     fuel_tank.fuel.mass_properties.mass         = total_fuel_volume *  fuel_tank.fuel.density   
+    #     fuel_tank.fuel.volume_properties.net_volume = total_fuel_volume 
+    #    
     return 
+
 #CAN DELETE IF NOT NEEDED BEFORE MERGING PR
 # def compute_wing_integral_tank_fuel_volume(wing,fuel_tank):     
 #     """

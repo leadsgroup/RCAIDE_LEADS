@@ -107,9 +107,11 @@ def compute_wing_transverse_non_integral_tank_volume(fuel_tank, wing,fuel_tanks)
     # root chord of refernce wing
     root_chord = wing.chords.root
     wing_span  = wing.spans.projected
+    
     # where tank is located as a percentage of root chord
     tank_start_percent = fuel_tank.aft_tank_root_chord_bounds[0]
     tank_end_percent   = fuel_tank.aft_tank_root_chord_bounds[1]
+
     # create x coordinates where airfoils will be interpolated to find polygon of interest
     n = 5
     # ------------------------------------------------------
@@ -257,18 +259,12 @@ def compute_wing_transverse_non_integral_tank_volume(fuel_tank, wing,fuel_tanks)
     tank_volume_i                = max_volume
     fuel_tank.volume_properties.net_volume         = tank_volume_i
     fuel_tank.volume_properties.gross_volume       = tank_volume_o
-    if fuel_tank.fuel.mass_properties.mass != 0:
-        actual_fuel_volume = fuel_tank.fuel.mass_properties.mass /  fuel_tank.fuel.density
-        if actual_fuel_volume > fuel_tank.volume_properties.net_volume + 1e-8 :
-            print('Warning:Specified fuel mass greater than mass of fuel capable of being stored in fuel tank')
-        fuel_tank.fuel.volume_properties.net_volume = tank_volume_i
-    else:
-        fuel_tank.fuel.mass_properties.mass         = tank_volume_i *  fuel_tank.fuel.density
-        fuel_tank.fuel.volume_properties.net_volume = tank_volume_i
+     
     # fuel tank origin
     fuel_tank.origin[0][0]  = circle_origins[max_idx][0] - fuel_tank.diameters.external / 2
     fuel_tank.origin[0][1]  = 0
     fuel_tank.origin[0][2]  = circle_origins[max_idx][1]
+   
     # fuel tank C.G.
     fuel_tank.fuel.mass_properties.center_of_gravity  =  [[fuel_tank.lengths.external /2, 0, 0]]
     fuel_tank.mass_properties.center_of_gravity       =  [[fuel_tank.lengths.external /2, 0, 0]]
@@ -276,12 +272,28 @@ def compute_wing_transverse_non_integral_tank_volume(fuel_tank, wing,fuel_tanks)
         fuel_tank.fuel.mass_properties.center_of_gravity  =  [[fuel_tank.diameters.external /2, 0, 0]]
         fuel_tank.mass_properties.center_of_gravity       =  [[fuel_tank.diameters.external /2, 0, 0]]
         
-    fuel_tank.fuel.origin = fuel_tank.origin
+    fuel_tank.fuel.origin            = fuel_tank.origin
     fuel_tank.fuel.xz_plane_symmetric = wing.xz_plane_symmetric
     fuel_tank.fuel.xy_plane_symmetric = wing.xy_plane_symmetric
-    fuel_tank.fuel.yz_plane_symmetric = wing.yz_plane_symmetric 
-    wing.aft_tank_end_percent =  (fuel_tank.origin[0][0] + fuel_tank.diameters.external )/wing.chords.root
-    
+    fuel_tank.fuel.yz_plane_symmetric = wing.yz_plane_symmetric
+    wing.aft_tank_end_percent         =  (fuel_tank.origin[0][0] + fuel_tank.diameters.external )/wing.chords.root
+
+    # non-dimensional moment of inertia tensor for fuel (solid rounded-end cylinder)
+    r_f = fuel_tank.diameters.internal / 2
+    l_f = fuel_tank.lengths.internal
+    I_fuel_nd = np.zeros((3, 3))
+    V_cyl_f   = np.pi * r_f**2 * l_f
+    V_sph_f   = 4 / 3 * np.pi * r_f**3
+    V_fuel    = V_cyl_f + V_sph_f
+    if V_fuel > 0:
+        f_cyl = V_cyl_f / V_fuel
+        f_sph = V_sph_f / V_fuel
+        d_h   = l_f / 2 + (3 / 8) * r_f
+        I_fuel_nd[0][0] = 0.5 * f_cyl * r_f**2 + 2 / 5 * f_sph * r_f**2
+        I_fuel_nd[1][1] = f_cyl * (r_f**2 / 4 + l_f**2 / 12) + 2 / 5 * f_sph * r_f**2 + f_sph * d_h**2
+        I_fuel_nd[2][2] = I_fuel_nd[1][1]
+    fuel_tank.fuel.mass_properties.moments_of_inertia.non_dimensional_tensor = I_fuel_nd
+
     return
 
 

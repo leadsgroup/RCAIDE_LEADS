@@ -43,7 +43,6 @@ class Geometry(Analysis):
         self.settings.overwrite_reference       = True 
         self.settings.compute_fuel_volume       = True
         self.settings.unique_geometry           = False
-        self.settings.update_max_fuel           = False
         self.settings.write_geometry_properties = False
 
         

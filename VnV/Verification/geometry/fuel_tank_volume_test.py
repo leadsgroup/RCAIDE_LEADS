@@ -11,6 +11,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core                          import Units , Data 
 from RCAIDE.Library.Mission.Common.Pre_Process import geometry
+from RCAIDE.Library.Mission.Common.Pre_Process import mass_properties
 from RCAIDE.Library.Plots                           import *        
 
 
@@ -115,6 +116,7 @@ def integral_fuel_tank_volume_test():
         analysis.geometry.settings.compute_fuel_volume = True
     mission  = mission_setup(analyses)
     geometry(mission)
+    mass_properties(mission)
 
     error = (fuel_volume_true[1]- mission.segments.cruise.analyses.vehicle.volume_properties.max_fuel)/fuel_volume_true[0]
     print(error)
@@ -251,6 +253,7 @@ def non_conformal_lh2_fuel_tank_volume_test():
     mission  = mission_setup(analyses)
 
     geometry(mission)   
+    mass_properties(mission)
     
     error = (fuel_volume_true- mission.segments.cruise.analyses.vehicle.volume_properties.max_fuel)/fuel_volume_true
     
@@ -359,7 +362,7 @@ def non_conformal_lng_fuel_tank_volume_test():
         analysis.geometry.settings.update_max_fuel = True
     mission  = mission_setup(analyses)
 
-    geometry(mission)   
+    geometry(mission)    
     
     error = (fuel_volume_true- mission.segments.cruise.analyses.vehicle.volume_properties.max_fuel)/fuel_volume_true
     

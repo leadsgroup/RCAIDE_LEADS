@@ -81,6 +81,8 @@ class Weights(Analysis):
         self.settings.run_weights_analysis                          = True
         self.settings.run_center_of_gravity_analysis                = False
         self.settings.run_moments_of_inertia_analysis               = False
+        self.settings.update_max_fuel_mass                          = False
+        self.settings.update_fuel_mass                              = False
         self.settings.write_mass_properties                         = False
         self.settings.iterate_mtow                                  = False
     
