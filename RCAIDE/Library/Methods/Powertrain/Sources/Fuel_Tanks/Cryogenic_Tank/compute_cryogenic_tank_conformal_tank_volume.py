@@ -121,9 +121,9 @@ def compute_cryogenic_tank_conformal_volume(fuel_tank,_):
     fuel_tank.fuel.volume_properties.net_volume    = V_guess
     fuel_tank.fuel.volume_properties.gross_volume  = V_total
     
-    fuel_tank.fuel.mass_properties.mass =  fuel_tank.fuel.volume_properties.net_volume *  fuel_tank.fuel.density
-    fuel_tank.mass_properties.insulation_mass =  mass_ins
-    fuel_tank.mass_properties.structural_mass = mass_struct
+    fuel_tank.fuel.mass_properties.mass       = fuel_tank.fuel.volume_properties.net_volume *  fuel_tank.fuel.density
+    fuel_tank.insulation.mass_properties.mass = mass_ins
+    fuel_tank.structural.mass_properties.mass = mass_struct
     
     fuel_tank.inner_structure   = Data()
     fuel_tank.inner_structure.thickness = th
@@ -141,7 +141,7 @@ def compute_cryogenic_tank_conformal_volume(fuel_tank,_):
     fuel_tank.insulation_thickness  = t_ins
     fuel_tank.total_thickness       = t_ins + th
 
-    fuel_tank.mass_properties.mass = fuel_tank.tank_accesories_weight_factor*(fuel_tank.mass_properties.insulation_mass + fuel_tank.mass_properties.structural_mass)
+    fuel_tank.mass_properties.mass = fuel_tank.tank_accesories_weight_factor*(fuel_tank.insulation.mass_properties.mass + fuel_tank.structural.mass_properties.mass)
     
     return
 

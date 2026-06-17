@@ -50,7 +50,7 @@ def compute_cryogenic_cylindrical_tank_volume(fuel_tank,fuel_tanks):
                 Sized fuel volumes [m³] (scaled if symmetric).
             - fuel.mass_properties.mass : float
                 Fuel mass [kg].
-            - mass_properties.structural_mass : float
+            - structural.mass_properties.mass : float
                 Tank structural mass [kg].
 
     Notes
@@ -208,10 +208,10 @@ def compute_cryogenic_cylindrical_tank_volume(fuel_tank,fuel_tanks):
     if np.isnan(mass_ins):
         print(f"[WARNING] Tank '{fuel_tank.tag}' is too small and has negative fuel volume. Removing from list.")
         fuel_tanks.pop(fuel_tank.tag)
-    fuel_tank.fuel.mass_properties.mass =  fuel_tank.fuel.volume_properties.net_volume *  fuel_tank.fuel.density
-    fuel_tank.mass_properties.insulation_mass =  mass_ins
-    fuel_tank.mass_properties.structural_mass = V_material * fuel_tank.material.density  # Structural Mass of the tank
-    fuel_tank.mass_properties.mass = fuel_tank.tank_accesories_weight_factor*(fuel_tank.mass_properties.insulation_mass + fuel_tank.mass_properties.structural_mass)
+    fuel_tank.fuel.mass_properties.mass       =  fuel_tank.fuel.volume_properties.net_volume *  fuel_tank.fuel.density
+    fuel_tank.insulation.mass_properties.mass =  mass_ins
+    fuel_tank.structural.mass_properties.mass = V_material * fuel_tank.material.density  # Structural Mass of the tank
+    fuel_tank.mass_properties.mass            = fuel_tank.tank_accesories_weight_factor*(fuel_tank.insulation.mass_properties.mass + fuel_tank.structural.mass_properties.mass)
     
     return
 
