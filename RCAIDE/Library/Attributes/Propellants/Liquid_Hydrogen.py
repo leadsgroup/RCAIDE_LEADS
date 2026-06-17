@@ -90,7 +90,7 @@ class Liquid_Hydrogen(Propellant):
         self.pressure                      = 0         # [Pa] Pressure of fuel
         self.fuel_surrogate_S1             = {} # [-] Mole fractions of fuel surrogate species
         self.kinetic_mechanism             = '' # [-] Kinetic mechanism for fuel surrogate species
-        self.oxidizer                      = ''        
+        self.oxidizer                      = ''       
 
         self.emission_indices.Production  = 0.0      # kg/kg 
         self.emission_indices.CO2         = 0.0      # kg/kg
