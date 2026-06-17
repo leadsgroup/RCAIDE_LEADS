@@ -26,28 +26,35 @@ def main():
     
     # define optmiztion problem
     problem = define_optimization_problem()
+
+    show_desing_space = False
     
-    # create carpet plot  
-    carpet_plot(problem,
-                design_input_1_index            = 0, 
-                design_input_2_index            = 1,                
-                number_of_points                = 5,
-                generate_objective_plot         = True, 
-                objective_plot_constraint_index = 0, 
-                generate_constraint_plots       = True)
-    
-    # create line plot 
-    line_plot(problem,
-              design_input_1_index = 0, 
-              number_of_points     = 3, 
-              plot_objective       = True,
-              plot_constraint      = True) 
+    # show design space with carpet and line plots  
+    if show_desing_space:
+        carpet_plot_data =generate_carpet_plot(problem,
+                    design_input_1_index            = 0, 
+                    design_input_2_index            = 1,                
+                    number_of_points                = 5,
+                    generate_objective_plot         = True, 
+                    objective_plot_constraint_index = 0, 
+                    generate_constraint_plots       = True)
+        
+        # create line plot 
+        line_plot_data =generate_line_plot(problem,
+                design_input_1_index = 0, 
+                number_of_points     = 3, 
+                plot_objective       = True,
+                plot_constraint      = True) 
      
     # start clock 
     ti = time.time()
     
+    '''This optimization call below is set to run only 2 iterations with a large tolerance to speed up 
+    the optimization for tutorial and server regression purposes. '''
+    regression_solution = scipy_setup.SciPy_Solve(problem,solver='SLSQP', sense_step = 1.e-2, iter =2, tolerance = 1e-1)
+    
     # solve optimization problem
-    solution = scipy_setup.SciPy_Solve(problem,solver='SLSQP')
+    #solution = scipy_setup.SciPy_Solve(problem,solver='SLSQP', sense_step = 1.e-4, iter =10, tolerance = 1e-2)
     
     # stop clock 
     tf                   = time.time()
@@ -56,9 +63,6 @@ def main():
 
     # write optimization outputs     
     print_optimization_results(problem)  
-    
-    # plot mission with optimized aircraft 
-    Plot_Mission.plot_mission(problem)
     
     return
 

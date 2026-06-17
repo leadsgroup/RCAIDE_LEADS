@@ -9,9 +9,8 @@
 # RCAIDE imports  
 import RCAIDE
 from RCAIDE.Framework.Core import Units , Container
-from RCAIDE.Library.Methods.Performance.compute_payload_range_diagram        import compute_payload_range_diagram
-from RCAIDE.Library.Plots import * 
-
+from RCAIDE.Library.Methods.Performance.compute_payload_range_diagram        import compute_payload_range_diagram 
+from RCAIDE.Library.Plots.Performance.plot_payload_range_diagram import plot_payload_range_diagram 
 # python imports     
 import numpy as np  
 import sys

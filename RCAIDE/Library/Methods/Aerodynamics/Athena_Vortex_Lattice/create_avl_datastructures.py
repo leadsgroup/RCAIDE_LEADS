@@ -197,7 +197,6 @@ def populate_wing_sections(avl_wing,rcaide_wing):
                 l  = dy/np.cos(dihedral)
                 dx = l*np.tan(sweep)
             origin= [[origin[0][0] + dx , origin[0][1] + dy, origin[0][2] + dz]]  
-            print(f"origin: {origin}")
         
     else:    
         dihedral              = rcaide_wing.dihedral

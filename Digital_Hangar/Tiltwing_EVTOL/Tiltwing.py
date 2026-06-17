@@ -279,6 +279,7 @@ def vehicle_setup(redesign_rotors = False):
     bat.electrical_configuration.parallel                  = 60 
     bat.geometrtic_configuration.normal_count              = 20
     bat.geometrtic_configuration.parallel_count            = 24  
+    bat.origin                                             = [[2.5, 0,  0.]]
     
     for _ in range(10):
         bus.battery_modules.append(deepcopy(bat))   

@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Performance/cruise_drag_buildup_table.py
+# RCAIDE/Library/Methods/Performance/generate_cruise_drag_buildup_table.py
 # 
 # 
 # Created:  Feb 2026, S. Shekar
@@ -21,7 +21,7 @@ import pandas as pd
 # ----------------------------------------------------------------------
 #  Calculate vehicle Payload Range Diagram
 # ----------------------------------------------------------------------  
-def cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cruise", save_filepath = None):
+def generate_cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cruise", save_filepath = None):
 
     if mission == None:
         raise AssertionError('Mission not specifed!')
@@ -42,7 +42,7 @@ def cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cruise", sav
     }
 
     # --- unpack settings/geometry for parasite normalization (match parasite_total.py logic)
-    vehicle = mission.segments[cruise_segment_tag].analyses.vehicle
+    vehicle  = mission.segments[cruise_segment_tag].analyses.vehicle
     settings = mission.segments[cruise_segment_tag].analyses.aerodynamics.settings
     vehicle_reference_area = vehicle.reference_area
 

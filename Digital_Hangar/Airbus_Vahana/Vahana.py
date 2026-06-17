@@ -355,11 +355,17 @@ def vehicle_setup(redesign_rotors=True):
     else:
         regression_prop_rotor_propulsor = deepcopy(prop_rotor_propulsor)        
         design_electric_rotor(regression_prop_rotor_propulsor, iterations=2)
-        loaded_propulsor = load_propulsor(os.path.join(sys.path[0], 'vahana_tilt_rotor_propulsor.res'))  
+        loaded_propulsor = load_propulsor(os.path.join(sys.path[0], 'vahana_tilt_rotor_propulsor.res'))
         for key,item in prop_rotor_propulsor.rotor.items():
-            prop_rotor_propulsor.rotor[key] = loaded_propulsor.rotor[key] 
+            prop_rotor_propulsor.rotor[key] = loaded_propulsor.rotor[key]
         for key,item in prop_rotor_propulsor.motor.items():
-            prop_rotor_propulsor.motor[key] = loaded_propulsor.motor[key] 
+            prop_rotor_propulsor.motor[key] = loaded_propulsor.motor[key]
+        prop_rotor_propulsor.rotor.airfoils.airfoil.coordinate_file  =  airfoil_file_path + 'NACA_4412.txt'
+        prop_rotor_propulsor.rotor.airfoils.airfoil.polar_files      = [polar_file_path + 'NACA_4412_polar_Re_50000.txt' ,
+                                                                         polar_file_path + 'NACA_4412_polar_Re_100000.txt' ,
+                                                                         polar_file_path + 'NACA_4412_polar_Re_200000.txt' ,
+                                                                         polar_file_path + 'NACA_4412_polar_Re_500000.txt' ,
+                                                                         polar_file_path + 'NACA_4412_polar_Re_1000000.txt']
          
     # Front Rotors Locations 
     nacelle_origins = [[-0.2, 1.347, 0.0], [-0.2, 3.2969999999999997, 0.0], [-0.2, -1.347, 0.0], [-0.2, -3.2969999999999997, 0.0],\

@@ -15,7 +15,7 @@ import RCAIDE
 from RCAIDE.Framework.Core import Units , Data
 from RCAIDE.Library.Plots import *
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan                   import design_turbofan 
-from RCAIDE.Library.Methods.Performance.compute_noise_certification_data import  compute_noise_certification_data
+from RCAIDE.Library.Methods.Performance.compute_noise_certification_metrics import  compute_noise_certification_metrics
 
 # python imports      
 import os
@@ -42,7 +42,7 @@ def main():
     approach_mission  = approach_mission_setup(analyses)
     takeoff_mission   = takeoff_mission_setup(analyses)  
      
-    results = compute_noise_certification_data(approach_mission = approach_mission,
+    results = compute_noise_certification_metrics(approach_mission = approach_mission,
                                                takeoff_mission=takeoff_mission)
     plot_noise_certification_contour(results) 
  
