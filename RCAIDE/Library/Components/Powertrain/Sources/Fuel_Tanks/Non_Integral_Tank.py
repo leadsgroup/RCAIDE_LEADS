@@ -12,7 +12,10 @@
 import RCAIDE
 from .Fuel_Tank  import Fuel_Tank 
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions import append_fuel_tank_conditions 
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_non_integral_tank_volume import *
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_wing_non_integral_tank_volume             import compute_wing_non_integral_tank_volume
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_prismatic_tank_volume                     import compute_prismatic_tank_volume      
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_rounded_end_cylindrical_tank_volume       import compute_rounded_end_cylindrical_tank_volume
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_wing_transverse_non_integral_tank_volume  import compute_wing_transverse_non_integral_tank_volume
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_rounded_end_cylinder_moment_of_inertia, compute_cuboid_moment_of_inertia
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_cuboid_center_of_gravity,  compute_cylinder_center_of_gravity
 # ----------------------------------------------------------------------------------------------------------------------
@@ -175,12 +178,12 @@ class Non_Integral_Tank(Fuel_Tank):
         elif self.bwb_aft_tank is True:
             if self.bwb_aft_tank == True:
                 wing = wings[self.wing_tag]  
-                compute_bwb_aft_tank_volume(self,wing,fuel_tanks)
+                compute_wing_transverse_non_integral_tank_volume(self,wing,fuel_tanks)
         else:
             if self.geometry_type == 'prismatic':
-                compute_prismatic_fuel_tank_volume(self)
+                compute_prismatic_tank_volume(self)
             if self.geometry_type == 'cylindrical':
-                compute_rounded_end_cylindical_tank_volume(self)
+                compute_rounded_end_cylindrical_tank_volume(self)
         return
     
    

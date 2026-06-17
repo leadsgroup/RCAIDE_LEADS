@@ -9,7 +9,7 @@
 # ----------------------------------------------------------------------------------------------------------------------    
 import RCAIDE
 from RCAIDE.Framework.Core import Data 
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank import compute_non_dimensional_rib_coordinates 
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_wing_non_integral_tank_volume import compute_non_dimensional_rib_coordinates 
 from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry, compute_naca_4series
 
 # python imports

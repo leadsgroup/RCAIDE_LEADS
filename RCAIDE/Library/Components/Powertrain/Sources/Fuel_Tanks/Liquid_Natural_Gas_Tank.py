@@ -10,8 +10,10 @@
 from .Non_Integral_Tank  import Non_Integral_Tank 
 import RCAIDE
 from RCAIDE.Framework.Core import Units
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Integral_Tank.compute_integral_tank_volume               import *
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_non_integral_tank_volume       import *
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Integral_Tank.compute_wing_transverse_integral_tank_volume    import compute_wing_transverse_integral_tank_volume
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Integral_Tank.compute_wing_prismatic_integral_tank_volume     import compute_wing_prismatic_integral_tank_volume
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_wing_transverse_non_integral_tank_volume import compute_wing_transverse_non_integral_tank_volume 
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_wing_non_integral_tank_volume import compute_wing_non_integral_tank_volume  
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_cylindrical_tank_volume import compute_cryogenic_cylindrical_tank_volume
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_tank_conformal_tank_volume import compute_cryogenic_tank_conformal_volume
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_cylinder_center_of_gravity
@@ -147,14 +149,14 @@ class Liquid_Natural_Gas_Tank(Non_Integral_Tank):
             if self.wing_tag != None and self.bwb_aft_tank is False:
                 compute_wing_non_integral_tank_volume(self, wings[self.wing_tag],fuel_tanks)
             elif self.wing_tag != None and self.bwb_aft_tank == True:
-                compute_bwb_aft_tank_volume(self, wings[self.wing_tag] ,fuel_tanks)
+                compute_wing_transverse_non_integral_tank_volume(self, wings[self.wing_tag] ,fuel_tanks)
             if hasattr(fuel_tanks, self.tag):
                 compute_cryogenic_cylindrical_tank_volume(self,fuel_tanks)
         elif self.geometry_type == 'conformal':
             if self.wing_tag != None and self.bwb_aft_tank is False:
-                compute_wing_integral_prismatic_tank_volume(self, wings[self.wing_tag],fuel_tanks)
+                compute_wing_prismatic_integral_tank_volume(self, wings[self.wing_tag],fuel_tanks)
             elif self.wing_tag != None and self.bwb_aft_tank == True:
-                compute_bwb_aft_integral_prismatic_tank_volume(self, wings[self.wing_tag],fuel_tanks)
+                compute_wing_transverse_integral_tank_volume(self, wings[self.wing_tag],fuel_tanks)
             if hasattr(fuel_tanks, self.tag):
                 compute_cryogenic_tank_conformal_volume(self,fuel_tanks)
         else:

@@ -13,7 +13,7 @@ from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Components          import Component
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks  import * 
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions import append_fuel_tank_conditions 
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_non_integral_tank_volume import *
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_prismatic_tank_volume   import compute_prismatic_tank_volume     
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_cuboid_moment_of_inertia
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_cuboid_center_of_gravity
 
@@ -139,7 +139,7 @@ class Fuel_Tank(Component):
         --------
         RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_non_integral_tank_volume
         """ 
-        compute_prismatic_fuel_tank_volume(self)
+        compute_prismatic_tank_volume(self)
         return
     
    
