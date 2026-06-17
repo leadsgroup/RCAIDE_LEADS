@@ -61,7 +61,8 @@ class Evaluate(Segment):
         
         # conditions
         self.temperature_deviation                = 0.0
-        self.sideslip_angle                       = 0.0 
+        self.sideslip_angle                       = 0.0
+        self.crosswind_speed                      = 0.0
         self.angle_of_attack                      = 1.0 *  Units.degree
         self.bank_angle                           = 0.0
         self.hybrid_power_split_ratio             = None

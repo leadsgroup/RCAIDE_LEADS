@@ -33,6 +33,7 @@ def main():
 
     # define vehicle 
     vehicle   = vehicle_setup()   
+    vehicle.mass_properties.landing = 40000
   
     # Set up vehicle configs
     configs  = configs_setup(vehicle)
@@ -40,11 +41,9 @@ def main():
     # create analyses
     analyses = analyses_setup(configs)
     
-    landing_weight = 40000
-    landing_field_length = estimate_landing_field_length( analyses = analyses.landing, 
-                                                          landing_weight =landing_weight) 
+    landing_field_length = estimate_landing_field_length( analyses = analyses.landing) 
     
-    print('Weight (kg): ', landing_weight)
+    print('Weight (kg): ', vehicle.mass_properties.landing)
     print('Landing Field Length (m): ',landing_field_length)
  
     return

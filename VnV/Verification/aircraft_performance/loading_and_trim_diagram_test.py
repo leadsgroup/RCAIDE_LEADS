@@ -62,10 +62,10 @@ def tube_and_wing_load_trim_test():
     mission = E190_mission_setup(analyses)
  
     load_data =  compute_load_and_trim_diagram( mission, cruise_segment_tag = 'cruise', discretization=  3)
-     
+    
     CG_Percent_of_LEMAC_truth = np.array([[-0.25572757,  0.67208385,  1.59989527],
                                           [-0.25572757,  0.67208385,  1.59989527],
-                                          [-0.25572757,  0.67208385,  1.59989527]])
+                                          [-0.25572757,  0.67208385,  1.59989527]]) 
     plot_load_diagram(load_data,save_filename  = "TW_Aircraft_Loading_Trim_Dragram") 
 
     LEMAC_error = np.max(np.abs((load_data.trim_results.CG_percent_of_LEMAC_location - CG_Percent_of_LEMAC_truth)/np.abs(CG_Percent_of_LEMAC_truth)))
@@ -92,10 +92,10 @@ def blended_wing_body_load_trim_test():
     mission = BWB_mission_setup(analyses)
  
     load_data =  compute_load_and_trim_diagram( mission, cruise_segment_tag= 'cruise', discretization=  3) 
- 
+  
     CG_Percent_of_LEMAC_truth = np.array([[-0.06332442,  0.78558599,  1.63449641],
                                          [-0.06332442,  0.78558599,  1.63449641],
-                                         [-0.06332442,  0.78558599,  1.63449641]])
+                                         [-0.06332442,  0.78558599,  1.63449641]]) 
     
     plot_load_diagram(load_data,save_filename  = "BWB_Aircraft_Loading_Trim_Dragram") 
 
@@ -260,7 +260,7 @@ def E190_mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]   
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle.active             = True                
     
     mission.append_segment(segment) 
   
@@ -296,7 +296,7 @@ def BWB_mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['propulsor_1','propulsor_2']]   
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle.active             = True                
     
     mission.append_segment(segment) 
   

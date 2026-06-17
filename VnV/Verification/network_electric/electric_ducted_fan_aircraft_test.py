@@ -39,7 +39,7 @@ def main():
     ducted_fan_type  = ['Blade_Element_Momentum_Theory', 'Rankine_Froude_Momentum_Theory']
     
     # truth values 
-    thrust_truth         = [68.13505513753238, 68.13505513753242]
+    thrust_truth         = [68.08079599102852, 68.08079599102851]
    
     for i in range(len(ducted_fan_type)):  
         # vehicle data
@@ -190,8 +190,8 @@ def mission_setup(analyses):
     segment.assigned_control_variables.throttle.active                  = True           
     segment.assigned_control_variables.throttle.assigned_propulsors     = [['center_propulsor','starboard_propulsor','port_propulsor']] 
     segment.assigned_control_variables.throttle.initial_guess_values    = [[0.95]]    
-    segment.assigned_control_variables.body_angle.active                = True        
-    segment.assigned_control_variables.body_angle.initial_guess_values  = [[2.05 * Units.degree]]                   
+    segment.assigned_control_variables.pitch_angle.active                = True        
+    segment.assigned_control_variables.pitch_angle.initial_guess_values  = [[2.05 * Units.degree]]                   
       
     mission.append_segment(segment) 
     return mission

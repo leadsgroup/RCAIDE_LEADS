@@ -7,9 +7,8 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
 from RCAIDE.Framework.Core import Units
-from RCAIDE.Library.Plots.Common import set_axes, plot_style 
+from RCAIDE.Library.Plots.Common import set_axes, plot_style, segment_colors 
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
 import numpy as np 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -30,7 +29,7 @@ def plot_fuel_flow_rates(results,
                   'axes.titlesize': ps.title_font_size}
     plt.rcParams.update(parameters)
      
-    line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))      
+    line_colors   = segment_colors(len(results.segments))      
      
     fig   = plt.figure(save_filename)
     fig.set_size_inches(width,height)
@@ -92,19 +91,20 @@ def plot_fuel_flow_rates(results,
                                label = label)
 
                 # ---------------- CONVERTERS ----------------
-                for k , converter in enumerate(fuel_line.assigned_converters):
+                for converter_group in fuel_line.assigned_converters:
+                    for m, converter_tag in enumerate(converter_group):
 
-                    converter_flow_rate = results.segments[i].conditions.energy.converters[converter[k]].fuel_mass_flow_rate[:,0]
+                        converter_flow_rate = results.segments[i].conditions.energy.converters[converter_tag].fuel_mass_flow_rate[:,0]
 
-                    marker_style = converter_markers[k % len(converter_markers)]
-                    label = converter if i==0 and j==0 else None
+                        marker_style = converter_markers[m % len(converter_markers)]
+                        label = converter_tag if i==0 and j==0 else None
 
-                    axis_conv.plot(time,
-                                   converter_flow_rate,
-                                   color = line_colors[i],
-                                   marker = marker_style[k],
-                                   linewidth = ps.line_width,
-                                   label = label)
+                        axis_conv.plot(time,
+                                       converter_flow_rate,
+                                       color = line_colors[i],
+                                       marker = marker_style,
+                                       linewidth = ps.line_width,
+                                       label = label)
 
     if show_legend:
         axis_prop.legend(fontsize=ps.legend_font_size)

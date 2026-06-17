@@ -1,4 +1,4 @@
- # generate_V_n_diagram.py
+# RCAIDE/Library/Methods/Performance/generate_V_n_diagram.py
 #
 # Created:  Nov 2018, S. Karpuk
 # Modified:
@@ -10,15 +10,17 @@
 # RCAIDE Imports
 import RCAIDE
 from RCAIDE.Framework.Core import Data, Units  
+from RCAIDE.Library.Methods.Aerodynamics.Common.Drag import * 
+from RCAIDE.Library.Methods.Aerodynamics.Common.Lift import *
+from RCAIDE.Library.Mission.Common.Pre_Process  import geometry_preprocess_routine 
 
 # package imports
-import numpy as np
-import matplotlib.pyplot as plt
+import numpy as np 
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Compute a V-n diagram
 # ---------------------------------------------------------------------------------------------------------------------- 
-def generate_V_n_diagram(vehicle,analyses,altitude = 0,delta_ISA = 0):
+def generate_V_n_diagram(analyses=None,altitude = 0,delta_ISA = 0):
     
     """
     Computes a V-n (velocity-load factor) diagram for an aircraft according to FAR requirements.
@@ -100,22 +102,28 @@ def generate_V_n_diagram(vehicle,analyses,altitude = 0,delta_ISA = 0):
     [3] Gudmundsson, S. (2022). General Aviation Aircraft Design: Applied Methods and procedures. Elsevier. 
     """
     
-    weight =  vehicle.mass_properties.max_takeoff
- 
+    if type(analyses) != RCAIDE.Framework.Analyses.Vehicle:
+        raise AttributeError('RCAIDE analyses must be defined')
+    # ---------------------------------------------- 
+    # Preprocess Geometry 
+    # ---------------------------------------------- 
+    geometry_preprocess_routine(analyses)
+
     # ----------------------------------------------
     # Unpack
     # ---------------------------------------------- 
-    FAR_part_number = vehicle.flight_envelope.FAR_part_number
-    atmo            = analyses.atmosphere
-    Mc              = vehicle.flight_envelope.design_mach_number
-
-    for wing in vehicle.wings: 
-        reference_area  = vehicle.reference_area 
-        Cmac            = wing.chords.mean_aerodynamic 
-        pos_limit_load  = vehicle.flight_envelope.positive_limit_load
-        neg_limit_load  = vehicle.flight_envelope.positive_limit_load
-
-    category_tag = vehicle.flight_envelope.category
+    vehicle                  = analyses.vehicle
+    atmo                     = analyses.atmosphere
+    weight                   = vehicle.mass_properties.max_takeoff 
+    FAR_part_number          = vehicle.flight_envelope.FAR_part_number
+    Mc                       = vehicle.flight_envelope.design_mach_number
+    reference_area           = vehicle.reference_area 
+    Cmac                     = vehicle.reference_chord 
+    pos_limit_load           = vehicle.flight_envelope.positive_limit_load
+    neg_limit_load           = vehicle.flight_envelope.negative_limit_load
+    category_tag             = vehicle.flight_envelope.category
+    minimum_lift_coefficient = vehicle.flight_envelope.minimum_lift_coefficient
+ 
     
     # ----------------------------------------------
     # Computing atmospheric conditions
@@ -130,9 +138,9 @@ def generate_V_n_diagram(vehicle,analyses,altitude = 0,delta_ISA = 0):
     # ------------------------------
     # Computing lift-curve slope
     # ------------------------------ 
-    results =  evalaute_aircraft(vehicle,altitude,Vc)
+    results =  evalaute_aircraft(analyses,altitude,Vc)
     CLa     =  results.segments.cruise.conditions.static_stability.derivatives.Clift_alpha[0, 0] 
-
+ 
     # -----------------------------------------------------------
     # Determining vehicle minimum and maximum lift coefficients
     # -----------------------------------------------------------
@@ -145,7 +153,7 @@ def generate_V_n_diagram(vehicle,analyses,altitude = 0,delta_ISA = 0):
         minimum_lift_coefficient = vehicle.flight_envelope.minimum_lift_coefficient
     else: 
         raise ValueError("Minimum lift coefficient not specified.")
-             
+    
     # -----------------------------------------------------------------------------
     # Convert all terms to English (Used for FAR) and remove elements from arrays
     # -----------------------------------------------------------------------------
@@ -256,7 +264,10 @@ def generate_V_n_diagram(vehicle,analyses,altitude = 0,delta_ISA = 0):
     V_n_data.maximum_lift_coefficient = maximum_lift_coefficient
     V_n_data.minimum_lift_coefficient = minimum_lift_coefficient
     V_n_data.positive_limit_load      = load_factors_pos[2]
-    V_n_data.negative_limit_load      = load_factors_neg[2]
+    V_n_data.negative_limit_load      = load_factors_neg[2] 
+    V_n_data.tag                      =  vehicle.tag  
+    V_n_data.category                 =  vehicle.flight_envelope.category  
+    V_n_data.FAR_part_number          =  vehicle.flight_envelope.FAR_part_number   
     
     # --------------------------------------------------
     # Computing critical speeds (Va, Vc, Vb, Vd, Vs1)
@@ -404,18 +415,16 @@ def generate_V_n_diagram(vehicle,analyses,altitude = 0,delta_ISA = 0):
     # Post-processing the V-n diagram
     # ---------------------------------------------- 
     V_n_data.positive_limit_load = max(V_n_data.load_factors.positive)
-    V_n_data.negative_limit_load = min(V_n_data.load_factors.negative) 
-    post_processing(category_tag, Uref_rough, Uref_cruise, Uref_dive, V_n_data, vehicle) 
+    V_n_data.negative_limit_load = min(V_n_data.load_factors.negative)
+    
+    V_n_data.category_tag = category_tag
+    V_n_data.Uref_rough   = Uref_rough  
+    V_n_data.Uref_cruise  = Uref_cruise
+    V_n_data.Uref_dive    = Uref_dive 
     return V_n_data
 
       
-def evalaute_aircraft(vehicle,altitude,Vc):
-
-    # Set up vehicle configs
-    configs  = configs_setup(vehicle)
-
-    # create analyses
-    analyses = analyses_setup(configs)
+def evalaute_aircraft(analyses,altitude,Vc): 
 
     # mission analyses
     mission  = base_mission_setup(analyses,altitude,Vc) 
@@ -426,7 +435,7 @@ def evalaute_aircraft(vehicle,altitude,Vc):
     # mission analysis 
     results = missions.base_mission.evaluate() 
 
-    return results
+    return results 
  
 def analyses_setup(configs):
 
@@ -461,7 +470,7 @@ def base_analysis(vehicle):
     #  Aerodynamics Analysis
     # ------------------------------------------------------------------
     aerodynamics                                      = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.settings.use_surrogate               = True
+    aerodynamics.settings.use_surrogate               = False
     analyses.append(aerodynamics)
 
 
@@ -510,7 +519,7 @@ def base_mission_setup(analyses,altitude,Vc):
 
     #   Cruise Segment: constant Speed, constant altitude 
     segment                           = Segments.Untrimmed.Untrimmed()
-    segment.analyses.extend( analyses.base )   
+    segment.analyses.extend( analyses)   
     segment.tag                       = "cruise" 
     segment.altitude                  = altitude
     segment.air_speed                 = Vc
@@ -600,17 +609,12 @@ def stall_maneuver_speeds(V_n_data):
     airspeeds_neg[2] = (2 * weight * abs(load_factors_neg[2]) / (rho * reference_area * \
                                                                  abs(min_lift_coef))) ** 0.5
     
-    # Pack
-    V_n_data.airspeeds.positive           = airspeeds_pos
-    V_n_data.airspeeds.negative           = airspeeds_neg
-    V_n_data.load_factors.positive        = load_factors_pos
-    V_n_data.load_factors.negative        = load_factors_neg
+    # Pack 
     V_n_data.Vs1.positive                 = airspeeds_pos[1]
     V_n_data.Vs1.negative                 = airspeeds_neg[1]
     V_n_data.Va.positive                  = airspeeds_pos[2]
     V_n_data.Va.negative                  = airspeeds_neg[2]
     
-#------------------------------------------------------------------------------------------------------------
 
 def stall_line(V_n_data, upper_bound, lower_bound, Num_of_points, sign_flag):
     
@@ -684,7 +688,7 @@ def stall_line(V_n_data, upper_bound, lower_bound, Num_of_points, sign_flag):
         V_n_data.airspeeds.negative        = airspeeds
     
     return 
-#--------------------------------------------------------------------------------------------------------------
+
 
 def gust_loads(category_tag, V_n_data, Kg, CLa, Num_of_points, FAR_part_number, sign_flag):
 
@@ -734,10 +738,8 @@ def gust_loads(category_tag, V_n_data, Kg, CLa, Num_of_points, FAR_part_number, 
     For more details, refer to S. Gudmundsson "General Aviation Aircraft Design: Applied Methods and Procedures"
     """
 
-    # Unpack
-    weight          = V_n_data.weight
-    wing_loading    = V_n_data.wing_loading
-    reference_area  = V_n_data.reference_area
+    # Unpack 
+    wing_loading    = V_n_data.wing_loading 
     density         = V_n_data.density
     density_ratio   = V_n_data.density_ratio
     Vc              = V_n_data.Vc
@@ -938,113 +940,8 @@ def gust_dive_speed_intersection(category_tag, load_factors, gust_load_factors, 
                                         load_factors[(element_num):]))    
 
     return airspeeds, load_factors
-#--------------------------------------------------------------------------------------------------------------------------
 
-def post_processing(category_tag, Uref_rough, Uref_cruise, Uref_dive, V_n_data, vehicle):
-
-    """ Plot graph, save the final figure, and create results output file
-
-    Source:
-
-    Inputs:
-    V_n_data.
-        airspeeds.positive                  [kts]
-        airspeeds.negative                  [kts]
-        Vc                                  [kts]
-        Vd                                  [kts]
-        Vs1.positive                        [kts]
-            negative                        [kts]
-        Va.positive                         [kts]
-            negative                        [kts]
-        load_factors.positive               [Unitless]
-            negative                        [Unitless]
-        gust_load_factors.positive          [Unitless]
-            negative                        [Unitless]
-        weight                              [lb]
-        altitude                            [ft]
-    vehicle._base.tag                       [Unitless]
-    Uref_rough                              [ft/s]
-    Uref_cruise                             [ft/s]
-    Uref_dive                               [ft/s]
-
-    Outputs:
-
-    Properties Used:
-    N/A
-
-    Description:
-    """
-
-    # Unpack
-    load_factors_pos        = V_n_data.load_factors.positive
-    load_factors_neg        = V_n_data.load_factors.negative
-    airspeeds_pos           = V_n_data.airspeeds.positive
-    airspeeds_neg           = V_n_data.airspeeds.negative
-    Vc                      = V_n_data.Vc
-    Vd                      = V_n_data.Vd
-    Vs1_pos                 = V_n_data.Vs1.positive
-    Vs1_neg                 = V_n_data.Vs1.negative
-    Va_pos                  = V_n_data.Va.positive
-    Va_neg                  = V_n_data.Va.negative
-    gust_load_factors_pos   = V_n_data.gust_load_factors.positive
-    gust_load_factors_neg   = V_n_data.gust_load_factors.negative
-    weight                  = V_n_data.weight
-    altitude                = V_n_data.altitude
-
-    #-----------------------------
-    # Plotting the V-n diagram
-    #-----------------------------
-    fig, ax = plt.subplots()
-    ax.fill(airspeeds_pos, load_factors_pos, c='b', alpha=0.3)
-    ax.fill(airspeeds_neg, load_factors_neg, c='b', alpha=0.3)
-    ax.plot(airspeeds_pos, load_factors_pos, c='b')
-    ax.plot(airspeeds_neg, load_factors_neg, c='b')
-
-    # Plotting gust lines
-    ax.plot([0, Vc,1.05*Vd],[1,gust_load_factors_pos[2],gust_load_factors_pos[len(gust_load_factors_pos)-3]],'--', c='r', label = ('Gust ' + str(round(Uref_cruise)) + 'fps'))
-    ax.plot([0, Vd,1.05*Vd],[1,gust_load_factors_pos[3],gust_load_factors_pos[len(gust_load_factors_pos)-2]],'--', c='g', label = ('Gust ' + str(round(Uref_dive)) + 'fps'))
-    ax.plot([0, Vc,1.05*Vd],[1,gust_load_factors_neg[2],gust_load_factors_neg[len(gust_load_factors_neg)-3]],'--', c='r')
-    ax.plot([0, Vd,1.05*Vd],[1,gust_load_factors_neg[3],gust_load_factors_neg[len(gust_load_factors_neg)-2]],'--', c='g')
-
-    if category_tag == 'commuter':
-        ax.plot([0, 1.05*Vd],[1,gust_load_factors_pos[len(gust_load_factors_pos)-1]],'--', c='m', label = ('Gust ' + str(round(Uref_rough)) + 'fps'))
-        ax.plot([0, 1.05*Vd],[1,gust_load_factors_neg[len(gust_load_factors_neg)-1]],'--', c='m')
-
-    # Formating the plot
-    ax.set_xlabel('Airspeed, KEAS')
-    ax.set_ylabel('Load Factor')
-    ax.set_title(vehicle.tag + '  Weight=' + str(round(weight)) + 'lb  ' + ' Altitude=' + str(round(altitude)) + 'ft ')
-    ax.legend()
-    ax.grid() 
-
-    #---------------------------------
-    # Creating results output file
-    #---------------------------------
-    fres = open("V_n_diagram_results_" + vehicle.tag +".dat","w")
-    fres.write('V-n diagram summary\n')
-    fres.write('-------------------\n')
-    fres.write('Aircraft: ' + vehicle.tag + '\n')
-    fres.write('category: ' + vehicle.flight_envelope.category + '\n')
-    fres.write('FAR certification: Part ' +  vehicle.flight_envelope.FAR_part_number  + '\n')
-    fres.write('Weight = ' + str(round(weight)) + ' lb\n')
-    fres.write('Altitude = ' + str(round(altitude)) + ' ft\n')
-    fres.write('---------------------------------------------------------------\n\n')
-    fres.write('Airspeeds: \n')
-    fres.write('    Positive stall speed (Vs1)   = ' + str(round(Vs1_pos,1)) + ' KEAS\n')
-    fres.write('    Negative stall speed (Vs1)   = ' + str(round(Vs1_neg,1)) + ' KEAS\n')
-    fres.write('    Positive maneuver speed (Va) = ' + str(round(Va_pos,1))  + ' KEAS\n')
-    fres.write('    Negative maneuver speed (Va) = ' + str(round(Va_neg,1))  + ' KEAS\n')
-    fres.write('    Cruise speed (Vc)            = ' + str(round(Vc,1))      + ' KEAS\n')
-    fres.write('    Dive speed (Vd)              = ' + str(round(Vd,1))      + ' KEAS\n')
-    fres.write('Load factors: \n')
-    fres.write('    Positive limit load factor (n+) = ' + str(round(max(load_factors_pos),2)) + '\n')
-    fres.write('    Negative limit load factor (n-) = ' + str(round(min(load_factors_neg),2)) + '\n')
-    fres.write('    Positive load factor at Vd      = ' + str(round(V_n_data.limit_loads.dive.positive,2)) + '\n')
-    fres.write('    Negative load factor at Vd      = ' + str(round(V_n_data.limit_loads.dive.negative,2)) + '\n')
-   
-    return
 #------------------------------------------------------------------------------------------------------------------------
-
 def convert_keas(V_n_data):
 
     """ Convert speed to KEAS

@@ -63,7 +63,7 @@ def main():
     plot_battery_pack_conditions(results) 
 
     X57_SPL        = np.max(results.segments.cruise.conditions.aeroacoustics.hemisphere_SPL_dBA) 
-    X57_SPL_true   = 85.02279245087165
+    X57_SPL_true   = 85.63436752934628
     X57_diff_SPL   = np.abs(X57_SPL - X57_SPL_true)
     print('Error: ',X57_diff_SPL)
     assert np.abs((X57_SPL - X57_SPL_true)/X57_SPL_true) < 1e-3 
@@ -195,8 +195,8 @@ def mission_setup(analyses):
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]  
     segment.assigned_control_variables.throttle.initial_guess_values = [[0.5]]  
-    segment.assigned_control_variables.body_angle.active             = True               
-    segment.assigned_control_variables.body_angle.initial_guess_values     = [[8.15*Units.degrees]]        
+    segment.assigned_control_variables.pitch_angle.active             = True               
+    segment.assigned_control_variables.pitch_angle.initial_guess_values     = [[8.15*Units.degrees]]        
     
     mission.append_segment(segment)  
     return mission

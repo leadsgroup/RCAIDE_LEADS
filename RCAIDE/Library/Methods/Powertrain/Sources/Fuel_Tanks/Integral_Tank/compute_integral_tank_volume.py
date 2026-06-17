@@ -105,7 +105,7 @@ def compute_fuselage_integral_tank_fuel_volume(fuel_tank,fuselage):
             # volume of truncated cylinder 
             A_1_o    = np.pi * inner_segment.height /2  *  inner_segment.width/2
             A_2_o    = np.pi * outer_segment.height/2   *  outer_segment.width/2
-            volume_o = (1 /3) * ( A_1_o + A_2_o + np.sqrt(A_2_o*A_2_o)) *h
+            volume_o = (1 /3) * ( A_1_o + A_2_o + np.sqrt(A_1_o*A_2_o)) *h
 
             A_1_i    = np.pi * inner_segment.height /2  *  inner_segment.width/2
             A_2_i    = np.pi * outer_segment.height/2   *  outer_segment.width/2 
@@ -826,9 +826,13 @@ def compute_bwb_aft_integral_prismatic_tank_volume(fuel_tank, wing,_):
         # Use interpolant to evaluate polygon points
         upper_y_function = interp1d(x_points_upper_positioned, y_points_upper_positioned, kind='linear')
         lower_y_function = interp1d(x_points_lower_positioned, y_points_lower_positioned, kind='linear')
-        upper_y_points   = upper_y_function(x_tank_bounds)
-        lower_y_points   = lower_y_function(x_tank_bounds)
-        
+        upper_y_raw      = upper_y_function(x_tank_bounds)
+        lower_y_raw      = lower_y_function(x_tank_bounds)
+        # Reflexed airfoils can have upper_y < lower_y near the trailing edge;
+        # clamp so the polygon is always non-self-intersecting.
+        upper_y_points   = np.maximum(upper_y_raw, lower_y_raw)
+        lower_y_points   = np.minimum(upper_y_raw, lower_y_raw)
+
         # Create polygon
         polygon = []
         # upper points
@@ -863,11 +867,11 @@ def compute_bwb_aft_integral_prismatic_tank_volume(fuel_tank, wing,_):
     for seg_i in range(1, num_tank_sections):
 
         if seg_i == 1:
-            inner_polygon = Polygon(polygon_points[seg_i - 1])
+            inner_polygon = Polygon(polygon_points[seg_i - 1]).buffer(0)
         else:
             inner_polygon = intersection_polygon
 
-        outer_polygon = Polygon(polygon_points[seg_i])
+        outer_polygon = Polygon(polygon_points[seg_i]).buffer(0)
 
         intersection_polygon = inner_polygon.intersection(outer_polygon)
 
@@ -877,11 +881,14 @@ def compute_bwb_aft_integral_prismatic_tank_volume(fuel_tank, wing,_):
             intersection_polygons.append(None)
             continue
 
-        if intersection_polygon.geom_type == 'MultiPolygon':
-            intersection_polygon = max(
-                intersection_polygon.geoms,
-                key=lambda g: g.area
-            )
+        if not isinstance(intersection_polygon, shapely.geometry.Polygon):
+            polys = [g for g in getattr(intersection_polygon, 'geoms', []) if isinstance(g, shapely.geometry.Polygon)]
+            intersection_polygon = max(polys, key=lambda g: g.area) if polys else None
+        if intersection_polygon is None:
+            tank_volumes[seg_i - 1] = 0.0
+            tank_lengths[seg_i - 1] = 0.0
+            intersection_polygons.append(None)
+            continue
 
         area = intersection_polygon.area
 

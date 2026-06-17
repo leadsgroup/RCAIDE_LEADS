@@ -133,7 +133,7 @@ def geometry_preprocess_routine(analyses):
                     elif type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.First:
                         NPF +=  cabin_class.number_of_seats 
                 total_seats += cabin.number_of_seats 
-            for cabin in wing.cabins:     
+                
                 if cabin.number_of_passengers == 0: # if cabin class  passengers are not defined, use ratio of cabin to aircraft
                     cabin.number_of_passengers =  min(total_seats,int( np.round((cabin.number_of_seats / total_seats) *  vehicle.number_of_passengers)))
                         

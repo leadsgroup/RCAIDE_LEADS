@@ -15,7 +15,7 @@ Date   : Feb 18th, 2026
 import RCAIDE
 from RCAIDE.Framework.Core   import Data,Units 
 from RCAIDE.Library.Methods.Performance       import generate_V_n_diagram 
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan                  import design_turbofan 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan  import design_turbofan 
 from RCAIDE.Library.Plots import  * 
 
 # python imports      

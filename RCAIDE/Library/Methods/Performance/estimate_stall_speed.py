@@ -61,7 +61,7 @@ def estimate_stall_speed(vehicle_mass,reference_area,altitude,maximum_lift_coeff
     RCAIDE.Library.Attributes.Atmospheres
     RCAIDE.Library.Methods.Performance.estimate_take_off_field_length
     """
-      
+    
     g       = 9.81 
     atmo    = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
     rho     = atmo.compute_values(altitude,0.).density[0][0] 

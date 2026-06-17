@@ -36,8 +36,8 @@ def main():
          
     battery_types = ['lithium_ion_nmc', 'lithium_ion_lfp']
     btms_types    = ['Liquid_Cooled_Wavy_Channel', 'Air_Cooled', None] 
-    CL_true       = [[0.8283889051940404,  0.8283889051940404 ,   0.8283889051940404],
-                     [ 0.8283889051940401,  0.8283889051940401,  0.8283889051940401]] 
+    CL_true       = [[ 0.8285112002922213, 0.8285112002922213, 0.8285112002922213],
+                     [ 0.8285112002922213, 0.8285112002922213, 0.8285112002922213]] 
     # vehicle data
     for i , battery_type in enumerate(battery_types):
         for j , btms_type in enumerate(btms_types):
@@ -62,6 +62,9 @@ def main():
             assert(abs(error)<1e-6)
               
             plot_results(results)
+
+
+    plot_3d_vehicle(vehicle, show_figure = False )
 
     return
     
@@ -161,7 +164,7 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
-    segment.assigned_control_variables.body_angle.active             = True                  
+    segment.assigned_control_variables.pitch_angle.active             = True                  
        
     mission.append_segment(segment)
 
@@ -183,7 +186,7 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
-    segment.assigned_control_variables.body_angle.active             = True                  
+    segment.assigned_control_variables.pitch_angle.active             = True                  
        
     mission.append_segment(segment)     
     

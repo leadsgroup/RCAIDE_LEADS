@@ -402,8 +402,8 @@ def vehicle_setup():
     fuselage.append_segment(segment)
 
     # define cabin    
-    cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-    cabin.offset_x                                    = 2.5  
+    cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
+    cabin.origin                                      = [[2,0,0.46]]
     economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
     economy_class.number_of_seats_abrest              = 2
     economy_class.seat_pitch                          = 31 * Units.inches
@@ -413,7 +413,9 @@ def vehicle_setup():
     economy_class.galley_lavatory_percent_x_locations = []  
     economy_class.emergency_exit_percent_x_locations  = []      
     economy_class.type_A_exit_percent_x_locations     = [0.01,1] 
-    economy_class.number_of_seats                     = economy_class.number_of_rows  * economy_class.number_of_seats_abrest 
+    economy_class.number_of_seats                     = economy_class.number_of_rows  * economy_class.number_of_seats_abrest
+    cabin.append_cabin_class(economy_class)
+    fuselage.append_cabin(cabin)          
     
 
     # add to vehicle
@@ -532,12 +534,15 @@ def vehicle_setup():
     propeller.origin                                 = [[3.36,2.25,1.15]]   
     airfoil                                          = RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil.tag                                      = 'NACA_4412' 
-    airfoil.coordinate_file                          = 'NACA_4412.txt'     
-    airfoil.polar_files                              =[ 'NACA_4412_polar_Re_50000.txt',
-                                                        'NACA_4412_polar_Re_100000.txt',
-                                                        'NACA_4412_polar_Re_200000.txt',
-                                                        'NACA_4412_polar_Re_500000.txt',
-                                                        'NACA_4412_polar_Re_1000000.txt']   
+    airfoil.coordinate_file                       =  airfoil_file_path  + 'NACA_4412.txt'
+    airfoil.polar_files                           = [polar_file_path  + 'NACA_4412_polar_Re_50000.txt' ,
+                                                     polar_file_path  + 'NACA_4412_polar_Re_100000.txt' ,
+                                                     polar_file_path  + 'NACA_4412_polar_Re_200000.txt' ,
+                                                     polar_file_path  + 'NACA_4412_polar_Re_500000.txt' ,
+                                                     polar_file_path  + 'NACA_4412_polar_Re_1000000.txt',
+                                                     polar_file_path  + 'NACA_4412_polar_Re_3500000.txt',
+                                                     polar_file_path  + 'NACA_4412_polar_Re_5000000.txt',
+                                                     polar_file_path  + 'NACA_4412_polar_Re_7500000.txt' ]
     propeller.append_airfoil(airfoil)                       
     propeller.airfoil_polar_stations                 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]   
     starboard_propulsor.propeller                    = propeller   

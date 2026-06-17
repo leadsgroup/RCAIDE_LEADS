@@ -38,7 +38,7 @@ from Hydrogen_Fuel_Cell_Twin_Otter   import vehicle_setup , configs_setup
 
 def main():  
  
-    mdot_H2_true         = [0.0178402179585528, 0.017442464732302283]
+    mdot_H2_true         = [0.01783053350249817, 0.017434650919374024]
     fuel_cell_models     = ['PEM', 'Larminie']
     
     for i in range(2): 
@@ -172,7 +172,7 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
-    segment.assigned_control_variables.body_angle.active             = True                  
+    segment.assigned_control_variables.pitch_angle.active             = True                  
        
     mission.append_segment(segment) 
     

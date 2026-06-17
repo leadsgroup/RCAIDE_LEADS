@@ -71,7 +71,8 @@ class Vehicle(Data):
         self.number_of_seats                                               = 0 
         self.number_of_first_class_seats                                   = 0 
         self.number_of_business_class_seats                                = 0 
-        self.number_of_economy_class_seats                                 = 0 
+        self.number_of_economy_class_seats                                 = 0
+        self.Vref_VS_ratio                                                 = None
         self.maximum_cross_sectional_area                                  = 0.0
         self.length                                                        = 0.0
          
@@ -94,7 +95,7 @@ class Vehicle(Data):
         self.flight_envelope.maximum_dynamic_pressure                      = 0.0
         self.flight_envelope.maximum_mach_operational                      = 0.0
         self.flight_envelope.maximum_lift_coefficient                      = None
-        self.flight_envelope.minimum_lift_coefficient                      = None
+        self.flight_envelope.minimum_lift_coefficient                      = -1.5
 
         self.flight_envelope.maneuver                                      = Data()
         self.flight_envelope.maneuver.load_alleviation_factor              = 0.0 

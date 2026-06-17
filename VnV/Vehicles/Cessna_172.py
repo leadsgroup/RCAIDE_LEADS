@@ -37,8 +37,12 @@ def vehicle_setup():
     vehicle.flight_envelope.positive_limit_load      = 3.8  
     vehicle.flight_envelope.design_range             = 750 * Units.nmi 
     vehicle.flight_envelope.design_dynamic_pressure  = 2755 # max speed at 10 k feet
-    vehicle.flight_envelope.design_mach_number       = 0.18745866156304694
-                                                
+    vehicle.flight_envelope.design_mach_number       = 0.18745866156304694 
+    vehicle.flight_envelope.category                 = 'normal'
+    vehicle.flight_envelope.FAR_part_number          = '23' 
+    vehicle.flight_envelope.maximum_lift_coefficient = 3
+    vehicle.flight_envelope.minimum_lift_coefficient = -1.5
+    
     # basic parameters                          
     vehicle.reference_area                           = 174. * Units.feet**2       
     vehicle.number_of_passengers                     = 4
@@ -208,9 +212,7 @@ def vehicle_setup():
     fuselage.heights.maximum                    = 62. * Units.inches    # Height of the fuselage
     fuselage.lengths.total                      = 326.         * Units.inches            # Length of the fuselage
     fuselage.lengths.tail                       = 161. * Units.inches  
-    fuselage.lengths.cabin                      = 105. * Units.inches 
-    fuselage.volume_properties.volume           = .4*fuselage.lengths.total*(np.pi/4.)*(fuselage.heights.maximum**2.) #try this as approximation
-    fuselage.volume_properties.internal         = .3*fuselage.lengths.total*(np.pi/4.)*(fuselage.heights.maximum**2.)
+    fuselage.lengths.cabin                      = 105. * Units.inches  
     fuselage.areas.wetted                       = 30000. * Units.inches**2. 
     fuselage.fineness.nose                      = 1.6
     fuselage.fineness.tail                      = 2.

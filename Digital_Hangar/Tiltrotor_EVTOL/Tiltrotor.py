@@ -384,6 +384,7 @@ def vehicle_setup(redesign_rotors = False):
     #------------------------------------------------------------------------------------------------------------------------------------ 
     battery_module                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC() 
     battery_module.tag                                                = 'bus_battery'
+    battery_module.origin                                             = [[2.5, 0,  0.]]
     battery_module.electrical_configuration.series                    = 60
     battery_module.electrical_configuration.parallel                  = 60          
     battery_module.geometrtic_configuration.normal_count              = 60

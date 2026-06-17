@@ -13,8 +13,8 @@ from RCAIDE.Framework.Core                                       import Data, Un
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method   import VLM
 from RCAIDE.Library.Methods.Geometry.Planform                    import  wing_planform 
 from RCAIDE.Library.Plots  import *
-from RCAIDE.load import load  
-from RCAIDE.save import save  
+from RCAIDE.Input_Output import load
+from RCAIDE.Input_Output import save
 
 
 import sys
