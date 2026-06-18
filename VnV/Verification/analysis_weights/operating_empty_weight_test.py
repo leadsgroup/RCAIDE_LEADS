@@ -131,7 +131,7 @@ def Transport_Hydrogen_Test(update_regression_values, show_figure):
     for fuel_line in vehicle.networks.fuel.fuel_lines:
         for fuel_tank in fuel_line.fuel_tanks:
             fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()   
-            fuel_tank.fuel.gravimetric_efficiency            = 0.5
+            fuel_tank.gravimetric_efficiency            = 0.5
 
     for method_type in method_types:
         print(f'Testing Transport Aircraft Method: {method_type} | Method: {"Complex"}')        
@@ -334,11 +334,12 @@ def BWB_Hydrogen_Aircraft_Test(update_regression_values,show_figure):
                 propulsor.combustor.fuel_data =  RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen() 
             for fuel_line in vehicle.networks.fuel.fuel_lines:
                 fuel_line.fuel_tanks.clear()
-                fuel_tank                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
-                fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()   
-                fuel_tank.fuel.gravimetric_efficiency            = 0.5
-                fuel_tank.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
-                fuel_tank.insulation_material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
+                fuel_tank                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
+                fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+                fuel_tank.design_inlet_temperature               = 20
+                fuel_tank.gravimetric_efficiency                  = 0.5
+                fuel_tank.inner_structure.material                = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+                fuel_tank.insulation.material                     = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
                 fuel_tank.segments_bounding_tank                = ['fuel_wall', 'wing_section_1']
                 fuel_line.fuel_tanks.append(fuel_tank)
 
@@ -352,7 +353,7 @@ def BWB_Hydrogen_Aircraft_Test(update_regression_values,show_figure):
                     compute_layout_of_passenger_accommodations(wing)
                     wing_planform(wing)
                     vehicle.reference_area = wing.areas.reference 
-            compute_fuel_volume(vehicle,compute_fuel_volume =True, update_max_fuel = False)
+            compute_fuel_volume(vehicle, compute_fuel_volume=True)
             weight_analysis.settings.FLOPS.fidelity   = 'Simple' if FLOPS_number == 0 else 'Complex'
             weight                   = weight_analysis.evaluate(vehicle)
             plot_weight_breakdown(vehicle, show_figure = show_figure) 

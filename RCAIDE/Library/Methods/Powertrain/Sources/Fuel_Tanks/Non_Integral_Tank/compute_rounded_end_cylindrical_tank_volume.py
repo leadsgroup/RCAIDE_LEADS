@@ -7,7 +7,8 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports
-import  RCAIDE 
+import  RCAIDE
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_non_dimensional_moment_of_inertia import compute_rounded_end_cylinder_non_dimensional_moi
 from RCAIDE.Library.Methods.Geometry.Planform.convert_sweep import convert_sweep_segments  
 from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry,  compute_naca_4series 
 
@@ -27,43 +28,34 @@ def compute_rounded_end_cylindrical_tank_volume(fuel_tank):
     Computes the volume for a hollow rounded-end cylinder. 
     """ 
     
-    # unpack 
-    L = fuel_tank.lengths.external
-    D = fuel_tank.diameters.external 
-    t = fuel_tank.wall_thickness
-     
-    # compute tank dimensions 
-    L_o = L
-    R_o = D / 2
-    R_i = R_o -  t
-    L_i = L_o - 2 * t # There are two different conventions in this script. One where L is from hemisphere tip to hemisphere tip the other where it is from cylinder end to cylinder end. 
-         
-    # volume of external tank
-    V_i_cyl = (np.pi * R_i ** 2 * L_i )  
-    V_i_sph = ( 4 / 3 * np.pi * R_i ** 3)   
-    
-    # volume of interal walls 
-    V_o_cyl = (np.pi * R_o ** 2 * L_o )  
-    V_o_sph = ( 4 / 3 * np.pi * R_o ** 3)   
-   
-    # store the center of gravity and origin of the fuel mass for use in mass properties calculations
-    fuel_tank.volume_properties.net_volume            = V_i_cyl + V_i_sph
-    fuel_tank.volume_properties.gross_volume          = V_o_cyl + V_o_sph
-    fuel_tank.fuel.mass_properties.center_of_gravity  =  [[(L_o + D)/2, 0, 0]]
-    fuel_tank.mass_properties.center_of_gravity       =  [[(L_o + D)/2, 0, 0]]
-    fuel_tank.fuel.origin                             = fuel_tank.origin
+    # unpack (lengths.external is total tip-to-tip including hemispherical caps)
+    L_total = fuel_tank.lengths.external
+    D       = fuel_tank.diameters.external
+    t       = fuel_tank.wall_thickness
 
-    # non-dimensional moment of inertia tensor for fuel (solid rounded-end cylinder)
-    I_fuel_nd = np.zeros((3, 3))
-    V_fuel    = V_i_cyl + V_i_sph
-    if V_fuel > 0:
-        f_cyl = V_i_cyl / V_fuel
-        f_sph = V_i_sph / V_fuel
-        d_h   = L_i / 2 + (3 / 8) * R_i
-        I_fuel_nd[0][0] = 0.5 * f_cyl * R_i**2 + 2 / 5 * f_sph * R_i**2
-        I_fuel_nd[1][1] = f_cyl * (R_i**2 / 4 + L_i**2 / 12) + 2 / 5 * f_sph * R_i**2 + f_sph * d_h**2
-        I_fuel_nd[2][2] = I_fuel_nd[1][1]
-    fuel_tank.fuel.mass_properties.moments_of_inertia.non_dimensional_tensor = I_fuel_nd
+    # outer dimensions: cylinder length = total - diameter (two hemispheres)
+    R_o    = D / 2
+    L_cyl  = L_total - D
+
+    # inner dimensions
+    R_i      = R_o - t
+    L_cyl_i  = L_cyl - 2 * t
+
+    # outer volume (cylinder + sphere)
+    V_o_cyl = np.pi * R_o**2 * L_cyl
+    V_o_sph = 4 / 3 * np.pi * R_o**3
+
+    # inner volume (cylinder + sphere)
+    V_i_cyl = np.pi * R_i**2 * L_cyl_i
+    V_i_sph = 4 / 3 * np.pi * R_i**3
+
+    fuel_tank.volume_properties.net_volume           = V_i_cyl + V_i_sph
+    fuel_tank.volume_properties.gross_volume         = V_o_cyl + V_o_sph
+    fuel_tank.fuel.mass_properties.center_of_gravity = [[L_total / 2, 0, 0]]
+    fuel_tank.mass_properties.center_of_gravity      = [[L_total / 2, 0, 0]]
+    fuel_tank.fuel.origin                            = fuel_tank.origin
+
+    fuel_tank.fuel.mass_properties.moments_of_inertia.non_dimensional_tensor = compute_rounded_end_cylinder_non_dimensional_moi(R_i, L_cyl_i)
 
     return
     

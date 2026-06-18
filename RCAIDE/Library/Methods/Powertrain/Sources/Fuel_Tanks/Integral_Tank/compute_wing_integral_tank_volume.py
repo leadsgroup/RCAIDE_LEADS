@@ -154,7 +154,15 @@ def compute_wing_integral_tank_volume(fuel_tank,wing,n_points = 101,scale_factor
         segment_meshes.append(solid_segment)
     
     combinde_mesh = trimesh.util.concatenate(segment_meshes)
-    
+
+    # Equivalent rectangle dimensions from unscaled mesh bounding box
+    bounds = combinde_mesh.bounds
+    fuel_tank.widths.external  = bounds[1][0] - bounds[0][0]
+    fuel_tank.lengths.external = bounds[1][1] - bounds[0][1]
+    fuel_tank.heights.external = bounds[1][2] - bounds[0][2]
+    if fuel_tank.heights.external > 0:
+        fuel_tank.aspect_ratio = fuel_tank.lengths.external / fuel_tank.heights.external
+
     # Reflect across the YZ plane (mirror X)
     Ry = np.diag([1, -1, 1])   # reflection matrix
 
@@ -182,96 +190,18 @@ def compute_wing_integral_tank_volume(fuel_tank,wing,n_points = 101,scale_factor
         combined_mesh_full         = trimesh.util.concatenate([combinde_mesh, combined_mesh_sym]) 
     else:
         combined_mesh_full = combinde_mesh
-    combined_mesh_full.density = fuel_tank.fuel.density 
     centroid = combined_mesh_full.centroid
     cg_x     = centroid[0]
     cg_y     = centroid[1]
-    cg_z     = centroid[2] 
-    
-    # Shift inertia tensor from origin to the requested (actual) centroid
-    I = combined_mesh_full.moment_inertia  
-    
-    fuel_tank.fuel.mass_properties.center_of_gravity          = [[cg_x, cg_y, cg_z]]
-    fuel_tank.fuel.mass_properties.moments_of_inertia.tensor  = I 
-    fuel_tank.volume_properties.gross_volume                  = combined_mesh_full.volume 
-    fuel_tank.volume_properties.net_volume                    = combined_mesh_full.volume 
+    cg_z     = centroid[2]
 
-    # if fuel_tank.fuel.mass_properties.mass != 0:
-    #     actual_fuel_volume = fuel_tank.fuel.mass_properties.mass /  fuel_tank.fuel.density  
-    #     if actual_fuel_volume > fuel_tank.volume_properties.net_volume + 1e-8:
-    #         raise AttributeError('Specified fuel mass greater than mass of fuel capable of being stored in fuel tank') 
-    #     fuel_tank.fuel.volume_properties.net_volume = actual_fuel_volume
-    # else:
-    #     fuel_tank.fuel.mass_properties.mass         = total_fuel_volume *  fuel_tank.fuel.density   
-    #     fuel_tank.fuel.volume_properties.net_volume = total_fuel_volume 
-    #    
-    return 
+    # Non-dimensional moment of inertia (I/mass) using unit density
+    combined_mesh_full.density = 1.0
+    I_fuel_nd = combined_mesh_full.moment_inertia / combined_mesh_full.mass
 
-#CAN DELETE IF NOT NEEDED BEFORE MERGING PR
-# def compute_wing_integral_tank_fuel_volume(wing,fuel_tank):     
-#     """
-#     Computes the fuel volume for an integral fuel tank in a single-segment wing.
+    fuel_tank.fuel.mass_properties.center_of_gravity                         = [[cg_x, cg_y, cg_z]]
+    fuel_tank.fuel.mass_properties.moments_of_inertia.non_dimensional_tensor = I_fuel_nd
+    fuel_tank.volume_properties.gross_volume                                 = combined_mesh_full.volume
+    fuel_tank.volume_properties.net_volume                                   = combined_mesh_full.volume
 
-#     This function calculates the volume of fuel that can be stored in an integral tank
-#     spanning the entire wing span. It uses the wing's root and tip chord dimensions
-#     along with the fuel tank's chord-wise location specifications.
-
-#     Parameters
-#     ---------- 
-#     wing : Wing
-#         The wing object containing chord dimensions, span, and fuel tank specifications
-
-#     Returns
-#     -------
-#     volume : float
-#         The calculated fuel volume in cubic meters
-
-#     Notes
-#     -----
-#     The function calculates the wing box dimensions at both root and tip locations
-#     and uses the truncated prism formula to determine the total volume. The wing box
-#     is defined by the fuel tank's chord-wise start and end locations. Assumes a NACA 0012
-#     airfoil if no airfoil is provided.
-
-#     **Major Assumptions**
-#         * Fuel tank spans the entire wing from root to tip
-#         * Wing box geometry follows the airfoil profile
-#         * Linear variation of chord dimensions from root to tip
-
-#     **Theory**
-
-#     The volume is calculated using a truncated prism formula:
-
-#     :math:`V = \\frac{1}{3} \\left( A_1 + A_2 + \\sqrt{A_1 A_2} \\right) h`
-
-#     where:
-#         - :math:`A_1` is the wing box area at the root
-#         - :math:`A_2` is the wing box area at the tip
-#         - :math:`h` is the wing span
-
-#     **Definitions**
-
-#     'Wing Box'
-#         The structural box formed by the front and rear spars, containing the fuel tank
-
-#     'Chord Location'
-#         The position along the wing chord where the fuel tank begins and ends
-#     """
-
-#     inner_front_rib_yu,inner_rear_rib_yu,inner_front_rib_yl,inner_rear_rib_yl = compute_non_dimensional_rib_coordinates(wing,fuel_tank,fuel_tank.segments_percent_chord_start[0], fuel_tank.segments_percent_chord_end[0])
-#     inner_front_rib_length  = wing.chords.root * (abs(inner_front_rib_yu) + abs(inner_front_rib_yl))
-#     inner_rear_rib_length   = wing.chords.root * (abs(inner_rear_rib_yu) + abs(inner_rear_rib_yl))
-#     inner_wingbox_length    = wing.chords.root * (fuel_tank.segments_percent_chord_end[0] -fuel_tank.segments_percent_chord_start[0]) 
-
-#     outer_front_rib_yu,outer_rear_rib_yu,outer_front_rib_yl,outer_rear_rib_yl = compute_non_dimensional_rib_coordinates(wing,fuel_tank,fuel_tank.segments_percent_chord_start[1], fuel_tank.segments_percent_chord_end[1])
-#     outer_front_rib_length  = wing.chords.tip * (abs(outer_front_rib_yu) + abs(outer_front_rib_yl))
-#     outer_rear_rib_length   = wing.chords.tip * (abs(outer_rear_rib_yu) + abs(outer_rear_rib_yl))
-#     outer_wingbox_length    = wing.chords.tip * (fuel_tank.segments_percent_chord_end[1] -fuel_tank.segments_percent_chord_start[1]) 
-
-#     # volume of truncated prism
-#     A_1 = inner_wingbox_length * (inner_front_rib_length + inner_rear_rib_length) / 2 
-#     A_2 = outer_wingbox_length * (outer_front_rib_length + outer_rear_rib_length) / 2
-#     h =  wing.spans.projected
-#     volume  = (1 /3) * ( A_1 + A_2 + np.sqrt(A_1*A_2)) *h   
-
-#     return volume
+    return

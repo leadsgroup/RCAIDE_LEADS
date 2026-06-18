@@ -50,9 +50,10 @@ class Weights(Analysis):
             from the weight breakdown after each evaluation.
 
         ``iterate_mtow`` (default ``False``)
-            Iterate MTOW to satisfy the Staub factor constraint. Requires
-            ``vehicle.staub_factor`` to be set. Significantly increases
-            computational cost; leave ``False`` for most optimizations.
+            Iterate MTOW to satisfy the MTOW capacity fraction constraint.
+            Requires ``settings.mtow_capacity_fraction`` to be set (0–1).
+            Significantly increases computational cost; leave ``False``
+            for most optimizations.
 
         ``run_center_of_gravity_analysis`` (default ``False``)
             Compute and store the vehicle CG after the weight buildup.
@@ -85,6 +86,7 @@ class Weights(Analysis):
         self.settings.update_fuel_mass                              = False
         self.settings.write_mass_properties                         = False
         self.settings.iterate_mtow                                  = False
+        self.settings.mtow_capacity_fraction                        = 0.0
     
         self.settings.weight_correction_factors                     = Data()
         self.settings.weight_correction_factors.empty               = Data()

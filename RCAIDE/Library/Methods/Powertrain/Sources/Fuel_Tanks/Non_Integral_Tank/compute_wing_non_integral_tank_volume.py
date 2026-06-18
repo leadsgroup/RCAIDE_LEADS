@@ -7,9 +7,10 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports
-import  RCAIDE 
-from RCAIDE.Library.Methods.Geometry.Planform.convert_sweep import convert_sweep_segments  
-from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry,  compute_naca_4series 
+import  RCAIDE
+from RCAIDE.Library.Methods.Geometry.Planform.convert_sweep import convert_sweep_segments
+from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry,  compute_naca_4series
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_non_dimensional_moment_of_inertia import compute_rounded_end_cylinder_non_dimensional_moi
 
 #Python Imports 
 import numpy as np
@@ -82,24 +83,10 @@ def compute_wing_non_integral_tank_volume(fuel_tank, wing,fuel_tanks):
             
     fuel_tank.volume_properties.net_volume            = tank_volume_i
     fuel_tank.volume_properties.gross_volume          = tank_volume_o
-    fuel_tank.fuel.mass_properties.center_of_gravity  =  [[(fuel_tank.lengths.external + fuel_tank.diameters.external) /2, 0,0]]
-    fuel_tank.mass_properties.center_of_gravity       =  [[(fuel_tank.lengths.external + fuel_tank.diameters.external) /2, 0,0]]
+    fuel_tank.fuel.mass_properties.center_of_gravity  =  [[fuel_tank.lengths.external / 2, 0, 0]]
+    fuel_tank.mass_properties.center_of_gravity       =  [[fuel_tank.lengths.external / 2, 0, 0]]
 
-    # non-dimensional moment of inertia tensor for fuel (solid rounded-end cylinder)
-    r_in  = fuel_tank.diameters.internal / 2
-    l_in  = fuel_tank.lengths.internal
-    I_fuel_nd = np.zeros((3, 3))
-    V_cyl_f   = np.pi * r_in**2 * l_in
-    V_sph_f   = 4 / 3 * np.pi * r_in**3
-    V_fuel    = V_cyl_f + V_sph_f
-    if V_fuel > 0:
-        f_cyl = V_cyl_f / V_fuel
-        f_sph = V_sph_f / V_fuel
-        d_h   = l_in / 2 + (3 / 8) * r_in
-        I_fuel_nd[0][0] = 0.5 * f_cyl * r_in**2 + 2 / 5 * f_sph * r_in**2
-        I_fuel_nd[1][1] = f_cyl * (r_in**2 / 4 + l_in**2 / 12) + 2 / 5 * f_sph * r_in**2 + f_sph * d_h**2
-        I_fuel_nd[2][2] = I_fuel_nd[1][1]
-    fuel_tank.fuel.mass_properties.moments_of_inertia.non_dimensional_tensor = I_fuel_nd
+    fuel_tank.fuel.mass_properties.moments_of_inertia.non_dimensional_tensor = compute_rounded_end_cylinder_non_dimensional_moi(fuel_tank.diameters.internal / 2, fuel_tank.lengths.internal - fuel_tank.diameters.internal)
 
     return
 
@@ -283,16 +270,17 @@ def compute_wing_non_integral_tank_fuel_volume(fuel_tank, wing, inner_segment_0,
     r_in   = (D -  2 * fuel_tank.wall_thickness ) / 2
 
     fuel_tank.diameters.external = D
-    fuel_tank.diameters.internal = 2*r_in
-    fuel_tank.lengths.external   = l-D
-    fuel_tank.aspect_ratio       = (fuel_tank.lengths.external+fuel_tank.diameters.external)/fuel_tank.diameters.external
+    fuel_tank.diameters.internal = 2 * r_in
+    fuel_tank.lengths.external   = l
+    fuel_tank.aspect_ratio       = fuel_tank.lengths.external / fuel_tank.diameters.external
 
-    l_in = fuel_tank.aspect_ratio * fuel_tank.diameters.internal
+    fuel_tank.lengths.internal   = fuel_tank.aspect_ratio * fuel_tank.diameters.internal
 
-    fuel_tank.lengths.internal = l_in - fuel_tank.diameters.internal
-    
-    tank_volume_i = np.pi * ( r_in** 2) * (fuel_tank.lengths.internal )  +  4 / 3 * np.pi * ( r_in** 3) 
-    tank_volume_o = np.pi * ( r_out** 2) * (fuel_tank.lengths.external)  +  4 / 3 * np.pi * ( r_out** 3) 
+    # volume = cylinder + sphere; cylinder length = total length - diameter
+    L_cyl_o = fuel_tank.lengths.external  - fuel_tank.diameters.external
+    L_cyl_i = fuel_tank.lengths.internal  - fuel_tank.diameters.internal
+    tank_volume_o = np.pi * r_out**2 * L_cyl_o + 4 / 3 * np.pi * r_out**3
+    tank_volume_i = np.pi * r_in**2  * L_cyl_i + 4 / 3 * np.pi * r_in**3
 
     if fuel_tank.xz_plane_symmetric:
         tank_volume_o *= 2

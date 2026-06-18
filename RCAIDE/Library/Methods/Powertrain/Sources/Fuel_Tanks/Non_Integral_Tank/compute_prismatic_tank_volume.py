@@ -7,17 +7,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports
-import  RCAIDE 
-from RCAIDE.Library.Methods.Geometry.Planform.convert_sweep import convert_sweep_segments  
-from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry,  compute_naca_4series 
-
-#Python Imports 
-import numpy as np
-from scipy.interpolate import interp1d
-from shapely.geometry import Polygon, Point
-from copy import  deepcopy
-import shapely
-import os
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_non_dimensional_moment_of_inertia import compute_cuboid_non_dimensional_moi
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Methods to compute volume of non integrak tanks
@@ -62,12 +52,6 @@ def compute_prismatic_tank_volume(fuel_tank):
     fuel_tank.mass_properties.center_of_gravity       =  [[fuel_tank.lengths.external /2, 0, 0]]
     fuel_tank.fuel.origin                             = fuel_tank.origin
 
-    # non-dimensional moment of inertia tensor for fuel (solid cuboid)
-    I_fuel_nd = np.zeros((3, 3))
-    if inner_length > 0 and inner_width > 0 and inner_height > 0:
-        I_fuel_nd[0][0] = (inner_width**2  + inner_height**2) / 12
-        I_fuel_nd[1][1] = (inner_length**2 + inner_height**2) / 12
-        I_fuel_nd[2][2] = (inner_length**2 + inner_width**2)  / 12
-    fuel_tank.fuel.mass_properties.moments_of_inertia.non_dimensional_tensor = I_fuel_nd
+    fuel_tank.fuel.mass_properties.moments_of_inertia.non_dimensional_tensor = compute_cuboid_non_dimensional_moi(inner_length, inner_width, inner_height)
 
     return

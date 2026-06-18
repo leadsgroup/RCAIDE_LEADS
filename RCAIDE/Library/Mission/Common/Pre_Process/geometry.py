@@ -320,7 +320,7 @@ def write_geometry_to_excel(vehicle):
                     "Segments Bounding Tank"       : getattr(fuel_tank, "segments_bounding_tank", None),
                     "Segments % Chord Start"       : getattr(fuel_tank, "segments_percent_chord_start", None),
                     "Segments % Chord End"         : getattr(fuel_tank, "segments_percent_chord_end", None),
-                    "BWB Aft Tank"                 : getattr(fuel_tank, "bwb_aft_tank", None),
+                    "BWB Aft Tank"                 : getattr(fuel_tank, "transverse_tank", None),
                     "XZ Plane Symmetric"           : getattr(fuel_tank, "xz_plane_symmetric", None),
                     "Fuel Net Volume (m^3)"        : getattr(getattr(fuel_tank.fuel, "volume_properties", None), "net_volume", None) if fuel_tank.fuel else None,
                     "Fuel Gross Volume (m^3)"      : getattr(getattr(fuel_tank, "volume_properties", None), "gross_volume", None) if fuel_tank.fuel else None,

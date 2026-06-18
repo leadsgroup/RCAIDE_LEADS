@@ -14,7 +14,7 @@ from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_ve
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.compute_fuel_mass import compute_fuel_mass
 from RCAIDE.Library.Methods.Mass_Properties.mass_correction_factors   import apply_correction_factors, apply_component_weights
 from RCAIDE.Library.Methods.Mass_Properties.mass_properties_report import print_mass_report, write_mass_report  
-from scipy.optimize import fsolve
+from scipy.optimize import brentq, minimize_scalar
 import numpy as np
 import pandas as pd 
 
@@ -160,52 +160,8 @@ def mass_properties_preprocess_routine(segment, i = 0):
         # ---------------------------------------------------------------------------------------------------------------------------         
         if analyses.vehicle.mass_properties.payload > analyses.vehicle.mass_properties.max_payload:
             print('Warning:Prescribed payload weight is greater than maxmimum payload weight')
-        if weights_analysis.settings.iterate_mtow:  
-            diff = 999
-            max_mtow_iterations = 1000
-            mtow_iterations = 0 
-            max_zero_fuel_flag = False
-            compute_max_fuel = False
-            tol = 0.001
-            while abs(diff)>tol and mtow_iterations<max_mtow_iterations: 
-                
-                if analyses.vehicle.mass_properties.max_zero_fuel == None:
-                    max_zero_fuel_flag = True
-                    # Before proceeding to the weight buildups, the buildups need either the max fuel capacity or the max zero fuel to compute OEW 
-                    if i == 0 and mtow_iterations == 0:
-                        print('\n Warning: Max Fuel or Max Zero Fuel not defined. Iterating to find these values.')
-                    # Inital guess for max fuel and max zero fuel based on regressional analysis which use max takeoff weight of the aircraft
-                    iterate_max_fuel_and_max_zero_fuel(analyses) 
-
-                _ = weights_analysis.evaluate(analyses.vehicle) 
-
-                if analyses.vehicle.mass_properties.payload > analyses.vehicle.mass_properties.max_payload:
-                    print('Warning: Computed payload weight is greater than maxmimum payload weight')        
-                
-                # Compute OEW  
-                analyses.vehicle.mass_properties.operating_empty = analyses.vehicle.mass_properties.weight_breakdown.empty.total   +  analyses.vehicle.mass_properties.weight_breakdown.operational_items.total 
-                                
-                # Apply correction factors  if any
-                apply_correction_factors(analyses)
-                if i == 0:
-                    apply_component_weights(analyses)
-
-                new_mtow,diff = iterate_for_mtow(analyses.vehicle.mass_properties.max_takeoff, 
-                                analyses.vehicle.mass_properties.operating_empty, 
-                                analyses.vehicle.mass_properties.max_payload,
-                                analyses.vehicle.mass_properties.max_fuel,
-                                analyses.vehicle)
-                analyses.vehicle.mass_properties.max_takeoff = new_mtow
-
-                if abs(diff)> tol:
-                    if max_zero_fuel_flag:
-                        analyses.vehicle.mass_properties.max_zero_fuel = None
-                    if compute_max_fuel:
-                        analyses.vehicle.mass_properties.max_fuel = None
-                mtow_iterations += 1
-            
-            if mtow_iterations>max_mtow_iterations:
-                raise Exception('MTOW DIDNT CONVERGE')
+        if weights_analysis.settings.iterate_mtow:
+            solve_for_mtow(analyses, weights_analysis, i)
             
         else:
             if analyses.vehicle.mass_properties.max_zero_fuel == None:
@@ -236,8 +192,7 @@ def mass_properties_preprocess_routine(segment, i = 0):
         # Compute takeoff weight and max zero fuel weight 
         if analyses.vehicle.mass_properties.takeoff == None:
             analyses.vehicle.mass_properties.takeoff = analyses.vehicle.mass_properties.operating_empty  + analyses.vehicle.mass_properties.payload+ analyses.vehicle.mass_properties.fuel    
-        elif i == 0:
-            print('\n Using user defined takeoff weight')                
+       
         analyses.vehicle.mass_properties.max_zero_fuel = analyses.vehicle.mass_properties.operating_empty\
                                                                     + analyses.vehicle.mass_properties.max_payload 
         
@@ -294,23 +249,6 @@ def mass_properties_preprocess_routine(segment, i = 0):
             with pd.ExcelWriter(excel_filename, engine="openpyxl",mode="a",if_sheet_exists="replace") as writer:
                 moment_of_inertia_df.to_excel(writer,sheet_name="Moment of Inertia",index=False)
             print(f"MOI breakdown written to Excel:\n  {excel_filename}") 
-     
-def iterate_for_mtow(old_mtow, oew, max_payload, max_fuel,vehicle):
-    '''
-    Staub factor after, Franco Staub, ex JetZero, is MTOW/(OEW + Max Fuel + Max Payload)
-
-    '''
-    overall_maximum_weight = max_payload + oew + max_fuel
-
-    target_staub_factor = getattr(vehicle, 'staub_factor', 0)
-
-    existing_staub_factor = old_mtow / overall_maximum_weight
-
-    diff =   target_staub_factor   -existing_staub_factor
-    gain = 0.1 
-    new_mtow = old_mtow * (1.0 + gain * diff )  
-    
-    return max(new_mtow, 0.0),diff   
  
 
 def iterate_max_fuel_and_max_zero_fuel(analyses, max_iterations=100):
@@ -352,7 +290,52 @@ def iterate_max_fuel_and_max_zero_fuel(analyses, max_iterations=100):
             break
         else:
             analyses.vehicle.mass_properties.max_zero_fuel += residual_max_zero_fuel * 0.1
-            if compute_max_fuel: 
-                analyses.vehicle.mass_properties.max_fuel      += residual_max_fuel * 0.1 
+            if compute_max_fuel:
+                analyses.vehicle.mass_properties.max_fuel      += residual_max_fuel * 0.1
 
-    return 
+    return
+
+
+def solve_for_mtow(analyses, weights_analysis, i):
+    """Solves for MTOW that satisfies the target capacity fraction.
+
+    The MTOW capacity fraction is MTOW / (OEW + Max Fuel + Max Payload).
+    Uses brentq for superlinear convergence instead of fixed-point iteration.
+    """
+
+    target_fraction    = weights_analysis.settings.mtow_capacity_fraction
+    max_zero_fuel_flag = analyses.vehicle.mass_properties.max_zero_fuel is None
+
+    if max_zero_fuel_flag and i == 0:
+        print('\n Warning: Max Fuel or Max Zero Fuel not defined. Iterating to find these values.')
+
+    def _mtow_residual(mtow):
+        analyses.vehicle.mass_properties.max_takeoff = mtow
+        if max_zero_fuel_flag:
+            analyses.vehicle.mass_properties.max_zero_fuel = None
+            iterate_max_fuel_and_max_zero_fuel(analyses)
+        _ = weights_analysis.evaluate(analyses.vehicle)
+        analyses.vehicle.mass_properties.operating_empty = (
+            analyses.vehicle.mass_properties.weight_breakdown.empty.total +
+            analyses.vehicle.mass_properties.weight_breakdown.operational_items.total)
+        apply_correction_factors(analyses)
+        if i == 0:
+            apply_component_weights(analyses)
+        oew         = analyses.vehicle.mass_properties.operating_empty
+        max_fuel    = analyses.vehicle.mass_properties.max_fuel
+        max_payload = analyses.vehicle.mass_properties.max_payload
+        return target_fraction - mtow / (oew + max_fuel + max_payload)
+
+    mtow_0 = analyses.vehicle.mass_properties.max_takeoff
+    try:
+        mtow_converged = brentq(_mtow_residual, 0.5 * mtow_0, 1.5 * mtow_0, xtol=1.0)
+    except ValueError:
+        res = minimize_scalar(lambda m: _mtow_residual(m)**2,
+                              bounds=(0.5 * mtow_0, 1.5 * mtow_0), method='bounded')
+        mtow_converged = float(res.x)
+
+    # Final evaluation to leave vehicle in correct state
+    _mtow_residual(mtow_converged)
+    analyses.vehicle.mass_properties.max_takeoff = mtow_converged
+
+    return

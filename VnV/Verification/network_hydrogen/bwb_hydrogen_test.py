@@ -125,6 +125,7 @@ def base_analysis(vehicle):
     weights.settings.write_mass_properties                                   = True 
     weights.settings.run_weights_analysis                                    = True
     weights.settings.iterate_mtow                                            = True
+    weights.settings.mtow_capacity_fraction                                  = 0.955
     weights.settings.run_center_of_gravity_analysis                          = True
     weights.settings.run_moments_of_inertia_analysis                         = True
     analyses.append(weights)

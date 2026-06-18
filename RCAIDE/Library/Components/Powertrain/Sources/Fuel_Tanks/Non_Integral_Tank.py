@@ -37,7 +37,7 @@ class Non_Integral_Tank(Fuel_Tank):
     orientation_euler_angles : list
         Euler angles defining tank orientation [rad] (default: [0., 0., 0.])
         
-    bwb_aft_tank : bool
+    transverse_tank : bool
         Flag indicating if tank is configured as BWB aft tank (default: False)
         
     aft_tank_start_root_chord : float, optional
@@ -110,7 +110,7 @@ class Non_Integral_Tank(Fuel_Tank):
         self.tag                         = 'non_integral_tank' 
         self.orientation_euler_angles    = [0.,0.,0.]
         self.geometry_type               = 'cylindrical'   # ['prismatic', 'cylindrical']
-        self.aft_tank_segment_bound      = None # This only has one bound since it is more of a end bound and it will always start from the rootchord and grow symmetrically till bound
+        self.transverse_tank_segment_bound      = None # This only has one bound since it is more of a end bound and it will always start from the rootchord and grow symmetrically till bound
         self.radial_offset               = None
         self.aspect_ratio                = None # Defined as the ratio of total length of the tank to the diameter of the tank. or for a conformal tank it is defined as the ratio of length to height
 
@@ -171,12 +171,12 @@ class Non_Integral_Tank(Fuel_Tank):
         --------
         RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_non_integral_tank_volume
         """
-        if self.wing_tag is not None and self.bwb_aft_tank is False:
+        if self.wing_tag is not None and self.transverse_tank is False:
             if self.geometry_type == 'cylindrical':
                 wing = wings[self.wing_tag]  
                 compute_wing_non_integral_tank_volume(self,wing,fuel_tanks)             
-        elif self.bwb_aft_tank is True:
-            if self.bwb_aft_tank == True:
+        elif self.transverse_tank is True:
+            if self.transverse_tank == True:
                 wing = wings[self.wing_tag]  
                 compute_wing_transverse_non_integral_tank_volume(self,wing,fuel_tanks)
         else:

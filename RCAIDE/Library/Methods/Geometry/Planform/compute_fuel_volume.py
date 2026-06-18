@@ -73,7 +73,7 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = True):
                 fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag 
                 if compute_fuel_volume:     
                     fuel_tank.compute_volume(wings, fuselages, fuel_tanks)    
-                total_fuel_volume += fuel_tank.fuel.volume_properties.net_volume
+                total_fuel_volume += fuel_tank.volume_properties.net_volume
         
         for bus in network.busses:
             fuel_tanks = bus.fuel_tanks
@@ -81,7 +81,7 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = True):
                 fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag
                 if compute_fuel_volume:
                     fuel_tank.compute_volume(wings, fuselages, fuel_tanks)  
-                total_fuel_volume += fuel_tank.fuel.volume_properties.net_volume 
+                total_fuel_volume += fuel_tank.volume_properties.net_volume 
     
     if compute_fuel_volume:     
         vehicle.volume_properties.max_fuel = total_fuel_volume 

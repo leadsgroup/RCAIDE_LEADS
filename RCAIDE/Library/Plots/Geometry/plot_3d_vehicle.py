@@ -331,11 +331,11 @@ def plot_3d_vehicle(vehicle,
                 if fuel_tank.wing_tag is not None:
                     wing = geometry.wings[fuel_tank.wing_tag]
                     if issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank):
-                        if issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank) and fuel_tank.geometry_type == 'conformal' and fuel_tank.bwb_aft_tank:
-                            seg_bounds = fuel_tank.aft_tank_root_chord_bounds
+                        if issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank) and fuel_tank.geometry_type == 'conformal' and fuel_tank.transverse_tank:
+                            seg_bounds = fuel_tank.transverse_tank_chord_bounds
                             GEOM       = generate_aft_integral_wing_tank_points(wing, 5, seg_bounds, fuel_tank)
                             plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=fuel_tank_rgb_color, opacity=fuel_tank_opacity)
-                        elif issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank) and fuel_tank.geometry_type == 'conformal':
+                        elif issubclass(type(fuel_tank), RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank) and fuel_tank.geometry_type == 'conformal':
                             seg_bounds = fuel_tank.segments_bounding_tank
                             GEOM       = generate_integral_wing_tank_points(wing, number_of_airfoil_points, seg_bounds, fuel_tank)
                             plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=fuel_tank_rgb_color, opacity=fuel_tank_opacity)

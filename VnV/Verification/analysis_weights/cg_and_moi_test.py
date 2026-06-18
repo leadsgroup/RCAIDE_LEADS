@@ -60,12 +60,13 @@ def BWB_Test():
     #  Energy Source: Fuel Tank
     #------------------------------------------------------------------------------------------------------------------------- 
     # fuel tank
-    fuel_tank_1                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Natural_Gas_Tank(vehicle.wings.main_wing)
-    fuel_tank_1.tag                             = 'LNG_Fuel_Tank_1' 
-    fuel_tank_1.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas()  
-    fuel_tank_1.material                        = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
-    fuel_tank_1.insulation_material             = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
-    fuel_tank_1.fuel.gravimetric_efficiency     = 0.5 
+    fuel_tank_1                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
+    fuel_tank_1.tag                             = 'LNG_Fuel_Tank_1'
+    fuel_tank_1.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas()
+    fuel_tank_1.design_inlet_temperature        = 100
+    fuel_tank_1.inner_structure.material        = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank_1.insulation.material             = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
+    fuel_tank_1.gravimetric_efficiency          = 0.5
     fuel_tank_1.segments_bounding_tank          = ['fuselage_section_3', 'wing_section_2']        
     fuel_tank_1.segments_percent_chord_start    = [0.2,0.2]
     fuel_tank_1.segments_percent_chord_end      = [0.6,0.6]  
@@ -73,17 +74,18 @@ def BWB_Test():
     fuel_line.fuel_tanks.append(fuel_tank_1)
 
 
-    fuel_tank_2                               = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Natural_Gas_Tank(vehicle.wings.main_wing)
-    fuel_tank_2.tag                           = 'LNG_Fuel_Tank_2' 
-    fuel_tank_2.fuel                          = RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas()   
-    fuel_tank_2.material                      = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
-    fuel_tank_2.insulation_material           = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
-    fuel_tank_2.fuel.gravimetric_efficiency   = 0.5
+    fuel_tank_2                               = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
+    fuel_tank_2.tag                           = 'LNG_Fuel_Tank_2'
+    fuel_tank_2.fuel                          = RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas()
+    fuel_tank_2.design_inlet_temperature      = 100
+    fuel_tank_2.inner_structure.material      = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank_2.insulation.material           = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
+    fuel_tank_2.gravimetric_efficiency        = 0.5
     fuel_tank_2.xz_plane_symmetric            = False
     fuel_tank_2.orientation_euler_angles      = [0,0,np.pi/2]
-    fuel_tank_2.bwb_aft_tank                  = True
-    fuel_tank_2.aft_tank_root_chord_bounds    = [0.65,0.9]
-    fuel_tank_2.aft_tank_segment_bound        = 'fuel_wall'
+    fuel_tank_2.transverse_tank                  = True
+    fuel_tank_2.transverse_tank_chord_bounds    = [0.65,0.9]
+    fuel_tank_2.transverse_tank_segment_bound        = 'fuel_wall'
     fuel_tank_2.radial_offset                 = 0.2
 
     fuel_line.fuel_tanks.append(fuel_tank_2)
@@ -98,9 +100,9 @@ def BWB_Test():
     geometry(mission)   
     mass_properties(mission)
 
-    truth_moi = np.array([[ 3.58319661e+06,  2.03392371e+06, -6.74086276e+05],
-                          [ 2.03392371e+06,  2.42973677e+07,  9.20231432e+03],
-                          [-6.74086276e+05,  9.20231432e+03,  2.66460352e+07]])
+    truth_moi = np.array([[ 2.40990518e+06,  2.91179643e+05, -7.63149244e+05],
+                          [ 2.91179643e+05,  2.39551546e+07, -1.02447485e+04],
+                          [-7.63149244e+05, -1.02447485e+04,  2.52720396e+07]])
     computed_moi = mission.segments[0].analyses.vehicle.mass_properties.moments_of_inertia.tensor
     error_matrix = abs((computed_moi - truth_moi) / truth_moi)
     assert np.all(error_matrix < 1e-2),\

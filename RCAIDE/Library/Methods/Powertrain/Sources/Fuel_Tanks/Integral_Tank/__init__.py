@@ -15,6 +15,5 @@ See Also
 # ---------------------------------------------------------------------------------------------------------------------- 
 
 from .compute_fuselage_integral_tank_volume import compute_fuselage_integral_tank_volume
-from .compute_wing_prismatic_integral_tank_volume import compute_wing_prismatic_integral_tank_volume
 from .compute_wing_transverse_integral_tank_volume import compute_wing_transverse_integral_tank_volume
-from .compute_wing_integral_tank_volume import compute_wing_integral_tank_volume 
+from .compute_wing_integral_tank_volume import compute_wing_integral_tank_volume

@@ -29,10 +29,10 @@ def compute_wing_transverse_integral_tank_volume(fuel_tank, wing,_):
 
     # Check if there are enough properties to accurately compute the maximum possible tank volume 
     if any(val is None for val in [
-        fuel_tank.aft_tank_root_chord_bounds[0],
-        fuel_tank.aft_tank_root_chord_bounds[1],
+        fuel_tank.transverse_tank_chord_bounds[0],
+        fuel_tank.transverse_tank_chord_bounds[1],
         fuel_tank.segments_bounding_tank ,
-        fuel_tank.aft_tank_segment_bound
+        fuel_tank.transverse_tank_segment_bound
         ]):
         raise ValueError("One or more required aft tank parameters are not set in 'fuel_tank'.")
 
@@ -43,8 +43,8 @@ def compute_wing_transverse_integral_tank_volume(fuel_tank, wing,_):
     root_chord = wing.chords.root
     wing_span  = wing.spans.projected
     # where tank is located as a percentage of root chord
-    tank_start_percent = fuel_tank.aft_tank_root_chord_bounds[0]
-    tank_end_percent   = fuel_tank.aft_tank_root_chord_bounds[1]
+    tank_start_percent = fuel_tank.transverse_tank_chord_bounds[0]
+    tank_end_percent   = fuel_tank.transverse_tank_chord_bounds[1]
     # create x coordinates where airfoils will be interpolated to find polygon of interest
     n = 2 # 2 gives us a straight tank
     # ------------------------------------------------------
@@ -55,7 +55,7 @@ def compute_wing_transverse_integral_tank_volume(fuel_tank, wing,_):
     segments             = wing.segments
         
     seg_tags = list(wing.segments.keys())
-    index = seg_tags.index( fuel_tank.aft_tank_segment_bound)
+    index = seg_tags.index( fuel_tank.transverse_tank_segment_bound)
     seg_names = seg_tags[:index + 1]
 
     for _,tag in enumerate(seg_names):
@@ -121,16 +121,9 @@ def compute_wing_transverse_integral_tank_volume(fuel_tank, wing,_):
         # close polygon
         polygon.append((x_tank_bounds[0], upper_y_points[0]))
         # store polygon points
-        polygon_points.append(polygon)
+        polygon_points.append(polygon) 
 
-        # test polygon
-        # Extract x and y coordinates into separate lists for plotting
-        x_coords = [p[0] for p in polygon_points[seg_i]]
-        y_coords = [p[1] for p in polygon_points[seg_i]]
-
-        # ax.plot(x_coords, y_coords, color='tab:blue', linewidth=1.0, alpha=0.85)
-
-    fuel_tank.aft_tank_root_chord_bounds[1] = tank_end_percent_current
+    fuel_tank.transverse_tank_chord_bounds[1] = tank_end_percent_current
     # ------------------------------------------------------
     # Compute prismatic volumes from intersections
     # ------------------------------------------------------
@@ -217,10 +210,10 @@ def compute_wing_transverse_integral_tank_volume(fuel_tank, wing,_):
 
     fuel_tank.max_volume_intersection_edge_lengths = np.array(edge_lengths)
     fuel_tank.max_volume_intersection_num_edges    = int(len(edge_lengths)) 
-    fuel_tank.average_outer_width                  = (edge_lengths[0]+edge_lengths[2])/2
-    fuel_tank.average_outer_length                 = fuel_tank.length_external
-    fuel_tank.average_outer_height                 = (edge_lengths[1]+edge_lengths[3])/2 
-    fuel_tank.aspect_ratio                         = fuel_tank.average_outer_length /fuel_tank.average_outer_height 
+    fuel_tank.widths.external                      = (edge_lengths[0]+edge_lengths[2])/2
+    fuel_tank.lengths.external                     = fuel_tank.length_external
+    fuel_tank.heights.external                     = (edge_lengths[1]+edge_lengths[3])/2 
+    fuel_tank.aspect_ratio                         = fuel_tank.lengths.external /fuel_tank.heights.external 
     fuel_tank.volume_properties.net_volume         = max_volume
     fuel_tank.volume_properties.gross_volume       = max_volume
 
@@ -248,15 +241,18 @@ def compute_wing_transverse_integral_tank_volume(fuel_tank, wing,_):
     tank_mesh.apply_transform(T)
 
     centroid = np.asarray(tank_mesh.center_mass, dtype=float)
-    I        = tank_mesh.moment_inertia 
     cg_x     = centroid[0]
     cg_y     = 0
     cg_z     = centroid[2]
-    
-    fuel_tank.mass_properties.center_of_gravity               = [[cg_x, cg_y, cg_z]]
-    fuel_tank.fuel.mass_properties.center_of_gravity          = [[cg_x, cg_y, cg_z]] 
-    fuel_tank.fuel.mass_properties.moments_of_inertia.tensor  = I 
-    fuel_tank.origin                                          =  [[0, 0, 0]]
-    fuel_tank.fuel.origin                                     = fuel_tank.origin
+
+    # Non-dimensional moment of inertia (I/mass) using unit density
+    tank_mesh.density = 1.0
+    I_fuel_nd = tank_mesh.moment_inertia / tank_mesh.mass
+
+    fuel_tank.mass_properties.center_of_gravity                              = [[cg_x, cg_y, cg_z]]
+    fuel_tank.fuel.mass_properties.center_of_gravity                         = [[cg_x, cg_y, cg_z]]
+    fuel_tank.fuel.mass_properties.moments_of_inertia.non_dimensional_tensor = I_fuel_nd
+    fuel_tank.origin                                                         = [[0, 0, 0]]
+    fuel_tank.fuel.origin                                                    = fuel_tank.origin
     
     return
