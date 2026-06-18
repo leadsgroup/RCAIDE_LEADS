@@ -158,7 +158,7 @@ def mass_properties_preprocess_routine(segment, i = 0):
             mtow_iterations = 0 
             max_zero_fuel_flag = False
             compute_max_fuel = False
-            tol = 0.001
+            tol = weights_analysis.settings.mtow_iteration_tolerance
             while abs(diff)>tol and mtow_iterations<max_mtow_iterations: 
                 
                 if analyses.vehicle.mass_properties.max_zero_fuel == None:
