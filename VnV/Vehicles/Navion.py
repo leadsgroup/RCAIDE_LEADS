@@ -55,30 +55,38 @@ def vehicle_setup():
     vehicle.flight_envelope.design_mach_number        = 0.1931864244395293
     
  
-    # ------------------------------------------------------------------        
+    # ################################################# Landing Gear #############################################################
+    # ------------------------------------------------------------------
     #  Landing Gear
-    # ------------------------------------------------------------------  
-    main_gear                                  = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
-    main_gear.tire_diameter                    = 19 *  Units.inches 
-    main_gear.rim_diameter                     = 8 *  Units.inches 
-    main_gear.tire_width                       = 7 *  Units.inches 
-    main_gear.strut_length                     = 5 * Units.feet  
-    main_gear.wheels                           = 1   
-    main_gear.number_of_gear_types_in_tandem   = 1
-    main_gear.number_of_wheels_in_gear_type    = 1 
-    main_gear.xz_plane_symmetric               = True 
-    main_gear.origin                           = [[ 2.595 ,1.245, 0]]
-    vehicle.append_component(main_gear)  
+    #  Source: Ryan Navion Type Certificate Data Sheet A-785
+    #          Jane's All the World's Aircraft (Navion / L-17)
+    #  Main tire: 6.00-6  (~17.5 in diameter, 6 in wide)
+    #  Nose tire: 5.00-5  (~14 in diameter, 5 in wide)
+    #  Gear track: ~2.74 m  (each main at ±1.37 m from centerline)
+    #  Wheelbase:  ~2.07 m
+    # ------------------------------------------------------------------
+    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
+    main_gear.tire_diameter                  = 17.5 * Units.inches
+    main_gear.rim_diameter                   = 6.0  * Units.inches
+    main_gear.tire_width                     = 6.0  * Units.inches
+    main_gear.strut_length                   = 0.45 * Units.m
+    main_gear.origin                         = [[2.55, 1.37, -0.6]]
+    main_gear.wheels                         = 2
+    main_gear.number_of_gear_types_in_tandem = 1
+    main_gear.number_of_wheels_in_gear_type  = 1
+    main_gear.xz_plane_symmetric             = True
+    main_gear.gear_extended                  = True
+    vehicle.append_component(main_gear)
 
-    nose_gear                                 = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
-    nose_gear.tire_diameter                   =  19 *  Units.inches   
-    nose_gear.rim_diameter                    =  8 *  Units.inches 
-    nose_gear.tire_width                      =  7 *  Units.inches 
-    nose_gear.strut_length                    =  5 * Units.feet  
-    nose_gear.wheels                          = 1   
-    nose_gear.number_of_gear_types_in_tandem  = 1
-    nose_gear.origin                          = [[0.865 , 0, 0]] 
-    vehicle.append_component(nose_gear)    
+    nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()
+    nose_gear.tire_diameter                  = 14.0 * Units.inches
+    nose_gear.rim_diameter                   = 5.0  * Units.inches
+    nose_gear.tire_width                     = 5.0  * Units.inches
+    nose_gear.strut_length                   = 0.40 * Units.m
+    nose_gear.origin                         = [[0.48, 0, -0.6]]
+    nose_gear.wheels                         = 1
+    nose_gear.gear_extended                  = True
+    vehicle.append_component(nose_gear)
     
     # ------------------------------------------------------------------        
     #   Main Wing

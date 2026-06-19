@@ -57,7 +57,7 @@ def vehicle_setup():
     # ##################################################### Landing Gear ################################################################    
     #------------------------------------------------------------------------------------------------------------------------------------ 
     main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
-    main_gear.origin                         = [[17, 0, -11]]
+    main_gear.origin                         = [[35, 3.85, -0]]
     main_gear.tire_diameter                  =  47    *  Units.inches  
     main_gear.rim_diameter                   =  22.1  *  Units.inches 
     main_gear.tire_width                     =  15.75 *  Units.inches 
@@ -69,7 +69,7 @@ def vehicle_setup():
     vehicle.append_component(main_gear)  
 
     nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()
-    nose_gear.origin                         = [[35, 0, -11]]
+    nose_gear.origin                         = [[17, 0, -0]]
     nose_gear.tire_diameter                  = 31 *  Units.inches    
     nose_gear.rim_diameter                   = 14  *  Units.inches 
     nose_gear.tire_width                     = 10.75  *  Units.inches 

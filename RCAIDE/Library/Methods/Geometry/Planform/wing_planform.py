@@ -484,8 +484,11 @@ def segment_properties(wing):
                 x_0        = segments[segment_names[seg_idx]].origin[0][0]  +  wing.origin[0][0]
                 dy         = ( MAC -  chord_root) / ( (chord_tip - chord_root) / span_seg)
                 LEMAC      =  x_0 + np.tan(segments[segment_names[seg_idx]].sweeps.leading_edge) *dy
-                wing.LEMAC = LEMAC  
-            
+                wing.LEMAC = LEMAC
+            elif (MAC == chord_root) and   (MAC == chord_tip):
+                x_0        = segments[segment_names[seg_idx]].origin[0][0]  +  wing.origin[0][0]
+                wing.LEMAC = x_0
+                
             if isinstance(outboard_segment, RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment):
                 
                 # center body 
