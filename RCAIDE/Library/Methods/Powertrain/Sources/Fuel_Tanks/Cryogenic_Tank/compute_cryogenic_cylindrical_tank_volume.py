@@ -324,14 +324,8 @@ def _heat_balance(Te, t_ins, Ta, Ti, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, 
 #  Falls back to minimizing f(x)² with minimize_scalar when brentq fails
 #  (no sign change in the bracket, e.g. the root is a tangent zero).
 # ----------------------------------------------------------------------------------------------------------------------
-def _find_root(func, a, b, args=(), xtol=1e-9):
-    try:
-        return brentq(func, a, b, xtol=xtol, args=args)
-    except ValueError:
-        res = minimize_scalar(lambda x: func(x, *args)**2,
-                              bounds=(a, b), method="bounded",
-                              options={"xatol": xtol})
-        return float(res.x)
+def _find_root(func, a, b, args=(), xtol=1e-9):  
+    return brentq(func, a, b, xtol=xtol, args=args) 
 
 
 # ----------------------------------------------------------------------------------------------------------------------

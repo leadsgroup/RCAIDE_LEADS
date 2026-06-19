@@ -326,13 +326,8 @@ def solve_for_mtow(analyses, weights_analysis, i):
         max_payload = analyses.vehicle.mass_properties.max_payload
         return target_fraction - mtow / (oew + max_fuel + max_payload)
 
-    mtow_0 = analyses.vehicle.mass_properties.max_takeoff
-    try:
-        mtow_converged = brentq(_mtow_residual, 0.5 * mtow_0, 1.5 * mtow_0, xtol=1.0)
-    except ValueError:
-        res = minimize_scalar(lambda m: _mtow_residual(m)**2,
-                              bounds=(0.5 * mtow_0, 1.5 * mtow_0), method='bounded')
-        mtow_converged = float(res.x)
+    mtow_0 = analyses.vehicle.mass_properties.max_takeoff 
+    mtow_converged = brentq(_mtow_residual, 0.5 * mtow_0, 1.5 * mtow_0, xtol=1.0) 
 
     # Final evaluation to leave vehicle in correct state
     _mtow_residual(mtow_converged)
