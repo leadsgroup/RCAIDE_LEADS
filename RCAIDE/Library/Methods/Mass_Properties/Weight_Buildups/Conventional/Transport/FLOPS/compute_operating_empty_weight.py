@@ -125,6 +125,15 @@ def compute_operating_empty_weight(vehicle, settings=None):
     # System Weight
     ##------------------------------------------------------------------------------- 
     W_systems = FLOPS.compute_systems_weight(vehicle) 
+
+    # add furnishings to cabin mass
+    for fuselage in vehicle.fuselages:
+        for cabin in fuselage.cabins:  
+            cabin.mass_properties.mass +=    W_systems.W_furnish * (cabin.number_of_passengers / vehicle.number_of_passengers )              
+    for wing in vehicle.wings:
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+            for cabin in wing.cabins:  
+                cabin.mass_properties.mass +=    W_systems.W_furnish  * (cabin.number_of_passengers / vehicle.number_of_passengers )  
     
     ##-------------------------------------------------------------------------------                 
     # Propulsion Weight 
@@ -253,7 +262,8 @@ def compute_operating_empty_weight(vehicle, settings=None):
         W_fuselage = FLOPS.compute_fuselage_weight(vehicle)
         W_fuselage = W_fuselage 
         fuse.mass_properties.mass = W_fuselage
-        W_fuselage_total += W_fuselage
+        W_fuselage_total += W_fuselage 
+        
     
     ##-------------------------------------------------------------------------------                 
     # Landing Gear Weight
@@ -289,7 +299,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
                                                     + output.empty.systems.electrical + output.empty.systems.avionics \
                                                     + output.empty.systems.hydraulics + output.empty.systems.furnishings \
                                                     + output.empty.systems.air_conditioner + output.empty.systems.instruments
- 
+
     output.payload    = payload 
     output.operational_items    = Data()
     output.operational_items    = W_oper 

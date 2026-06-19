@@ -11,8 +11,7 @@ from RCAIDE.Framework.Optimization.Packages.scipy import scipy_setup
 import Vehicles     # defines aircraft 
 import Analyses     # defines analyses
 import Missions     # defines flight profile 
-import Procedure    # defines optimization interation process 
-import Plot_Mission # plots mission 
+import Procedure    # defines optimization interation process  
 
 # python imports 
 import matplotlib.pyplot as plt
@@ -27,7 +26,7 @@ def main():
     # define optmiztion problem
     problem = define_optimization_problem()
 
-    show_desing_space = False
+    show_desing_space = True
     
     # show design space with carpet and line plots  
     if show_desing_space:

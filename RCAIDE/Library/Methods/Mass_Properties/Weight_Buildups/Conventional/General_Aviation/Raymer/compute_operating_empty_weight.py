@@ -245,15 +245,25 @@ def compute_operating_empty_weight(vehicle, settings=None):
             elif isinstance(landing_gear, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear):
                 landing_gear.mass_properties.mass = W_landing_gear.nose 
 
-    # Calculating Empty Weight of Aircraft
-    W_systems           = Raymer.compute_systems_weight(vehicle,V_fuel, V_fuel_int, number_of_tanks, number_of_engines)
     
     # Calculate the equipment empty weight of the aircraft 
     W_empty           = (W_wing + W_fuselage + W_landing_gear.main+W_landing_gear.nose + W_energy_network_cumulative + W_systems.total + \
                           W_tail_horizontal +W_tail_vertical) 
 
     # packup outputs
-    W_payload = Raymer.compute_payload_weight(vehicle)       
+    W_payload = Raymer.compute_payload_weight(vehicle)    
+    
+    # Calculating Empty Weight of Aircraft
+    W_systems           = Raymer.compute_systems_weight(vehicle,V_fuel, V_fuel_int, number_of_tanks, number_of_engines)   
+
+    # add furnishings to cabin mass
+    for fuselage in vehicle.fuselages:
+        for cabin in fuselage.cabins:  
+            cabin.mass_properties.mass +=    W_systems.W_furnish * (cabin.number_of_passengers / vehicle.number_of_passengers )              
+    for wing in vehicle.wings:
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+            for cabin in wing.cabins:  
+                cabin.mass_properties.mass +=    W_systems.W_furnish  * (cabin.number_of_passengers / vehicle.number_of_passengers )  
 
     # Distribute all weight in the output fields
     output                                    = Data()

@@ -37,6 +37,15 @@ def compute_operating_empty_weight(vehicle, settings=None):
     ##------------------------------------------------------------------------------- 
     W_systems = Raymer.compute_systems_weight(vehicle)
 
+    # add furnishings to systems weight
+    for fuselage in vehicle.fuselages:
+        for cabin in fuselage.cabins:  
+            cabin.mass_properties.mass +=    W_systems.W_furnish * (cabin.number_of_passengers / vehicle.number_of_passengers )              
+    for wing in vehicle.wings:
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+            for cabin in wing.cabins:  
+                cabin.mass_properties.mass +=    W_systems.W_furnish  * (cabin.number_of_passengers / vehicle.number_of_passengers )  
+
     ##-------------------------------------------------------------------------------                 
     # Propulsion Weight 
     ##-------------------------------------------------------------------------------
@@ -77,7 +86,12 @@ def compute_operating_empty_weight(vehicle, settings=None):
         W_energy_network.W_fuel_system      += W_propulsion.W_fuel_system 
         W_energy_network.W_nacelle          += W_propulsion.W_nacelle    
         number_of_engines                   += W_propulsion.number_of_engines
-        number_of_tanks                     += W_propulsion.number_of_fuel_tanks
+        number_of_tanks                     += W_propulsion.number_of_fuel_tanks 
+
+        for propulsor in network.propulsors:
+            propulsor.mass_properties.mass = (W_energy_network.W_engine +W_energy_network.W_thrust_reverser+W_energy_network.W_starter)\
+                                            +W_energy_network.W_engine_controls / number_of_engines
+            propulsor.nacelle.mass_properties.mass = W_energy_network.W_nacelle / number_of_engines
         
     W_energy_network_cumulative += W_energy_network_total
     

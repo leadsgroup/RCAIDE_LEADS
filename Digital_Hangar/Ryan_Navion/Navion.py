@@ -318,20 +318,27 @@ def vehicle_setup():
     #  Landing Gear
     # Source: https://www.boeing.com/content/dam/boeing/boeingdotcom/commercial/airports/acaps/747_123sp.pdf 
     # ------------------------------------------------------------------  
-    main_gear               = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
-    main_gear.tire_diameter = 10.0 * Units.inches
-    main_gear.strut_length  = 2.0 * Units.ft 
-    main_gear.units         = 2    # Number of main landing gear
-    main_gear.wheels        = 1    # Number of wheels on the main landing gear
-    main_gear.origin = [[0.5,0,0]]
-    vehicle.append_component(main_gear)  
+    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
+    main_gear.tire_diameter                  = 17.5 * Units.inches
+    main_gear.rim_diameter                   = 6.0  * Units.inches
+    main_gear.tire_width                     = 6.0  * Units.inches
+    main_gear.strut_length                   = 0.45 * Units.m
+    main_gear.origin                         = [[2.55, 1.37, -0.6]]
+    main_gear.wheels                         = 2
+    main_gear.number_of_gear_types_in_tandem = 1
+    main_gear.number_of_wheels_in_gear_type  = 1
+    main_gear.xz_plane_symmetric             = True
+    main_gear.gear_extended                  = True
+    vehicle.append_component(main_gear)
 
-    nose_gear               = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()       
-    nose_gear.tire_diameter = 10. * Units.inches
-    nose_gear.units         = 1    # Number of nose landing gear
-    nose_gear.wheels        = 1    # Number of wheels on the nose landing gear
-    nose_gear.strut_length  = 2.0 * Units.ft 
-    nose_gear.origin        = [[1.75,0,0]]
+    nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()
+    nose_gear.tire_diameter                  = 14.0 * Units.inches
+    nose_gear.rim_diameter                   = 5.0  * Units.inches
+    nose_gear.tire_width                     = 5.0  * Units.inches
+    nose_gear.strut_length                   = 0.40 * Units.m
+    nose_gear.origin                         = [[0.48, 0, -0.6]]
+    nose_gear.wheels                         = 1
+    nose_gear.gear_extended                  = True
     vehicle.append_component(nose_gear)
 
     # ########################################################  Energy Network  #########################################################  
