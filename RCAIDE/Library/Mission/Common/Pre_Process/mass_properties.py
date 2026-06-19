@@ -11,8 +11,8 @@ from copy import deepcopy
 import RCAIDE 
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_vehicle_moment_of_inertia
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_vehicle_center_of_gravity 
-from RCAIDE.Library.Methods.Mass_Properties.mass_correction_factors   import apply_correction_factors, apply_component_weights
-from RCAIDE.Library.Methods.Mass_Properties.mass_properties_report import print_mass_report, write_mass_report  
+from RCAIDE.Library.Mission.Common.Pre_Process.mass_properties_correction_factors   import apply_correction_factors, apply_component_weights
+from RCAIDE.Library.Mission.Common.Pre_Process.mass_properties_report import print_mass_report, write_mass_report  
 from scipy.optimize import fsolve
 import numpy as np
 import pandas as pd 
