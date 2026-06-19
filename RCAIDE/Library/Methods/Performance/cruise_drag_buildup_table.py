@@ -82,7 +82,7 @@ def cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cruise", sav
 
         component_ref_area = component_reference_areas[key] if key in component_reference_areas else vehicle_reference_area
         val = val * component_ref_area / vehicle_reference_area
-        val = val * (1 - settings.drag_reduction_factors.parasite_drag)
+        val = val #* (1 - settings.drag_reduction_factors.parasite_drag)
 
         if abs(val) > eps:
             if key != 'wings' and key != 'nacelles':
@@ -91,10 +91,11 @@ def cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cruise", sav
     cd_parasite_total = 0.0
     for key, val in parasite_sub:
         if key != 'wings' and key != 'nacelles':
+            print(f"key: {key}")
             cd_parasite_total += val
 
     # --- totals (mean over cruise nodes)
-    cd_total          = float(np.mean(drag.total[:, 0]))
+    cd_total1          = float(np.mean(drag.total[:, 0]))
     cd_induced_total  = float(np.mean(drag.induced.total[:, 0]))
     cd_comp_total     = float(np.mean(drag.compressible.total[:, 0]))
     cd_misc_total     = float(np.mean(drag.miscellaneous.total[:, 0]))
@@ -102,6 +103,8 @@ def cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cruise", sav
     cd_form_total     = float(np.mean(drag.form.total[:, 0]))
     cd_cool_total     = float(np.mean(drag.cooling.total[:, 0]))
 
+    cd_total = cd_induced_total + cd_comp_total + cd_misc_total + cd_wave_total  + cd_form_total  + cd_cool_total + cd_parasite_total
+    
     item_vis = drag.induced["viscous"]
     arr_vis = np.asarray(item_vis)
     if arr_vis.ndim == 2:
