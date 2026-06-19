@@ -149,14 +149,14 @@ def compute_cryogenic_cylindrical_tank_volume(fuel_tank, fuel_tanks=None):
     #  v_ins = volume between outer envelope and structural shell
     #  a_ins = outer surface area (for surface-density-based insulation)
     # ------------------------------------------------------------------
-    R_ext = fuel_tank.diameters.external / 2
-    L_ext = fuel_tank.lengths.external
-    R_so  = fuel_tank.inner_structure.diameters.external / 2
-    L_so  = fuel_tank.inner_structure.lengths.external
+    R_ext   = fuel_tank.diameters.external / 2
+    L_cyl_e = fuel_tank.lengths.external - fuel_tank.diameters.external      # cylinder-only (tip-to-tip minus caps)
+    R_so    = fuel_tank.inner_structure.diameters.external / 2
+    L_so    = fuel_tank.inner_structure.lengths.external
 
-    a_ins    = 2 * np.pi * R_ext * L_ext + 4 * np.pi * R_ext**2
-    v_ins    = (np.pi * R_ext**2 * L_ext + (4 / 3) * np.pi * R_ext**3) - \
-               (np.pi * R_so**2  * L_so  + (4 / 3) * np.pi * R_so**3)
+    a_ins    = 2 * np.pi * R_ext * L_cyl_e + 4 * np.pi * R_ext**2
+    v_ins    = (np.pi * R_ext**2 * L_cyl_e + (4 / 3) * np.pi * R_ext**3) - \
+               (np.pi * R_so**2  * L_so    + (4 / 3) * np.pi * R_so**3)
     mass_ins = v_ins * fuel_tank.insulation.material.density + \
                a_ins * fuel_tank.insulation.material.specific_density
 
