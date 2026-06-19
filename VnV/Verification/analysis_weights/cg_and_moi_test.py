@@ -98,9 +98,9 @@ def BWB_Test():
     geometry(mission)   
     mass_properties(mission)
 
-    truth_moi = np.array([[ 3.58319661e+06,  2.03392371e+06, -6.74086276e+05],
-                          [ 2.03392371e+06,  2.42973677e+07,  9.20231432e+03],
-                          [-6.74086276e+05,  9.20231432e+03,  2.66460352e+07]])
+    truth_moi = np.array([[ 3.58576061e+06,  1.93732600e+06, -7.09124969e+05],
+                            [ 1.93732600e+06,  2.55143486e+07,  6.27470341e+03],
+                            [-7.09124969e+05,  6.27470341e+03,  2.78614097e+07]])
     computed_moi = mission.segments[0].analyses.vehicle.mass_properties.moments_of_inertia.tensor
     error_matrix = abs((computed_moi - truth_moi) / truth_moi)
     assert np.all(error_matrix < 1e-2),\

@@ -81,6 +81,9 @@ class Fuel_Tank(Component):
         self.diameters                      = Data()
         self.diameters.external             = 0.0
         self.diameters.internal             = 0.0 
+        self.tank_accesories_weight_factor  = 1.0
+        self.structural                     = Component()                
+        self.insulation                     = Component()                    
         self.segments_bounding_tank         = [None, None] 
         self.segments_percent_chord_start   = [0.1,0.1]
         self.segments_percent_chord_end     = [0.7,0.7]

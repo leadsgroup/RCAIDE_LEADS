@@ -96,14 +96,18 @@ def compute_cryogenic_tank_conformal_volume(fuel_tank,_):
         h_o_o =   h_o + 2*t_ins
         l_o_o =   l_o + 2*t_ins
         w_o_o =   w_o + 2*t_ins
-
+        
+        # calculate the volume of the tank based on the outer dimensions after insulation, which is the constraint for this problem
         V_calculated = h_o_o * l_o_o * w_o_o
         
+        # true volume of the tank based on the inner dimensions
         V_cuboid =  fuel_tank.average_outer_width *  fuel_tank.average_outer_height *  fuel_tank.average_outer_length
-        error  = V_cuboid - V_calculated
+
+        # compute error and update guess
+        error      = V_cuboid - V_calculated
         rel_error  = error / (V_cuboid)
-        V_guess  += alpha * rel_error 
-        iteration     += 1
+        V_guess    += alpha * rel_error 
+        iteration  += 1
 
     if abs(error) > tol:
         print("[Warning] compute_liquid_hydrogen_tank_volume did not converge within the iteration limit.")
@@ -117,9 +121,9 @@ def compute_cryogenic_tank_conformal_volume(fuel_tank,_):
     fuel_tank.fuel.volume_properties.net_volume    = V_guess
     fuel_tank.fuel.volume_properties.gross_volume  = V_total
     
-    fuel_tank.fuel.mass_properties.mass =  fuel_tank.fuel.volume_properties.net_volume *  fuel_tank.fuel.density
-    fuel_tank.mass_properties.insulation_mass =  mass_ins
-    fuel_tank.mass_properties.structural_mass = mass_struct
+    fuel_tank.fuel.mass_properties.mass       = fuel_tank.fuel.volume_properties.net_volume *  fuel_tank.fuel.density
+    fuel_tank.insulation.mass_properties.mass = mass_ins
+    fuel_tank.structural.mass_properties.mass = mass_struct
     
     fuel_tank.inner_structure   = Data()
     fuel_tank.inner_structure.thickness = th
@@ -135,9 +139,9 @@ def compute_cryogenic_tank_conformal_volume(fuel_tank,_):
     fuel_tank.outer_height  = h_o_o
 
     fuel_tank.insulation_thickness  = t_ins
-    fuel_tank.total_thickness   = t_ins + th
+    fuel_tank.total_thickness       = t_ins + th
 
-    fuel_tank.mass_properties.mass = fuel_tank.tank_accesories_weight_factor*(fuel_tank.mass_properties.insulation_mass + fuel_tank.mass_properties.structural_mass)
+    fuel_tank.mass_properties.mass = fuel_tank.tank_accesories_weight_factor*(fuel_tank.insulation.mass_properties.mass + fuel_tank.structural.mass_properties.mass)
     
     return
 
