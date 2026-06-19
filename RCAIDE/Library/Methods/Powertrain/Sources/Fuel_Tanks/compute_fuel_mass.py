@@ -66,22 +66,21 @@ def compute_fuel_mass(vehicle, update_fuel_mass = True, update_max_fuel_mass=Tru
     
     max_fuel_tank_mass = 0
     fuel_mass          = 0
-    for network in vehicle.networks: 
+    for network in vehicle.networks:
         for fuel_line in network.fuel_lines:
             fuel_tanks = fuel_line.fuel_tanks
             for fuel_tank in fuel_tanks:
-                    max_fuel_tank_mass += fuel_tank.fuel.volume_properties.net_volume * fuel_tank.fuel.density  
+                    max_fuel_tank_mass += fuel_tank.volume_properties.net_volume * fuel_tank.fuel.density
                     if update_fuel_mass:
-                        fuel_tank.fuel.mass_properties.mass  += fuel_tank.fuel.volume_properties.net_volume * fuel_tank.fuel.density 
-                    fuel_mass  += fuel_tank.fuel.mass_properties.mass   
+                        fuel_tank.fuel.mass_properties.mass = fuel_tank.volume_properties.net_volume * fuel_tank.fuel.density
+                    fuel_mass += fuel_tank.fuel.mass_properties.mass
         for bus in network.busses:
             fuel_tanks = bus.fuel_tanks
             for fuel_tank in fuel_tanks:
-                    max_fuel_tank_mass += fuel_tank.fuel.volume_properties.net_volume * fuel_tank.fuel.density
-
+                    max_fuel_tank_mass += fuel_tank.volume_properties.net_volume * fuel_tank.fuel.density
                     if update_fuel_mass:
-                        fuel_tank.fuel.mass_properties.mass  += fuel_tank.fuel.volume_properties.net_volume * fuel_tank.fuel.density 
-                    fuel_mass  += fuel_tank.fuel.mass_properties.mass
+                        fuel_tank.fuel.mass_properties.mass = fuel_tank.volume_properties.net_volume * fuel_tank.fuel.density
+                    fuel_mass += fuel_tank.fuel.mass_properties.mass
                 
     # Assign Total Fuel Volume and to Vehicle 
     if update_max_fuel_mass:

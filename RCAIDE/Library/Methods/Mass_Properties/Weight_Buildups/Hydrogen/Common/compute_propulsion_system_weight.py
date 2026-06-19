@@ -132,7 +132,7 @@ def compute_fuel_system_weight(vehicle, NENG,settings):
     for network in vehicle.networks:
         for fuel_line in network.fuel_lines:
             for fuel_tank in fuel_line.fuel_tanks: 
-                WTANK += fuel_tank.tank_accesories_weight_factor * (fuel_tank.insulation.mass_properties.mass + fuel_tank.structural.mass_properties.mass) # The factor 0.5 covers all the other tank adjustments
+                WTANK += fuel_tank.tank_accesories_weight_factor * (fuel_tank.insulation.mass_properties.mass + fuel_tank.inner_structure.mass_properties.mass) # The factor 0.5 covers all the other tank adjustments
             
             compute_distributor_center_of_gravity(fuel_line,vehicle, length=0)
             WLINE = fuel_line.mass_properties.mass        
