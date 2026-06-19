@@ -106,7 +106,7 @@ def main():
     sideslip_free    = results.segments.cruise_free_sideslip.conditions.frames.wind.body_rotations[0,2] / Units.deg
     rudder_free      = results.segments.cruise_free_sideslip.conditions.control_surfaces.rudder.deflection[0,0]  / Units.deg
     aileron_free     = results.segments.cruise_free_sideslip.conditions.control_surfaces.aileron.deflection[0,0] / Units.deg
-    print('Free sideslip β:', sideslip_free, 'rudder:', rudder_free, 'aileron:', aileron_free)
+    print('Free sideslip beta:', sideslip_free, 'rudder:', rudder_free, 'aileron:', aileron_free)
     assert np.abs(sideslip_free) < 1e-1
     assert np.abs(rudder_free)   < 1e-1
     assert np.abs(aileron_free)  < 1e-1
