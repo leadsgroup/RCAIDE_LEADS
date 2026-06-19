@@ -131,14 +131,16 @@ def compute_operating_empty_weight(vehicle, settings=None):
     ##------------------------------------------------------------------------------- 
     W_systems = Method.compute_systems_weight(vehicle) 
 
-    # add furnishings to cabin mass
+    # set cabin mass to passenger payload + furnishings
     for fuselage in vehicle.fuselages:
-        for cabin in fuselage.cabins:  
-            cabin.mass_properties.mass +=    W_systems.W_furnish * (cabin.number_of_passengers / vehicle.number_of_passengers )              
+        for cabin in fuselage.cabins:
+            pax_ratio = cabin.number_of_passengers / vehicle.number_of_passengers
+            cabin.mass_properties.mass = (payload.passengers + W_systems.W_furnish) * pax_ratio
     for wing in vehicle.wings:
         if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
-            for cabin in wing.cabins:  
-                cabin.mass_properties.mass +=    W_systems.W_furnish  * (cabin.number_of_passengers / vehicle.number_of_passengers )  
+            for cabin in wing.cabins:
+                pax_ratio = cabin.number_of_passengers / vehicle.number_of_passengers
+                cabin.mass_properties.mass = (payload.passengers + W_systems.W_furnish) * pax_ratio
                 
     ##-------------------------------------------------------------------------------                 
     # Propulsion Weight 

@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # cg_and_moi_test.py
 
-from RCAIDE.Framework.Core                                     import Units,  Data  
+from RCAIDE.Framework.Core                                     import Units
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_vehicle_moment_of_inertia
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_vehicle_center_of_gravity
 from RCAIDE.Library.Methods.Geometry.Planform                  import wing_planform
@@ -166,27 +166,15 @@ def Transport_Aircraft_Test():
     
     print(vehicle.tag + ' Moment of Inertia')
     print(MOI) 
-    accepted  = np.array([[ 1.61568025e+07, -2.32830644e-10, -7.93049792e+06],
-       [-2.32830644e-10,  5.94821638e+07,  0.00000000e+00],
-       [-7.93049792e+06,  0.00000000e+00,  5.53750895e+07]])
-                          
-    MOI_error     = (MOI - accepted) / accepted
+    accepted  = np.array([[ 1.47817494e+07,  0.00000000e+00, -7.74146166e+06],
+                          [ 0.00000000e+00,  5.86064098e+07,  0.00000000e+00],
+                          [-7.74146166e+06,  0.00000000e+00,  5.32287420e+07]])
 
-    # Check the errors
-    error = Data()
-    error.Ixx   = MOI_error[0, 0]
-    error.Iyy   = MOI_error[1, 1]
-    error.Izz   = MOI_error[2, 2]
-    error.Ixz   = MOI_error[2, 0]
-    error.Ixy   = MOI_error[1, 0]
+    error_matrix = abs((MOI - accepted) / np.where(accepted != 0, accepted, 1))
+    assert np.all(error_matrix < 1e-6),\
+        f"MOI tensor mismatch.\nExpected:\n{accepted}\nGot:\n{MOI}"
 
-    print('Errors:')
-    print(error)
-
-    for k,v in list(error.items()):
-        assert(np.abs(v)<1e-6) 
-
-    return  
+    return
 
 def General_Aviation_Test(): 
     # ------------------------------------------------------------------
@@ -241,21 +229,9 @@ def General_Aviation_Test():
                           [   0.        , 4772.52702827,    0.        ],
                           [-100.21249467,    0.        , 2756.61446524]])
 
-    MOI_error     = MOI - accepted
-
-    # Check the errors
-    error       = Data()
-    error.Ixx   = MOI_error[0, 0]
-    error.Iyy   = MOI_error[1, 1]
-    error.Izz   = MOI_error[2, 2]
-    error.Ixz   = MOI_error[2, 0]
-    error.Ixy   = MOI_error[1, 0]
-
-    print('Errors:')
-    print(error)
-
-    for k,v in list(error.items()):
-        assert(np.abs(v)<1e-5)   
+    error_matrix = abs(MOI - accepted)
+    assert np.all(error_matrix < 1e-5),\
+        f"MOI tensor mismatch.\nExpected:\n{accepted}\nGot:\n{MOI}"
 
     return
 
@@ -317,23 +293,11 @@ def EVTOL_Aircraft_Test(update_regression_values):
     accepted  = np.array([[ 9445.05900029,  -432.23307422,  -317.48560422],
                           [ -432.23307422,  9878.2899165 ,  -101.09561206],
                           [ -317.48560422,  -101.09561206, 17535.02150018]])
-    MOI_error     = (MOI - accepted) / accepted
+    error_matrix = abs((MOI - accepted) / accepted)
+    assert np.all(error_matrix < 5e-2),\
+        f"MOI tensor mismatch.\nExpected:\n{accepted}\nGot:\n{MOI}"
 
-    # Check the errors
-    error = Data()
-    error.Ixx   = MOI_error[0, 0]
-    error.Iyy   = MOI_error[1, 1]
-    error.Izz   = MOI_error[2, 2]
-    error.Ixz   = MOI_error[2, 0]
-    error.Ixy   = MOI_error[1, 0]
-
-    print('Errors:')
-    print(error)
-
-    for k,v in list(error.items()):
-        assert(np.abs(v)<5e-2) # Note that EVTOL weight is an iterative process, therefore the error can be larger than expected. 
-
-    return  
+    return
 
 def configs_setup(vehicle):
     """This function sets up vehicle configurations for use in different parts of the mission.

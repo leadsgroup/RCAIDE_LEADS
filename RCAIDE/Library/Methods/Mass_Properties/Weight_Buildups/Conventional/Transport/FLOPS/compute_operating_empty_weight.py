@@ -126,14 +126,16 @@ def compute_operating_empty_weight(vehicle, settings=None):
     ##------------------------------------------------------------------------------- 
     W_systems = FLOPS.compute_systems_weight(vehicle) 
 
-    # add furnishings to cabin mass
+    # set cabin mass to passenger payload + furnishings
     for fuselage in vehicle.fuselages:
-        for cabin in fuselage.cabins:  
-            cabin.mass_properties.mass +=    W_systems.W_furnish * (cabin.number_of_passengers / vehicle.number_of_passengers )              
+        for cabin in fuselage.cabins:
+            pax_ratio = cabin.number_of_passengers / vehicle.number_of_passengers
+            cabin.mass_properties.mass = (payload.passengers + W_systems.W_furnish) * pax_ratio
     for wing in vehicle.wings:
         if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
-            for cabin in wing.cabins:  
-                cabin.mass_properties.mass +=    W_systems.W_furnish  * (cabin.number_of_passengers / vehicle.number_of_passengers )  
+            for cabin in wing.cabins:
+                pax_ratio = cabin.number_of_passengers / vehicle.number_of_passengers
+                cabin.mass_properties.mass = (payload.passengers + W_systems.W_furnish) * pax_ratio
     
     ##-------------------------------------------------------------------------------                 
     # Propulsion Weight 
@@ -177,9 +179,9 @@ def compute_operating_empty_weight(vehicle, settings=None):
         number_of_engines                   += W_propulsion.number_of_engines
         number_of_tanks                     += W_propulsion.number_of_fuel_tanks  
         for propulsor in network.propulsors:
-            propulsor.mass_properties.mass = (W_energy_network.W_engine +W_energy_network.W_thrust_reverser+W_energy_network.W_starter)\
-                                            +W_energy_network.W_engine_controls / number_of_engines
-            propulsor.nacelle.mass_properties.mass = W_energy_network.W_nacelle / number_of_engines
+            propulsor.mass_properties.mass = (W_propulsion.W_engine + W_propulsion.W_thrust_reverser + W_propulsion.W_starter \
+                                            + W_propulsion.W_engine_controls) / W_propulsion.number_of_engines
+            propulsor.nacelle.mass_properties.mass = W_propulsion.W_nacelle / W_propulsion.number_of_engines
         
         # Electric-Powered Propulsors  
         for bus in network.busses: 
