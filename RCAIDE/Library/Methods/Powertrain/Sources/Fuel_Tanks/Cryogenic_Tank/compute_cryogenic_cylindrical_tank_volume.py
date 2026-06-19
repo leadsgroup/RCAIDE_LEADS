@@ -15,7 +15,7 @@ from scipy.optimize import minimize_scalar, brentq
 # ----------------------------------------------------------------------------------------------------------------------
 #  Cryogenic Cylindrical Tank Volume
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_cryogenic_cylindrical_tank_volume(fuel_tank, fuel_tanks):
+def compute_cryogenic_cylindrical_tank_volume(fuel_tank, fuel_tanks=None):
     """
     Sizes a cryogenic rounded-end cylindrical tank (cylinder + hemispherical caps)
     to fit within the outer mold line set by the upstream non-integral tank function.
@@ -62,7 +62,7 @@ def compute_cryogenic_cylindrical_tank_volume(fuel_tank, fuel_tanks):
     #  Unpack constants that do not change during iteration
     # ------------------------------------------------------------------
     safety_factor = fuel_tank.safety_factor
-    aspect_ratio  = fuel_tank.aspect_ratio           # total_length / diameter
+    aspect_ratio  = fuel_tank.lengths.external / fuel_tank.diameters.external      
     ullage_frac   = fuel_tank.ullage_volume_fraction  # fraction of internal volume reserved for ullage
     T_inlet       = fuel_tank.design_inlet_temperature
     Qo            = fuel_tank.acceptable_heat_leak    # max allowable heat leak [W/m²]

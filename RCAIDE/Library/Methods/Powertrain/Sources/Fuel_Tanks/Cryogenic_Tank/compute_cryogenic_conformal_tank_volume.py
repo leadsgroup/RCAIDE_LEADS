@@ -15,7 +15,7 @@ from .compute_cryogenic_cylindrical_tank_volume import _find_root
 # ----------------------------------------------------------------------------------------------------------------------
 #  Cryogenic Conformal (Prismatic) Tank Volume
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_cryogenic_tank_conformal_volume(fuel_tank, _):
+def compute_cryogenic_conformal_tank_volume(fuel_tank, _):
     """
     Sizes a cryogenic conformal (prismatic/cuboid) tank to fit within the equivalent
     rectangle envelope set by the upstream integral tank function.

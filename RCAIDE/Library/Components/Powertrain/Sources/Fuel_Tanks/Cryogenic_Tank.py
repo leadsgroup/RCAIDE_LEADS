@@ -17,7 +17,7 @@ from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.comp
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_rounded_end_cylindrical_tank_volume       import compute_rounded_end_cylindrical_tank_volume
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_wing_transverse_non_integral_tank_volume  import compute_wing_transverse_non_integral_tank_volume
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_cylindrical_tank_volume            import compute_cryogenic_cylindrical_tank_volume
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_tank_conformal_tank_volume         import compute_cryogenic_tank_conformal_volume
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_conformal_tank_volume         import compute_cryogenic_conformal_tank_volume
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_cylinder_center_of_gravity
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_rounded_end_cylinder_moment_of_inertia, compute_cuboid_moment_of_inertia
 
@@ -80,7 +80,7 @@ class Cryogenic_Tank(Non_Integral_Tank):
             elif self.wing_tag is not None and self.transverse_tank is True:
                 compute_wing_transverse_integral_tank_volume(self, wings[self.wing_tag], fuel_tanks)
             if hasattr(fuel_tanks, self.tag):
-                compute_cryogenic_tank_conformal_volume(self, fuel_tanks)
+                compute_cryogenic_conformal_tank_volume(self, fuel_tanks)
         else:
             raise NotImplementedError
         return
