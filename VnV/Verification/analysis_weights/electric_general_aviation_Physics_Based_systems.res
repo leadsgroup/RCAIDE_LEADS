@@ -19,17 +19,17 @@
             "total": 1847.921508670973
         },
         "systems": {
-            "control_systems": 2.0,
+            "control_systems": 0.0,
             "apu": 0.0,
-            "electrical": 2.0,
-            "avionics": 2.0,
-            "hydraulics": 2.0,
+            "electrical": 447.04525551434335,
+            "avionics": 148.9535139658237,
+            "hydraulics": 65.01948933709056,
             "furnishings": 599.4632568919194,
-            "air_conditioner": 0.0,
-            "instruments": 2.0,
-            "total": 609.4632568919194
+            "air_conditioner": 41.958529379268086,
+            "instruments": 35.33218340631586,
+            "total": 1337.772228494761
         },
-        "total": 4451.110784459135
+        "total": 5281.478039311977
     },
     "payload": {
         "total": 100,
@@ -43,6 +43,6 @@
         "flight_attendants": 0.0,
         "total": 102.05828325
     },
-    "zero_fuel_weight": 4653.169067709136,
+    "zero_fuel_weight": 5381.478039311977,
     "max_takeoff": 5670
 }

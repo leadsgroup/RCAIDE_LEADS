@@ -8,6 +8,7 @@
 # RCAIDE imports   
 from RCAIDE.Library.Components import Component 
 from RCAIDE.Library.Methods.Powertrain.Systems.append_systems_conditions import append_systems_conditions
+from RCAIDE.Library.Methods.Powertrain.Systems.compute_systems_power_draw import compute_systems_power_draw
  
 # ----------------------------------------------------------------------------------------------------------------------
 # System
@@ -84,4 +85,26 @@ class Systems(Component):
             Electrical bus supplying power to the avionics
         """
         append_systems_conditions(self, segment, bus)
-        return         
+        return    
+
+    def compute_performance(self,vehicle,state, bus):   
+        """
+        Computes the power draw of the system based on the operating conditions.
+
+        Parameters
+        ----------
+        vehicle : Data
+            The aircraft vehicle for which performance is being computed
+        segment : Data
+            Mission segment for which performance is being computed
+        bus : Data
+            Electrical bus supplying power to the system
+
+        Notes
+        -----
+        This method should be overridden by specific system implementations to 
+        calculate power draw based on their unique characteristics and operating 
+        conditions. The base implementation does not perform any calculations.
+        """
+        compute_systems_power_draw(self, state, bus)
+        return     

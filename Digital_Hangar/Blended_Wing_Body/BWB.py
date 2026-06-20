@@ -330,17 +330,17 @@ def vehicle_setup():
     wing.aspect_ratio                             = 1.5
     wing.thickness_to_chord                       = .08
     wing.areas.reference                          = 48.79*2
-    wing.spans.projected                          = 7.620591106 #8.49945964 # Must be doubled for a symmetric tail
+    wing.spans.projected                          = 9
     wing.sweeps.quarter_chord                     = 35 * Units.degrees   
     wing.areas.wetted                             = 48.79*4.2
     wing.taper                                    = 0.375
-    wing.chords.root                              = 3.218430874 #2501937
+    wing.chords.root                              = 5
     wing.chords.tip                               = wing.chords.root * wing.taper                  
     wing.chords.mean_aerodynamic                  = wing.chords.root * 2/3 * (( 1 + wing.taper + wing.taper**2 ) / ( 1 + wing.taper )) 
     wing.total_length                             = wing.chords.root 
     wing.twists.root                              = 0.0 
     wing.twists.tip                               = 0.0 
-    wing.origin                                   = [[vehicle.wings.main_wing.chords.root - 1.4*wing.chords.root,  5.5 , -0.5]]  
+    wing.origin                                   = [[23.5,  5.5 , -0.5]]  
     wing.xz_plane_symmetric                       = True
     wing.dynamic_pressure_ratio                   = 1.0  
 
@@ -388,7 +388,7 @@ def vehicle_setup():
     main_gear.number_of_gear_types_in_tandem      = 2
     main_gear.number_of_wheels_in_gear_type       = 2  
     main_gear.xz_plane_symmetric                  = True 
-    main_gear.origin = [[17,0,-2]]
+    main_gear.origin                              = [[17,3.5,-2]]
     vehicle.append_component(main_gear)         
        
     nose_gear                                     = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
@@ -399,7 +399,7 @@ def vehicle_setup():
     nose_gear.wheels                              = 2   
     nose_gear.number_of_gear_types_in_tandem      = 1
     nose_gear.number_of_wheels_in_gear_type       = 2   
-    nose_gear.origin = [[2,0,-1.5]] 
+    nose_gear.origin                              = [[5,0,-1.5]] 
     vehicle.append_component(nose_gear)
 
     

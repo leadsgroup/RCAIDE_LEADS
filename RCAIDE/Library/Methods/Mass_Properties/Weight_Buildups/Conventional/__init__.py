@@ -11,7 +11,7 @@ See Also
 --------
 RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Electric
 RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Hybrid
-RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Hydrogen
+RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Cryogenic
 """
 
 # ----------------------------------------------------------------------------------------------------------------------

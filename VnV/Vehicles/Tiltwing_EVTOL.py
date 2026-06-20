@@ -389,13 +389,13 @@ def vehicle_setup(new_regression=True):
     systems                         = RCAIDE.Library.Components.Powertrain.Systems.Systems()
     systems.power_draw              = 10. # Watts 
     systems.mass_properties.mass    = 1.0 * Units.kg
-    bus.systems                     = systems 
+    network.systems.append(systems)  
                              
     # Avionics                            
     avionics                        = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
     avionics.power_draw             = 10. # Watts  
     avionics.mass_properties.mass   = 1.0 * Units.kg
-    bus.avionics                    = avionics    
+    network.systems.append(avionics)    
     
   
     network.busses.append(bus) 

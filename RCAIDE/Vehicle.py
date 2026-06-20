@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
  
 from RCAIDE                    import Framework
-from RCAIDE.Framework.Core     import Data, DataOrdered
+from RCAIDE.Framework.Core     import Data 
 from RCAIDE.Library            import Components
 import numpy as np 
 
@@ -74,8 +74,7 @@ class Vehicle(Data):
         self.number_of_economy_class_seats                                 = 0
         self.Vref_VS_ratio                                                 = None
         self.maximum_cross_sectional_area                                  = 0.0
-        self.length                                                        = 0.0
-         
+        self.length                                                        = 0.0 
         
         self.flight_envelope                                               = Data()
         self.flight_envelope.design_dynamic_pressure                       = None 
@@ -120,7 +119,7 @@ class Vehicle(Data):
         self.flight_envelope.gust.load_factor.velocity_max_cruise          = 0
         self.flight_envelope.gust.load_factor.velocity_max_dive            = 0 
         
-        self.performance                              = DataOrdered()
+        self.performance                                                   = Data()
          
     _energy_network_root_map = None 
 

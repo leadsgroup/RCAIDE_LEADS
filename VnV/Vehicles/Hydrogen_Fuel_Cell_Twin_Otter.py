@@ -560,7 +560,7 @@ def vehicle_setup(fuel_cell_model= 'PEM'):
     #------------------------------------------------------------------------------------------------------------------------------------  
     avionics                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
     avionics.power_draw          = 30. # Watts
-    bus.avionics                 = avionics
+    net.systems.append(avionics)
     
     #------------------------------------------------------------------------------------------------------------------------------------   
     # Assign propulsors to bus       

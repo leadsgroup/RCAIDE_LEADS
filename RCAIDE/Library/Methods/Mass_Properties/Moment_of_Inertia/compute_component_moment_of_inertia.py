@@ -37,15 +37,18 @@ def compute_component_moment_of_inertia(moment_of_inertia_df,component,vehicle,t
             total_MOI = compute_component_moment_of_inertia(moment_of_inertia_df,item,vehicle,total_MOI,segment,verbose)
     if isinstance(component,Component):
         component.compute_moments_of_inertia(vehicle, center_of_gravity=vehicle_CG)
-        update_total_moment_of_inertia(total_MOI,vehicle_CG,component,segment, verbose, moment_of_inertia_df)  
+        update_total_moment_of_inertia(total_MOI,vehicle_CG,component,segment, verbose, moment_of_inertia_df)
+        is_cryo_tank = isinstance(component, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank)
         for key in component.keys():
             item = component[key]
             if isinstance(item,Component.Container):
                 total_MOI = compute_component_moment_of_inertia(moment_of_inertia_df,item,vehicle,total_MOI,segment,verbose)
             if isinstance(item,Component):
+                if is_cryo_tank and not isinstance(item, RCAIDE.Library.Attributes.Propellants.Propellant):
+                    continue
                 item.compute_moments_of_inertia(vehicle, center_of_gravity=vehicle_CG)
-                update_total_moment_of_inertia(total_MOI,vehicle_CG,item,segment, verbose,moment_of_inertia_df) 
-        
+                update_total_moment_of_inertia(total_MOI,vehicle_CG,item,segment, verbose,moment_of_inertia_df)
+
     return total_MOI
  
 def update_total_moment_of_inertia(total_MOI,vehicle_CG,C,segment,verbose,moment_of_inertia_df):

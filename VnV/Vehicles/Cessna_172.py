@@ -414,7 +414,7 @@ def vehicle_setup():
     Wuav                                        = 2. * Units.lbs
     avionics                                    = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
     avionics.mass_properties.uninstalled        = Wuav
-    vehicle.avionics                            = avionics     
+    net.systems.append(avionics)     
 
     #------------------------------------------------------------------------------------------------------------------------------------ 
     #   Vehicle Definition Complete

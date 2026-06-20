@@ -303,7 +303,8 @@ def vehicle_setup():
     fuselage.areas.wetted                       = 327.01
     fuselage.areas.front_projected              = np.pi * (fuselage.heights.maximum  / 2) ** 2
     fuselage.effective_diameter                 = 3.18 
-    fuselage.differential_pressure              = 10**5 * Units.pascal    # Maximum differential pressure  
+    fuselage.differential_pressure              = 10**5 * Units.pascal    # Maximum differential pressure   
+    fuselage.operational_items.origin = [[fuselage.lengths.total * 0.6, 0, 0]]
     
 
     # Segment  
@@ -444,44 +445,46 @@ def vehicle_setup():
     # add to vehicle
     vehicle.append_component(fuselage)
 
-    ##------------------------------------------------------------------------------------------------------------------------- 
-    ##  Systems
-    ##-------------------------------------------------------------------------------------------------------------------------   
-    avionics =  RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.origin                   = [[4,0,0]]   
-    vehicle.append_component(avionics)
 
-    flight_controls =  RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()    
-    flight_controls.origin            = [[25,0,0]]  
-    vehicle.append_component(flight_controls)
-    
-    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit()  
-    auxillary_power_unit.origin       = [[35,0,0]] 
-    vehicle.append_component(auxillary_power_unit)
 
-    electrical =  RCAIDE.Library.Components.Powertrain.Systems.Electrical()      
-    electrical.origin                 = [[34,0,0]]  
-    vehicle.append_component(electrical)
-    
-    hydraulics =  RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()  
-    hydraulics.origin                 = [[25,0,0]]  
-    vehicle.append_component(hydraulics)
-    
-    environmental_controls =  RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()  
-    environmental_controls.origin     = [[34,0,0]]   
-    vehicle.append_component(environmental_controls)
-    
-    instruments =  RCAIDE.Library.Components.Powertrain.Systems.Instruments()  
-    instruments.origin                = [[20,0,0]]  
-    vehicle.append_component(instruments)
-        
-  
-    #------------------------------------------------------------------------------------------------------------------------------------  
+    #------------------------------------------------------------------------------------------------------------------------------------
     #  Fuel Network
     #------------------------------------------------------------------------------------------------------------------------------------  
     #initialize the fuel network
     net                                         = RCAIDE.Framework.Networks.Fuel() 
-    
+     
+    ##  Systems   
+    avionics =  RCAIDE.Library.Components.Powertrain.Systems.Avionics()
+    avionics.origin                   = [[4,0,0]]   
+    net.systems.append(avionics)
+
+    flight_controls =  RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
+    flight_controls.origin            = [[17,0,0]]
+    net.systems.append(flight_controls)
+
+    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit()
+    auxillary_power_unit.origin       = [[35,0,0]]
+    net.systems.append(auxillary_power_unit)
+
+    electrical =  RCAIDE.Library.Components.Powertrain.Systems.Electrical()
+    electrical.origin                 = [[16,0,0]]
+    net.systems.append(electrical)
+
+    hydraulics =  RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
+    hydraulics.origin                 = [[17,0,0]]
+    net.systems.append(hydraulics)
+
+    environmental_controls =  RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
+    environmental_controls.origin     = [[16,0,-0.5]]
+    net.systems.append(environmental_controls)
+
+    instruments =  RCAIDE.Library.Components.Powertrain.Systems.Instruments()
+    instruments.origin                = [[15,0,0]]
+    net.systems.append(instruments)
+
+    furnishings = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
+    furnishings.origin                = [[18,0,0]]
+    net.systems.append(furnishings)
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Fuel Distrubition Line 
     #------------------------------------------------------------------------------------------------------------------------------------  
@@ -541,16 +544,16 @@ def vehicle_setup():
     turbofan.design_altitude                        = 35000.0*Units.ft
     turbofan.design_mach_number                     = 0.8   
     turbofan.design_thrust                          = 35000.0* Units.N#/2 
-    turbofan.origin                                 = [[13.15,4.38,-2.1]]
+    turbofan.origin                                 = [[14.46,4.38,-2.1]]
     turbofan.mass_properties.center_of_gravity      = [[turbofan.length /2,0,0]]
-     
-    # Nacelle 
+
+    # Nacelle
     nacelle                                         = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()
     nacelle.diameter                                = 2.05
     nacelle.length                                  = 2.66
     nacelle.tag                                     = 'nacelle_1'
     nacelle.inlet_diameter                          = 2.0
-    nacelle.origin                                  = [[12.15,4.38, -2.1]] 
+    nacelle.origin                                  = [[13.96,4.38, -2.1]]
     nacelle.mass_properties.center_of_gravity       = [[nacelle.length /2,0,0 ]]
     nacelle.areas.wetted                            = 1.1*np.pi*nacelle.diameter*nacelle.length
     nacelle_airfoil                                 = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
@@ -647,8 +650,8 @@ def vehicle_setup():
     # copy turbofan
     turbofan_2                             = deepcopy(turbofan)
     turbofan_2.tag                         = 'port_propulsor'  
-    turbofan_2.origin                      = [[13.15,-4.38,-2.1]]  # change origin  
-    turbofan_2.nacelle.origin              = [[12.15,-4.38,-2.1]]   
+    turbofan_2.origin                      = [[14.46,-4.38,-2.1]]
+    turbofan_2.nacelle.origin              = [[13.96,-4.38,-2.1]]   
     
     # append propulsor to network
     net.propulsors.append(turbofan_2)
@@ -662,7 +665,8 @@ def vehicle_setup():
     net.fuel_lines.append(fuel_line)        
     
     # Append energy network to aircraft 
-    vehicle.append_energy_network(net)     
+    vehicle.append_energy_network(net)    
+
         
     return vehicle
 

@@ -50,7 +50,7 @@ class Hydrogen_BWB(Weights):
         N/A
         """ 
         self.method                                        = 'Semi_Empirical'
-        self.propulsion_architecture                       = 'Hydrogen'
+        self.propulsion_architecture                       = 'Cryogenic'
         self.aircraft_type                                 = 'BWB' 
         self.settings.PRSEUS                               = True 
         self.settings.advanced_composites                  = False

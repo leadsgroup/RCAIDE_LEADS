@@ -175,9 +175,9 @@ def mass_properties_preprocess_routine(segment, i = 0):
             if analyses.vehicle.mass_properties.payload > analyses.vehicle.mass_properties.max_payload:
                 print('Warning: Computed payload weight is greater than maxmimum payload weight')        
             
-            # Compute OEW 
-            if weights_analysis.settings.overwrite_operating_empty_weight: 
-                analyses.vehicle.mass_properties.operating_empty = analyses.vehicle.mass_properties.weight_breakdown.empty.total +  analyses.vehicle.mass_properties.weight_breakdown.operational_items.total 
+            # Compute OEW
+            if weights_analysis.settings.overwrite_operating_empty_weight:
+                analyses.vehicle.mass_properties.operating_empty = analyses.vehicle.mass_properties.weight_breakdown.empty.total
                             
             # Apply correction factors  if any
             apply_correction_factors(analyses)
@@ -267,8 +267,8 @@ def iterate_max_fuel_and_max_zero_fuel(analyses, max_iterations=100):
         _ = analyses.weights.evaluate(analyses.vehicle)
         
         # Compute OEW
-        if analyses.weights.settings.overwrite_operating_empty_weight: 
-            analyses.vehicle.mass_properties.operating_empty = analyses.vehicle.mass_properties.weight_breakdown.empty.total +  analyses.vehicle.mass_properties.weight_breakdown.operational_items.total 
+        if analyses.weights.settings.overwrite_operating_empty_weight:
+            analyses.vehicle.mass_properties.operating_empty = analyses.vehicle.mass_properties.weight_breakdown.empty.total
                         
         # Apply Correction Factors if any
         apply_correction_factors(analyses)
@@ -315,9 +315,7 @@ def solve_for_mtow(analyses, weights_analysis, i):
             analyses.vehicle.mass_properties.max_zero_fuel = None
             iterate_max_fuel_and_max_zero_fuel(analyses)
         _ = weights_analysis.evaluate(analyses.vehicle)
-        analyses.vehicle.mass_properties.operating_empty = (
-            analyses.vehicle.mass_properties.weight_breakdown.empty.total +
-            analyses.vehicle.mass_properties.weight_breakdown.operational_items.total)
+        analyses.vehicle.mass_properties.operating_empty = analyses.vehicle.mass_properties.weight_breakdown.empty.total
         apply_correction_factors(analyses)
         if i == 0:
             apply_component_weights(analyses)

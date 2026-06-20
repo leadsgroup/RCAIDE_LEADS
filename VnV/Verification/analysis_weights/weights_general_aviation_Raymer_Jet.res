@@ -38,6 +38,5 @@
         "flight_attendants": 0,
         "total": 0
     },
-    "operating_empty": 4660.937206967913,
     "zero_fuel_weight": 4860.937206967913
 }

@@ -143,19 +143,14 @@ def compute_operating_empty_weight(vehicle,settings = None):
         maxVTip                = 0
         eta                    = 0
         for network in vehicle.networks:
-
+            for system in network.systems: 
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Avionics:
+                    weight.avionics += system.mass_properties.mass * Units.kg   
+         
             #-------------------------------------------------------------------------------
             # Powertain 
             #-------------------------------------------------------------------------------            
-            for bus in network.busses:
-
-                #-------------------------------------------------------------------------------
-                # Avionics Weight
-                #-------------------------------------------------------------------------------
-                if bus.avionics.origin[0][0] == 0:
-                    bus.avionics.origin[0][0]                          = 0.4 * nose_length
-                bus.avionics.mass_properties.center_of_gravity[0][0]   = 0.0
-                weight.avionics += bus.avionics.mass_properties.mass
+            for bus in network.busses: 
 
                 for modules in bus.battery_modules:
                     weight.battery += modules.mass_properties.mass * Units.kg
@@ -349,7 +344,7 @@ def compute_operating_empty_weight(vehicle,settings = None):
         output.payload.total      = weight.passengers + weight.payload
         
         # total weight 
-        output.empty.total        = output.empty.systems.total +  output.empty.propulsion.total +  output.empty.structural.total        
+        output.empty.total        = output.empty.systems.total + output.empty.propulsion.total + output.empty.structural.total + output.operational_items.total
         output.zero_fuel_weight   = output.empty.total + output.payload.total
         output.fuel               = 0
         output.total              = output.empty.total + output.payload.total 

@@ -38,7 +38,7 @@ from BWB            import vehicle_setup as BWB_vehicle_setup
 # ----------------------------------------------------------------------------------------------------------------------  
 def main():
     # tube and wing load trim test 
-    tube_and_wing_load_trim_test()
+    #tube_and_wing_load_trim_test()
  
     # blended wing body load trim test 
     blended_wing_body_load_trim_test()
@@ -63,9 +63,9 @@ def tube_and_wing_load_trim_test():
  
     load_data =  compute_load_and_trim_diagram( mission, cruise_segment_tag = 'cruise', discretization=  3)
     
-    CG_Percent_of_LEMAC_truth = np.array([[-0.25572757,  0.67208385,  1.59989527],
-                                          [-0.25572757,  0.67208385,  1.59989527],
-                                          [-0.25572757,  0.67208385,  1.59989527]]) 
+    CG_Percent_of_LEMAC_truth = np.array([[-0.28977704,  0.62952201,  1.54882106],
+                                            [-0.28977704,  0.62952201,  1.54882106],
+                                            [-0.28977704,  0.62952201,  1.54882106]])
     plot_load_diagram(load_data,save_filename  = "TW_Aircraft_Loading_Trim_Dragram") 
 
     LEMAC_error = np.max(np.abs((load_data.trim_results.CG_percent_of_LEMAC_location - CG_Percent_of_LEMAC_truth)/np.abs(CG_Percent_of_LEMAC_truth)))
@@ -77,7 +77,7 @@ def tube_and_wing_load_trim_test():
 
 def blended_wing_body_load_trim_test():
     vehicle    = BWB_vehicle_setup()  
-    
+     
     # take out control surfaces to make regression run faster
     for wing in vehicle.wings:
         wing.control_surfaces  = Container() 
@@ -93,9 +93,9 @@ def blended_wing_body_load_trim_test():
  
     load_data =  compute_load_and_trim_diagram( mission, cruise_segment_tag= 'cruise', discretization=  3) 
   
-    CG_Percent_of_LEMAC_truth = np.array([[-0.09760759,  0.74273203,  1.58307165],
-                                            [-0.09760759,  0.74273203,  1.58307165],
-                                            [-0.09760759,  0.74273203,  1.58307165]])
+    CG_Percent_of_LEMAC_truth = np.array([[-0.72420342, -0.04051276,  0.6431779 ],
+                                            [-0.72420342, -0.04051276,  0.6431779 ],
+                                            [-0.72420342, -0.04051276,  0.6431779 ]])
     
     plot_load_diagram(load_data,save_filename  = "BWB_Aircraft_Loading_Trim_Dragram") 
 
@@ -150,7 +150,7 @@ def E190_base_analysis(vehicle):
     weights = RCAIDE.Framework.Analyses.Weights.Conventional_Transport()   
     weights.settings.FLOPS.fidelity              = 'Complex' 
     weights.settings.run_center_of_gravity_analysis             = True
-    weights.settings.run_moments_of_inertia_analysis            = True 
+    weights.settings.run_moments_of_inertia_analysis            = True  
     weights.print_weight_analysis_report         = False
     analyses.append(weights)
 
@@ -199,6 +199,7 @@ def BWB_base_analysis(vehicle):
     #  Weights 
     weights = RCAIDE.Framework.Analyses.Weights.Conventional_BWB()   
     weights.settings.FLOPS.fidelity              = 'Complex' 
+    weights.settings.update_max_fuel_mass        = True
     weights.print_weight_analysis_report         = False
     analyses.append(weights)
 

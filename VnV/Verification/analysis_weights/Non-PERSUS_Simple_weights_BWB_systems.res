@@ -10,26 +10,27 @@
             "motors": 0
         },
         "structural": {
-            "wings": 13530.461068105573,
-            "empennage": 511.01319437794876,
-            "center_body": 32115.414165817318,
-            "aft_center_body": 5257.512823315998,
-            "landing_gear": 4908.711040446306,
+            "wings": 13380.049009864975,
+            "empennage": 508.57848775932786,
+            "center_body": 32030.37525770262,
+            "aft_center_body": 5240.800029214259,
+            "landing_gear": 4837.204254398957,
             "nacelle": 1307.2039005662316,
-            "total": 57630.31619262937
+            "fuel_tanks": 0,
+            "total": 57304.21093950637
         },
         "systems": {
-            "control_systems": 2.0,
-            "apu": 235.80000000000004,
-            "electrical": 2.0,
-            "avionics": 2.0,
-            "hydraulics": 2.0,
+            "control_systems": 1640.093734900792,
+            "apu": 647.3267839232889,
+            "electrical": 1146.4862471843442,
+            "avionics": 1297.751772059812,
+            "hydraulics": 1290.8506672836997,
             "furnishings": 172.81869297,
-            "air_conditioner": 2.0,
-            "instruments": 2.0,
-            "total": 420.61869297000004
+            "air_conditioner": 1726.34792113087,
+            "instruments": 449.3525469679759,
+            "total": 8371.028366420782
         },
-        "total": 75317.40339992743
+        "total": 84375.26819649099
     },
     "payload": {
         "total": 30390.68879,
@@ -38,12 +39,12 @@
         "cargo": 5080.234543999999
     },
     "operational_items": {
-        "misc": 362.6191035369379,
+        "misc": 474.2125136857728,
         "flight_crew": 306.17484975,
         "flight_attendants": 653.1730128,
         "passenger_service": 0.0,
-        "total": 1321.966966086938
+        "total": 1433.5603762357728
     },
-    "zero_fuel_weight": 107030.05915601437,
-    "max_takeoff": 127005.86360000001
+    "zero_fuel_weight": 114765.95698649099,
+    "max_takeoff": 125000.0
 }

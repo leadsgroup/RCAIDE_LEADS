@@ -1,4 +1,3 @@
-  
 # Regression/scripts/Tests/network_ducted_fan/electric_ducted_fan_netowrk.py
 # 
 # Created:  Jul 2023, M. Clarke 

@@ -637,17 +637,7 @@ def vehicle_setup(new_regression=True) :
     propeller_nacelle_2.origin                     = [[5.583, - 1.300,     1.092]]
     cruise_propulsor_2.nacelle                     = propeller_nacelle_2
     network.propulsors.append(cruise_propulsor_2) 
-    cruise_bus.assigned_propulsors = [['cruise_propulsor_1','cruise_propulsor_2' ]]
-        
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    # Additional Bus Loads
-    #------------------------------------------------------------------------------------------------------------------------------------     
-    
-    # Avionics   
-    avionics                       = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.power_draw            = 10. # Watts  
-    avionics.mass_properties.mass  = 1.0 * Units.kg
-    cruise_bus.avionics            = avionics    
+    cruise_bus.assigned_propulsors = [['cruise_propulsor_1','cruise_propulsor_2' ]]   
 
     # append forward bus
     network.busses.append(cruise_bus)    
@@ -785,7 +775,7 @@ def vehicle_setup(new_regression=True) :
     avionics                                                = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
     avionics.power_draw                                     = 20. # Watts  
     avionics.mass_properties.mass                           = 1.0 * Units.kg
-    lift_bus.avionics                                       = avionics    
+    network.systems.append(avionics)    
 
    
     network.busses.append(lift_bus)       

@@ -14,8 +14,8 @@ from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLO
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_bwb_wing_weight        import compute_wing_weight
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.BWB.FLOPS.compute_operating_items_weight import compute_operating_items_weight
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Common                                   import compute_payload_weight
-from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Hydrogen.Common.compute_landing_gear_weight           import compute_landing_gear_weight
-from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Hydrogen.Common.compute_propulsion_system_weight      import compute_propulsion_system_weight
+from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Cryogenic.Common.compute_landing_gear_weight           import compute_landing_gear_weight
+from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Cryogenic.Common.compute_propulsion_system_weight      import compute_propulsion_system_weight
 from RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport                                import FLOPS 
 from RCAIDE.Library.Methods.Geometry.Planform                                                                     import segment_properties  
 from copy import deepcopy
@@ -183,20 +183,14 @@ def compute_operating_empty_weight(vehicle,settings=None):
             propulsor.mass_properties.mass = (W_energy_network.W_engine +W_energy_network.W_thrust_reverser+W_energy_network.W_starter + W_energy_network.W_engine_controls) / number_of_engines
             propulsor.nacelle.mass_properties.mass = W_energy_network.W_nacelle / number_of_engines
         
-        # Electric-Powered Propulsors  
-        for bus in network.busses: 
-            # electrical payload 
-            W_systems.W_electrical  += bus.systems.mass_properties.mass * Units.kg
-     
-            # Avionics Weight 
-            W_systems.W_avionics  += bus.avionics.mass_properties.mass      
-    
-            for battery in bus.battery_modules: 
+        # Electric-Powered Propulsors
+        for bus in network.busses:
+            for battery in bus.battery_modules:
                 W_energy_network_total  += battery.mass_properties.mass * Units.kg
                 W_energy_network.W_battery = battery.mass_properties.mass * Units.kg
-                
+
         for propulsor in network.propulsors:
-            if 'motor' in propulsor:                           
+            if 'motor' in propulsor:
                 W_energy_network.W_motor +=  propulsor.motor.mass_properties.mass
                 W_energy_network_total  +=  propulsor.motor.mass_properties.mass
                    
@@ -281,15 +275,22 @@ def compute_operating_empty_weight(vehicle,settings=None):
     ##-------------------------------------------------------------------------------                 
     # Accumulate Structural Weight
     ##-------------------------------------------------------------------------------   
+    W_fuel_tanks = 0
+    for network in vehicle.networks:
+        for fuel_line in network.fuel_lines:
+            for fuel_tank in fuel_line.fuel_tanks:
+                W_fuel_tanks += fuel_tank.mass_properties.mass
+
     output.empty.structural                       = Data()
-    output.empty.structural.wings                 = W_main_wing 
-    output.empty.structural.empennage             = W_tail_horizontal +  W_tail_vertical 
+    output.empty.structural.wings                 = W_main_wing
+    output.empty.structural.empennage             = W_tail_horizontal + W_tail_vertical
     output.empty.structural.center_body           = W_cabin
     output.empty.structural.aft_center_body       = W_aft_center_body
-    output.empty.structural.landing_gear          = landing_gear.main +  landing_gear.nose  
+    output.empty.structural.landing_gear          = landing_gear.main + landing_gear.nose
     output.empty.structural.nacelle               = W_energy_network.W_nacelle
-    output.empty.structural.total = output.empty.structural.wings   + output.empty.structural.center_body + output.empty.structural.aft_center_body + output.empty.structural.landing_gear\
-                                    + output.empty.structural.nacelle + output.empty.structural.empennage 
+    output.empty.structural.fuel_tanks            = W_fuel_tanks
+    output.empty.structural.total = output.empty.structural.wings + output.empty.structural.center_body + output.empty.structural.aft_center_body + output.empty.structural.landing_gear\
+                                    + output.empty.structural.nacelle + output.empty.structural.empennage + output.empty.structural.fuel_tanks
     
     ##-------------------------------------------------------------------------------                 
     # Accumulate Systems Weight
@@ -313,16 +314,15 @@ def compute_operating_empty_weight(vehicle,settings=None):
         output.empty.systems.total                 += output.empty.systems.water_tank 
     
     output.payload    = payload 
-    output.operational_items    = Data()
-    output.operational_items    = W_oper 
-    output.empty.total          = output.empty.structural.total + output.empty.propulsion.total + output.empty.systems.total 
-    output.zero_fuel_weight     = output.empty.total + output.operational_items.total + output.payload.total
+    output.operational_items    = W_oper
+    output.empty.total          = output.empty.structural.total + output.empty.propulsion.total + output.empty.systems.total + output.operational_items.total
+    output.zero_fuel_weight     = output.empty.total + output.payload.total
     output.max_takeoff          = vehicle.mass_properties.max_takeoff
 
     for wing in vehicle.wings:
         if isinstance(wing, Wings.Blended_Wing_Body):    
-            wing.aft_center_body.mass_properties.mass = output.empty.structural.aft_center_body  +  output.empty.propulsion.miscellaneous  
-            wing.center_body.mass_properties.mass     = output.empty.structural.center_body   + output.operational_items.total  + output.empty.systems.furnishings
+            wing.aft_center_body.mass_properties.mass = output.empty.structural.aft_center_body + output.empty.propulsion.miscellaneous
+            wing.center_body.mass_properties.mass     = output.empty.structural.center_body
 
     return output
 

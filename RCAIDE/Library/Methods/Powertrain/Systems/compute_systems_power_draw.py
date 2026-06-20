@@ -6,7 +6,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------    
 # package imports
-def compute_systems_power_draw(system,vehicle,bus,state):
+def compute_systems_power_draw(system,state,bus):
     """
     Computes the power draw of a generic system.
     

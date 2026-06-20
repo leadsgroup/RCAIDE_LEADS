@@ -87,16 +87,13 @@ def generate_cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cru
         if abs(val) > eps:
             parasite_sub.append((key, val))
 
-    cd_parasite_total = 0.0
-    for _, val in parasite_sub:
-        cd_parasite_total += val
+    cd_parasite_total = float(np.mean(drag.parasite.total[:, 0]))
 
     # --- totals (mean over cruise nodes)
     cd_total          = float(np.mean(drag.total[:, 0]))
     cd_induced_total  = float(np.mean(drag.induced.total[:, 0]))
     cd_comp_total     = float(np.mean(drag.compressible.total[:, 0]))
     cd_misc_total     = float(np.mean(drag.miscellaneous.total[:, 0]))
-    cd_wave_total     = float(np.mean(drag.wave.total[:, 0]))
     cd_form_total     = float(np.mean(drag.form.total[:, 0]))
     cd_cool_total     = float(np.mean(drag.cooling.total[:, 0]))
 
@@ -134,15 +131,17 @@ def generate_cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cru
     ]
     induced_sub = [(name, val) for name, val in induced_sub if abs(val) > eps]
 
+    trim_factor = settings.trim_drag_correction_factor if hasattr(settings, 'trim_drag_correction_factor') else 1.0
+    cd_buildup_total = trim_factor * (cd_parasite_total + cd_induced_total + cd_comp_total + cd_misc_total + cd_form_total + cd_cool_total)
+
     categories_raw = [
         ("parasite",      parasite_sub,      cd_parasite_total),
         ("induced",       induced_sub,       cd_induced_total),
         ("compressible",  [("total", cd_comp_total)],  cd_comp_total),
         ("miscellaneous", [("total", cd_misc_total)],  cd_misc_total),
-        ("wave",          [("total", cd_wave_total)],  cd_wave_total),
         ("form",          [("total", cd_form_total)],  cd_form_total),
         ("cooling",       [("total", cd_cool_total)],  cd_cool_total),
-        ("TOTAL",         [("total", cd_total)],       cd_total),
+        ("TOTAL",         [("total", cd_buildup_total)], cd_buildup_total),
     ]
     categories = []
     for cat, subs, tot in categories_raw:
@@ -161,6 +160,8 @@ def generate_cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cru
             if name != "total":
                 print(f"  - {name:28s} {val: .6e}")
     print("-" * 72)
+    if abs(cd_total - cd_buildup_total) > 1e-6:
+        print(f"  Note: aero solver total ({cd_total: .6e}) differs from buildup sum ({cd_buildup_total: .6e}) by {abs(cd_total - cd_buildup_total):.6e}")
 
     # -------------------------
     # DataFrame for Excel
@@ -264,7 +265,6 @@ def generate_cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cru
         ("Induced", cd_induced_total),
         ("Compressible", cd_comp_total),
         ("Miscellaneous", cd_misc_total),
-        ("Wave", cd_wave_total),
         ("Form", cd_form_total),
         ("Cooling", cd_cool_total),
     ]

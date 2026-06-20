@@ -12,6 +12,7 @@ from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor                
 from RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator                 import design_turboelectric_generator   
 
 # python imports 
+from aviary.subsystems.mass.gasp_based import avionics
 import numpy as np  
 from   copy import deepcopy 
 import os
@@ -641,7 +642,7 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     avionics                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
     avionics.power_draw          = 30. # Watts
-    bus.avionics                 = avionics
+    net.systems.append(avionics)  
 
     #------------------------------------------------------------------------------------------------------------------------------------   
     # Assign propulsors to bus       

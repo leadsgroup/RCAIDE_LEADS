@@ -150,14 +150,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
         W_energy_network_total   = 0 
     
         # Electric-Powered Propulsors  
-        for bus in network.busses: 
-            # electrical payload 
-            try: W_systems.W_electrical  += bus.systems.mass_properties.mass * Units.kg
-            except: pass
-     
-            # Avionics Weight 
-            W_systems.W_avionics  += bus.avionics.mass_properties.mass      
-    
+        for bus in network.busses:  
             for battery in bus.battery_modules: 
                 W_energy_network_total  += battery.mass_properties.mass * Units.kg
                 W_energy_network.W_battery = battery.mass_properties.mass * Units.kg
@@ -271,10 +264,9 @@ def compute_operating_empty_weight(vehicle, settings=None):
                                                     + output.empty.systems.air_conditioner + output.empty.systems.instruments
  
     output.payload              = payload 
-    output.operational_items    = Data()
-    output.operational_items    = W_oper 
-    output.empty.total          = output.empty.structural.total + output.empty.propulsion.total + output.empty.systems.total 
-    output.zero_fuel_weight     = output.empty.total + output.operational_items.total + output.payload.total
+    output.operational_items    = W_oper
+    output.empty.total          = output.empty.structural.total + output.empty.propulsion.total + output.empty.systems.total + output.operational_items.total
+    output.zero_fuel_weight     = output.empty.total + output.payload.total
     output.max_takeoff          = vehicle.mass_properties.max_takeoff 
  
     return output

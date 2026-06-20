@@ -37,19 +37,8 @@ def compute_operating_empty_weight(vehicle, settings=None):
     ##------------------------------------------------------------------------------- 
     W_systems = Raymer.compute_systems_weight(vehicle)
 
-    # set cabin mass to passenger payload + furnishings
-    for fuselage in vehicle.fuselages:
-        for cabin in fuselage.cabins:
-            pax_ratio = cabin.number_of_passengers / vehicle.number_of_passengers
-            cabin.mass_properties.mass = (payload.passengers + W_systems.W_furnish) * pax_ratio
-    for wing in vehicle.wings:
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
-            for cabin in wing.cabins:
-                pax_ratio = cabin.number_of_passengers / vehicle.number_of_passengers
-                cabin.mass_properties.mass = (payload.passengers + W_systems.W_furnish) * pax_ratio
-
-    ##-------------------------------------------------------------------------------                 
-    # Propulsion Weight 
+    ##-------------------------------------------------------------------------------
+    # Propulsion Weight
     ##-------------------------------------------------------------------------------
     output                                      = Data()
     output.empty                                = Data() 
@@ -189,10 +178,9 @@ def compute_operating_empty_weight(vehicle, settings=None):
                                                     + output.empty.systems.air_conditioner + output.empty.systems.instruments
  
     output.payload    = payload 
-    output.operational_items    = Data()
-    output.operational_items    = W_oper 
-    output.empty.total          = output.empty.structural.total + output.empty.propulsion.total + output.empty.systems.total 
-    output.zero_fuel_weight     = output.empty.total + output.operational_items.total + output.payload.total
+    output.operational_items    = W_oper
+    output.empty.total          = output.empty.structural.total + output.empty.propulsion.total + output.empty.systems.total + output.operational_items.total
+    output.zero_fuel_weight     = output.empty.total + output.payload.total
     output.max_takeoff          = vehicle.mass_properties.max_takeoff 
 
     return output

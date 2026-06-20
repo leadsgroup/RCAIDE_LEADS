@@ -39,25 +39,21 @@ def compute_operating_empty_weight(vehicle, settings=None):
     ##-------------------------------------------------------------------------------             
     # Operating Items Weight
     ##------------------------------------------------------------------------------- 
-    W_oper = FLOPS.compute_operating_items_weight(vehicle)      
-    
-    ##-------------------------------------------------------------------------------         
+    W_oper = FLOPS.compute_operating_items_weight(vehicle)
+
+    Wings = RCAIDE.Library.Components.Wings
+    for fuselage in vehicle.fuselages:
+        fuselage.operational_items.mass_properties.mass = W_oper.total
+    for wing in vehicle.wings:
+        if isinstance(wing, Wings.Blended_Wing_Body):
+            wing.operational_items.mass_properties.mass = W_oper.total
+
+    ##-------------------------------------------------------------------------------
     # System Weight
     ##------------------------------------------------------------------------------- 
     W_systems = FLOPS.compute_systems_weight(vehicle)
 
-    # set cabin mass to passenger payload + furnishings
-    for fuselage in vehicle.fuselages:
-        for cabin in fuselage.cabins:
-            pax_ratio = cabin.number_of_passengers / vehicle.number_of_passengers
-            cabin.mass_properties.mass = (payload.passengers + W_systems.W_furnish) * pax_ratio
-    for wing in vehicle.wings:
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
-            for cabin in wing.cabins:
-                pax_ratio = cabin.number_of_passengers / vehicle.number_of_passengers
-                cabin.mass_properties.mass = (payload.passengers + W_systems.W_furnish) * pax_ratio
-    
-    ##-------------------------------------------------------------------------------                 
+    ##-------------------------------------------------------------------------------
     # Propulsion Weight 
     ##-------------------------------------------------------------------------------
     output                                      = Data()
@@ -104,18 +100,12 @@ def compute_operating_empty_weight(vehicle, settings=None):
             if propulsor.nacelle != None: 
                 propulsor.nacelle.mass_properties.mass = W_energy_network.W_nacelle / number_of_engines
          
-        # Electric-Powered Propulsors  
-        for bus in network.busses: 
-            # electrical payload 
-            W_systems.W_electrical  += bus.systems.mass_properties.mass * Units.kg
-     
-            # Avionics Weight 
-            W_systems.W_avionics  += bus.avionics.mass_properties.mass      
-    
-            for battery in bus.battery_modules: 
+        # Electric-Powered Propulsors
+        for bus in network.busses:
+            for battery in bus.battery_modules:
                 W_energy_network_total  += battery.mass_properties.mass * Units.kg
                 W_energy_network.W_battery = battery.mass_properties.mass * Units.kg
-                
+
         for propulsor in network.propulsors:
             if 'motor' in propulsor:                           
                 W_energy_network.W_motor +=  propulsor.motor.mass_properties.mass
@@ -228,12 +218,11 @@ def compute_operating_empty_weight(vehicle, settings=None):
                                                     + output.empty.systems.electrical + output.empty.systems.avionics \
                                                     + output.empty.systems.hydraulics + output.empty.systems.furnishings \
                                                     + output.empty.systems.air_conditioner + output.empty.systems.instruments
- 
-    output.payload    = payload 
-    output.operational_items    = Data()
-    output.operational_items    = W_oper 
-    output.empty.total          = output.empty.structural.total + output.empty.propulsion.total + output.empty.systems.total 
-    output.zero_fuel_weight     = output.empty.total + output.operational_items.total + output.payload.total
+
+    output.payload    = payload
+    output.operational_items    = W_oper
+    output.empty.total          = output.empty.structural.total + output.empty.propulsion.total + output.empty.systems.total + output.operational_items.total
+    output.zero_fuel_weight     = output.empty.total + output.payload.total
     output.max_takeoff          = vehicle.mass_properties.max_takeoff
     total_fuel_weight           = vehicle.mass_properties.max_takeoff - output.zero_fuel_weight 
 
