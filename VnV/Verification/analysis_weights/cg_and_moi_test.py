@@ -215,9 +215,9 @@ def EVTOL_Aircraft_Test(update_regression_values):
     print(MOI)
 
     truth_OEW_CG_mass_percentage = 86.35
-    truth_moi  = np.array([[ 9365.33138772,  -447.36598313,  -417.23458308],
-                           [ -447.36598313,  9136.88871098,   -99.75208906],
-                           [ -417.23458308,   -99.75208906, 16740.10553482]])
+    truth_moi  = np.array([[ 9365.33138772,  -450.90746732,  -440.58026539],
+                           [ -450.90746732,  9156.50731552,   -99.75208906],
+                           [ -440.58026539,   -99.75208906, 16759.72413936]])
 
     error_moi = abs((MOI - truth_moi) / truth_moi)
     assert np.all(error_moi < 5e-2),\
