@@ -1,4 +1,4 @@
-# RCAIDE/Library/Missions/Common/Pre_Process/set_residuals_and_unknowns.py
+# RCAIDE/Library/Missions/Common/Pre_Process/set_mission_residuals_and_unknowns.py
 #
 #
 # Created:  Jul 2023, M. Clarke
@@ -11,7 +11,7 @@ from RCAIDE.Framework.Core import Units
 import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  set_residuals_and_unknowns
+#  set_mission_residuals_and_unknowns
 # ----------------------------------------------------------------------------------------------------------------------
 def set_mission_residuals_and_unknowns(mission):
     """

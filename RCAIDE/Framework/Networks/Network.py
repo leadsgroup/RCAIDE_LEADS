@@ -20,62 +20,134 @@ import scipy.linalg as sla
 # ----------------------------------------------------------------------------------------------------------------------
 #  Network
 # ---------------------------------------------------------------------------------------------------------------------- 
-class Network(Component):  
-    """ 
-    
-    Generalized Energy Network (powertrain) Class capable of creating all derivatives of conventional
-    and unconventional powertrains, including hybrid-electric powertrains and the all-electric network.
-    
+class Network(Component):
+    """
+    Generalized Energy Network (powertrain) class capable of creating all derivatives of conventional
+    and unconventional powertrains, including hybrid-electric powertrains and all-electric networks.
+
                                             GENERIC NETWORK
-          .........................................:..........................................                          
+          .........................................:..........................................
           :                        :                                :                        :
-    .-------------.         .-------------.                 .-------------.           .-------------.                     
-    | propulsor 1 |         | propulsor 2 |                 | propulsor 2 |           | propulsor 3 | 
-    '-------------'         '-------------'                 '-------------'           '-------------'            
-          ||                       ||                              ||                        ||                                  
+    .-------------.         .-------------.                 .-------------.           .-------------.
+    | propulsor 1 |         | propulsor 2 |                 | propulsor 2 |           | propulsor 3 |
+    '-------------'         '-------------'                 '-------------'           '-------------'
+          ||                       ||                              ||                        ||
           ||   .-------------.     ||                              ||  .-------------.       ||
-          ||== | converter 1 |====== electric bus / fuel line =========| converter 2 |=======|| 
-               '-------------'                                         '-------------'  
-                           
+          ||== | converter 1 |====== electric bus / fuel line =========| converter 2 |=======||
+               '-------------'                                         '-------------'
+
     Attributes
     ----------
     tag : str
-        Identifier for the network   
-    
+        Identifier for the network.
+
+    reverse_thrust : bool
+        Flag to enable reverse thrust computation. Default is False.
+
+    hybrid_power_split_ratio : float
+        Fraction of total propulsive power supplied by electrical sources, denoted
+        as phi. This ratio controls how much electrical power is routed to the
+        integrated drive motor on the propulsor shaft and how much power is drawn
+        from electrochemical sources (batteries, fuel cells).
+
+        - phi = 0.0 : all power from fuel (conventional turbofan/turbojet)
+        - phi = 0.5 : equal split between fuel and electric motor (parallel hybrid)
+        - phi = 1.0 : all power from electrical sources (all-electric)
+
+        The turbomachinery (compressor, fan) always computes the full thermodynamic
+        work regardless of phi. The mechanical hybridization is handled through
+        the external_shaft_work term in the turbine energy balance, which accounts
+        for motor-supplied shaft power and motor efficiency losses.
+
+        Default is 0.0.
+
+    battery_fuel_cell_power_split_ratio : float
+        Fraction of electrical power supplied by batteries versus fuel cells,
+        denoted as psi. This ratio partitions the electrical power demand among
+        electrochemical energy sources.
+
+        - psi = 1.0 : all electrical power from batteries
+        - psi = 0.5 : equal split between batteries and fuel cells
+        - psi = 0.0 : all electrical power from fuel cells
+
+        Default is 1.0.
+
+    propulsors : Container
+        Collection of propulsor components (turbofans, rotors, etc.).
+
+    converters : Container
+        Collection of converter components (turboshafts, motors, generators, etc.).
+
+    nacelles : Container
+        Collection of nacelle components.
+
+    modulators : Container
+        Collection of modulator components.
+
+    distributors : Container
+        Collection of distributor components (electrical buses, fuel lines, etc.).
+
+    sources : Container
+        Collection of energy source components (fuel tanks, battery packs, etc.).
+
+    systems : Container
+        Collection of system components (avionics, environmental controls, etc.).
+
     Notes
     -----
-    The evaluate function is broken into three sections: Section 1 computes all the forces and moments
-    from propulsors regardless of if they are powered by fuel or an electrochemical energy storage system;
-    Section 2 computees the perfomrance of any converters on the distrution lines, for example,
-    turboshafts, motors, pumps etc; and Section 3 computes the thermal mangement of the system as
-    well as energy consumtion of the powertrain. The state of storage devices such as covnentional fuel tanks,
-    batteries are also updates. Propulsor groups can be "active" or "inactive" to simulate
-    engine out conditions. Energy consumtion from avionics is also modeled 
-    
-    **Definitions** 
-    'Propulsor Group'
-        Any single or group of Components that work together to provide thrust.
+    The evaluate function is broken into four sections:
 
-    
-    
-    
-    
+    1. **Propulsors** — computes forces and moments from all active propulsors.
+    2. **Systems** — computes power consumption from auxiliary systems (avionics,
+       environmental controls, hydraulics, etc.).
+    3. **Converters** — computes performance of converters on distribution lines
+       (turboshafts, motors, pumps, fuel cell stacks, etc.).
+    4. **Sources** — computes energy consumption and state updates for storage
+       devices (fuel tanks, batteries).
+
+    Propulsor groups can be set to active or inactive to simulate engine-out
+    conditions.
+
+    **Power Split Architecture**
+
+    The two power split ratios (phi and psi) together define the complete energy
+    sourcing strategy for the network::
+
+        Total Propulsive Power
+            |
+            |--- (1 - phi) ---> Fuel (combustion) ---> Turbine shaft work
+            |
+            |--- (phi) -------> Electrical power
+                                    |
+                                    |--- (psi) ------> Batteries
+                                    |
+                                    |--- (1 - psi) --> Fuel Cells
+
+    The actual electrical power (in Watts) is determined by the network solver,
+    which finds the power level that satisfies the net electrical power balance
+    residual (sum of all electrical sources minus all electrical sinks equals zero).
+
+    **Definitions**
+
+    'Propulsor Group'
+        Any single or group of components that work together to provide thrust.
+
     See Also
     --------
     RCAIDE.Library.Framework.Networks.Fuel
-        Fuel network class 
+        Fuel network class
     RCAIDE.Library.Framework.Networks.Fuel_Cell
-        Fuel_Cell network class 
+        Fuel_Cell network class
     RCAIDE.Library.Framework.Networks.Electric
-        All-Electric network class  
-    """      
-    
+        All-Electric network class
+    """
+
     def __defaults__(self):
         """ This sets the default values for the network to function.
-        """        
+        """
         self.tag                                 = 'network'
         self.reverse_thrust                      = False
-        self.hybrid_power_split_ratio            = 1.0
+        self.hybrid_power_split_ratio            = 0.0
         self.battery_fuel_cell_power_split_ratio = 1.0
         self.propulsors                          = Container()
         self.converters                          = Container()

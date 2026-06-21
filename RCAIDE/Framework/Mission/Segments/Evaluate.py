@@ -101,9 +101,10 @@ class Evaluate(Segment):
         iterate.initials.planet_position   = Common.Initialize.planet_position
         
         # Unpack Unknowns
-        iterate.unknowns                   = Process()
-        iterate.unknowns.controls          = Common.Unpack_Unknowns.control_surfaces 
-        iterate.unknowns.mission           = Common.Unpack_Unknowns.orientation
+        iterate.unknowns                         = Process()
+        iterate.unknowns.mission                 = Process()
+        iterate.unknowns.mission.controls        = Common.Unpack_Unknowns.control_surfaces
+        iterate.unknowns.mission.mission         = Common.Unpack_Unknowns.orientation
         
         # Update Conditions
         iterate.conditions = Process()

@@ -87,7 +87,8 @@ def orientation(segment):
     --------
     RCAIDE.Framework.Mission.Segments
     """
-    ctrls    = segment.assigned_control_variables 
+
+    ctrls    = segment.assigned_control_variables
 
     # Body Angle Control
     if segment.lift_coefficient !=  None:

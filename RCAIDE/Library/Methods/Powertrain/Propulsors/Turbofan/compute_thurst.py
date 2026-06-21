@@ -176,30 +176,6 @@ def compute_thrust(turbofan,conditions):
     core_area_ratio             = turbofan_conditions.core_nozzle_area_ratio                   
     bypass_ratio                = turbofan_conditions.bypass_ratio
 
-    # DEBUG: Print intermediate values for comparison with develop branch
-    print('========== DEBUG compute_thrust ==========')
-    print(f'gamma[0]:          {gamma[0,0]:.6f}')
-    print(f'u0[0]:             {u0[0,0]:.6f}')
-    print(f'a0[0]:             {a0[0,0]:.6f}')
-    print(f'M0[0]:             {M0[0,0]:.6f}')
-    print(f'p0[0]:             {p0[0,0]:.6f}')
-    print(f'Tref:              {Tref:.6f}')
-    print(f'Pref:              {Pref:.6f}')
-    print(f'mdhc:              {mdhc:.6f}')
-    print(f'f[0]:              {f[0,0]:.8f}')
-    print(f'total_T_ref[0]:    {total_temperature_reference[0,0]:.6f}')
-    print(f'total_P_ref[0]:    {total_pressure_reference[0,0]:.6f}')
-    print(f'flow_through_core: {flow_through_core:.6f}')
-    print(f'flow_through_fan:  {flow_through_fan:.6f}')
-    print(f'V_fan_nozzle[0]:   {V_fan_nozzle[0,0]:.6f}')
-    print(f'V_core_nozzle[0]:  {V_core_nozzle[0,0]:.6f}')
-    print(f'fan_area_ratio[0]: {fan_area_ratio[0,0]:.6f}')
-    print(f'core_area_ratio[0]:{core_area_ratio[0,0]:.6f}')
-    print(f'P_fan_nozzle[0]:   {P_fan_nozzle[0,0]:.6f}')
-    print(f'P_core_nozzle[0]:  {P_core_nozzle[0,0]:.6f}')
-    print(f'bypass_ratio:      {bypass_ratio:.6f}')
-    print(f'throttle[0]:       {turbofan_conditions.throttle[0,0]:.6f}')
-
     # Compute  non dimensional thrust
     fan_thrust_nondim   = flow_through_fan*(gamma*M0*M0*(V_fan_nozzle/u0-1.) + fan_area_ratio*(P_fan_nozzle/p0-1.)) # AE 283 Aircraft Propulsion Eqn. 2.44
     core_thrust_nondim  = flow_through_core*(gamma*M0*M0*(V_core_nozzle/u0-1.) + core_area_ratio*(P_core_nozzle/p0-1.)) # AE 283 Aircraft Propulsion Eqn. 2.44
@@ -221,12 +197,6 @@ def compute_thrust(turbofan,conditions):
     # Compute dimensional thrust
     FD2   = Fsp*a0*(1.+bypass_ratio)*mdot_core*turbofan_conditions.throttle
 
-    print(f'fan_thrust_nd[0]:  {fan_thrust_nondim[0,0]:.6f}')
-    print(f'core_thrust_nd[0]: {core_thrust_nondim[0,0]:.6f}')
-    print(f'Fsp[0]:            {Fsp[0,0]:.8f}')
-    print(f'mdot_core[0]:      {mdot_core[0,0]:.6f}')
-    print(f'FD2[0] (thrust):   {FD2[0,0]:.6f}')
-    print('========== END DEBUG ==========')  
     FD2_f = Fsp_f*a0*(1.+bypass_ratio)*mdot_core*turbofan_conditions.throttle
     FD2_c = Fsp_c*a0*(1.+bypass_ratio)*mdot_core*turbofan_conditions.throttle
 

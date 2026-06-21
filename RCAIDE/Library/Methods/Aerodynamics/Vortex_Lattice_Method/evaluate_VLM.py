@@ -43,7 +43,7 @@ def evaluate_surrogate(state,settings,vehicle):
     sub_sur          = aerodynamics.surrogates.subsonic
     sup_sur          = aerodynamics.surrogates.supersonic
     trans_sur        = aerodynamics.surrogates.transonic  
-    AoA              = np.atleast_2d(conditions.aerodynamics.angles.alpha)  
+    AoA              = np.atleast_2d(conditions.aerodynamics.angles.alpha) 
     Beta             = np.atleast_2d(conditions.aerodynamics.angles.beta)    
     Mach             = np.atleast_2d(conditions.freestream.mach_number)  
     ones_row         = np.ones_like(AoA)  
