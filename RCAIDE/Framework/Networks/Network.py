@@ -229,14 +229,14 @@ class Network(Component):
                     state.conditions.energy.distributors[distributor_tag].inputs.power[distributor.domain]    += outputs.power[distributor.domain] 
                 
 
-        # Final aggregation for system level performance 
+        # Final aggregation for system level performance
         conditions.energy.total_force_vector       = total_thrust
         conditions.energy.total_moment_vector      = total_moment
-        conditions.weights.vehicle.mass_rate       = total_mdot  
-        conditions.energy.net_electrical_power     = net_electrical_power 
-        conditions.energy.net_thermal_power        = net_thermal_power 
-        conditions.energy.net_hydraulic_power      = net_hydraulic_power 
-        conditions.energy.net_chemical_power       = net_chemical_power 
+        conditions.weights.vehicle.mass_rate       = total_mdot
+        conditions.energy.net_electrical_power     = net_electrical_power
+        conditions.energy.net_thermal_power        = net_thermal_power
+        conditions.energy.net_hydraulic_power      = net_hydraulic_power
+        conditions.energy.net_chemical_power       = net_chemical_power
 
         return
      
