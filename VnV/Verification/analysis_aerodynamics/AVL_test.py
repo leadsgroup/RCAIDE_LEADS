@@ -34,7 +34,7 @@ from Navion    import vehicle_setup, configs_setup
 
 def main():
     
-    new_regression_results = True  # Keep False, Only True when getting new results for regression 
+    new_regression_results = False  # Keep False, Only True when getting new results for regression 
 
     
     use_surrogate          = False  
