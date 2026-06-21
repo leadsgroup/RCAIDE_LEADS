@@ -11,9 +11,8 @@ from   RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor                          import design_electric_rotor
 from RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator                 import design_turboelectric_generator   
 
-# python imports 
-from aviary.subsystems.mass.gasp_based import avionics
-import numpy as np  
+# python imports
+import numpy as np
 from   copy import deepcopy 
 import os
 
