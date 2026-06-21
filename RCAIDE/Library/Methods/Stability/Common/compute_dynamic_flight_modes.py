@@ -55,11 +55,19 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
         SS     = conditions.static_stability
         SSD    = SS.derivatives 
         DS     = conditions.dynamic_stability 
-        Ixx    = conditions.weights.vehicle.moments_of_inertia_Ixx  
-        Ixz    = conditions.weights.vehicle.moments_of_inertia_Ixz  
-        Iyy    = conditions.weights.vehicle.moments_of_inertia_Iyy  
-        Izx    = conditions.weights.vehicle.moments_of_inertia_Izx  
-        Izz    = conditions.weights.vehicle.moments_of_inertia_Izz  
+        if any(conditions.weights.vehicle.moments_of_inertia_Ixx):
+            Ixx    = conditions.weights.vehicle.moments_of_inertia_Ixx  
+            Ixz    = conditions.weights.vehicle.moments_of_inertia_Ixz  
+            Iyy    = conditions.weights.vehicle.moments_of_inertia_Iyy  
+            Izx    = conditions.weights.vehicle.moments_of_inertia_Izx  
+            Izz    = conditions.weights.vehicle.moments_of_inertia_Izz  
+        
+        else:
+            Ixx    = np.ones((n_cpts,1)) * vehicle.mass_properties.moments_of_inertia.tensor[0,0]#conditions.weights.vehicle.moments_of_inertia_Ixx  
+            Ixz    = np.ones((n_cpts,1)) *vehicle.mass_properties.moments_of_inertia.tensor[1,2]#conditions.weights.vehicle.moments_of_inertia_Ixz  
+            Iyy    = np.ones((n_cpts,1)) *vehicle.mass_properties.moments_of_inertia.tensor[1,1]#conditions.weights.vehicle.moments_of_inertia_Iyy  
+            Izx    = np.ones((n_cpts,1)) *vehicle.mass_properties.moments_of_inertia.tensor[0,2]#conditions.weights.vehicle.moments_of_inertia_Izx  
+            Izz    = np.ones((n_cpts,1)) *vehicle.mass_properties.moments_of_inertia.tensor[2,2]#conditions.weights.vehicle.moments_of_inertia_Izz  
         m      = conditions.weights.vehicle.mass
         
         if np.all(conditions.static_stability.spiral_criteria) == 0: 
