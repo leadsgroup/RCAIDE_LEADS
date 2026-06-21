@@ -174,16 +174,7 @@ class Turbofan(Propulsor):
         self.design_thrust                              = 0.0 
         self.design_power_offtake                       = 0.0
         self.mass_flow_rate_design                      = 0.0
-        self.design_voltage                             = 0.0
-
-        self.emission_indices                           = Data()  
-        self.emission_indices.NOx                       = None
-        self.emission_indices.CO2                       = None
-        self.emission_indices.CO                        = None
-        self.emission_indices.H2O                       = None
-        self.emission_indices.SO2                       = None
-        self.emission_indices.Soot                      = None  
-        
+        self.design_voltage                             = 0.0 
         self.OpenVSP_flow_through                       = False 
         
     def append_operating_conditions(self, segment):

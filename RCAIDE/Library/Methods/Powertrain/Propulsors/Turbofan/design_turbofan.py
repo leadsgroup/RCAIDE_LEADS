@@ -156,18 +156,18 @@ def design_turbofan(turbofan):
         conditions = RCAIDE.Framework.Mission.Common.Results()
     
         # freestream conditions    
-        conditions.freestream.altitude                    = np.atleast_1d(turbofan.design_altitude)
-        conditions.freestream.mach_number                 = np.atleast_1d(turbofan.design_mach_number)
-        conditions.freestream.pressure                    = np.atleast_1d(p)
-        conditions.freestream.temperature                 = np.atleast_1d(T)
-        conditions.freestream.density                     = np.atleast_1d(rho)
-        conditions.freestream.dynamic_viscosity           = np.atleast_1d(mu)
-        conditions.freestream.gravity                     = np.atleast_1d(planet.compute_gravity(turbofan.design_altitude))
-        conditions.freestream.isentropic_expansion_factor = np.atleast_1d(turbofan.working_fluid.compute_gamma(T,p))
-        conditions.freestream.Cp                          = np.atleast_1d(turbofan.working_fluid.compute_cp(T,p))
-        conditions.freestream.R                           = np.atleast_1d(turbofan.working_fluid.gas_specific_constant)
-        conditions.freestream.speed_of_sound              = np.atleast_1d(a)
-        conditions.freestream.velocity                    = np.atleast_1d(U) 
+        conditions.freestream.altitude                    = np.atleast_2d(turbofan.design_altitude)
+        conditions.freestream.mach_number                 = np.atleast_2d(turbofan.design_mach_number)
+        conditions.freestream.pressure                    = np.atleast_2d(p)
+        conditions.freestream.temperature                 = np.atleast_2d(T)
+        conditions.freestream.density                     = np.atleast_2d(rho)
+        conditions.freestream.dynamic_viscosity           = np.atleast_2d(mu)
+        conditions.freestream.gravity                     = np.atleast_2d(planet.compute_gravity(turbofan.design_altitude))
+        conditions.freestream.isentropic_expansion_factor = np.atleast_2d(turbofan.working_fluid.compute_gamma(T,p))
+        conditions.freestream.Cp                          = np.atleast_2d(turbofan.working_fluid.compute_cp(T,p))
+        conditions.freestream.R                           = np.atleast_2d(turbofan.working_fluid.gas_specific_constant)
+        conditions.freestream.speed_of_sound              = np.atleast_2d(a)
+        conditions.freestream.velocity                    = np.atleast_2d(U) 
      
     segment                  = RCAIDE.Framework.Mission.Segments.Segment()  
     segment.state.conditions = conditions 
@@ -366,27 +366,17 @@ def design_turbofan(turbofan):
     turbofan_conditions.flow_through_fan                         = bypass_ratio/(1.+bypass_ratio) #scaled constant to turn on fan thrust computation        
 
     # Step 22: Size the core of the turbofan  
-    size_core(turbofan,conditions) 
-    
-     # Step 23: Static Sea Level Thrust  
-    atmosphere            = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
+    size_core(turbofan,conditions)  
+
+    # Step 23: Static Sea Level Thrust  
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
-    static_sea_level_speed= atmo_data_sea_level.speed_of_sound[0][0]*0.01 
-     
-    dummy_turbofan         = deepcopy(turbofan) # create copy of propulsor so that original is not modified 
-    dummy_turbofan.assigned_distributors = [[fuel_line.tag]]
-    
-    # set up operating conditions for 
-    operating_state       = setup_operating_conditions(dummy_turbofan,fuel_line,velocity_range=np.array([static_sea_level_speed]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
-    operating_state.conditions.energy.propulsors[dummy_turbofan.tag].throttle[:,0] = 1.0   
-    
-    # compute propulsor performance
+    V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
+    operating_state       = setup_operating_conditions(turbofan,fuel_line,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
+    operating_state.conditions.energy.propulsors[turbofan.tag].throttle[:,0] = 1.0  
     operating_state.unknowns.network['electrical_power'] = np.array([[design_power_offtake]])
-    inputs,outputs,_,_                     = dummy_turbofan.compute_performance(operating_state,dummy_network)
-    
-    # store values  
+    inputs,outputs,_,_                     = turbofan.compute_performance(operating_state,dummy_network) 
     turbofan.sealevel_static_thrust        = outputs.thrust[0][0]
     turbofan.sealevel_static_power         = outputs.power.propulsive[0][0]
     turbofan.design_power                  = design_power_offtake
-     
+ 
     return 

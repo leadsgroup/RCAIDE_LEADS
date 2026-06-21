@@ -221,23 +221,16 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     core_nozzle_conditions  = conditions.energy.converters[core_nozzle.tag]
     fan_nozzle_conditions   = conditions.energy.converters[fan_nozzle.tag]    
  
- 
-    # Set the electrical power output of the turbofan based on the specified power split for hybrid systems. This is used to determine how much power is generated or consumed by electric components in the engine (e.g., electric motors or generators associated with the fan or compressors).
-    if type(network) == RCAIDE.Framework.Networks.Fuel: 
-        P_elec = state.unknowns.network['electrical_power'] 
-        turbofan_conditions.outputs.power.electrical = P_elec  
-    else:
-        P_elec =  state.unknowns.network['electrical_power'] *(1 - state.conditions.energy.hybrid_power_split_ratio)
-        turbofan_conditions.inputs.power.electrical = P_elec   
-
-    external_shaft_work       =  0*state.ones_row(1)  
-
     # ----------------------------------------------------------------------------
     # Compute Externally Supplied/Delivered Shaft Power from Electric Motors or Generators
-    # ----------------------------------------------------------------------------
-    
+    # ---------------------------------------------------------------------------- 
+    external_shaft_work       =  0*state.ones_row(1)  
+
     # compute electrical power if generated/supplied   
-    if integrated_drive_motor != None and  len(state.numerics.time.differentiate) > 0:   
+    if integrated_drive_motor != None and  len(state.numerics.time.differentiate) > 0:  
+         
+        turbofan_conditions.inputs.power.electrical =  state.unknowns.network['electrical_power'] *(1 - state.conditions.energy.hybrid_power_split_ratio)
+  
         # compute power produced by the generator    
         compressor_motor_conditions                 = conditions.energy.converters[integrated_drive_motor.tag] 
         compressor_motor_conditions.outputs.power   = turbofan_conditions.inputs.power.electrical     
@@ -248,7 +241,9 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
         # net power delivered to the shaft is negative since this is a motor delivering power
         external_shaft_work -= outputs.power.electrical
             
-    if integrated_drive_generator != None and len(state.numerics.time.differentiate) > 0: 
+    if integrated_drive_generator != None and len(state.numerics.time.differentiate) > 0:  
+        turbofan_conditions.outputs.power.electrical =  state.unknowns.network['electrical_power'] 
+
         # compute power produced by the generator    
         IDG_conditions                           = conditions.energy.converters[integrated_drive_generator.tag] 
         IDG_conditions.outputs.power.electrical  = turbofan_conditions.outputs.power.electrical 
