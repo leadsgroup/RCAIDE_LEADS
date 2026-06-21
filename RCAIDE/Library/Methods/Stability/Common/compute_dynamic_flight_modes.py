@@ -256,6 +256,7 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
             spiralFreqHz                = np.atleast_2d(abs(remaining_modes[Ind,spiralInd]) / 2 / np.pi).T
             spiralDamping               = np.atleast_2d(- np.sign(remaining_modes[Ind,spiralInd].real)).T
             spiralTimeDoubleHalf        = np.log(2) / abs(2 * np.pi * spiralFreqHz  * spiralDamping)
+            print(f"Made it through Lateral Flight Modes without yeeting the code, proof: spiral doubling time is {spiralTimeDoubleHalf}")
         except:
             pass 
         
