@@ -33,7 +33,7 @@ def main():
         carpet_plot_data =generate_carpet_plot(problem,
                     design_input_1_index            = 0, 
                     design_input_2_index            = 1,                
-                    number_of_points                = 5,
+                    number_of_points                = 3,
                     generate_objective_plot         = True, 
                     objective_plot_constraint_index = 0, 
                     generate_constraint_plots       = True)
