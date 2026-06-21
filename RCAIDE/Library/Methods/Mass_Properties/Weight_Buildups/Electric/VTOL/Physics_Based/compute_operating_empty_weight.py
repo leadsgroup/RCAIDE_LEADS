@@ -143,9 +143,15 @@ def compute_operating_empty_weight(vehicle,settings = None):
         maxVTip                = 0
         eta                    = 0
         for network in vehicle.networks:
-            for system in network.systems: 
+            for system in network.systems:
                 if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Avionics:
-                    weight.avionics += system.mass_properties.mass * Units.kg   
+                    weight.avionics += system.mass_properties.mass * Units.kg
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls:
+                    system.mass_properties.mass = weight.ECS
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Electrical:
+                    system.mass_properties.mass = weight.wiring
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Furnishings:
+                    system.mass_properties.mass = weight.seats
          
             #-------------------------------------------------------------------------------
             # Powertain 
@@ -287,7 +293,7 @@ def compute_operating_empty_weight(vehicle,settings = None):
         for fuse in  vehicle.fuselages:
             fuselage_weight = EVTOL.compute_fuselage_weight(fuse, maxSpan, MTOW )
             fuse.mass_properties.center_of_gravity[0][0] = .45*fuse.lengths.total
-            fuse.mass_properties.mass                    =  fuselage_weight + weight.passengers + weight.seats + weight.wiring + weight.BRS
+            fuse.mass_properties.mass                    =  fuselage_weight
             weight.fuselage += fuselage_weight
 
         #-------------------------------------------------------------------------------

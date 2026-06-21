@@ -7,14 +7,11 @@
 # cg_and_moi_test.py
 
 from RCAIDE.Framework.Core                                     import Units
-from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_vehicle_moment_of_inertia
-from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_vehicle_center_of_gravity
 from RCAIDE.Library.Methods.Geometry.Planform                  import wing_planform
 from RCAIDE.Library.Mission.Common.Pre_Process                 import geometry, mass_properties
 import numpy as  np
 import RCAIDE
-import pandas as pd
-import sys   
+import sys
 import os
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -83,220 +80,154 @@ def BWB_Test():
     fuel_tank_2.gravimetric_efficiency        = 0.5
     fuel_tank_2.xz_plane_symmetric            = False
     fuel_tank_2.orientation_euler_angles      = [0,0,np.pi/2]
-    fuel_tank_2.transverse_tank                  = True
-    fuel_tank_2.transverse_tank_chord_bounds    = [0.65,0.9]
-    fuel_tank_2.transverse_tank_segment_bound        = 'fuel_wall'
+    fuel_tank_2.transverse_tank               = True
+    fuel_tank_2.transverse_tank_chord_bounds  = [0.65,0.9]
+    fuel_tank_2.transverse_tank_segment_bound = 'fuel_wall'
     fuel_tank_2.radial_offset                 = 0.2
 
     fuel_line.fuel_tanks.append(fuel_tank_2)
-  
+   
+    # define configs, analyses, and mission for the BWB test
     configs  = configs_setup(vehicle)
-    analyses = analyses_setup(configs)
-    for analysis in analyses:
-        analysis.geometry.settings.compute_fuel_volume = True
-        analysis.geometry.settings.update_max_fuel = True
-    mission  = mission_setup(analyses)
-
+    analyses = BWB_analyses_setup(configs) 
+    mission  = mission_setup(analyses) 
+    
+    # run geometry and mass properties analyses to get CG and MOI results for the BWB test
     geometry(mission)   
     mass_properties(mission)
 
-    truth_moi = np.array([[ 3718367.96918734,  1216717.45388673,  -863389.64087765],
-                          [ 1216717.45388673, 13846625.03183943,    52136.11018868],
-                          [ -863389.64087765,    52136.11018868, 16391915.29983849]])
-    computed_moi = mission.segments[0].analyses.vehicle.mass_properties.moments_of_inertia.tensor
-    error_matrix = abs((computed_moi - truth_moi) / truth_moi)
-    assert np.all(error_matrix < 1e-2),\
+    mission_vehicle = mission.segments[0].analyses.vehicle
+    computed_moi    = mission_vehicle.mass_properties.moments_of_inertia.tensor
+
+    print("\n\nBWB Aircraft Test Results:")
+    print('BWB  OEW CG: ' + str(mission_vehicle.mass_properties.operating_empty_center_of_gravity))
+    print('BWB  OEW CG Mass Percentage: ' + str(mission_vehicle.mass_properties.OEW_CG_mass_percentage) + ' %')
+    print('BWB  Moment of Inertia')
+    print(computed_moi)
+    truth_OEW_CG_mass_percentage = 99.34
+    truth_moi = np.array([[ 3718367.96918734,  1217750.86758788,  -863024.23812853],
+                          [ 1217750.86758788, 13844895.97177752,    52136.11018868],
+                          [ -863024.23812853,    52136.11018868, 16390186.23977657]])
+
+    error_moi = abs((computed_moi - truth_moi) / truth_moi)
+    assert np.all(error_moi < 1e-2),\
         f"MOI tensor mismatch.\nExpected:\n{truth_moi}\nGot:\n{computed_moi}"
 
+    error_pct = abs(mission_vehicle.mass_properties.OEW_CG_mass_percentage - truth_OEW_CG_mass_percentage)
+    assert error_pct < 0.1,\
+        f"OEW CG mass percentage mismatch. Expected: {truth_OEW_CG_mass_percentage}%, Got: {mission_vehicle.mass_properties.OEW_CG_mass_percentage}%"
+
+    print("****************************************************************")
     return
 
 def Transport_Aircraft_Test():
-    vehicle = transport_setup()
-    for wing in vehicle.wings: 
-        wing_planform(wing) 
+    vehicle = transport_setup() 
 
-    # update fuel weight to 60%
-    vehicle.networks.fuel.fuel_lines.fuel_line.fuel_tanks.integral_tank.fuel.mass_properties.mass = 0.6 * vehicle.networks.fuel.fuel_lines.fuel_line.fuel_tanks.integral_tank.fuel.mass_properties.mass
-    vehicle.mass_properties.fuel = 0.6 * vehicle.networks.fuel.fuel_lines.fuel_line.fuel_tanks.integral_tank.fuel.mass_properties.mass
-    # ------------------------------------------------------------------
-    #   Weight Breakdown 
-    # ------------------------------------------------------------------  
-    weight_analysis                               = RCAIDE.Framework.Analyses.Weights.Conventional_Transport()
-    weight_analysis.aircraft_type                 = "Transport" 
-    weight_analysis.method                        = 'Raymer'
-    weight_analysis.settings.use_max_fuel_weight  = False  
-    weight_analysis.settings.cargo_doors_number   = 2
-    weight_analysis.settings.cargo_doors_clamshell= True
-    results                                       = weight_analysis.evaluate(vehicle) 
-
-    # ------------------------------------------------------------------
-    #   CG Location
-    # ------------------------------------------------------------------  
-    centre_of_gravity_df = pd.DataFrame(columns=[
-    "Component",
-    "Mass (kg)",
-    "CG x (m)",
-    "CG y (m)",
-    "CG z (m)"
-    ])
-    verbose_flag = False
-    CG_location,_, _, centre_of_gravity_df = compute_vehicle_center_of_gravity(vehicle,centre_of_gravity_df,
-                                            overwrite_center_of_gravity =  True ,
-                                            verbose=verbose_flag)     
-
-    # ------------------------------------------------------------------
-    #   Operating Aircraft MOI
-    # ------------------------------------------------------------------ 
- 
-    moment_of_inertia_df = pd.DataFrame(columns=[
-    "Component",
-    "Mass (kg)",
-    "Ixx (kg·m²)",
-    "Iyy (kg·m²)",
-    "Izz (kg·m²)",
-    "Ixy (kg·m²)",
-    "Ixz (kg·m²)",
-    "Iyz (kg·m²)",
-    ])
-    overwrite_MOI = True
-    verbose_flag = False
-    MOI ,moment_of_inertia_df = compute_vehicle_moment_of_inertia(vehicle,moment_of_inertia_df,
-                                        overwrite_moment_of_intertia = overwrite_MOI,
-                                        verbose=verbose_flag)   
+    # define configs, analyses, and mission for the BWB test
+    configs  = configs_setup(vehicle)
+    analyses = Transport_analyses_setup(configs) 
+    mission  = mission_setup(analyses) 
     
-    print(vehicle.tag + ' Moment of Inertia')
-    print(MOI) 
-    accepted  = np.array([[ 1.47817494e+07,  0.00000000e+00, -7.74146166e+06],
-                          [ 0.00000000e+00,  5.86064098e+07,  0.00000000e+00],
-                          [-7.74146166e+06,  0.00000000e+00,  5.32287420e+07]])
+    # run geometry and mass properties analyses to get CG and MOI results
+    geometry(mission)
+    mass_properties(mission)
 
-    error_matrix = abs((MOI - accepted) / np.where(accepted != 0, accepted, 1))
-    assert np.all(error_matrix < 1e-6),\
-        f"MOI tensor mismatch.\nExpected:\n{accepted}\nGot:\n{MOI}"
+    mission_vehicle = mission.segments[0].analyses.vehicle
+    MOI = mission_vehicle.mass_properties.moments_of_inertia.tensor
+
+    print("\n\n Transport Aircraft Test Results:")
+    print('Transport OEW CG: ' + str(mission_vehicle.mass_properties.operating_empty_center_of_gravity))
+    print('Transport OEW CG Mass Percentage: ' + str(mission_vehicle.mass_properties.OEW_CG_mass_percentage) + ' %')
+    print('Transport Moment of Inertia')
+    print(MOI)
+
+    truth_OEW_CG_mass_percentage = 93.47
+    truth_moi  = np.array([[ 6.84032042e+06, -3.70666165e-10, -9.20276404e+05],
+                           [-3.70666165e-10,  4.93390771e+07,  1.39407158e-10],
+                           [-9.20276404e+05,  1.39407158e-10,  5.19215368e+07]])
+
+    error_moi = abs((MOI - truth_moi) / np.where(truth_moi != 0, truth_moi, 1))
+    assert np.all(error_moi < 1e-6),\
+        f"MOI tensor mismatch.\nExpected:\n{truth_moi}\nGot:\n{MOI}"
+
+    error_pct = abs(mission_vehicle.mass_properties.OEW_CG_mass_percentage - truth_OEW_CG_mass_percentage)
+    assert error_pct < 0.1,\
+        f"OEW CG mass percentage mismatch. Expected: {truth_OEW_CG_mass_percentage}%, Got: {mission_vehicle.mass_properties.OEW_CG_mass_percentage}%"
+
+    print("****************************************************************")
 
     return
 
-def General_Aviation_Test(): 
-    # ------------------------------------------------------------------
-    #   Weight Breakdown 
-    # ------------------------------------------------------------------  
-    weight_analysis               = RCAIDE.Framework.Analyses.Weights.Conventional_General_Aviation() 
-    vehicle                       = general_aviation_setup() 
-    for wing in vehicle.wings: 
-        wing_planform(wing) 
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
-            vehicle.reference_area = wing.areas.reference 
-    results                       = weight_analysis.evaluate(vehicle) 
+def General_Aviation_Test():
+    vehicle = general_aviation_setup()
 
-    # ------------------------------------------------------------------
-    #   CG Location
-    # ------------------------------------------------------------------    
-    centre_of_gravity_df = pd.DataFrame(columns=[
-    "Component",
-    "Mass (kg)",
-    "CG x (m)",
-    "CG y (m)",
-    "CG z (m)"
-    ])
-    verbose_flag = False
-    CG_location,_, _, centre_of_gravity_df = compute_vehicle_center_of_gravity(vehicle,centre_of_gravity_df,
-                                            overwrite_center_of_gravity =  True ,
-                                            verbose=verbose_flag)   
+    # define configs, analyses, and mission
+    configs  = configs_setup(vehicle)
+    analyses = GA_analyses_setup(configs) 
+    mission  = mission_setup(analyses) 
+    
+    # run geometry and mass properties analyses to get CG and MOI results
+    geometry(mission)
+    mass_properties(mission)
 
-    # ------------------------------------------------------------------
-    #   Operating Aircraft MOI
-    # ------------------------------------------------------------------    
-    moment_of_inertia_df = pd.DataFrame(columns=[
-    "Component",
-    "Mass (kg)",
-    "Ixx (kg·m²)",
-    "Iyy (kg·m²)",
-    "Izz (kg·m²)",
-    "Ixy (kg·m²)",
-    "Ixz (kg·m²)",
-    "Iyz (kg·m²)",
-    ])
-    overwrite_MOI = True
-    verbose_flag = False
-    MOI ,moment_of_inertia_df = compute_vehicle_moment_of_inertia(vehicle,moment_of_inertia_df,
-                                        overwrite_moment_of_intertia = overwrite_MOI,
-                                        verbose=verbose_flag)   
+    mission_vehicle = mission.segments[0].analyses.vehicle
+    MOI = mission_vehicle.mass_properties.moments_of_inertia.tensor
 
-    print(vehicle.tag + ' Moment of Inertia')
+    print("\n\nGeneral Aviation Test Results:")
+    print('GA OEW CG: ' + str(mission_vehicle.mass_properties.operating_empty_center_of_gravity))
+    print('GA OEW CG Mass Percentage: ' + str(mission_vehicle.mass_properties.OEW_CG_mass_percentage) + ' %')
+    print('GA Moment of Inertia')
     print(MOI)
 
-    accepted  = np.array([[2213.58651621,    0.        , -100.21249467],
-                          [   0.        , 4772.52702827,    0.        ],
-                          [-100.21249467,    0.        , 2756.61446524]])
+    truth_OEW_CG_mass_percentage = 98.78
+    truth_moi  = np.array([[ 3.74934496e+02, -6.95403814e-15, -4.00441102e+01],
+                           [-6.95403814e-15,  3.75654482e+03, -6.13259031e-15],
+                           [-4.00441102e+01, -6.13259031e-15,  3.58247327e+03]])
 
-    error_matrix = abs(MOI - accepted)
-    assert np.all(error_matrix < 1e-5),\
-        f"MOI tensor mismatch.\nExpected:\n{accepted}\nGot:\n{MOI}"
+    error_moi = abs(MOI - truth_moi)
+    assert np.all(error_moi < 1e-5),\
+        f"MOI tensor mismatch.\nExpected:\n{truth_moi}\nGot:\n{MOI}"
 
+    error_pct = abs(mission_vehicle.mass_properties.OEW_CG_mass_percentage - truth_OEW_CG_mass_percentage)
+    assert error_pct < 0.1,\
+        f"OEW CG mass percentage mismatch. Expected: {truth_OEW_CG_mass_percentage}%, Got: {mission_vehicle.mass_properties.OEW_CG_mass_percentage}%"
+
+    print("****************************************************************")
     return
 
 def EVTOL_Aircraft_Test(update_regression_values):
     vehicle = EVTOL_setup(update_regression_values)
-    for wing in vehicle.wings: 
-        wing_planform(wing) 
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
-            vehicle.reference_area = wing.areas.reference
-    # ------------------------------------------------------------------
-    #   Weight Breakdown 
-    # ------------------------------------------------------------------  
-    weight_analysis          = RCAIDE.Framework.Analyses.Weights.Electric_VTOL()
-    weight_analysis.method    = 'Physics_Based'
-    weight_analysis.aircraft_type = 'VTOL'
-    weight_analysis.settings.safety_factor               = 1.5    
-    weight_analysis.settings.miscelleneous_weight_factor = 1.1 
-    weight_analysis.settings.disk_area_factor            = 1.15
-    weight_analysis.settings.max_thrust_to_weight_ratio  = 1.1
-    weight_analysis.settings.max_g_load                  = 3.8 
-    results                                              = weight_analysis.evaluate(vehicle) 
+    configs  = configs_setup(vehicle)
+    analyses = EVTOL_analyses_setup(configs)
+    mission  = mission_setup(analyses) 
+    
+    # run geometry and mass properties analyses to get CG and MOI results
+    geometry(mission)
+    mass_properties(mission)
 
-    # ------------------------------------------------------------------
-    #   CG Location
-    # ------------------------------------------------------------------    
-    centre_of_gravity_df = pd.DataFrame(columns=[
-    "Component",
-    "Mass (kg)",
-    "CG x (m)",
-    "CG y (m)",
-    "CG z (m)"
-    ])
-    verbose_flag = False
-    CG_location,_, _, centre_of_gravity_df = compute_vehicle_center_of_gravity(vehicle,centre_of_gravity_df,
-                                            overwrite_center_of_gravity =  True ,
-                                            verbose=verbose_flag)   
+    mission_vehicle = mission.segments[0].analyses.vehicle
+    MOI = mission_vehicle.mass_properties.moments_of_inertia.tensor
 
-    # ------------------------------------------------------------------
-    #   Operating Aircraft MOI
-    # ------------------------------------------------------------------    
-    moment_of_inertia_df = pd.DataFrame(columns=[
-    "Component",
-    "Mass (kg)",
-    "Ixx (kg·m²)",
-    "Iyy (kg·m²)",
-    "Izz (kg·m²)",
-    "Ixy (kg·m²)",
-    "Ixz (kg·m²)",
-    "Iyz (kg·m²)",
-    ])
-    overwrite_MOI = True
-    verbose_flag = False
-    MOI ,moment_of_inertia_df = compute_vehicle_moment_of_inertia(vehicle,moment_of_inertia_df,
-                                        overwrite_moment_of_intertia = overwrite_MOI,
-                                        verbose=verbose_flag)   
+    print("\n\nEVTOL Aircraft Test Results:")
+    print('EVTOL OEW CG: ' + str(mission_vehicle.mass_properties.operating_empty_center_of_gravity))
+    print('EVTOL OEW CG Mass Percentage: ' + str(mission_vehicle.mass_properties.OEW_CG_mass_percentage) + ' %')
+    print('EVTOL Moment of Inertia')
+    print(MOI)
 
-    print(vehicle.tag + ' Moment of Inertia')
-    print(MOI) 
-    accepted  = np.array([[ 9445.05900029,  -432.23307422,  -317.48560422],
-                          [ -432.23307422,  9878.2899165 ,  -101.09561206],
-                          [ -317.48560422,  -101.09561206, 17535.02150018]])
-    error_matrix = abs((MOI - accepted) / accepted)
-    assert np.all(error_matrix < 5e-2),\
-        f"MOI tensor mismatch.\nExpected:\n{accepted}\nGot:\n{MOI}"
+    truth_OEW_CG_mass_percentage = 86.35
+    truth_moi  = np.array([[ 9365.33138772,  -447.36598313,  -417.23458308],
+                           [ -447.36598313,  9136.88871098,   -99.75208906],
+                           [ -417.23458308,   -99.75208906, 16740.10553482]])
 
+    error_moi = abs((MOI - truth_moi) / truth_moi)
+    assert np.all(error_moi < 5e-2),\
+        f"MOI tensor mismatch.\nExpected:\n{truth_moi}\nGot:\n{MOI}"
+
+    error_pct = abs(mission_vehicle.mass_properties.OEW_CG_mass_percentage - truth_OEW_CG_mass_percentage)
+    assert error_pct < 0.1,\
+        f"OEW CG mass percentage mismatch. Expected: {truth_OEW_CG_mass_percentage}%, Got: {mission_vehicle.mass_properties.OEW_CG_mass_percentage}%"
+
+    print("****************************************************************")
     return
 
 def configs_setup(vehicle):
@@ -313,7 +244,7 @@ def configs_setup(vehicle):
     configs.append(base_config)
     return configs
 
-def analyses_setup(configs):
+def BWB_analyses_setup(configs):
     """Set up analyses for each of the different configurations."""
 
     analyses = RCAIDE.Framework.Analyses.Analysis.Container()
@@ -321,12 +252,51 @@ def analyses_setup(configs):
     # Build a base analysis for each configuration. Here the base analysis is always used, but
     # this can be modified if desired for other cases.
     for tag,config in configs.items():
-        analysis = base_analysis(config)
+        analysis = BWB_base_analysis(config)
         analyses[tag] = analysis
 
     return analyses
 
-def base_analysis(vehicle):
+def Transport_analyses_setup(configs):
+    """Set up analyses for each of the different configurations."""
+
+    analyses = RCAIDE.Framework.Analyses.Analysis.Container()
+
+    # Build a base analysis for each configuration. Here the base analysis is always used, but
+    # this can be modified if desired for other cases.
+    for tag,config in configs.items():
+        analysis = Transport_base_analysis(config)
+        analyses[tag] = analysis
+
+    return analyses
+
+def GA_analyses_setup(configs):
+    """Set up analyses for each of the different configurations."""
+
+    analyses = RCAIDE.Framework.Analyses.Analysis.Container()
+
+    # Build a base analysis for each configuration. Here the base analysis is always used, but
+    # this can be modified if desired for other cases.
+    for tag,config in configs.items():
+        analysis = GA_base_analysis(config)
+        analyses[tag] = analysis
+
+    return analyses
+
+def EVTOL_analyses_setup(configs):
+    """Set up analyses for each of the different configurations."""
+
+    analyses = RCAIDE.Framework.Analyses.Analysis.Container()
+
+    # Build a base analysis for each configuration. Here the base analysis is always used, but
+    # this can be modified if desired for other cases.
+    for tag,config in configs.items():
+        analysis = EVTOL_base_analysis(config)
+        analyses[tag] = analysis
+
+    return analyses
+
+def BWB_base_analysis(vehicle):
     """This is the baseline set of analyses to be used with this vehicle. Of these, the most
     commonly changed are the weights and aerodynamics methods."""
 
@@ -340,20 +310,127 @@ def base_analysis(vehicle):
     #  Geometry
     # ------------------------------------------------------------------
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
+    geometry.settings.compute_fuel_volume = True
+    geometry.settings.update_max_fuel = True
     analyses.append(geometry)
     
 
     # ------------------------------------------------------------------
     #  Weights
+    # ------------------------------------------------------------------
     weights = RCAIDE.Framework.Analyses.Weights.Conventional_BWB() 
     weights.aircraft_type                                                    = 'BWB'
     weights.settings.FLOPS.fidelity                                          = 'Complex' 
     weights.settings.run_weights_analysis                                    = True
     weights.settings.run_center_of_gravity_analysis                          = True
     weights.settings.run_moments_of_inertia_analysis                         = True
+    weights.print_weight_analysis_report                  = False
     analyses.append(weights)
 
     return analyses  
+
+
+def Transport_base_analysis(vehicle):
+    """This is the baseline set of analyses to be used with this vehicle. Of these, the most
+    commonly changed are the weights and aerodynamics methods."""
+
+    # ------------------------------------------------------------------
+    #   Initialize the Analyses
+    # ------------------------------------------------------------------     
+    analyses = RCAIDE.Framework.Analyses.Vehicle()
+    analyses.vehicle = vehicle
+
+    # ------------------------------------------------------------------
+    #  Geometry
+    # ------------------------------------------------------------------
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
+    geometry.settings.compute_fuel_volume = True
+    geometry.settings.update_max_fuel = False
+    analyses.append(geometry) 
+
+    # ------------------------------------------------------------------
+    #  Weights
+    # ------------------------------------------------------------------ 
+    weights                                              = RCAIDE.Framework.Analyses.Weights.Conventional_Transport()
+    weights.aircraft_type                                = "Transport"
+    weights.method                                       = 'Raymer'
+    weights.settings.use_max_fuel_weight                 = False
+    weights.settings.cargo_doors_number                  = 2
+    weights.settings.cargo_doors_clamshell               = True
+    weights.settings.run_weights_analysis                = True
+    weights.settings.run_center_of_gravity_analysis      = True
+    weights.settings.run_moments_of_inertia_analysis     = True
+    weights.print_weight_analysis_report                  = False
+    analyses.append(weights)
+
+    return analyses
+
+
+def GA_base_analysis(vehicle):
+    """This is the baseline set of analyses to be used with this vehicle. Of these, the most
+    commonly changed are the weights and aerodynamics methods."""
+
+    # ------------------------------------------------------------------
+    #   Initialize the Analyses
+    # ------------------------------------------------------------------     
+    analyses = RCAIDE.Framework.Analyses.Vehicle()
+    analyses.vehicle = vehicle
+
+    # ------------------------------------------------------------------
+    #  Geometry
+    # ------------------------------------------------------------------
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()  
+    analyses.append(geometry) 
+
+    # ------------------------------------------------------------------
+    #  Weights
+    # ------------------------------------------------------------------   
+    weights = RCAIDE.Framework.Analyses.Weights.Conventional_General_Aviation()
+    weights.settings.run_weights_analysis                = True
+    weights.settings.run_center_of_gravity_analysis      = True
+    weights.settings.run_moments_of_inertia_analysis     = True
+    weights.print_weight_analysis_report                  = False
+    analyses.append(weights)
+
+    return analyses
+
+
+def EVTOL_base_analysis(vehicle):
+    """This is the baseline set of analyses to be used with this vehicle. Of these, the most
+    commonly changed are the weights and aerodynamics methods."""
+
+    # ------------------------------------------------------------------
+    #   Initialize the Analyses
+    # ------------------------------------------------------------------     
+    analyses = RCAIDE.Framework.Analyses.Vehicle()
+    analyses.vehicle = vehicle
+
+    # ------------------------------------------------------------------
+    #  Geometry
+    # ------------------------------------------------------------------
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()  
+    analyses.append(geometry) 
+
+    # ------------------------------------------------------------------
+    #  Weights
+    # ------------------------------------------------------------------  
+    weights                                              = RCAIDE.Framework.Analyses.Weights.Electric_VTOL()
+    weights.method                                       = 'Physics_Based'
+    weights.aircraft_type                                = 'VTOL'
+    weights.settings.safety_factor                       = 1.5
+    weights.settings.miscelleneous_weight_factor         = 1.1
+    weights.settings.disk_area_factor                    = 1.15
+    weights.settings.max_thrust_to_weight_ratio          = 1.1
+    weights.settings.max_g_load                          = 3.8
+    weights.settings.run_weights_analysis                = True
+    weights.settings.run_center_of_gravity_analysis      = True
+    weights.settings.run_moments_of_inertia_analysis     = True
+    weights.print_weight_analysis_report                  = False
+    analyses.append(weights)
+
+    return analyses
+
+
 
 def mission_setup(analyses):
 

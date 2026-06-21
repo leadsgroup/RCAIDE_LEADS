@@ -291,24 +291,26 @@ class Vehicle_Mass_Properties(Components.Mass_Properties):
                 None
             """         
 
-        self.tag                         = 'mass_properties'
-        self.operating_empty             = None
-        self.max_takeoff                 = None
-        self.takeoff                     = None
-        self.max_landing                 = None
-        self.landing                     = None
-        self.max_cargo                   = None
-        self.cargo                       = 0
-        self.max_payload                 = 0 
-        self.min_payload                 = 0 
-        self.payload                     = 0
-        self.passenger                   = None
-        self.crew                        = None
-        self.max_fuel                    = None
-        self.fuel                        = 0
-        self.max_zero_fuel               = None
-        self.center_of_gravity           = [[0.0,0.0,0.0]]
-        self.zero_fuel_center_of_gravity = np.array([[0.0,0.0,0.0]])    
+        self.tag                                    = 'mass_properties'
+        self.operating_empty                        = None
+        self.max_takeoff                            = None
+        self.takeoff                                = None
+        self.max_landing                            = None
+        self.landing                                = None
+        self.max_cargo                              = None
+        self.cargo                                  = 0
+        self.max_payload                            = 0 
+        self.min_payload                            = 0 
+        self.payload                                = 0
+        self.passenger                              = None
+        self.crew                                   = None
+        self.max_fuel                               = None
+        self.fuel                                   = 0
+        self.max_zero_fuel                          = None
+        self.center_of_gravity                      = [[0.0,0.0,0.0]]
+        self.zero_fuel_center_of_gravity            = [[0.0,0.0,0.0]]
+        self.operating_empty_center_of_gravity      = [[0.0,0.0,0.0]]
+        self.OEW_CG_mass_percentage                 = 0.0    
         
 class Vehicle_Mass_Container(Components.Component.Container,Vehicle_Mass_Properties):
         

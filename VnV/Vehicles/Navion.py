@@ -267,7 +267,7 @@ def vehicle_setup():
     fuselage.areas.wetted                       = 12. 
     fuselage.areas.front_projected              = fuselage.width*fuselage.heights.maximum
     fuselage.effective_diameter                 = 1.22028016  
-    fuselage.operational_items.origin            = [[2.5, 0, 0]]
+    fuselage.operational_items.origin           = [[2.5, 0, 0]]
 
     # Segment
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
@@ -349,10 +349,8 @@ def vehicle_setup():
 
     #------------------------------------------------------------------------------------------------------------------------------------
     # Avionics
-    #------------------------------------------------------------------------------------------------------------------------------------
-    Wuav                                        = 2. * Units.lbs
-    avionics                                    = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.mass_properties.uninstalled        = Wuav
+    #------------------------------------------------------------------------------------------------------------------------------------ 
+    avionics                                    = RCAIDE.Library.Components.Powertrain.Systems.Avionics() 
     avionics.origin                             = [[1.5, 0, 0]]
     net.systems.append(avionics)
 

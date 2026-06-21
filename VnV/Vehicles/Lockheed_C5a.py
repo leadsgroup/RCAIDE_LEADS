@@ -325,6 +325,7 @@ def vehicle_setup():
     fuselage.heights.at_quarter_length          = 8.0 * Units.meter
     fuselage.heights.at_three_quarters_length   = 6.75 * Units.meter
     fuselage.heights.at_wing_root_quarter_chord = 8.1 * Units.meter
+    fuselage.operational_items.origin           = [[10.0, 0, 5.0]]
     
     # Segment  
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment() 
@@ -503,15 +504,6 @@ def vehicle_setup():
     nose_gear.number_of_gear_types_in_tandem = 1
     nose_gear.number_of_wheels_in_gear_type  = 4 
     vehicle.append_component(nose_gear)
-    
-      
-  
-  
-  
-  
-  
-  
-  
   
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Turbofan Network
@@ -519,6 +511,38 @@ def vehicle_setup():
     #initialize the gas turbine network
     net                                         = RCAIDE.Framework.Networks.Fuel() 
     
+
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Avionics
+    #------------------------------------------------------------------------------------------------------------------------------------ 
+    avionics                                    = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
+    avionics.origin                             = [[4.0, 0, 1.0]]
+    net.systems.append(avionics)
+
+    flight_controls                             = RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
+    flight_controls.origin                      = [[28.0, 0, 2.0]]
+    net.systems.append(flight_controls)
+
+    electrical                                  = RCAIDE.Library.Components.Powertrain.Systems.Electrical()
+    electrical.origin                           = [[24.0, 0, 2.0]]
+    net.systems.append(electrical)
+
+    hydraulics                                  = RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
+    hydraulics.origin                           = [[26.0, 0, 1.5]]
+    net.systems.append(hydraulics)
+
+    environmental_controls                      = RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
+    environmental_controls.origin               = [[16.0, 0, 0.5]]
+    net.systems.append(environmental_controls)
+
+    instruments                                 = RCAIDE.Library.Components.Powertrain.Systems.Instruments()
+    instruments.origin                          = [[3.0, 0, 5.5]]
+    net.systems.append(instruments)
+
+    furnishings                                 = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
+    furnishings.origin                          = [[12.0, 0, 5.0]]
+    net.systems.append(furnishings)
+
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Fuel Distrubition Line 
     #------------------------------------------------------------------------------------------------------------------------------------  
@@ -527,18 +551,18 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Fuel Tank & Fuel
     #------------------------------------------------------------------------------------------------------------------------------------   
-    fuel_tank                                   = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)
-    fuel_tank.origin                            = [[23.0,0,3.913]] # vehicle.wings.main_wing.origin   
-    fuel_tank.mass_properties.center_of_gravity = [[23.0,0,3.913]] #vehicle.wings.main_wing.mass_properties.center_of_gravity    
-    
-    # fuel 
-    fuel                                        = RCAIDE.Library.Attributes.Propellants.Jet_A1()   
-    fuel.mass_properties.mass                   = fuel_percentage * vehicle.mass_properties.max_fuel
-    fuel.origin                                 = [[23.0,0,3.913]]# vehicle.wings.main_wing.origin    
-    fuel.mass_properties.center_of_gravity      = [[23.0,0,3.913]] #vehicle.wings.main_wing.mass_properties.center_of_gravity 
-    fuel_tank.fuel                              = fuel 
-    fuel_line.fuel_tanks.append(fuel_tank) 
-    
+    fuel_tank_1                                   = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing) 
+    fuel_tank_1.tag                               = 'main_wing_inboard_fuel_tank'
+    fuel_tank_1.segments_bounding_tank            = ['root', 'yehudi']   
+    fuel_tank_1.fuel                              = RCAIDE.Library.Attributes.Propellants.Jet_A1()  
+    fuel_line.fuel_tanks.append(fuel_tank_1) 
+
+    fuel_tank_2                                   = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing) 
+    fuel_tank_2.tag                               = 'main_wing_outboard_fuel_tank'
+    fuel_tank_2.segments_bounding_tank            = ['yehudi', 'tip']   
+    fuel_tank_2.fuel                              = RCAIDE.Library.Attributes.Propellants.Jet_A1()  
+    fuel_line.fuel_tanks.append(fuel_tank_2) 
+     
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Propulsor
@@ -546,7 +570,7 @@ def vehicle_setup():
     turbofan                                        = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
     turbofan.tag                                    = 'outer_starboard_propulsor' 
     turbofan.origin                                 = [[26.429, 17.6, 0.2]] 
-    turbofan.length                          = 7.92    
+    turbofan.length                                 = 7.92    
     turbofan.bypass_ratio                           = 8  
     turbofan.design_altitude                        = 0*Units.ft
     turbofan.design_mach_number                     = 0.01
