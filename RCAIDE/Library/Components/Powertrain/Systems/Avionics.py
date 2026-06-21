@@ -57,3 +57,4 @@ class Avionics(Systems):
         Sets default values for the avionics system attributes.
         """                  
         self.tag        = 'Avionics'
+        self.uninstalled_mass = 0.0

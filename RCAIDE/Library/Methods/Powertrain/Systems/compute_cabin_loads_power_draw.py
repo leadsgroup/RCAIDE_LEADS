@@ -6,7 +6,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------    
 # package imports
-def compute_cabin_loads_power_draw(cabin_loads,vehicle,bus,state):
+def compute_cabin_loads_power_draw(cabin_loads,vehicle,state,bus):
     """
     Computes the power draw of a cabin loads system.
     

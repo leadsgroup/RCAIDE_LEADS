@@ -58,6 +58,6 @@ class Flight_Controls(Systems):
         """                  
         self.tag        = 'Flight_Controls' 
 
-    def compute_performance(self, vehicle, segment, bus):
-        compute_flight_controls_power_draw(self, vehicle, segment, bus)
+    def compute_performance(self, vehicle,state,bus):
+        compute_flight_controls_power_draw(self, vehicle,state,bus)
         return

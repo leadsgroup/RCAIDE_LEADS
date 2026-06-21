@@ -141,10 +141,10 @@ def Transport_Aircraft_Test():
     print('Transport Moment of Inertia')
     print(MOI)
 
-    truth_OEW_CG_mass_percentage = 93.47
-    truth_moi  = np.array([[ 6.84032042e+06, -3.70666165e-10, -9.20276404e+05],
-                           [-3.70666165e-10,  4.93390771e+07,  1.39407158e-10],
-                           [-9.20276404e+05,  1.39407158e-10,  5.19215368e+07]])
+    truth_OEW_CG_mass_percentage = 111.88
+    truth_moi  = np.array([[ 7317066.68118963,  -102481.15213347,    92929.8510052 ],
+                           [ -102481.15213347, 34562824.23910017,   210365.5831478 ],
+                           [   92929.8510052 ,   210365.5831478 , 37397106.90877086]])
 
     error_moi = abs((MOI - truth_moi) / np.where(truth_moi != 0, truth_moi, 1))
     assert np.all(error_moi < 1e-6),\

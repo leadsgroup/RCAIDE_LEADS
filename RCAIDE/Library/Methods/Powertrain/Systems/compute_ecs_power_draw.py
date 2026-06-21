@@ -9,7 +9,7 @@
 import RCAIDE
 import numpy as np
 
-def compute_ecs_power_draw(environmental_controls,vehicle,bus,state):
+def compute_ecs_power_draw(environmental_controls,vehicle,state,bus):
     """
     Computes the power draw of an environmental control system.
     
@@ -21,10 +21,10 @@ def compute_ecs_power_draw(environmental_controls,vehicle,bus,state):
                 Power consumption of the environmental control component [W]
     vehicle : Vehicle()
         The vehicle object, used to extract the total passenger capacity
-    bus : Electrical_Bus
-        The electrical bus that powers the cabin system
     state : State
         Object containing the dynamic mission state arrays (altitude, Mach, pressure, temperature)
+    bus : Electrical_Bus
+        The electrical bus that powers the cabin system
     
     Returns
     -------

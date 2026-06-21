@@ -78,12 +78,13 @@ def compute_systems_weight(vehicle, V_fuel, V_int, N_tank, N_eng):
     hyd_pnu_wt = (.001*W_0) * Units.lb
 
     # Avionics weight
-    if len(vehicle.avionics) == 0:
-        avionics     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-        W_uav        = 0. 
-    else:
-        avionics = vehicle.avionics
-        W_uav    = avionics.mass_properties.uninstalled
+    W_uav        = 0. 
+
+    Systems = RCAIDE.Library.Components.Powertrain.Systems
+    for network in  vehicle.networks: 
+        for system in network.systems: 
+            if isinstance(system, Systems.Avionics):  
+                W_uav    = system.uninstalled_mass
     
     W_avionics = 2.117*((W_uav/Units.lbs)**.933)*Units.lb 
 
@@ -96,8 +97,6 @@ def compute_systems_weight(vehicle, V_fuel, V_int, N_tank, N_eng):
     # Furnishings Group Wt
     W_furnish = (.0582*W_0-65.)*Units.lb
 
-
-    Systems = RCAIDE.Library.Components.Powertrain.Systems
 
     for network in  vehicle.networks: 
         for system in network.systems: 

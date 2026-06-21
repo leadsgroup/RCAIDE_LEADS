@@ -6,7 +6,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------    
 
-def compute_avionics_power_draw(avionics,vehicle,bus,state):
+def compute_avionics_power_draw(avionics,vehicle,state,bus):
     """
     Computes the electrical power draw of the aircraft's avionics system.
     

@@ -8,7 +8,7 @@
 # package imports
 import numpy as np
 
-def compute_hydraulics_power_draw(hydraulics,vehicle,bus,state):
+def compute_hydraulics_power_draw(hydraulics,vehicle,state,bus):
     """
     Computes the power draw of a hydraulic systems system.
     

@@ -341,6 +341,7 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------ 
     avionics                                    = RCAIDE.Library.Components.Powertrain.Systems.Avionics() 
     avionics.origin                             = [[1.3, 0, 0.2]]
+    avionics.uninstalled_mass                   = 50. * Units.lbs
     net.systems.append(avionics)
 
     flight_controls                             = RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
