@@ -94,8 +94,8 @@ def orientation(segment):
         segment.state.conditions.aerodynamics.coefficients.lift.total          = segment.lift_coefficient * segment.state.ones_row(1)
         segment.state.conditions.aerodynamics.coefficients.lift.inviscid.total = segment.lift_coefficient / segment.analyses.aerodynamics.settings.fuselage_lift_correction   * segment.state.ones_row(1)
     else:
-        if ctrls.body_angle.active:
-            segment.state.conditions.frames.body.inertial_rotations[:,1] = segment.state.unknowns.mission.body_angle[:,0]
+        if ctrls.pitch_angle.active:
+            segment.state.conditions.frames.body.inertial_rotations[:,1] = segment.state.unknowns.mission.pitch_angle[:,0]
         else:
             segment.state.conditions.frames.body.inertial_rotations[:,1] = segment.angle_of_attack
 

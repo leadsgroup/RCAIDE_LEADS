@@ -72,19 +72,19 @@ def set_mission_residuals_and_unknowns(mission):
             segment.state.number_of_mission_residuals += 1
 
         # Body Angle
-        if ctrls.body_angle.active:
+        if ctrls.pitch_angle.active:
             segment.state.number_of_mission_unknowns  += 1
-            if ctrls.body_angle.initial_guess_values !=  None:
-                segment.state.unknowns.mission.body_angle = ones_row(1) * ctrls.body_angle.initial_guess_values[0][0]
+            if ctrls.pitch_angle.initial_guess_values !=  None:
+                segment.state.unknowns.mission.pitch_angle = ones_row(1) * ctrls.pitch_angle.initial_guess_values[0][0]
             else:
-                segment.state.unknowns.mission.body_angle = ones_row(1) * 3.0 * Units.degrees
+                segment.state.unknowns.mission.pitch_angle = ones_row(1) * 3.0 * Units.degrees
 
-            if ctrls.body_angle.bounds !=  None:
-                segment.state.unknowns_lower_bounds.mission.body_angle = ctrls.body_angle.bounds[0][0] * ones_row(1)
-                segment.state.unknowns_upper_bounds.mission.body_angle = ctrls.body_angle.bounds[0][1] * ones_row(1)
+            if ctrls.pitch_angle.bounds !=  None:
+                segment.state.unknowns_lower_bounds.mission.pitch_angle = ctrls.pitch_angle.bounds[0][0] * ones_row(1)
+                segment.state.unknowns_upper_bounds.mission.pitch_angle = ctrls.pitch_angle.bounds[0][1] * ones_row(1)
             else:
-                segment.state.unknowns_lower_bounds.mission.body_angle =  -np.inf * ones_row(1)
-                segment.state.unknowns_upper_bounds.mission.body_angle =   np.inf * ones_row(1)
+                segment.state.unknowns_lower_bounds.mission.pitch_angle =  -np.inf * ones_row(1)
+                segment.state.unknowns_upper_bounds.mission.pitch_angle =   np.inf * ones_row(1)
 
         # Bank Angle
         if ctrls.bank_angle.active:
