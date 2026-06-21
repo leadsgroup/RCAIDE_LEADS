@@ -40,5 +40,5 @@ class Source(Component):
         self.active                       = True 
         self.assigned_distributors        = None
         self.efficiency                   = 0.0
-        self.power_split_ratio            = None
+        self.power_split_ratio            = 1.0
         self.identical_sources            = False

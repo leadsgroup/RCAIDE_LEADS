@@ -156,13 +156,11 @@ def compute_operating_empty_weight(vehicle,settings = None):
             #-------------------------------------------------------------------------------
             # Powertain 
             #-------------------------------------------------------------------------------            
-            for bus in network.busses: 
-
-                for modules in bus.battery_modules:
-                    weight.battery += modules.mass_properties.mass * Units.kg
-
-                for fuel_cell in bus.fuel_cell_stacks:
-                    weight.fuel_cell += fuel_cell.mass_properties.mass * Units.kg
+            for source in network.sources:
+                if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
+                    weight.battery += source.mass_properties.mass * Units.kg
+                elif isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Cells.Fuel_Cell_Stack):
+                    weight.fuel_cell += source.mass_properties.mass * Units.kg
 
                 # Servo, Hub and BRS Weights
                 lift_rotor_hub_weight   = 4.   * Units.kg
@@ -227,10 +225,12 @@ def compute_operating_empty_weight(vehicle,settings = None):
             if number_of_lift_rotors == 1: # this assumes that the vehicle is an electric helicopter with a tail rotor
                 maxLiftOmega   = maxVTip/rTip_ref
                 maxLiftTorque  = maxLiftPower / maxLiftOmega
-                for bus in network.busses:
-                    tailrotor = next(iter(bus.lift_rotors))
-                    weight.tail_rotor  = EVTOL_Common.compute_rotor_weight(tailrotor, 1.5*maxLiftTorque/(1.25*rTip_ref))*0.2 * Units.kg
-                    weight.rotors     += weight.tail_rotor
+                for propulsor in network.propulsors:
+                    if isinstance(propulsor.rotor, RCAIDE.Library.Components.Powertrain.Converters.Lift_Rotor):
+                        tailrotor = propulsor.rotor
+                        weight.tail_rotor  = EVTOL_Common.compute_rotor_weight(tailrotor, 1.5*maxLiftTorque/(1.25*rTip_ref))*0.2 * Units.kg
+                        weight.rotors     += weight.tail_rotor
+                        break
 
             #-------------------------------------------------------------------------------
             # Thermal Management System Weight

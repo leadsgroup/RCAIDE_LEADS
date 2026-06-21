@@ -59,9 +59,13 @@ def modify_wavy_channel_HAS(nexus):
           Source:
              None
     """        
-    battery_list  = list(nexus.hrs_configurations.optimized.networks.electric.busses.bus.battery_modules.keys())
-    battery       = nexus.hrs_configurations.optimized.networks.electric.busses.bus.battery_modules[battery_list[0]]
-    has_opt       = nexus.hrs_configurations.optimized.networks.electric.coolant_lines.coolant_line.battery_modules[battery.tag].thermal_management_system.heat_acquisition_system
+    network       = nexus.hrs_configurations.optimized.networks.electric
+    battery       = None
+    for source in network.sources:
+        if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
+            battery = source
+            break
+    has_opt       = network.coolant_lines.coolant_line.battery_modules[battery.tag].thermal_management_system.heat_acquisition_system
 
     # ------------------------------------------------------------------------------------------------------------------------
     # Unpack paramters  

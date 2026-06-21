@@ -47,16 +47,16 @@ class Numerics(Conditions):
         self.number_of_control_points           = 16
         self.discretization_method              = chebyshev_data
     
-        # mission solver 
+        # mission solver
         self.mission_solver                     = Conditions()
-        self.mission_solver.type                = "optimize" # options: "optimize", "root_finder"
-        self.mission_solver.method              = "SLSQP"    
-        self.mission_solver.objective           = "energy"   # options: # None, energy , power 
-        self.mission_solver.tolerance           = 1E-6     
+        self.mission_solver.type                = "optimize"
+        self.mission_solver.method              = "SLSQP"
+        self.mission_solver.objective           = "energy"
+        self.mission_solver.tolerance           = 1E-6
         self.mission_solver.converged           = None
         self.mission_solver.print_output        = True
         self.mission_solver.max_evaluations     = 200
-        self.mission_solver.step_size           = 1E-8  
+        self.mission_solver.step_size           = 1E-8
         self.mission_solver.verbose             = False
            
         # network solver    

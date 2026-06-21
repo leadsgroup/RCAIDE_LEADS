@@ -113,37 +113,12 @@ def append_fuel_cell_conditions(fuel_cell_stack,segment):
     
     return
 
-def append_fuel_cell_segment_conditions(fuel_cell_stack, bus, conditions, segment):  
-    """
-    Sets the initial fuel cell energy at the start of each segment as the last point from the previous segment
-    
-    Parameters
-    ----------
-    fuel_cell_stack : fuel_cell_stack
-        The fuel_cell_stack object containing cell properties and configuration.
-    bus : bus
-        The electrical bus object.
-    conditions : MissionConditions
-        The current conditions of the mission segment segment
-    segment : MissionSegment
-        The current mission segment. 
+def reuse_stored_fuel_cell_data(fuel_cell_stack, state, network, stored_conveter_tag):
+    '''
+    Reuses results from one converter for identical fuel cells
+    '''
+    stored_conditions = state.conditions.energy.converters[stored_conveter_tag]
+    fuel_cell_conditions = state.conditions.energy.converters[fuel_cell_stack.tag]
+    fuel_cell_conditions.update(deepcopy(stored_conditions))
 
-    Returns
-    ------- 
-        
-    """
-    fuel_cell_conditions = conditions[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag]
-    if segment.state.initials:  
-        fuel_cell_initials                                   = segment.state.initials.conditions.energy.busses[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag]
-        fuel_cell_conditions.temperature[:,0]                = fuel_cell_initials.temperature[-1,0]
-        fuel_cell_conditions.cell.temperature[:,0]           = fuel_cell_initials.cell.temperature[-1,0]     
-    return
-  
-def reuse_stored_fuel_cell_data(fuel_cell_stack,state,bus,stored_results_flag, stored_fuel_cell_stack_tag):
-    '''
-    Reuses results from one propulsor for identical fuel cells 
-    '''
-   
-    state.conditions.energy.busses[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag] = deepcopy(state.conditions.energy.busses[bus.tag].fuel_cell_stacks[stored_fuel_cell_stack_tag])
-     
-    return
+    return fuel_cell_conditions.inputs, fuel_cell_conditions.outputs

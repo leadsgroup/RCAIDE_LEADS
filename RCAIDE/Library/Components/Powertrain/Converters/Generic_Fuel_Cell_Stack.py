@@ -116,21 +116,17 @@ class Generic_Fuel_Cell_Stack(Converter):
             None
         """                  
         
-        inputs, outputs, stored_results_flag, stored_battery_tag = compute_fuel_cell_performance(self,state,bus,network, t_idx,delta_t) 
-        
-        return inputs, outputs, stored_results_flag, stored_battery_tag 
+        inputs, outputs, stored_results_flag, stored_converter_tag = compute_fuel_cell_performance(self, state, network)
 
-    def append_operating_conditions(self,segment):  
-        append_fuel_cell_conditions(self,segment)  
+        return inputs, outputs, stored_results_flag, stored_converter_tag
+
+    def append_operating_conditions(self, segment):
+        append_fuel_cell_conditions(self, segment)
         return
-    
-    def append_fuel_cell_segment_conditions(self,bus, conditions, segment):
-        append_fuel_cell_segment_conditions(self,bus, conditions, segment)
-        return 
 
-    def reuse_stored_data(self,state,bus,stored_results_flag, stored_fuel_cell_tag):
-        inputs, outputs = reuse_stored_fuel_cell_data(self,state,bus,stored_results_flag, stored_fuel_cell_tag)
-        return inputs, outputs 
+    def reuse_stored_data(self, state, network, stored_conveter_tag):
+        inputs, outputs = reuse_stored_fuel_cell_data(self, state, network, stored_conveter_tag)
+        return inputs, outputs
 
     def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
         """

@@ -7,6 +7,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
 
+import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Plots.Common import set_axes, plot_style, segment_colors
 import matplotlib.pyplot as plt
@@ -101,11 +102,11 @@ def plot_battery_module_conditions(results,
     axis_5 = plt.subplot(3,2,5) 
     axis_6 = plt.subplot(3,2,6)
      
-    for network in results.segments[0].analyses.vehicle.networks: 
-        busses  = network.busses 
-        for bus in busses:
-            for b_i, battery in enumerate(bus.battery_modules):
-                if b_i == 0 or bus.identical_sources == False:
+    for network in results.segments[0].analyses.vehicle.networks:
+        for b_i, source in enumerate(network.sources):
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
+                battery = source
+                if b_i == 0 or source.identical_sources == False:
                     for i in range(len(results.segments)):  
                         time    = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min    
                         battery_conditions  = results.segments[i].conditions.energy.sources[battery.tag]

@@ -80,16 +80,16 @@ def append_fuel_cell_conditions(fuel_cell_stack,segment):
     # Conditions for recharging fuel_cell 
     if isinstance(segment,RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge):
         segment.state.conditions.energy.recharging  = True 
-        segment.state.unknowns.mission['recharge']          =  0* ones_row(1)  
+        segment.state.unknowns.mission['recharge']  =  0* ones_row(1)  
         segment.state.residuals.mission['recharge'] =  0* ones_row(1)
-        segment.state.number_of_mission_unknowns  += 1
-        segment.state.number_of_mission_residuals += 1    
+        segment.state.number_of_mission_unknowns    += 1
+        segment.state.number_of_mission_residuals   += 1    
     elif type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Battery_Discharge:
         segment.state.conditions.energy.recharging   = False 
-        segment.state.unknowns.mission['discharge']          =  0* ones_row(1)  
+        segment.state.unknowns.mission['discharge']  =  0* ones_row(1)  
         segment.state.residuals.mission['discharge'] =  0* ones_row(1) 
-        segment.state.number_of_mission_unknowns  += 1
-        segment.state.number_of_mission_residuals += 1        
+        segment.state.number_of_mission_unknowns     += 1
+        segment.state.number_of_mission_residuals    += 1        
     else:
         segment.state.conditions.energy.recharging  = False             
     return

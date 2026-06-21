@@ -7,6 +7,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
 
+import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Plots.Common import set_axes, plot_style, segment_colors
 import matplotlib.pyplot as plt
@@ -100,28 +101,29 @@ def plot_battery_pack_conditions(results,
     axis_5 = plt.subplot(3,2,5) 
     axis_6 = plt.subplot(3,2,6)
      
-    for network in results.segments[0].analyses.vehicle.networks: 
-        busses  = network.busses 
-        for  b_i , bus in  enumerate(busses): 
-            for i in range(len(results.segments)): 
-                no_modules         = len(bus.battery_modules) 
-                bus_config         = bus.battery_module_electric_configuration 
-                battery_module_tag = list(bus.battery_modules.keys())[0]
-                
-                time                = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min    
-                battery_conditions  = results.segments[i].conditions.energy.sources[battery_module_tag]
-             
-                if bus_config == 'Series':
-                    pack_current        = battery_conditions.current[:,0] 
-                    pack_volts          = battery_conditions.voltage_under_load[:,0]   * no_modules                          
-                elif bus_config  == 'Parallel': 
-                    pack_current        = battery_conditions.current[:,0] * no_modules
-                    pack_volts          = battery_conditions.voltage_under_load[:,0]   
-                    
-                pack_power          = battery_conditions.power[:,0] * no_modules
-                pack_energy         = battery_conditions.energy[:,0] * no_modules
-                pack_SOC            = battery_conditions.cell.state_of_charge[:,0]   
-                pack_temperature    = battery_conditions.temperature[:,0]   
+    for network in results.segments[0].analyses.vehicle.networks:
+        for b_i, source in enumerate(network.sources):
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
+                battery = source
+                for i in range(len(results.segments)):
+                    no_modules         = len(battery.modules)
+                    bus_config         = battery.battery_module_electric_configuration
+                    battery_module_tag = list(battery.modules.keys())[0]
+
+                    time                = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min
+                    battery_conditions  = results.segments[i].conditions.energy.sources[battery_module_tag]
+
+                    if bus_config == 'Series':
+                        pack_current        = battery_conditions.current[:,0]
+                        pack_volts          = battery_conditions.voltage_under_load[:,0]   * no_modules
+                    elif bus_config  == 'Parallel':
+                        pack_current        = battery_conditions.current[:,0] * no_modules
+                        pack_volts          = battery_conditions.voltage_under_load[:,0]
+
+                    pack_power          = battery_conditions.power[:,0] * no_modules
+                    pack_energy         = battery_conditions.energy[:,0] * no_modules
+                    pack_SOC            = battery_conditions.cell.state_of_charge[:,0]
+                    pack_temperature    = battery_conditions.temperature[:,0]
             
                 if b_i == 0 and i ==0:                             
                     axis_1.plot(time, pack_SOC, color = line_colors[i], marker = ps.markers[b_i], linewidth = ps.line_width, label = bus.tag)

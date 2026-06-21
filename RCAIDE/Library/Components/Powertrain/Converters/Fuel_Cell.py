@@ -155,24 +155,20 @@ class Fuel_Cell(Generic_Fuel_Cell_Stack):
         self.fuel_cell.area_specific_mass                                      = 2.5 
         return 
         
-    def compute_performance(self,state,bus,network, t_idx, delta_t): 
-        """Computes the state of the fuel cell battery cell. 
-        """        
-        if not (self.fuel_cell.type == "LT") or  (self.fuel_cell.type == "HT"): 
-            raise ValueError('PEM type not supported, currently supported types are "LT" and "HT"')         
-        
-        inputs, outputs, stored_results_flag, stored_battery_tag = compute_fuel_cell_performance(self,state,bus,network, t_idx,delta_t) 
-        
-        return inputs, outputs, stored_results_flag, stored_battery_tag
-    
-    def append_operating_conditions(self,segment):  
-        append_fuel_cell_conditions(self,segment)  
-        return
-    
-    def append_fuel_cell_segment_conditions(self,bus, conditions, segment):
-        append_fuel_cell_segment_conditions(self,bus, conditions, segment)
-        return 
+    def compute_performance(self, state, network):
+        """Computes the state of the fuel cell battery cell.
+        """
+        if not (self.fuel_cell.type == "LT") or  (self.fuel_cell.type == "HT"):
+            raise ValueError('PEM type not supported, currently supported types are "LT" and "HT"')
 
-    def reuse_stored_data(self,state,bus,stored_results_flag, stored_fuel_cell_tag):
-        inputs, outputs = reuse_stored_fuel_cell_data(self,state,bus,stored_results_flag, stored_fuel_cell_tag)
-        return inputs, outputs   
+        inputs, outputs, stored_results_flag, stored_converter_tag = compute_fuel_cell_performance(self, state, network)
+
+        return inputs, outputs, stored_results_flag, stored_converter_tag
+
+    def append_operating_conditions(self, segment):
+        append_fuel_cell_conditions(self, segment)
+        return
+
+    def reuse_stored_data(self, state, network, stored_conveter_tag):
+        inputs, outputs = reuse_stored_fuel_cell_data(self, state, network, stored_conveter_tag)
+        return inputs, outputs

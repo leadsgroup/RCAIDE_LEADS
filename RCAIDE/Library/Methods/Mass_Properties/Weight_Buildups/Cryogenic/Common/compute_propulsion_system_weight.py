@@ -82,8 +82,8 @@ def compute_propulsion_system_weight(vehicle,ref_propulsor, settings):
             if propulsor.nacelle !=  None:          
                 if propulsor.nacelle !=  None:                
                     ref_nacelle =  propulsor.nacelle   
-        for fuel_line in network.fuel_lines:
-            for _ in fuel_line.fuel_tanks:
+        for source in network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
                 number_of_tanks +=  1
                   
     if ref_nacelle is not None:
@@ -130,13 +130,14 @@ def compute_fuel_system_weight(vehicle, NENG,settings):
     WPUMP = 0
  
     for network in vehicle.networks:
-        for fuel_line in network.fuel_lines:
-            for fuel_tank in fuel_line.fuel_tanks: 
-                WTANK += fuel_tank.tank_accesories_weight_factor * (fuel_tank.insulation.mass_properties.mass + fuel_tank.inner_structure.mass_properties.mass) # The factor 0.5 covers all the other tank adjustments
-            
-            compute_distributor_center_of_gravity(fuel_line,vehicle, length=0)
-            WLINE = fuel_line.mass_properties.mass        
-        
+        for source in network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                WTANK += source.tank_accesories_weight_factor * (source.insulation.mass_properties.mass + source.inner_structure.mass_properties.mass)
+
+        for distributor in network.distributors:
+            compute_distributor_center_of_gravity(distributor, vehicle, length=0)
+            WLINE = distributor.mass_properties.mass
+
         for converter in network.converters:
             if issubclass(type(converter),RCAIDE.Library.Components.Powertrain.Converters.Pump):
                 WPUMP += converter.mass_properties.mass

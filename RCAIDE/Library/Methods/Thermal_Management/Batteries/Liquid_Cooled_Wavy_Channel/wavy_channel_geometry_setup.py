@@ -29,17 +29,15 @@ def wavy_channel_geometry_setup(HAS,battery):
           Source:
              None
     """     
-    vehicle                                                   = RCAIDE.Vehicle()  
+    vehicle                                                   = RCAIDE.Vehicle()
     net                                                       = RCAIDE.Framework.Networks.Network()
-    bus                                                       = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
-    bus.battery_modules.append(battery)
-    coolant_line                                                          = RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line([bus])     
-    coolant_line.battery_modules[battery.tag].thermal_management_system   = Data() 
+    net.sources.append(battery)
+    coolant_line                                                          = RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line()
+    coolant_line.battery_modules[battery.tag]                             = Data()
+    coolant_line.battery_modules[battery.tag].thermal_management_system   = Data()
+    coolant_line.battery_modules[battery.tag].thermal_management_system.heat_acquisition_system = HAS
 
-    coolant_line.battery_modules[battery.tag].thermal_management_system.heat_acquisition_system = HAS 
-
-    net.busses.append(bus)
-    net.coolant_lines.append(coolant_line) 
+    net.coolant_lines.append(coolant_line)
     vehicle.append_energy_network(net) 
     
     configs                                                     = RCAIDE.Library.Components.Configs.Config.Container()

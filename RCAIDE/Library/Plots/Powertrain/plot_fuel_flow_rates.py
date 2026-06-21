@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
+import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Plots.Common import set_axes, plot_style, segment_colors 
 import matplotlib.pyplot as plt
@@ -76,22 +77,22 @@ def plot_fuel_flow_rates(results,
                                linewidth = ps.line_width,
                                label = label)
 
-            # ---------------- FUEL LINES ----------------
-            for j , fuel_line in enumerate(network.fuel_lines):
+            # ---------------- DISTRIBUTORS ----------------
+            for j, distributor in enumerate(network.distributors):
 
-                fuel_line_flow_rate = results.segments[i].conditions.energy.fuel_lines[fuel_line.tag].fuel_mass_flow_rate
+                distributor_flow_rate = results.segments[i].conditions.energy.distributors[distributor.tag].fuel_mass_flow_rate
 
-                label = fuel_line.tag if i==0 else None
+                label = distributor.tag if i==0 else None
 
                 axis_fuel.plot(time,
-                               fuel_line_flow_rate,
+                               distributor_flow_rate,
                                color = line_colors[i],
                                marker = ps.markers[j],
                                linewidth = ps.line_width,
                                label = label)
 
                 # ---------------- CONVERTERS ----------------
-                for converter_group in fuel_line.assigned_converters:
+                for converter_group in distributor.assigned_converters:
                     for m, converter_tag in enumerate(converter_group):
 
                         converter_flow_rate = results.segments[i].conditions.energy.converters[converter_tag].fuel_mass_flow_rate[:,0]

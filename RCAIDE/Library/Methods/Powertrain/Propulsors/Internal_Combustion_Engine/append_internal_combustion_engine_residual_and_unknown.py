@@ -66,8 +66,8 @@ def append_internal_combustion_engine_residual_and_unknown(propulsor, segment):
     propeller   = propulsor.propeller 
     segment.state.unknowns.mission[propulsor.tag  + '_propeller_omega'] = ones_row(1) * propeller.cruise.design_angular_velocity   
     segment.state.residuals.mission.network[ propulsor.tag + '_rotor_engine_torque'] = 0. * ones_row(1)
-    segment.state.numerics.mission_solver.upper_bounds[propulsor.tag + '_propeller_omega'] =   np.inf* ones_row(1) 
-    segment.state.numerics.mission_solver.lower_bounds[propulsor.tag + '_propeller_omega'] = - np.inf* ones_row(1)
+    segment.state.unknowns_upper_bounds.network[propulsor.tag + '_propeller_omega'] =   np.inf* ones_row(1)
+    segment.state.unknowns_lower_bounds.network[propulsor.tag + '_propeller_omega'] = - np.inf* ones_row(1)
     segment.state.number_of_mission_unknowns  += 1
     segment.state.number_of_mission_residuals += 1
     return 

@@ -156,7 +156,7 @@ def compute_systems_weight(vehicle):
                     system.mass_properties.mass = WAVONC * Units.lbs
                 elif isinstance(system, Systems.Flight_Controls):
                     system.mass_properties.mass = WSC * Units.lbs
-                elif isinstance(system, Systems.Auxillary_Power_Unit):
+                elif isinstance(system, Systems.Auxiliary_Power_Unit):
                     system.mass_properties.mass = WAPU * Units.lbs
                 elif isinstance(system, Systems.Electrical):
                     system.mass_properties.mass = WELEC * Units.lbs
@@ -174,7 +174,7 @@ def compute_systems_weight(vehicle):
                     WAVONC = system.mass_properties.mass / Units.lbs
                 elif isinstance(system, Systems.Flight_Controls):
                     WSC    = system.mass_properties.mass / Units.lbs
-                elif isinstance(system, Systems.Auxillary_Power_Unit):
+                elif isinstance(system, Systems.Auxiliary_Power_Unit):
                     WAPU   += system.mass_properties.mass / Units.lbs
                 elif isinstance(system, Systems.Electrical):
                     WELEC  = system.mass_properties.mass / Units.lbs

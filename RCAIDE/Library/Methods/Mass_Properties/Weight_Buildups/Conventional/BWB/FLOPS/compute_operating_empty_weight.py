@@ -184,11 +184,10 @@ def compute_operating_empty_weight(vehicle,settings=None):
                                             W_energy_network.W_engine_controls) / number_of_engines
             propulsor.nacelle.mass_properties.mass = W_energy_network.W_nacelle / number_of_engines
     
-        # Electric-Powered Propulsors
-        for bus in network.busses:
-            for battery in bus.battery_modules:
-                W_energy_network_total  += battery.mass_properties.mass * Units.kg
-                W_energy_network.W_battery = battery.mass_properties.mass * Units.kg
+        for source in network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
+                W_energy_network_total  += source.mass_properties.mass * Units.kg
+                W_energy_network.W_battery = source.mass_properties.mass * Units.kg
 
         for propulsor in network.propulsors:
             if 'motor' in propulsor:
@@ -270,9 +269,9 @@ def compute_operating_empty_weight(vehicle,settings=None):
     ##-------------------------------------------------------------------------------   
     W_fuel_tanks = 0
     for network in vehicle.networks:
-        for fuel_line in network.fuel_lines:
-            for fuel_tank in fuel_line.fuel_tanks:
-                W_fuel_tanks += fuel_tank.mass_properties.mass
+        for source in network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                W_fuel_tanks += source.mass_properties.mass
 
     output.empty.structural                       = Data()
     output.empty.structural.wings                 = W_main_wing

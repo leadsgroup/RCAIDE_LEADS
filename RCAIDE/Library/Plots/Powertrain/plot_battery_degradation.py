@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
+import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Plots.Common import set_axes, plot_style 
 import matplotlib.pyplot as plt
@@ -88,12 +89,11 @@ def plot_battery_degradation(results,
     plt.rcParams.update(parameters)
     
 
-    for network in results.segments[0].analyses.vehicle.networks: 
-        busses  = network.busses
-        for bus in busses:
-            if bus.identical_sources:
-                for i, battery in enumerate(bus.battery_modules):
-                    if i == 0:
+    for network in results.segments[0].analyses.vehicle.networks:
+        for i, source in enumerate(network.sources):
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
+                battery = source
+                if source.identical_sources and i == 0:
                         fig = plt.figure(save_filename + '_' + battery.tag)
                         fig.set_size_inches(width,height)  
                         num_segs          = len(results.segments)

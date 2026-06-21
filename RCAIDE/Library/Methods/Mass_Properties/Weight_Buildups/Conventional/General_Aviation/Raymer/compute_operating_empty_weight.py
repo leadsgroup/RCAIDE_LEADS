@@ -168,24 +168,21 @@ def compute_operating_empty_weight(vehicle, settings=None):
     for network in vehicle.networks:
         W_energy_network_total   = 0
 
-    for fuel_line in  network.fuel_lines: 
-        for fuel_tank in fuel_line.fuel_tanks: 
-            m_fuel_tank     = fuel_tank.fuel.mass_properties.mass
-            m_fuel          += m_fuel_tank   
-            landing_weight  -= m_fuel_tank   
-            number_of_tanks += 1
-            V_fuel_int      += m_fuel_tank/fuel_tank.fuel.density  #assume all fuel is in integral tanks 
-            V_fuel          += m_fuel_tank/fuel_tank.fuel.density #total fuel  
-         
-        # Electric-Powered Propulsors
-        for bus in network.busses:
-            for battery in bus.battery_modules:
-                W_energy_network_total  += battery.mass_properties.mass * Units.kg
+        for source in network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                m_fuel_tank     = source.fuel.mass_properties.mass
+                m_fuel          += m_fuel_tank
+                landing_weight  -= m_fuel_tank
+                number_of_tanks += 1
+                V_fuel_int      += m_fuel_tank/source.fuel.density
+                V_fuel          += m_fuel_tank/source.fuel.density
+            elif isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
+                W_energy_network_total  += source.mass_properties.mass * Units.kg
 
-            for propulsor in bus.propulsors:
-                if 'motor' in propulsor: 
-                    motor_mass = propulsor.motor.mass_properties.mass       
-                    W_energy_network_cumulative  += motor_mass                
+        for propulsor in network.propulsors:
+            if 'motor' in propulsor:
+                motor_mass = propulsor.motor.mass_properties.mass
+                W_energy_network_cumulative  += motor_mass                
         
         # Fuel network
         W_propulsion = Raymer.compute_propulsion_system_weight(network, settings)      

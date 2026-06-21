@@ -35,3 +35,42 @@ class Pump(Converter):
 
         inputs, outputs, stored_results_flag, stored_converter_tag =  compute_pump_performance(self,state)
         return inputs, outputs, stored_results_flag, stored_converter_tag
+    
+
+    # def __defaults__(self):
+    #     """
+    #     Sets default values for the pump attributes.
+    #     """
+    #     self.tag        = 'Pump'
+    #     self.efficiency = 1.0
+    #     return
+   
+    # def compute_power_consumed(pressure_differential, density, mass_flow_rate, efficiency):
+    #     """
+    #     Calculates the power consumed by the pump.
+
+    #     Parameters
+    #     ----------
+    #     pressure_differential : float
+    #         Pressure rise across the pump
+            
+    #     density : float
+    #         Coolant density
+            
+    #     mass_flow_rate : float
+    #         Mass flow rate through the pump
+            
+    #     efficiency : float
+    #         Overall pump efficiency
+
+    #     Returns
+    #     -------
+    #     float
+    #         Power consumed by the pump
+
+    #     Notes
+    #     -----
+    #     Uses the standard pump power equation:
+    #     Power = (mass_flow_rate * pressure_differential) / (density * efficiency)
+    #     """
+    #     return mass_flow_rate * pressure_differential / (density * efficiency)
