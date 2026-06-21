@@ -25,12 +25,12 @@ def main():
     try:
         import vsp as vsp
         from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
-        export_vsp_vehicle(vehicle, 'X57_Maxwell_Mod2')
+        export_vsp_vehicle(vehicle, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'X57_Maxwell_Mod2'))
     except ImportError:
         pass
         
     # Step 2: plot vehicle 
-    plot_3d_vehicle(vehicle,export_gltf=True)  
+    plot_3d_vehicle(vehicle,save_filename=os.path.join(os.path.dirname(os.path.abspath(__file__)),'X57_Maxwell_M2'),export_gltf=True,show_figure=True)  
     
     return 
  
@@ -459,7 +459,7 @@ def vehicle_setup():
     propeller.hub_radius                             = 10.     * Units.inches 
     propeller.cruise.design_freestream_velocity      = 175.*Units['mph']   
     propeller.cruise.design_angular_velocity         = 2700. * Units.rpm 
-    propeller.cruise.design_Cl                       = 0.7 
+    propeller.cruise.design_lift_coefficient                       = 0.7 
     propeller.cruise.design_altitude                 = 30. * Units.feet 
     propeller.cruise.design_thrust                   = 3000   
     propeller.clockwise_rotation                     = False

@@ -62,23 +62,21 @@ class Untrimmed(Segment):
         # --------------------------------------------------------------
         
         # conditions
-        self.temperature_deviation                            = 0.0
-        self.sideslip_angle                                   = 0.0 
-        self.angle_of_attack                                  = 1.0 *  Units.degree
-        self.bank_angle                                       = 0.0 
-        self.linear_acceleration_x                            = 0.
-        self.linear_acceleration_y                            = 0.  
-        self.linear_acceleration_z                            = 0. # note that down is positive
-        self.roll_rate                                        = 0.
-        self.pitch_rate                                       = 0. 
-        self.initial_battery_conditions                       = Data()
-        self.initial_battery_conditions.cell_temperature      = None 
-        self.initial_battery_conditions.state_of_charge       = None
-        self.initial_battery_conditions.charge_throughput     = None
-        self.initial_battery_conditions.increment_battery_age = False 
-        self.yaw_rate                                         = 0.  
-        self.state.numerics.number_of_control_points          = 2     
-        self.trim_lift_coefficient                            = None
+        self.temperature_deviation                   = 0.0
+        self.sideslip_angle                          = 0.0 
+        self.crosswind_speed                         = 0.0
+        self.angle_of_attack                         = 1.0 *  Units.degree
+        self.bank_angle                              = 0.0 
+        self.linear_acceleration_x                   = 0.
+        self.linear_acceleration_y                   = 0.  
+        self.linear_acceleration_z                   = 0. # note that down is positive
+        self.roll_rate                               = 0.
+        self.pitch_rate                              = 0.
+        self.hybrid_power_split_ratio                = None
+        self.battery_fuel_cell_power_split_ratio     = None 
+        self.yaw_rate                                = 0.  
+        self.state.numerics.number_of_control_points = 2     
+        self.lift_coefficient                        = None
         self.state.conditions.update(Results())
         
         # ---------------------------------------------------------------

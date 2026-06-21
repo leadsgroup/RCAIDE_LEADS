@@ -10,8 +10,8 @@ import RCAIDE
 from RCAIDE.Framework.Core            import Data, Units     
 from RCAIDE.Library.Methods.Aerodynamics.Common.Drag import * 
 from RCAIDE.Library.Methods.Aerodynamics.Common.Lift import *
-from RCAIDE.Library.Mission.Common.Pre_Process.energy import energy
-from RCAIDE.Library.Mission.Common.Pre_Process.geometry import geometry_preprocess_routine
+from RCAIDE.Library.Mission.Common.Pre_Process.energy import energy 
+from RCAIDE.Library.Mission.Common.Pre_Process  import geometry_preprocess_routine 
 
 # package imports
 import numpy as np
@@ -19,8 +19,8 @@ import numpy as np
 # ----------------------------------------------------------------------
 #  Compute field length required for takeoff
 # ----------------------------------------------------------------------
-def estimate_take_off_field_length(analyses,altitude = 0, delta_isa = 0, compute_2nd_seg_climb = False):
-    r"""
+def estimate_take_off_field_length(analyses=None,altitude = 0, delta_isa = 0, compute_2nd_seg_climb = False):
+    """
     Computes the takeoff field length and optionally the second segment climb gradient for a given vehicle configuration.
 
     Parameters
@@ -90,7 +90,10 @@ def estimate_take_off_field_length(analyses,altitude = 0, delta_isa = 0, compute
     --------
     RCAIDE.Library.Methods.Aerodynamics.Common.Drag.windmilling_drag
     RCAIDE.Library.Methods.Aerodynamics.Common.Drag.asymmetry_drag
-    """         
+    """  
+    if type(analyses) != RCAIDE.Framework.Analyses.Vehicle:
+        raise AttributeError('RCAIDE analyses must be defined')
+
     # ---------------------------------------------- 
     # Preprocess Geometry 
     # ---------------------------------------------- 
@@ -99,7 +102,7 @@ def estimate_take_off_field_length(analyses,altitude = 0, delta_isa = 0, compute
     # ----------------------------------------------
     # Unpack
     # ---------------------------------------------- 
-    vehicle         = analyses.vehicle    
+    vehicle         = analyses.vehicle
     atmo            = analyses.atmosphere 
     weight          = vehicle.mass_properties.takeoff
     reference_area  = vehicle.reference_area 
@@ -182,25 +185,27 @@ def estimate_take_off_field_length(analyses,altitude = 0, delta_isa = 0, compute
      
     mission = RCAIDE.Framework.Mission.Sequential_Segments() 
     segment = RCAIDE.Framework.Mission.Segments.Segment() 
+    segment.hybrid_power_split_ratio            = None
+    segment.battery_fuel_cell_power_split_ratio = None
     segment.analyses.extend( analysis) 
     mission.append_segment(segment) 
     segment.state.conditions  = conditions    
     
-    # initialize mission
+    # initalize mission
     energy(mission)      
 
     thrust =  np.array([[0.0, 0.0, 0.0]]) 
     for network in vehicle.networks:   
         for propulsor in  network.propulsors: 
             segment.state.conditions.energy.propulsors[propulsor.tag].throttle = np.array([[1]])
-    
-        for source in  network.sources: 
+            
+        for source in network.sources:
             if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
                 fuel = source.fuel
                 segment.state.conditions.weights.components.mass[fuel.tag] = np.array([[0]])                
                 
-        network.evaluate(segment.state,center_of_gravity = vehicle.mass_properties.center_of_gravity) 
-        thrust += conditions.energy.total_force_vector
+        network.evaluate(segment.state,vehicle) 
+        thrust += conditions.energy.thrust_force_vector
 
     # ==============================================
     # Calculate takeoff distance

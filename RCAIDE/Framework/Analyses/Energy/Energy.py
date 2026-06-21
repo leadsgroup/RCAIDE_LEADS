@@ -49,15 +49,14 @@ class Energy(Analysis):
         Returns:
             results : results of the thrust evaluation method. 
         """  
-        cg    = segment.analyses.vehicle.mass_properties.center_of_gravity
-        state = segment.state
-        
+        vehicle = segment.analyses.vehicle
+        state   = segment.state
+
         # Pack the unknowns to pass through the network
         if isinstance(unknowns,np.ndarray):
             state.unknowns.network.unpack_array(unknowns)
 
-        # RCAIDE.Library.Mission.Common.Initialize.energy(segment)
-        network.evaluate(state,cg)
+        network.evaluate(state, vehicle)
         
         if type(segment) != RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge: 
             state.residuals.network[ 'electrical_power'] = state.conditions.energy.net_electrical_power 

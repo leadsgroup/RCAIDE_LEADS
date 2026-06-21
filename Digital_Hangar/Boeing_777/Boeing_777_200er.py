@@ -26,12 +26,12 @@ def main():
     try:
         import vsp as vsp
         from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
-        export_vsp_vehicle(vehicle, 'Boeing_777_200er')
+        export_vsp_vehicle(vehicle, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Boeing_777_200er'))
     except ImportError:
         pass 
     
     # Step 2: plot vehicle 
-    plot_3d_vehicle(vehicle,export_gltf=True)  
+    plot_3d_vehicle(vehicle,save_filename=os.path.join(os.path.dirname(os.path.abspath(__file__)),'Boeing_777_200er'),export_gltf=True,show_figure=True)  
     return  
 
 def vehicle_setup(): 
@@ -527,22 +527,31 @@ def vehicle_setup():
 
 
     # ################################################# Landing Gear #############################################################   
-    # ------------------------------------------------------------------        
+    # ------------------------------------------------------------------
     #  Landing Gear
-    # Source: https://www.boeing.com/content/dam/boeing/boeingdotcom/commercial/airports/acaps/787.pdf
-    # ------------------------------------------------------------------  
-    main_gear               = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
-    main_gear.tire_diameter = 1.12000 * Units.m  
-    main_gear.strut_length  = 1.8 * Units.m 
-    main_gear.units         = 2    # Number of main landing gear
-    main_gear.wheels        = 6    # Number of wheels on the main landing gear
-    vehicle.append_component(main_gear)  
+    # Source: https://www.boeing.com/content/dam/boeing/boeingdotcom/commercial/airports/acaps/777.pdf
+    # ------------------------------------------------------------------
+    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
+    main_gear.tire_diameter                  = 52.0  * Units.inches
+    main_gear.rim_diameter                   = 22.0  * Units.inches
+    main_gear.tire_width                     = 21.0  * Units.inches
+    main_gear.strut_length                   = 1.8   * Units.m
+    main_gear.wheels                         = 6
+    main_gear.number_of_gear_types_in_tandem = 3
+    main_gear.number_of_wheels_in_gear_type  = 2
+    main_gear.origin                         = [[37.3, 5.65, -1.5]]
+    main_gear.xz_plane_symmetric             = True
+    vehicle.append_component(main_gear)
 
-    nose_gear               = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()       
-    nose_gear.tire_diameter = 0.6858 * Units.m  
-    nose_gear.units         = 1    # Number of nose landing gear
-    nose_gear.wheels        = 2    # Number of wheels on the nose landing gear
-    nose_gear.strut_length  = 1.3 * Units.m 
+    nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()
+    nose_gear.tire_diameter                  = 40.0  * Units.inches
+    nose_gear.rim_diameter                   = 16.0  * Units.inches
+    nose_gear.tire_width                     = 14.5  * Units.inches
+    nose_gear.strut_length                   = 1.8   * Units.m
+    nose_gear.wheels                         = 2
+    nose_gear.number_of_gear_types_in_tandem = 1
+    nose_gear.number_of_wheels_in_gear_type  = 2
+    nose_gear.origin                         = [[8.7, 0, -1.5]]
     vehicle.append_component(nose_gear)
     
     # ################################################# Energy Network #######################################################         
@@ -578,8 +587,7 @@ def vehicle_setup():
     # Propulsor: Starboard Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------         
     turbofan                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
-    turbofan.tag                                = 'propulsor_1'
-    turbofan.active_fuel_tanks                  = ['b777_fuel_tank']   
+    turbofan.tag                                = 'propulsor_1' 
     turbofan.origin                             = [[ 25.72797886 , 9.69802 , -2.04  ]]
     turbofan.mass_properties.mass               = 7893
     turbofan.engine_length                      = 7.29
@@ -715,8 +723,7 @@ def vehicle_setup():
     # Propulsor: Port Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------      
     # copy turbofan
-    turbofan_2                                  = deepcopy(turbofan)
-    turbofan_2.active_fuel_tanks                = ['b777_fuel_tank'] 
+    turbofan_2                                  = deepcopy(turbofan) 
     turbofan_2.tag                              = 'propulsor_2' 
     turbofan_2.origin                           = [[ 25.72797886 , -9.69802 , -2.04  ]]   # change origin 
     turbofan_2.nacelle.origin                   = [[26.72797886 , -9.69802 , -2.04 ]]  

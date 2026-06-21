@@ -159,20 +159,24 @@ class Results(Conditions):
                                                                                
         # aerodynamic coefficients                                             
         self.aerodynamics.coefficients                                         = Conditions()
-        self.aerodynamics.coefficients.surface_pressure                        = None
+        self.aerodynamics.coefficients.differential_surface_pressure           = None
         self.aerodynamics.coefficients.lift                                    = Conditions()
         self.aerodynamics.coefficients.lift.total                              = ones_1col * 0   
         self.aerodynamics.coefficients.lift.inviscid                           = Conditions()
-        self.aerodynamics.coefficients.lift.inviscid.total                     = ones_1col * 0   
-        self.aerodynamics.coefficients.lift.inviscid.wings                     = Conditions()  
+        self.aerodynamics.coefficients.lift.inviscid.total                     = ones_1col * 0  
+        self.aerodynamics.coefficients.lift.spanwise                           = None
         self.aerodynamics.coefficients.drag                                    = Conditions()  
         self.aerodynamics.coefficients.drag.total                              = ones_1col * 0   
         self.aerodynamics.coefficients.drag.parasite                           = Conditions()
         self.aerodynamics.coefficients.drag.miscellaneous                      = Conditions()
         self.aerodynamics.coefficients.drag.compressible                       = Conditions() 
+        self.aerodynamics.coefficients.drag.compressible.total                 = ones_1col * 0  
+        self.aerodynamics.coefficients.drag.compressible.wave                  = Conditions() 
+        self.aerodynamics.coefficients.drag.compressible.wave.total            = ones_1col * 0  
+        self.aerodynamics.coefficients.drag.compressible.wave.volume           = ones_1col * 0  
+        self.aerodynamics.coefficients.drag.compressible.wave.lift             = ones_1col * 0  
         self.aerodynamics.coefficients.drag.induced                            = Conditions()
-        self.aerodynamics.coefficients.drag.induced.total                      = ones_1col * 0  
-        self.aerodynamics.coefficients.drag.induced.wings                      = Conditions() 
+        self.aerodynamics.coefficients.drag.induced.total                      = ones_1col * 0   
         self.aerodynamics.coefficients.drag.induced.viscous                    = ones_1col * 0 
         self.aerodynamics.coefficients.drag.induced.inviscid                   = ones_1col * 0 
         self.aerodynamics.coefficients.drag.induced.efficiency_factor          = ones_1col * 0 
@@ -184,6 +188,7 @@ class Results(Conditions):
         self.aerodynamics.coefficients.drag.form.total                         = ones_1col * 0
         self.aerodynamics.coefficients.drag.trim                               = Conditions()
         self.aerodynamics.coefficients.drag.trim.total                         = ones_1col * 0
+        self.aerodynamics.spanwise_induced_angle                               = None
         self.aerodynamics.coefficients.drag.windmilling                        = Conditions()
         self.aerodynamics.coefficients.drag.windmilling.total                  = ones_1col * 0
         self.aerodynamics.coefficients.drag.asymmetry_trim                     = Conditions()
@@ -197,6 +202,7 @@ class Results(Conditions):
 
         self.control_surfaces.aileron                                          = Conditions()
         self.control_surfaces.aileron.deflection                               = ones_1col * 0 
+        self.control_surfaces.aileron.hinge_moment                             = ones_1col * 0  
         self.control_surfaces.aileron.static_stability                         = Conditions()
         self.control_surfaces.aileron.static_stability.coefficients            = Conditions()          
         self.control_surfaces.aileron.static_stability.coefficients.X          = ones_1col * 0           
@@ -209,7 +215,8 @@ class Results(Conditions):
         self.control_surfaces.aileron.static_stability.coefficients.e          = ones_1col * 0
         
         self.control_surfaces.elevator                                         = Conditions()
-        self.control_surfaces.elevator.deflection                              = ones_1col * 0 
+        self.control_surfaces.elevator.deflection                              = ones_1col * 0
+        self.control_surfaces.elevator.hinge_moment                            = ones_1col * 0  
         self.control_surfaces.elevator.static_stability                        = Conditions()
         self.control_surfaces.elevator.static_stability.coefficients           = Conditions()          
         self.control_surfaces.elevator.static_stability.coefficients.lift      = ones_1col * 0       
@@ -223,6 +230,7 @@ class Results(Conditions):
         
         self.control_surfaces.rudder                                           = Conditions()
         self.control_surfaces.rudder.deflection                                = ones_1col * 0 
+        self.control_surfaces.rudder.hinge_moment                              = ones_1col * 0 
         self.control_surfaces.rudder.static_stability                          = Conditions()
         self.control_surfaces.rudder.static_stability.coefficients             = Conditions()          
         self.control_surfaces.rudder.static_stability.coefficients.X           = ones_1col * 0          
@@ -235,6 +243,7 @@ class Results(Conditions):
         
         self.control_surfaces.flap                                             = Conditions()
         self.control_surfaces.flap.deflection                                  = ones_1col * 0 
+        self.control_surfaces.flap.hinge_moment                                = ones_1col * 0 
         self.control_surfaces.flap.static_stability                            = Conditions()
         self.control_surfaces.flap.static_stability.coefficients               = Conditions()           
         self.control_surfaces.flap.static_stability.coefficients.X             = ones_1col * 0           
@@ -247,6 +256,7 @@ class Results(Conditions):
         
         self.control_surfaces.slat                                             = Conditions()
         self.control_surfaces.slat.deflection                                  = ones_1col * 0 
+        self.control_surfaces.slat.hinge_moment                                = ones_1col * 0 
         self.control_surfaces.slat.static_stability                            = Conditions()
         self.control_surfaces.slat.static_stability.coefficients               = Conditions()          
         self.control_surfaces.slat.static_stability.coefficients.X             = ones_1col * 0          
@@ -296,6 +306,11 @@ class Results(Conditions):
         self.static_stability.derivatives.Clift_delta_r                        = ones_1col * 0
         self.static_stability.derivatives.Clift_delta_f                        = ones_1col * 0
         self.static_stability.derivatives.Clift_delta_s                        = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_delta_a                        = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_delta_e                        = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_delta_r                        = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_delta_f                        = ones_1col * 0
+        self.static_stability.derivatives.Cdrag_delta_s                        = ones_1col * 0
         self.static_stability.derivatives.Cdrag_induced_alpha                  = ones_1col * 0
         self.static_stability.derivatives.Cdrag_induced_beta                   = ones_1col * 0
         self.static_stability.derivatives.Cdrag_induced_delta_a                = ones_1col * 0
@@ -407,7 +422,12 @@ class Results(Conditions):
         # ----------------------------------------------------------------------------------------------------------------------         
         # Freestream 
         # ----------------------------------------------------------------------------------------------------------------------    
-        self.emissions                                       = Conditions()         
+        self.emissions                                                = Conditions()       
+        self.emissions.mass                                           = Conditions()    
+        self.emissions.index                                          = Conditions()    
+        self.emissions.gCO2e                                          =  ones_1col * 0  
+        self.emissions.cumulative_gCO2e                               =  ones_1col * 0 
+    
         
         # ----------------------------------------------------------------------------------------------------------------------         
         # Noise

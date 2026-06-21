@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE imports
-from RCAIDE.Framework.Core import Units,Data
+from RCAIDE.Framework.Core import Units
 from RCAIDE.Framework.Mission.Segments         import Segment
 from RCAIDE.Framework.Mission.Common.Results   import Results
 from RCAIDE.Library.Mission                    import Common , Solver 
@@ -60,16 +60,14 @@ class Evaluate(Segment):
         # --------------------------------------------------------------
         
         # conditions
-        self.temperature_deviation                                 = 0.0
-        self.sideslip_angle                                        = 0.0
-        self.angle_of_attack                                       = 1.0 *  Units.degree
-        self.bank_angle                                            = 0.0 
-        self.trim_lift_coefficient                                 = None
-        self.initial_battery_conditions                            = Data()
-        self.initial_battery_conditions.cell_temperature           = None
-        self.initial_battery_conditions.state_of_charge            = None
-        self.initial_battery_conditions.charge_throughput          = None
-        self.initial_battery_conditions.increment_battery_age      = False
+        self.temperature_deviation                = 0.0
+        self.sideslip_angle                       = 0.0
+        self.crosswind_speed                      = 0.0
+        self.angle_of_attack                      = 1.0 *  Units.degree
+        self.bank_angle                           = 0.0
+        self.hybrid_power_split_ratio             = None
+        self.battery_fuel_cell_power_split_ratio  = None
+        self.lift_coefficient                     = None
         self.state.conditions.update(Results())       
         
         # ---------------------------------------------------------------
@@ -103,10 +101,9 @@ class Evaluate(Segment):
         iterate.initials.planet_position   = Common.Initialize.planet_position
         
         # Unpack Unknowns
-        iterate.unknowns                         = Process()       
-        iterate.unknowns.mission                 = Process()   
-        iterate.unknowns.mission.controls        = Common.Unpack_Unknowns.control_surfaces
-        iterate.unknowns.mission.mission         = Common.Unpack_Unknowns.orientation
+        iterate.unknowns                   = Process()
+        iterate.unknowns.controls          = Common.Unpack_Unknowns.control_surfaces 
+        iterate.unknowns.mission           = Common.Unpack_Unknowns.orientation
         
         # Update Conditions
         iterate.conditions = Process()
@@ -118,7 +115,6 @@ class Evaluate(Segment):
         iterate.conditions.atmosphere            = Common.Update.atmosphere
         iterate.conditions.gravity               = Common.Update.gravity
         iterate.conditions.freestream            = Common.Update.freestream
-        iterate.conditions.network               = Common.Update.network
         iterate.conditions.thrust                = Common.Update.thrust
         iterate.conditions.aerodynamics          = Common.Update.aerodynamics
         iterate.conditions.weights               = Common.Update.weights
@@ -128,8 +124,8 @@ class Evaluate(Segment):
         iterate.conditions.planet_position       = Common.Update.planet_position
 
         # Solve Residuals
-        iterate.residuals.mission = Process()
-        iterate.residuals.mission.flight_dynamics  = Common.Residuals.flight_dynamics
+        iterate.residuals = Process()  
+        iterate.residuals.flight_dynamics  = Common.Residuals.flight_dynamics   
 
         # --------------------------------------------------------------  
         #  Post Process   
@@ -137,7 +133,7 @@ class Evaluate(Segment):
         post_process                    = self.process.post_process   
         post_process.inertial_position  = Common.Update.linear_inertial_horizontal_position
         post_process.energy             = Common.Update.energy 
-        post_process.noise              = Common.Update.noise
+        post_process.aeroacoustics      = Common.Update.aeroacoustics
         post_process.emissions          = Common.Update.emissions
         
         return

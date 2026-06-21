@@ -124,9 +124,11 @@ def wing_planform(wing):
         
         # Calculate the areas of each segment
         As = (lengths_dim*chords_dim[:-1]-(chords_dim[:-1]-chords_dim[1:])*(lengths_dim/2)) 
-        
+        Af = lengths_dim*((chords_dim[:-1]*t_cs[:-1]+chords_dim[1:]*t_cs[1:])/2)
+
         # Calculate the wing area
         ref_area = np.sum(As)*(1+sym)
+        frontal_area = np.sum(Af)*(1+sym)
         
         # Calculate the Aspect Ratio
         AR = (span**2)/ref_area
@@ -204,6 +206,7 @@ def wing_planform(wing):
         wing.taper                           = lamda
         wing.areas.projected                 = ref_area
         wing.areas.reference                 = ref_area
+        wing.areas.front_projected           = frontal_area
         wing.sweeps.quarter_chord            = c_4_sweep
         wing.sweeps.leading_edge             = le_sweep_total
         wing.thickness_to_chord              = t_c
@@ -262,6 +265,7 @@ def wing_planform(wing):
         # calculate leading edge sweep
         if wing.sweeps.leading_edge == None:
             le_sweep = np.arctan( np.tan(sweep) - (4./ar)*(0.-0.25)*(1.-taper)/(1.+taper) )
+            wing.sweeps.leading_edge = le_sweep
         else:
             le_sweep = wing.sweeps.leading_edge
             wing.sweeps.quarter_chord = convert_sweep(wing,old_ref_chord_fraction = 0.0,new_ref_chord_fraction = 0.25)
@@ -290,6 +294,7 @@ def wing_planform(wing):
         wing.sweeps.leading_edge        = le_sweep
         wing.areas.wetted               = swet
         wing.areas.projected            = sref
+        wing.areas.front_projected      = span*mgc
         wing.spans.projected            = span
         wing.spans.total                = span_total
         wing.aerodynamic_center         = [x_coord , y_coord, z_coord]
@@ -297,6 +302,35 @@ def wing_planform(wing):
 
         # estimate LEMAC
         wing.LEMAC =  wing.origin[0][0] + np.tan(wing.sweeps.leading_edge) * y_coord  
+
+        segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
+        segment.tag                           = 'root'
+        segment.percent_span_location         = 0.0
+        segment.root_chord_percent            = 1.0 
+        segment.sweeps.leading_edge           = le_sweep
+        segment.sweeps.quarter_chord          = wing.sweeps.quarter_chord
+        segment.dihedral_outboard             = dihedral
+        segment.thickness_to_chord            = t_c_w
+        wing.append_segment(segment)  
+
+        segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
+        segment.tag                           = 'tip'
+        segment.percent_span_location         = 1.0
+        segment.root_chord_percent            = taper  
+        segment.thickness_to_chord            = t_c_w
+        
+        if vertical:
+            dx = np.tan(le_sweep) * semispan
+            dy = np.tan(dihedral) * semispan
+            dz = semispan
+            segment.origin   = [[dx,  dy , semispan ]]
+        else:
+            dx = np.tan(le_sweep) * semispan 
+            dz = np.tan(dihedral) * semispan
+            segment.origin   = [[dx, semispan  , dz ]] 
+        wing.append_segment(segment)     
+
+        segment_properties(wing) 
       
     # control surface  
     taper = wing.taper 
@@ -450,8 +484,11 @@ def segment_properties(wing):
                 x_0        = segments[segment_names[seg_idx]].origin[0][0]  +  wing.origin[0][0]
                 dy         = ( MAC -  chord_root) / ( (chord_tip - chord_root) / span_seg)
                 LEMAC      =  x_0 + np.tan(segments[segment_names[seg_idx]].sweeps.leading_edge) *dy
-                wing.LEMAC = LEMAC  
-            
+                wing.LEMAC = LEMAC
+            elif (MAC == chord_root) and   (MAC == chord_tip):
+                x_0        = segments[segment_names[seg_idx]].origin[0][0]  +  wing.origin[0][0]
+                wing.LEMAC = x_0
+                
             if isinstance(outboard_segment, RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment):
                 
                 # center body 

@@ -76,21 +76,7 @@ def initialize_conditions(segment):
     """    
     t_nondim   = segment.state.numerics.dimensionless.control_points
 
-    vehicle = segment.analyses.vehicle
-
-    #for network in vehicle.networks:
-        #for distributor in network.distributors:
-            #if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus):
-                #distributor.append_operating_conditions(segment)
-            #for tag, bus_item in distributor.items():
-                #if issubclass(type(bus_item), RCAIDE.Library.Components.Component):
-                    #bus_item.append_operating_conditions(segment,distributor) 
-        
-        #for fuel_cell_stack in  bus.fuel_cell_stacks:
-            #fuel_cell_stack.append_operating_conditions(segment,bus)
-
-        #for source in network.sources:
-            #source.append_operating_conditions(segment)
+    vehicle = segment.analyses.vehicle 
      
     # handle recharging 
     if isinstance(segment, RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge):

@@ -21,20 +21,7 @@ import os
 # ----------------------------------------------------------------------
 
 
-def vehicle_setup(MTOW = 125225.92487939,
-                  span_input         = 64, 
-                  root_chord         = 34.590950446109, 
-                  vertical_chord     = 3.33984778055753, 
-                  vertical_height    = 7.90551686864603, 
-                  fuel_wall_sweep    = 0.746391195462114, 
-                  fuel_wall_chord    = 0.570169900478341, 
-                  fuel_wall_dihedral = 0.0238583066378036, 
-                  section1_sweep     = 0.622074639446857, 
-                  section1_dihedral  = 0.0388862791060358, 
-                  section1_chord     = 0.320234286874057, 
-                  section_1_span_percent = 0.3347,
-                  root_twist         = 0.05, 
-                  tip_twist          = -0.0174894184557103) : 
+def vehicle_setup() :
     
     ospath                                = os.path.abspath(__file__)
     rel_path                              = os.path.dirname(ospath) + os.path.sep  + 'Airfoils' + os.path.sep
@@ -44,9 +31,8 @@ def vehicle_setup(MTOW = 125225.92487939,
     # ------------------------------------------------------------------      
     vehicle                                           = RCAIDE.Vehicle()    
     vehicle.tag                                       = 'BWB_2050_LH2' 
-    vehicle.staub_factor = 0.955
-    vehicle.mass_properties.max_takeoff               = MTOW  
-    vehicle.mass_properties.takeoff                   = MTOW  
+    vehicle.mass_properties.max_takeoff               = 125225.92487939  
+    vehicle.mass_properties.takeoff                   = 125225.92487939  
     vehicle.mass_properties.payload                   = 55800* Units.lbs 
     vehicle.mass_properties.max_payload               = 66960.  * Units.lb    
     vehicle.mass_properties.min_payload               = 43200.  * Units.lb   
@@ -97,18 +83,18 @@ def vehicle_setup(MTOW = 125225.92487939,
     wing.aspect_ratio            = 5.7178477994757815 
     wing.sweeps.quarter_chord    = 0.6562637381290588 
     wing.thickness_to_chord      = 0.12823921650789133
-    wing.taper                   = 2.1 / root_chord   
-    wing.spans.projected         = span_input
+    wing.taper                   = 2.1 / 34.590950446109   
+    wing.spans.projected         = 64
     wing.areas.reference         = 298.9408702885464
     wing.areas.wetted            = 1464.0003661503454
     wing.chords.mean_aerodynamic = 5.263452352647592
-    wing.chords.root             = root_chord
+    wing.chords.root             = 34.590950446109
     wing.chords.tip              = 1.8359256146144747  
     wing.aft_center_body.length  = 9.021        
     wing.aft_center_body.taper   = 0.85
-    wing.total_length            = root_chord
-    wing.twists.root             = root_twist
-    wing.twists.tip              = tip_twist
+    wing.total_length            = 34.590950446109
+    wing.twists.root             = 0
+    wing.twists.tip              = -0.0174894184557103
     wing.origin                  = [[0.0,  0.0,  0.0]] 
     wing.aerodynamic_center      = [17.43511294,  0.        ,  1.08931241] 
     wing.vertical                = False
@@ -116,10 +102,10 @@ def vehicle_setup(MTOW = 125225.92487939,
     wing.t_tail                  = False 
     wing.dynamic_pressure_ratio  = 1.0
      
-    cabin                                                  = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-    cabin.offset_x                                         = 2.54
+    cabin                                                  = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
     cabin.origin                                           = [[2.54, 0, 0]]
-    
+    cabin.segments_bounding_cabin                          = ['Fuselage_Section_1','Cabin_Wall']
+
     business_class                                         = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business() 
     business_class.number_of_seats_abrest                  = 4
     business_class.number_of_rows                          = 4
@@ -139,8 +125,7 @@ def vehicle_setup(MTOW = 125225.92487939,
     wing.append_cabin(cabin)  
 
     side_cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Side_Cabin()
-    side_cabin.nose.fineness_ratio                         = 1.75
-    side_cabin.offset_x                                    = 2.54
+    side_cabin.nose.fineness_ratio                         = 1.75 
     side_cabin.origin                                      = [[2.54, 0, 0]]
    
     business_class                                         = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business() 
@@ -223,9 +208,9 @@ def vehicle_setup(MTOW = 125225.92487939,
     segment.taper                                  = 0.32260442862265637   
     segment.percent_span_location                  = 0.224625/  wing.spans.projected*64
     segment.twist                                  = (wing.twists.root +  segment.percent_span_location * wing.twists.tip)
-    segment.root_chord_percent                     = fuel_wall_chord
-    segment.dihedral_outboard                      = fuel_wall_dihedral    
-    segment.sweeps.quarter_chord                   = fuel_wall_sweep
+    segment.root_chord_percent                     = 0.570169900478341
+    segment.dihedral_outboard                      = 0.0238583066378036
+    segment.sweeps.quarter_chord                   = 0.746391195462114
     airfoil                                        = RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil.coordinate_file                        = rel_path + 's1016.txt'
     segment.append_airfoil(airfoil )
@@ -233,11 +218,11 @@ def vehicle_setup(MTOW = 125225.92487939,
     
     segment                                        = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                                    = 'Wing_Section_1' 
-    segment.percent_span_location                  = section_1_span_percent
+    segment.percent_span_location                  = 0.3347
     segment.twist                                  = (wing.twists.root + segment.percent_span_location * wing.twists.tip)
-    segment.root_chord_percent                     = section1_chord
-    segment.dihedral_outboard                      = section1_dihedral 
-    segment.sweeps.quarter_chord                   = section1_sweep 
+    segment.root_chord_percent                     = 0.320234286874057
+    segment.dihedral_outboard                      = 0.0388862791060358
+    segment.sweeps.quarter_chord                   = 0.622074639446857
     airfoil                                        =  RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil.coordinate_file                        =  rel_path +'transonic_wing_outboard_section_airfoil.txt'
     segment.append_airfoil(airfoil )
@@ -323,13 +308,13 @@ def vehicle_setup(MTOW = 125225.92487939,
     wing.tag = 'vertical_stabilizer'
     wing.aspect_ratio                             = 1.73
     wing.thickness_to_chord                       = .08
-    wing.spans.projected                          = vertical_height
-    wing.sweeps.quarter_chord                     = 35 * Units.degrees   
-    wing.chords.root                              = vertical_chord
+    wing.spans.projected                          = 7.90551686864603
+    wing.sweeps.quarter_chord                     = 35 * Units.degrees
+    wing.chords.root                              = 3.33984778055753
     taper = 1/3
-    wing.chords.tip                               = wing.chords.root * taper                   
-    wing.chords.mean_aerodynamic                  = wing.chords.root * 2/3 * (( 1 + wing.taper + wing.taper**2 ) / ( 1 + wing.taper )) 
-    wing.areas.reference                          = vertical_height * (1+taper)/2*vertical_chord
+    wing.chords.tip                               = wing.chords.root * taper
+    wing.chords.mean_aerodynamic                  = wing.chords.root * 2/3 * (( 1 + wing.taper + wing.taper**2 ) / ( 1 + wing.taper ))
+    wing.areas.reference                          = 7.90551686864603 * (1+taper)/2*3.33984778055753
     wing.total_length                             = wing.chords.root 
     wing.taper                                    = wing.chords.tip /  wing.chords.root 
     wing.twists.root                              = 0.0 
@@ -533,8 +518,7 @@ def vehicle_setup(MTOW = 125225.92487939,
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor: Propulsor 2 (Inner Port Side)
     #------------------------------------------------------------------------------------------------------------------------------------       
-    turbofan2                                  = deepcopy(turbofan1)
-    turbofan2.active_fuel_tanks                = ['fuel_tank'] 
+    turbofan2                                  = deepcopy(turbofan1) 
     turbofan2.tag                              = 'propulsor_2' 
     turbofan2.origin                           = [[0.8*vehicle.wings.main_wing.chords.root, -4.2, 2.25]] 
     turbofan2.nacelle.tag                      =  'propulsor_2_nacelle'
@@ -547,35 +531,38 @@ def vehicle_setup(MTOW = 125225.92487939,
     #------------------------------------------------------------------------------------------------------------------------- 
     #  Energy Source: Fuel Tank
     #------------------------------------------------------------------------------------------------------------------------- 
-    fuel_tank_1                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
-    fuel_tank_1.tag                                    = 'tank_1l_1r' 
-    fuel_tank_1.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
-    fuel_tank_1.insulation_material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
-    fuel_tank_1.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']                
-    fuel_tank_1.segments_percent_chord_bounds          = [0.1 ,0.1] 
+    fuel_tank_1                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
+    fuel_tank_1.tag                                    = 'tank_1l_1r'
+    fuel_tank_1.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+    fuel_tank_1.design_inlet_temperature               = 20
+    fuel_tank_1.inner_structure.material               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank_1.insulation.material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
+    fuel_tank_1.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']
+    fuel_tank_1.segments_percent_chord_bounds          = [0.1 ,0.1]
     fuel_tank_1.segments_percent_chord_end             = [0.55,0.55]
-    fuel_tank_1.fuel.tag                               = '_lh2' 
     fuel_line.fuel_tanks.append(fuel_tank_1)
 
-    fuel_tank_2                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
-    fuel_tank_2.tag                                    = 'tank_2l_2r' 
-    fuel_tank_2.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
-    fuel_tank_2.insulation_material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation() 
-    fuel_tank_2.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']                
-    fuel_tank_2.segments_percent_chord_bounds          = [0.1 ,0.1] 
-    fuel_tank_2.segments_percent_chord_end             = [0.55,0.55]  
-    fuel_tank_2.fuel.tag                               = '_lh2' 
-    
+    fuel_tank_2                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
+    fuel_tank_2.tag                                    = 'tank_2l_2r'
+    fuel_tank_2.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+    fuel_tank_2.design_inlet_temperature               = 20
+    fuel_tank_2.inner_structure.material               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank_2.insulation.material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
+    fuel_tank_2.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']
+    fuel_tank_2.segments_percent_chord_bounds          = [0.1 ,0.1]
+    fuel_tank_2.segments_percent_chord_end             = [0.55,0.55]
     fuel_line.fuel_tanks.append(fuel_tank_2)
-    fuel_tank_3                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
-    fuel_tank_3.tag                                    = 'tank_3l_3r' 
-    fuel_tank_3.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
-    fuel_tank_3.insulation_material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
-    fuel_tank_3.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']                     
-    fuel_tank_3.segments_percent_chord_bounds          = [0.1 ,0.1] 
-    fuel_tank_3.segments_percent_chord_end             = [0.55,0.55]  
-    fuel_tank_3.fuel.tag                               =  '_lh2' 
-    fuel_line.fuel_tanks.append(fuel_tank_3)    
+
+    fuel_tank_3                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
+    fuel_tank_3.tag                                    = 'tank_3l_3r'
+    fuel_tank_3.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+    fuel_tank_3.design_inlet_temperature               = 20
+    fuel_tank_3.inner_structure.material               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank_3.insulation.material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
+    fuel_tank_3.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']
+    fuel_tank_3.segments_percent_chord_bounds          = [0.1 ,0.1]
+    fuel_tank_3.segments_percent_chord_end             = [0.55,0.55]
+    fuel_line.fuel_tanks.append(fuel_tank_3)
 
     # ------------------------------------------------
     # Bounds for aft tank
@@ -583,7 +570,7 @@ def vehicle_setup(MTOW = 125225.92487939,
     cabin_bound = cabin_length / vehicle.wings.main_wing.chords.root
 
     aft_segment_bound = 'cabin_wall'
-    engine2wall = abs(turbofan2.nacelle.origin[0][1]) + vehicle.wings.main_wing.segments[aft_segment_bound].percent_span_location * vehicle.wings.main_wing.spans.projected / 2 # Distance from engine to the far wall
+    engine2wall = abs(turbofan2.nacelle.origin[0][1]) + vehicle.wings.main_wing.segments[aft_segment_bound].percent_span_location * vehicle.wings.main_wing.spans.projected / 2
     forward_location = np.tan(15*Units.degrees) * engine2wall
     rotor_burst_bound = (turbofan2.nacelle.origin[0][0] - forward_location) / vehicle.wings.main_wing.chords.root
 
@@ -591,18 +578,19 @@ def vehicle_setup(MTOW = 125225.92487939,
         print("Error: rotor burst criteria and cabin bounds intersect. Tank 4 and 5 are impossible to place")
     else:
 
-        fuel_tank_4                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
-        fuel_tank_4.tag                                    = 'aft_tank' 
+        fuel_tank_4                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
+        fuel_tank_4.tag                                    = 'aft_tank'
+        fuel_tank_4.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+        fuel_tank_4.design_inlet_temperature               = 20
         fuel_tank_4.geometry_type                          = 'conformal'
-        fuel_tank_4.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
-        fuel_tank_4.insulation_material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
+        fuel_tank_4.inner_structure.material               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+        fuel_tank_4.insulation.material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
         fuel_tank_4.xz_plane_symmetric                     = False
         fuel_tank_4.orientation_euler_angles               = [0,0,np.pi/2]
-        fuel_tank_4.bwb_aft_tank                           = True
-        fuel_tank_4.aft_tank_root_chord_bounds             = [cabin_bound,rotor_burst_bound]
-        fuel_tank_4.aft_tank_segment_bound                 = aft_segment_bound
+        fuel_tank_4.transverse_tank                        = True
+        fuel_tank_4.transverse_tank_chord_bounds             = [cabin_bound,rotor_burst_bound]
+        fuel_tank_4.transverse_tank_segment_bound                 = aft_segment_bound
         fuel_tank_4.radial_offset                          = 0.1
-        fuel_tank_4.fuel.tag                               = '_lh2' 
         fuel_line.fuel_tanks.append(fuel_tank_4)
 
 

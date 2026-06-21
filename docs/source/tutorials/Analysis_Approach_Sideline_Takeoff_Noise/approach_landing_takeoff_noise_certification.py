@@ -15,7 +15,7 @@ import RCAIDE
 from RCAIDE.Framework.Core import Units , Data
 from RCAIDE.Library.Plots import *
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan                   import design_turbofan 
-from RCAIDE.Library.Methods.Performance.compute_noise_certification_data import  compute_noise_certification_data
+from RCAIDE.Library.Methods.Performance.compute_noise_certification_metrics import  compute_noise_certification_metrics
 
 # python imports      
 import os
@@ -42,7 +42,7 @@ def main():
     approach_mission  = approach_mission_setup(analyses)
     takeoff_mission   = takeoff_mission_setup(analyses)  
      
-    results = compute_noise_certification_data(approach_mission = approach_mission,
+    results = compute_noise_certification_metrics(approach_mission = approach_mission,
                                                takeoff_mission=takeoff_mission)
     plot_noise_certification_contour(results) 
  
@@ -103,7 +103,7 @@ def vehicle_setup():
     # Carbo Bays 
     # ------------------------------------------------------------------ 
     forward_cargo_bay = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
-    forward_cargo_bay.cargo.mass_properties.mass  = 1850
+    forward_cargo_bay.mass_properties.mass        = 1850
     forward_cargo_bay.origin                      = [[6.82, 0, -0.5]]
     forward_cargo_bay.length                      = 7.82
     forward_cargo_bay.width                       = 1.57  
@@ -111,7 +111,7 @@ def vehicle_setup():
     vehicle.cargo_bays.append(forward_cargo_bay) 
  
     aft_cargo_bay  = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
-    aft_cargo_bay.cargo.mass_properties.mass  = 1440
+    aft_cargo_bay.mass_properties.mass        = 1440
     aft_cargo_bay.origin                      = [[23.43, 0, -0.5]]
     aft_cargo_bay.length                      =  5.5
     aft_cargo_bay.width                       =  1.57 
@@ -886,7 +886,7 @@ def approach_mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle.active             = True                
 
     mission.append_segment(segment)
  
@@ -936,7 +936,7 @@ def takeoff_mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
-    segment.assigned_control_variables.body_angle.active             = True                 
+    segment.assigned_control_variables.pitch_angle.active             = True                 
 
     mission.append_segment(segment) 
 
@@ -958,7 +958,7 @@ def takeoff_mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
-    segment.assigned_control_variables.body_angle.active             = True                 
+    segment.assigned_control_variables.pitch_angle.active             = True                 
 
     mission.append_segment(segment)
  

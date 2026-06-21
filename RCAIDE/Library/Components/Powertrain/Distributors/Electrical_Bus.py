@@ -100,7 +100,7 @@ class Electrical_Bus(Distributor):
         self.conductor                                 = Component()
         self.conductor.radius                          = None
         self.conductor.material                        = Copper()  # Default conductor material
-        self.conductor.resistance                  = None
+        self.conductor.resistance                      = None
         self.insulator                                 = Component()
         self.insulator.radius                          = None
         self.insulator.material                        = Polyimide()  # Default insulator material 

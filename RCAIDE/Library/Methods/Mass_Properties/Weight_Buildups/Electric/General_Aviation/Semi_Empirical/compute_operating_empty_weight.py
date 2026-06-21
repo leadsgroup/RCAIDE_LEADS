@@ -49,30 +49,9 @@ def compute_operating_empty_weight(vehicle, settings=None):
     ##-------------------------------------------------------------------------------         
     # System Weight
     ##------------------------------------------------------------------------------- 
-    W_systems = FLOPS.compute_systems_weight(vehicle) 
-    for system in vehicle.systems:
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Avionics:
-            if system.mass_properties.mass == 0:
-                system.mass_properties.mass = W_systems.W_avionics 
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls:
-            if system.mass_properties.mass == 0:
-                system.mass_properties.mass = W_systems.W_flight_control 
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit: 
-            if system.mass_properties.mass == 0:
-                system.mass_properties.mass = W_systems.W_apu 
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Electrical: 
-            if system.mass_properties.mass == 0:
-                system.mass_properties.mass = W_systems.W_electrical 
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Hydraulics: 
-            if system.mass_properties.mass == 0:
-                system.mass_properties.mass = W_systems.W_hyd_pnu 
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls: 
-            if system.mass_properties.mass == 0:
-                system.mass_properties.mass = W_systems.W_ac + W_systems.W_anti_ice   
-        if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Instruments:
-            if system.mass_properties.mass == 0:     
-                system.mass_properties.mass = W_systems.W_instruments  
-    ##-------------------------------------------------------------------------------                 
+    W_systems = FLOPS.compute_systems_weight(vehicle)
+
+    ##-------------------------------------------------------------------------------
     # Propulsion Weight 
     ##-------------------------------------------------------------------------------
     output                                      = Data()
@@ -102,19 +81,12 @@ def compute_operating_empty_weight(vehicle, settings=None):
         W_energy_network_total   = 0 
     
         # Electric-Powered Propulsors  
-        for distributor in network.distrubutor:
-            if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus): 
-                # electrical payload 
-                W_systems.W_electrical += distributor.systems.mass_properties.mass   
-         
-                # Avionics Weight 
-                W_systems.W_avionics  += distributor.avionics.mass_properties.mass      
-        
-        for source in network.sources: 
-            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
-                W_energy_network_total  += source.mass_properties.mass 
-                W_energy_network.W_battery = source.mass_properties.mass 
-            
+        for bus in network.busses:  
+    
+            for battery in bus.battery_modules: 
+                W_energy_network_total  += battery.mass_properties.mass * Units.kg
+                W_energy_network.W_battery = battery.mass_properties.mass * Units.kg
+                
         for propulsor in network.propulsors:
             if 'motor' in propulsor:                           
                 W_energy_network.W_motor +=  propulsor.motor.mass_properties.mass
@@ -224,9 +196,8 @@ def compute_operating_empty_weight(vehicle, settings=None):
                                                     + output.empty.systems.air_conditioner + output.empty.systems.instruments
  
     output.payload    = payload 
-    output.operational_items    = Data()
-    output.operational_items    = W_oper 
-    output.empty.total          = output.empty.structural.total + output.empty.propulsion.total + output.empty.systems.total 
-    output.zero_fuel_weight     = output.empty.total + output.operational_items.total + output.payload.total
+    output.operational_items    = W_oper
+    output.empty.total          = output.empty.structural.total + output.empty.propulsion.total + output.empty.systems.total + output.operational_items.total
+    output.zero_fuel_weight     = output.empty.total + output.payload.total
     output.max_takeoff          = vehicle.mass_properties.max_takeoff 
     return output

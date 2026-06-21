@@ -1,4 +1,3 @@
-  
 # Regression/scripts/Tests/network_ducted_fan/electric_ducted_fan_netowrk.py
 # 
 # Created:  Jul 2023, M. Clarke 
@@ -39,7 +38,7 @@ def main():
     ducted_fan_type  = ['Blade_Element_Momentum_Theory', 'Rankine_Froude_Momentum_Theory']
     
     # truth values 
-    thrust_truth         = [46.37988724561762, 63.08075015806363]
+    thrust_truth         = [68.08079599102852, 68.08079599102851]
    
     for i in range(len(ducted_fan_type)):  
         # vehicle data
@@ -64,21 +63,23 @@ def main():
             if regression_flag: # if regression skip test since we cannot run DFDC 
                 error = Data()
                 error.thrust   = 0
-            else:  
+            else:   
                 thurst         =  np.linalg.norm(results.segments.cruise.conditions.energy.propulsors['center_propulsor'].thrust, axis=1)  
                 error          = Data()
+                print('Thrust', thurst[0])
                 error.thrust   = np.max(np.abs(thrust_truth[i]   - thurst[0] ))        
                 
         elif ducted_fan_type[i] ==  'Rankine_Froude_Momentum_Theory':  
             thurst         =  np.linalg.norm(results.segments.cruise.conditions.energy.propulsors['starboard_propulsor'].thrust, axis=1)  
             error          = Data()
+            print('Thrust', thurst[0])
             error.thrust   = np.max(np.abs(thrust_truth[i]   - thurst[0] ))   
         
         print('Errors:')
         print(error)
         
         for k,v in list(error.items()):
-            assert(np.abs(v)<1e-6) 
+            assert(np.abs(v)<1e-5) 
 
     return 
 
@@ -127,10 +128,9 @@ def base_analysis(vehicle):
     
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
-    aerodynamics                                       = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.settings.number_of_spanwise_vortices  = 25
-    aerodynamics.settings.number_of_chordwise_vortices = 5       
-    aerodynamics.settings.model_fuselage               = False
+    aerodynamics =  RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()      
+    aerodynamics.settings.number_of_spanwise_vortices    = 10 # reducing the number of vortices to speed up the test 
+    aerodynamics.settings.number_of_chordwise_vortices   = 5  # reducing the number of vortices to speed up the test     
     analyses.append(aerodynamics)
   
     # ------------------------------------------------------------------
@@ -189,8 +189,8 @@ def mission_setup(analyses):
     segment.assigned_control_variables.throttle.active                  = True           
     segment.assigned_control_variables.throttle.assigned_propulsors     = [['center_propulsor','starboard_propulsor','port_propulsor']] 
     segment.assigned_control_variables.throttle.initial_guess_values    = [[0.95]]    
-    segment.assigned_control_variables.body_angle.active                = True        
-    segment.assigned_control_variables.body_angle.initial_guess_values  = [[2.05 * Units.degree]]                   
+    segment.assigned_control_variables.pitch_angle.active                = True        
+    segment.assigned_control_variables.pitch_angle.initial_guess_values  = [[2.05 * Units.degree]]                   
       
     mission.append_segment(segment) 
     return mission

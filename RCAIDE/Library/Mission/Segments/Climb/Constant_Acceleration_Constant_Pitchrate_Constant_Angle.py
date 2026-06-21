@@ -152,8 +152,8 @@ def initialize_conditions(segment):
     vz = t_nondim *  V  * np.sin(climb_angle) + v0[2] * np.sin(climb_angle)  
     
     # set the body angle
-    body_angle = time*(Tf-T0)/(t_final-t_initial) + T0
-    segment.state.conditions.frames.body.inertial_rotations[:,1] = body_angle[:,0]     
+    pitch_angle = time*(Tf-T0)/(t_final-t_initial) + T0
+    segment.state.conditions.frames.body.inertial_rotations[:,1] = pitch_angle[:,0]     
     
     # pack
     segment.state.conditions.freestream.altitude[:,0]             = alt[:,0]

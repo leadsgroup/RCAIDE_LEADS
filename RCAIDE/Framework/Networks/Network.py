@@ -73,11 +73,12 @@ class Network(Component):
     def __defaults__(self):
         """ This sets the default values for the network to function.
         """        
-        self.tag                                 = 'network' 
+        self.tag                                 = 'network'
+        self.reverse_thrust                      = False
         self.hybrid_power_split_ratio            = 1.0
-        self.battery_fuel_cell_power_split_ratio = 1.0        
-        self.propulsors                          = Container() 
-        self.converters                          = Container() 
+        self.battery_fuel_cell_power_split_ratio = 1.0
+        self.propulsors                          = Container()
+        self.converters                          = Container()
         self.nacelles                            = Container()
         self.modulators                          = Container()
         self.distributors                        = Container()
@@ -85,7 +86,7 @@ class Network(Component):
         self.systems                             = Container()
          
 
-    def evaluate(network,state,center_of_gravity):
+    def evaluate(network,state,vehicle):
         """ Computes the performance of the network.
         
             Notes
@@ -95,13 +96,14 @@ class Network(Component):
         """
 
         # unpack
-        conditions    = state.conditions
-        propulsors    = network.propulsors
-        converters    = network.converters  
-        distributors  = network.distributors
-        modulators    = network.modulators
-        sources       = network.sources
-        systems       = network.systems
+        center_of_gravity = vehicle.mass_properties.center_of_gravity
+        conditions        = state.conditions
+        propulsors        = network.propulsors
+        converters        = network.converters  
+        distributors      = network.distributors
+        modulators        = network.modulators
+        sources           = network.sources
+        systems           = network.systems
 
         total_thrust            = 0. * state.ones_row(3)
         total_moment            = 0. * state.ones_row(3)
@@ -155,7 +157,7 @@ class Network(Component):
         stored_results_flag  = False
         for system in systems:
             if system.active: 
-                inputs, outputs,_,_= system.compute_performance(state)  
+                inputs, outputs,_,_= system.compute_performance(state,vehicle)  
                 net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)

@@ -1,7 +1,5 @@
 # RCAIDE/Library/Components/Systems/__init__.py 
 # 
-# Created:  Feb 2024, M. Clarke
-# Modified: Sep 2025, M. Guidotti
 
 """
 Module containing aircraft system components for modeling various onboard systems 
@@ -12,15 +10,16 @@ for avionics and other aircraft systems.
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
- 
-from .Systems                 import Systems  
+
 from .Avionics                import Avionics
-from .Environmental_Controls  import Environmental_Controls 
-from .Flight_Controls         import Flight_Controls
-from .Electrical              import Electrical
-from .Hydraulics              import Hydraulics 
-from .Instruments             import Instruments  
-from .Pneumatic               import Pneumatic
+from .Flight_Controls         import Flight_Controls 
+from .Cabin_Loads             import Cabin_Loads
+from .Ice_Protection          import Ice_Protection
+from .Environmental_Controls  import Environmental_Controls
+from .Furnishings             import Furnishings
 from .Auxiliary_Power_Unit    import Auxiliary_Power_Unit 
+from .Electrical              import Electrical 
+from .Hydraulics              import Hydraulics 
+from .Instruments             import Instruments 
 from .Systems                 import Systems
-from .Water_Tank              import Water_Tank 
+from .Water_Tank              import Water_Tank

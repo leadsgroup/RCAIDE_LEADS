@@ -61,6 +61,8 @@ nosetests.xml
 
 
 *.dat
+*.csv
+*.xlsx
 
 # Geometry
 *.geo

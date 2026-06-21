@@ -4,8 +4,8 @@ from RCAIDE.Framework.Analyses.Weights import Electric_General_Aviation, Electri
 from RCAIDE.Framework.Core import Data, Units 
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan   import design_turbofan  
 from RCAIDE.Library.Plots import * 
-from RCAIDE.load import load as load_results
-from RCAIDE.save import save as save_results 
+from RCAIDE.Input_Output import load as load_results
+from RCAIDE.Input_Output import save as save_results
 from RCAIDE.Library.Methods.Geometry.LOPA import compute_layout_of_passenger_accommodations
 from RCAIDE.Library.Methods.Geometry.Planform import compute_fuel_volume, wing_planform
 import numpy as  np 
@@ -127,11 +127,11 @@ def Transport_Hydrogen_Test(update_regression_values, show_figure):
 
     vehicle = hydrogen_transport_setup()
     for propulsor in vehicle.networks.fuel.propulsors:
-        propulsor.combustor.fuel_data =  RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
-    
-        for source in vehicle.networks.sources: 
-            source.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()   
-            source.fuel.gravimetric_efficiency            = 0.5
+        propulsor.combustor.fuel_data =  RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen() 
+    for fuel_line in vehicle.networks.fuel.fuel_lines:
+        for fuel_tank in fuel_line.fuel_tanks:
+            fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()   
+            fuel_tank.gravimetric_efficiency            = 0.5
 
     for method_type in method_types:
         print(f'Testing Transport Aircraft Method: {method_type} | Method: {"Complex"}')        
@@ -331,16 +331,17 @@ def BWB_Hydrogen_Aircraft_Test(update_regression_values,show_figure):
             weight_analysis          = RCAIDE.Framework.Analyses.Weights.Hydrogen_BWB()
             vehicle  = bwb_setup()
             for propulsor in vehicle.networks.fuel.propulsors:
-                propulsor.combustor.fuel_data =  RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
-             
-            for source in vehicle.networks.fuel.sources:
-                source                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
-                source.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()   
-                source.fuel.gravimetric_efficiency            = 0.5
-                source.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
-                source.insulation_material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
-                source.segments_bounding_tank                = ['fuel_wall', 'wing_section_1']
-                vehicle.networks.fuel.sources.append(fuel_tank)
+                propulsor.combustor.fuel_data =  RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen() 
+            for fuel_line in vehicle.networks.fuel.fuel_lines:
+                fuel_line.fuel_tanks.clear()
+                fuel_tank                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
+                fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+                fuel_tank.design_inlet_temperature               = 20
+                fuel_tank.gravimetric_efficiency                  = 0.5
+                fuel_tank.inner_structure.material                = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+                fuel_tank.insulation.material                     = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
+                fuel_tank.segments_bounding_tank                = ['fuel_wall', 'wing_section_1']
+                fuel_line.fuel_tanks.append(fuel_tank)
 
 
             if cabin_type == 'PERSUS':
@@ -352,7 +353,7 @@ def BWB_Hydrogen_Aircraft_Test(update_regression_values,show_figure):
                     compute_layout_of_passenger_accommodations(wing)
                     wing_planform(wing)
                     vehicle.reference_area = wing.areas.reference 
-            compute_fuel_volume(vehicle,compute_fuel_volume =True, update_max_fuel = False)
+            compute_fuel_volume(vehicle, compute_fuel_volume=True)
             weight_analysis.settings.FLOPS.fidelity   = 'Simple' if FLOPS_number == 0 else 'Complex'
             weight                   = weight_analysis.evaluate(vehicle)
             plot_weight_breakdown(vehicle, show_figure = show_figure) 

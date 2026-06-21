@@ -51,7 +51,7 @@ class Prop_Rotor(Rotor):
                 Design point sound pressure level [dBA]. Default is None.
             - design_blade_pitch_command : float
                 Design point blade pitch command [rad]. Default is 0.0.
-            - design_Cl : float
+            - design_lift_coefficient : float
                 Design point lift coefficient. Default is None.
             - design_thrust_coefficient : float
                 Design point thrust coefficient. Default is None.
@@ -78,7 +78,7 @@ class Prop_Rotor(Rotor):
                 Design point sound pressure level [dBA]. Default is None.
             - design_blade_pitch_command : float
                 Design point blade pitch command [rad]. Default is 0.0.
-            - design_Cl : float
+            - design_lift_coefficient : float
                 Design point lift coefficient. Default is None.
             - design_thrust_coefficient : float
                 Design point thrust coefficient. Default is None.
@@ -155,7 +155,7 @@ class Prop_Rotor(Rotor):
         self.hover.design_SPL_dBA                = None
         self.hover.design_blade_pitch_command    = 0.0
         self.hover.design_efficiency             = 0.86  
-        self.hover.design_Cl                     = None
+        self.hover.design_lift_coefficient                     = None
         self.hover.design_thrust_coefficient     = None
         self.hover.design_power_coefficient      = None
         self.hover.design_torque_coefficient     = None
@@ -173,7 +173,7 @@ class Prop_Rotor(Rotor):
         self.oei.design_efficiency               = 0.86  
         self.oei.design_altitude                 = None
         self.oei.design_SPL_dBA                  = None
-        self.oei.design_Cl                       = None
+        self.oei.design_lift_coefficient                       = None
         self.oei.design_thrust_coefficient       = None
         self.oei.design_power_coefficient        = None  
         self.oei.design_torque_coefficient       = None  
@@ -189,7 +189,7 @@ class Prop_Rotor(Rotor):
         self.cruise.design_SPL_dBA               = None
         self.cruise.design_blade_pitch_command   = 0.0
         self.cruise.design_efficiency            = 0.86  
-        self.cruise.design_Cl                    = None
+        self.cruise.design_lift_coefficient      = None
         self.cruise.design_thrust_coefficient    = None
         self.cruise.design_power_coefficient     = None  
         self.cruise.design_torque_coefficient    = None       

@@ -8,15 +8,16 @@
 # RCAIDE imports  
 from .Systems import Systems
  
-# ----------------------------------------------------------------------------------------------------------------------
-#  Instruments
-# ----------------------------------------------------------------------------------------------------------------------            
-class Auxiliary_Power_Unit(Systems):
+# ----------------------------------------------------------------------
+# Auxiliary_Power_Unit
+# ----------------------------------------------------------------------
+class Auxiliary_Power_Unit(Systems): 
     """
-    A class representing the apu. 
+    A class representing auxiliary power unit and their power requirements. 
     """        
     def __defaults__(self):
         """
-        Sets default values for the instruments system attributes.
+        Sets default values for the auxiliary power unit attributes.
         """                  
-        self.tag        = 'apu' 
+        self.tag        = 'auxiliary_power_unit'
+    

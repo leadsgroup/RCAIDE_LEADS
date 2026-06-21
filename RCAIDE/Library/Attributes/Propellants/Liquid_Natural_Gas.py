@@ -46,6 +46,22 @@ class Liquid_Natural_Gas(Propellant):
         Kinetic mechanism name for fuel surrogate combustion
     oxidizer : str
         Oxidizer species name
+    emission_indices : Data
+        Emission indices in kg/kg fuel
+            - Production : float
+                Upstream extraction and liquefaction CO2 (0.35)
+            - CO2 : float
+                Carbon dioxide (2.75)
+            - CO : float
+                Carbon monoxide (0.00100)
+            - H2O : float
+                Water vapor (2.20)
+            - SO2 : float
+                Sulfur dioxide (0.0)
+            - NOx : float
+                Nitrogen oxides (0.0126)
+            - Soot : float
+                Particulate matter (0.0)
     global_warming_potential_100 : Data
         100-year global warming potentials (CO2-equivalent per kg of species)
             - CO2 : float
@@ -128,6 +144,14 @@ class Liquid_Natural_Gas(Propellant):
         self.fuel_surrogate_S1             = {}  # [-]    mole fractions of fuel surrogate species
         self.kinetic_mechanism             = ''  #        kinetic mechanism name for combustion model
         self.oxidizer                      = ''  #        oxidizer species name
+
+        self.emission_indices.Production  = 0.35     # kg/kg  upstream extraction + liquefaction (GREET)
+        self.emission_indices.CO2         = 2.75     # kg/kg  stoichiometric floor for CH4 (44/16); LNG blend ≈ 2.75–2.78
+        self.emission_indices.CO          = 0.00100  # kg/kg  ~1.0 g/kg, typical gas turbine at cruise
+        self.emission_indices.H2O         = 2.20     # kg/kg
+        self.emission_indices.SO2         = 0.0      # kg/kg
+        self.emission_indices.NOx         = 0.0126   # kg/kg
+        self.emission_indices.Soot        = 0.0      # kg/kg
         
         self.global_warming_potential_100.CO2       = 1     # [CO2e/kg]    carbon dioxide
         self.global_warming_potential_100.H2O       = 0.06  # [CO2e/kg]    water vapor

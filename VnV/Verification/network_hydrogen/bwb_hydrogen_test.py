@@ -49,7 +49,7 @@ def main():
     
     # Step 5 execute flight profile
     results = missions.base_mission.evaluate()
-    CL_truth = 0.3975726457797412
+    CL_truth = 0.4429852995574973
     CL    = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[0, 0]
 
     abs_error = np.abs((CL - CL_truth)) 
@@ -125,15 +125,16 @@ def base_analysis(vehicle):
     weights.settings.write_mass_properties                                   = True 
     weights.settings.run_weights_analysis                                    = True
     weights.settings.iterate_mtow                                            = True
+    weights.settings.mtow_capacity_fraction                                  = 0.955
     weights.settings.run_center_of_gravity_analysis                          = True
     weights.settings.run_moments_of_inertia_analysis                         = True
     analyses.append(weights)
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
-    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.settings.number_of_spanwise_vortices          = 20
-    aerodynamics.settings.number_of_chordwise_vortices         = 4
+    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
+    aerodynamics.settings.number_of_spanwise_vortices          = 10 # reducing the number of vortices to speed up the test 
+    aerodynamics.settings.number_of_chordwise_vortices         = 5  # reducing the number of vortices to speed up the test 
     aerodynamics.settings.drag_reduction_factors.parasite_drag = 0.16
     aerodynamics.settings.store_training_data                  = False
     aerodynamics.training.Mach                                 = np.array([0.1  ,0.3,  0.5,  0.65 , 0.85 , 0.9])
@@ -205,7 +206,7 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['propulsor_1','propulsor_2']] 
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle.active             = True                
 
     mission.append_segment(segment)
 

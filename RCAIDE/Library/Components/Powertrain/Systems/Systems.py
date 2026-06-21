@@ -1,16 +1,14 @@
 # RCAIDE/Library/Components/Powertrain/Systems/Systems.py
 # 
 # Created:  Mar 2024, M. Clarke 
-# Modified: Sep 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------   
-# RCAIDE imports  
-from RCAIDE.Framework.Core import Data 
-from RCAIDE.Library.Components import Component
+# RCAIDE imports   
+from RCAIDE.Library.Components import Component 
+from RCAIDE.Library.Methods.Powertrain.Systems.append_systems_conditions import append_systems_conditions
 from RCAIDE.Library.Methods.Powertrain.Systems.compute_systems_power_draw import compute_systems_power_draw
-from RCAIDE.Library.Methods.Powertrain.Systems.append_systems_conditions import *
  
 # ----------------------------------------------------------------------------------------------------------------------
 # System
@@ -66,22 +64,18 @@ class Systems(Component):
         """
         Sets default values for the system attributes.
         """        
-        self.tag                          = 'System'  
-        self.power_draw                   = 0.0
-        self.active                       = True
-        self.assigned_distributors        = None
-        self.efficiency                   = 0.0
+        self.tag                    = 'System'
+        self.active                 = True
+        self.assigned_distributors  = None
+        self.power_draw             = 0.0
+        self.length      = 0
+        self.width       = 0
+        self.height      = 0
+        self.control     = None
+        self.accessories = None 
+        self.mass_properties.calculated_flag = False
 
-    def unpack_unknowns(self,segment):
-        return 
-
-    def pack_residuals(self,segment): 
-        return        
-
-    def append_unknowns_and_residuals(self,segment):
-        return                
-
-    def append_operating_conditions(self, segment): 
+    def append_operating_conditions(self, segment):
         """
         Adds operating conditions for the avionics system to a mission segment.
 
@@ -89,19 +83,37 @@ class Systems(Component):
         ----------
         segment : Data
             Mission segment to which conditions are being added
-        bus : Data
-            Electrical bus supplying power to the avionics
         """
         append_systems_conditions(self, segment)
         return
-    
-    def compute_performance(self, state):
 
-        outputs,inputs = compute_systems_power_draw(self, state)
+    def compute_performance(self, state, vehicle):
+        """
+        Computes the power draw of the system based on the operating conditions.
 
-        return outputs,inputs, None, None
-    
+        Parameters
+        ----------
+        state : State
+            Mission segment state containing conditions.
+        vehicle : Vehicle
+            The aircraft vehicle for which performance is being computed.
 
-    def append_segment_conditions(self,segment):
-        append_system_segment_conditions(self, segment)
-        
+        Returns
+        -------
+        inputs : Conditions
+            Input power conditions for the system.
+        outputs : Conditions
+            Output power conditions for the system.
+        stored_results_flag : bool
+            Always False for systems.
+        stored_tag : None
+            No stored tag for systems.
+        """
+        inputs, outputs = compute_systems_power_draw(self, state, vehicle)
+        return inputs, outputs, False, None
+
+    def unpack_unknowns(self, segment):
+        return
+
+    def pack_residuals(self, segment):
+        return

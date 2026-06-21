@@ -112,7 +112,6 @@ def compute_operating_empty_weight(vehicle, settings=None):
                     fuselage - a data dictionary with the fields:
                         areas             - a data dictionary with the fields:
                             wetted - wetted area of the fuselage [meters**2]
-                        differential_pressure  - Maximum fuselage pressure differential   [Pascal]
                         width             - width of the fuselage                         [meters]
                         heights - a data dictionary with the fields:
                             maximum - height of the fuselage                              [meters]
@@ -169,33 +168,24 @@ def compute_operating_empty_weight(vehicle, settings=None):
     for network in vehicle.networks:
         W_energy_network_total   = 0
 
-        for source in  network.sources: 
-            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
-                m_fuel_tank     = source.fuel.mass_properties.mass
-                m_fuel          += m_fuel_tank   
-                landing_weight  -= m_fuel_tank   
-                number_of_tanks += 1
-                V_fuel_int      += m_fuel_tank/source.fuel.density  #assume all fuel is in integral tanks 
-                V_fuel          += m_fuel_tank/source.fuel.density #total fuel  
-        
-            for system in network.systems:
-                W_energy_network_total += system.mass_properties.mass
-                if isinstance(system, RCAIDE.Library.Components.Powertrain.Systems.Electrical): 
-                    # electrical payload 
-                    W_systems.W_electrical  += system.mass_properties.mass
-                    
-                elif isinstance(system, RCAIDE.Library.Components.Powertrain.Systems.Avionics):
-                    # Avionics Weight 
-                    W_systems.W_avionics  += system.mass_properties.mass
-                    
-        for source in network.sources:
-            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
-                W_energy_network_total  += source.mass_properties.mass * Units.kg
-                  
-        for propulsor in network.propulsors:
-            if 'motor' in propulsor: 
-                motor_mass = propulsor.motor.mass_properties.mass       
-                W_energy_network_cumulative  += motor_mass                
+    for fuel_line in  network.fuel_lines: 
+        for fuel_tank in fuel_line.fuel_tanks: 
+            m_fuel_tank     = fuel_tank.fuel.mass_properties.mass
+            m_fuel          += m_fuel_tank   
+            landing_weight  -= m_fuel_tank   
+            number_of_tanks += 1
+            V_fuel_int      += m_fuel_tank/fuel_tank.fuel.density  #assume all fuel is in integral tanks 
+            V_fuel          += m_fuel_tank/fuel_tank.fuel.density #total fuel  
+         
+        # Electric-Powered Propulsors
+        for bus in network.busses:
+            for battery in bus.battery_modules:
+                W_energy_network_total  += battery.mass_properties.mass * Units.kg
+
+            for propulsor in bus.propulsors:
+                if 'motor' in propulsor: 
+                    motor_mass = propulsor.motor.mass_properties.mass       
+                    W_energy_network_cumulative  += motor_mass                
         
         # Fuel network
         W_propulsion = Raymer.compute_propulsion_system_weight(network, settings)      
@@ -248,16 +238,13 @@ def compute_operating_empty_weight(vehicle, settings=None):
                 landing_gear.mass_properties.mass = W_landing_gear.main 
             elif isinstance(landing_gear, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear):
                 landing_gear.mass_properties.mass = W_landing_gear.nose 
-
-    # Calculating Empty Weight of Aircraft
-    W_systems           = Raymer.compute_systems_weight(vehicle,V_fuel, V_fuel_int, number_of_tanks, number_of_engines)
-    
-    # Calculate the equipment empty weight of the aircraft 
-    W_empty           = (W_wing + W_fuselage + W_landing_gear.main+W_landing_gear.nose + W_energy_network_cumulative + W_systems.total + \
-                          W_tail_horizontal +W_tail_vertical) 
+ 
 
     # packup outputs
-    W_payload = Raymer.compute_payload_weight(vehicle)       
+    W_payload = Raymer.compute_payload_weight(vehicle)    
+    
+    # Calculating Empty Weight of Aircraft
+    W_systems           = Raymer.compute_systems_weight(vehicle,V_fuel, V_fuel_int, number_of_tanks, number_of_engines)    
 
     # Distribute all weight in the output fields
     output                                    = Data()
@@ -291,17 +278,16 @@ def compute_operating_empty_weight(vehicle, settings=None):
                                                   + output.empty.systems.hydraulics + output.empty.systems.furnishings \
                                                   + output.empty.systems.air_conditioner + output.empty.systems.instruments \
                                                   + output.empty.systems.anti_ice
-  
+
     output.payload                                = Data()
     output.payload                                = W_payload
-    output.operational_items                      = Data() # What is the point of these items?
+    output.operational_items                      = Data()
     output.operational_items.oper_items           = 0
     output.operational_items.flight_crew          = 0
     output.operational_items.flight_attendants    = 0
     output.operational_items.total                = 0
 
-    output.empty.total      = output.empty.structural.total + output.empty.propulsion.total + output.empty.systems.total
-    output.operating_empty  = output.empty.total + output.operational_items.total
-    output.zero_fuel_weight =  output.operating_empty + output.payload.total 
-    
+    output.empty.total      = output.empty.structural.total + output.empty.propulsion.total + output.empty.systems.total + output.operational_items.total
+    output.zero_fuel_weight = output.empty.total + output.payload.total
+
     return output

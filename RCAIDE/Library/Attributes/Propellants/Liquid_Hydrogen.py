@@ -80,9 +80,8 @@ class Liquid_Hydrogen(Propellant):
         self.reactant                      = 'O2' 
         self.density                       = 70.85                            # [kg/m^3]
         self.specific_energy               = 120e6  # [J/kg] Considering the lower heating value https://ntrs.nasa.gov/api/citations/20020085127/downloads/20020085127.pdf
-        self.energy_density                = 8491.0e6                         # [J/m^3] 
-        self.gravimetric_efficiency        = .3
-        self.stoichiometric_fuel_to_air    = 0.029411 
+        self.energy_density                = 8491.0e6                         # [J/m^3]
+        self.stoichiometric_fuel_to_air    = 0.029411
         self.temperatures.autoignition     = 845.15                           # [K]  
         self.stoichiometric_fuel_air_ratio = 0.029411         # [-] Stoichiometric Fuel to Air ratio
         self.heat_of_vaporization          = 0         # [J/kg] Heat of vaporization at standard conditions
@@ -92,6 +91,23 @@ class Liquid_Hydrogen(Propellant):
         self.kinetic_mechanism             = '' # [-] Kinetic mechanism for fuel surrogate species
         self.oxidizer                      = ''       
 
+        self.emission_indices.Production  = 0.0      # kg/kg 
+        self.emission_indices.CO2         = 0.0      # kg/kg
+        self.emission_indices.CO          = 0.0      # kg/kg
+        self.emission_indices.H2O         = 8.21     # kg/kg  
+        self.emission_indices.SO2         = 0.0      # kg/kg
+        self.emission_indices.NOx         = 0.0539   # kg/kg
+        self.emission_indices.Soot        = 0.0      # kg/kg
+        
+        self.global_warming_potential_100.CO2       = 1     # CO2e/kg  
+        self.global_warming_potential_100.H2O       = 0.06  # CO2e/kg  
+        self.global_warming_potential_100.CO        = 1     # CO2e/kg  
+        self.global_warming_potential_100.SO2       = -226  # CO2e/kg  
+        self.global_warming_potential_100.NOx       = 52    # CO2e/kg  
+        self.global_warming_potential_100.CO        = 1     # CO2e/kg  
+        self.global_warming_potential_100.Soot      = 1166  # CO2e/kg    
+        self.global_warming_potential_100.Contrails = 11 #  kg/CO2e/km
+        
         self.materials_properties = self.cryogen_properties()
 
     def cryogen_properties(self, T, prop_name):

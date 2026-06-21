@@ -3,11 +3,15 @@
 # 
 # Created:  Jul 2024, M. Clarke 
 # Modified: Aug 2025, S. Shekar 
+# ---------------------------------------------------------------------------------------
+# Imports
+# ---------------------------------------------------------------------------------------
 import RCAIDE
+
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_fuel_volume 
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_fuel_volume(vehicle, compute_fuel_volume = False, update_max_fuel = False):
+def compute_fuel_volume(vehicle, compute_fuel_volume = True, update_max_fuel = False):
     """
     Computes the total fuel volume and mass for all fuel tanks in a vehicle.
 
@@ -65,39 +69,26 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = False, update_max_fuel = 
     """
     wings             = vehicle.wings
     fuselages         = vehicle.fuselages 
-    total_fuel_volume = 0
-    total_fuel_mass   = 0
+    total_fuel_volume = 0    
     for network in vehicle.networks: 
-        for source in network.sources:
-            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
-                # update fuel tag to ensure no overwriting of mass 
-                source.fuel.tag = source.tag + '_' + source.fuel.tag          
-                try:
-                    compute_fuel_tank_volume = source.compute_volume
-                except Exception as e:
-                    total_fuel_volume += getattr(source.fuel.volume_properties, "net_volume", None)
-                    total_fuel_mass   += getattr(source.fuel.mass_properties, "mass", None)
-                else:
-                    # if no error getting the method, run it normally
-                    if compute_fuel_volume:
-                        compute_fuel_tank_volume(wings, fuselages, network.sources) 
-                        source.fuel.volume_properties.net_volume = source.fuel.mass_properties.mass / source.fuel.density
-                    total_fuel_volume += source.fuel.volume_properties.net_volume 
-                    total_fuel_mass   += source.fuel.mass_properties.mass
-                    
-                
-    for network in vehicle.networks: 
-        for source in network.sources:
-            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):     
-                if source.power_split_ratio == None:
-                    source.power_split_ratio = source.fuel.mass_properties.mass / total_fuel_mass                    
-                
-    # Assign Total Fuel Volume and to Vehicle 
-    if compute_fuel_volume:
-        vehicle.volume_properties.max_fuel   = total_fuel_volume
-
+         for source in  network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                fuel_tank =  source     
+                fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag 
+                if compute_fuel_volume:
+                    fuel_tank.compute_volume(wings, fuselages,  network.sources)
+                total_fuel_volume += fuel_tank.volume_properties.net_volume 
     
+    if compute_fuel_volume:
+        vehicle.volume_properties.max_fuel = total_fuel_volume
+
     if update_max_fuel:
+        total_fuel_mass = sum(
+            source.volume_properties.net_volume * source.fuel.density
+            for network in vehicle.networks
+            for source in network.sources
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank)
+        )
         vehicle.mass_properties.max_fuel = total_fuel_mass
 
-    return 
+    return

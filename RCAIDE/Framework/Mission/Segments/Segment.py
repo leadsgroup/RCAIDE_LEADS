@@ -177,21 +177,26 @@ class Segment(Analysis):
         
         self.assigned_control_variables                                                = Data() 
           
-        self.assigned_control_variables.body_angle                                     = Data()
-        self.assigned_control_variables.body_angle.active                              = False               
-        self.assigned_control_variables.body_angle.initial_guess_values                = None              
-        self.assigned_control_variables.body_angle.bounds                              = None
+        self.assigned_control_variables.pitch_angle                                    = Data()
+        self.assigned_control_variables.pitch_angle.active                             = False               
+        self.assigned_control_variables.pitch_angle.initial_guess_values               = None              
+        self.assigned_control_variables.pitch_angle.bounds                             = None
   
         self.assigned_control_variables.bank_angle                                     = Data()
         self.assigned_control_variables.bank_angle.active                              = False 
         self.assigned_control_variables.bank_angle.initial_guess_values                = None
         self.assigned_control_variables.bank_angle.bounds                              = None 
   
-        self.assigned_control_variables.wind_angle                                     = Data()
-        self.assigned_control_variables.wind_angle.active                              = False             
-        self.assigned_control_variables.wind_angle.initial_guess_values                = None              
-        self.assigned_control_variables.wind_angle.bounds                              = None  
-  
+        self.assigned_control_variables.angle_of_attack                                = Data()
+        self.assigned_control_variables.angle_of_attack.active                         = False
+        self.assigned_control_variables.angle_of_attack.initial_guess_values           = None
+        self.assigned_control_variables.angle_of_attack.bounds                         = None
+
+        self.assigned_control_variables.sideslip_angle                                 = Data()
+        self.assigned_control_variables.sideslip_angle.active                          = False
+        self.assigned_control_variables.sideslip_angle.initial_guess_values            = None
+        self.assigned_control_variables.sideslip_angle.bounds                          = None
+
         self.assigned_control_variables.elapsed_time                                   = Data()
         self.assigned_control_variables.elapsed_time.active                            = False                 
         self.assigned_control_variables.elapsed_time.initial_guess_values              = None                

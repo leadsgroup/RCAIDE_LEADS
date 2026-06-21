@@ -45,7 +45,7 @@ def vehicle_setup(rotor_type):
     vehicle.flight_envelope.design_mach_number        = 0.228
     
     vehicle.reference_area                            = 14.76
-    vehicle.number_of_passengers                                = 1
+    vehicle.number_of_passengers                      = 1
     vehicle.systems.control                           = "fully powered"
     vehicle.systems.accessories                       = "commuter"
     
@@ -470,7 +470,7 @@ def vehicle_setup(rotor_type):
         propeller.hub_radius                             = 10.     * Units.inches 
         propeller.cruise.design_freestream_velocity      = 175.*Units['mph']   
         propeller.cruise.design_angular_velocity         = 2700. * Units.rpm 
-        propeller.cruise.design_Cl                       = 0.7 
+        propeller.cruise.design_lift_coefficient                       = 0.7 
         propeller.cruise.design_altitude                 = 30. * Units.feet 
         propeller.cruise.design_thrust                   = 6000   
         propeller.clockwise_rotation                     = False

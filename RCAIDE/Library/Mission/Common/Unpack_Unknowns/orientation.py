@@ -15,7 +15,7 @@ def orientation(segment):
         The mission segment being analyzed
             - assigned_control_variables : Data
                 Control configurations
-                    - body_angle : Control
+                    - pitch_angle : Control
                         Body angle control settings
                     - bank_angle : Control
                         Bank angle control settings
@@ -23,7 +23,7 @@ def orientation(segment):
                         Velocity control settings
                     - altitude : Control
                         Altitude control settings
-            - trim_lift_coefficient : float, optional
+            - lift_coefficient : float, optional
                 Target lift coefficient for trim
             - angle_of_attack : float
                 Fixed angle of attack [rad]
@@ -43,7 +43,7 @@ def orientation(segment):
                             Vehicle position [m]
                 - unknowns : Data
                     Solver variables
-                        - body_angle : array
+                        - pitch_angle : array
                             Body angle values [rad]
                         - bank_angle : array
                             Bank angle values [rad]
@@ -89,29 +89,27 @@ def orientation(segment):
     """
     ctrls    = segment.assigned_control_variables 
 
-    # Body Angle Control 
-    if segment.trim_lift_coefficient !=  None:
-        segment.state.conditions.aerodynamics.coefficients.lift.total  = segment.trim_lift_coefficient * segment.state.ones_row(1)
-    else: 
-        if ctrls.body_angle.active: 
+    # Body Angle Control
+    if segment.lift_coefficient !=  None:
+        segment.state.conditions.aerodynamics.coefficients.lift.total          = segment.lift_coefficient * segment.state.ones_row(1)
+        segment.state.conditions.aerodynamics.coefficients.lift.inviscid.total = segment.lift_coefficient / segment.analyses.aerodynamics.settings.fuselage_lift_correction   * segment.state.ones_row(1)
+    else:
+        if ctrls.body_angle.active:
             segment.state.conditions.frames.body.inertial_rotations[:,1] = segment.state.unknowns.mission.body_angle[:,0]
-        else: 
+        else:
             segment.state.conditions.frames.body.inertial_rotations[:,1] = segment.angle_of_attack
-            
-    # Bank Angle 
-    if ctrls.bank_angle.active: 
+
+    # Bank Angle
+    if ctrls.bank_angle.active:
         segment.state.conditions.frames.body.inertial_rotations[:,0] = -segment.state.unknowns.mission.bank_angle[:,0]
     else:
-        segment.state.conditions.frames.body.inertial_rotations[:,0] = -segment.bank_angle 
+        segment.state.conditions.frames.body.inertial_rotations[:,0] = -segment.bank_angle
     segment.state.conditions.frames.body.inertial_rotations[:,2] =  segment.state.conditions.frames.planet.true_heading[:,0]
-    
-    # Side Slip Angle - Future work would be to include drift angle as a variable 
-    segment.state.conditions.frames.wind.body_rotations[:,2] = segment.sideslip_angle  
-    
+
     # Velocity Control
     if ctrls.velocity.active:
         segment.state.conditions.frames.inertial.velocity_vector[:,0] = segment.state.unknowns.mission.velocity[:,0]
-        
+
     # Altitude Control
     if ctrls.altitude.active:
         segment.state.conditions.frames.inertial.position_vector[:,2] = -segment.state.unknowns.mission.altitude[:,0]

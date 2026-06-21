@@ -37,8 +37,8 @@ def compute_operating_empty_weight(vehicle, settings=None):
     ##------------------------------------------------------------------------------- 
     W_systems = Raymer.compute_systems_weight(vehicle)
 
-    ##-------------------------------------------------------------------------------                 
-    # Propulsion Weight 
+    ##-------------------------------------------------------------------------------
+    # Propulsion Weight
     ##-------------------------------------------------------------------------------
     output                                      = Data()
     output.empty                                = Data() 
@@ -77,8 +77,13 @@ def compute_operating_empty_weight(vehicle, settings=None):
         W_energy_network.W_fuel_system      += W_propulsion.W_fuel_system 
         W_energy_network.W_nacelle          += W_propulsion.W_nacelle    
         number_of_engines                   += W_propulsion.number_of_engines
-        number_of_tanks                     += W_propulsion.number_of_fuel_tanks
-        
+        number_of_tanks                     += W_propulsion.number_of_fuel_tanks 
+
+        for propulsor in network.propulsors:
+            propulsor.mass_properties.mass = (W_propulsion.W_engine + W_propulsion.W_thrust_reverser + W_propulsion.W_starter \
+                                            + W_propulsion.W_engine_controls) / W_propulsion.number_of_engines
+            propulsor.nacelle.mass_properties.mass = W_propulsion.W_nacelle / W_propulsion.number_of_engines
+
     W_energy_network_cumulative += W_energy_network_total
     
     ##-------------------------------------------------------------------------------                 
@@ -173,10 +178,9 @@ def compute_operating_empty_weight(vehicle, settings=None):
                                                     + output.empty.systems.air_conditioner + output.empty.systems.instruments
  
     output.payload    = payload 
-    output.operational_items    = Data()
-    output.operational_items    = W_oper 
-    output.empty.total          = output.empty.structural.total + output.empty.propulsion.total + output.empty.systems.total 
-    output.zero_fuel_weight     = output.empty.total + output.operational_items.total + output.payload.total
+    output.operational_items    = W_oper
+    output.empty.total          = output.empty.structural.total + output.empty.propulsion.total + output.empty.systems.total + output.operational_items.total
+    output.zero_fuel_weight     = output.empty.total + output.payload.total
     output.max_takeoff          = vehicle.mass_properties.max_takeoff 
 
     return output

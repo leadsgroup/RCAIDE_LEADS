@@ -49,7 +49,7 @@ class Hydrogen_Transport(Weights):
         N/A
         """ 
         self.method                                        = 'Semi_Empirical'
-        self.propulsion_architecture                       = 'Hydrogen'
+        self.propulsion_architecture                       = 'Cryogenic'
         self.aircraft_type                                 = 'Transport' 
  
         self.settings.advanced_composites                  = False

@@ -24,13 +24,13 @@ def main():
     try:
         import vsp as vsp
         from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
-        export_vsp_vehicle(vehicle, 'Boeing_737_800')
+        export_vsp_vehicle(vehicle, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Boeing_737_800'))
     except ImportError:
         pass
        
     
     # Step 2: plot vehicle 
-    plot_3d_vehicle(vehicle,export_gltf=True)  
+    plot_3d_vehicle(vehicle,save_filename=os.path.join(os.path.dirname(os.path.abspath(__file__)),'Boeing_737_800'),export_gltf=True,show_figure=True)  
     
     return 
     
@@ -70,27 +70,27 @@ def vehicle_setup():
     # ------------------------------------------------------------------        
     #  Landing Gear
     # ------------------------------------------------------------------  
-    main_gear                                 = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
-    main_gear.tire_diameter                   = 44.5 *  Units.inches 
-    main_gear.rim_diameter                    = 21   *  Units.inches 
-    main_gear.tire_width                      = 16.5  *  Units.inches 
-    main_gear.strut_length                    = 1.8  * Units.m
-    main_gear.origin                          = [[18,0, -2]]  
-    main_gear.wheels                          = 4   
+    main_gear                   = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
+    main_gear.tire_diameter     = 44.5 *  Units.inches 
+    main_gear.rim_diameter      = 21   *  Units.inches 
+    main_gear.tire_width        = 16.5  *  Units.inches 
+    main_gear.strut_length      = 1.8  * Units.m
+    main_gear.origin            = [[18,5.72/2,-0.5]]  
+    main_gear.wheels            = 4   
     main_gear.number_of_gear_types_in_tandem  = 1
-    main_gear.number_of_wheels_in_gear_type   = 2  
-    main_gear.xz_plane_symmetric              = True
+    main_gear.number_of_wheels_in_gear_type  = 2  
+    main_gear.xz_plane_symmetric= True
     vehicle.append_component(main_gear)  
 
-    nose_gear                                 = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
-    nose_gear.tire_diameter                   = 27    *  Units.inches   
-    nose_gear.rim_diameter                    = 15    *  Units.inches 
-    nose_gear.tire_width                      = 7.75  *  Units.inches 
-    nose_gear.strut_length                    = 1.8   * Units.m  
-    nose_gear.origin                          = [[5,0, -2]]  
-    nose_gear.wheels                          = 2   
+    nose_gear                   = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
+    nose_gear.tire_diameter     = 27    *  Units.inches   
+    nose_gear.rim_diameter      = 15    *  Units.inches 
+    nose_gear.tire_width        = 7.7   *  Units.inches
+    nose_gear.strut_length      = 1.8   * Units.m  
+    nose_gear.origin            = [[5,0,-0.5]]  
+    nose_gear.wheels            = 2   
     nose_gear.number_of_gear_types_in_tandem  = 1
-    nose_gear.number_of_wheels_in_gear_type   = 2    
+    nose_gear.number_of_wheels_in_gear_type  = 2    
     vehicle.append_component(nose_gear)
      
 
@@ -99,7 +99,7 @@ def vehicle_setup():
     # Carbo Bays 
     # ------------------------------------------------------------------ 
     forward_cargo_bay = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
-    forward_cargo_bay.cargo.mass_properties.mass  = 1850
+    forward_cargo_bay.mass_properties.mass        = 1850
     forward_cargo_bay.origin                      = [[5.82, 0, -0.6]]
     forward_cargo_bay.length                      = 7.82
     forward_cargo_bay.width                       = 2.5
@@ -107,7 +107,7 @@ def vehicle_setup():
     vehicle.append_component(forward_cargo_bay) 
  
     aft_cargo_bay  = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
-    aft_cargo_bay.cargo.mass_properties.mass  = 1440
+    aft_cargo_bay.mass_properties.mass        = 1440
     aft_cargo_bay.origin                      = [[23.43, 0, -0.6]]
     aft_cargo_bay.length                      =  5.5
     aft_cargo_bay.width                       =  2.5
@@ -137,9 +137,7 @@ def vehicle_setup():
     wing.vertical                         = False
     wing.xz_plane_symmetric               = True
     wing.twists.root                      = 2.5 * Units.degrees 
-    wing.twists.tip                       = 3.5  * Units.degrees 
-    wing.transition_x_upper               = 0.5
-    wing.transition_x_lower               = 0.5
+    wing.twists.tip                       = 3.5  * Units.degrees  
     
 
     # Wing Segments
@@ -318,9 +316,7 @@ def vehicle_setup():
     wing.vertical                         = True
     wing.xz_plane_symmetric               = False
     wing.t_tail                           = False 
-    wing.dynamic_pressure_ratio           = 1.0
-    wing.transition_x_upper               = 0.5
-    wing.transition_x_lower               = 0.5
+    wing.dynamic_pressure_ratio           = 1.0 
 
     # Wing Segments
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -387,30 +383,6 @@ def vehicle_setup():
     fuselage.heights.at_quarter_length                 = 3.74 * Units.meter
     fuselage.heights.at_three_quarters_length          = 3.65 * Units.meter
     fuselage.heights.at_wing_root_quarter_chord        = 3.74 * Units.meter
-    
-    cabin                                              = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-    cabin.origin                                       = [[5, 0, 0]]
-    first_class                                        = RCAIDE.Library.Components.Fuselages.Cabins.Classes.First() 
-    first_class.number_of_seats_abrest                 = 4
-    first_class.number_of_rows                         = 4
-    first_class.galley_lavatory_percent_x_locations    = [0]       
-    first_class.type_A_exit_percent_x_locations        = [0.2]
-    cabin.append_cabin_class(first_class) 
-
-    business_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business() 
-    business_class.number_of_seats_abrest              = 6
-    business_class.number_of_rows                      = 3  
-    cabin.append_cabin_class(business_class) 
-    
-    economy_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
-    economy_class.number_of_seats_abrest              = 6
-    economy_class.number_of_rows                      = 18
-    economy_class.galley_lavatory_percent_x_locations = [1]      
-    economy_class.emergency_exit_percent_x_locations  = [0.1,0.15] 
-    economy_class.type_A_exit_percent_x_locations     = [0.99]
-    cabin.append_cabin_class(economy_class)
-    
-    fuselage.append_cabin(cabin)          
     
 
     # Segment  
@@ -544,8 +516,33 @@ def vehicle_setup():
     segment.percent_z_location                  = 0.04593
     segment.height                              = 1.09130
     segment.width                               = 0.21826
-    fuselage.append_segment(segment)
+    fuselage.append_segment(segment) 
     
+    # define cabin 
+    cabin                                              = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
+    cabin.origin                                       = [[5, 0, 0]]
+    cabin.segments_bounding_cabin                      = ['segment_6','segment_12']
+    first_class                                        = RCAIDE.Library.Components.Fuselages.Cabins.Classes.First() 
+    first_class.number_of_seats_abrest                 = 4
+    first_class.number_of_rows                         = 4
+    first_class.galley_lavatory_percent_x_locations    = [0]       
+    first_class.type_A_exit_percent_x_locations        = [0.2]
+    cabin.append_cabin_class(first_class) 
+
+    business_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business() 
+    business_class.number_of_seats_abrest              = 6
+    business_class.number_of_rows                      = 3  
+    cabin.append_cabin_class(business_class) 
+    
+    economy_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
+    economy_class.number_of_seats_abrest              = 6
+    economy_class.number_of_rows                      = 18
+    economy_class.galley_lavatory_percent_x_locations = [1]      
+    economy_class.emergency_exit_percent_x_locations  = [0.1,0.15] 
+    economy_class.type_A_exit_percent_x_locations     = [0.99]
+    cabin.append_cabin_class(economy_class)
+    
+    fuselage.append_cabin(cabin)          
     
     # add to vehicle
     vehicle.append_component(fuselage)
