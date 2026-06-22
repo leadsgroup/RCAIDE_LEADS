@@ -27,6 +27,7 @@ def energy(mission):
                 converter.append_operating_conditions(segment)  
 
             for modulator in network.modulators: 
+                modulator.initialize(network)
                 modulator.append_operating_conditions(segment)  
 
             for source in  network.sources: 
@@ -34,6 +35,7 @@ def energy(mission):
                 source.append_operating_conditions(segment)  
 
             for system in network.systems:
+                system.initialize(network)
                 system.append_operating_conditions(segment)             
     
             for distributor in network.distributors:
