@@ -27,11 +27,13 @@ vehicles_path = os.path.abspath(
 if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Navion    import vehicle_setup, configs_setup     
+import time
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 
 def main(): 
+    ti = time.time()
     
     # vehicle data
     vehicle  = vehicle_setup() 
@@ -57,6 +59,10 @@ def main():
     print('Error: ',CL_diff)
     assert np.abs(CL_diff/CL_true) < 1e-6
      
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return  
 # ----------------------------------------------------------------------
 #   Define the Vehicle Analyses

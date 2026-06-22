@@ -31,12 +31,14 @@ vehicles_path = os.path.abspath(
 if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Hydrogen_Fuel_Cell_Twin_Otter   import vehicle_setup , configs_setup  
+import time
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  REGRESSION
 # ----------------------------------------------------------------------------------------------------------------------  
 
 def main():  
+    ti = time.time()
  
     mdot_H2_true         = [0.01783053350249817, 0.017434650919374024]
     fuel_cell_models     = ['PEM', 'Larminie']
@@ -70,6 +72,10 @@ def main():
         if i == 0: 
             plot_results(results)
         
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
  
 def analyses_setup(configs):

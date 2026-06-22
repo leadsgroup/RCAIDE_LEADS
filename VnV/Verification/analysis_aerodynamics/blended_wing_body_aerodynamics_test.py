@@ -18,11 +18,13 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 # the analysis functions
 from BWB    import vehicle_setup  ,  configs_setup
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 def main():
+    ti = time.time()
     
     vehicle  = vehicle_setup() 
     configs  = configs_setup(vehicle) 
@@ -100,6 +102,10 @@ def main():
     for k,v in list(error.items()): 
         assert(np.abs(v)<1e-3), f"{k} error too large: {v}"
     
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
 
 # ----------------------------------------------------------------------

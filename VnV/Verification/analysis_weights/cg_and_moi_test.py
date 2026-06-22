@@ -28,7 +28,9 @@ from Lockheed_C5a           import vehicle_setup as transport_setup
 from Cessna_172             import vehicle_setup as general_aviation_setup
 from Stopped_Rotor_EVTOL    import vehicle_setup as EVTOL_setup
 from BWB                    import vehicle_setup as BWB_vehicle_setup
+import time
 def main(): 
+    ti = time.time()
     # make true only when resizing aircraft. should be left false for regression
     update_regression_values = False  
     Transport_Aircraft_Test()
@@ -44,6 +46,10 @@ def main():
     else:
         print("Skipping BWB_Test():\
             Shapely lacks 'maximum_inscribed_circle' support for Python < 3.11.")
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 def BWB_Test():

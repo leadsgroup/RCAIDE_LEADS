@@ -34,6 +34,7 @@ from Boeing_737    import configs_setup as configs_setup
 # ----------------------------------------------------------------------------------------------------------------------
 
 def main():
+    ti = time.time()
     
     cantera_installation = False 
 
@@ -42,6 +43,12 @@ def main():
 
     try: 
         import cantera as ct
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
+    return
+import time
         cantera_installation = True 
         emissions_methods = ['Emission_Index_Correlation_Method', 'Emission_Index_CRN_Method']
     except:

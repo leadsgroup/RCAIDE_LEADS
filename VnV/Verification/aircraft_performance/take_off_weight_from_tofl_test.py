@@ -29,12 +29,14 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 
 from Embraer_190 import vehicle_setup, configs_setup 
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 
 def main():    
+    ti = time.time()
 
     # define vehicle 
     vehicle   = vehicle_setup()   
@@ -58,6 +60,10 @@ def main():
     print('Range Error = %.4e' % max_tow_error)
     assert(max_tow_error   < 1e-6 )
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return  
 
 

@@ -26,12 +26,14 @@ vehicles_path = os.path.abspath(
 if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Test_Propeller    import Test_Propeller  
+import time
 
 #--------------------------------------------------------------------------------------------
 #   Imports
 # -------------------------------------------------------------------------------------------
 
 def main():
+    ti = time.time()
     '''
     This example shows a propeller operating in three cases of nonuniform freestream flow:
     First, a propeller operates at a nonzero thrust angle relative to the freestream.
@@ -51,6 +53,10 @@ def main():
     #-------------------------------------------------------------    
     arbitrary_nonuniform_freestream_test()
      
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 def inclined_angle_test():

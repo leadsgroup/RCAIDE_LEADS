@@ -29,12 +29,14 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Hydrogen_BWB         import vehicle_setup as BWB_vehicle_setup
 from Hydrogen_BWB         import configs_setup as BWB_configs_setup
+import time
 
 # ----------------------------------------------------------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------------------------------------------------------
 
 def main():
+    ti = time.time()
 
     vehicle = BWB_vehicle_setup()
      # Step 2 create aircraft configuration based on vehicle 
@@ -69,6 +71,10 @@ def main():
         if os.path.exists(file_path):
             os.remove(file_path)
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 # ----------------------------------------------------------------------

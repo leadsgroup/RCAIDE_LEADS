@@ -32,17 +32,23 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Embraer_190    import vehicle_setup as E190_vehicle_setup       
 from BWB            import vehicle_setup as BWB_vehicle_setup       
+import time
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  REGRESSION
 # ----------------------------------------------------------------------------------------------------------------------  
 def main():
+    ti = time.time()
     # tube and wing load trim test 
     #tube_and_wing_load_trim_test()
  
     # blended wing body load trim test 
     blended_wing_body_load_trim_test()
     
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
 
 def tube_and_wing_load_trim_test():

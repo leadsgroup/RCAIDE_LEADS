@@ -25,11 +25,13 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Embraer_190    import vehicle_setup as vehicle_setup
 from Embraer_190    import configs_setup as configs_setup 
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 def main(): 
+    ti = time.time()
     vehicle           = vehicle_setup() 
     configs           = configs_setup(vehicle) 
     analyses          = noise_analyses_setup(configs)  
@@ -55,6 +57,10 @@ def main():
     for k,v in list(error.items()):
         assert(np.abs(v)<1e-2)
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
  
 

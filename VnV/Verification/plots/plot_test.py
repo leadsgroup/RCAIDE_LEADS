@@ -35,11 +35,13 @@ from Concorde                       import vehicle_setup as Concorde_vehicle_set
 from Boeing_737                     import vehicle_setup as B737_vehicle_setup
 from Hydrogen_Fuel_Cell_Twin_Otter  import vehicle_setup as HTO_vehicle_setup
 from Navion                         import vehicle_setup as Navion_vehicle_setup
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 def main():
+    ti = time.time()
     show_figure = False # must be false for C.I. on github
     evtol_aircraft_geometry_test(show_figure)
     conventional_turbofan_aircraft_geometry_test(show_figure)
@@ -49,6 +51,10 @@ def main():
     general_aviation_aircraft_geometry_test(show_figure)
     bwb_aircraft_geometry_test(show_figure)
     orthogonal_view_test(show_figure)
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
     
 def evtol_aircraft_geometry_test(show_figure):

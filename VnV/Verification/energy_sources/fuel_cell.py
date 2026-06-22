@@ -30,12 +30,14 @@ vehicles_path = os.path.abspath(
 if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Hydrogen_Fuel_Cell   import vehicle_setup , configs_setup  
+import time
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  REGRESSION
 # ----------------------------------------------------------------------------------------------------------------------  
 
 def main():   
+    ti = time.time()
     
     # Operating conditions for battery p 
     marker_size           = 5   
@@ -91,6 +93,10 @@ def main():
     axes1.legend(loc='upper right', ncol = 2, prop={'size': legend_font_size})  
     axes1.set_ylim([0,1E-6])  
     
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return  
  
 def analyses_setup(configs):

@@ -19,6 +19,7 @@ import pylab as plt
 import sys
 import os
 import numpy as np
+import time
 
 # import vehicle file
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -32,6 +33,7 @@ if vehicles_path not in sys.path:
 from Embraer_190 import vehicle_setup, configs_setup  
 
 def main(): 
+    ti = time.time()
     # define vehicle 
     vehicle   = vehicle_setup()
     vehicle.mass_properties.landing = 40000
@@ -49,7 +51,10 @@ def main():
     print('Landing Field Length (m): ',landing_field_length) 
     LFL_error = np.max(np.abs(landing_field_length-truth_LFL))
     assert(LFL_error<1e-6)
- 
+    
+    elapsed_time = time.time() - ti 
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ',elapsed_time_min)
  
     return
 

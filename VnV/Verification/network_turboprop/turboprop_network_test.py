@@ -31,12 +31,14 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from   ATR_72    import vehicle_setup as vehicle_setup
 from   ATR_72    import configs_setup as configs_setup 
+import time
 
 # ----------------------------------------------------------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------------------------------------------------------
 
 def main():
+    ti = time.time()
     
 
     # vehicle data
@@ -85,6 +87,10 @@ def main():
     
     # plt the old results
     plot_mission(results)   
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
 
 def analyses_setup(configs):

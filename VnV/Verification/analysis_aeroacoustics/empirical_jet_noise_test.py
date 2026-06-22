@@ -31,12 +31,14 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Embraer_190    import vehicle_setup as vehicle_setup
 from Embraer_190    import configs_setup as configs_setup 
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 
 def main():     
+    ti = time.time()
 
     # vehicle data
     vehicle                           = vehicle_setup()
@@ -58,6 +60,10 @@ def main():
     E190_diff_SPL   = np.abs(E190_SPL - E190_SPL_true)
     print('SPL difference: ',E190_diff_SPL)
     assert np.abs((E190_SPL - E190_SPL_true)/E190_SPL_true) < 1e-3 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 def base_analysis(vehicle):

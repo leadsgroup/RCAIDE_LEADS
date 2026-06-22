@@ -33,12 +33,14 @@ if vehicles_path not in sys.path:
 from BWB         import vehicle_setup as BWB_vehicle_setup
 from Boeing_737  import vehicle_setup as B737_vehicle_setup
 from Navion      import vehicle_setup as Nav_vehicle_setup
+import time
 
 # ----------------------------------------------------------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------------------------------------------------------
 
 def main():
+    ti = time.time()
     integral_fuel_tank_volume_test()
     # -------------------------------------------------------------
     # Run test only if Python version >= 3.11
@@ -52,6 +54,10 @@ def main():
     else:
         print("Skipping non_conformal_lh2_fuel_tank_volume_test() and conformal_lh2_fuel_tank_volume_test():\
             Shapely lacks 'maximum_inscribed_circle' support for Python < 3.11.")
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 def integral_fuel_tank_volume_test():

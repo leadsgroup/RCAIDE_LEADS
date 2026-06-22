@@ -27,11 +27,13 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Embraer_190    import vehicle_setup as E190_vehicle_setup 
 from NASA_X57       import vehicle_setup as X57_vehicle_setup      
+import time
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  REGRESSION
 # ----------------------------------------------------------------------------------------------------------------------  
 def main():
+    ti = time.time()
     # standard payload range
     fuel_aircraft_payload_range()
     
@@ -40,6 +42,10 @@ def main():
     
     # electric payload range 
     electric_aircraft_payload_range() 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 def fuel_aircraft_payload_range():

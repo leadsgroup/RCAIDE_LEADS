@@ -29,8 +29,10 @@ from Stopped_Rotor_EVTOL    import vehicle_setup as evtol_setup
 from Boeing_787             import vehicle_setup as hydrogen_transport_setup
 from Electric_Twin_Otter    import vehicle_setup as electric_general_aviation_setup
 from all_electric_ATR_72    import vehicle_setup as electric_transport_setup 
+import time
 
 def main():
+    ti = time.time()
     update_regression_values = False # should be false unless code functionally changes
     show_figure              = False # leave false for regression
 
@@ -42,6 +44,10 @@ def main():
     BWB_Hydrogen_Aircraft_Test(update_regression_values,show_figure)
     Electric_General_Aviation_Test(update_regression_values,show_figure)
     Electric_Transport_Test(update_regression_values,show_figure)
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 def Electric_Transport_Test(update_regression_values, show_figure):
