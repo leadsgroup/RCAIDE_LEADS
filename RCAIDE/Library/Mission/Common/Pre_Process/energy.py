@@ -405,6 +405,8 @@ def _resolve_hybridization(segment, topology,seg_i, verbose=False):
                         source.power_split_ratio = 1.0 / len(sources)
 
     if verbose:
+        # print segment name
+        print(f'  Segment {seg_i + 1}: {segment.tag}')
         print(f'  Resolved phi = {phi}  (fuel/electric split)')
         print(f'  Resolved psi = {psi}  (battery/fuel-cell split)')
         print('  ' + '-' * 50)

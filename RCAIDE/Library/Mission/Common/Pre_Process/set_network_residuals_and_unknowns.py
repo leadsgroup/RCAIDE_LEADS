@@ -56,7 +56,17 @@ def set_network_residuals_and_unknowns(mission):
                                 stacklevel=2)
 
                 if has_electrical_flow:
-                    segment.state.unknowns.network['electrical_power']              = 0.  * ones_row(1)
+                    # Estimate initial electrical power from system loads
+                    initial_electrical_power = 0.0
+                    for network in segment.analyses.vehicle.networks:
+                        for system in network.systems:
+                            if system.active and hasattr(system, 'power_draw'):
+                                initial_electrical_power += system.power_draw
+
+                    if initial_electrical_power == 0.0:
+                        initial_electrical_power = 1000.0
+
+                    segment.state.unknowns.network['electrical_power']              = initial_electrical_power * ones_row(1)
                     segment.state.residuals.network['electrical_power']             = 0.     * ones_row(1)
                     segment.state.unknowns_upper_bounds.network['electrical_power'] =  np.inf * ones_row(1)
                     segment.state.unknowns_lower_bounds.network['electrical_power'] = -np.inf * ones_row(1)

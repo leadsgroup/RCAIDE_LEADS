@@ -34,7 +34,7 @@ def compute_battery_pack_performance(battery,state,network):
                 battery_conditions[module.tag].inputs.power.electrical  = battery_conditions.outputs.power.electrical/ battery.number_of_active_modules 
                 battery_conditions[module.tag].current_draw             = battery_conditions[module.tag].inputs.power.electrical  / module_voltage 
             else:
-                battery_conditions.outputs.power.electrical              = state.unknowns.network['electrical_power']  *  battery_conditions.power_split_ratio * psi * phi
+                battery_conditions.outputs.power.electrical              = state.unknowns.network['electrical_power']  *  battery_conditions.power_split_ratio * psi
                 battery_conditions[module.tag].outputs.power.electrical  = battery_conditions.outputs.power.electrical / battery.number_of_active_modules
                 battery_conditions[module.tag].current_draw              = battery_conditions[module.tag].outputs.power.electrical /module_voltage 
             

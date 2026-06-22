@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE imports
-from RCAIDE.Framework.Core import Units
+from RCAIDE.Framework.Core import Units, Data
 from RCAIDE.Framework.Mission.Segments         import Segment
 from RCAIDE.Framework.Mission.Common.Results   import Results
 from RCAIDE.Library.Mission                    import Common , Solver 
@@ -67,6 +67,11 @@ class Evaluate(Segment):
         self.bank_angle                           = 0.0
         self.hybrid_power_split_ratio             = None
         self.battery_fuel_cell_power_split_ratio  = None
+        self.initial_battery_conditions           = Data()
+        self.initial_battery_conditions.state_of_charge       = None
+        self.initial_battery_conditions.cell_temperature       = None
+        self.initial_battery_conditions.charge_throughput       = None
+        self.initial_battery_conditions.increment_battery_age  = False
         self.lift_coefficient                     = None
         self.state.conditions.update(Results())       
         
