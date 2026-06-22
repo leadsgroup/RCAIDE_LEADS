@@ -335,7 +335,7 @@ def train_model(aerodynamics,Mach, vehicle):
     training.dCY_dbeta  = (CY_beta[0,:] - CY_beta[1,:]) / (Beta[0] - Beta[1])
     training.dCY_dr     = (CY_r[0,:] - CY_r[1,:]) / ((yaw_rate[0]-yaw_rate[1])* b / (2 *V[0,:]))   
 
-    training.dCZ_dalpha = (CZ_alpha[0,:] - CZ_alpha[1,:]) / (AoA[0] - AoA[1])             
+    training.dCZ_dalpha = -(Clift_alpha[0,:] - Clift_alpha[1,:]) / (AoA[0] - AoA[1]) #(CZ_alpha[0,:] - CZ_alpha[1,:]) / (AoA[0] - AoA[1])             
     training.dCZ_du     = (CZ_u[0,:] - CZ_u[1,:]) / (u[0] - u[1])    
     training.dCZ_dq     = (CZ_q[0,:] - CZ_q[1,:]) / ((pitch_rate[0]-pitch_rate[1])* MAC / (2 *V[0,:]))    
     

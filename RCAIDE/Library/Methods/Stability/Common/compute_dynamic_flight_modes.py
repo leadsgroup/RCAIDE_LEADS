@@ -102,7 +102,7 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
         Xu               = rho * u0 * S_ref * Cw * np.sin(theta0) + 0.5 * rho * u0 * S_ref * SSD.CX_u  
         Xw               = 0.5 * rho * u0 * S_ref * SSD.CX_alpha     
         Zu               = -rho * u0 * S_ref * Cw * np.cos(theta0) + 0.5 * rho * u0 * S_ref * SSD.CZ_u 
-        Zw               = 0.5 * rho * u0 * S_ref * SSD.CZ_alpha   
+        Zw               = 0.5 * rho * u0 * S_ref * -SSD.Clift_alpha   
         Zq               = 0.25 * rho * u0 * c_ref * S_ref *  SSD.CZ_q    
         Mu               =  0.5 * rho * u0 * c_ref * S_ref * SSD.CM_u     
         Mw               = 0.5 * rho * u0 * c_ref * S_ref * SSD.CM_alpha  
