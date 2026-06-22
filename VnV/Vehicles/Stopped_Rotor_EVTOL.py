@@ -261,7 +261,8 @@ def vehicle_setup(new_regression=True) :
 
     # define cabin    
     cabin                                       = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-    cabin.origin                                = [[1, 0, 0]] 
+    cabin.origin                                = [[1, 0, 0]]
+    cabin.filled_seats_arrangement              = 'ascending'
     economy_class                               = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
     economy_class.number_of_seats_abrest        = 2
     economy_class.number_of_rows                = 3 
