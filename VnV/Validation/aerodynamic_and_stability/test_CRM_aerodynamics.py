@@ -269,20 +269,6 @@ def run_aero_analysis(vehicle):
                                     - results_data['Induced Drag']
                                     - results_data['Wave Drag'])
 
-
-    # Run VLM - Non-Surrogate
-    analyses.aerodynamics.settings.use_surrogate =  False
-    results_non_surrogate = aircraft_aerodynamic_analysis(
-        analyses                         = analyses,
-        angle_of_attacks                 = AoAs,
-        mach_numbers                     = Machs,
-        non_dimensional_reynolds_numbers = Non_Dim_Res,
-        temperatures                     = Ts,
-    )
-    
-    # Plot surface pressure coefficient
-    plot_pressure_coefficient_distribution(results_non_surrogate)
-    
     return results_data
 
 
