@@ -70,219 +70,273 @@ def set_mission_residuals_and_unknowns(mission):
         if dynamics.moment_z == True:
             segment.state.residuals.mission.moment_z = ones_row(1) *0
             segment.state.number_of_mission_residuals += 1
+            
 
-        # Body Angle
-        if ctrls.pitch_angle.active:
-            segment.state.number_of_mission_unknowns  += 1
-            if ctrls.pitch_angle.initial_guess_values !=  None:
-                segment.state.unknowns.mission.pitch_angle = ones_row(1) * ctrls.pitch_angle.initial_guess_values[0][0]
-            else:
-                segment.state.unknowns.mission.pitch_angle = ones_row(1) * 3.0 * Units.degrees
+        # Sets flight kinematics residuals and unknowns
+        set_flight_kinematics_residuals_and_unknowns(segment)
 
-            if ctrls.pitch_angle.bounds !=  None:
-                segment.state.unknowns_lower_bounds.mission.pitch_angle = ctrls.pitch_angle.bounds[0][0] * ones_row(1)
-                segment.state.unknowns_upper_bounds.mission.pitch_angle = ctrls.pitch_angle.bounds[0][1] * ones_row(1)
-            else:
-                segment.state.unknowns_lower_bounds.mission.pitch_angle =  -np.inf * ones_row(1)
-                segment.state.unknowns_upper_bounds.mission.pitch_angle =   np.inf * ones_row(1)
+        # Sets control surface residuals and unknowns
+        set_control_surface_residuals_and_unknowns(segment)
+        
+        # Sets powertrain-level residuals and unknowns
+        set_powertrain_residuals_and_unknowns(segment)
+ 
+   
+    return
 
-        # Bank Angle
-        if ctrls.bank_angle.active:
-            segment.state.number_of_mission_unknowns  += 1
-            if ctrls.bank_angle.initial_guess_values !=  None:
-                segment.state.unknowns.mission.bank_angle = ones_row(1) * ctrls.bank_angle.initial_guess_values[0][0]
-            else:
-                segment.state.unknowns.mission.bank_angle = ones_row(1) * 0.0 * Units.degrees
+def set_flight_kinematics_residuals_and_unknowns(segment): 
 
-            if ctrls.bank_angle.bounds !=  None:
-                segment.state.unknowns_lower_bounds.mission.bank_angle = ctrls.bank_angle.bounds[0][0] * ones_row(1)
-                segment.state.unknowns_upper_bounds.mission.bank_angle = ctrls.bank_angle.bounds[0][1] * ones_row(1)
-            else:
-                segment.state.unknowns_lower_bounds.mission.bank_angle =  -np.inf * ones_row(1)
-                segment.state.unknowns_upper_bounds.mission.bank_angle =   np.inf * ones_row(1)
+    ones_row    = segment.state.ones_row
+    ones_row_m1 = segment.state.ones_row_m1
+    ctrls       = segment.assigned_control_variables
+    dynamics    = segment.flight_dynamics
+    
+    # Body Angle
+    if ctrls.pitch_angle.active:
+        segment.state.number_of_mission_unknowns  += 1
+        if ctrls.pitch_angle.initial_guess_values !=  None:
+            segment.state.unknowns.mission.pitch_angle = ones_row(1) * ctrls.pitch_angle.initial_guess_values[0][0]
+        else:
+            segment.state.unknowns.mission.pitch_angle = ones_row(1) * 3.0 * Units.degrees
 
-        # Wind Angle
-        if ctrls.angle_of_attack.active:
-            segment.state.number_of_mission_unknowns  += 1
-            if ctrls.angle_of_attack.initial_guess_values !=  None:
-                segment.state.unknowns.mission.angle_of_attack = ones_row(1) * ctrls.angle_of_attack.initial_guess_values[0][0]
-            else:
-                segment.state.unknowns.mission.angle_of_attack = ones_row(1) * 1.0 * Units.degrees
+        if ctrls.pitch_angle.bounds !=  None:
+            segment.state.unknowns_lower_bounds.mission.pitch_angle = ctrls.pitch_angle.bounds[0][0] * ones_row(1)
+            segment.state.unknowns_upper_bounds.mission.pitch_angle = ctrls.pitch_angle.bounds[0][1] * ones_row(1)
+        else:
+            segment.state.unknowns_lower_bounds.mission.pitch_angle =  -np.inf * ones_row(1)
+            segment.state.unknowns_upper_bounds.mission.pitch_angle =   np.inf * ones_row(1)
 
-            if ctrls.angle_of_attack.bounds !=  None:
-                segment.state.unknowns_lower_bounds.mission.angle_of_attack = ctrls.angle_of_attack.bounds[0][0] * ones_row(1)
-                segment.state.unknowns_upper_bounds.mission.angle_of_attack = ctrls.angle_of_attack.bounds[0][1] * ones_row(1)
-            else:
-                segment.state.unknowns_lower_bounds.mission.angle_of_attack =  -np.inf * ones_row(1)
-                segment.state.unknowns_upper_bounds.mission.angle_of_attack =   np.inf * ones_row(1)
+    # Bank Angle
+    if ctrls.bank_angle.active:
+        segment.state.number_of_mission_unknowns  += 1
+        if ctrls.bank_angle.initial_guess_values !=  None:
+            segment.state.unknowns.mission.bank_angle = ones_row(1) * ctrls.bank_angle.initial_guess_values[0][0]
+        else:
+            segment.state.unknowns.mission.bank_angle = ones_row(1) * 0.0 * Units.degrees
 
-        # Throttle
-        if ctrls.throttle.active:
-            for i in range(len(ctrls.throttle.assigned_propulsors)):
-                segment.state.number_of_mission_unknowns  += 1
-                if ctrls.throttle.initial_guess_values !=  None:
-                    segment.state.unknowns.mission["throttle_" + str(i)] = ones_row(1) * ctrls.throttle.initial_guess_values[i][0]
-                else:
-                    segment.state.unknowns.mission["throttle_" + str(i)] = ones_row(1) *  0.5
+        if ctrls.bank_angle.bounds !=  None:
+            segment.state.unknowns_lower_bounds.mission.bank_angle = ctrls.bank_angle.bounds[0][0] * ones_row(1)
+            segment.state.unknowns_upper_bounds.mission.bank_angle = ctrls.bank_angle.bounds[0][1] * ones_row(1)
+        else:
+            segment.state.unknowns_lower_bounds.mission.bank_angle =  -np.inf * ones_row(1)
+            segment.state.unknowns_upper_bounds.mission.bank_angle =   np.inf * ones_row(1)
 
-                if ctrls.throttle.bounds !=  None:
-                    segment.state.unknowns_lower_bounds.mission["throttle_" + str(i)] = ctrls.throttle.bounds[i][0] * ones_row(1)
-                    segment.state.unknowns_upper_bounds.mission["throttle_" + str(i)] = ctrls.throttle.bounds[i][1] * ones_row(1)
-                else:
-                    segment.state.unknowns_lower_bounds.mission["throttle_" + str(i)] =  -np.inf * ones_row(1)
-                    segment.state.unknowns_upper_bounds.mission["throttle_" + str(i)] =   np.inf * ones_row(1)
+    # Wind Angle
+    if ctrls.angle_of_attack.active:
+        segment.state.number_of_mission_unknowns  += 1
+        if ctrls.angle_of_attack.initial_guess_values !=  None:
+            segment.state.unknowns.mission.angle_of_attack = ones_row(1) * ctrls.angle_of_attack.initial_guess_values[0][0]
+        else:
+            segment.state.unknowns.mission.angle_of_attack = ones_row(1) * 1.0 * Units.degrees
 
-        # Thrust Vector
-        if ctrls.thrust_vector_angle.active:
-            for i in range(len(ctrls.thrust_vector_angle.assigned_propulsors)):
-                segment.state.number_of_mission_unknowns  += 1
-                if ctrls.thrust_vector_angle.initial_guess_values !=  None:
-                    segment.state.unknowns.mission["thrust_vector_angle_" + str(i)] = ones_row(1) * ctrls.thrust_vector_angle.initial_guess_values[i][0]
-                else:
-                    segment.state.unknowns.mission["thrust_vector_angle_" + str(i)] = ones_row(1) *  0.5
-
-                if ctrls.thrust_vector_angle.bounds !=  None:
-                    segment.state.unknowns_lower_bounds.mission["thrust_vector_angle_" + str(i)] = ctrls.thrust_vector_angle.bounds[i][0] * ones_row(1)
-                    segment.state.unknowns_upper_bounds.mission["thrust_vector_angle_" + str(i)] = ctrls.thrust_vector_angle.bounds[i][1] * ones_row(1)
-                else:
-                    segment.state.unknowns_lower_bounds.mission["thrust_vector_angle_" + str(i)] =  -np.inf * ones_row(1)
-                    segment.state.unknowns_upper_bounds.mission["thrust_vector_angle_" + str(i)] =   np.inf * ones_row(1)
-
-        # Blade Pitch Command
-        if ctrls.blade_pitch_command.active:
-            for i in range(len(ctrls.blade_pitch_command.assigned_rotors)):
-                segment.state.number_of_mission_unknowns  += 1
-                if ctrls.blade_pitch_command.initial_guess_values !=  None:
-                    segment.state.unknowns.mission["blade_pitch_command_" + str(i)] = ones_row(1) * ctrls.blade_pitch_command.initial_guess_values[i][0]
-                else:
-                    segment.state.unknowns.mission["blade_pitch_command_" + str(i)] = ones_row(1) *  0.5
-
-                if ctrls.blade_pitch_command.bounds !=  None:
-                    segment.state.unknowns_lower_bounds.mission["blade_pitch_command_" + str(i)] = ctrls.blade_pitch_command.bounds[i][0] * ones_row(1)
-                    segment.state.unknowns_upper_bounds.mission["blade_pitch_command_" + str(i)] = ctrls.blade_pitch_command.bounds[i][1] * ones_row(1)
-                else:
-                    segment.state.unknowns_lower_bounds.mission["blade_pitch_command_" + str(i)] =  -np.inf * ones_row(1)
-                    segment.state.unknowns_upper_bounds.mission["blade_pitch_command_" + str(i)] =   np.inf * ones_row(1)
-
-        # Velocity
-        if ctrls.velocity.active:
-            segment.state.number_of_mission_unknowns  += 1
-            if  ctrls.velocity.initial_guess_values !=  None:
-                segment.state.unknowns.mission.velocity = ones_row(1) * ctrls.velocity.initial_guess_values[0][0]
-            else:
-                segment.state.unknowns.mission.velocity = ones_row(1) *  100
-
-            if ctrls.velocity.bounds !=  None:
-                segment.state.unknowns_lower_bounds.mission.velocity = ctrls.velocity.bounds[0][0] * ones_row(1)
-                segment.state.unknowns_upper_bounds.mission.velocity = ctrls.velocity.bounds[0][1] * ones_row(1)
-            else:
-                segment.state.unknowns_lower_bounds.mission.velocity =  -np.inf * ones_row(1)
-                segment.state.unknowns_upper_bounds.mission.velocity =   np.inf * ones_row(1)
-
-        # Ground Velocity
-        if ctrls.ground_velocity.active:
-            segment.state.number_of_mission_unknowns  += 1
-            if  ctrls.ground_velocity.initial_guess_values !=  None:
-                segment.state.unknowns.mission.ground_velocity = ones_row(1) * ctrls.ground_velocity.initial_guess_values[0][0]
-            else:
-                segment.state.unknowns.mission.ground_velocity = ones_row(1) *  100
-
-            if ctrls.ground_velocity.bounds !=  None:
-                segment.state.unknowns_lower_bounds.mission.ground_velocity = ctrls.ground_velocity.bounds[0][0] * ones_row_m1(1)
-                segment.state.unknowns_upper_bounds.mission.ground_velocity = ctrls.ground_velocity.bounds[0][1] * ones_row_m1(1)
-            else:
-                segment.state.unknowns_lower_bounds.mission.ground_velocity =  -np.inf * ones_row_m1(1)
-                segment.state.unknowns_upper_bounds.mission.ground_velocity =   np.inf * ones_row_m1(1)
+        if ctrls.angle_of_attack.bounds !=  None:
+            segment.state.unknowns_lower_bounds.mission.angle_of_attack = ctrls.angle_of_attack.bounds[0][0] * ones_row(1)
+            segment.state.unknowns_upper_bounds.mission.angle_of_attack = ctrls.angle_of_attack.bounds[0][1] * ones_row(1)
+        else:
+            segment.state.unknowns_lower_bounds.mission.angle_of_attack =  -np.inf * ones_row(1)
+            segment.state.unknowns_upper_bounds.mission.angle_of_attack =   np.inf * ones_row(1)
 
 
-        # Altitude
-        if ctrls.altitude.active:
-            segment.state.number_of_mission_unknowns  += 1
-            if ctrls.altitude.initial_guess_values != None:
-                segment.state.unknowns.mission.altitude = ctrls.altitude.initial_guess_values[0][0]
-            else:
-                segment.state.unknowns.mission.altitude = ones_row(1) * 0.0
 
-            if ctrls.altitude.bounds !=  None:
-                segment.state.unknowns_lower_bounds.mission.altitude = ctrls.altitude.bounds[0][0] * ones_row(1)
-                segment.state.unknowns_upper_bounds.mission.altitude = ctrls.altitude.bounds[0][1] * ones_row(1)
-            else:
-                segment.state.unknowns_lower_bounds.mission.altitude = -np.inf * ones_row(1)
-                segment.state.unknowns_upper_bounds.mission.altitude =  np.inf * ones_row(1)
+    # Altitude
+    if ctrls.altitude.active:
+        segment.state.number_of_mission_unknowns  += 1
+        if ctrls.altitude.initial_guess_values != None:
+            segment.state.unknowns.mission.altitude = ctrls.altitude.initial_guess_values[0][0]
+        else:
+            segment.state.unknowns.mission.altitude = ones_row(1) * 0.0
 
-        # Acceleration
-        if ctrls.acceleration.active:
-            segment.state.number_of_mission_unknowns  += 1
-            if ctrls.acceleration.initial_guess_values !=  None:
-                segment.state.unknowns.mission.acceleration = ones_row(1) * ctrls.acceleration.initial_guess_values[0][0]
-            else:
-                segment.state.unknowns.mission.acceleration = ones_row(1) *  1.
+        if ctrls.altitude.bounds !=  None:
+            segment.state.unknowns_lower_bounds.mission.altitude = ctrls.altitude.bounds[0][0] * ones_row(1)
+            segment.state.unknowns_upper_bounds.mission.altitude = ctrls.altitude.bounds[0][1] * ones_row(1)
+        else:
+            segment.state.unknowns_lower_bounds.mission.altitude = -np.inf * ones_row(1)
+            segment.state.unknowns_upper_bounds.mission.altitude =  np.inf * ones_row(1)
 
-            if ctrls.acceleration.bounds !=  None:
-                segment.state.unknowns_lower_bounds.mission.acceleration = ctrls.acceleration.bounds[0][0] * ones_row(1)
-                segment.state.unknowns_upper_bounds.mission.acceleration = ctrls.acceleration.bounds[0][1] * ones_row(1)
-            else:
-                segment.state.unknowns_lower_bounds.mission.acceleration =  -np.inf * ones_row(1)
-                segment.state.unknowns_upper_bounds.mission.acceleration =   np.inf * ones_row(1)
+    # Acceleration
+    if ctrls.acceleration.active:
+        segment.state.number_of_mission_unknowns  += 1
+        if ctrls.acceleration.initial_guess_values !=  None:
+            segment.state.unknowns.mission.acceleration = ones_row(1) * ctrls.acceleration.initial_guess_values[0][0]
+        else:
+            segment.state.unknowns.mission.acceleration = ones_row(1) *  1.
 
-        # Time
-        if ctrls.elapsed_time.active:
-            segment.state.number_of_mission_unknowns  += 1
-            if ctrls.elapsed_time.initial_guess_values != None:
-                segment.state.unknowns.mission.elapsed_time = ctrls.elapsed_time.initial_guess_values[0][0]
-            else:
-                segment.state.unknowns.mission.elapsed_time = 30
+        if ctrls.acceleration.bounds !=  None:
+            segment.state.unknowns_lower_bounds.mission.acceleration = ctrls.acceleration.bounds[0][0] * ones_row(1)
+            segment.state.unknowns_upper_bounds.mission.acceleration = ctrls.acceleration.bounds[0][1] * ones_row(1)
+        else:
+            segment.state.unknowns_lower_bounds.mission.acceleration =  -np.inf * ones_row(1)
+            segment.state.unknowns_upper_bounds.mission.acceleration =   np.inf * ones_row(1)
 
-            if ctrls.elapsed_time.bounds !=  None:
-                segment.state.unknowns_lower_bounds.mission.elapsed_time = ctrls.elapsed_time.bounds[0][0]
-                segment.state.unknowns_upper_bounds.mission.elapsed_time = ctrls.elapsed_time.bounds[0][1]
-            else:
-                segment.state.unknowns_lower_bounds.mission.elapsed_time = -np.inf
-                segment.state.unknowns_upper_bounds.mission.elapsed_time =  np.inf
+    # Time
+    if ctrls.elapsed_time.active:
+        segment.state.number_of_mission_unknowns  += 1
+        if ctrls.elapsed_time.initial_guess_values != None:
+            segment.state.unknowns.mission.elapsed_time = ctrls.elapsed_time.initial_guess_values[0][0]
+        else:
+            segment.state.unknowns.mission.elapsed_time = 30
+
+        if ctrls.elapsed_time.bounds !=  None:
+            segment.state.unknowns_lower_bounds.mission.elapsed_time = ctrls.elapsed_time.bounds[0][0]
+            segment.state.unknowns_upper_bounds.mission.elapsed_time = ctrls.elapsed_time.bounds[0][1]
+        else:
+            segment.state.unknowns_lower_bounds.mission.elapsed_time = -np.inf
+            segment.state.unknowns_upper_bounds.mission.elapsed_time =  np.inf
+
+
+    # Velocity
+    if ctrls.velocity.active:
+        segment.state.number_of_mission_unknowns  += 1
+        if  ctrls.velocity.initial_guess_values !=  None:
+            segment.state.unknowns.mission.velocity = ones_row(1) * ctrls.velocity.initial_guess_values[0][0]
+        else:
+            segment.state.unknowns.mission.velocity = ones_row(1) *  100
+
+        if ctrls.velocity.bounds !=  None:
+            segment.state.unknowns_lower_bounds.mission.velocity = ctrls.velocity.bounds[0][0] * ones_row(1)
+            segment.state.unknowns_upper_bounds.mission.velocity = ctrls.velocity.bounds[0][1] * ones_row(1)
+        else:
+            segment.state.unknowns_lower_bounds.mission.velocity =  -np.inf * ones_row(1)
+            segment.state.unknowns_upper_bounds.mission.velocity =   np.inf * ones_row(1)
+
+    # Ground Velocity
+    if ctrls.ground_velocity.active:
+        segment.state.number_of_mission_unknowns  += 1
+        if  ctrls.ground_velocity.initial_guess_values !=  None:
+            segment.state.unknowns.mission.ground_velocity = ones_row(1) * ctrls.ground_velocity.initial_guess_values[0][0]
+        else:
+            segment.state.unknowns.mission.ground_velocity = ones_row(1) *  100
+
+        if ctrls.ground_velocity.bounds !=  None:
+            segment.state.unknowns_lower_bounds.mission.ground_velocity = ctrls.ground_velocity.bounds[0][0] * ones_row_m1(1)
+            segment.state.unknowns_upper_bounds.mission.ground_velocity = ctrls.ground_velocity.bounds[0][1] * ones_row_m1(1)
+        else:
+            segment.state.unknowns_lower_bounds.mission.ground_velocity =  -np.inf * ones_row_m1(1)
+            segment.state.unknowns_upper_bounds.mission.ground_velocity =   np.inf * ones_row_m1(1)
+
+
+            
+    return 
+
+def set_control_surface_residuals_and_unknowns(segment): 
+    ones_row    = segment.state.ones_row
+    ones_row_m1 = segment.state.ones_row_m1
+    ctrls       = segment.assigned_control_variables
+    dynamics    = segment.flight_dynamics
+
 
         # Elevator
-        if ctrls.elevator_deflection.active:
+    if ctrls.elevator_deflection.active:
+        segment.state.number_of_mission_unknowns  += 1
+        if ctrls.elevator_deflection.initial_guess_values!= None:
+            segment.state.unknowns.mission["elevator"] = ones_row(1) * ctrls.elevator_deflection.initial_guess_values[0][0]
+        else:
+            segment.state.unknowns.mission["elevator"] = ones_row(1) * 0.0 * Units.degrees
+
+        if ctrls.elevator_deflection.bounds !=  None:
+            segment.state.unknowns_lower_bounds.mission["elevator"] = ctrls.elevator_deflection.bounds[0][0] * ones_row(1)
+            segment.state.unknowns_upper_bounds.mission["elevator"] = ctrls.elevator_deflection.bounds[0][1] * ones_row(1)
+        else:
+            segment.state.unknowns_lower_bounds.mission["elevator"] =  -np.inf * ones_row(1)
+            segment.state.unknowns_upper_bounds.mission["elevator"] =   np.inf * ones_row(1)
+
+    # Rudder
+    if ctrls.rudder_deflection.active:
+        segment.state.number_of_mission_unknowns  += 1
+        if ctrls.rudder_deflection.initial_guess_values !=  None:
+            segment.state.unknowns.mission["rudder"] = ones_row(1) * ctrls.rudder_deflection.initial_guess_values[0][0]
+        else:
+            segment.state.unknowns.mission["rudder"] = ones_row(1) * 0.0 * Units.degrees
+
+        if ctrls.rudder_deflection.bounds !=  None:
+            segment.state.unknowns_lower_bounds.mission["rudder"] = ctrls.rudder_deflection.bounds[0][0] * ones_row(1)
+            segment.state.unknowns_upper_bounds.mission["rudder"] = ctrls.rudder_deflection.bounds[0][1] * ones_row(1)
+        else:
+            segment.state.unknowns_lower_bounds.mission["rudder"] =  -np.inf * ones_row(1)
+            segment.state.unknowns_upper_bounds.mission["rudder"] =   np.inf * ones_row(1)
+
+    # Aileron
+    if ctrls.aileron_deflection.active:
+        segment.state.number_of_mission_unknowns  += 1
+        if ctrls.aileron_deflection.initial_guess_values !=  None:
+            segment.state.unknowns.mission["aileron" ] = ones_row(1) * ctrls.aileron_deflection.initial_guess_values[0][0]
+        else:
+            segment.state.unknowns.mission["aileron" ] = ones_row(1) * 0.0 * Units.degrees
+
+        if ctrls.aileron_deflection.bounds !=  None:
+            segment.state.unknowns_lower_bounds.mission["aileron"] = ctrls.aileron_deflection.bounds[0][0] * ones_row(1)
+            segment.state.unknowns_upper_bounds.mission["aileron"] = ctrls.aileron_deflection.bounds[0][1] * ones_row(1)
+        else:
+            segment.state.unknowns_lower_bounds.mission["aileron"] =  -np.inf * ones_row(1)
+            segment.state.unknowns_upper_bounds.mission["aileron"] =   np.inf * ones_row(1)
+
+
+def set_powertrain_residuals_and_unknowns(segment): 
+
+    ones_row    = segment.state.ones_row
+    ones_row_m1 = segment.state.ones_row_m1
+    ctrls       = segment.assigned_control_variables
+    dynamics    = segment.flight_dynamics
+
+    # Throttle
+    if ctrls.throttle.active:
+        for i in range(len(ctrls.throttle.assigned_propulsors)):
             segment.state.number_of_mission_unknowns  += 1
-            if ctrls.elevator_deflection.initial_guess_values!= None:
-                segment.state.unknowns.mission["elevator"] = ones_row(1) * ctrls.elevator_deflection.initial_guess_values[0][0]
+            if ctrls.throttle.initial_guess_values !=  None:
+                segment.state.unknowns.mission["throttle_" + str(i)] = ones_row(1) * ctrls.throttle.initial_guess_values[i][0]
             else:
-                segment.state.unknowns.mission["elevator"] = ones_row(1) * 0.0 * Units.degrees
+                segment.state.unknowns.mission["throttle_" + str(i)] = ones_row(1) *  0.5
 
-            if ctrls.elevator_deflection.bounds !=  None:
-                segment.state.unknowns_lower_bounds.mission["elevator"] = ctrls.elevator_deflection.bounds[0][0] * ones_row(1)
-                segment.state.unknowns_upper_bounds.mission["elevator"] = ctrls.elevator_deflection.bounds[0][1] * ones_row(1)
+            if ctrls.throttle.bounds !=  None:
+                segment.state.unknowns_lower_bounds.mission["throttle_" + str(i)] = ctrls.throttle.bounds[i][0] * ones_row(1)
+                segment.state.unknowns_upper_bounds.mission["throttle_" + str(i)] = ctrls.throttle.bounds[i][1] * ones_row(1)
             else:
-                segment.state.unknowns_lower_bounds.mission["elevator"] =  -np.inf * ones_row(1)
-                segment.state.unknowns_upper_bounds.mission["elevator"] =   np.inf * ones_row(1)
+                segment.state.unknowns_lower_bounds.mission["throttle_" + str(i)] =  -np.inf * ones_row(1)
+                segment.state.unknowns_upper_bounds.mission["throttle_" + str(i)] =   np.inf * ones_row(1)
 
-        # Rudder
-        if ctrls.rudder_deflection.active:
+    # Thrust Vector
+    if ctrls.thrust_vector_angle.active:
+        for i in range(len(ctrls.thrust_vector_angle.assigned_propulsors)):
             segment.state.number_of_mission_unknowns  += 1
-            if ctrls.rudder_deflection.initial_guess_values !=  None:
-                segment.state.unknowns.mission["rudder"] = ones_row(1) * ctrls.rudder_deflection.initial_guess_values[0][0]
+            if ctrls.thrust_vector_angle.initial_guess_values !=  None:
+                segment.state.unknowns.mission["thrust_vector_angle_" + str(i)] = ones_row(1) * ctrls.thrust_vector_angle.initial_guess_values[i][0]
             else:
-                segment.state.unknowns.mission["rudder"] = ones_row(1) * 0.0 * Units.degrees
+                segment.state.unknowns.mission["thrust_vector_angle_" + str(i)] = ones_row(1) *  0.5
 
-            if ctrls.rudder_deflection.bounds !=  None:
-                segment.state.unknowns_lower_bounds.mission["rudder"] = ctrls.rudder_deflection.bounds[0][0] * ones_row(1)
-                segment.state.unknowns_upper_bounds.mission["rudder"] = ctrls.rudder_deflection.bounds[0][1] * ones_row(1)
+            if ctrls.thrust_vector_angle.bounds !=  None:
+                segment.state.unknowns_lower_bounds.mission["thrust_vector_angle_" + str(i)] = ctrls.thrust_vector_angle.bounds[i][0] * ones_row(1)
+                segment.state.unknowns_upper_bounds.mission["thrust_vector_angle_" + str(i)] = ctrls.thrust_vector_angle.bounds[i][1] * ones_row(1)
             else:
-                segment.state.unknowns_lower_bounds.mission["rudder"] =  -np.inf * ones_row(1)
-                segment.state.unknowns_upper_bounds.mission["rudder"] =   np.inf * ones_row(1)
+                segment.state.unknowns_lower_bounds.mission["thrust_vector_angle_" + str(i)] =  -np.inf * ones_row(1)
+                segment.state.unknowns_upper_bounds.mission["thrust_vector_angle_" + str(i)] =   np.inf * ones_row(1)
 
-        # Aileron
-        if ctrls.aileron_deflection.active:
+    # Blade Pitch Command
+    if ctrls.blade_pitch_command.active:
+        for i in range(len(ctrls.blade_pitch_command.assigned_rotors)):
             segment.state.number_of_mission_unknowns  += 1
-            if ctrls.aileron_deflection.initial_guess_values !=  None:
-                segment.state.unknowns.mission["aileron" ] = ones_row(1) * ctrls.aileron_deflection.initial_guess_values[0][0]
+            if ctrls.blade_pitch_command.initial_guess_values !=  None:
+                segment.state.unknowns.mission["blade_pitch_command_" + str(i)] = ones_row(1) * ctrls.blade_pitch_command.initial_guess_values[i][0]
             else:
-                segment.state.unknowns.mission["aileron" ] = ones_row(1) * 0.0 * Units.degrees
+                segment.state.unknowns.mission["blade_pitch_command_" + str(i)] = ones_row(1) *  0.5
 
-            if ctrls.aileron_deflection.bounds !=  None:
-                segment.state.unknowns_lower_bounds.mission["aileron"] = ctrls.aileron_deflection.bounds[0][0] * ones_row(1)
-                segment.state.unknowns_upper_bounds.mission["aileron"] = ctrls.aileron_deflection.bounds[0][1] * ones_row(1)
+            if ctrls.blade_pitch_command.bounds !=  None:
+                segment.state.unknowns_lower_bounds.mission["blade_pitch_command_" + str(i)] = ctrls.blade_pitch_command.bounds[i][0] * ones_row(1)
+                segment.state.unknowns_upper_bounds.mission["blade_pitch_command_" + str(i)] = ctrls.blade_pitch_command.bounds[i][1] * ones_row(1)
             else:
-                segment.state.unknowns_lower_bounds.mission["aileron"] =  -np.inf * ones_row(1)
-                segment.state.unknowns_upper_bounds.mission["aileron"] =   np.inf * ones_row(1)
+                segment.state.unknowns_lower_bounds.mission["blade_pitch_command_" + str(i)] =  -np.inf * ones_row(1)
+                segment.state.unknowns_upper_bounds.mission["blade_pitch_command_" + str(i)] =   np.inf * ones_row(1)
+    
+    if ctrls.power_split_ratio.active:
+        for i in range(len(ctrls.power_split_ratio.assigned_networks)):
+            segment.state.number_of_mission_unknowns  += 1
+            if ctrls.power_split_ratio.initial_guess_values !=  None:
+                segment.state.unknowns.mission["power_split_ratio_" + str(i)] = ones_row(1) * ctrls.power_split_ratio.initial_guess_values[i][0]
+            else:
+                segment.state.unknowns.mission["power_split_ratio_" + str(i)] = ones_row(1) *  0.5
 
-    return
+            if ctrls.power_split_ratio.bounds !=  None:
+                segment.state.unknowns_lower_bounds.mission["power_split_ratio_" + str(i)] = ctrls.power_split_ratio.bounds[i][0] * ones_row(1)
+                segment.state.unknowns_upper_bounds.mission["power_split_ratio_" + str(i)] = ctrls.power_split_ratio.bounds[i][1] * ones_row(1)
+            else:
+                segment.state.unknowns_lower_bounds.mission["power_split_ratio_" + str(i)] =  -np.inf * ones_row(1)
+                segment.state.unknowns_upper_bounds.mission["power_split_ratio_" + str(i)] =   np.inf * ones_row(1)

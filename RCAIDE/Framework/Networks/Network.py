@@ -44,34 +44,6 @@ class Network(Component):
     reverse_thrust : bool
         Flag to enable reverse thrust computation. Default is False.
 
-    hybrid_power_split_ratio : float
-        Fraction of total propulsive power supplied by electrical sources, denoted
-        as phi. This ratio controls how much electrical power is routed to the
-        integrated drive motor on the propulsor shaft and how much power is drawn
-        from electrochemical sources (batteries, fuel cells).
-
-        - phi = 0.0 : all power from fuel (conventional turbofan/turbojet)
-        - phi = 0.5 : equal split between fuel and electric motor (parallel hybrid)
-        - phi = 1.0 : all power from electrical sources (all-electric)
-
-        The turbomachinery (compressor, fan) always computes the full thermodynamic
-        work regardless of phi. The mechanical hybridization is handled through
-        the external_shaft_work term in the turbine energy balance, which accounts
-        for motor-supplied shaft power and motor efficiency losses.
-
-        Default is 0.0.
-
-    battery_fuel_cell_power_split_ratio : float
-        Fraction of electrical power supplied by batteries versus fuel cells,
-        denoted as psi. This ratio partitions the electrical power demand among
-        electrochemical energy sources.
-
-        - psi = 1.0 : all electrical power from batteries
-        - psi = 0.5 : equal split between batteries and fuel cells
-        - psi = 0.0 : all electrical power from fuel cells
-
-        Default is 1.0.
-
     propulsors : Container
         Collection of propulsor components (turbofans, rotors, etc.).
 
@@ -110,8 +82,15 @@ class Network(Component):
 
     **Power Split Architecture**
 
-    The two power split ratios (phi and psi) together define the complete energy
-    sourcing strategy for the network::
+    Hybridization is controlled by two ratios set on the mission segment (not the
+    network):
+
+    - **phi** (``hybrid_power_split_ratio``) — fraction of propulsive power from
+      electrical sources (0 = all fuel, 1 = all electric).
+    - **psi** (``battery_fuel_cell_power_split_ratio``) — fraction of electrical
+      power from batteries vs fuel cells (1 = all battery, 0 = all fuel cell).
+
+    ::
 
         Total Propulsive Power
             |
@@ -123,9 +102,11 @@ class Network(Component):
                                     |
                                     |--- (1 - psi) --> Fuel Cells
 
-    The actual electrical power (in Watts) is determined by the network solver,
-    which finds the power level that satisfies the net electrical power balance
-    residual (sum of all electrical sources minus all electrical sinks equals zero).
+    These ratios are resolved during pre-processing by
+    ``RCAIDE.Library.Mission.Common.Pre_Process.energy``, which analyzes the
+    network topology and either uses user-specified values from the segment,
+    auto-derives defaults for simple topologies, or registers them as
+    optimization variables for ambiguous configurations.
 
     **Definitions**
 
@@ -134,6 +115,10 @@ class Network(Component):
 
     See Also
     --------
+    RCAIDE.Framework.Mission.Segments.Evaluate
+        Where phi and psi are set per mission segment
+    RCAIDE.Library.Mission.Common.Pre_Process.energy
+        Topology analysis and phi/psi resolution
     RCAIDE.Library.Framework.Networks.Fuel
         Fuel network class
     RCAIDE.Library.Framework.Networks.Fuel_Cell
@@ -147,8 +132,6 @@ class Network(Component):
         """
         self.tag                                 = 'network'
         self.reverse_thrust                      = False
-        self.hybrid_power_split_ratio            = 0.0
-        self.battery_fuel_cell_power_split_ratio = 1.0
         self.propulsors                          = Container()
         self.converters                          = Container()
         self.nacelles                            = Container()
