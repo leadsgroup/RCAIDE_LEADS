@@ -102,6 +102,23 @@ class Propulsor(Component):
         self.height                       = 0.0    
         self.working_fluid                = RCAIDE.Library.Attributes.Gases.Air() 
     
+    def append_segment_conditions(self, segment):
+        propulsor_conditions = segment.state.conditions.energy.propulsors[self.tag]
+        propulsor_conditions.inputs.power.propulsive[:,0]  = 0.0
+        propulsor_conditions.inputs.power.mechanical[:,0]  = 0.0
+        propulsor_conditions.inputs.power.electrical[:,0]  = 0.0
+        propulsor_conditions.inputs.power.chemical[:,0]    = 0.0
+        propulsor_conditions.inputs.power.pneumatic[:,0]   = 0.0
+        propulsor_conditions.inputs.power.hydraulic[:,0]   = 0.0
+        propulsor_conditions.inputs.power.thermal[:,0]     = 0.0
+        propulsor_conditions.outputs.power.propulsive[:,0] = 0.0
+        propulsor_conditions.outputs.power.mechanical[:,0] = 0.0
+        propulsor_conditions.outputs.power.electrical[:,0] = 0.0
+        propulsor_conditions.outputs.power.chemical[:,0]   = 0.0
+        propulsor_conditions.outputs.power.pneumatic[:,0]  = 0.0
+        propulsor_conditions.outputs.power.hydraulic[:,0]  = 0.0
+        propulsor_conditions.outputs.power.thermal[:,0]    = 0.0
+
     def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
         """
         Computes the moment of inertia tensor for the propulsor.

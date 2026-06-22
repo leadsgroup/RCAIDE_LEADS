@@ -326,17 +326,34 @@ def set_powertrain_residuals_and_unknowns(segment):
                 segment.state.unknowns_lower_bounds.mission["blade_pitch_command_" + str(i)] =  -np.inf * ones_row(1)
                 segment.state.unknowns_upper_bounds.mission["blade_pitch_command_" + str(i)] =   np.inf * ones_row(1)
     
-    if ctrls.power_split_ratio.active:
-        for i in range(len(ctrls.power_split_ratio.assigned_networks)):
+    # Hybrid Power Split Ratio (phi) — fuel vs electrical split
+    if ctrls.hybrid_power_split_ratio.active:
+        for i in range(len(ctrls.hybrid_power_split_ratio.assigned_networks)):
             segment.state.number_of_mission_unknowns  += 1
-            if ctrls.power_split_ratio.initial_guess_values !=  None:
-                segment.state.unknowns.mission["power_split_ratio_" + str(i)] = ones_row(1) * ctrls.power_split_ratio.initial_guess_values[i][0]
+            if ctrls.hybrid_power_split_ratio.initial_guess_values !=  None:
+                segment.state.unknowns.mission["hybrid_power_split_ratio_" + str(i)] = ones_row(1) * ctrls.hybrid_power_split_ratio.initial_guess_values[i][0]
             else:
-                segment.state.unknowns.mission["power_split_ratio_" + str(i)] = ones_row(1) *  0.5
+                segment.state.unknowns.mission["hybrid_power_split_ratio_" + str(i)] = ones_row(1) *  0.5
 
-            if ctrls.power_split_ratio.bounds !=  None:
-                segment.state.unknowns_lower_bounds.mission["power_split_ratio_" + str(i)] = ctrls.power_split_ratio.bounds[i][0] * ones_row(1)
-                segment.state.unknowns_upper_bounds.mission["power_split_ratio_" + str(i)] = ctrls.power_split_ratio.bounds[i][1] * ones_row(1)
+            if ctrls.hybrid_power_split_ratio.bounds !=  None:
+                segment.state.unknowns_lower_bounds.mission["hybrid_power_split_ratio_" + str(i)] = ctrls.hybrid_power_split_ratio.bounds[i][0] * ones_row(1)
+                segment.state.unknowns_upper_bounds.mission["hybrid_power_split_ratio_" + str(i)] = ctrls.hybrid_power_split_ratio.bounds[i][1] * ones_row(1)
             else:
-                segment.state.unknowns_lower_bounds.mission["power_split_ratio_" + str(i)] =  -np.inf * ones_row(1)
-                segment.state.unknowns_upper_bounds.mission["power_split_ratio_" + str(i)] =   np.inf * ones_row(1)
+                segment.state.unknowns_lower_bounds.mission["hybrid_power_split_ratio_" + str(i)] = 0.0 * ones_row(1)
+                segment.state.unknowns_upper_bounds.mission["hybrid_power_split_ratio_" + str(i)] = 1.0 * ones_row(1)
+
+    # Battery / Fuel Cell Power Split Ratio (psi) — battery vs fuel cell split
+    if ctrls.battery_fuel_cell_power_split_ratio.active:
+        for i in range(len(ctrls.battery_fuel_cell_power_split_ratio.assigned_networks)):
+            segment.state.number_of_mission_unknowns  += 1
+            if ctrls.battery_fuel_cell_power_split_ratio.initial_guess_values !=  None:
+                segment.state.unknowns.mission["battery_fuel_cell_power_split_ratio_" + str(i)] = ones_row(1) * ctrls.battery_fuel_cell_power_split_ratio.initial_guess_values[i][0]
+            else:
+                segment.state.unknowns.mission["battery_fuel_cell_power_split_ratio_" + str(i)] = ones_row(1) *  0.5
+
+            if ctrls.battery_fuel_cell_power_split_ratio.bounds !=  None:
+                segment.state.unknowns_lower_bounds.mission["battery_fuel_cell_power_split_ratio_" + str(i)] = ctrls.battery_fuel_cell_power_split_ratio.bounds[i][0] * ones_row(1)
+                segment.state.unknowns_upper_bounds.mission["battery_fuel_cell_power_split_ratio_" + str(i)] = ctrls.battery_fuel_cell_power_split_ratio.bounds[i][1] * ones_row(1)
+            else:
+                segment.state.unknowns_lower_bounds.mission["battery_fuel_cell_power_split_ratio_" + str(i)] = 0.0 * ones_row(1)
+                segment.state.unknowns_upper_bounds.mission["battery_fuel_cell_power_split_ratio_" + str(i)] = 1.0 * ones_row(1)

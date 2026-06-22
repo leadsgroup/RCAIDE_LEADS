@@ -51,12 +51,4 @@ class Fuel_Selector(Modulator):
 
         self.tag                   = 'fuel_selector'  
         self.efficiency            = 0.0       
-        
-    def append_operating_conditions(self,segment): 
-        append_fuel_selector_conditions(self,segment)
-        return 
-
-    def compute_performance(self,state):
-
-        inputs, outputs, stored_results_flag, stored_modulator_tag =  compute_fuel_selector_performance(self,state)
-        return inputs, outputs, stored_results_flag, stored_modulator_tag
+          

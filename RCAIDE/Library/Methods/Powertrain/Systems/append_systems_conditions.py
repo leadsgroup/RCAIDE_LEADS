@@ -38,7 +38,20 @@ def append_systems_conditions(system, segment):
     return
 
 def append_system_segment_conditions(system, segment): 
-    #energy_conditions  = segment.state.conditions.energy      
-    #energy_conditions.systems[system.tag].inputs.power.electrical[:,0]    = 0.0    
-    #energy_conditions.systems[system.tag].outputs.power.electrical[:,0]   = 0.0
-    pass
+ 
+    system_conditions   = segment.state.conditions.energy.systems[system.tag]  
+    system_conditions.inputs.power.electrical[:,0]             = 0.0
+    system_conditions.inputs.power.thermal[:,0]                = 0.0
+    system_conditions.inputs.power.hydraulic[:,0]              = 0.0
+    system_conditions.inputs.power.propulsive[:,0]             = 0.0
+    system_conditions.inputs.power.pneumatic[:,0]              = 0.0
+    system_conditions.inputs.power.mechanical[:,0]             = 0.0
+    system_conditions.inputs.power.chemical[:,0]               = 0.0 
+    system_conditions.outputs.power.electrical[:,0]            = 0.0
+    system_conditions.outputs.power.thermal[:,0]               = 0.0
+    system_conditions.outputs.power.hydraulic[:,0]             = 0.0
+    system_conditions.outputs.power.propulsive[:,0]            = 0.0
+    system_conditions.outputs.power.pneumatic[:,0]             = 0.0
+    system_conditions.outputs.power.mechanical[:,0]            = 0.0
+    system_conditions.outputs.power.chemical[:,0]              = 0.0 
+    return

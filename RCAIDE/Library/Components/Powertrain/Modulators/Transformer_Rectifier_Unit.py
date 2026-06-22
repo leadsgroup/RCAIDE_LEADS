@@ -77,9 +77,3 @@ class Transformer_Rectifier_Unit(Modulator):
 
         inputs, outputs, stored_results_flag, stored_modulator_tag = compute_TRU_performance(self, network, state)
         return inputs, outputs, stored_results_flag, stored_modulator_tag
-    
-
-    def append_segment_conditions(self,segment):
-        energy_conditions  = segment.state.conditions.energy    
-        energy_conditions.modulators[self.tag].inputs.power.electrical[:,0]  = 0.0 
-        energy_conditions.modulators[self.tag].outputs.power.electrical[:,0] = 0.0     

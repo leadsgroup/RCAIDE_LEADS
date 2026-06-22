@@ -33,14 +33,22 @@ class Converter(Component):
         self.identical_converters               = True 
         self.efficiency                         = 1.0
 
-    def initialize(self, network):  
+    def initialize(self, network):
         return
-    
-    #def append_segment_conditions(self,segment): 
-        #energy_conditions  = segment.state.conditions.energy    
-        #energy_conditions.converters[self.tag].inputs.power.electrical[:,0]  = 0  # initial_conditions.propulsors[propulsor.tag].inputs.power.electrical[-1,0] 
-        #energy_conditions.converters[self.tag].inputs.power.chemical[:,0]    = 0  # initial_conditions.propulsors[propulsor.tag].inputs.power.chemical[-1,0]   
-        #energy_conditions.converters[self.tag].inputs.power.thermal[:,0]     = 0  # initial_conditions.propulsors[propulsor.tag].inputs.power.thermal[-1,0]    
-        #energy_conditions.converters[self.tag].outputs.power.electrical[:,0] = 0  # initial_conditions.propulsors[propulsor.tag].outputs.power.electrical[-1,0]
-        #energy_conditions.converters[self.tag].outputs.power.chemical[:,0]   = 0  # initial_conditions.propulsors[propulsor.tag].outputs.power.chemical[-1,0]  
-        #energy_conditions.converters[self.tag].outputs.power.thermal[:,0]    = 0  # initial_conditions.propulsors[propulsor.tag].outputs.power.thermal[-1,0]                 
+
+    def append_segment_conditions(self, segment):
+        converter_conditions = segment.state.conditions.energy.converters[self.tag]
+        converter_conditions.inputs.power.propulsive[:,0]  = 0.0
+        converter_conditions.inputs.power.mechanical[:,0]  = 0.0
+        converter_conditions.inputs.power.electrical[:,0]  = 0.0
+        converter_conditions.inputs.power.chemical[:,0]    = 0.0
+        converter_conditions.inputs.power.pneumatic[:,0]   = 0.0
+        converter_conditions.inputs.power.hydraulic[:,0]   = 0.0
+        converter_conditions.inputs.power.thermal[:,0]     = 0.0
+        converter_conditions.outputs.power.propulsive[:,0] = 0.0
+        converter_conditions.outputs.power.mechanical[:,0] = 0.0
+        converter_conditions.outputs.power.electrical[:,0] = 0.0
+        converter_conditions.outputs.power.chemical[:,0]   = 0.0
+        converter_conditions.outputs.power.pneumatic[:,0]  = 0.0
+        converter_conditions.outputs.power.hydraulic[:,0]  = 0.0
+        converter_conditions.outputs.power.thermal[:,0]    = 0.0

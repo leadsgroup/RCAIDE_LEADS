@@ -9,7 +9,7 @@
 from RCAIDE.Library.Components import Component 
 from RCAIDE.Library.Methods.Powertrain.Systems.append_systems_conditions import append_systems_conditions
 from RCAIDE.Library.Methods.Powertrain.Systems.compute_systems_power_draw import compute_systems_power_draw
- 
+from RCAIDE.Library.Methods.Powertrain.Systems.append_systems_conditions import append_system_segment_conditions
 # ----------------------------------------------------------------------------------------------------------------------
 # System
 # ----------------------------------------------------------------------------------------------------------------------            
@@ -111,9 +111,29 @@ class Systems(Component):
         """
         inputs, outputs = compute_systems_power_draw(self, state, vehicle)
         return inputs, outputs, False, None
-
+    
+    def initialize(self, network):
+        return
+    
     def unpack_unknowns(self, segment):
         return
 
     def pack_residuals(self, segment):
         return
+
+    def append_unknowns_and_residuals(self, segment):
+        return
+        
+    def append_segment_conditions(self, segment):
+        """
+        Append segment-specific conditions to the bus
+        
+        Parameters
+        ----------
+        conditions : Data
+            Container for segment conditions
+        segment : Segment
+            Flight segment data
+        """
+        append_system_segment_conditions(self,segment)
+        return      

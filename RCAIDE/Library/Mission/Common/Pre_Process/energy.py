@@ -62,17 +62,20 @@ def energy(mission):
     RCAIDE.Library.Mission.Common.Initialize.energy
         Runs after pre-processing to allocate result data structures.
     """
-    for segment in mission.segments:
-        for network in segment.analyses.vehicle.networks:
+
+    for seg_i ,segment in enumerate(mission.segments):
+        verbose = segment.analyses.energy.verbose
+        for network in segment.analyses.vehicle.networks: 
 
             # ----------------------------------------------------------------
             # Analyze network topology and resolve hybridization
             # ----------------------------------------------------------------
-            topology = _analyze_topology(network)
-            phi, psi = _resolve_hybridization(segment, topology)
+            topology = _analyze_topology(network,seg_i,verbose=verbose)
+            phi, psi = _resolve_hybridization(segment, topology, seg_i,verbose=verbose)
 
             segment.state.conditions.energy.hybrid_power_split_ratio            = phi * segment.state.ones_row(1)
             segment.state.conditions.energy.battery_fuel_cell_power_split_ratio = psi * segment.state.ones_row(1)
+            segment.state.conditions.energy.topology                            = topology
 
             # ----------------------------------------------------------------
             # Initialize components and append operating conditions
@@ -108,7 +111,7 @@ def energy(mission):
 #  Topology Analysis
 # ==============================================================================
 
-def _analyze_topology(network):
+def _analyze_topology(network, seg_i,  verbose=False):
     """Classify all network components by energy domain and map distributor connections.
 
     Walks the network in five passes:
@@ -253,6 +256,38 @@ def _analyze_topology(network):
 
     topology.distributor_connections = connections
 
+    # ------------------------------------------------------------------
+    # Verbose output
+    # ------------------------------------------------------------------
+    if verbose and seg_i == 0:  # only print for first segment to avoid clutter
+        print('\n  Energy Network Topology Analysis')
+        print('  ' + '-' * 50)
+        print(f'  Chemical propulsors:   {[p.tag for p in chemical_propulsors]}')
+        print(f'  Electrical propulsors: {[p.tag for p in electrical_propulsors]}')
+        print(f'  Fuel tanks:            {[s.tag for s in fuel_tanks]}')
+        print(f'  Batteries:             {[s.tag for s in batteries]}')
+        print(f'  Fuel cells:            {[c.tag for c in fuel_cells]}')
+        print(f'  Generators:            {[c.tag for c in generators]}')
+        print(f'  Electrical motors:     {[c.tag for c in electrical_motors]}')
+        print(f'  Has chemical path:     {topology.has_chemical_path}')
+        print(f'  Has electrical path:   {topology.has_electrical_path}')
+        for dist_tag, conn in connections.items():
+            domain = distributor_domains[dist_tag]
+            providers = [p.tag for p in conn.providers]
+            consumers = [c.tag for c in conn.consumers]
+            has_flow  = len(providers) > 0 and len(consumers) > 0
+            print(f'  Distributor: {dist_tag} ({domain})')
+            print(f'    Providers: {providers}')
+            print(f'    Consumers: {consumers}')
+            if not has_flow:
+                if len(providers) == 0 and len(consumers) > 0:
+                    print(f'    WARNING: consumers but no providers on this distributor')
+                elif len(consumers) == 0 and len(providers) > 0:
+                    print(f'    WARNING: providers but no consumers on this distributor')
+
+        # add space between next print out 
+        print('\n \n') 
+
     return topology
 
 
@@ -260,7 +295,7 @@ def _analyze_topology(network):
 #  Hybridization Resolution
 # ==============================================================================
 
-def _resolve_hybridization(segment, topology):
+def _resolve_hybridization(segment, topology,seg_i, verbose=False):
     """Determine phi and psi from user input or network topology.
 
     Resolution logic:
@@ -316,12 +351,13 @@ def _resolve_hybridization(segment, topology):
                                     len(topology.generators)  > 0)
             if has_electrical_source:
                 import warnings
-                warnings.warn(
-                    "Hybrid network detected (both chemical and electrical paths) "
-                    "but segment.hybrid_power_split_ratio (phi) is not set. "
-                    "Defaulting to phi = 0.0 (all fuel). Set phi on the segment "
-                    "or it will be registered as an optimization variable.",
-                    stacklevel=4)
+                if verbose and seg_i == 0:
+                    warnings.warn(
+                        "Hybrid network detected (both chemical and electrical paths) "
+                        "but segment.hybrid_power_split_ratio (phi) is not set. "
+                        "Defaulting to phi = 0.0 (all fuel). Set phi on the segment "
+                        "or it will be registered as an optimization variable.",
+                        stacklevel=4)
             phi = 0.0
         else:
             phi = 0.0
@@ -341,12 +377,13 @@ def _resolve_hybridization(segment, topology):
             psi = 0.0
         elif has_battery and has_fuel_cell:
             import warnings
-            warnings.warn(
-                "Network has both batteries and fuel cells but "
-                "segment.battery_fuel_cell_power_split_ratio (psi) is not set. "
-                "Defaulting to psi = 1.0 (all battery). Set psi on the segment "
-                "or it will be registered as an optimization variable.",
-                stacklevel=4)
+            if verbose and seg_i == 0:
+                warnings.warn(
+                    "Network has both batteries and fuel cells but "
+                    "segment.battery_fuel_cell_power_split_ratio (psi) is not set. "
+                    "Defaulting to psi = 1.0 (all battery). Set psi on the segment "
+                    "or it will be registered as an optimization variable.",
+                    stacklevel=4)
             psi = 1.0
         else:
             psi = 1.0
@@ -366,5 +403,10 @@ def _resolve_hybridization(segment, topology):
                 if len(sources) > 1:
                     for source in sources:
                         source.power_split_ratio = 1.0 / len(sources)
+
+    if verbose:
+        print(f'  Resolved phi = {phi}  (fuel/electric split)')
+        print(f'  Resolved psi = {psi}  (battery/fuel-cell split)')
+        print('  ' + '-' * 50)
 
     return phi, psi

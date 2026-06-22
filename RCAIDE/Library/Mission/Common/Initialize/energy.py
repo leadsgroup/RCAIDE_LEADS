@@ -75,18 +75,21 @@ def energy(segment):
     vehicle    = segment.analyses.vehicle
 
     # loop through all networks in the vehicle and append energy conditions
-    for network in vehicle.networks: 
+    for network in vehicle.networks:
         network.append_segment_conditions(segment)
-         
+
+        for propulsor in network.propulsors:
+            propulsor.append_segment_conditions(segment)
+
         for source in network.sources:
             source.append_segment_conditions(segment)
-            
+
         for distributor in network.distributors:
-            distributor.append_segment_conditions(segment) 
-        
+            distributor.append_segment_conditions(segment)
+
         for system in network.systems:
             system.append_segment_conditions(segment)
-            
+
         for converter in network.converters:
             converter.append_segment_conditions(segment)
 

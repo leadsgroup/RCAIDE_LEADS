@@ -263,8 +263,20 @@ class Segment(Analysis):
         self.assigned_control_variables.blade_pitch_command.active                     = False        
         self.assigned_control_variables.blade_pitch_command.assigned_rotors            = None 
         self.assigned_control_variables.blade_pitch_command.initial_guess_values       = None   
-        self.assigned_control_variables.blade_pitch_command.bounds                     = None       
+        self.assigned_control_variables.blade_pitch_command.bounds                     = None   
         
+        self.assigned_control_variables.hybrid_power_split_ratio                                 = Data()
+        self.assigned_control_variables.hybrid_power_split_ratio.active                          = False
+        self.assigned_control_variables.hybrid_power_split_ratio.assigned_networks               = None
+        self.assigned_control_variables.hybrid_power_split_ratio.initial_guess_values            = None
+        self.assigned_control_variables.hybrid_power_split_ratio.bounds                          = None
+
+        self.assigned_control_variables.battery_fuel_cell_power_split_ratio                      = Data()
+        self.assigned_control_variables.battery_fuel_cell_power_split_ratio.active               = False
+        self.assigned_control_variables.battery_fuel_cell_power_split_ratio.assigned_networks    = None
+        self.assigned_control_variables.battery_fuel_cell_power_split_ratio.initial_guess_values = None
+        self.assigned_control_variables.battery_fuel_cell_power_split_ratio.bounds               = None
+
         return     
            
 # ----------------------------------------------------------------------

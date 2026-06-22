@@ -33,6 +33,7 @@ class Energy(Analysis):
         """        
         self.tag      = 'energy'
         self.vehicle  = Data()
+        self.verbose  = True
         
     def evaluate(self,unknowns,segment,network):
         """Evaluate the thrust produced by the energy network.
@@ -57,10 +58,10 @@ class Energy(Analysis):
             state.unknowns.network.unpack_array(unknowns)
 
         network.evaluate(state, vehicle)
-        
-        if type(segment) != RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge: 
-            state.residuals.network[ 'electrical_power'] = state.conditions.energy.net_electrical_power 
-            #state.residuals.network[ 'chemical_power']   = state.conditions.energy.net_chemical_power
+
+        if type(segment) != RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge:
+            if 'electrical_power' in state.unknowns.network:
+                state.residuals.network['electrical_power'] = state.conditions.energy.net_electrical_power
          
 
         # Unpack Residuals
