@@ -19,13 +19,13 @@ modules = [
     '../Tutorials/Analysis_Aerodynamic_Polars/aircraft_aerodynamics_analysis.py',
     '../Tutorials/Analysis_Approach_Sideline_Takeoff_Noise/approach_landing_takeoff_noise_certification.py',
     '../Tutorials/Analysis_Landing_Field_Length/landing_field_length.py',
-    '../Tutorials/Analysis_Loading_and_Trim_Diagram/aircraft_loading_and_trim_diagram.py',
-    '../Tutorials/Analysis_Payload_Range/aircraft_payload_range_diagram.py',
+    #'../Tutorials/Analysis_Loading_and_Trim_Diagram/aircraft_loading_and_trim_diagram.py',#- DO NOT RUN ON GITHUB, TAKES TOO LONG
+    #'../Tutorials/Analysis_Payload_Range/aircraft_payload_range_diagram.py',#-DO NOT RUN ON GITHUB, TAKES TOO LONG
     '../Tutorials/Analysis_Take_Off_Field_Length/takeoff_field_length_estimation.py',
     '../Tutorials/Analysis_Take_Off_Field_Length/takeoff_weight_estimation_from_target_TOFL.py',
     '../Tutorials/Analysis_V_n_Diagram/Part_23_V_n_diagram.py',
     '../Tutorials/Analysis_V_n_Diagram/Part_35_V_n_diagram.py',
-    '../Tutorials/Optimization_Wing_Planform_Fuel_Burn/Optimize.py',
+    #'../Tutorials/Optimization_Wing_Planform_Fuel_Burn/Optimize.py',# DO NOT RUN ON GITHUB, TAKES TOO LONG
     '../Tutorials/Simulation_Turbofan_Transonic_Aircraft_5000nmi_Mission/Boeing_737_800.py',
     '../Tutorials/Simulation_Turbojet_Supersonic_Aircraft_4500nmi_Mission/Concorde.py',
     '../Tutorials/Simulation_Turboprop_Aircraft_1000nmi_Mission/ATR_72.py',
