@@ -31,7 +31,7 @@ def compute_battery_properties(battery,network):
                 Number of cells in series
             - electrical_configuration.parallel : int
                 Number of cells in parallel
-            - geometrtic_configuration : GeometricConfiguration
+            - geometric_configuration : GeometricConfiguration
                 Object containing geometric layout information
             - volume_packaging_factor : float
                 Factor accounting for additional volume due to packaging
@@ -95,15 +95,15 @@ def compute_battery_properties(battery,network):
     for battery_module in battery.modules: 
         series_e           = battery_module.electrical_configuration.series
         parallel_e         = battery_module.electrical_configuration.parallel 
-        normal_count       = battery_module.geometrtic_configuration.normal_count  
-        parallel_count     = battery_module.geometrtic_configuration.parallel_count
-        stacking_rows      = battery_module.geometrtic_configuration.stacking_rows
+        normal_count       = battery_module.geometric_configuration.normal_count  
+        parallel_count     = battery_module.geometric_configuration.parallel_count
+        stacking_rows      = battery_module.geometric_configuration.stacking_rows
     
         if int(parallel_e*series_e) != int(normal_count*parallel_count):
             pass #raise Exception('Number of cells in gemetric layout not equal to number of cells in electric circuit configuration ')
             
-        normal_spacing     = battery_module.geometrtic_configuration.normal_spacing   
-        parallel_spacing   = battery_module.geometrtic_configuration.parallel_spacing
+        normal_spacing     = battery_module.geometric_configuration.normal_spacing   
+        parallel_spacing   = battery_module.geometric_configuration.parallel_spacing
         volume_factor      = battery_module.volume_packaging_factor
         cell_diameter      = battery_module.cell.diameter
         cell_height        = battery_module.cell.height  

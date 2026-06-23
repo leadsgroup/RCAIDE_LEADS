@@ -458,8 +458,8 @@ def vehicle_setup(new_regression=True) :
     battery_module.tag                                                = 'cruise_bus_battery'
     battery_module.electrical_configuration.series                     = 140  
     battery_module.electrical_configuration.parallel                   = 60  
-    battery_module.geometrtic_configuration.normal_count               = 140  
-    battery_module.geometrtic_configuration.parallel_count             = 60  
+    battery_module.geometric_configuration.normal_count               = 140  
+    battery_module.geometric_configuration.parallel_count             = 60  
     for _ in range( cruise_bus.number_of_battery_modules):
         cruise_bus.battery_modules.append(deepcopy(battery_module))    
     cruise_bus.initialize_bus_properties()
@@ -658,8 +658,8 @@ def vehicle_setup(new_regression=True) :
     battery_module.electrical_configuration.series                    = 140
     battery_module.origin                                             = [[4.2, 0.0, 0.0]]
     battery_module.electrical_configuration.parallel                  = 20 
-    battery_module.geometrtic_configuration.normal_count              = 140   
-    battery_module.geometrtic_configuration.parallel_count            = 20 
+    battery_module.geometric_configuration.normal_count              = 140   
+    battery_module.geometric_configuration.parallel_count            = 20 
     for _ in range( lift_bus.number_of_battery_modules):
         lift_bus.battery_modules.append(deepcopy(battery_module))
     lift_bus.initialize_bus_properties()

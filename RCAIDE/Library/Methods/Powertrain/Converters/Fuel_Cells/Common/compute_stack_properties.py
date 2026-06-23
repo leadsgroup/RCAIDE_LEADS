@@ -78,15 +78,15 @@ def compute_stack_properties(fuel_cell_stack):
     series_e           = fuel_cell_stack.electrical_configuration.series
     parallel_e         = fuel_cell_stack.electrical_configuration.parallel
     n_total            = parallel_e *series_e
-    normal_count       = fuel_cell_stack.geometrtic_configuration.normal_count  
-    parallel_count     = fuel_cell_stack.geometrtic_configuration.parallel_count
-    stacking_rows      = fuel_cell_stack.geometrtic_configuration.stacking_rows
+    normal_count       = fuel_cell_stack.geometric_configuration.normal_count  
+    parallel_count     = fuel_cell_stack.geometric_configuration.parallel_count
+    stacking_rows      = fuel_cell_stack.geometric_configuration.stacking_rows
 
     if int(parallel_e*series_e) != int(normal_count*parallel_count):
         raise Exception('Number of cells in gemetric layout not equal to number of cells in electric circuit configuration ')
          
-    normal_spacing     = fuel_cell_stack.geometrtic_configuration.normal_spacing   
-    parallel_spacing   = fuel_cell_stack.geometrtic_configuration.parallel_spacing
+    normal_spacing     = fuel_cell_stack.geometric_configuration.normal_spacing   
+    parallel_spacing   = fuel_cell_stack.geometric_configuration.parallel_spacing
     volume_factor      = fuel_cell_stack.volume_packaging_factor 
     euler_angles       = fuel_cell_stack.orientation_euler_angles
     fuel_cell_length   = fuel_cell_stack.fuel_cell.length 

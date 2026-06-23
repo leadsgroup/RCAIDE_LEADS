@@ -368,9 +368,9 @@ def vehicle_setup(redesign_rotors=True) :
     battery_module.tag                                                = 'bus_battery'
     battery_module.electrical_configuration.series                    = 60
     battery_module.electrical_configuration.parallel                  = 60          
-    battery_module.geometrtic_configuration.normal_count              = 60
-    battery_module.geometrtic_configuration.parallel_count            = 60
-    battery_module.geometrtic_configuration.stacking_rows             = 2
+    battery_module.geometric_configuration.normal_count              = 60
+    battery_module.geometric_configuration.parallel_count            = 60
+    battery_module.geometric_configuration.stacking_rows             = 2
     
                        # starboard   | port        | front  | rear 
     modules_origins = [[1.8, 2.0,1.0 ],[1.8, -2.0, 1.0  ],[0.3, 0.0, 0.0 ],[2, 0.0, 0.0]]  

@@ -191,9 +191,9 @@ def vehicle_setup():
     battery_module                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC() 
     battery_module.electrical_configuration.series                    = 150   
     battery_module.electrical_configuration.parallel                  = 270  
-    battery_module.geometrtic_configuration.normal_count              = 900
-    battery_module.geometrtic_configuration.parallel_count            = 45
-    battery_module.geometrtic_configuration.stacking_rows             = 9
+    battery_module.geometric_configuration.normal_count              = 900
+    battery_module.geometric_configuration.parallel_count            = 45
+    battery_module.geometric_configuration.stacking_rows             = 9
     battery_module.origin                                             = [[0.5, 0, 0]]
     bus.battery_modules.append(battery_module)    
     bus.initialize_bus_properties()

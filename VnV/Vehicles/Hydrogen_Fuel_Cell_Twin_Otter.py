@@ -360,14 +360,14 @@ def vehicle_setup(fuel_cell_model= 'PEM'):
         fuel_cell_stack = RCAIDE.Library.Components.Powertrain.Converters.Fuel_Cell() 
         fuel_cell_stack.electrical_configuration.series             = 940
         fuel_cell_stack.electrical_configuration.parallel           = 7
-        fuel_cell_stack.geometrtic_configuration.normal_count       = 940
-        fuel_cell_stack.geometrtic_configuration.parallel_count     = 7
+        fuel_cell_stack.geometric_configuration.normal_count       = 940
+        fuel_cell_stack.geometric_configuration.parallel_count     = 7
     if fuel_cell_model == 'Larminie':  
         fuel_cell_stack   = RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack() 
         fuel_cell_stack.electrical_configuration.series             = 1020
         fuel_cell_stack.electrical_configuration.parallel           = 1
-        fuel_cell_stack.geometrtic_configuration.normal_count       = 1020
-        fuel_cell_stack.geometrtic_configuration.parallel_count     = 1
+        fuel_cell_stack.geometric_configuration.normal_count       = 1020
+        fuel_cell_stack.geometric_configuration.parallel_count     = 1
         
     bus.fuel_cell_stacks.append(fuel_cell_stack)  
     bus.initialize_bus_properties() 

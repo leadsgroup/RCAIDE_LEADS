@@ -199,8 +199,8 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     bat.tag                                                = 'li_ion_battery'
     bat.electrical_configuration.series                    = 40  
     bat.electrical_configuration.parallel                  = 10 
-    bat.geometrtic_configuration.normal_count              = 40  
-    bat.geometrtic_configuration.parallel_count            = 10
+    bat.geometric_configuration.normal_count              = 40  
+    bat.geometric_configuration.parallel_count            = 10
     bus.battery_modules.append(bat)      
     bus.initialize_bus_properties()
     

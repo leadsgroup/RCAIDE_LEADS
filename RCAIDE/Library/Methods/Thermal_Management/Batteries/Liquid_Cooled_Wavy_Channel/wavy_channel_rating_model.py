@@ -70,7 +70,7 @@ def  wavy_channel_rating_model(HAS,battery_module,bus,coolant_line,Q_heat_gen,T_
     d_cell                      = battery_module.cell.diameter                    
     h_cell                      = battery_module.cell.height                      
     A_cell                      = np.pi*d_cell*h_cell 
-    N_cells_geometric_config    = battery_module.geometrtic_configuration.parallel_count*battery_module.geometrtic_configuration.normal_count  
+    N_cells_geometric_config    = battery_module.geometric_configuration.parallel_count*battery_module.geometric_configuration.normal_count  
     cell_mass                   = battery_module.cell.mass 
     Nn_module_cells             = battery_module.electrical_configuration.series            
     Np_module_cells             = battery_module.electrical_configuration.parallel
@@ -93,7 +93,7 @@ def  wavy_channel_rating_model(HAS,battery_module,bus,coolant_line,Q_heat_gen,T_
     A_chan   = 2*N_cells_geometric_config*(theta)*A_cell  
 
     #Length of Channel   
-    L_extra  =  battery_module.geometrtic_configuration.parallel_count*d_cell
+    L_extra  =  battery_module.geometric_configuration.parallel_count*d_cell
     L_chan   = (N_cells_geometric_config*d_cell)+L_extra 
 
     # Hydraulic diameter    

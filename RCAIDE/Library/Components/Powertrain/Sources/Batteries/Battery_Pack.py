@@ -66,7 +66,7 @@ class Battery_Pack(Source):
             - parallel : int
                 Number of parallel strings (default: 1)
             
-    geometrtic_configuration : Data
+    geometric_configuration : Data
         Physical arrangement of cells
             - normal_count : int
                 Cells in normal direction (default: 1)

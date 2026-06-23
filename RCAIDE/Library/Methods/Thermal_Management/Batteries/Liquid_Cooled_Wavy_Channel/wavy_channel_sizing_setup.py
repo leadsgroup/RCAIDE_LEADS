@@ -109,7 +109,7 @@ def modify_wavy_channel_HAS(nexus):
     new_parllel_spacing  = (d_cell + d) * np.cos(theta/2)
     
     #Length of Channel   
-    L_chan  = (battery.geometrtic_configuration.normal_count*new_normal_spacing)*battery.geometrtic_configuration.parallel_count
+    L_chan  = (battery.geometric_configuration.normal_count*new_normal_spacing)*battery.geometric_configuration.parallel_count
     L_extra  = 3*d_cell
     L_chan   = (N_cells*d_cell)+L_extra 
 

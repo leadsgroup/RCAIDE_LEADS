@@ -478,8 +478,8 @@ def vehicle_setup():
     bat_module.electrical_configuration.series             = 20 
     bat_module.electrical_configuration.parallel           = 210 *  4 
     bat_module.cell.nominal_capacity                       = 3.8 
-    bat_module.geometrtic_configuration.normal_count       = 42 
-    bat_module.geometrtic_configuration.parallel_count     = 100 *  4 
+    bat_module.geometric_configuration.normal_count       = 42 
+    bat_module.geometric_configuration.parallel_count     = 100 *  4 
 
     for _ in range(12):
         bat_copy = deepcopy(bat_module)

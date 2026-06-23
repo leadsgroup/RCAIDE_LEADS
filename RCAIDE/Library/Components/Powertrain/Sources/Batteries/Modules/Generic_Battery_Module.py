@@ -63,7 +63,7 @@ class Generic_Battery_Module(Source):
             - parallel : int
                 Number of parallel strings (default: 1)
             
-    geometrtic_configuration : Data
+    geometric_configuration : Data
         Physical arrangement of cells
             - normal_count : int
                 Cells in normal direction (default: 1)
@@ -127,12 +127,12 @@ class Generic_Battery_Module(Source):
         self.electrical_configuration.series                   = 1
         self.electrical_configuration.parallel                 = 1   
 
-        self.geometrtic_configuration                          = Data() 
-        self.geometrtic_configuration.normal_count             = 1
-        self.geometrtic_configuration.parallel_count           = 1
-        self.geometrtic_configuration.normal_spacing           = 0.02
-        self.geometrtic_configuration.stacking_rows            = 3
-        self.geometrtic_configuration.parallel_spacing         = 0.02    
+        self.geometric_configuration                          = Data() 
+        self.geometric_configuration.normal_count             = 1
+        self.geometric_configuration.parallel_count           = 1
+        self.geometric_configuration.normal_spacing           = 0.02
+        self.geometric_configuration.stacking_rows            = 3
+        self.geometric_configuration.parallel_spacing         = 0.02    
 
     def unpack_unknowns(self,segment): 
         return 

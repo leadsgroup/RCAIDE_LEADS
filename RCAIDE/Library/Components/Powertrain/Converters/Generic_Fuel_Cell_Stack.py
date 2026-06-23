@@ -90,12 +90,12 @@ class Generic_Fuel_Cell_Stack(Converter):
         self.electrical_configuration.series            = 1
         self.electrical_configuration.parallel          = 1   
         
-        self.geometrtic_configuration                   = Data() 
-        self.geometrtic_configuration.normal_count      = 1
-        self.geometrtic_configuration.parallel_count    = 1
-        self.geometrtic_configuration.normal_spacing    = 0.02
-        self.geometrtic_configuration.stacking_rows     = 3
-        self.geometrtic_configuration.parallel_spacing  = 0.02     
+        self.geometric_configuration                   = Data() 
+        self.geometric_configuration.normal_count      = 1
+        self.geometric_configuration.parallel_count    = 1
+        self.geometric_configuration.normal_spacing    = 0.02
+        self.geometric_configuration.stacking_rows     = 3
+        self.geometric_configuration.parallel_spacing  = 0.02     
           
     def compute_performance(self,state,network):  
         """Computes the state of the NMC battery cell.
