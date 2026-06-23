@@ -87,7 +87,33 @@ def vehicle_setup():
 
     vehicle.append_component(cargo_bay3)
 
+      # ################################################# Landing Gear #############################################################   
+
+    main_gear                                     = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
+    main_gear.tire_diameter                       = 50.0 *  Units.inches 
+    main_gear.rim_diameter                        = 22   *  Units.inches 
+    main_gear.tire_width                          = 20.0 *  Units.inches 
+    main_gear.strut_length                        = 5.5  * Units.ft 
+    main_gear.wheels                              = 8   
+    main_gear.number_of_gear_types_in_tandem      = 2
+    main_gear.number_of_wheels_in_gear_type       = 2  
+    main_gear.xz_plane_symmetric                  = True 
+    main_gear.origin                              = [[17,3.5,-2]]
+    vehicle.append_component(main_gear)         
+       
+    nose_gear                                     = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
+    nose_gear.tire_diameter                       = 40. *  Units.inches   
+    nose_gear.rim_diameter                        = 16  *  Units.inches 
+    nose_gear.tire_width                          = 16  *  Units.inches 
+    nose_gear.strut_length                        = 5.5 * Units.ft 
+    nose_gear.wheels                              = 2   
+    nose_gear.number_of_gear_types_in_tandem      = 1
+    nose_gear.number_of_wheels_in_gear_type       = 2   
+    nose_gear.origin                              = [[5,0,-1.5]] 
+    vehicle.append_component(nose_gear)
+
     
+
     # ------------------------------------------------------------------
     #  Main Wing 
     # ------------------------------------------------------------------ 
@@ -108,7 +134,7 @@ def vehicle_setup():
     wing.aft_center_body.taper   = 0.85
     wing.total_length            = 34.590950446109
     wing.twists.root             = 0
-    wing.twists.tip              = -0.0174894184557103
+    wing.twists.tip              = -3*Units.degrees
     wing.origin                  = [[0.0,  0.0,  0.0]] 
     wing.aerodynamic_center      = [17.43511294,  0.        ,  1.08931241] 
     wing.vertical                = False
@@ -324,16 +350,15 @@ def vehicle_setup():
     wing.thickness_to_chord                       = .08
     wing.spans.projected                          = 7.90551686864603
     wing.sweeps.quarter_chord                     = 35 * Units.degrees
-    wing.chords.root                              = 3.33984778055753
-    taper = 1/3
-    wing.chords.tip                               = wing.chords.root * taper
+    wing.chords.root                              = 5.5
+    wing.taper                                    = 1/3
+    wing.chords.tip                               = wing.chords.root * wing.taper
     wing.chords.mean_aerodynamic                  = wing.chords.root * 2/3 * (( 1 + wing.taper + wing.taper**2 ) / ( 1 + wing.taper ))
-    wing.areas.reference                          = 7.90551686864603 * (1+taper)/2*3.33984778055753
+    wing.areas.reference                          = 7.90551686864603 * (1+wing.taper )/2*3.33984778055753
     wing.total_length                             = wing.chords.root 
-    wing.taper                                    = wing.chords.tip /  wing.chords.root 
     wing.twists.root                              = 0.0 
     wing.twists.tip                               = 0.0 
-    wing.origin                                   = [[vehicle.wings.main_wing.chords.root * 0.90 - wing.chords.root,  6.4 , 0.0]] 
+    wing.origin                                   = [[27,  6., 0.5]] 
     wing.xz_plane_symmetric                       = True
     wing.dynamic_pressure_ratio                   = 1.0  
 
@@ -368,36 +393,9 @@ def vehicle_setup():
 
     # add to vehicle
     vehicle.append_component(wing)     
-
-
-    # ################################################# Landing Gear #############################################################   
-
-    main_gear                                     = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
-    main_gear.tire_diameter                       = 50.0 *  Units.inches 
-    main_gear.rim_diameter                        = 22   *  Units.inches 
-    main_gear.tire_width                          = 20.0 *  Units.inches 
-    main_gear.strut_length                        = 5.5  * Units.ft 
-    main_gear.wheels                              = 8   
-    main_gear.number_of_gear_types_in_tandem      = 2
-    main_gear.number_of_wheels_in_gear_type       = 2  
-    main_gear.xz_plane_symmetric                  = True 
-    main_gear.origin                              = [[20.9,0,0]]
-    vehicle.append_component(main_gear)         
-       
-    nose_gear                                     = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
-    nose_gear.tire_diameter                       = 40. *  Units.inches   
-    nose_gear.rim_diameter                        = 16  *  Units.inches 
-    nose_gear.tire_width                          = 16  *  Units.inches 
-    nose_gear.strut_length                        = 5.5 * Units.ft 
-    nose_gear.wheels                              = 2   
-    nose_gear.number_of_gear_types_in_tandem      = 1
-    nose_gear.number_of_wheels_in_gear_type       = 2  
-    nose_gear.origin                              = [[5.8,0,0]]    
-    vehicle.append_component(nose_gear)
+ 
     
-    
-    
- # ################################################# Energy Network #######################################################          
+    # ################################################# Energy Network #######################################################          
     #------------------------------------------------------------------------------------------------------------------------- 
     #  Turbofan Network
     #-------------------------------------------------------------------------------------------------------------------------   
@@ -518,13 +516,13 @@ def vehicle_setup():
     nacelle.length                              = 160 * Units.inches  
     nacelle.tag                                 = 'nacelle_1'
     nacelle.inlet_diameter                      = 80 * Units.inches    
-    nacelle.origin                              = [[0.8*vehicle.wings.main_wing.chords.root, 4.2, 2.25]] 
+    nacelle.origin                              = [[0.8*vehicle.wings.main_wing.chords.root, 3.5, 2.25]] 
     nacelle.areas.wetted                        = np.pi*nacelle.diameter*nacelle.length
     nacelle_airfoil                             = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
     nacelle_airfoil.NACA_4_Series_code          = '4305'
     nacelle.append_airfoil(nacelle_airfoil) 
     turbofan1.nacelle                            = nacelle  
-    turbofan1.origin                             = [[0.8*vehicle.wings.main_wing.chords.root, 4.2, 2.25]] 
+    turbofan1.origin                             = [[0.8*vehicle.wings.main_wing.chords.root, 3.5, 2.25]] 
     
     
     net.propulsors.append(turbofan1)
@@ -534,9 +532,9 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------       
     turbofan2                                  = deepcopy(turbofan1) 
     turbofan2.tag                              = 'propulsor_2' 
-    turbofan2.origin                           = [[0.8*vehicle.wings.main_wing.chords.root, -4.2, 2.25]] 
+    turbofan2.origin                           = [[0.8*vehicle.wings.main_wing.chords.root, -3.5, 2.25]] 
     turbofan2.nacelle.tag                      =  'propulsor_2_nacelle'
-    turbofan2.nacelle.origin                   = [[0.8*vehicle.wings.main_wing.chords.root, -4.2, 2.25]] 
+    turbofan2.nacelle.origin                   = [[0.8*vehicle.wings.main_wing.chords.root, -3.5, 2.25]] 
         
     # append propulsor to distribution line 
     net.propulsors.append(turbofan2) 

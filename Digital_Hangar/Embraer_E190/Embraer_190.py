@@ -301,7 +301,8 @@ def vehicle_setup():
     fuselage.areas.wetted                       = 327.01
     fuselage.areas.front_projected              = np.pi * (fuselage.heights.maximum  / 2) ** 2
     fuselage.effective_diameter                 = 3.18 
-    fuselage.differential_pressure              = 10**5 * Units.pascal    # Maximum differential pressure  
+    fuselage.differential_pressure              = 10**5 * Units.pascal    # Maximum differential pressure
+    fuselage.operational_items.origin = [[fuselage.lengths.total * 0.6, 0, 0]]
 
 
     cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
@@ -459,12 +460,45 @@ def vehicle_setup():
     #  Fuel Network
     #------------------------------------------------------------------------------------------------------------------------------------  
     #initialize the fuel network
-    net                                         = RCAIDE.Framework.Networks.Fuel() 
-    
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    # Fuel Distribution Line 
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line() 
+    net                                         = RCAIDE.Framework.Networks.Fuel()
+
+    ##  Systems
+    avionics =  RCAIDE.Library.Components.Powertrain.Systems.Avionics()
+    avionics.origin                   = [[4,0,0]]
+    net.systems.append(avionics)
+
+    flight_controls =  RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
+    flight_controls.origin            = [[16,0,0]]
+    net.systems.append(flight_controls)
+
+    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
+    auxillary_power_unit.origin       = [[33,0,0]]
+    net.systems.append(auxillary_power_unit)
+
+    electrical =  RCAIDE.Library.Components.Powertrain.Systems.Electrical()
+    electrical.origin                 = [[15,0,0]]
+    net.systems.append(electrical)
+
+    hydraulics =  RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
+    hydraulics.origin                 = [[16,0,0]]
+    net.systems.append(hydraulics)
+
+    environmental_controls =  RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
+    environmental_controls.origin     = [[15,0,-0.5]]
+    net.systems.append(environmental_controls)
+
+    instruments =  RCAIDE.Library.Components.Powertrain.Systems.Instruments()
+    instruments.origin                = [[14,0,0]]
+    net.systems.append(instruments)
+
+    furnishings = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
+    furnishings.origin                = [[17,0,0]]
+    net.systems.append(furnishings)
+
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Fuel Distribution Line
+    #------------------------------------------------------------------------------------------------------------------------------------
+    fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
     
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Fuel Tank & Fuel

@@ -145,7 +145,7 @@ def vehicle_setup():
         
     # Wing Segments 
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
-    segment.tag                           = 'Root'
+    segment.tag                           = 'root'
     segment.percent_span_location         = 0.0
     segment.twist                         = 0. * Units.deg
     segment.root_chord_percent            = 1.
@@ -159,7 +159,7 @@ def vehicle_setup():
     wing.append_segment(segment)
 
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
-    segment.tag                           = 'Yehudi'
+    segment.tag                           = 'yehudi'
     segment.percent_span_location         = 0.44
     segment.twist                         = 0.0 * Units.deg
     segment.root_chord_percent            = 0.53
@@ -173,7 +173,7 @@ def vehicle_setup():
     wing.append_segment(segment)
 
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
-    segment.tag                           = 'Tip'
+    segment.tag                           = 'tip'
     segment.percent_span_location         = 1.
     segment.twist                         = -3. * Units.degrees
     segment.root_chord_percent            = 0.235
@@ -386,9 +386,58 @@ def vehicle_setup():
     fuselage.heights.at_quarter_length          = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_three_quarters_length   = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_wing_root_quarter_chord = fuselage.heights.maximum* Units.meter
-    
-    # Segment  
-    segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment() 
+    fuselage.operational_items.origin = [[fuselage.lengths.total * 0.6, 0, 0]]
+
+
+    lower_cabin                                           = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
+    lower_cabin.origin                                    = [[13, 0, 0]]
+    lower_cabin.wide_body                                 = True
+    lower_cabin.segments_bounding_cabin                   = ['segment_10', 'segment_14']
+
+    business_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business()
+    business_class.number_of_seats_abrest              = 8
+    business_class.number_of_rows                      = 8
+    business_class.seat_width                          = 20 *  Units.inches
+    business_class.seat_arm_rest_width                 = 4 *  Units.inches
+    business_class.seat_pitch                          = 38 *  Units.inches
+    business_class.aisle_width                         = 20 *  Units.inches
+    business_class.galley_lavatory_percent_x_locations = [0, 1]
+    business_class.type_A_exit_percent_x_locations     = [0, 1]
+    lower_cabin.append_cabin_class(business_class)
+
+    economy_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy()
+    economy_class.number_of_seats_abrest              = 10
+    economy_class.number_of_rows                      = 28
+    economy_class.seat_pitch                          = 32 *  Units.inches
+    economy_class.galley_lavatory_percent_x_locations = [0, 0.5, 1.0]
+    economy_class.type_A_exit_percent_x_locations     = [0, 0.5, 1.0]
+    economy_class.emergency_exit_percent_x_locations  = [0.25, 0.75]
+    lower_cabin.append_cabin_class(economy_class)
+
+    fuselage.append_cabin(lower_cabin)
+
+    upper_cabin                                     = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
+    upper_cabin.origin                              = [[8, 0, 4.0]]
+    upper_cabin.wide_body                           = False
+    upper_cabin.segments_bounding_cabin             = ['segment_8', 'segment_11']
+
+    first_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.First()
+    first_class.number_of_seats_abrest              = 4
+    first_class.number_of_rows                      = 6
+    first_class.seat_width                          = 26 *  Units.inches
+    first_class.seat_arm_rest_width                 = 3 *  Units.inches
+    first_class.seat_length                         = 45 *  Units.inches
+    first_class.seat_pitch                          = 50 *  Units.inches
+    first_class.aisle_width                         = 20 *  Units.inches
+    first_class.galley_lavatory_percent_x_locations = [0, 1]
+    first_class.type_A_exit_percent_x_locations     = [0, 1]
+    upper_cabin.append_cabin_class(first_class)
+
+    fuselage.append_cabin(upper_cabin)
+
+
+    # Segment
+    segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
     segment.tag                                 = 'segment_0'    
     segment.percent_x_location                  = 0.0000
     segment.percent_z_location                  = 0.00 
@@ -566,10 +615,45 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------- 
     #  Turbofan Network
     #-------------------------------------------------------------------------------------------------------------------------   
-    net                                         = RCAIDE.Framework.Networks.Fuel() 
-    
-    #------------------------------------------------------------------------------------------------------------------------- 
-    # Fuel Distribution Line 
+    net                                         = RCAIDE.Framework.Networks.Fuel()
+
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Systems
+    #------------------------------------------------------------------------------------------------------------------------------------
+    avionics = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
+    avionics.origin                   = [[7,0,0]]
+    net.systems.append(avionics)
+
+    flight_controls = RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
+    flight_controls.origin            = [[30,0,0]]
+    net.systems.append(flight_controls)
+
+    auxillary_power_unit = RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
+    auxillary_power_unit.origin       = [[62,0,0]]
+    net.systems.append(auxillary_power_unit)
+
+    electrical = RCAIDE.Library.Components.Powertrain.Systems.Electrical()
+    electrical.origin                 = [[28,0,0]]
+    net.systems.append(electrical)
+
+    hydraulics = RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
+    hydraulics.origin                 = [[30,0,0]]
+    net.systems.append(hydraulics)
+
+    environmental_controls = RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
+    environmental_controls.origin     = [[28,0,-0.5]]
+    net.systems.append(environmental_controls)
+
+    instruments = RCAIDE.Library.Components.Powertrain.Systems.Instruments()
+    instruments.origin                = [[27,0,0]]
+    net.systems.append(instruments)
+
+    furnishings = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
+    furnishings.origin                = [[32,0,0]]
+    net.systems.append(furnishings)
+
+    #-------------------------------------------------------------------------------------------------------------------------
+    # Fuel Distribution Line
     #------------------------------------------------------------------------------------------------------------------------- 
     fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
            
@@ -580,7 +664,7 @@ def vehicle_setup():
     turbofan_1                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
     turbofan_1.tag                                = 'propulsor_1' 
     turbofan_1.origin                             = [[13.72, 4.86,-1.1]] 
-    turbofan_1.length                      = 3.934     
+    turbofan_1.length                             = 3.934     
     turbofan_1.bypass_ratio                       = 5.0   
     turbofan_1.design_altitude                    = 0.0*Units.ft
     turbofan_1.design_mach_number                 = 0.01   
@@ -720,11 +804,16 @@ def vehicle_setup():
         
     #------------------------------------------------------------------------------------------------------------------------- 
     #  Energy Source: Fuel Tank
-    #------------------------------------------------------------------------------------------------------------------------- 
-    # fuel tank
-    fuel_tank                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank() 
-    fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Jet_A1()      
-    fuel_line.fuel_tanks.append(fuel_tank)
+    #-------------------------------------------------------------------------------------------------------------------------  
+    inboard_tank                               = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)  
+    inboard_tank.fuel                          = RCAIDE.Library.Attributes.Propellants.Jet_A()
+    inboard_tank.segments_bounding_tank        = ['root','yehudi']   
+    fuel_line.fuel_tanks.append(inboard_tank)
+     
+    outboard_tank                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)  
+    outboard_tank.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A()
+    outboard_tank.segments_bounding_tank       = ['yehudi', 'tip']  
+    fuel_line.fuel_tanks.append(outboard_tank)    
     
     #------------------------------------------------------------------------------------------------------------------------------------   
     # Assign propulsors to fuel line to network      

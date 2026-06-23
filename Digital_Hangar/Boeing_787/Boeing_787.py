@@ -645,7 +645,7 @@ def vehicle_setup() :
     turbofan1.origin                             = [[17.818, 10.000,-0.953 ]]
     turbofan1.tag                                = 'propulsor_1'    
     turbofan1.length                      = 4.928                      
-    turbofan1.engine_diameter                    = 2.822                  
+    turbofan1.diameter                    = 2.822                  
     turbofan1.bypass_ratio                       = 9.1                        
     turbofan1.design_altitude                    = 36000*Units.ft             
     turbofan1.design_mach_number                 = 0.85                     

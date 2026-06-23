@@ -417,8 +417,9 @@ def vehicle_setup():
     fuselage.heights.at_quarter_length          = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_three_quarters_length   = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_wing_root_quarter_chord = fuselage.heights.maximum* Units.meter
-    
-     # Segment  
+    fuselage.operational_items.origin            = [[fuselage.lengths.total * 0.6, 0, 0]]
+
+     # Segment
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment() 
     segment.tag                                 = 'segment_1'    
     segment.percent_x_location                  = 0.0000

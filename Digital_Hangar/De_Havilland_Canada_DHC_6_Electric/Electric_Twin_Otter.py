@@ -319,7 +319,8 @@ def vehicle_setup():
     fuselage.areas.side_projected               = fuselage.lengths.total *fuselage.heights.maximum  # estimate    
     fuselage.areas.wetted                       = 2 * np.pi * fuselage.width *  fuselage.lengths.total +  2 * np.pi * fuselage.width ** 2
     fuselage.areas.front_projected              =  np.pi * fuselage.width ** 2 
-    fuselage.effective_diameter                 = 1.75 
+    fuselage.effective_diameter                 = 1.75
+    fuselage.operational_items.origin            = [[fuselage.lengths.total * 0.6, 0, 0]]
 
     # Segment
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()

@@ -436,6 +436,7 @@ def vehicle_setup():
     fuselage.heights.at_quarter_length          = 3.74 * Units.meter
     fuselage.heights.at_three_quarters_length   = 3.65 * Units.meter
     fuselage.heights.at_wing_root_quarter_chord = 3.74 * Units.meter
+    fuselage.operational_items.origin = [[fuselage.lengths.total * 0.6, 0, 0]]
     # Segment  
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment() 
     segment.tag                                 = 'segment_0'    
@@ -600,61 +601,97 @@ def vehicle_setup():
      
 
     # ################################################# Energy Network #######################################################          
+  
+    # ################################################# Energy Network #######################################################          
     #------------------------------------------------------------------------------------------------------------------------- 
     #  Turbofan Network
     #-------------------------------------------------------------------------------------------------------------------------   
-    net                                         = RCAIDE.Framework.Networks.Fuel() 
-    
+    net                                           = RCAIDE.Framework.Networks.Fuel() 
+    #------------------------------------------------------------------------------------------------------------------------------------ 
+    # Systems 
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    avionics = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
+    avionics.origin                   = [[5.0, 0, 0]]
+    net.systems.append(avionics)
+
+    flight_controls = RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
+    flight_controls.origin            = [[36.5, 0, 0]]
+    net.systems.append(flight_controls)
+
+    auxiliary_power_unit = RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
+    auxiliary_power_unit.origin       = [[70.9, 0, 0]]
+    net.systems.append(auxiliary_power_unit)
+
+    electrical = RCAIDE.Library.Components.Powertrain.Systems.Electrical()
+    electrical.origin                 = [[18.3, 0, -0.8]]
+    net.systems.append(electrical)
+
+    hydraulics = RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
+    hydraulics.origin                 = [[36.5, 0, -0.8]]
+    net.systems.append(hydraulics)
+
+    environmental_controls = RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
+    environmental_controls.origin     = [[21.9, 0, -1.0]]
+    net.systems.append(environmental_controls)
+
+    instruments = RCAIDE.Library.Components.Powertrain.Systems.Instruments()
+    instruments.origin                = [[5.0, 0, 0]]
+    net.systems.append(instruments)
+
+    furnishings = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
+    furnishings.origin                = [[36.5, 0, 0]]
+    net.systems.append(furnishings)
+
     #------------------------------------------------------------------------------------------------------------------------- 
     # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
-    fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
+    fuel_line                                      = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
     
     #------------------------------------------------------------------------------------------------------------------------------------  
-    # Propulsor: Starboard Propulsor LEAP 1B Engine
+    # Propulsor: Starboard Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------         
-    turbofan                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
-    turbofan.tag                                = 'propulsor_1' 
-    turbofan.origin                             = [[13.0, 4.86,-1.1]] 
-    turbofan.length                      = 3.13944 
-    turbofan.engine_diameter                    = 1.7526  
-    turbofan.bypass_ratio                       = 9.1    
-    turbofan.design_altitude                    = 35000.0*Units.ft
-    turbofan.design_mach_number                 = 0.78   
-    turbofan.design_thrust                      = 19500.0* Units.N # LEAP 1B Engine
-             
-    # fan                
-    fan                                         = RCAIDE.Library.Components.Powertrain.Converters.Fan()   
-    fan.tag                                     = 'fan'
-    fan.polytropic_efficiency                   = 0.93
-    fan.pressure_ratio                          = 1.7   
-    turbofan.fan                                = fan        
+    turbofan                                       = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
+    turbofan.tag                                   = 'starboard_propulsor' 
+    turbofan.origin                                = [[13.72, 4.38,-1.5]] 
+    turbofan.length                                = 2.71     
+    turbofan.bypass_ratio                          = 5.4          
+    turbofan.diameter                              = 1.5494
+    turbofan.design_altitude                       = 35000.0*Units.ft
+    turbofan.design_mach_number                    = 0.78   
+    turbofan.design_thrust                         = 35000.0* Units.N 
+                
+    # fan                   
+    fan                                            = RCAIDE.Library.Components.Powertrain.Converters.Fan()   
+    fan.tag                                        = 'fan'
+    fan.polytropic_efficiency                      = 0.93
+    fan.pressure_ratio                             = 1.7   
+    turbofan.fan                                   = fan        
                    
     # working fluid                   
-    turbofan.working_fluid                      = RCAIDE.Library.Attributes.Gases.Air() 
-    ram                                         = RCAIDE.Library.Components.Powertrain.Converters.Ram()
-    ram.tag                                     = 'ram' 
-    turbofan.ram                                = ram 
-          
-    # inlet nozzle          
-    inlet_nozzle                                = RCAIDE.Library.Components.Powertrain.Converters.Compression_Nozzle()
-    inlet_nozzle.tag                            = 'inlet nozzle'
-    inlet_nozzle.polytropic_efficiency          = 0.98
-    inlet_nozzle.pressure_ratio                 = 0.98 
-    turbofan.inlet_nozzle                       = inlet_nozzle 
-
-    # low pressure compressor    
-    low_pressure_compressor                       = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
-    low_pressure_compressor.tag                   = 'lpc'
-    low_pressure_compressor.polytropic_efficiency = 0.91
-    low_pressure_compressor.pressure_ratio        = 1.9   
-    turbofan.low_pressure_compressor              = low_pressure_compressor
+    turbofan.working_fluid                         = RCAIDE.Library.Attributes.Gases.Air() 
+    ram                                            = RCAIDE.Library.Components.Powertrain.Converters.Ram()
+    ram.tag                                        = 'ram' 
+    turbofan.ram                                   = ram 
+              
+    # inlet nozzle              
+    inlet_nozzle                                   = RCAIDE.Library.Components.Powertrain.Converters.Compression_Nozzle()
+    inlet_nozzle.tag                               = 'inlet nozzle'
+    inlet_nozzle.polytropic_efficiency             = 0.98
+    inlet_nozzle.pressure_ratio                    = 0.98 
+    turbofan.inlet_nozzle                          = inlet_nozzle 
+ 
+    # low pressure compressor     
+    low_pressure_compressor                        = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
+    low_pressure_compressor.tag                    = 'lpc'
+    low_pressure_compressor.polytropic_efficiency  = 0.91
+    low_pressure_compressor.pressure_ratio         = 1.9   
+    turbofan.low_pressure_compressor               = low_pressure_compressor
 
     # high pressure compressor  
     high_pressure_compressor                       = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
     high_pressure_compressor.tag                   = 'hpc'
     high_pressure_compressor.polytropic_efficiency = 0.91
-    high_pressure_compressor.pressure_ratio        = 12.7    
+    high_pressure_compressor.pressure_ratio        = 10.0    
     turbofan.high_pressure_compressor              = high_pressure_compressor
 
     # low pressure turbine  
@@ -672,14 +709,23 @@ def vehicle_setup():
     turbofan.high_pressure_turbine                 = high_pressure_turbine 
 
     # combustor  
-    combustor                                      = RCAIDE.Library.Components.Powertrain.Converters.Combustor()   
-    combustor.tag                                  = 'Comb'
-    combustor.efficiency                           = 0.99 
-    combustor.alphac                               = 1.0     
-    combustor.turbine_inlet_temperature            = 1500
-    combustor.pressure_ratio                       = 0.95
-    combustor.fuel_data                            = RCAIDE.Library.Attributes.Propellants.Jet_A1()  
-    turbofan.combustor                             = combustor
+    combustor                                         = RCAIDE.Library.Components.Powertrain.Converters.Combustor()   
+    combustor.tag                                     = 'Comb'
+    combustor.efficiency                              = 0.99 
+    combustor.alphac                                  = 1.0     
+    combustor.turbine_inlet_temperature               = 1600
+    combustor.pressure_ratio                          = 0.95
+    combustor.air_mass_flow_rate_take_off             = 40      
+    combustor.air_data                                = RCAIDE.Library.Attributes.Gases.Air() 
+    combustor.fuel_to_air_ratio_take_off              = 0.025    # [-]
+    combustor.fuel_data                               = RCAIDE.Library.Attributes.Propellants.Jet_A1()
+    combustor.fuel_data.stoichiometric_fuel_air_ratio = 0.068
+    combustor.fuel_data.heat_of_vaporization          = 360000
+    combustor.fuel_data.fuel_surrogate_S1             = {'NC12H26':0.404, 'IC8H18':0.295, 'TMBENZ' : 0.073,'NPBENZ':0.228, 'C10H8':0.02}
+    combustor.fuel_data.temperature                   = 298.15
+    combustor.fuel_data.pressure                      = 101325
+    combustor.fuel_data.kinetic_mechanism             = 'Fuel.yaml' 
+    turbofan.combustor                                = combustor
 
     # core nozzle
     core_nozzle                                    = RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle()   
@@ -697,15 +743,14 @@ def vehicle_setup():
     
     # design turbofan
     design_turbofan(turbofan)   
-   
- 
+    
     # Nacelle 
     nacelle                                     = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()
-    nacelle.diameter                            = 2.05
+    nacelle.diameter                            = 1.6
     nacelle.length                              = 2.71
-    nacelle.tag                                 = 'nacelle_1'
+    nacelle.tag                                 = 'starboard_nacelle'
     nacelle.inlet_diameter                      = 2.0
-    nacelle.origin                              = [[13.0,4.38,-1.5]] 
+    nacelle.origin                              = [[13.5,4.38,-1.5]] 
     nacelle.areas.wetted                        = 1.1*np.pi*nacelle.diameter*nacelle.length 
     nacelle_airfoil                             = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
     nacelle_airfoil.NACA_4_Series_code          = '2410'
@@ -717,12 +762,12 @@ def vehicle_setup():
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor: Port Propulsor
-    #------------------------------------------------------------------------------------------------------------------------------------      
-    # copy turbofan
+    #------------------------------------------------------------------------------------------------------------------------------------   
     turbofan_2                                  = deepcopy(turbofan) 
-    turbofan_2.tag                              = 'propulsor_2' 
-    turbofan_2.origin                           = [[13.0,-4.38,-1.1]]  # change origin 
-    turbofan_2.nacelle.origin                   = [[13.0,-4.38,-1.5]]
+    turbofan_2.tag                              = 'port_propulsor' 
+    turbofan_2.origin                           = [[13.72,-4.38,-1.5]] 
+    turbofan_2.nacelle.tag                      = 'port_nacelle'    
+    turbofan_2.nacelle.origin                   = [[13.5,-4.38,-1.5]]
          
     # append propulsor to network
     net.propulsors.append(turbofan_2)
@@ -742,17 +787,14 @@ def vehicle_setup():
     
     #------------------------------------------------------------------------------------------------------------------------------------   
     # Assign propulsors to fuel line to network      
-    fuel_line.assigned_propulsors =  [[turbofan.tag, turbofan_2.tag]]
+    fuel_line.assigned_propulsors =  [[turbofan.tag, turbofan_2.tag]]   
 
     #------------------------------------------------------------------------------------------------------------------------------------   
     # Append fuel line to fuel line to network      
     net.fuel_lines.append(fuel_line)        
     
     # Append energy network to aircraft 
-    vehicle.append_energy_network(net)       
-    #------------------------------------------------------------------------------------------------------------------------- 
-    # Done ! 
-    #------------------------------------------------------------------------------------------------------------------------- 
+    vehicle.append_energy_network(net)
 
     return vehicle 
 
