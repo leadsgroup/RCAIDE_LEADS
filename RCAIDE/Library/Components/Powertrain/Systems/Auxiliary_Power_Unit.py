@@ -11,9 +11,9 @@ from RCAIDE.Library.Methods.Powertrain.Systems.append_systems_conditions import 
 from RCAIDE.Library.Methods.Powertrain.Systems.compute_systems_power_draw import compute_systems_power_draw
  
 # ----------------------------------------------------------------------
-# Auxillary_Power_Unit
+# Auxiliary_Power_Unit
 # ----------------------------------------------------------------------
-class Auxillary_Power_Unit(Systems): 
+class Auxiliary_Power_Unit(Systems): 
     """
     A class representing auxillary power unit and their power requirements. 
     """        

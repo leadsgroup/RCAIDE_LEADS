@@ -487,7 +487,7 @@ def vehicle_setup():
     net                                         = RCAIDE.Framework.Networks.Fuel() 
     
     #------------------------------------------------------------------------------------------------------------------------------------  
-    # Fuel Distrubition Line 
+    # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------------------  
     fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line() 
     

@@ -282,8 +282,9 @@ def plot_3d_vehicle(vehicle,
     for network in geometry.networks:
         for propulsor in network.propulsors:
 
-            if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() or type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet():
-       
+            if type(propulsor) in (RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan,
+                                   RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet):
+
                 GEOM = generate_3d_propulsor_points(propulsor, tessellation)
                 plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=propulsor_rgb_color, opacity=propulsor_opacity)
                 

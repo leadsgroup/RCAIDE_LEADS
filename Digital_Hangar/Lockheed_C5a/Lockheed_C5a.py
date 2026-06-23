@@ -549,7 +549,7 @@ def vehicle_setup():
     net.systems.append(furnishings)
 
     #------------------------------------------------------------------------------------------------------------------------------------  
-    # Fuel Distrubition Line 
+    # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------------------  
     fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line() 
     

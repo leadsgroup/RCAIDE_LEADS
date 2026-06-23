@@ -446,8 +446,8 @@ def vehicle_setup():
     bat_module.electrical_configuration.parallel           = 53
     bat_module.cell.nominal_capacity                       = 6
     bat_module.cell.mass                                   = 0.03 * Units.kg
-    bat_module.geometrtic_configuration.normal_count       = 85
-    bat_module.geometrtic_configuration.parallel_count     = 53 
+    bat_module.geometric_configuration.normal_count       = 85
+    bat_module.geometric_configuration.parallel_count     = 53 
     for _ in range(4):
         bat_copy = deepcopy(bat_module)
         bus.battery_modules.append(bat_copy)

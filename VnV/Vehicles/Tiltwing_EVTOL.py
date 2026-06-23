@@ -261,8 +261,8 @@ def vehicle_setup(new_regression=True):
     bat.tag                                                = 'bus_battery'
     bat.electrical_configuration.series                    = 8 
     bat.electrical_configuration.parallel                  = 60 
-    bat.geometrtic_configuration.normal_count              = 20
-    bat.geometrtic_configuration.parallel_count            = 24  
+    bat.geometric_configuration.normal_count              = 20
+    bat.geometric_configuration.parallel_count            = 24  
     
     for _ in range(10):
         bus.battery_modules.append(deepcopy(bat))   

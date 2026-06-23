@@ -556,7 +556,7 @@ def vehicle_setup(vehicle_name = 'Boeing_787-8', number_of_passengers = 248) :
     net                                         = RCAIDE.Framework.Networks.Fuel() 
 
     #------------------------------------------------------------------------------------------------------------------------- 
-    # Fuel Distrubition Line 
+    # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
     fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
 

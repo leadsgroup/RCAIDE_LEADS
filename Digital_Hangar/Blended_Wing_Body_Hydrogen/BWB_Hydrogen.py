@@ -404,7 +404,7 @@ def vehicle_setup():
     net                                         = RCAIDE.Framework.Networks.Fuel() 
 
     #------------------------------------------------------------------------------------------------------------------------- 
-    # Fuel Distrubition Line 
+    # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
     fuel_line                                      = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
     fuel_line.pipe.rigid_material                  = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304()
@@ -622,19 +622,19 @@ def vehicle_setup():
     flight_controls.origin            = [[0.5 * vehicle.wings.main_wing.chords.root,0,0]]  
     vehicle.append_component(flight_controls)
     
-    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit()  
+    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()  
     auxillary_power_unit.tag= 'fuel_cell_apu_0'
     auxillary_power_unit.mass_properties.mass = 235.8
     auxillary_power_unit.origin       = [[0.76 * vehicle.wings.main_wing.chords.root,0,0]] 
     vehicle.append_component(auxillary_power_unit)
     
-    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit()  
+    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()  
     auxillary_power_unit.tag= 'fuel_cell_apu_1'
     auxillary_power_unit.mass_properties.mass = 235.8
     auxillary_power_unit.origin       = [[0.76 * vehicle.wings.main_wing.chords.root,-2,0]]  
     vehicle.append_component(auxillary_power_unit)
     
-    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit()  
+    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()  
     auxillary_power_unit.origin       = [[0.76 * vehicle.wings.main_wing.chords.root,2,0]] 
     auxillary_power_unit.mass_properties.mass = 235.8
     auxillary_power_unit.tag= 'fuel_cell_apu_2'

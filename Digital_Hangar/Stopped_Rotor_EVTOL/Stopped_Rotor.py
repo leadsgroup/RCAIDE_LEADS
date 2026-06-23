@@ -449,8 +449,8 @@ def vehicle_setup(redesign_rotors = False):
     battery_module.origin                                             = [[2.5, 0,  0.]]
     battery_module.electrical_configuration.series                    = 140  
     battery_module.electrical_configuration.parallel                  = 30  
-    battery_module.geometrtic_configuration.normal_count              = 210
-    battery_module.geometrtic_configuration.parallel_count            = 20
+    battery_module.geometric_configuration.normal_count              = 210
+    battery_module.geometric_configuration.parallel_count            = 20
      
     modules_origins = [[0.25 , 0.0, 0.0],[1.5 , 0.0, 0.0]]  # large prop-rotor modules are beneath floor
     for m_i in range(cruise_bus.number_of_battery_modules):
@@ -663,8 +663,8 @@ def vehicle_setup(redesign_rotors = False):
     battery_module.tag                                                = 'lift_bus_battery'
     battery_module.electrical_configuration.series                    = 140   
     battery_module.electrical_configuration.parallel                  = 10  
-    battery_module.geometrtic_configuration.normal_count              = 140 
-    battery_module.geometrtic_configuration.parallel_count            = 10
+    battery_module.geometric_configuration.normal_count              = 140 
+    battery_module.geometric_configuration.parallel_count            = 10
 
     modules_origins = [[3.5, 0.0, 0.5],[3.5, 0.0, 0.5 ]]  # rear modules are stacked inside cabin
     for m_i in range(lift_bus.number_of_battery_modules):

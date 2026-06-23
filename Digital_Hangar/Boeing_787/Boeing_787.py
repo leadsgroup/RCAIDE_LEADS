@@ -371,6 +371,7 @@ def vehicle_setup() :
     fuselage.heights.at_quarter_length          = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_three_quarters_length   = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_wing_root_quarter_chord = fuselage.heights.maximum* Units.meter
+    fuselage.operational_items.origin = [[fuselage.lengths.total * 0.6, 0, 0]]
 
     
     # Segment  
@@ -524,9 +525,7 @@ def vehicle_setup() :
     segment.percent_z_location                  = 0.04098
     segment.height                              = 0.0
     segment.width                               = 0.0
-    fuselage.append_segment(segment)
-
-    
+    fuselage.append_segment(segment) 
 
     cabin                                           = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
     cabin.origin                                    =  [[4.5, 0, 0.5]] 
@@ -550,7 +549,7 @@ def vehicle_setup() :
     business_class.number_of_rows                      = 4  
     business_class.seat_arm_rest_width                 = 4 *  Units.inches 
     business_class.seat_width                          = 17 *  Units.inches
-    business_class.aisle_width                          = 18  *  Units.inches  
+    business_class.aisle_width                         = 18  *  Units.inches  
     cabin.append_cabin_class(business_class) 
 
     economy_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
@@ -598,17 +597,54 @@ def vehicle_setup() :
     net                                         = RCAIDE.Framework.Networks.Fuel() 
 
     #------------------------------------------------------------------------------------------------------------------------- 
-    # Fuel Distrubition Line 
+    # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
     fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
     
+
+    #------------------------------------------------------------------------------------------------------------------------------------ 
+    # Systems 
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    avionics = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
+    avionics.origin                   = [[5.0, 0, 0]]
+    net.systems.append(avionics)
+
+    flight_controls = RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
+    flight_controls.origin            = [[36.5, 0, 0]]
+    net.systems.append(flight_controls)
+
+    auxiliary_power_unit = RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
+    auxiliary_power_unit.origin       = [[70.9, 0, 0]]
+    net.systems.append(auxiliary_power_unit)
+
+    electrical = RCAIDE.Library.Components.Powertrain.Systems.Electrical()
+    electrical.origin                 = [[18.3, 0, -0.8]]
+    net.systems.append(electrical)
+
+    hydraulics = RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
+    hydraulics.origin                 = [[36.5, 0, -0.8]]
+    net.systems.append(hydraulics)
+
+    environmental_controls = RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
+    environmental_controls.origin     = [[21.9, 0, -1.0]]
+    net.systems.append(environmental_controls)
+
+    instruments = RCAIDE.Library.Components.Powertrain.Systems.Instruments()
+    instruments.origin                = [[5.0, 0, 0]]
+    net.systems.append(instruments)
+
+    furnishings = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
+    furnishings.origin                = [[36.5, 0, 0]]
+    net.systems.append(furnishings)
+
+
     #------------------------------------------------------------------------------------------------------------------------------------ 
     # Propulsor: Starboard Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------         
     turbofan1                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan()   
     turbofan1.origin                             = [[17.818, 10.000,-0.953 ]]
     turbofan1.tag                                = 'propulsor_1'    
-    turbofan1.engine_length                      = 4.928                      
+    turbofan1.length                      = 4.928                      
     turbofan1.engine_diameter                    = 2.822                  
     turbofan1.bypass_ratio                       = 9.1                        
     turbofan1.design_altitude                    = 36000*Units.ft             

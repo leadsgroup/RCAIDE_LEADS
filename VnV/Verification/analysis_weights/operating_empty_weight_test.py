@@ -597,7 +597,7 @@ def add_systems_weights(vehicle):
     flight_controls.mass_properties.mass = 2 
     vehicle.append_component(flight_controls)
     
-    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit()  
+    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()  
     auxillary_power_unit.tag= 'fuel_cell_apu_0'
     auxillary_power_unit.mass_properties.mass = 235.8
     auxillary_power_unit.origin       = [[0.76 * vehicle.wings.main_wing.chords.root,0,0]] 
@@ -635,7 +635,7 @@ def add_systems_no_weights(vehicle):
     flight_controls.origin            = [[0.5 * vehicle.wings.main_wing.chords.root,0,0]]  
     vehicle.append_component(flight_controls)
     
-    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit()  
+    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()  
     auxillary_power_unit.tag= 'fuel_cell_apu_0'
     auxillary_power_unit.origin       = [[0.76 * vehicle.wings.main_wing.chords.root,0,0]] 
     vehicle.append_component(auxillary_power_unit)

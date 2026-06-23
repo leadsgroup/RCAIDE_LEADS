@@ -569,7 +569,7 @@ def vehicle_setup():
     net                                         = RCAIDE.Framework.Networks.Fuel() 
     
     #------------------------------------------------------------------------------------------------------------------------- 
-    # Fuel Distrubition Line 
+    # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
     fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
            
@@ -580,7 +580,7 @@ def vehicle_setup():
     turbofan_1                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
     turbofan_1.tag                                = 'propulsor_1' 
     turbofan_1.origin                             = [[13.72, 4.86,-1.1]] 
-    turbofan_1.engine_length                      = 3.934     
+    turbofan_1.length                      = 3.934     
     turbofan_1.bypass_ratio                       = 5.0   
     turbofan_1.design_altitude                    = 0.0*Units.ft
     turbofan_1.design_mach_number                 = 0.01   

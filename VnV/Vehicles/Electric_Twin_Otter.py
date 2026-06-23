@@ -366,8 +366,8 @@ def vehicle_setup(cell_chemistry, btms_type):
         bat_module.electrical_configuration.series             = 10
         bat_module.electrical_configuration.parallel           = 210
         bat_module.cell.nominal_capacity                       = 3.8 
-        bat_module.geometrtic_configuration.normal_count       = 42
-        bat_module.geometrtic_configuration.parallel_count     = 50 
+        bat_module.geometric_configuration.normal_count       = 42
+        bat_module.geometric_configuration.parallel_count     = 50 
     
         for i in range(12):
             bat_copy = deepcopy(bat_module)
@@ -385,8 +385,8 @@ def vehicle_setup(cell_chemistry, btms_type):
             bat_module.electrical_configuration.series             = 10
             bat_module.electrical_configuration.parallel           = 210
             bat_module.cell.nominal_capacity                       = 3.8 
-            bat_module.geometrtic_configuration.normal_count       = 42
-            bat_module.geometrtic_configuration.parallel_count     = 50
+            bat_module.geometric_configuration.normal_count       = 42
+            bat_module.geometric_configuration.parallel_count     = 50
             bat_module.nominal_capacity                            = bat_module.cell.nominal_capacity* bat_module.electrical_configuration.parallel
             bat_module.origin                                      = [[4, 0, 0]]
         

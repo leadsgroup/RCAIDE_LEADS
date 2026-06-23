@@ -578,8 +578,8 @@ def vehicle_setup():
     bat_module.electrical_configuration.series             = 20 
     bat_module.electrical_configuration.parallel           = 210 *  4 
     bat_module.cell.nominal_capacity                       = 3.8 
-    bat_module.geometrtic_configuration.normal_count       = 100 *  4 
-    bat_module.geometrtic_configuration.parallel_count     = 42
+    bat_module.geometric_configuration.normal_count       = 100 *  4 
+    bat_module.geometric_configuration.parallel_count     = 42
 
     for _ in range(12):
         bat_copy = deepcopy(bat_module)
@@ -594,8 +594,8 @@ def vehicle_setup():
     fuel_cell_stack = RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell() 
     fuel_cell_stack.electrical_configuration.series             = 940
     fuel_cell_stack.electrical_configuration.parallel           = 7
-    fuel_cell_stack.geometrtic_configuration.normal_count       = 940
-    fuel_cell_stack.geometrtic_configuration.parallel_count     = 7  
+    fuel_cell_stack.geometric_configuration.normal_count       = 940
+    fuel_cell_stack.geometric_configuration.parallel_count     = 7  
     bus.fuel_cell_stacks.append(fuel_cell_stack)
     
     bus.initialize_bus_properties()
@@ -612,7 +612,7 @@ def vehicle_setup():
   
 
     #------------------------------------------------------------------------------------------------------------------------- 
-    # Fuel Distrubition Line 
+    # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
     fuel_line                                       = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
   
