@@ -360,23 +360,45 @@ def compute_turbojet_performance(turbojet, state, center_of_gravity=[[0.0, 0.0, 
     lpc_conditions.omega        = low_pressure_compressor.design_angular_velocity * turbojet_conditions.throttle
     hpc_conditions.omega        = high_pressure_compressor.design_angular_velocity * turbojet_conditions.throttle
    
-    # compute electrical power if generated/supplied  
+    # compute electrical power if generated/supplied
     power_elec = 0*state.ones_row(1)
-    if low_pressure_compressor.motor != None and  len(state.numerics.time.differentiate) > 0: 
-        compressor_motor_conditions                 = conditions.energy.converters[low_pressure_compressor.motor.tag] 
-        compressor_motor_conditions.outputs.power   = power *conditions.energy.hybrid_power_split_ratio   
-        compressor_motor_conditions.outputs.omega   = lpc_conditions.omega
-        compressor_motor_conditions.outputs.torque  = compressor_motor_conditions.outputs.power / compressor_motor_conditions.outputs.omega   
-        power_elec =  compressor_motor_conditions.outputs.power  
-    
-    if low_pressure_compressor.generator != None and len(state.numerics.time.differentiate) > 0: 
-        compressor_generator_conditions                = conditions.energy.converters[low_pressure_compressor.generator.tag] 
-        compressor_generator_conditions.inputs.power   = power *conditions.energy.hybrid_power_split_ratio  
-        compressor_generator_conditions.inputs.omega   = lpc_conditions.omega
-        compressor_generator_conditions.outputs.torque = compressor_generator_conditions.outputs.power / compressor_generator_conditions.outputs.omega  
-        power_elec =  compressor_generator_conditions.inputs.power  
 
-        
+    # Motor: consumes electrical from bus, delivers mechanical to compressor shaft
+    if low_pressure_compressor.motor != None and len(state.numerics.time.differentiate) > 0:
+        motor_conditions = conditions.energy.converters[low_pressure_compressor.motor.tag]
+        phi = conditions.energy.hybrid_power_split_ratio
+        if 'electrical_power' in state.unknowns.network:
+            motor_electrical_power = state.unknowns.network['electrical_power'] * phi
+        else:
+            motor_electrical_power = conditions.energy.inputs.power.electrical * phi
+
+        eta_motor = low_pressure_compressor.motor.efficiency
+        motor_mechanical_power = motor_electrical_power * eta_motor
+
+        motor_conditions.inputs.power.electrical  = motor_electrical_power
+        motor_conditions.outputs.power.mechanical = motor_mechanical_power
+        motor_conditions.outputs.omega            = lpc_conditions.omega
+        motor_conditions.outputs.torque           = motor_mechanical_power / lpc_conditions.omega
+        power_elec = motor_electrical_power
+
+    # Generator: extracts mechanical from compressor shaft, provides electrical to bus
+    if low_pressure_compressor.generator != None and len(state.numerics.time.differentiate) > 0:
+        gen_conditions = conditions.energy.converters[low_pressure_compressor.generator.tag]
+        if 'electrical_power' in state.unknowns.network:
+            gen_electrical_power = state.unknowns.network['electrical_power'] * low_pressure_compressor.generator.power_split_ratio
+        else:
+            gen_electrical_power = conditions.energy.inputs.power.electrical * low_pressure_compressor.generator.power_split_ratio
+
+        eta_gen = low_pressure_compressor.generator.efficiency
+        gen_mechanical_power = gen_electrical_power / eta_gen
+
+        gen_conditions.outputs.power.electrical  = gen_electrical_power
+        gen_conditions.inputs.power.mechanical   = gen_mechanical_power
+        gen_conditions.inputs.omega              = lpc_conditions.omega
+        gen_conditions.inputs.torque             = gen_mechanical_power / lpc_conditions.omega
+        power_elec = gen_electrical_power
+
+
     # store data
     core_nozzle_res = Data(
                 exit_static_temperature             = core_nozzle_conditions.outputs.static_temperature,

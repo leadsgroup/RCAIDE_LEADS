@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Powertrain/Sources/Batteries/Common/append_battery_module_unknown_and_residual.py
+# RCAIDE/Methods/Powertrain/Sources/Batteries/Common/append_battery_unknown_and_residual.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke
@@ -12,9 +12,9 @@ import RCAIDE
 import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  append_battery_module_unknown_and_residual
+#  append_battery_unknown_and_residual
 # ----------------------------------------------------------------------------------------------------------------------
-def append_battery_module_unknown_and_residual(module, battery,segment):
+def append_battery_unknown_and_residual(module, battery,segment):
      
     ones_row  = segment.state.ones_row 
     segment.state.number_of_network_unknowns  += 2 

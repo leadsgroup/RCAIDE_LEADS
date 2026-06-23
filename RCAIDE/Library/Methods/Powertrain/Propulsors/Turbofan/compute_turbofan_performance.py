@@ -223,37 +223,58 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
  
     # ----------------------------------------------------------------------------
     # Compute Externally Supplied/Delivered Shaft Power from Electric Motors or Generators
-    # ---------------------------------------------------------------------------- 
-    external_shaft_work       =  0*state.ones_row(1)  
+    # ----------------------------------------------------------------------------
+    external_shaft_work       =  0*state.ones_row(1)
+    lpc_conditions.omega      = low_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle
 
-    # compute electrical power if generated/supplied   
-    if integrated_drive_motor != None and  len(state.numerics.time.differentiate) > 0:  
-         
-        turbofan_conditions.inputs.power.electrical =  state.unknowns.network['electrical_power'] * state.conditions.energy.hybrid_power_split_ratio
-  
-        # compute power produced by the generator    
-        compressor_motor_conditions                 = conditions.energy.converters[integrated_drive_motor.tag] 
-        compressor_motor_conditions.outputs.power   = turbofan_conditions.inputs.power.electrical     
-        compressor_motor_conditions.outputs.omega   = lpc_conditions.omega
-        compressor_motor_conditions.outputs.torque  = compressor_motor_conditions.outputs.power / compressor_motor_conditions.outputs.omega
-        inputs, outputs, _, _ = compressor_motor_conditions.compute_performance()  
+    # Motor: consumes electrical power from the bus, delivers mechanical power to the shaft
+    if integrated_drive_motor != None and len(state.numerics.time.differentiate) > 0:
+        motor_conditions = conditions.energy.converters[integrated_drive_motor.tag]
 
-        # net power delivered to the shaft is negative since this is a motor delivering power
-        external_shaft_work -= outputs.power.electrical
+        # Determine the electrical power the motor consumes
+        # phi controls what fraction of propulsive power comes from the motor
+        phi = state.conditions.energy.hybrid_power_split_ratio
+        if 'electrical_power' in state.unknowns.network:
+            motor_electrical_power = state.unknowns.network['electrical_power'] * phi
+        else:
+            motor_electrical_power = state.conditions.energy.inputs.power.electrical * phi
+
+        # Mechanical power delivered to shaft = electrical input * motor efficiency
+        eta_motor = integrated_drive_motor.efficiency
+        motor_mechanical_power = motor_electrical_power * eta_motor
+
+        turbofan_conditions.inputs.power.electrical        = motor_electrical_power
+        motor_conditions.inputs.power.electrical           = motor_electrical_power
+        motor_conditions.outputs.power.mechanical          = motor_mechanical_power
+        motor_conditions.outputs.efficiency                = eta_motor * state.ones_row(1)
+        motor_conditions.outputs.omega                     = lpc_conditions.omega
+        motor_conditions.outputs.torque                    = motor_mechanical_power / lpc_conditions.omega
+
+        # Motor delivers power to shaft (negative = reduces turbine burden)
+        external_shaft_work -= motor_mechanical_power
             
-    if integrated_drive_generator != None and len(state.numerics.time.differentiate) > 0:  
-        turbofan_conditions.outputs.power.electrical =  state.unknowns.network['electrical_power'] 
+    if integrated_drive_generator != None and len(state.numerics.time.differentiate) > 0:
+        IDG_conditions = conditions.energy.converters[integrated_drive_generator.tag]
 
-        # compute power produced by the generator    
-        IDG_conditions                           = conditions.energy.converters[integrated_drive_generator.tag] 
-        IDG_conditions.outputs.power.electrical  = turbofan_conditions.outputs.power.electrical 
-        IDG_conditions.outputs.omega             = lpc_conditions.omega # need to check 
-        IDG_conditions.outputs.torque            = IDG_conditions.outputs.power.electrical / IDG_conditions.outputs.omega  
-        integrated_drive_generator.compute_performance()   
-        inputs, outputs, _, _ = integrated_drive_generator.compute_performance(state,network) 
+        # Determine the electrical power the generator must produce
+        if 'electrical_power' in state.unknowns.network:
+            generator_electrical_power = state.unknowns.network['electrical_power'] * integrated_drive_generator.power_split_ratio
+        else:
+            generator_electrical_power = state.conditions.energy.inputs.power.electrical * integrated_drive_generator.power_split_ratio
 
-        # net power delivered to the shaft is positive since this is a generator producing power
-        external_shaft_work +=  inputs.outputs.power.electrical   
+        # Mechanical power extracted from shaft = electrical power / generator efficiency
+        eta_gen = integrated_drive_generator.efficiency
+        generator_mechanical_power = generator_electrical_power / eta_gen
+
+        turbofan_conditions.outputs.power.electrical      = generator_electrical_power
+        IDG_conditions.outputs.power.electrical            = generator_electrical_power
+        IDG_conditions.inputs.power.mechanical             = generator_mechanical_power
+        IDG_conditions.outputs.efficiency                  = eta_gen * state.ones_row(1)
+        IDG_conditions.inputs.omega                        = lpc_conditions.omega
+        IDG_conditions.inputs.torque                       = generator_mechanical_power / lpc_conditions.omega
+
+        # Generator extracts mechanical power from the shaft (positive = more turbine work needed)
+        external_shaft_work += generator_mechanical_power
 
     # ----------------------------------------------------------------------------
     # Compute Turbofan Performance

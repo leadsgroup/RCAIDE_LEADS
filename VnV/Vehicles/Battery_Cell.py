@@ -26,11 +26,13 @@ def vehicle_setup(current,C_rat,cell_chemistry,electrical_config):
     vehicle.mass_properties.max_takeoff     = 1 * Units.kg 
          
     net                              = RCAIDE.Framework.Networks.Electric()
-    net.charging_power               = 20 # Watt
+    net.charging_power               = 20  
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus
     #------------------------------------------------------------------------------------------------------------------------------------  
     bus                              = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
+    bus.design_power   = 50  
+    bus.design_voltage = 10  
     
     # Battery Module
     battery_pack = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack()

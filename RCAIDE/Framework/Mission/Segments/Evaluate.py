@@ -68,7 +68,7 @@ class Evaluate(Segment):
         self.hybrid_power_split_ratio             = None
         self.battery_fuel_cell_power_split_ratio  = None
         self.initial_battery_conditions           = Data()
-        self.initial_battery_conditions.state_of_charge       = None
+        self.initial_battery_conditions.state_of_charge       = 1.0
         self.initial_battery_conditions.cell_temperature       = None
         self.initial_battery_conditions.charge_throughput       = None
         self.initial_battery_conditions.increment_battery_age  = False

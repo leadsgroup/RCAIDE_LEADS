@@ -9,9 +9,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports
 from RCAIDE.Framework.Core        import Data
-from RCAIDE.Library.Components.Powertrain.Sources.Source    import Source   
-from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_module_conditions import append_battery_module_conditions, append_battery_module_segment_conditions
-
+from RCAIDE.Library.Components.Powertrain.Sources.Source    import Source    
+from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common import append_battery_conditions, append_battery_segment_conditions
 # ----------------------------------------------------------------------------------------------------------------------
 #  Battery
 # ----------------------------------------------------------------------------------------------------------------------      
@@ -155,7 +154,7 @@ class Generic_Battery_Module(Source):
         bus : Component
             Electrical bus connected to this battery
         """
-        append_battery_module_conditions(self,battery,segment)
+        append_battery_conditions(self,battery,segment)
  
         return
 
@@ -173,5 +172,5 @@ class Generic_Battery_Module(Source):
         segment : Segment
             Flight segment data
         """
-        append_battery_module_segment_conditions(self,battery,segment) 
+        append_battery_segment_conditions(self,battery,segment) 
         return     

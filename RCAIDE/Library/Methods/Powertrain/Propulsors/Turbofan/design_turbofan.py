@@ -16,8 +16,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Turbine            import comp
 from RCAIDE.Library.Methods.Powertrain.Converters.Expansion_Nozzle   import compute_expansion_nozzle_performance 
 from RCAIDE.Library.Methods.Powertrain.Converters.Compression_Nozzle import compute_compression_nozzle_performance
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan           import size_core 
-from RCAIDE.Library.Methods.Powertrain                               import setup_operating_conditions 
-
+from RCAIDE.Library.Methods.Powertrain                               import setup_operating_conditions
 from RCAIDE.Library.Methods.Powertrain.Converters.Motor.design_optimal_motor import   design_optimal_motor
 from RCAIDE.Library.Methods.Powertrain.Converters.Generator.design_optimal_generator import design_optimal_generator
 
@@ -269,33 +268,31 @@ def design_turbofan(turbofan):
     combustor.working_fluid                                           = high_pressure_compressor.working_fluid     
     
     # Step 12: Compute flow through the high pressor compressor 
-    compute_combustor_performance(combustor,conditions)
-
+    compute_combustor_performance(combustor,conditions) 
        
-    net_external_shaft_power  = np.array([[0]])
+    net_external_shaft_power  = np.array([[0.0]])
     
-    # compute electrical power if generated/supplied   
-    if integrated_drive_motor != None:
-        pass 
-        #integrated_drive_motor.no_load_current = 
-        #integrated_drive_motor.nominal_voltage =  
-        #integrated_drive_motor.gearbox.gear_ratio      = 
-        #integrated_drive_motor.design_angular_velocity = 
-        #integrated_drive_motor.efficiency   = 
-        #integrated_drive_motor.design_power = 
-        #integrated_drive_motor.design_torque    =     integrated_drive_motor.design_power / integrated_drive_motor.design_angular_velocit 
-        #net_external_shaft_power += outputs.power.electrical
-            
-    if integrated_drive_generator != None: 
-        #integrated_drive_generator.no_load_current  =  
-        #integrated_drive_generator.nominal_voltage  = 
-        #integrated_drive_generator.gearbox.gear_ratio  =   
-        #integrated_drive_generator.design_angular_velocity  = 
-        #integrated_drive_generator.design_power = design_power_offtake   
-        #design_optimal_generator(integrated_drive_generator)
-        
-        # design generator 
-        net_external_shaft_power += design_power_offtake
+    # Design and size integrated drive motor (parallel hybrid)
+    # Design and size integrated drive motor (parallel hybrid)
+    if integrated_drive_motor != None: 
+        motor_electrical_power = design_power_offtake
+        motor_mechanical_power = motor_electrical_power * integrated_drive_motor.efficiency
+        integrated_drive_motor.design_power             = motor_electrical_power
+        integrated_drive_motor.design_angular_velocity  = low_pressure_compressor.design_angular_velocity
+        integrated_drive_motor.design_torque            = motor_mechanical_power / integrated_drive_motor.design_angular_velocity  
+        design_optimal_motor(integrated_drive_motor) 
+        net_external_shaft_power -= motor_mechanical_power
+
+    # Design and size integrated drive generator (IDG)
+    if integrated_drive_generator != None:
+        gen_mechanical_power = design_power_offtake / integrated_drive_generator.efficiency
+        integrated_drive_generator.design_power             = design_power_offtake
+        integrated_drive_generator.design_angular_velocity  = low_pressure_compressor.design_angular_velocity
+        integrated_drive_generator.design_torque            = gen_mechanical_power / integrated_drive_generator.design_angular_velocity
+        integrated_drive_generator.design_current           = design_power_offtake / integrated_drive_generator.nominal_voltage if integrated_drive_generator.nominal_voltage > 0 else 0.0
+        if integrated_drive_generator.voltage_type == 'DC' and integrated_drive_generator.nominal_voltage > 0:
+            design_optimal_generator(integrated_drive_generator)
+        net_external_shaft_power += gen_mechanical_power
                 
     external_shaft_work =  net_external_shaft_power    
     

@@ -11,13 +11,17 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_nmc_cell_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_battery_pack_performance(battery,state,network):
+def compute_battery_performance(battery,state,network):
     """ 
     """  
     battery_conditions = state.conditions.energy.sources[battery.tag]
     psi                = state.conditions.energy.battery_fuel_cell_power_split_ratio  
     phi                = state.conditions.energy.hybrid_power_split_ratio
     
+    # Reset accumulators before summing across modules
+    battery_conditions.energy[:,0]                = 0.0
+    battery_conditions.heat_energy_generated[:,0] = 0.0
+
     stored_module_tag = None
     for m_i, module in enumerate(battery.modules):
         if module.active:
@@ -28,15 +32,20 @@ def compute_battery_pack_performance(battery,state,network):
             elif battery.battery_module_electric_configuration == 'Parallel':    
                 module_voltage          = battery_voltage 
             
-            # determine power flow 
-            if state.conditions.energy.recharging:  
-                battery_conditions.outputs.power.electrical             = (battery.nominal_capacity * battery.charging_c_rate* battery_voltage*battery_conditions.power_split_ratio) 
-                battery_conditions[module.tag].inputs.power.electrical  = battery_conditions.outputs.power.electrical/ battery.number_of_active_modules 
-                battery_conditions[module.tag].current_draw             = battery_conditions[module.tag].inputs.power.electrical  / module_voltage 
-            else:
-                battery_conditions.outputs.power.electrical              = state.unknowns.network['electrical_power']  *  battery_conditions.power_split_ratio * psi
+            # determine power flow
+            if state.conditions.energy.recharging:
+                battery_conditions.outputs.power.electrical             = (battery.nominal_capacity * battery.charging_c_rate* battery_voltage*battery_conditions.power_split_ratio)
+                battery_conditions[module.tag].inputs.power.electrical  = battery_conditions.outputs.power.electrical/ battery.number_of_active_modules
+                battery_conditions[module.tag].current_draw             = battery_conditions[module.tag].inputs.power.electrical  / module_voltage
+            elif 'electrical_power' in state.unknowns.network:
+                battery_conditions.outputs.power.electrical              = state.unknowns.network['electrical_power'] * battery_conditions.power_split_ratio * psi
                 battery_conditions[module.tag].outputs.power.electrical  = battery_conditions.outputs.power.electrical / battery.number_of_active_modules
-                battery_conditions[module.tag].current_draw              = battery_conditions[module.tag].outputs.power.electrical /module_voltage 
+                battery_conditions[module.tag].current_draw              = battery_conditions[module.tag].outputs.power.electrical / module_voltage
+            else:
+                total_electrical_demand = state.conditions.energy.inputs.power.electrical
+                battery_conditions.outputs.power.electrical              = total_electrical_demand * battery_conditions.power_split_ratio * psi
+                battery_conditions[module.tag].outputs.power.electrical  = battery_conditions.outputs.power.electrical / battery.number_of_active_modules
+                battery_conditions[module.tag].current_draw              = battery_conditions[module.tag].outputs.power.electrical / module_voltage
             
             # compute battery module performance 
             battery_conditions[module.tag].power_draw   = battery_conditions[module.tag].outputs.power.electrical -  battery_conditions[module.tag].inputs.power.electrical      
@@ -61,7 +70,7 @@ def compute_battery_pack_performance(battery,state,network):
             if state.conditions.energy.recharging:
                 fully_charged = battery_conditions.state_of_charge                    == 1
                 battery_conditions.charging_current[fully_charged]                    = 0
-                battery_conditions[module.tag].power[fully_charged]                   = 0
+                battery_conditions[module.tag].power_draw[fully_charged]              = 0
                 battery_conditions[module.tag].current[fully_charged]                 = 0
                 battery_conditions[module.tag].inputs.power.electrical[fully_charged] = 0
             

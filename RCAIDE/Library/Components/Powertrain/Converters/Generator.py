@@ -90,10 +90,11 @@ class Generator(Converter):
         Properties Used:
         None
         """           
-        self.tag                      = 'generator' 
-        self.voltage_type           = 'DC'
-        self.active                   = True 
-        self.reverse_mode_computation      = False
+        self.tag                      = 'generator'
+        self.voltage_type             = 'DC'
+        self.active                   = True
+        self.reverse_mode_computation = False
+        self.power_split_ratio        = 1.0
         self.interpolated_func        = None  
         self.resistance               = 0.0
         self.no_load_current          = 0.0
@@ -118,7 +119,7 @@ class Generator(Converter):
         append_generator_conditions(self,segment)
         return
     
-    def compute_performance(self,state):
+    def compute_performance(self,state,network=None):
 
         inputs, outputs, stored_results_flag,stored_converter_tag =  compute_generator_performance(self,state)
         return inputs, outputs, stored_results_flag,stored_converter_tag

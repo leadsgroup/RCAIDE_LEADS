@@ -204,6 +204,8 @@ def _analyze_topology(network, seg_i,  verbose=False):
 
     # ------------------------------------------------------------------
     # 4. Classify converters (fuel cells, generators, motors)
+    #    Also check propulsor sub-components (integrated drive generators
+    #    and motors) since those are NOT in network.converters.
     # ------------------------------------------------------------------
     fuel_cells          = []
     generators          = []
@@ -218,6 +220,14 @@ def _analyze_topology(network, seg_i,  verbose=False):
         elif isinstance(converter, (RCAIDE.Library.Components.Powertrain.Converters.DC_Motor,
                                     RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor)):
             electrical_motors.append(converter)
+
+    for propulsor in network.propulsors:
+        idg = getattr(propulsor, 'integrated_drive_generator', None)
+        if idg is not None:
+            generators.append(idg)
+        idm = getattr(propulsor, 'integrated_drive_motor', None)
+        if idm is not None:
+            electrical_motors.append(idm)
 
     topology.fuel_cells        = fuel_cells
     topology.generators        = generators

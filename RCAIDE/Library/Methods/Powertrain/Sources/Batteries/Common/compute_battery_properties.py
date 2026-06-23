@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Powertrain/Sources/Batteries/Common/compute_battery_pack_properties.py
+# RCAIDE/Methods/Powertrain/Sources/Batteries/Common/compute_battery_properties.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke 
@@ -13,7 +13,7 @@ import  numpy as  np
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHOD
 # ----------------------------------------------------------------------------------------------------------------------  
-def compute_battery_pack_properties(battery,network):  
+def compute_battery_properties(battery,network):  
     """
     Calculates module level properties of battery module using cell properties and module configuration.
     
