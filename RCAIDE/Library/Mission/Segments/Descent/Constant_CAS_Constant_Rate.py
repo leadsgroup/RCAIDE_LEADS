@@ -84,12 +84,12 @@ def initialize_conditions(segment):
     
     # unpack
     descent_rate = segment.descent_rate
-    cas          = segment.calibrated_air_speed   
+    cas          = segment.calibrated_airspeed   
     alt0         = segment.altitude_start 
     altf         = segment.altitude_end
     beta         = segment.sideslip_angle
     t_nondim     = segment.state.numerics.dimensionless.control_points
-    conditions   = segment.state.conditions  
+    conditions   = segment.state.conditions
 
     # check for initial altitude
     if alt0 is None:

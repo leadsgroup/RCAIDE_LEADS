@@ -158,8 +158,8 @@ def mass_properties_preprocess_routine(segment, i = 0):
         # ---------------------------------------------------------------------------------------------------------------------------
         # STEP 3: Run weights analysis 
         # ---------------------------------------------------------------------------------------------------------------------------         
-        if analyses.vehicle.mass_properties.payload > analyses.vehicle.mass_properties.max_payload:
-            print('Warning:Prescribed payload weight is greater than maxmimum payload weight')
+        if i == 0 and analyses.vehicle.mass_properties.payload > analyses.vehicle.mass_properties.max_payload:
+            print('Warning: Prescribed payload weight is greater than maximum payload weight')
         if weights_analysis.settings.iterate_mtow:
             solve_for_mtow(analyses, weights_analysis, i)
             
@@ -172,8 +172,8 @@ def mass_properties_preprocess_routine(segment, i = 0):
             
             _ = weights_analysis.evaluate(analyses.vehicle) 
 
-            if analyses.vehicle.mass_properties.payload > analyses.vehicle.mass_properties.max_payload:
-                print('Warning: Computed payload weight is greater than maxmimum payload weight')        
+            if i == 0 and analyses.vehicle.mass_properties.payload > analyses.vehicle.mass_properties.max_payload:
+                print('Warning: Computed payload weight is greater than maximum payload weight')        
             
             # Compute OEW
             if weights_analysis.settings.overwrite_operating_empty_weight:

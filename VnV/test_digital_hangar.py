@@ -25,7 +25,6 @@ modules = [
     '../Digital_Hangar/Blended_Wing_Body/BWB.py',
     '../Digital_Hangar/Blended_Wing_Body_Hydrogen/BWB_Hydrogen.py',
     '../Digital_Hangar/Boeing_737_800/Boeing_737_800.py',
-    '../Digital_Hangar/Boeing_737_Max_8/Boeing_737_Max_8.py',
     '../Digital_Hangar/Boeing_747_100/Boeing_747_100.py',
     '../Digital_Hangar/Boeing_777/Boeing_777_200er.py',
     '../Digital_Hangar/Boeing_787/Boeing_787.py',

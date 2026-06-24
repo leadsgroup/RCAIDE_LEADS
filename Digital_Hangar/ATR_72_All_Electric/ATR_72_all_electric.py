@@ -53,7 +53,7 @@ def vehicle_setup():
     # mass properties
     vehicle.mass_properties.max_takeoff               = 23000  
     vehicle.mass_properties.max_zero_fuel             = 15651.8 
-    vehicle.mass_properties.max_payload               = 7100
+    vehicle.mass_properties.max_payload               = 7400
     vehicle.mass_properties.min_payload               = 0 
     vehicle.mass_properties.center_of_gravity         = [[13.0038, 0, 0.45]]  
     vehicle.mass_properties.moments_of_inertia.tensor = [[0,0,0]]  

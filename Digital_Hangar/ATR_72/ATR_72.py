@@ -54,7 +54,7 @@ def vehicle_setup():
     vehicle.mass_properties.takeoff                   = 23000  
     vehicle.mass_properties.operating_empty           = 13010
     vehicle.mass_properties.max_zero_fuel             = 20000 
-    vehicle.mass_properties.max_payload               = 7100 
+    vehicle.mass_properties.max_payload               = 7400 
     vehicle.mass_properties.center_of_gravity         = [[13.00381052,0,1.026]]  
     vehicle.mass_properties.max_fuel                  = 5450
     

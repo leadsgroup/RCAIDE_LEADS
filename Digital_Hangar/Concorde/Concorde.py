@@ -190,7 +190,16 @@ def vehicle_setup():
     wing_airfoil                  = RCAIDE.Library.Components.Airfoils.Airfoil()   
     wing_airfoil.coordinate_file  = airfoil_file_path + 'NACA65_203.txt' 
     segment.append_airfoil(wing_airfoil)
-    wing.append_segment(segment)       
+    wing.append_segment(segment)      
+    
+    # control surfaces -------------------------------------------
+    slat                          = RCAIDE.Library.Components.Wings.Control_Surfaces.Slat()
+    slat.tag                      = 'slat'
+    slat.span_fraction_start      = 0.2
+    slat.span_fraction_end        = 0.963
+    slat.deflection               = 0.0 * Units.degrees
+    slat.chord_fraction           = 0.075
+    wing.append_control_surface(slat) 
 
     flap                          = RCAIDE.Library.Components.Wings.Control_Surfaces.Flap()
     flap.tag                      = 'flap'
@@ -216,6 +225,14 @@ def vehicle_setup():
     spoiler.deflection            = 0.0 * Units.degrees
     spoiler.chord_fraction        = 0.1
     wing.append_control_surface(spoiler) 
+
+    spoiler                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Elevator()
+    spoiler.tag                   = 'elevator'
+    spoiler.span_fraction_start   = 0.08
+    spoiler.span_fraction_end     = 0.24
+    spoiler.deflection            = 0.0 * Units.degrees
+    spoiler.chord_fraction        = 0.1
+    wing.append_control_surface(spoiler)     
     
     # add to vehicle
     vehicle.append_component(wing)
