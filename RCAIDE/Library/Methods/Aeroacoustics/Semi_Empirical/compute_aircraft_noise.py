@@ -10,9 +10,12 @@
 # RCAIDE Imports
 import  RCAIDE
 from RCAIDE.Framework.Core                         import Data  
-from .clean_wing_noise                             import clean_wing_noise
-from .landing_gear_noise                           import landing_gear_noise 
-from .trailing_edge_flap_noise                     import trailing_edge_flap_noise 
+from .Airframe.OLD.clean_wing_noise                import clean_wing_noise
+from .Airframe.OLD.landing_gear_noise              import landing_gear_noise 
+from .Airframe.OLD.trailing_edge_flap_noise        import trailing_edge_flap_noise 
+from .Propulsion.Engine_Noise.compute_core_noise   import compute_core_noise
+from .Propulsion.Engine_Noise.compute_fan_noise    import compute_fan_noise
+from .Propulsion.Engine_Noise.compute_jet_noise    import compute_fan_noise
 from RCAIDE.Library.Methods.Aeroacoustics.Metrics  import A_weighting_metric  
 from RCAIDE.Library.Methods.Aeroacoustics.Common   import SPL_arithmetic 
 
@@ -22,7 +25,7 @@ import numpy as np
 # ----------------------------------------------------------------------
 #  Airframe Noise 
 # ----------------------------------------------------------------------
-def airframe_noise(microphone_locations, segment, config, settings):
+def compute_aircraft_noise(microphone_locations, segment, settings):
     """
     This computes the noise from different sources of the airframe for a given vehicle for a constant altitude flight.
 
@@ -87,6 +90,7 @@ def airframe_noise(microphone_locations, segment, config, settings):
     RCAIDE.Library.Methods.Aeroacoustics.Common.SPL_arithmetic
     """
     # Unpack conditions 
+    vehicle = segment.analyses.vehicle
     velocity     = segment.conditions.freestream.velocity                  # aircraft velocity  
     noise_time   = segment.conditions.frames.inertial.time[:,0]            # time discretization
 
@@ -98,7 +102,7 @@ def airframe_noise(microphone_locations, segment, config, settings):
     
     # Unpack Geometry  
     slots      = 0 
-    for wing in config.wings:
+    for wing in vehicle.wings:
         if (type(wing) == RCAIDE.Library.Components.Wings.Main_Wing) or  (type(wing) == RCAIDE.Library.Components.Wings.Blended_Wing_Body):
             taper = wing.taper 
             Sw    = wing.areas.reference                
@@ -219,10 +223,46 @@ def airframe_noise(microphone_locations, segment, config, settings):
             # Calculation of dBA based on the sound pressure time history 
             SPLt_dBA_history[i,j,:] = A_weighting_metric(SPL_total,frequency) 
     
-    # Pack Airframe Noise 
+    # FIX THIS  Pack Airframe Noise 
     airframe_noise                        = Data()  
     airframe_noise.SPL                    = SPL_arithmetic(SPL_total_history, sum_axis= 2)
     airframe_noise.SPL_1_3_spectrum       = SPL_total_history
     airframe_noise.SPL_dBA                = SPL_arithmetic(np.atleast_2d(SPLt_dBA_history), sum_axis= 2) 
     airframe_noise.noise_time             = noise_time 
+    
+
+ 
+      # iterate through sources  
+    for network in vehicle.networks:  
+        for propulsor in network.propulsors:
+            if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan:   
+
+                # call jet noise 
+                jet_noise_data = compute_jet_noise(microphone_locations, turbofan, aeroacoustic_data, segment, settings)
+
+                # call core noise 
+                core_noise_data = compute_core_noise(microphone_locations, turbofan, aeroacoustic_data, segment, settings)
+
+                # call fan noise 
+                fan_noise_data = compute_fan_noise(microphone_locations, turbofan, aeroacoustic_data, segment, settings)
+
+                # do decibel arithmetic 
+
+
+                total_SPL_dBA             = SPL_arithmetic(np.concatenate((total_SPL_dBA[:,None,:],engine_noise.SPL_dBA[:,None,:]),axis =1),sum_axis=1)
+                total_SPL_spectra[:,:,5:] = SPL_arithmetic(np.concatenate((total_SPL_spectra[:,None,:,5:],engine_noise.SPL_1_3_spectrum[:,None,:,:]),axis =1),sum_axis=1) 
+                                    
+    
+    # pack results 
+    engine_noise                   = Data()   
+    engine_noise.SPL_1_3_spectrum  = SPL_1_3_spectrum_dBA
+    engine_noise.SPL               = SPL
+    engine_noise.SPL_dBA           = SPL_dBA
+
+
+
+    # FIX THIS 
+    total_SPL_dBA             = SPL_arithmetic(np.concatenate((total_SPL_dBA[:,None,:],airframe_noise_res.SPL_dBA[:,None,:]),axis =1),sum_axis=1)
+    total_SPL_spectra[:,:,5:] = SPL_arithmetic(np.concatenate((total_SPL_spectra[:,None,:,5:],airframe_noise_res.SPL_1_3_spectrum[:,None,:,:]),axis =1),sum_axis=1) 
+            
     return airframe_noise

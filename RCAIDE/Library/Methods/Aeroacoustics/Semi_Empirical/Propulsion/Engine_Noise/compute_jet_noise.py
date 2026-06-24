@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Aeroacoustics/Semi_Empirical/Turbofan/turbofan_engine_noise.py
+# RCAIDE/Methods/Aeroacoustics/Semi_Empirical/Turbofan/jet_noise.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke  
@@ -27,7 +27,7 @@ from copy import deepcopy
 # ----------------------------------------------------------------------------------------------------------------------     
 #  turbofan engine noise 
 # ----------------------------------------------------------------------------------------------------------------------         
-def turbofan_engine_noise(microphone_locations, turbofan, aeroacoustic_data, segment, settings):
+def compute_jet_noise(microphone_locations, turbofan, aeroacoustic_data, segment, settings):
     """
     This method predicts the free-field 1/3 Octave Band SPL of coaxial subsonic jets for turbofan engines under various conditions.
 

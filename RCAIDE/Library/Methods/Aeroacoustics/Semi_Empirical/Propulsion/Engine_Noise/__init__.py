@@ -8,4 +8,4 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
  
-from .turbofan_engine_noise                import turbofan_engine_noise
+from .compute_engine_noise                import compute_engine_noise
