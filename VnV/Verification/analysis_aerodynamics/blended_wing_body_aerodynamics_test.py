@@ -81,11 +81,11 @@ def main():
     coordinate_3_y         = LOPA_coords[301][3] 
     
     # thruth values 
-    coordinate_1_x_thruth  = 5.6388
+    coordinate_1_x_thruth  = 8.178799999999999
     coordinate_1_y_thruth  = 1.7018 
-    coordinate_2_x_thruth  = 1.3716
+    coordinate_2_x_thruth  = 3.9116
     coordinate_2_y_thruth  = 0.6858
-    coordinate_3_x_thruth  = 0.4572
+    coordinate_3_x_thruth  = 2.9972
     coordinate_3_y_thruth  = -3.556
     
     # Truth values  

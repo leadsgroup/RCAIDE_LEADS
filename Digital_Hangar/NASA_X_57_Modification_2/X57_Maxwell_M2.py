@@ -376,7 +376,7 @@ def vehicle_setup():
     module.geometric_configuration.stacking_rows              = 12   
     for i in range(8):
         bat_module = deepcopy(module)
-        bat_module.origin = [[3+i*0.15, 0, 0.3]]
+        bat_module.origin = [[3+i*0.15, 0, 0.4]]
         bus.battery_modules.append(bat_module)      
     bus.initialize_bus_properties()      
     #------------------------------------------------------------------------------------------------------------------------------------  

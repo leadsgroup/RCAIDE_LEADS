@@ -21,7 +21,8 @@ import pandas as pd
 # ----------------------------------------------------------------------
 #  Calculate vehicle Payload Range Diagram
 # ----------------------------------------------------------------------  
-def generate_cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cruise", save_filepath = None):
+def generate_cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cruise", save_filepath = None,
+                             width = 11, height = 7):
 
     if mission == None:
         raise AssertionError('Mission not specifed!')
@@ -30,41 +31,18 @@ def generate_cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cru
     results = mission.evaluate()
     drag = results.segments[cruise_segment_tag].conditions.aerodynamics.coefficients.drag
     eps = 1e-12
-    name_map = {
-        "main_wing": "Main Wing",
-        "vertical_stabilizer": "Vertical\n Stabilizer",
-        "nacelle_1": "Nacelle 1",
-        "propulsor_2_nacelle": "Nacelle 2",
-        "nacelle_1_pylon": "Pylon 1",
-        "propulsor_2_nacelle_pylon": "Pylon 2",
-        "viscous": "Viscous",
-        "inviscid": "Inviscid",
-    }
+    def _format_tag(tag):
+        return tag.replace("_", " ").title()
 
-    # --- unpack settings/geometry for parasite normalization (match parasite_total.py logic)
+    # --- unpack settings/geometry
     vehicle  = mission.segments[cruise_segment_tag].analyses.vehicle
     settings = mission.segments[cruise_segment_tag].analyses.aerodynamics.settings
-    vehicle_reference_area = vehicle.reference_area
 
-    component_reference_areas = {}
-    for wing in vehicle.wings:
-        component_reference_areas[wing.tag] = wing.areas.reference
-    for fuselage in vehicle.fuselages:
-        component_reference_areas[fuselage.tag] = fuselage.areas.front_projected
-    for boom in vehicle.booms:
-        component_reference_areas[boom.tag] = boom.areas.front_projected
-    for network in vehicle.networks:
-        for propulsor in network.propulsors:
-            if propulsor.nacelle != None:
-                nacelle = propulsor.nacelle
-                front_area = np.pi * (nacelle.diameter ** 2) / 4
-                component_reference_areas[nacelle.tag] = front_area
-                component_reference_areas[nacelle.tag + "_pylon"] = front_area
-
-    # --- parasite subcomponents from available keys (excluding "total")
+    # --- parasite subcomponents from available keys (excluding totals and aggregates)
+    aggregate_keys = {"total", "nacelles", "fuselages", "wings", "booms"}
     parasite_sub = []
     for key in drag.parasite.keys():
-        if key == "total":
+        if key in aggregate_keys:
             continue
         item = drag.parasite[key]
         arr = np.asarray(item)
@@ -80,8 +58,6 @@ def generate_cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cru
         else:
             val = float(np.mean(arr))
 
-        component_ref_area = component_reference_areas[key] if key in component_reference_areas else vehicle_reference_area
-        val = val * component_ref_area / vehicle_reference_area
         val = val * (1 - settings.drag_reduction_factors.parasite_drag)
 
         if abs(val) > eps:
@@ -132,7 +108,6 @@ def generate_cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cru
     induced_sub = [(name, val) for name, val in induced_sub if abs(val) > eps]
 
     trim_factor = settings.trim_drag_correction_factor if hasattr(settings, 'trim_drag_correction_factor') else 1.0
-    cd_buildup_total = trim_factor * (cd_parasite_total + cd_induced_total + cd_comp_total + cd_misc_total + cd_form_total + cd_cool_total)
 
     categories_raw = [
         ("parasite",      parasite_sub,      cd_parasite_total),
@@ -141,7 +116,7 @@ def generate_cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cru
         ("miscellaneous", [("total", cd_misc_total)],  cd_misc_total),
         ("form",          [("total", cd_form_total)],  cd_form_total),
         ("cooling",       [("total", cd_cool_total)],  cd_cool_total),
-        ("TOTAL",         [("total", cd_buildup_total)], cd_buildup_total),
+        ("TOTAL",         [("total", cd_total)], cd_total),
     ]
     categories = []
     for cat, subs, tot in categories_raw:
@@ -160,8 +135,9 @@ def generate_cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cru
             if name != "total":
                 print(f"  - {name:28s} {val: .6e}")
     print("-" * 72)
-    if abs(cd_total - cd_buildup_total) > 1e-6:
-        print(f"  Note: aero solver total ({cd_total: .6e}) differs from buildup sum ({cd_buildup_total: .6e}) by {abs(cd_total - cd_buildup_total):.6e}")
+    cd_buildup_sum = trim_factor * (cd_parasite_total + cd_induced_total + cd_comp_total + cd_misc_total + cd_form_total + cd_cool_total)
+    if abs(cd_total - cd_buildup_sum) > 1e-6:
+        print(f"  Note: aero solver total ({cd_total: .6e}) differs from buildup sum ({cd_buildup_sum: .6e}) by {abs(cd_total - cd_buildup_sum):.6e}")
 
     # -------------------------
     # DataFrame for Excel
@@ -185,7 +161,7 @@ def generate_cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cru
         "ytick.labelsize": ps.axis_font_size + 4,
         "axes.titlesize": ps.title_font_size,
     })
-    fig, ax = plt.subplots(figsize=(10, 8))
+    fig, ax = plt.subplots(figsize=(width, height))
 
     hatch_list = ["///", "\\\\\\", "xx", "..", "++", "--", "oo", "**", "||", "//"]
     cat_colors = plt.cm.tab10(np.linspace(0, 1, max(len(categories), 1)))
@@ -222,7 +198,7 @@ def generate_cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cru
             edgecolor="k",
             alpha=0.65,
             hatch=hatch_list[i % len(hatch_list)],
-            label=name_map[name] if name in name_map else name.replace("_", " ").title(),
+            label=_format_tag(name),
         )
         for i, (name, val) in enumerate(parasite_sub) if abs(val) > eps
     ]
@@ -232,7 +208,7 @@ def generate_cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cru
             edgecolor="k",
             alpha=0.65,
             hatch=hatch_list[i % len(hatch_list)],
-            label=name_map[name] if name in name_map else name.replace("_", " ").title(),
+            label=_format_tag(name),
         )
         for i, (name, val) in enumerate(induced_sub) if abs(val) > eps
     ]
@@ -296,9 +272,7 @@ def generate_cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cru
     fig_parasite_zoom = None
     if len(parasite_sub) > 0:
         fig_parasite_zoom, ax_pz = plt.subplots(figsize=(6, 4.8))
-        parasite_zoom_data = [(n, v) for (n, v) in parasite_sub if n != "main_wing" and abs(v) > eps]
-        if len(parasite_zoom_data) == 0:
-            parasite_zoom_data = parasite_sub
+        parasite_zoom_data = [(n, v) for (n, v) in parasite_sub if abs(v) > eps]
 
         x_pz = np.arange(len(parasite_zoom_data))
         for i, (name, val) in enumerate(parasite_zoom_data):
@@ -310,7 +284,7 @@ def generate_cruise_drag_buildup_table(mission = None, cruise_segment_tag = "cru
                 hatch=hatch_list[i % len(hatch_list)],
             )
         ax_pz.set_yticks(x_pz)
-        nice_labels = [name_map[n] if n in name_map else n.replace("_", " ").title() for n, _ in parasite_zoom_data]
+        nice_labels = [_format_tag(n) for n, _ in parasite_zoom_data]
         ax_pz.set_yticklabels(nice_labels, fontsize=13)
         ax_pz.set_xlabel(r"c$_D$")
         ax_pz.set_title("Parasite Drag Subcomponents")
