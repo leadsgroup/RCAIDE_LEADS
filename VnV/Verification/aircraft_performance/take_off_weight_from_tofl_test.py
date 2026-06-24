@@ -55,7 +55,7 @@ def main():
                                                target_tofl =target_tofl)
                                                
 
-    truth_max_tow = 56980.00000000001
+    truth_max_tow = 47847
     max_tow_error = np.max(np.abs(MTOW[0]-truth_max_tow)) 
     print('Range Error = %.4e' % max_tow_error)
     assert(max_tow_error   < 1e-6 )

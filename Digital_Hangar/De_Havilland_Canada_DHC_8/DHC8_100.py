@@ -67,7 +67,56 @@ def vehicle_setup():
     vehicle.reference_area                         = 395.0 * Units['meters**2']    
     vehicle.number_of_passengers                             = 37 
     vehicle.systems.control                        = "fully powered" 
-    vehicle.systems.accessories                    = "short range"
+    vehicle.systems.accessories                    = "short range" 
+    
+    # ------------------------------------------------------------------
+    # Carbo Bays 
+    # ------------------------------------------------------------------ 
+    forward_cargo_bay = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
+    forward_cargo_bay.tag                            = 'forward_cargo_bay'
+    forward_cargo_bay.mass_properties.mass           = 150
+    forward_cargo_bay.origin                         = [[4.5, 0, -0.25]]
+    forward_cargo_bay.length                         = 2.5
+    forward_cargo_bay.width                          = 1.4
+    forward_cargo_bay.height                         = 0.5
+    vehicle.append_component(forward_cargo_bay)
+
+    aft_cargo_bay  = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
+    aft_cargo_bay.tag                                = 'aft_cargo_bay'
+    aft_cargo_bay.mass_properties.mass               = 200
+    aft_cargo_bay.origin                             = [[13.5, 0, 0.5]]
+    aft_cargo_bay.length                             = 3.0
+    aft_cargo_bay.width                              = 1.4
+    aft_cargo_bay.height                             = 0.7
+    vehicle.append_component(aft_cargo_bay)
+
+    # ------------------------------------------------------------------
+    #   Landing Gear
+    # ------------------------------------------------------------------   
+
+    main_gear                                      = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
+    main_gear.tire_diameter                        = 24.0  * Units.inches
+    main_gear.rim_diameter                         = 12.0  * Units.inches
+    main_gear.tire_width                           = 7.75  * Units.inches
+    main_gear.strut_length                         = 1.2   * Units.meter
+    main_gear.wheels                               = 2
+    main_gear.number_of_gear_types_in_tandem       = 1
+    main_gear.number_of_wheels_in_gear_type        = 2
+    main_gear.origin                               = [[10.5, 3.945,0]]
+    main_gear.xz_plane_symmetric                   = True
+    vehicle.append_component(main_gear)
+
+    nose_gear                                      = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()
+    nose_gear.tire_diameter                        = 18.0  * Units.inches
+    nose_gear.rim_diameter                         = 8.0   * Units.inches
+    nose_gear.tire_width                           = 6.5   * Units.inches
+    nose_gear.strut_length                         = 1.2   * Units.meter
+    nose_gear.wheels                               = 2
+    nose_gear.number_of_gear_types_in_tandem       = 1
+    nose_gear.number_of_wheels_in_gear_type        = 2
+    nose_gear.origin                               = [[3.0, 0,0]]
+    vehicle.append_component(nose_gear)
+    
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Main Wing
@@ -314,7 +363,7 @@ def vehicle_setup():
 
     # define cabin    
     cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-    cabin.origin                                      = [[3.5,0,0]]   
+    cabin.origin                                      = [[3.5,0,0.5]]   
     economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
     economy_class.number_of_seats_abrest              = 4
     economy_class.seat_pitch                          = 31 * Units.inches
@@ -457,24 +506,6 @@ def vehicle_setup():
     # add to vehicle
     vehicle.append_component(fuselage)
 
-    # ------------------------------------------------------------------
-    #   Landing Gear
-    # ------------------------------------------------------------------   
-
-    main_gear               = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
-    main_gear.tire_diameter = 0.5 * Units.meter
-    main_gear.strut_length  = 1.9 * Units.meter 
-    main_gear.units         = 1    # Number of main landing gear
-    main_gear.wheels        = 2    # Number of wheels on the main landing gear
-    vehicle.append_component(main_gear)  
-
-    nose_gear               = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()       
-    nose_gear.tire_diameter = 0.4 * Units.meter
-    nose_gear.units         = 1    # Number of nose landing gear
-    nose_gear.wheels        = 2    # Number of wheels on the nose landing gear
-    nose_gear.strut_length  = 0.5 * Units.meter 
-    vehicle.append_component(nose_gear)
-    
     
     # ########################################################  Energy Network  #########################################################
     net                                              = RCAIDE.Framework.Networks.Fuel()

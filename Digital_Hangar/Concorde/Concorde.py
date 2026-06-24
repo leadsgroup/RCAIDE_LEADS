@@ -73,11 +73,11 @@ def vehicle_setup():
     # ##################################################### Landing Gear ################################################################    
     #------------------------------------------------------------------------------------------------------------------------------------ 
     main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
-    main_gear.origin                         = [[35, 3.86, 0]]
+    main_gear.origin                         = [[35, 3.85, 0]]
     main_gear.tire_diameter                  = 49.0  *  Units.inches
     main_gear.rim_diameter                   = 20.0  *  Units.inches
     main_gear.tire_width                     = 17.0  *  Units.inches
-    main_gear.strut_length                   = 2.0   * Units.m
+    main_gear.strut_length                   = 4.0  * Units.m
     main_gear.wheels                         = 8
     main_gear.number_of_gear_types_in_tandem = 2
     main_gear.number_of_wheels_in_gear_type  = 2
@@ -89,7 +89,7 @@ def vehicle_setup():
     nose_gear.tire_diameter                  = 31.0  *  Units.inches
     nose_gear.rim_diameter                   = 14.0  *  Units.inches
     nose_gear.tire_width                     = 10.75 *  Units.inches
-    nose_gear.strut_length                   = 2.2   * Units.m
+    nose_gear.strut_length                   = 4.0   * Units.m
     nose_gear.wheels                         = 2
     nose_gear.number_of_gear_types_in_tandem = 1
     nose_gear.number_of_wheels_in_gear_type  = 2
@@ -485,7 +485,7 @@ def vehicle_setup():
     outer_right_turbojet.design_altitude          = 60000.0*Units.ft
     outer_right_turbojet.design_mach_number       = 2.02
     outer_right_turbojet.design_thrust            = 10000. * Units.lbf  
-    outer_right_turbojet.origin                   = [[43.,5.5,-1.6]] 
+    outer_right_turbojet.origin                   = [[43.,6.5,-1.6]] 
     outer_right_turbojet.working_fluid            = RCAIDE.Library.Attributes.Gases.Air()
     
     # Ram  
@@ -562,7 +562,7 @@ def vehicle_setup():
     nacelle                                     = RCAIDE.Library.Components.Nacelles.Stack_Nacelle()
     nacelle.diameter                            = 1.3
     nacelle.tag                                 = 'nacelle_1'
-    nacelle.origin                              = [[37.,5.5,-1.6]] 
+    nacelle.origin                              = [[37.,6.5,-1.6]] 
     nacelle.length                              = 10
     nacelle.inlet_diameter                      = 1.1 
     nacelle.areas.wetted                        = 30.
@@ -591,10 +591,10 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------   
     inner_right_turbojet                     = deepcopy(outer_right_turbojet) 
     inner_right_turbojet.tag                 = 'inner_right_turbojet'      
-    inner_right_turbojet.origin              = [[43,4,-1.6]]     
+    inner_right_turbojet.origin              = [[43,5,-1.6]]     
     nacelle_2                                = deepcopy(nacelle)
     nacelle_2.tag                            = 'nacelle_2'
-    nacelle_2.origin                         = [[37.,4,-1.6]]
+    nacelle_2.origin                         = [[37.,5,-1.6]]
     inner_right_turbojet.nacelle = nacelle_2 
     net.propulsors.append(inner_right_turbojet) 
 
@@ -603,10 +603,10 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------    
     inner_left_turbojet                     = deepcopy(outer_right_turbojet)    
     inner_left_turbojet.tag                 = 'inner_left_turbojet'  
-    inner_left_turbojet.origin              = [[43.,-4,-1.6]]   
+    inner_left_turbojet.origin              = [[43.,-5,-1.6]]   
     nacelle_3                               = deepcopy(nacelle)
     nacelle_3.tag                           = 'nacelle_3'
-    nacelle_3.origin                        = [[37.,-4,-1.6]]
+    nacelle_3.origin                        = [[37.,-5,-1.6]]
     inner_left_turbojet.nacelle = nacelle_3 
     net.propulsors.append(inner_left_turbojet) 
 
@@ -615,10 +615,10 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------    
     outer_left_turbojet                     = deepcopy(outer_right_turbojet)
     outer_left_turbojet.tag                 = 'outer_left_turbojet'      
-    outer_left_turbojet.origin              = [[43.,-5.5,-1.6]]   
+    outer_left_turbojet.origin              = [[43.,-6.5,-1.6]]   
     nacelle_4                               = deepcopy(nacelle)
     nacelle_4.tag                           = 'nacelle_4'
-    nacelle_4.origin                        = [[37.,-5.5,-1.6]]
+    nacelle_4.origin                        = [[37.,-6.5,-1.6]]
     outer_left_turbojet.nacelle = nacelle_4
     net.propulsors.append(outer_left_turbojet) 
  

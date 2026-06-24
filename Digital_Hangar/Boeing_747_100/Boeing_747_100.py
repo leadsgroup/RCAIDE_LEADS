@@ -85,6 +85,26 @@ def vehicle_setup():
     main_body_gear.xz_plane_symmetric              = True
     vehicle.append_component(main_body_gear)
 
+    # ################################################# Wings ##################################################################### 
+    # ------------------------------------------------------------------
+    # Carbo Bays 
+    # ------------------------------------------------------------------ 
+    forward_cargo_bay = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
+    forward_cargo_bay.mass_properties.mass        = 1850
+    forward_cargo_bay.origin                      = [[10, 0, -1.5]]
+    forward_cargo_bay.length                      = 14
+    forward_cargo_bay.width                       = 140 *  Units.inches 
+    forward_cargo_bay.height                      = 67 *  Units.inches 
+    vehicle.append_component(forward_cargo_bay) 
+ 
+    aft_cargo_bay  = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
+    aft_cargo_bay.mass_properties.mass           = 1440
+    aft_cargo_bay.origin                         = [[37, 0, -1.5]]
+    aft_cargo_bay.length                         =  14
+    aft_cargo_bay.width                          =  140 *  Units.inches 
+    aft_cargo_bay.height                         =  67 *  Units.inches 
+    vehicle.append_component(aft_cargo_bay)
+
     # ------------------------------------------------------------------
     #  Main Wing Gear  (2 bogies, wing-mounted, symmetric about XZ)
     # ------------------------------------------------------------------
@@ -114,9 +134,6 @@ def vehicle_setup():
     nose_gear.number_of_wheels_in_gear_type        = 2
     nose_gear.origin                               = [[8.5, 0, -2.0]]
     vehicle.append_component(nose_gear)
-     
- 
-     # ################################################# Wings #############################################################   
 
     # ------------------------------------------------------------------
     #   Main Wing
@@ -354,11 +371,7 @@ def vehicle_setup():
     rudder.span_fraction_end     = 0.95 
     rudder.deflection            = 0 
     rudder.chord_fraction        = 0.33  
-    wing.append_control_surface(rudder)    
-    
-    
-        
-
+    wing.append_control_surface(rudder)     
     # add to vehicle
     vehicle.append_component(wing)
     
@@ -390,9 +403,9 @@ def vehicle_setup():
 
 
     lower_cabin                                           = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-    lower_cabin.origin                                    = [[13, 0, 0]]
+    lower_cabin.origin                                    = [[8, 0, 0]]
     lower_cabin.wide_body                                 = True
-    lower_cabin.segments_bounding_cabin                   = ['segment_10', 'segment_14']
+    lower_cabin.segments_bounding_cabin                   = ['segment_7', 'segment_14']
 
     business_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Business()
     business_class.number_of_seats_abrest              = 8
@@ -407,7 +420,7 @@ def vehicle_setup():
 
     economy_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy()
     economy_class.number_of_seats_abrest              = 10
-    economy_class.number_of_rows                      = 28
+    economy_class.number_of_rows                      = 32
     economy_class.seat_pitch                          = 32 *  Units.inches
     economy_class.galley_lavatory_percent_x_locations = [0, 0.5, 1.0]
     economy_class.type_A_exit_percent_x_locations     = [0, 0.5, 1.0]
@@ -417,9 +430,9 @@ def vehicle_setup():
     fuselage.append_cabin(lower_cabin)
 
     upper_cabin                                     = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-    upper_cabin.origin                              = [[8, 0, 4.0]]
+    upper_cabin.origin                              = [[8, 0, 2.0]]
     upper_cabin.wide_body                           = False
-    upper_cabin.segments_bounding_cabin             = ['segment_8', 'segment_11']
+    upper_cabin.segments_bounding_cabin             = ['segment_7', 'segment_11']
 
     first_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.First()
     first_class.number_of_seats_abrest              = 4
@@ -663,8 +676,9 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------         
     turbofan_1                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
     turbofan_1.tag                                = 'propulsor_1' 
-    turbofan_1.origin                             = [[13.72, 4.86,-1.1]] 
-    turbofan_1.length                             = 3.934     
+    turbofan_1.origin                             = [[32.483, -21.000,-1.95]] 
+    turbofan_1.length                             = 3.934   
+    turbofan_1.diameter                           = 2.2     
     turbofan_1.bypass_ratio                       = 5.0   
     turbofan_1.design_altitude                    = 0.0*Units.ft
     turbofan_1.design_mach_number                 = 0.01   

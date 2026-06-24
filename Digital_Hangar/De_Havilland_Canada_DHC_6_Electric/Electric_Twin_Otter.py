@@ -433,7 +433,46 @@ def vehicle_setup():
     vehicle.append_component(fuselage)
     
     # ########################################################  Energy Network  #########################################################  
-    net                                         = RCAIDE.Framework.Networks.Electric()    
+    net                                         = RCAIDE.Framework.Networks.Electric()   
+
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    ##  Systems
+    #------------------------------------------------------------------------------------------------------------------------------------  
+ 
+    avionics =  RCAIDE.Library.Components.Powertrain.Systems.Avionics()
+    avionics.origin                   = [[2,0,0]]
+    avionics.mass_properties.uninstalled        = 2. * Units.lbs
+    net.systems.append(avionics)
+
+    flight_controls =  RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
+    flight_controls.origin            = [[7,0,0]]
+    net.systems.append(flight_controls)
+
+    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
+    auxillary_power_unit.origin       = [[14,0,0]]
+    net.systems.append(auxillary_power_unit)
+
+    electrical =  RCAIDE.Library.Components.Powertrain.Systems.Electrical()
+    electrical.origin                 = [[6,0,0]]
+    net.systems.append(electrical)
+
+    hydraulics =  RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
+    hydraulics.origin                 = [[7,0,0]]
+    net.systems.append(hydraulics)
+
+    environmental_controls =  RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
+    environmental_controls.origin     = [[6,0,-0.5]]
+    net.systems.append(environmental_controls)
+
+    instruments =  RCAIDE.Library.Components.Powertrain.Systems.Instruments()
+    instruments.origin                = [[6,0,0]]
+    net.systems.append(instruments)
+
+    furnishings = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
+    furnishings.origin                = [[7,0,0]]
+    net.systems.append(furnishings)
+
+
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus
     #------------------------------------------------------------------------------------------------------------------------------------  
@@ -443,17 +482,19 @@ def vehicle_setup():
     # Battery
     #------------------------------------------------------------------------------------------------------------------------------------  
     bat_module                                             = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC()
-    bat_module.electrical_configuration.series             = 85
-    bat_module.electrical_configuration.parallel           = 53
-    bat_module.cell.nominal_capacity                       = 6
-    bat_module.cell.mass                                   = 0.03 * Units.kg
-    bat_module.geometric_configuration.normal_count       = 85
-    bat_module.geometric_configuration.parallel_count     = 53 
-    for _ in range(4):
+    bat_module.electrical_configuration.series             = 10
+    bat_module.electrical_configuration.parallel           = 210
+    bat_module.cell.nominal_capacity                       = 3.8 
+    bat_module.geometric_configuration.stacking_rows       = 8
+    bat_module.geometric_configuration.normal_count        = 75
+    bat_module.geometric_configuration.parallel_count      = 30 
+
+    for i in range(12):
         bat_copy = deepcopy(bat_module)
+        bat_copy.origin   = [[3 + (i * 0.5) , 0, -0.35]]
         bus.battery_modules.append(bat_copy)
 
-    bus.battery_module_electric_configuration = 'Parallel'  
+    bus.battery_module_electric_configuration = 'Series' 
     bus.initialize_bus_properties()
 
     #------------------------------------------------------------------------------------------------------------------------------------  
@@ -616,22 +657,7 @@ def vehicle_setup():
     port_propulsor.nacelle.origin                      = [[3.5,-2.8129,1]] 
     # append propulsor to distribution line 
     net.propulsors.append(port_propulsor) 
-
-    #------------------------------------------------------------------------------------------------------------------------------------ 
-    # Avionics
-    #------------------------------------------------------------------------------------------------------------------------------------ 
-    Wuav                                        = 2. * Units.lbs
-    avionics                                    = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.mass_properties.uninstalled        = Wuav
-    vehicle.avionics                            = avionics    
-
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    # Avionics
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    avionics                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.power_draw          = 30. # Watts
-    bus.avionics                 = avionics
-    
+ 
     #------------------------------------------------------------------------------------------------------------------------------------   
     # Assign propulsors to bus       
     bus.assigned_propulsors =  [[starboard_propulsor.tag, port_propulsor.tag]] 

@@ -65,13 +65,14 @@ class Component(Data):
         """
         Sets default values for the component attributes.
         """         
-        self.tag                = 'Component' 
-        self.mass_properties    = Mass_Properties()
-        self.volume_properties  = Volume_Properties()
-        self.origin             = np.array([[0.0,0.0,0.0]])
-        self.xz_plane_symmetric = False
-        self.xy_plane_symmetric = False
-        self.yz_plane_symmetric = False
+        self.tag                      = 'Component' 
+        self.mass_properties          = Mass_Properties()
+        self.volume_properties        = Volume_Properties()
+        self.origin                   = np.array([[0.0,0.0,0.0]])
+        self.orientation_euler_angles = [0.0, 0.0, 0.0]
+        self.xz_plane_symmetric       = False
+        self.xy_plane_symmetric       = False
+        self.yz_plane_symmetric       = False
          
     def compute_center_of_gravity(self, vehicle):
         return 

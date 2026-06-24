@@ -62,6 +62,11 @@
             0.0
         ]
     ],
+    "orientation_euler_angles": [
+        0.0,
+        0.0,
+        0.0
+    ],
     "xz_plane_symmetric": false,
     "xy_plane_symmetric": false,
     "yz_plane_symmetric": false,
@@ -131,6 +136,11 @@
                 1.092
             ]
         ],
+        "orientation_euler_angles": [
+            0.0,
+            0.0,
+            0.0
+        ],
         "xz_plane_symmetric": false,
         "xy_plane_symmetric": false,
         "yz_plane_symmetric": false,
@@ -147,11 +157,6 @@
         "diameter": 0.4,
         "inlet_diameter": 0.0,
         "length": 1.24,
-        "orientation_euler_angles": [
-            0.0,
-            0.0,
-            0.0
-        ],
         "flow_through": false,
         "has_pylon": true,
         "differential_pressure": 0.0,
@@ -221,14 +226,14 @@
                         0.0
                     ]
                 ],
-                "xz_plane_symmetric": false,
-                "xy_plane_symmetric": false,
-                "yz_plane_symmetric": false,
                 "orientation_euler_angles": [
                     0.0,
                     0.0,
                     0.0
                 ],
+                "xz_plane_symmetric": false,
+                "xy_plane_symmetric": false,
+                "yz_plane_symmetric": false,
                 "percent_x_location": 0.0,
                 "percent_y_location": 0,
                 "percent_z_location": 0,
@@ -300,14 +305,14 @@
                         0.0
                     ]
                 ],
-                "xz_plane_symmetric": false,
-                "xy_plane_symmetric": false,
-                "yz_plane_symmetric": false,
                 "orientation_euler_angles": [
                     0.0,
                     0.0,
                     0.0
                 ],
+                "xz_plane_symmetric": false,
+                "xy_plane_symmetric": false,
+                "yz_plane_symmetric": false,
                 "percent_x_location": 0.08064516129032259,
                 "percent_y_location": 0,
                 "percent_z_location": 0,
@@ -379,14 +384,14 @@
                         0.0
                     ]
                 ],
-                "xz_plane_symmetric": false,
-                "xy_plane_symmetric": false,
-                "yz_plane_symmetric": false,
                 "orientation_euler_angles": [
                     0.0,
                     0.0,
                     0.0
                 ],
+                "xz_plane_symmetric": false,
+                "xy_plane_symmetric": false,
+                "yz_plane_symmetric": false,
                 "percent_x_location": 0.12096774193548386,
                 "percent_y_location": 0,
                 "percent_z_location": 0,
@@ -458,14 +463,14 @@
                         0.0
                     ]
                 ],
-                "xz_plane_symmetric": false,
-                "xy_plane_symmetric": false,
-                "yz_plane_symmetric": false,
                 "orientation_euler_angles": [
                     0.0,
                     0.0,
                     0.0
                 ],
+                "xz_plane_symmetric": false,
+                "xy_plane_symmetric": false,
+                "yz_plane_symmetric": false,
                 "percent_x_location": 0.16129032258064518,
                 "percent_y_location": 0,
                 "percent_z_location": 0,
@@ -537,14 +542,14 @@
                         0.0
                     ]
                 ],
-                "xz_plane_symmetric": false,
-                "xy_plane_symmetric": false,
-                "yz_plane_symmetric": false,
                 "orientation_euler_angles": [
                     0.0,
                     0.0,
                     0.0
                 ],
+                "xz_plane_symmetric": false,
+                "xy_plane_symmetric": false,
+                "yz_plane_symmetric": false,
                 "percent_x_location": 0.20161290322580647,
                 "percent_y_location": 0,
                 "percent_z_location": 0,
@@ -616,14 +621,14 @@
                         0.0
                     ]
                 ],
-                "xz_plane_symmetric": false,
-                "xy_plane_symmetric": false,
-                "yz_plane_symmetric": false,
                 "orientation_euler_angles": [
                     0.0,
                     0.0,
                     0.0
                 ],
+                "xz_plane_symmetric": false,
+                "xy_plane_symmetric": false,
+                "yz_plane_symmetric": false,
                 "percent_x_location": 0.40322580645161293,
                 "percent_y_location": 0,
                 "percent_z_location": 0,
@@ -695,14 +700,14 @@
                         0.0
                     ]
                 ],
-                "xz_plane_symmetric": false,
-                "xy_plane_symmetric": false,
-                "yz_plane_symmetric": false,
                 "orientation_euler_angles": [
                     0.0,
                     0.0,
                     0.0
                 ],
+                "xz_plane_symmetric": false,
+                "xy_plane_symmetric": false,
+                "yz_plane_symmetric": false,
                 "percent_x_location": 0.6048387096774194,
                 "percent_y_location": 0,
                 "percent_z_location": 0,
@@ -774,14 +779,14 @@
                         0.0
                     ]
                 ],
-                "xz_plane_symmetric": false,
-                "xy_plane_symmetric": false,
-                "yz_plane_symmetric": false,
                 "orientation_euler_angles": [
                     0.0,
                     0.0,
                     0.0
                 ],
+                "xz_plane_symmetric": false,
+                "xy_plane_symmetric": false,
+                "yz_plane_symmetric": false,
                 "percent_x_location": 0.7903225806451613,
                 "percent_y_location": 0,
                 "percent_z_location": 0,
@@ -853,14 +858,14 @@
                         0.0
                     ]
                 ],
-                "xz_plane_symmetric": false,
-                "xy_plane_symmetric": false,
-                "yz_plane_symmetric": false,
                 "orientation_euler_angles": [
                     0.0,
                     0.0,
                     0.0
                 ],
+                "xz_plane_symmetric": false,
+                "xy_plane_symmetric": false,
+                "yz_plane_symmetric": false,
                 "percent_x_location": 1.0,
                 "percent_y_location": 0,
                 "percent_z_location": 0,
@@ -960,6 +965,11 @@
                 1.092
             ]
         ],
+        "orientation_euler_angles": [
+            0.0,
+            0.0,
+            0.0
+        ],
         "xz_plane_symmetric": false,
         "xy_plane_symmetric": false,
         "yz_plane_symmetric": false,
@@ -1045,6 +1055,11 @@
                 1.3,
                 1.092
             ]
+        ],
+        "orientation_euler_angles": [
+            0.0,
+            0.0,
+            0.0
         ],
         "xz_plane_symmetric": false,
         "xy_plane_symmetric": false,
@@ -1254,6 +1269,11 @@
                         0.0,
                         0.0
                     ]
+                ],
+                "orientation_euler_angles": [
+                    0.0,
+                    0.0,
+                    0.0
                 ],
                 "xz_plane_symmetric": false,
                 "xy_plane_symmetric": false,
@@ -14933,11 +14953,6 @@
         "profile_drag_coefficient": 0.03,
         "clockwise_rotation": true,
         "phase_offset_angle": 0.0,
-        "orientation_euler_angles": [
-            0.0,
-            0.0,
-            0.0
-        ],
         "ducted": false,
         "sol_tolerance": 1e-08,
         "use_2d_analysis": false,
@@ -15028,6 +15043,11 @@
                 1.3,
                 1.092
             ]
+        ],
+        "orientation_euler_angles": [
+            0.0,
+            0.0,
+            0.0
         ],
         "xz_plane_symmetric": false,
         "xy_plane_symmetric": false,

@@ -172,8 +172,7 @@ class Electrical_Bus(Component):
         --------
         RCAIDE.Library.Methods.weights.vehicle.moments_of_inertia.compute_fuselage_moment_of_inertia
             Implementation of the moment of inertia calculation
-        """
-        # _ , _ = compute_distributor_moment_of_inertia(self,center_of_gravity= center_of_gravity) 
+        """  
         return
     
 
@@ -185,6 +184,5 @@ class Electrical_Bus(Component):
         --------
         RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_fuselage_center_of_gravity
             Implementation of the moment of inertia calculation
-        """
-        # _  = compute_distributor_center_of_gravity(self,vehicle) 
+        """ 
         return

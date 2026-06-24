@@ -537,22 +537,22 @@ def vehicle_setup():
     #  Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------    
     turbofan                                        = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
-    turbofan.tag                                    = 'starboard_propulsor'  
-    turbofan.length                                 = 145 *  Units.inches
-    turbofan.bypass_ratio                           = 5.4   
-    turbofan.diameter                               = 53 *  Units.inches
+    turbofan.tag                                    = 'starboard_propulsor'
+    turbofan.length                                 = 106 *  Units.inches
+    turbofan.bypass_ratio                           = 5.4
+    turbofan.diameter                               = 43 *  Units.inches
     turbofan.design_altitude                        = 35000.0*Units.ft
-    turbofan.design_mach_number                     = 0.8   
-    turbofan.design_thrust                          = 35000.0* Units.N#/2 
+    turbofan.design_mach_number                     = 0.78
+    turbofan.design_thrust                          = 22500 * Units.N 
     turbofan.origin                                 = [[14.46,4.38,-2.1]]
     turbofan.mass_properties.center_of_gravity      = [[turbofan.length /2,0,0]]
 
     # Nacelle
     nacelle                                         = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()
-    nacelle.diameter                                = 2.05
-    nacelle.length                                  = 2.66
+    nacelle.diameter                                = 1.32
+    nacelle.length                                  = 2.87
     nacelle.tag                                     = 'nacelle_1'
-    nacelle.inlet_diameter                          = 2.0
+    nacelle.inlet_diameter                          = 1.10
     nacelle.origin                                  = [[13.96,4.38, -2.1]]
     nacelle.mass_properties.center_of_gravity       = [[nacelle.length /2,0,0 ]]
     nacelle.areas.wetted                            = 1.1*np.pi*nacelle.diameter*nacelle.length

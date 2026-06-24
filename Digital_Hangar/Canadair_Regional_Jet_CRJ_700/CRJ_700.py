@@ -70,7 +70,7 @@ def vehicle_setup():
     main_gear.rim_diameter      = 14.0 *  Units.inches
     main_gear.tire_width        = 8.5  *  Units.inches
     main_gear.strut_length      = 1.8  * Units.m
-    main_gear.origin            = [[15.0, 4.5/2, -0.5]]
+    main_gear.origin            = [[17.0, 4.5/2, -0.5]]
     main_gear.wheels            = 4
     main_gear.number_of_gear_types_in_tandem  = 1
     main_gear.number_of_wheels_in_gear_type  = 2
@@ -89,6 +89,25 @@ def vehicle_setup():
     vehicle.append_component(nose_gear)
 
     
+    # ################################################# Wings ##################################################################### 
+    # ------------------------------------------------------------------
+    # Carbo Bays 
+    # ------------------------------------------------------------------ 
+    forward_cargo_bay = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
+    forward_cargo_bay.mass_properties.mass        = 250
+    forward_cargo_bay.origin                      = [[5.7, 0,-0.2 ]]
+    forward_cargo_bay.length                      = 3.5
+    forward_cargo_bay.width                       = 1.6
+    forward_cargo_bay.height                      = 0.7
+    vehicle.append_component(forward_cargo_bay)
+
+    aft_cargo_bay  = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
+    aft_cargo_bay.mass_properties.mass             = 300
+    aft_cargo_bay.origin                           = [[17, 0,-0.2]]
+    aft_cargo_bay.length                           = 4.6
+    aft_cargo_bay.width                            = 1.6
+    aft_cargo_bay.height                           = 0.7
+    vehicle.append_component(aft_cargo_bay)
 
     # ################################################# Wings ##################################################################### 
     # ------------------------------------------------------------------
@@ -548,7 +567,8 @@ def vehicle_setup():
     turbofan                                       = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
     turbofan.tag                                   = 'starboard_propulsor' 
     turbofan.origin                                = [[21.5, -2.2,1.45]]  
-    turbofan.length                         = 3.3     
+    turbofan.length                                = 3.3     
+    turbofan.diameter                              = 1.55
     turbofan.bypass_ratio                          = 5    
     turbofan.design_altitude                       = 0.0*Units.ft
     turbofan.design_mach_number                    = 0.1   
