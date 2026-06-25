@@ -35,10 +35,10 @@ class Hydraulics(Systems):
         self.central_system.flowspeed       =  23.0
         self.central_system.system_power    = 196.0
     
-    def compute_performance(self,state,bus):   
+    def compute_performance(self,vehicle,state,bus):   
         """
         Computes the power draw of the hydraulic systems based on the operating conditions."""
 
-        compute_hydraulics_power_draw(self,state,bus)   
+        compute_hydraulics_power_draw(self,vehicle,state,bus)   
 
         return  

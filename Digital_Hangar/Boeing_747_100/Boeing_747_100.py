@@ -37,7 +37,7 @@ def vehicle_setup():
     airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') + os.sep 
     polar_file_path   =  os.path.join(os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') , 'Polars') + os.sep  
     
-    # ------------------------------------------------------------------
+      # ------------------------------------------------------------------
     #   Initialize the Vehicle
     # ------------------------------------------------------------------    
     
@@ -55,7 +55,7 @@ def vehicle_setup():
     vehicle.mass_properties.center_of_gravity         = [[32.00, 0, 0]]
     vehicle.flight_envelope.ultimate_load             = 3.75  
     vehicle.flight_envelope.positive_limit_load       = 2.5   
-    vehicle.flight_envelope.design_mach_number        = 0.85   
+    vehicle.flight_envelope.design_mach_number        = 0.84   
     vehicle.flight_envelope.design_cruise_altitude    = 35000.0*Units.feet 
     vehicle.flight_envelope.design_range              = 7305.0 * Units.nmi 
     vehicle.reference_area                            = 572.68 * Units['meters**2']   
@@ -84,26 +84,6 @@ def vehicle_setup():
     main_body_gear.origin                          = [[34.4, 3/2, -2.0]]
     main_body_gear.xz_plane_symmetric              = True
     vehicle.append_component(main_body_gear)
-
-    # ################################################# Wings ##################################################################### 
-    # ------------------------------------------------------------------
-    # Carbo Bays 
-    # ------------------------------------------------------------------ 
-    forward_cargo_bay = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
-    forward_cargo_bay.mass_properties.mass        = 1850
-    forward_cargo_bay.origin                      = [[10, 0, -1.5]]
-    forward_cargo_bay.length                      = 14
-    forward_cargo_bay.width                       = 140 *  Units.inches 
-    forward_cargo_bay.height                      = 67 *  Units.inches 
-    vehicle.append_component(forward_cargo_bay) 
- 
-    aft_cargo_bay  = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
-    aft_cargo_bay.mass_properties.mass           = 1440
-    aft_cargo_bay.origin                         = [[37, 0, -1.5]]
-    aft_cargo_bay.length                         =  14
-    aft_cargo_bay.width                          =  140 *  Units.inches 
-    aft_cargo_bay.height                         =  67 *  Units.inches 
-    vehicle.append_component(aft_cargo_bay)
 
     # ------------------------------------------------------------------
     #  Main Wing Gear  (2 bogies, wing-mounted, symmetric about XZ)
@@ -134,6 +114,27 @@ def vehicle_setup():
     nose_gear.number_of_wheels_in_gear_type        = 2
     nose_gear.origin                               = [[8.5, 0, -2.0]]
     vehicle.append_component(nose_gear)
+
+    # ################################################# Wings ##################################################################### 
+    # ------------------------------------------------------------------
+    # Carbo Bays 
+    # ------------------------------------------------------------------ 
+    forward_cargo_bay = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
+    forward_cargo_bay.mass_properties.mass        = 1850
+    forward_cargo_bay.origin                      = [[10, 0, -1.5]]
+    forward_cargo_bay.length                      = 14
+    forward_cargo_bay.width                       = 140 *  Units.inches 
+    forward_cargo_bay.height                      = 67 *  Units.inches 
+    vehicle.append_component(forward_cargo_bay) 
+ 
+    aft_cargo_bay  = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
+    aft_cargo_bay.mass_properties.mass           = 1440
+    aft_cargo_bay.origin                         = [[37, 0, -1.5]]
+    aft_cargo_bay.length                         =  14
+    aft_cargo_bay.width                          =  140 *  Units.inches 
+    aft_cargo_bay.height                         =  67 *  Units.inches 
+    vehicle.append_component(aft_cargo_bay)
+ 
 
     # ------------------------------------------------------------------
     #   Main Wing
@@ -677,18 +678,18 @@ def vehicle_setup():
     turbofan_1                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
     turbofan_1.tag                                = 'propulsor_1' 
     turbofan_1.origin                             = [[32.483, -21.000,-1.95]] 
-    turbofan_1.length                             = 3.934   
-    turbofan_1.diameter                           = 2.2     
-    turbofan_1.bypass_ratio                       = 5.0   
-    turbofan_1.design_altitude                    = 0.0*Units.ft
-    turbofan_1.design_mach_number                 = 0.01   
-    turbofan_1.design_thrust                      = 193000.0* Units.N 
+    turbofan_1.length                             = 3.26
+    turbofan_1.diameter                           = 2.34
+    turbofan_1.bypass_ratio                       = 5.0
+    turbofan_1.design_altitude                    = 35000*Units.ft
+    turbofan_1.design_mach_number                 = 0.84
+    turbofan_1.design_thrust                      = 59000.0* Units.N 
 
     # fan                
     fan                                         = RCAIDE.Library.Components.Powertrain.Converters.Fan()   
     fan.tag                                     = 'fan'
     fan.polytropic_efficiency                   = 0.93
-    fan.pressure_ratio                          = 1.67   
+    fan.pressure_ratio                          = 1.6   
     turbofan_1.fan                              = fan        
 
     # working fluid                   
@@ -718,7 +719,7 @@ def vehicle_setup():
     high_pressure_compressor                       = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
     high_pressure_compressor.tag                   = 'hpc'
     high_pressure_compressor.polytropic_efficiency = 0.91
-    high_pressure_compressor.pressure_ratio        = 8.4    
+    high_pressure_compressor.pressure_ratio        = 7.07    
     turbofan_1.high_pressure_compressor            = high_pressure_compressor
 
     # low pressure turbine  
@@ -766,10 +767,10 @@ def vehicle_setup():
 
     # Nacelle 
     nacelle                                     = RCAIDE.Library.Components.Nacelles.Body_of_Revolution_Nacelle()
-    nacelle.diameter                            = 2.30
-    nacelle.length                              = 2.70
+    nacelle.diameter                            = 2.54
+    nacelle.length                              = 3.26
     nacelle.tag                                 = 'nacelle_1'
-    nacelle.inlet_diameter                      = 2.2
+    nacelle.inlet_diameter                      = 2.34
     nacelle.origin                              = [[32.483, -21.000,-1.95]] 
     nacelle.areas.wetted                        = 1.1*np.pi*nacelle.diameter*nacelle.length
     nacelle_airfoil                             = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
@@ -838,7 +839,8 @@ def vehicle_setup():
     net.fuel_lines.append(fuel_line)        
     
     # Append energy network to aircraft 
-    vehicle.append_energy_network(net)       
+    vehicle.append_energy_network(net)     
+
 
     return vehicle
   
