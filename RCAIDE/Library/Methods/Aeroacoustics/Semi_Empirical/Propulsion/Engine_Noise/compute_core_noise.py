@@ -175,18 +175,18 @@ def compute_core_noise(microphone_locations, turbofan, aeroacoustic_data, segmen
     
         model_inputs = {
         "W1": (Area_secondary*Velocity_secondary*density_secondary)*2.20462,      # Total core mass flow rate (lbm/sec)
-        "T_C_o": combustor_conditions.outputs.static_temperature*1.8,   # Combustor outlet total temperature (deg R)
-        "T_C_i": combustor_conditions.inputs.static_temperature*1.8,   # Combustor inlet total temperature (deg R)
-        "P_amb": pressure_amb/6895, # Ambient pressure (pa -> psia)
-        "T_amb": temp_amb*1.8,  # Ambient temperature (deg R)
-        "n_f":  Num_nozzle,       # Number of fuel nozzles
-        "R": distance_microphone[i]*3.281,         # Microphone distance (ft)
-        "D_h_1": core_nozzle.diameter*3.281,   #core nozzle hydraulic diameter
-        "c_amb": sound_ambient*3.281,   # Ambient sonic velocity (ft/sec)
-        "D_C": combustor.diameter*3.281,     # Combustor diameter (ft)
+        "T_C_o": combustor_conditions.outputs.static_temperature*1.8,             # Combustor outlet total temperature (deg R)
+        "T_C_i": combustor_conditions.inputs.static_temperature*1.8,              # Combustor inlet total temperature (deg R)
+        "P_amb": pressure_amb/6895,                                               # Ambient pressure (pa -> psia)
+        "T_amb": temp_amb*1.8,                                                    # Ambient temperature (deg R)
+        "n_f":  Num_nozzle,                                                       # Number of fuel nozzles
+        "R": distance_microphone[i]*3.281,                                        # Microphone distance (ft)
+        "D_h_1": core_nozzle.diameter*3.281,                                      #core nozzle hydraulic diameter
+        "c_amb": sound_ambient*3.281,                                             # Ambient sonic velocity (ft/sec)
+        "D_C": combustor.diameter*3.281,                                          # Combustor diameter (ft)
         "c_C_o": (331.3*(1+((combustor_conditions.outputs.static_temperature-273)/273))**0.5)*3.281,  # Combustor exit sonic velocity (ft/sec)
-        "f": standard_freqs,# Frequency (Hz) -> injected list
-        "theta_c": theta,   #theta
+        "f": standard_freqs,                                                                          # Frequency (Hz) -> injected list
+        "theta_c": theta,                                                                             #theta
         "pressure_ratio": lpt_conditions.outputs.stagnation_pressure/ram_conditions.outputs.stagnation_pressure #Pressure ratio
     }
 

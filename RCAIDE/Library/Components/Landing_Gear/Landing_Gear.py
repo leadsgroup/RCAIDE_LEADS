@@ -87,11 +87,12 @@ class Landing_Gear(Component):
         self.tire_diameter                   = 0  
         self.rim_diameter                    = 0  
         self.tire_width                      = 0 
-        self.strut_length                    = 0  
+        self.strut_length                    = 0
+        self.strut_diameter                  = 0  
         self.wheels                          = 0
         self.length                          = 0 
         self.width                           = 0 
-        self.height                          = 0 
+        self.height                          = 0
         self.longitudinal_wheel_spacing      = 0.25
         self.lateral_wheel_spacing           = 0.25
         self.wheel_clearance_factor          = 1.1

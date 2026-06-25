@@ -183,19 +183,19 @@ class LandingGearNoiseModel:
             
         return results
 
-def compute_landing_gear_noise(D, H, W, wheels, M, Weight, velocity, phi, theta, distance, frequency, segment):
+def compute_landing_gear_noise(D, H, W, wheels, M, Weight, strut_diameter, theta, distance, frequency, segment):
     gear_params = {
         'num_wheels': wheels,
         'wheel_diam': D/12,  # Approximate
         'wheel_width': W/12, # Approximate
         'strut_lengths': [H/12], # Total length L=317 in
-        'strut_dims': [4.65],     # Average dimension a=4.65 in
+        'strut_dims': [strut_diameter/12],     # Average dimension a=4.65 in
         'aircraft_weight': Weight, # Reference weight (lbs)
-        'track_angle': 0.0 
+        'track_angle': 0.0 #assume track angle of zero
     }
 
 
-    target_M_local = M
+    target_M_local = M #mach number from flight segment needed.
     flight_cond = {
         'M_flight': target_M_local / 0.75, 
         'theta': theta,

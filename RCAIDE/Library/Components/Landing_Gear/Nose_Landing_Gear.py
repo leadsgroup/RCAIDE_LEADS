@@ -27,6 +27,9 @@ class Nose_Landing_Gear(Landing_Gear):
         
     strut_length : float
         Length of the nose gear strut assembly, defaults to 0
+    
+    strut_diameter : float
+        Diameter of the strut assembly, defaults to 0
         
     units : float
         Number of nose landing gear units, typically 1, defaults to 0

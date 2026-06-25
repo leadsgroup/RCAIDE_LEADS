@@ -1,7 +1,5 @@
 import math
 import numpy as np
-import math
-import matplotlib.pyplot as plt
 from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Propulsion.Engine_Noise.interpolate_fan_noise import get_spl_fan, create_interpolator_fan
 from RCAIDE.Library.Methods.Aeroacoustics.Common  import SPL_arithmetic 
