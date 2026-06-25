@@ -67,7 +67,7 @@ def compute_fan_noise(microphone_locations, turbofan, aeroacoustic_data, segment
 
     frequency              = settings.center_frequencies[5:]        
     n_cpts                 = len(noise_time)     
-    n_freq                  = len(frequency) 
+    n_freq                 = len(frequency) 
     n_mic                  = len(microphone_locations)
   
     # ============================================================================= 
@@ -132,7 +132,7 @@ def compute_fan_noise(microphone_locations, turbofan, aeroacoustic_data, segment
     "f_b": (N1*Num_blades)/60,                                          # Blade passage frequency (Hz)
     "M_Tip": (np.pi*Diameter_secondary*Num_blades)/(60*sound_ambient),  # Fan tip Mach number
     "V_Number": 54,                                                     # Number of stator vanes
-    "B_Number": 22,                                                     # Number of rotor blades
+    "B_Number": Num_blades,                                             # Number of rotor blades
     "inlet_distortion": False                                           # Boolean
     }
 
@@ -237,26 +237,24 @@ def compute_fan_noise(microphone_locations, turbofan, aeroacoustic_data, segment
         return 10 * math.log10(energy_sum)
     
     fan_noise= Data()
+    theta     =  np.zeros(n_mic)
+    bool_1    = (microphone_locations[:,1] > 0) &  (microphone_locations[:,0] > 0)
+    bool_2    = (microphone_locations[:,1] > 0) &  (microphone_locations[:,0] < 0)
+    bool_3    = (microphone_locations[:,1] < 0) &  (microphone_locations[:,0] < 0)
+    bool_4    = (microphone_locations[:,1] < 0) &  (microphone_locations[:,0] > 0)
+    
+    theta[bool_1] =  np.pi - np.arctan(microphone_locations[:,1]/microphone_locations[:,0])[bool_1]
+    theta[bool_2] =  np.arctan(microphone_locations[:,1]/ abs(microphone_locations[:,0]))[bool_2]
+    theta[bool_3] =  np.arctan(abs(microphone_locations[:,1])/ abs(microphone_locations[:,0]))[bool_3]
+    theta[bool_4] =  np.pi - np.arctan(abs(microphone_locations[:,1])/ microphone_locations[:,0])[bool_4] 
 
     for i in range(n_mic):
         spl_values = []
-        theta     =  np.zeros(n_mic)
-        bool_1    = (microphone_locations[:,1] > 0) &  (microphone_locations[:,0] > 0)
-        bool_2    = (microphone_locations[:,1] > 0) &  (microphone_locations[:,0] < 0)
-        bool_3    = (microphone_locations[:,1] < 0) &  (microphone_locations[:,0] < 0)
-        bool_4    = (microphone_locations[:,1] < 0) &  (microphone_locations[:,0] > 0)
-        
-        theta[bool_1] =  np.pi - np.arctan(microphone_locations[:,1]/microphone_locations[:,0])[bool_1]
-        theta[bool_2] =  np.arctan(microphone_locations[:,1]/ abs(microphone_locations[:,0]))[bool_2]
-        theta[bool_3] =  np.arctan(abs(microphone_locations[:,1])/ abs(microphone_locations[:,0]))[bool_3]
-        theta[bool_4] =  np.pi - np.arctan(abs(microphone_locations[:,1])/ microphone_locations[:,0])[bool_4] 
-
-        theta_S                = np.tile(theta[None,:],(n_cpts,1))  
-        theta_s = np.tile(np.atleast_2d(abs(theta_S[:,j])).T,(1,n_freq))
+        theta_S = np.tile(theta[None,:],(n_cpts,1))  
+        theta_s = np.tile(np.atleast_2d(abs(theta_S[:,i])).T,(1,n_freq))
         spl = calc_combination_tones(fan_inputs, frequency, theta=theta_s)
-        spl_values.append(spl)
-
-
+        distance_attenuated_spl = spl - 20*np.log10((7.44*0.3048)/distance_microphone[i]) # 7.44ft as the microphone sideline to fan distance
+        spl_values.append(distance_attenuated_spl)
 
         SPL_1_3_spectrum[:,i,:]       = spl 
         SPL[:,i]                      = SPL_arithmetic(spl,sum_axis=1 )

@@ -148,6 +148,7 @@ class Combustor(Converter):
         self.volume                                  = 0.0023         # [m**3] Combustor volume
         self.length                                  = 0.2            # [m] Combustor Length
         self.number_of_combustors                    = 1              # [-] Number of Combustors for one engine
+        self.number_of_fuel_nozzle                   = 30
         self.F_SC                                    = 1              # [-] Fuel scale factor
         self.N_PZ                                    = 21             # [-] Number of PSR in the Primary Zone
         self.L_PZ                                    = 0.05           # [m] Primary Zone length  

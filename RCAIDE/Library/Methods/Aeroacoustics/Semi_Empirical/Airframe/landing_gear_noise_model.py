@@ -61,15 +61,15 @@ class LandingGearNoiseModel:
         # --- LOW FREQ (Wheels) ---
         # S_L = pi * Nw * w * d (Eq. 33)
         Nw = self.gp['num_wheels']
-        w_ft = self.gp['wheel_width'] / 12.0
-        d_ft = self.gp['wheel_diam'] / 12.0
+        w_ft = self.gp['wheel_width']
+        d_ft = self.gp['wheel_diam']
         self.S_L = np.pi * Nw * w_ft * d_ft
         self.l0_L = d_ft # Length scale is diameter
 
         # --- MID FREQ (Struts) ---
         # S_M = sum(perimeter_j * L_j) (Eq. 35)
-        L_struts_ft = np.array(self.gp['strut_lengths']) / 12.0
-        D_struts_ft = np.array(self.gp['strut_dims']) / 12.0
+        L_struts_ft = np.array(self.gp['strut_lengths'])
+        D_struts_ft = np.array(self.gp['strut_dims'])
         
         perimeters = np.pi * D_struts_ft # Assuming circular approx
         self.S_M = np.sum(perimeters * L_struts_ft)
@@ -182,3 +182,29 @@ class LandingGearNoiseModel:
             results['Total'].append(to_db(val_total))
             
         return results
+
+def compute_landing_gear_noise(D, H, W, wheels, M, Weight, velocity, phi, theta, distance, frequency, segment):
+    gear_params = {
+        'num_wheels': wheels,
+        'wheel_diam': D/12,  # Approximate
+        'wheel_width': W/12, # Approximate
+        'strut_lengths': [H/12], # Total length L=317 in
+        'strut_dims': [4.65],     # Average dimension a=4.65 in
+        'aircraft_weight': Weight, # Reference weight (lbs)
+        'track_angle': 0.0 
+    }
+
+
+    target_M_local = M
+    flight_cond = {
+        'M_flight': target_M_local / 0.75, 
+        'theta': theta,
+        'R': distance, 
+        'c0': segment.conditions.freestream.speed_of_sound, #sound speed
+        'rho0': segment.conditions.freestream.density  
+    }
+
+    model = LandingGearNoiseModel(gear_params, flight_cond)
+    freqs = frequency # 30Hz to 10kHz
+    SPL = model.predict_spectrum(freqs)
+    return SPL

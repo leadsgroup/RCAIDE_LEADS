@@ -130,7 +130,7 @@ def compute_jet_noise(microphone_locations, turbofan, aeroacoustic_data, segment
 
     frequency              = settings.center_frequencies[5:]        
     n_cpts                 = len(noise_time)     
-    n_freq                  = len(frequency) 
+    n_freq                 = len(frequency) 
     n_mic                  = len(microphone_locations)
   
     # ============================================================================= 
