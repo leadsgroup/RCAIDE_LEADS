@@ -225,6 +225,8 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
         segment.analyses.weights.settings.update_fuel_mass                 = False
         segment.analyses.weights.settings.update_max_fuel_mass             = False
         segment.analyses.geometry.settings.compute_fuel_volume             = False
+        segment.analyses.weights.print_weight_analysis_report              = False
+        segment.analyses.energy.verbose                                    = False
 
 
     # loop for each point of Payload Range Diagram

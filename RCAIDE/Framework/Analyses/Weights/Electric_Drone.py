@@ -54,8 +54,9 @@ class Electric_Drone(Weights):
         self.settings.advanced_composites                  = False
         self.settings.fuselage_mounted_landing_gear_factor = 1.12 # assumes fuselage mounted landing gear. Change to 1 if False
         self.settings.cargo_doors_number                   = 1 # 0 if no cargo doors, 1 if 1 cargo door, 2 if 2 cargo doors
-        self.settings.cargo_doors_clamshell                = False # True if clamshell cargo doors, False if not 
-        
+        self.settings.cargo_doors_clamshell                = False # True if clamshell cargo doors, False if not
+        self.settings.mtow_capacity_fraction               = 0.78
+
         # FLOPS settings
         self.settings.FLOPS                                = Data() 
         self.settings.FLOPS.fidelity                       = 'Simple' 

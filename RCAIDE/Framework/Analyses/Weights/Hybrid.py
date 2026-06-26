@@ -51,5 +51,5 @@ class Hybrid(Weights):
         # self.method                  = 'Semi_Empirical'
         # self.aircraft_type           = 'Transport'
         # self.propulsion_architecture = 'Hydrogen'
+        self.settings.mtow_capacity_fraction               = 0.85
 
-        

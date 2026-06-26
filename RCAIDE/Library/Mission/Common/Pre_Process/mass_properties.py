@@ -186,12 +186,11 @@ def mass_properties_preprocess_routine(segment, i = 0):
  
 
         if (analyses.vehicle.mass_properties.fuel  == 0 or analyses.vehicle.mass_properties.fuel is None) and weights_analysis.propulsion_architecture != 'Electric':
-            ('Fuel Weight for the mission is not defned. Filling up the airplace till max takeoff weight')     
-            analyses.vehicle.mass_properties.fuel     = analyses.vehicle.mass_properties.max_takeoff- (analyses.vehicle.mass_properties.operating_empty + analyses.vehicle.mass_properties.payload) 
+            analyses.vehicle.mass_properties.fuel     = analyses.vehicle.mass_properties.max_takeoff- (analyses.vehicle.mass_properties.operating_empty + analyses.vehicle.mass_properties.payload)
 
-        # Compute takeoff weight and max zero fuel weight 
+        # Compute takeoff weight and max zero fuel weight
         if analyses.vehicle.mass_properties.takeoff == None:
-            analyses.vehicle.mass_properties.takeoff = analyses.vehicle.mass_properties.operating_empty  + analyses.vehicle.mass_properties.payload+ analyses.vehicle.mass_properties.fuel    
+            analyses.vehicle.mass_properties.takeoff = analyses.vehicle.mass_properties.operating_empty  + analyses.vehicle.mass_properties.payload+ analyses.vehicle.mass_properties.fuel
        
         analyses.vehicle.mass_properties.max_zero_fuel = analyses.vehicle.mass_properties.operating_empty\
                                                                     + analyses.vehicle.mass_properties.max_payload 
