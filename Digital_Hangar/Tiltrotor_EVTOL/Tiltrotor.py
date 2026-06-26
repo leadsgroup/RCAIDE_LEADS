@@ -6,9 +6,8 @@ import RCAIDE
 from RCAIDE.Framework.Core import Units    
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor   import design_electric_rotor  
 from RCAIDE.Library.Plots                 import *       
-from RCAIDE import  load 
-from RCAIDE import  save  
-
+from RCAIDE.Input_Output import load  
+from RCAIDE.Input_Output import save  
 
 # python imports  
 import numpy as np   
@@ -42,7 +41,8 @@ def vehicle_setup(redesign_rotors = False):
     local_path        = sys.path[0] + os.sep
     airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') + os.sep 
     polar_file_path   =  os.path.join(os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') , 'Polars') + os.sep  
-    # ------------------------------------------------------------------
+    
+       # ------------------------------------------------------------------
     #   Initialize the Vehicle
     # ------------------------------------------------------------------    
     vehicle                                   = RCAIDE.Vehicle()
@@ -65,34 +65,32 @@ def vehicle_setup(redesign_rotors = False):
     vehicle.number_of_passengers                      = 5
     vehicle.neutral_point                             = 2.600 
 
-    #------------------------------------------------------------------------------------------------------------------------------------
-    # ##################################################### Landing Gear ################################################################    
-    #------------------------------------------------------------------------------------------------------------------------------------ 
-    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
-    main_gear.tire_diameter                  = 6  *  Units.inches 
-    main_gear.rim_diameter                   = 3  *  Units.inches 
-    main_gear.tire_width                     = 6  *  Units.inches 
-    main_gear.strut_length                   = 12  * Units.ft 
-    main_gear.wheels                         = 1   
+    # ################################################# Landing Gear #############################################################   
+    # ------------------------------------------------------------------        
+    #  Landing Gear
+    # Source: https://www.boeing.com/content/dam/boeing/boeingdotcom/commercial/airports/acaps/747_123sp.pdf 
+    # ------------------------------------------------------------------  
+    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
+    main_gear.tire_diameter                  = 14.0 * Units.inches
+    main_gear.rim_diameter                   = 5.0  * Units.inches
+    main_gear.tire_width                     = 4.0  * Units.inches
+    main_gear.strut_length                   = 0.45 * Units.m
+    main_gear.origin                         = [[2.55, 0.6, -0.2]]
+    main_gear.wheels                         = 2
     main_gear.number_of_gear_types_in_tandem = 1
     main_gear.number_of_wheels_in_gear_type  = 1
-    main_gear.origin                         = [[3.5,0, 0]]
-    main_gear.fairing                        = True
     main_gear.xz_plane_symmetric             = True
     main_gear.gear_extended                  = True
-    vehicle.append_component(main_gear)  
+    vehicle.append_component(main_gear)
 
-    nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
-    nose_gear.tire_diameter                  =  5 *  Units.inches   
-    nose_gear.rim_diameter                   =  3 *  Units.inches 
-    nose_gear.tire_width                     =  5 *  Units.inches 
-    nose_gear.strut_length                   =  6.* Units.ft 
+    nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()
+    nose_gear.tire_diameter                  = 14.0 * Units.inches
+    nose_gear.rim_diameter                   = 5.0  * Units.inches
+    nose_gear.tire_width                     = 4.0  * Units.inches
+    nose_gear.strut_length                   = 0.40 * Units.m
+    nose_gear.origin                         = [[0.48, 0, -0.2]]
     nose_gear.wheels                         = 1
-    nose_gear.origin                         = [[0.25,0, 0]]
-    nose_gear.fairing                        = True 
     nose_gear.gear_extended                  = True
-    nose_gear.number_of_gear_types_in_tandem = 1
-    nose_gear.number_of_wheels_in_gear_type  = 1    
     vehicle.append_component(nose_gear)
 
     #------------------------------------------------------------------------------------------------------------------------------------
@@ -115,8 +113,8 @@ def vehicle_setup(redesign_rotors = False):
     wing.areas.exposed                        = 10.39 * 0.9  
     wing.twists.root                          = 0   * Units.degrees  
     wing.twists.tip                           = 0   * Units.degrees   
-    wing.origin                               = [[ 1.778,0 , 1.0 ]]
-    wing.aerodynamic_center                   = [ 1.8 ,0 , 1.0 ]    
+    wing.origin                               = [[ 1.778,0 , 1.1 ]]
+    wing.aerodynamic_center                   = [ 1.8 ,0 , 1.1 ]    
     wing.winglet_fraction                     = 0.0  
     wing.xz_plane_symmetric                   = True
     wing.vertical                             = False
@@ -128,11 +126,11 @@ def vehicle_setup(redesign_rotors = False):
     segment.percent_span_location             = 0.0
     segment.twist                             = 0. * Units.degrees
     segment.root_chord_percent                = 1 
-    segment.dihedral_outboard                 = 8.  * Units.degrees
+    segment.dihedral_outboard                 = 0.  * Units.degrees
     segment.sweeps.quarter_chord              = 0. * Units.degrees  
     airfoil                                   = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
     airfoil.NACA_4_Series_code                = '2312'       
-    #segment.append_airfoil(airfoil)
+    segment.append_airfoil(airfoil)
     wing.append_segment(segment)                           
                                               
     # Segment                                               
@@ -377,7 +375,7 @@ def vehicle_setup(redesign_rotors = False):
     #====================================================================================================================================          
     bus                           = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
     bus.tag                       = 'bus'
-    bus.number_of_battery_modules =  4
+    bus.number_of_battery_modules =  6
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus Battery
@@ -385,19 +383,24 @@ def vehicle_setup(redesign_rotors = False):
     battery_module                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC() 
     battery_module.tag                                                = 'bus_battery'
     battery_module.origin                                             = [[2.5, 0,  0.]]
-    battery_module.electrical_configuration.series                    = 60
-    battery_module.electrical_configuration.parallel                  = 60          
-    battery_module.geometric_configuration.normal_count              = 60
-    battery_module.geometric_configuration.parallel_count            = 60
-    battery_module.geometric_configuration.stacking_rows             = 2
+    battery_module.electrical_configuration.series                    = 40
+    battery_module.electrical_configuration.parallel                  = 50
+ 
+                       # front stbd         | front port          | outboard stbd       | outboard port        | behind seats stbd  | above wing 
+    modules_origins = [[0.8, 2.2, 1.195]   ,[0.8, -2.2, 1.195]  ,[1.5, 5.0, 1.320]  ,[1.5, -5.0, 1.320]  ,[3.0, 0.0, 0.5]   ,[2, 0.0, 1.1]]
+    orientation     = [[0, 0.0, 0]     ,[0, 0.0,0]     ,[0, 0.0, 0]    ,[0, 0.0,0]     ,[0, 0.0, 0]       ,[0, 0.0, 0]]
+    normal_count    = [200, 200, 200, 200, 100, 40]
+    parallel_count  = [10, 10, 10, 10, 20, 50] 
+    stacking_rows   = [5, 5, 5, 5, 8, 2]
     
-                       # starboard   | port        | front  | rear 
-    modules_origins = [[1.8, 2.0,1.0 ],[1.8, -2.0, 1.0  ],[0.3, 0.0, 0.0 ],[2, 0.0, 0.0]]  
-    orientation     = [[0, 0.0, np.pi],[0, 0.0, np.pi ],[0, 0.0, 0 ],[0, 0.0,0 ]]   
+   
     for m_i in range(bus.number_of_battery_modules):
         module =  deepcopy(battery_module)
         module.tag = 'nmc_module_' + str(m_i+1) 
         module.origin = [modules_origins[m_i]] 
+        module.geometric_configuration.normal_count               = normal_count[m_i] 
+        module.geometric_configuration.parallel_count             = parallel_count[m_i] 
+        module.geometric_configuration.stacking_rows              = stacking_rows[m_i]
         module.orientation_euler_angles  = orientation[m_i]  
         bus.battery_modules.append(module) 
     bus.initialize_bus_properties()    
@@ -467,7 +470,7 @@ def vehicle_setup(redesign_rotors = False):
     #------------------------------------------------------------------------------------------------------------------------------------    
     nacelle                                     = RCAIDE.Library.Components.Nacelles.Stack_Nacelle()
     nacelle.tag                                 = 'nacelle_1'
-    nacelle.length                              = 2
+    nacelle.length                              = 2.5
     nacelle.diameter                            = 0.85 
     nacelle.areas.wetted                        = 1.0    
     nacelle.flow_through                        = False     
@@ -484,47 +487,52 @@ def vehicle_setup(redesign_rotors = False):
     nac_segment.percent_x_location              = 0.1 
     nac_segment.percent_z_location              = 0 
     nac_segment.height                          = 0.3 
-    nac_segment.width                           = 0.3  
+    nac_segment.width                           = 0.4  
     nacelle.append_segment(nac_segment)   
 
     nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
     nac_segment.tag                             = 'segment_3'
     nac_segment.percent_x_location              = 0.15
     nac_segment.percent_z_location              = 0 
-    nac_segment.height                          = 0.35
-    nac_segment.width                           = 0.35
+    nac_segment.height                          = 0.45
+    nac_segment.width                           = 0.45
+    nac_segment.curvature                       = 3
     nacelle.append_segment(nac_segment)  
 
     nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
     nac_segment.tag                             = 'segment_4'
     nac_segment.percent_x_location              = 0.25
     nac_segment.percent_z_location              = 0
-    nac_segment.height                          = 0.45  
-    nac_segment.width                           = 0.45 
+    nac_segment.height                          = 0.5 
+    nac_segment.width                           = 0.5 
+    nac_segment.curvature                       = 3
     nacelle.append_segment(nac_segment)  
 
     nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
     nac_segment.tag                             = 'segment_5'
     nac_segment.percent_x_location              = 0.5
     nac_segment.percent_z_location              = 0
-    nac_segment.height                          = 0.4
-    nac_segment.width                           = 0.45
+    nac_segment.height                          = 0.475 
+    nac_segment.width                           = 0.475 
+    nac_segment.curvature                       = 23
     nacelle.append_segment(nac_segment)   
 
     nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
     nac_segment.tag                             = 'segment_6'
     nac_segment.percent_x_location              = 0.75
     nac_segment.percent_z_location              = 0 
-    nac_segment.height                          = 0.35	 
-    nac_segment.width                           = 0.35   
+    nac_segment.height                          = 0.475 
+    nac_segment.width                           = 0.475  
+    nac_segment.curvature                       = 3
     nacelle.append_segment(nac_segment)
 
     nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
     nac_segment.tag                             = 'segment_6'
     nac_segment.percent_x_location              = 0.9
     nac_segment.percent_z_location              = 0
-    nac_segment.height                          = 0.2
-    nac_segment.width                           = 0.25 
+    nac_segment.height                          = 0.4	 
+    nac_segment.width                           = 0.4
+    nac_segment.curvature                       = 3
     nacelle.append_segment(nac_segment)    
 
     nac_segment                                 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
@@ -532,7 +540,7 @@ def vehicle_setup(redesign_rotors = False):
     nac_segment.percent_x_location              = 1.0 
     nac_segment.percent_z_location              = 0 	
     nac_segment.height                          = 0.1
-    nac_segment.width                           = 0.1 
+    nac_segment.width                           = 0.3  
     nacelle.append_segment(nac_segment) 
     propulsor.nacelle                 = nacelle  
             
@@ -613,7 +621,7 @@ def vehicle_setup(redesign_rotors = False):
      
     # append energy network 
     vehicle.append_energy_network(network)     
-
+      
       
     return vehicle      
   

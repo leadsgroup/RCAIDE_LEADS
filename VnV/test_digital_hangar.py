@@ -36,7 +36,6 @@ modules = [
     '../Digital_Hangar/De_Havilland_Canada_DHC_8/DHC8_100.py',
     '../Digital_Hangar/Elysian_E9X/Elysian_E9X_Model.py',
     '../Digital_Hangar/Embraer_E190/Embraer_190.py',
-    '../Digital_Hangar/Hexacopter_EVTOL/Hexacopter.py',
     '../Digital_Hangar/Lockheed_C5a/Lockheed_C5a.py',
     '../Digital_Hangar/Lockheed_F22/Lockheed_F22.py',
     '../Digital_Hangar/Lockheed_F35C/Lockheed_F35C.py',

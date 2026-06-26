@@ -363,8 +363,6 @@ def compute_operating_empty_weight(vehicle,settings = None):
             print('Weight convergence failed!')
             return output 
         
-    print('Converged MTOW = ' + str(round(MTOW)) + ' kg')
-
     return output
 
 

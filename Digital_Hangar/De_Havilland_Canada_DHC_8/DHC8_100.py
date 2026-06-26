@@ -41,7 +41,7 @@ def vehicle_setup():
     airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') + os.sep 
     polar_file_path   =  os.path.join(os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') , 'Polars') + os.sep
     
-    # ------------------------------------------------------------------
+      # ------------------------------------------------------------------
     #   Initialize the Vehicle
     # ------------------------------------------------------------------      
 
@@ -65,7 +65,7 @@ def vehicle_setup():
     vehicle.flight_envelope.design_cruise_altitude = 25000.0*Units.feet 
     vehicle.flight_envelope.design_range           = 1350.0 * Units.nmi
     vehicle.reference_area                         = 395.0 * Units['meters**2']    
-    vehicle.number_of_passengers                             = 37 
+    vehicle.number_of_passengers                   = 37 
     vehicle.systems.control                        = "fully powered" 
     vehicle.systems.accessories                    = "short range" 
     
@@ -145,7 +145,7 @@ def vehicle_setup():
         
     # Wing Segments 
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
-    segment.tag                           = 'Root'
+    segment.tag                           = 'root'
     segment.percent_span_location         = 0.0
     segment.twist                         = 0. * Units.deg
     segment.root_chord_percent            = 1.
@@ -158,7 +158,7 @@ def vehicle_setup():
     wing.append_segment(segment)
 
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
-    segment.tag                           = 'Yehudi'
+    segment.tag                           = 'yehudi'
     segment.percent_span_location         = 0.35
     segment.twist                         = 0.0 * Units.deg
     segment.root_chord_percent            = 1
@@ -171,7 +171,7 @@ def vehicle_setup():
     wing.append_segment(segment)
 
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
-    segment.tag                           = 'Tip'
+    segment.tag                           = 'tip'
     segment.percent_span_location         = 1.
     segment.twist                         = 0 * Units.degrees
     segment.root_chord_percent            = 0.5
@@ -717,8 +717,21 @@ def vehicle_setup():
     # append propulsor to distribution line 
     net.propulsors.append(port_propulsor) 
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to fuel line    
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Fuel Tanks
+    #------------------------------------------------------------------------------------------------------------------------------------
+    inboard_tank                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)
+    inboard_tank.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A()
+    inboard_tank.segments_bounding_tank       = ['root', 'yehudi']
+    fuel_line.fuel_tanks.append(inboard_tank)
+
+    outboard_tank                             = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)
+    outboard_tank.fuel                        = RCAIDE.Library.Attributes.Propellants.Jet_A()
+    outboard_tank.segments_bounding_tank      = ['yehudi', 'tip']
+    fuel_line.fuel_tanks.append(outboard_tank)
+
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Assign propulsors to fuel line
     fuel_line.assigned_propulsors =  [[starboard_propulsor.tag, port_propulsor.tag]]
     
     # Append fuel line to Network      
@@ -726,7 +739,7 @@ def vehicle_setup():
 
     # Append energy network to aircraft 
     vehicle.append_energy_network(net)    
-
+    
     return vehicle
 
 if __name__ == '__main__': 
