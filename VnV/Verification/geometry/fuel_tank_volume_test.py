@@ -143,7 +143,7 @@ def non_conformal_lh2_fuel_tank_volume_test():
 
     print('\n----- Non-Conformal LH2 Fuel Tank Volume Test -----')
 
-    fuel_volume_true = 509.42635029498
+    fuel_volume_true = 612.218299
     vehicle          = BWB_vehicle_setup()
     fuel_line        = vehicle.networks.fuel.fuel_lines.fuel_line
     fuel_line.fuel_tanks.clear()
@@ -162,23 +162,21 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_tank_1.wall_thickness                  = 2*Units.inches
     fuel_line.fuel_tanks.append(fuel_tank_1)
 
-    # ---- Prismatic non-integral tank ----
-    fuel_tank_2                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank()
+    # ---- Cylindrical non-integral tank ----
+    fuel_tank_2                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank()
     fuel_tank_2.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     fuel_tank_2.tag                             = 'H2_Fuel_Tank_2'
-    fuel_tank_2.geometry_type                   = 'prismatic'
-    fuel_tank_2.lengths.external                = 1
-    fuel_tank_2.widths.external                 = 1
-    fuel_tank_2.heights.external                = 1
-    fuel_tank_2.segments_bounding_tank          = ['fuselage_section_3', 'wing_section_2']
-    fuel_tank_2.segments_percent_chord_start    = [0.2 ,0.2]
-    fuel_tank_2.segments_percent_chord_end      = [0.6,0.6]
-    fuel_tank_2.wall_thickness                  = 2*Units.inches
+    fuel_tank_2.design_inlet_temperature        = 20
+    fuel_tank_2.geometry_type                   = 'cylindrical'
+    fuel_tank_2.lengths.external                = 8
+    fuel_tank_2.diameters.external              = 4
     fuel_line.fuel_tanks.append(fuel_tank_2)
-
-    fuel_tank_2a                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank()
+ 
+    # ---- Prismatic non-integral tank ----
+    fuel_tank_2a                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank()
     fuel_tank_2a.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     fuel_tank_2a.tag                             = 'H2_Fuel_Tank_2a'
+    fuel_tank_2a.design_inlet_temperature        = 20
     fuel_tank_2a.geometry_type                   = 'prismatic'
     fuel_tank_2a.lengths.external                = 1
     fuel_tank_2a.widths.external                 = 1
@@ -187,10 +185,11 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_tank_2a.fuel.mass_properties.mass       = 0.1
     fuel_line.fuel_tanks.append(fuel_tank_2a)
 
-    # ---- Wing-mounted cylindrical non-integral tank ----
-    fuel_tank_3                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.wings.main_wing)
+    # ---- Wing-mounted prismatic non-integral tank ----
+    fuel_tank_3                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
     fuel_tank_3.tag                             = 'H2_Fuel_Tank_3'
-    fuel_tank_3.fuel                            = RCAIDE.Library.Attributes.Propellants.Jet_A1()
+    fuel_tank_3.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+    fuel_tank_3.design_inlet_temperature        = 20
     fuel_tank_3.gravimetric_efficiency          = 0.5
     fuel_tank_3.wall_thickness                  = 2*Units.inches
     fuel_tank_3.segments_bounding_tank          = ['fuselage_section_3', 'wing_section_2']
@@ -215,15 +214,16 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_line.fuel_tanks.append(fuel_tank_4)
 
     # ---- Non-integral BWB aft tank ----
-    fuel_tank_4a                               = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.wings.main_wing)
+    fuel_tank_4a                               = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
     fuel_tank_4a.tag                           = 'H2_Fuel_Tank_4a'
     fuel_tank_4a.fuel                          = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+    fuel_tank_4a.design_inlet_temperature      = 20
     fuel_tank_4a.gravimetric_efficiency        = 0.5
     fuel_tank_4a.xz_plane_symmetric            = False
     fuel_tank_4a.orientation_euler_angles      = [0,0,np.pi/2]
-    fuel_tank_4a.transverse_tank                  = True
-    fuel_tank_4a.transverse_tank_chord_bounds    = [0.65,0.9]
-    fuel_tank_4a.transverse_tank_segment_bound        = 'cabin_wall'
+    fuel_tank_4a.transverse_tank               = True
+    fuel_tank_4a.transverse_tank_chord_bounds  = [0.65,0.9]
+    fuel_tank_4a.transverse_tank_segment_bound = 'cabin_wall'
     fuel_tank_4a.radial_offset                 = 0.2
     fuel_line.fuel_tanks.append(fuel_tank_4a)
 
@@ -245,9 +245,10 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_line.fuel_tanks.append(fuel_tank_5)
 
     # ---- Non-integral wing tank with specified mass ----
-    fuel_tank_6                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.wings.main_wing)
+    fuel_tank_6                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
     fuel_tank_6.tag                             = 'H2_Fuel_Tank_6'
     fuel_tank_6.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+    fuel_tank_6.design_inlet_temperature        = 20
     fuel_tank_6.gravimetric_efficiency          = 0.5
     fuel_tank_6.wall_thickness                  = 2*Units.inches
     fuel_tank_6.fuel.mass_properties.mass       = 0.1

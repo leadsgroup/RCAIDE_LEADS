@@ -41,6 +41,8 @@ def vehicle_setup():
     airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') + os.sep 
     polar_file_path   =  os.path.join(os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') , 'Polars') + os.sep  
     
+   
+    
     #------------------------------------------------------------------------------------------------------------------------------------
     # ################################################# Vehicle-level Properties ########################################################  
     #------------------------------------------------------------------------------------------------------------------------------------
@@ -71,34 +73,33 @@ def vehicle_setup():
     vehicle.number_of_passengers                      = 106
     vehicle.systems.control                           = "fully powered"
     vehicle.systems.accessories                       = "medium range"
-
-
+ 
 
     # ################################################# Landing Gear #############################################################   
     # ------------------------------------------------------------------        
     #  Landing Gear
     # ------------------------------------------------------------------  
-    main_gear                   = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
-    main_gear.tire_diameter     = 44.5 *  Units.inches 
-    main_gear.rim_diameter      = 21   *  Units.inches 
-    main_gear.tire_width        = 16.5  *  Units.inches 
-    main_gear.strut_length      = 1.8  * Units.m
-    main_gear.origin            = [[18,5.72/2,-0.5]]  
-    main_gear.wheels            = 4   
+    main_gear                                 = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
+    main_gear.tire_diameter                   = 44.5 *  Units.inches 
+    main_gear.rim_diameter                    = 21   *  Units.inches 
+    main_gear.tire_width                      = 16.5  *  Units.inches 
+    main_gear.strut_length                    = 1.8  * Units.m
+    main_gear.origin                          = [[18,5.72/2,-0.5]]  
+    main_gear.wheels                          = 4   
     main_gear.number_of_gear_types_in_tandem  = 1
-    main_gear.number_of_wheels_in_gear_type  = 2  
-    main_gear.xz_plane_symmetric= True
+    main_gear.number_of_wheels_in_gear_type   = 2  
+    main_gear.xz_plane_symmetric              = True
     vehicle.append_component(main_gear)  
 
-    nose_gear                   = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
-    nose_gear.tire_diameter     = 27    *  Units.inches   
-    nose_gear.rim_diameter      = 15    *  Units.inches 
-    nose_gear.tire_width        = 7.75  *  Units.inches 
-    nose_gear.strut_length      = 1.8   * Units.m  
-    nose_gear.origin            = [[5,0,-0.5]]  
-    nose_gear.wheels            = 2   
+    nose_gear                                 = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
+    nose_gear.tire_diameter                  = 27    *  Units.inches   
+    nose_gear.rim_diameter                    = 15    *  Units.inches 
+    nose_gear.tire_width                      = 7.75  *  Units.inches 
+    nose_gear.strut_length                    = 1.8   * Units.m  
+    nose_gear.origin                          = [[5,0,-0.5]]  
+    nose_gear.wheels                          = 2   
     nose_gear.number_of_gear_types_in_tandem  = 1
-    nose_gear.number_of_wheels_in_gear_type  = 2    
+    nose_gear.number_of_wheels_in_gear_type   = 2    
     vehicle.append_component(nose_gear) 
 
     #------------------------------------------------------------------------------------------------------------------------------------
@@ -533,9 +534,9 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------    
     turbofan                                        = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
     turbofan.tag                                    = 'starboard_propulsor'
-    turbofan.length                                 = 106 *  Units.inches
+    turbofan.length                                 = 127 *  Units.inches
     turbofan.bypass_ratio                           = 5.4
-    turbofan.diameter                               = 43 *  Units.inches
+    turbofan.diameter                               = 52 *  Units.inches
     turbofan.design_altitude                        = 35000.0*Units.ft
     turbofan.design_mach_number                     = 0.78
     turbofan.design_thrust                          = 22500 * Units.N
@@ -547,7 +548,7 @@ def vehicle_setup():
     nacelle.diameter                                = 1.32
     nacelle.length                                  = 2.87
     nacelle.tag                                     = 'nacelle_1'
-    nacelle.inlet_diameter                          = 1.10
+    nacelle.inlet_diameter                          = 1.22
     nacelle.origin                                  = [[12.15,4.38, -2.1]] 
     nacelle.mass_properties.center_of_gravity       = [[nacelle.length /2,0,0 ]]
     nacelle.areas.wetted                            = 1.1*np.pi*nacelle.diameter*nacelle.length

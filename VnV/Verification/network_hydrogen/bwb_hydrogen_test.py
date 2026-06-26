@@ -118,7 +118,7 @@ def base_analysis(vehicle):
 
     # ------------------------------------------------------------------
     #  Weights
-    weights = RCAIDE.Framework.Analyses.Weights.Hydrogen_BWB()                                                  
+    weights = RCAIDE.Framework.Analyses.Weights.Cryogenic_BWB()                                                  
     weights.aircraft_type                                                    = 'BWB'
     weights.settings.FLOPS.fidelity                                          = 'Complex' 
     weights.settings.weight_correction_additions.empty.structural.paint      = 464.6384576160517  

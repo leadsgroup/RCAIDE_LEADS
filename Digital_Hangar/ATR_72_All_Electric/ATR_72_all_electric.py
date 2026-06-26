@@ -39,7 +39,7 @@ def vehicle_setup():
     airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') + os.sep 
     polar_file_path   =  os.path.join(os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') , 'Polars') + os.sep  
     
-    # ------------------------------------------------------------------
+     # ------------------------------------------------------------------
     #   Initialize the Vehicle
     # ------------------------------------------------------------------
 
@@ -111,8 +111,8 @@ def vehicle_setup():
     # ------------------------------------------------------------------      
     landing_battery_gear_pod                                    = RCAIDE.Library.Components.Booms.Boom()
     landing_battery_gear_pod.tag                                = 'landing_gear_battery_pod' 
-    landing_battery_gear_pod.origin                             = [[ 6, 0,  -0.082]]    
-    landing_battery_gear_pod.lengths.total                      = 12 
+    landing_battery_gear_pod.origin                             = [[ 4, 0,  -0.2]]    
+    landing_battery_gear_pod.lengths.total                      = 14
     landing_battery_gear_pod.width                              = 3.5  
     landing_battery_gear_pod.heights.maximum                    = 1.30 
     landing_battery_gear_pod.heights.at_quarter_length          = 1.05    
@@ -569,26 +569,26 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus
     #------------------------------------------------------------------------------------------------------------------------------------  
-    bus                              = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
-    
+    bus                              = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()  
+
     #------------------------------------------------------------------------------------------------------------------------------------           
     # Battery
     #------------------------------------------------------------------------------------------------------------------------------------  
     bat_module                                             = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC()
-    bat_module.origin                                      = [[10, 0,  -0.5]]
-    bat_module.electrical_configuration.series             = 135
-    bat_module.electrical_configuration.parallel           = 250
-    bat_module.cell.nominal_capacity                       = 6
-    bat_module.cell.mass                                   = 0.03 * Units.kg
-    bat_module.geometric_configuration.normal_count       = 224
-    bat_module.geometric_configuration.parallel_count     = 75
-    for _ in range(4):
+    bat_module.electrical_configuration.series             = 20 
+    bat_module.electrical_configuration.parallel           = 420
+    bat_module.cell.nominal_capacity                       = 3.8 
+    bat_module.geometric_configuration.stacking_rows       = 10
+    bat_module.geometric_configuration.normal_count        = 140
+    bat_module.geometric_configuration.parallel_count      = 60
+
+    for i in range(12):
         bat_copy = deepcopy(bat_module)
+        bat_copy.origin   = [[7 + (i * 0.65) , 0, -0.5]]
         bus.battery_modules.append(bat_copy)
 
-    bus.battery_module_electric_configuration = 'Parallel' 
-    bus.initialize_bus_properties()
-
+    bus.battery_module_electric_configuration = 'Series' 
+    bus.initialize_bus_properties() 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Coolant Line
     #------------------------------------------------------------------------------------------------------------------------------------  
@@ -764,7 +764,7 @@ def vehicle_setup():
 
     # append bus   
     net.busses.append(bus)
-    vehicle.append_energy_network(net)  
+    vehicle.append_energy_network(net)   
 
     return vehicle
  

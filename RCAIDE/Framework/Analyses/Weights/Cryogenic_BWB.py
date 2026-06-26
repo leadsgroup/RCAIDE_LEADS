@@ -1,6 +1,7 @@
-# RCAIDE/Framework/Analyses/Weights/Hydrogen_Transport.py
+# RCAIDE/Framework/Analyses/Weights/Cryogenic_BWB.py
 #
 # Created:  Jun 2025, M. Clarke
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
@@ -8,10 +9,10 @@ from RCAIDE.Framework.Core import Data
 from .Weights import Weights
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  Hydrogen Transport Class 
+#  BWB Transport Weights Analysis
 # ----------------------------------------------------------------------------------------------------------------------
-class Hydrogen_Transport(Weights):
-    """ This is class that evaluates the weight of a hydrogen transport class aircraft
+class Cryogenic_BWB(Weights):
+    """ This is class that evaluates the weight of a conventional blended wing body class aircraft
 
     Assumptions:
         None
@@ -50,8 +51,8 @@ class Hydrogen_Transport(Weights):
         """ 
         self.method                                        = 'Semi_Empirical'
         self.propulsion_architecture                       = 'Cryogenic'
-        self.aircraft_type                                 = 'Transport' 
- 
+        self.aircraft_type                                 = 'BWB' 
+        self.settings.PRSEUS                               = True 
         self.settings.advanced_composites                  = False
         self.settings.fuselage_mounted_landing_gear_factor = 1.12 # assumes fuselage mounted landing gear. Change to 1 if False
         self.settings.cargo_doors_number                   = 1 # 0 if no cargo doors, 1 if 1 cargo door, 2 if 2 cargo doors

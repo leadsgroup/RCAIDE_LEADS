@@ -141,7 +141,7 @@ def Transport_Hydrogen_Test(update_regression_values, show_figure):
 
     for method_type in method_types:
         print(f'Testing Transport Aircraft Method: {method_type} | Method: {"Complex"}')        
-        weight_analysis = RCAIDE.Framework.Analyses.Weights.Hydrogen_Transport() 
+        weight_analysis = RCAIDE.Framework.Analyses.Weights.Cryogenic_Transport() 
         for wing in vehicle.wings: 
             wing_planform(wing) 
             if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
@@ -334,7 +334,7 @@ def BWB_Hydrogen_Aircraft_Test(update_regression_values,show_figure):
     for cabin_type in cabin_types:
         for FLOPS_number in [0,1]:
             print(f'Testing Hydrogen Transport Aircraft Method: BWB| Composites: {cabin_type} | Method: {"Simple" if FLOPS_number == 0 else "Complex"}') 
-            weight_analysis          = RCAIDE.Framework.Analyses.Weights.Hydrogen_BWB()
+            weight_analysis          = RCAIDE.Framework.Analyses.Weights.Cryogenic_BWB()
             vehicle  = bwb_setup()
             for propulsor in vehicle.networks.fuel.propulsors:
                 propulsor.combustor.fuel_data =  RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen() 
@@ -365,8 +365,8 @@ def BWB_Hydrogen_Aircraft_Test(update_regression_values,show_figure):
             plot_weight_breakdown(vehicle, show_figure = show_figure) 
 
             if update_regression_values:
-                save_results(weight, os.path.join(os.path.dirname(__file__), f"{cabin_type}_{'Simple' if FLOPS_number == 0 else 'Complex'}_weights_Hydrogen_BWB.res"))
-            old_weight = load_results(os.path.join(os.path.dirname(__file__), f"{cabin_type}_{'Simple' if FLOPS_number == 0 else 'Complex'}_weights_Hydrogen_BWB.res"))
+                save_results(weight, os.path.join(os.path.dirname(__file__), f"{cabin_type}_{'Simple' if FLOPS_number == 0 else 'Complex'}_weights_Cryogenic_BWB.res"))
+            old_weight = load_results(os.path.join(os.path.dirname(__file__), f"{cabin_type}_{'Simple' if FLOPS_number == 0 else 'Complex'}_weights_Cryogenic_BWB.res"))
 
             check_list = [
                 'empty.total',

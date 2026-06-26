@@ -40,7 +40,7 @@ def vehicle_setup():
     polar_file_path   =  os.path.join(os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') , 'Polars') + os.sep  
 
     
-     # ------------------------------------------------------------------
+    # ------------------------------------------------------------------
     #   Initialize the Vehicle
     # ------------------------------------------------------------------      
     vehicle                                           = RCAIDE.Vehicle()    

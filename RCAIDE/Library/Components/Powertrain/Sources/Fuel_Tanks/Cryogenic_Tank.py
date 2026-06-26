@@ -35,7 +35,7 @@ class Cryogenic_Tank(Non_Integral_Tank):
     Attributes
     ----------
     geometry_type : str
-        Tank shape: 'cylindrical' or 'conformal' (default: 'cylindrical').
+        Tank shape: 'cylindrical', 'conformal', or 'prismatic' (default: 'cylindrical').
     design_inlet_temperature : float or None
         Nominal inlet temperature of the cryogen [K] (default: None).
     design_altitude : float
@@ -61,17 +61,51 @@ class Cryogenic_Tank(Non_Integral_Tank):
         self.acceptable_heat_leak           = 20
         self.acceptable_total_heat_leak     = 2000
         self.ullage_volume_fraction         = 0.07
+        self.inner_structure.material       = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+        self.insulation.material            = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
         self.design_external_pressure       = 0
         self.tank_accesories_weight_factor  = 1.5
         self.safety_factor                  = 1.6
         self.pressure_factor                = 5
 
     def compute_volume(self, wings, fuselages, fuel_tanks):
+        """Computes the net fuel volume and cryogenic structure/insulation sizing.
+
+        The method operates in two stages. First, the outer envelope is determined
+        from the wing geometry (or from user-supplied dimensions for standalone
+        tanks). Second, cryogenic-specific sizing works inward from that envelope
+        to compute insulation thickness, structural wall thickness, and the
+        resulting net fuel volume.
+
+        Cylindrical
+        -----------
+        - Wing spanwise:   outer envelope from ``compute_wing_non_integral_tank_volume``
+        - Wing transverse: outer envelope from ``compute_wing_transverse_non_integral_tank_volume``
+        - Standalone:      outer envelope from ``compute_rounded_end_cylindrical_tank_volume``
+                           using user-set ``lengths.external`` and ``diameters.external``
+        - Then:            ``compute_cryogenic_cylindrical_tank_volume`` sizes
+                           insulation and structure inward
+
+        Conformal
+        ---------
+        - Wing spanwise:   outer envelope from ``compute_wing_integral_tank_volume``
+        - Wing transverse: outer envelope from ``compute_wing_transverse_integral_tank_volume``
+        - Then:            ``compute_cryogenic_conformal_tank_volume`` sizes
+                           insulation and structure inward
+
+        Prismatic
+        ---------
+        - Uses user-set ``lengths.external``, ``widths.external``, ``heights.external``
+        - Then: ``compute_cryogenic_conformal_tank_volume`` sizes
+                insulation and structure inward
+        """
         if self.geometry_type == 'cylindrical':
             if self.wing_tag is not None and self.transverse_tank is False:
                 compute_wing_non_integral_tank_volume(self, wings[self.wing_tag], fuel_tanks)
             elif self.wing_tag is not None and self.transverse_tank is True:
                 compute_wing_transverse_non_integral_tank_volume(self, wings[self.wing_tag], fuel_tanks)
+            else:
+                compute_rounded_end_cylindrical_tank_volume(self)
             if hasattr(fuel_tanks, self.tag):
                 compute_cryogenic_cylindrical_tank_volume(self, fuel_tanks)
         elif self.geometry_type == 'conformal':
@@ -81,6 +115,8 @@ class Cryogenic_Tank(Non_Integral_Tank):
                 compute_wing_transverse_integral_tank_volume(self, wings[self.wing_tag], fuel_tanks)
             if hasattr(fuel_tanks, self.tag):
                 compute_cryogenic_conformal_tank_volume(self, fuel_tanks)
+        elif self.geometry_type == 'prismatic':
+            compute_cryogenic_conformal_tank_volume(self, fuel_tanks)
         else:
             raise NotImplementedError
         return

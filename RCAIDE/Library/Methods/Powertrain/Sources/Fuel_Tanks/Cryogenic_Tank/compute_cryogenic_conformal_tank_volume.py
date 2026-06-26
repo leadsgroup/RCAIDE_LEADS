@@ -49,7 +49,7 @@ def compute_cryogenic_conformal_tank_volume(fuel_tank, _):
     #  Unpack constants
     # ------------------------------------------------------------------
     safety_factor = fuel_tank.safety_factor
-    aspect_ratio  = fuel_tank.aspect_ratio
+    aspect_ratio  = fuel_tank.lengths.external / fuel_tank.heights.external
     ullage_frac   = fuel_tank.ullage_volume_fraction
     T_inlet       = fuel_tank.design_inlet_temperature
     Qo_total      = fuel_tank.acceptable_total_heat_leak

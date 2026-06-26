@@ -34,6 +34,10 @@ def main():
     return 
  
 def vehicle_setup():
+    '''This aircrat is a very complex aircraft to model hybrid architectures. It consists of three energy sources:
+    Jet-A stored in the wings in conventional "wet-wing" tanks, and liquid hydrogen stored in a cryogenic tank in the 
+    aft section for the aircraft, and battery energy stored in a battery pack in the landing gear pod. 
+    The aircraft has two turboprop engines, and two electric motors.'''
 
     airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') + os.sep 
     polar_file_path   =  os.path.join(os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') , 'Polars') + os.sep     
@@ -71,7 +75,7 @@ def vehicle_setup():
               
     # basic parameters              
     vehicle.reference_area                            = 61.0  
-    vehicle.number_of_passengers                                = 72
+    vehicle.number_of_passengers                      = 48
     vehicle.systems.control                           = "fully powered"
     vehicle.systems.accessories                       = "short range"
 
@@ -112,8 +116,8 @@ def vehicle_setup():
     # ------------------------------------------------------------------      
     landing_battery_gear_pod                                    = RCAIDE.Library.Components.Booms.Boom()
     landing_battery_gear_pod.tag                                = 'landing_gear_battery_pod' 
-    landing_battery_gear_pod.origin                             = [[ 6, 0,  -0.082]]    
-    landing_battery_gear_pod.lengths.total                      = 12 
+    landing_battery_gear_pod.origin                             = [[ 4, 0,  -0.2]]    
+    landing_battery_gear_pod.lengths.total                      = 14
     landing_battery_gear_pod.width                              = 3.5  
     landing_battery_gear_pod.heights.maximum                    = 1.30 
     landing_battery_gear_pod.heights.at_quarter_length          = 1.05    
@@ -170,8 +174,7 @@ def vehicle_setup():
     landing_battery_gear_pod.append_segment(segment) 
      
     # add to vehicle
-    vehicle.append_component(landing_battery_gear_pod)
-
+    vehicle.append_component(landing_battery_gear_pod) 
 
     
     # ################################################# Wings #############################################################   
@@ -511,6 +514,15 @@ def vehicle_setup():
 
     # Segment  
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment() 
+    segment.tag                                 = 'segment_10b'    
+    segment.percent_x_location                  = 15/fuselage.lengths.total 
+    segment.percent_z_location                  = 0.01860240047935103
+    segment.height                              = 2.755708426
+    segment.width                               = 2.985093814 
+    fuselage.append_segment(segment)   
+
+    # Segment  
+    segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment() 
     segment.tag                                 = 'segment_11'    
     segment.percent_x_location                  = 17.01420312/fuselage.lengths.total 
     segment.percent_z_location                  = 0.01860240047935103
@@ -548,10 +560,10 @@ def vehicle_setup():
     # define cabin    
     cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
     cabin.origin                                      = [[2,0,0]] 
-    cabin.segments_bounding_cabin                     = ['segment_9','segment_13'] 
+    cabin.segments_bounding_cabin                     = ['segment_9','segment_10b'] 
     economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
     economy_class.number_of_seats_abrest              = 4
-    economy_class.number_of_rows                      = 18
+    economy_class.number_of_rows                      = 12
     economy_class.galley_lavatory_percent_x_locations = [0, 9]  
     economy_class.emergency_exit_percent_x_locations  = []      
     economy_class.type_A_exit_percent_x_locations     = [0.01,1] 
@@ -569,24 +581,26 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus
     #------------------------------------------------------------------------------------------------------------------------------------  
-    bus                                        = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
-
+    bus                                         = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
+    
     #------------------------------------------------------------------------------------------------------------------------------------           
     # Battery
     #------------------------------------------------------------------------------------------------------------------------------------  
     bat_module                                             = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC()
-    bat_module.origin                                      = [[10, 0,  -0.5]]
     bat_module.electrical_configuration.series             = 20 
-    bat_module.electrical_configuration.parallel           = 210 *  4 
+    bat_module.electrical_configuration.parallel           = 420
     bat_module.cell.nominal_capacity                       = 3.8 
-    bat_module.geometric_configuration.normal_count       = 100 *  4 
-    bat_module.geometric_configuration.parallel_count     = 42
+    bat_module.geometric_configuration.stacking_rows       = 10
+    bat_module.geometric_configuration.normal_count        = 140
+    bat_module.geometric_configuration.parallel_count      = 60
 
-    for _ in range(12):
+    for i in range(12):
         bat_copy = deepcopy(bat_module)
+        bat_copy.origin   = [[7 + (i * 0.65) , 0, -0.5]]
         bus.battery_modules.append(bat_copy)
 
     bus.battery_module_electric_configuration = 'Series' 
+    bus.initialize_bus_properties() 
     
 
     #------------------------------------------------------------------------------------------------------------------------------------           
@@ -616,7 +630,36 @@ def vehicle_setup():
     # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
     fuel_line                                       = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
-  
+    fuel_line.pipe.rigid_material                  = RCAIDE.Library.Attributes.Materials.Aluminum()
+    fuel_line.pipe.flexible_material               = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304()
+    fuel_line.pipe.flexible_material_ratio         = 0.25
+    fuel_line.pipe.diameters                       = Data()
+    fuel_line.pipe.diameters.external              = 0.625 *  Units.inches 
+    fuel_line.pipe.diameters.internal              = 0.625 *  Units.inches -  (2 * 0.035)*  Units.inches
+    fuel_line.insulation                           = Data()
+    fuel_line.insulation.rigid_material            = RCAIDE.Library.Attributes.Materials.Aluminum() 
+    fuel_line.insulation.flexible_material         = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304() 
+    fuel_line.insulation.flexible_material_ratio   = 0.25
+    fuel_line.insulation.diameters                 = Data()
+    fuel_line.insulation.diameters.external        = 0.0
+    fuel_line.insulation.diameters.internal        = 0.0
+
+    cryo_fuel_line                                  = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    cryo_fuel_line.pipe.rigid_material                  = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304()
+    cryo_fuel_line.pipe.flexible_material               = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304() 
+    cryo_fuel_line.venting_system_length                = vehicle.wings.main_wing.chords.root/2 # Length of venting system
+    cryo_fuel_line.pipe.flexible_material_ratio         = 0.25
+    cryo_fuel_line.pipe.diameters                       = Data()
+    cryo_fuel_line.pipe.diameters.external              = 3.5 *  Units.inches 
+    cryo_fuel_line.pipe.diameters.internal              = 3.5 *  Units.inches -  (2 * 0.083)*  Units.inches
+    cryo_fuel_line.insulation                           = Data()
+    cryo_fuel_line.insulation.rigid_material            = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304() 
+    cryo_fuel_line.insulation.flexible_material         = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304() 
+    cryo_fuel_line.insulation.flexible_material_ratio   = 0.25
+    cryo_fuel_line.insulation.diameters                 = Data()
+    cryo_fuel_line.insulation.diameters.external        = 5.563 *  Units.inches 
+    cryo_fuel_line.insulation.diameters.internal        = 5.563 *  Units.inches -  (2 * 0.109)*  Units.inches
+
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------    
@@ -632,10 +675,10 @@ def vehicle_setup():
     #Propeller Design              
     propeller                                        = RCAIDE.Library.Components.Powertrain.Converters.Propeller()   
     propeller.tag                                    = 'starboard_propulsor_propeller' 
-    propeller.origin                                 = [[9.1,4.219315295, 1.616135105 ]]
+    propeller.origin                                 = [[9.559106394,4.219315295, 1.616135105 ]]
     propeller.active                                 = True          
     propeller.tip_radius                             = 2.8/2
-    propeller.hub_radius                             = 0.1 
+    propeller.hub_radius                             = 0.3 
     propeller.number_of_blades                       = 3   
     propeller.design_efficiency                      = 0.83      
     propeller.design_angular_velocity                = 3000.0 * Units.rpm        
@@ -807,11 +850,20 @@ def vehicle_setup():
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Crogenic Tank
-    #------------------------------------------------------------------------------------------------------------------------------------       
-    cryogenic_tank_1 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.fuselages.fuselage)    
-    cryogenic_tank_1.fuel_flow_split_ratio  = 0.5 
-    cryogenic_tank_1.fuel                 = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen() 
-    bus.fuel_tanks.append(cryogenic_tank_1)
+    #------------------------------------------------------------------------------------------------------------------------------------        
+
+    # ---- LH2 wing tank (non-conformal) ----
+    cryogenic_tank_1                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank() 
+    cryogenic_tank_1.origin                          = [[15.5,0,0.75]] 
+    cryogenic_tank_1.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+    cryogenic_tank_1.tag                             = 'H2_Fuel_Tank'
+    cryogenic_tank_1.design_inlet_temperature        = 20
+    cryogenic_tank_1.geometry_type                   = 'cylindrical'
+    cryogenic_tank_1.inner_structure.material        = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    cryogenic_tank_1.insulation.material             = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
+    cryogenic_tank_1.lengths.external                = 4
+    cryogenic_tank_1.diameters.external              = 2
+    cryo_fuel_line.fuel_tanks.append(cryogenic_tank_1)
      
     #------------------------------------------------------------------------------------------------------------------------- 
     # Energy Source: Fuel Tank
@@ -834,6 +886,7 @@ def vehicle_setup():
     # Append fuel line and bus  
     net.fuel_lines.append(fuel_line)  
     net.busses.append(bus)  
+    net.fuel_lines.append(cryo_fuel_line)
 
     # Append energy network to aircraft 
     vehicle.append_energy_network(net)     
