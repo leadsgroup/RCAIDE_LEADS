@@ -103,7 +103,8 @@ class Electrical_Bus(Component):
         self.voltage                                = 0.0 
         self.power_split_ratio                      = 1.0
         self.nominal_capacity                       = 0.0
-        self.charging_c_rate                        = 1.0 
+        self.maximum_energy                         = 0.0
+        self.charging_c_rate                        = 1.0
         self.battery_module_electric_configuration  = "Series"
         self.fuel_cell_stack_electric_configuration = "Series"
         

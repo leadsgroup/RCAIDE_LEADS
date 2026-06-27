@@ -5,6 +5,8 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units    
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor   import design_electric_rotor  
+from RCAIDE.Library.Methods.Thermal_Management.Heat_Exchangers.Cross_Flow_Heat_Exchanger  import design_cross_flow_heat_exchanger
+from RCAIDE.Library.Methods.Thermal_Management.Batteries.Liquid_Cooled_Wavy_Channel       import design_wavy_channel
 from RCAIDE.Library.Plots                 import *       
 
 # python imports  

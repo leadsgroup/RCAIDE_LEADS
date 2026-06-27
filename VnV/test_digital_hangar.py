@@ -18,7 +18,7 @@ import sys, traceback, time
 modules = [
     '../Digital_Hangar/ATR_72/ATR_72.py',
     '../Digital_Hangar/ATR_72_All_Electric/ATR_72_all_electric.py',
-    '../Digital_Hangar/ATR_72_Parallel_Hybrid/ATR_72_parallel_hybrid_electric.py',
+    '../Digital_Hangar/ATR_72_Parallel_Hybrid/ATR_72_cryo_parallel_hybrid_electric.py',
     '../Digital_Hangar/Airbus_A220/Airbus_A220_100.py',
     '../Digital_Hangar/Airbus_A320/Airbus_A320.py',
     '../Digital_Hangar/Airbus_Vahana/Vahana.py',
