@@ -859,8 +859,12 @@ def vehicle_setup():
     cryogenic_tank_1.origin                          = [[15.5,0,0.75]] 
     cryogenic_tank_1.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     cryogenic_tank_1.tag                             = 'H2_Fuel_Tank'
-    cryogenic_tank_1.design_inlet_temperature        = 20
-    cryogenic_tank_1.geometry_type                   = 'cylindrical'
+    cryogenic_tank_1.design_inlet_temperature         = 20
+    cryogenic_tank_1.design_altitude                  = 30000 * Units.ft
+    cryogenic_tank_1.design_heat_flux                 = 20
+    cryogenic_tank_1.design_total_heat_transfer       = 2000
+    cryogenic_tank_1.ullage_volume_fraction            = 0.07
+    cryogenic_tank_1.geometry_type                    = 'cylindrical'
     cryogenic_tank_1.inner_structure.material        = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
     cryogenic_tank_1.insulation.material             = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     cryogenic_tank_1.lengths.external                = 4

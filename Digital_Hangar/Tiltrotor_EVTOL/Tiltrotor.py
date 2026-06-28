@@ -129,13 +129,13 @@ def vehicle_setup(redesign_rotors = False):
     segment.dihedral_outboard                 = 0.  * Units.degrees
     segment.sweeps.quarter_chord              = 0. * Units.degrees  
     airfoil                                   = RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil()
-    airfoil.NACA_4_Series_code                = '2312'       
+    airfoil.NACA_4_Series_code                = '2312'
     segment.append_airfoil(airfoil)
-    wing.append_segment(segment)                           
-                                              
-    # Segment                                               
+    wing.append_segment(segment)
+
+    # Segment
     segment                                   = RCAIDE.Library.Components.Wings.Segments.Segment()
-    segment.tag                               = 'mid_section'    
+    segment.tag                               = 'mid_section'
     segment.percent_span_location             = 0.4875
     segment.root_chord_percent                = 0.6496
     segment.twist                             = 0. * Units.degrees
