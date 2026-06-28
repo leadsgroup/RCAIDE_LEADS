@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 # RCAIDE imports 
 import RCAIDE
-from RCAIDE.Framework.Core import Units   
+from RCAIDE.Framework.Core import Units, Data
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan    import design_turbofan 
 from RCAIDE.Library.Plots                 import *       
 
@@ -75,8 +75,25 @@ def vehicle_setup():
     vehicle.systems.accessories                       = "medium range"
  
 
-    # ################################################# Landing Gear #############################################################   
-    # ------------------------------------------------------------------        
+    # ------------------------------------------------------------------
+    # Cargo Bays
+    # ------------------------------------------------------------------
+    forward_cargo_bay = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
+    forward_cargo_bay.origin                      = [[6.82, 0, -0.5]]
+    forward_cargo_bay.length                      = 7.82
+    forward_cargo_bay.width                       = 1.57
+    forward_cargo_bay.height                      = 0.88
+    vehicle.cargo_bays.append(forward_cargo_bay)
+
+    aft_cargo_bay  = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
+    aft_cargo_bay.origin                      = [[23.43, 0, -0.5]]
+    aft_cargo_bay.length                      =  5.5
+    aft_cargo_bay.width                       =  1.57
+    aft_cargo_bay.height                      =  0.88
+    vehicle.cargo_bays.append(aft_cargo_bay)
+
+    # ################################################# Landing Gear #############################################################
+    # ------------------------------------------------------------------
     #  Landing Gear
     # ------------------------------------------------------------------  
     main_gear                                 = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
@@ -124,7 +141,7 @@ def vehicle_setup():
     wing.xz_plane_symmetric      = True       
     wing.areas.exposed           = 0.80 * wing.areas.wetted        
     wing.twists.root             = 2.0 * Units.degrees
-    wing.twists.tip              = 0.0 * Units.degrees    
+    wing.twists.tip              = -1.0 * Units.degrees    
     wing.dynamic_pressure_ratio  = 1.0
      
     segment = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -133,7 +150,8 @@ def vehicle_setup():
     segment.root_chord_percent            = 1.
     segment.thickness_to_chord            = .11
     segment.dihedral_outboard             = 5. * Units.degrees
-    segment.sweeps.quarter_chord          = 20.6 * Units.degrees  
+    segment.sweeps.quarter_chord          = 20.6 * Units.degrees
+    segment.twist                         = wing.twists.root  -  (wing.twists.root - wing.twists.tip) * segment.percent_span_location
     root_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
     root_airfoil.coordinate_file          = airfoil_file_path +  'transonic_wing_root_section_airfoil.txt'
     segment.append_airfoil(root_airfoil)
@@ -144,7 +162,8 @@ def vehicle_setup():
     segment.percent_span_location         = 0.348
     segment.root_chord_percent            = 0.60 
     segment.dihedral_outboard             = 4 * Units.degrees
-    segment.sweeps.quarter_chord          = 24.1 * Units.degrees 
+    segment.sweeps.quarter_chord          = 24.1 * Units.degrees
+    segment.twist                         = wing.twists.root  -  (wing.twists.root - wing.twists.tip) * segment.percent_span_location
     yehudi_airfoil                        = RCAIDE.Library.Components.Airfoils.Airfoil()
     yehudi_airfoil.coordinate_file        = airfoil_file_path + 'transonic_wing_inboard_section_airfoil.txt'
     segment.append_airfoil(yehudi_airfoil)
@@ -153,9 +172,10 @@ def vehicle_setup():
     segment = RCAIDE.Library.Components.Wings.Segments.Segment()
     segment.tag                          = 'section_2'
     segment.percent_span_location        = 0.961
-    segment.root_chord_percent           = 0.25 
+    segment.root_chord_percent           = 0.25
+    segment.twist                        = wing.twists.root  -  (wing.twists.root - wing.twists.tip) * segment.percent_span_location
     segment.dihedral_outboard            = 70. * Units.degrees
-    segment.sweeps.quarter_chord         = 40. * Units.degrees 
+    segment.sweeps.quarter_chord         = 40. * Units.degrees
     mid_airfoil                          = RCAIDE.Library.Components.Airfoils.Airfoil()
     mid_airfoil.coordinate_file          = airfoil_file_path + 'transonic_wing_outboard_section_airfoil.txt'
     segment.append_airfoil(mid_airfoil)
@@ -164,9 +184,10 @@ def vehicle_setup():
     segment = RCAIDE.Library.Components.Wings.Segments.Segment() 
     segment.tag                          = 'Tip'
     segment.percent_span_location        = 1.
-    segment.root_chord_percent           = 0.070 
+    segment.root_chord_percent           = 0.070
     segment.dihedral_outboard            = 0.
-    segment.sweeps.quarter_chord         = 0.  
+    segment.twist                        = wing.twists.root  -  (wing.twists.root - wing.twists.tip) * segment.percent_span_location
+    segment.sweeps.quarter_chord         = 0.
     tip_airfoil                          =  RCAIDE.Library.Components.Airfoils.Airfoil()
     tip_airfoil.coordinate_file          = airfoil_file_path + 'transonic_wing_tip_section_airfoil.txt'
     segment.append_airfoil(tip_airfoil)
@@ -188,7 +209,7 @@ def vehicle_setup():
     flap.deflection               = 0.0 * Units.degrees
     flap.configuration_type       = 'double_slotted'
     flap.chord_fraction           = 0.14
-    #wing.append_control_surface(flap)
+    wing.append_control_surface(flap)
 
     aileron                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Aileron()
     aileron.tag                   = 'aileron'
@@ -196,7 +217,7 @@ def vehicle_setup():
     aileron.span_fraction_end     = 0.963
     aileron.deflection            = 0.0 * Units.degrees
     aileron.chord_fraction        = 0.25
-    #wing.append_control_surface(aileron)
+    wing.append_control_surface(aileron)
         
     spoiler                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Spoiler()
     spoiler.tag                   = 'spoiler'
@@ -240,7 +261,7 @@ def vehicle_setup():
     elevator.span_fraction_end     = 0.92
     elevator.deflection            = 0.0  * Units.deg
     elevator.chord_fraction        = 0.3
-    #wing.append_control_surface(elevator)
+    wing.append_control_surface(elevator)
     
     # add to vehicle
     vehicle.append_component(wing)     
@@ -275,7 +296,7 @@ def vehicle_setup():
     rudder.span_fraction_end     = 0.92
     rudder.deflection            = 0.0  * Units.deg
     rudder.chord_fraction        = 0.3
-    #wing.append_control_surface(rudder)    
+    wing.append_control_surface(rudder)    
     
     
     # add to vehicle
@@ -499,7 +520,20 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------
     # Fuel Distribution Line
     #------------------------------------------------------------------------------------------------------------------------------------
-    fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    fuel_line                                      = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    fuel_line.pipe.rigid_material                  = RCAIDE.Library.Attributes.Materials.Aluminum()
+    fuel_line.pipe.flexible_material               = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304()
+    fuel_line.pipe.flexible_material_ratio         = 0.25
+    fuel_line.pipe.diameters                       = Data()
+    fuel_line.pipe.diameters.external              = 0.625 *  Units.inches
+    fuel_line.pipe.diameters.internal              = 0.625 *  Units.inches -  (2 * 0.035)*  Units.inches
+    fuel_line.insulation                           = Data()
+    fuel_line.insulation.rigid_material            = RCAIDE.Library.Attributes.Materials.Aluminum()
+    fuel_line.insulation.flexible_material         = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304()
+    fuel_line.insulation.flexible_material_ratio   = 0.25
+    fuel_line.insulation.diameters                 = Data()
+    fuel_line.insulation.diameters.external        = 0.0
+    fuel_line.insulation.diameters.internal        = 0.0
     
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Fuel Tank & Fuel
@@ -508,21 +542,21 @@ def vehicle_setup():
     inboard_tank.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A()
     inboard_tank.segments_bounding_tank       = ['root','yehudi']  
     inboard_tank.segments_percent_chord_start = [0.15  ,0.15 ]
-    inboard_tank.segments_percent_chord_end   = [0.625 ,0.625]  
+    inboard_tank.segments_percent_chord_end   = [0.65 , 0.65]  
     fuel_line.fuel_tanks.append(inboard_tank)
     
     outboard_tank                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)  
     outboard_tank.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A()
     outboard_tank.segments_bounding_tank       = ['yehudi', 'section_2']  
     outboard_tank.segments_percent_chord_start = [0.15 ,0.15 ]
-    outboard_tank.segments_percent_chord_end   = [0.625,0.625]  
+    outboard_tank.segments_percent_chord_end   = [0.65,0.65]  
     fuel_line.fuel_tanks.append(outboard_tank)    
 
     fuel_tank                                   = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank()  
-    fuel_tank.lengths.external                      = 2 
-    fuel_tank.widths.external                       = 2
+    fuel_tank.lengths.external                  = 2 
+    fuel_tank.widths.external                   = 2
     fuel_tank.geometry_type                     = 'prismatic'   
-    fuel_tank.heights.external                      = 0.5
+    fuel_tank.heights.external                  = 0.75
     fuel_tank.origin                            = [[15.0,0.0, 0.0]]
     fuel_tank.fuel                              = RCAIDE.Library.Attributes.Propellants.Jet_A()
     fuel_tank.fuel.origin                       = [[15.0,0.0, 0.0]]

@@ -223,6 +223,10 @@ def bwb_aircraft_geometry_test(show_figure):
     fuel_tank_1.tag                                    = 'H2_Fuel_Tank_1'
     fuel_tank_1.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     fuel_tank_1.design_inlet_temperature               = 20
+    fuel_tank_1.design_altitude                        = 30000 * Units.ft
+    fuel_tank_1.design_heat_flux                       = 20
+    fuel_tank_1.design_total_heat_transfer             = 2000
+    fuel_tank_1.ullage_volume_fraction                 = 0.07
     fuel_tank_1.inner_structure.material               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
     fuel_tank_1.insulation.material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Jacketed_Multilayer_Insulation()
     fuel_tank_1.gravimetric_efficiency                 = 0.5
@@ -243,6 +247,10 @@ def bwb_aircraft_geometry_test(show_figure):
         fuel_tank_4.tag                           = 'H2_Fuel_Tank_4'
         fuel_tank_4.fuel                          = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
         fuel_tank_4.design_inlet_temperature      = 20
+        fuel_tank_4.design_altitude                        = 30000 * Units.ft
+        fuel_tank_4.design_heat_flux                       = 20
+        fuel_tank_4.design_total_heat_transfer             = 2000
+        fuel_tank_4.ullage_volume_fraction                 = 0.07
         fuel_tank_4.inner_structure.material      = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
         fuel_tank_4.insulation.material           = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
         fuel_tank_4.gravimetric_efficiency        = 0.5
@@ -260,6 +268,10 @@ def bwb_aircraft_geometry_test(show_figure):
         fuel_tank.geometry_type           = 'conformal'
         fuel_tank.fuel                    = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
         fuel_tank.design_inlet_temperature = 20
+        fuel_tank.design_altitude                        = 30000 * Units.ft
+        fuel_tank.design_heat_flux                       = 20
+        fuel_tank.design_total_heat_transfer             = 2000
+        fuel_tank.ullage_volume_fraction                 = 0.07
         fuel_tank.inner_structure.material = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
         fuel_tank.insulation.material     = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
         fuel_tank.segments_bounding_tank    = ['fuel_wall', 'wing_section_1']  
@@ -272,6 +284,10 @@ def bwb_aircraft_geometry_test(show_figure):
         fuel_tank_2.geometry_type                          = 'conformal'
         fuel_tank_2.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
         fuel_tank_2.design_inlet_temperature               = 20
+        fuel_tank_2.design_altitude                        = 30000 * Units.ft
+        fuel_tank_2.design_heat_flux                       = 20
+        fuel_tank_2.design_total_heat_transfer             = 2000
+        fuel_tank_2.ullage_volume_fraction                 = 0.07
         fuel_tank_2.inner_structure.material               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
         fuel_tank_2.insulation.material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
         fuel_tank_2.xz_plane_symmetric                     = False

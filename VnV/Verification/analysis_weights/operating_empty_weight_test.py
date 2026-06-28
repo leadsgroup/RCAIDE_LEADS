@@ -343,6 +343,10 @@ def BWB_Hydrogen_Aircraft_Test(update_regression_values,show_figure):
                 fuel_tank                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
                 fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
                 fuel_tank.design_inlet_temperature               = 20
+                fuel_tank.design_altitude                        = 30000 * Units.ft
+                fuel_tank.design_heat_flux                       = 20
+                fuel_tank.design_total_heat_transfer             = 2000
+                fuel_tank.ullage_volume_fraction                 = 0.07
                 fuel_tank.gravimetric_efficiency                  = 0.5
                 fuel_tank.inner_structure.material                = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
                 fuel_tank.insulation.material                     = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()

@@ -46,7 +46,7 @@ def main():
     
     landing_field_length = estimate_landing_field_length( analyses = analyses.landing) 
     
-    truth_LFL =  1318.7485241006284
+    truth_LFL =  1311.3553189707457
     print('Weight (kg): ', vehicle.mass_properties.landing)
     print('Landing Field Length (m): ',landing_field_length) 
     LFL_error = np.max(np.abs(landing_field_length-truth_LFL))

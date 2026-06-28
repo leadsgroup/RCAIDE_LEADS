@@ -40,9 +40,9 @@ class Cryogenic_Tank(Non_Integral_Tank):
         Nominal inlet temperature of the cryogen [K] (default: None).
     design_altitude : float
         Design altitude for thermal/structural sizing [m].
-    acceptable_heat_leak : float
+    design_heat_flux : float
         Maximum allowable heat leak per unit area [W/m²] (default: 20).
-    acceptable_total_heat_leak : float
+    design_total_heat_transfer : float
         Maximum allowable total heat leak [W] (default: 2000).
     ullage_volume_fraction : float
         Fraction of internal volume reserved for ullage (default: 0.07).
@@ -56,11 +56,11 @@ class Cryogenic_Tank(Non_Integral_Tank):
         self.tag                            = 'cryogenic_tank'
         self.geometry_type                  = 'cylindrical'
         self.design_inlet_temperature       = None
-        self.design_altitude                = 30000 * Units.ft
+        self.design_altitude                = None
         self.design_isa_deviation           = 0
-        self.acceptable_heat_leak           = 20
-        self.acceptable_total_heat_leak     = 2000
-        self.ullage_volume_fraction         = 0.07
+        self.design_heat_flux               = None
+        self.design_total_heat_transfer     = None
+        self.ullage_volume_fraction         = None
         self.inner_structure.material       = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
         self.insulation.material            = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
         self.design_external_pressure       = 0
