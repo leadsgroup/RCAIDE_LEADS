@@ -93,6 +93,14 @@ def build_surrogate(aerodynamics, training, vehicle):
     surrogates.CN_alpha           = RegularGridInterpolator((AoA_data ,mach_data),training.CN_alpha           ,method = 'linear',   bounds_error=False, fill_value=None)  
     surrogates.Clift_spanwise     = RegularGridInterpolator((AoA_data, mach_data),training.Clift_spanwise      ,method='linear',    bounds_error=False, fill_value=None)      
 
+    # Wing-to-rotor coupling: gamma surrogate and VD geometry
+    if hasattr(training, 'gamma_alpha'):
+        surrogates.gamma_alpha    = RegularGridInterpolator((AoA_data, mach_data),training.gamma_alpha     ,method='linear', bounds_error=False, fill_value=None)
+        surrogates.VD             = training.VD
+    else:
+        surrogates.gamma_alpha = None
+        surrogates.VD          = None
+
     surrogates.Clift_beta         = RegularGridInterpolator((Beta_data ,mach_data),training.Clift_beta        ,method = 'linear',   bounds_error=False, fill_value=None)   
     surrogates.Cdrag_induced_beta = RegularGridInterpolator((Beta_data ,mach_data),training.Cdrag_induced_beta,method = 'linear',   bounds_error=False, fill_value=None)    
     surrogates.CX_beta            = RegularGridInterpolator((Beta_data ,mach_data),training.CX_beta           ,method = 'linear',   bounds_error=False, fill_value=None)    
@@ -186,6 +194,8 @@ def no_surrogate(aerodynamics, training, vehicle):
     surrogates.CN_alpha               = None    
     surrogates.CN_beta                = None    
     surrogates.CM_0                   = None  
+    surrogates.gamma_alpha            = None
+    surrogates.VD                     = None
     
     surrogates.dClift_dalpha          = None      
     surrogates.dCX_dalpha             = None      

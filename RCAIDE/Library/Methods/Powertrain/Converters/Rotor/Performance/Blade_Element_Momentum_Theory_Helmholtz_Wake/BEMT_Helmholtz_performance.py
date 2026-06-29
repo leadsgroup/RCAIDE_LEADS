@@ -9,9 +9,22 @@
 import RCAIDE
 from RCAIDE.Framework.Core                              import Data , Units, orientation_product, orientation_transpose  
 from RCAIDE.Library.Methods.Aerodynamics.Common.Lift    import compute_airfoil_aerodynamics,compute_inflow_and_tip_loss 
-
-# package imports
-import  numpy as  np 
+ # VORLAX imports
+from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.compute_wing_induced_velocity import compute_wing_induced_velocity
+import numpy as  np 
+import copy 
+import hashlib
+# ----------------------------------------------------------------------------------------------------------------------
+#  Helper: cache key for wing influence coefficients
+# ----------------------------------------------------------------------------------------------------------------------
+def _wing_influence_key(rotor, VD, ctrl_pts, Nr, Na):
+    h = hashlib.md5()
+    h.update(np.array(rotor.origin).tobytes())
+    h.update(np.array(rotor.orientation_euler_angles).tobytes())
+    h.update(VD.XAH.tobytes())
+    h.update(VD.YAH.tobytes())
+    h.update(np.array([ctrl_pts, Nr, Na]).tobytes())
+    return h.hexdigest()
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  BEMT_Helmholtz_performance
 # ----------------------------------------------------------------------------------------------------------------------  
@@ -168,6 +181,7 @@ def BEMT_Helmholtz_performance(rotor, conditions):
     Na                    = rotor.number_azimuthal_stations
     nonuniform_freestream = rotor.nonuniform_freestream
     use_2d_analysis       = rotor.use_2d_analysis
+    wing_to_rotor         = rotor.wing_to_rotor
  
     # Unpack freestream conditions
     rho     = conditions.freestream.density[:,0,None]
@@ -177,6 +191,8 @@ def BEMT_Helmholtz_performance(rotor, conditions):
     Vv      = conditions.frames.inertial.velocity_vector
     nu      = mu/rho
     rho_0   = rho 
+    aoa             = conditions.aerodynamics.angles.alpha 
+    V_distribution  =  np.ones_like(aoa) * conditions.freestream.velocity
 
     # Number of radial stations and segment control points
     Nr       = len(c)
@@ -253,7 +269,7 @@ def BEMT_Helmholtz_performance(rotor, conditions):
         utz =  -Vz*np.sin(psi_2d)
         urz =   Vz*np.cos(psi_2d)
         uty =  -Vy*np.cos(psi_2d)
-        ury =   Vy*np.sin(psi_2d)
+        ury =  -Vy*np.sin(psi_2d)
 
         ut +=  (utz + uty)  # tangential velocity in direction of rotor rotation
         ur +=  (urz + ury)  # radial velocity (positive toward tip)
@@ -310,7 +326,79 @@ def BEMT_Helmholtz_performance(rotor, conditions):
     # Total velocities
     Ut     = omegar - ut
     U      = np.sqrt(Ua*Ua + Ut*Ut + ur*ur)
+    if wing_to_rotor and 'VD' in conditions.aerodynamics: # after first iteration
+            
+            mach       = conditions.freestream.mach_number
+            VD         = conditions.aerodynamics.VD
+            Gamma_wing = conditions.aerodynamics.gamma * (V_distribution)
 
+            if use_2d_analysis:
+
+                cache_key = _wing_influence_key(rotor, VD, ctrl_pts, Nr, Na)
+
+                if not hasattr(rotor, '_wing_influence') or rotor._wing_influence.key != cache_key:
+                    # 1. Define local upright disk nodes relative to the hub center (0,0,0)
+                    y_h = -r_dim_2d * np.sin(psi_2d)
+                    z_h =  r_dim_2d * np.cos(psi_2d)
+                    disk_points_local_hub = np.stack((np.zeros_like(y_h), y_h, z_h), axis=-1)
+
+                    # 2. Extract the inverse/transpose rotation matrix to go from Thrust -> Body
+                    # Shape: (ctrl_pts, 3, 3)
+                    T_thrust2body = orientation_transpose(T_body2thrust)
+
+                    # 3. Transform local axes to line up with true Body Axes directions
+                    # T_thrust2body is (c, i, j) and disk_points_local_hub is (c, r, a, j)
+                    disk_points_body_directions = np.einsum('cij, craj -> crai', T_thrust2body, disk_points_local_hub)
+
+                    # 4. Translate the disk to its true home on the aircraft using the body-frame hub_origin
+                    # Shape: (1, 1, 1, 3) cleanly broadcasts across all radial and azimuthal points
+                    hub_origin_body = np.array(rotor.origin[0]).reshape(1, 1, 1, 3)
+                    disk_points_in_body_frame = disk_points_body_directions + hub_origin_body
+                    
+                    # Extract the dimensions
+                    n_panels = VD.XAH.shape[1]
+
+                    n_nodes = Nr * Na  
+                    disk_points_flat = disk_points_in_body_frame.reshape(ctrl_pts, n_nodes, 3)
+                    VD_copy = copy.copy(VD)  # Create a copy of VD to avoid modifying the original
+                    # modifying the control points in the VD
+                    VD_copy.XC = disk_points_flat[:, :, 0]
+                    VD_copy.YC = disk_points_flat[:, :, 1]
+                    VD_copy.ZC = disk_points_flat[:, :, 2]
+                    # Build induced velocity matrix, C_mn  
+                    vel_ind_W2R_body_frame, _, _, _ = compute_wing_induced_velocity(VD_copy,mach,compute_EW=False)
+
+                    # reshape to (ctrl_pts, Nr, Na, n_panels, 3) for easier downstream use
+                    vel_ind_W2R_body_frame = vel_ind_W2R_body_frame.reshape(ctrl_pts, Nr, Na, n_panels, 3)
+                    
+                    # 5. Transform induced velocity from body frame to rotor frame
+                    vel_ind_W2R_thrust_frame = np.einsum('cij, cranj -> crani', T_body2thrust, vel_ind_W2R_body_frame)
+
+                    # compute resulting radial and tangential velocities in polar frame
+                    utz = -vel_ind_W2R_thrust_frame[:, :, :, :, 2] * np.sin(psi_2d[:, :, :, None])
+                    urz =  vel_ind_W2R_thrust_frame[:, :, :, :, 2] * np.cos(psi_2d[:, :, :, None])
+                    uty = -vel_ind_W2R_thrust_frame[:, :, :, :, 1] * np.cos(psi_2d[:, :, :, None])
+                    ury = -vel_ind_W2R_thrust_frame[:, :, :, :, 1] * np.sin(psi_2d[:, :, :, None])
+
+                    rotor._wing_influence         = Data()
+                    rotor._wing_influence.key     = cache_key
+                    rotor._wing_influence.u_tang  = utz + uty
+                    rotor._wing_influence.u_rad   = urz + ury
+                    rotor._wing_influence.u_axial = vel_ind_W2R_thrust_frame[:, :, :, :, 0]
+
+                u_tang  = rotor._wing_influence.u_tang
+                u_rad   = rotor._wing_influence.u_rad
+                u_axial = rotor._wing_influence.u_axial
+
+                # dot with Gamma_wing to get actual induced velocity at each node
+                u_a_induced = np.einsum('nrap,np->nra', u_axial, Gamma_wing) # (ctrl_pts, Nr, Na)
+                u_t_induced = np.einsum('nrap,np->nra', u_tang , Gamma_wing) # (ctrl_pts, Nr, Na)
+                u_r_induced = np.einsum('nrap,np->nra', u_rad  , Gamma_wing) # (ctrl_pts, Nr, Na)
+
+                Ua += u_a_induced  
+                Ut -= u_t_induced  
+                ur += u_r_induced  
+                U  = np.sqrt(Ua*Ua + Ut*Ut + ur*ur)
     #---------------------------------------------------------------------------
     # COMPUTE WAKE-INDUCED INFLOW VELOCITIES AND RESULTING ROTOR PERFORMANCE
     #---------------------------------------------------------------------------

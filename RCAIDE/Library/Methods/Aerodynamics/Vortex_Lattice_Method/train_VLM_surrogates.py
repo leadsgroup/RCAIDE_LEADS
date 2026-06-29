@@ -151,6 +151,8 @@ def train_model(aerodynamics,Mach, vehicle):
     CL_res           = VLM_results.CL
     CM_res           = VLM_results.CM
     CN_res           = VLM_results.CN   
+    gamma_res        = VLM_results.gamma  # shape (len_Mach*len_AoA, n_panels)
+    VD_res           = VLM_results.VD     # geometry only, same for all cases
 
     training.Clift_spanwise  = VLM_results.sectional_CLift.reshape(len_Mach, len_AoA, np.shape(VLM_results.sectional_CLift)[1]).transpose(1, 0, 2)
     Clift_alpha              = np.reshape(Clift_res,(len_Mach,len_AoA)).T 
@@ -161,6 +163,8 @@ def train_model(aerodynamics,Mach, vehicle):
     CL_alpha                 = np.reshape(CL_res,(len_Mach,len_AoA)).T 
     CM_alpha                 = np.reshape(CM_res,(len_Mach,len_AoA)).T 
     CN_alpha                 = np.reshape(CN_res,(len_Mach,len_AoA)).T  
+    # gamma: (len_Mach*len_AoA, n_panels) → (len_AoA, len_Mach, n_panels)
+    gamma_alpha              = gamma_res.reshape(len_Mach, len_AoA, -1).transpose(1, 0, 2)
     
     # Angle of Attack at 0 Degrees .
     Clift_alpha_0   =  np.tile(Clift_alpha[2][None,:],(2,1))
@@ -299,7 +303,9 @@ def train_model(aerodynamics,Mach, vehicle):
     training.CL_alpha                  = CL_alpha   
     training.CM_alpha                  = CM_alpha 
     training.CN_alpha                  = CN_alpha    
-    training.CM_0                      = CM_alpha_0[0]  
+    training.CM_0                      = CM_alpha_0[0] 
+    training.gamma_alpha               = gamma_alpha   # shape (len_AoA, len_Mach, n_panels)
+    training.VD                        = VD_res        # VD geometry object, same for all AoA/Mach
             
     training.Clift_beta                = Clift_beta 
     training.Cdrag_induced_beta        = Cdrag_induced_beta  
@@ -740,7 +746,9 @@ def call_VLM(full_conditions,settings,vehicle):
             RES.CL              = VLM_results.CL
             RES.CM              = VLM_results.CM
             RES.CN              = VLM_results.CN
-            RES.sectional_CLift = VLM_results.sectional_CLift         
+            RES.sectional_CLift = VLM_results.sectional_CLift 
+            RES.gamma           = VLM_results.gamma   # shape (1, n_panels)
+            RES.VD              = VLM_results.VD      # geometry, store once        
             settings.vortex_distribution  = settings.vortex_distribution  
         else: 
             RES.CLift           = np.vstack((RES.CLift          ,VLM_results.CLift)) 
@@ -752,5 +760,7 @@ def call_VLM(full_conditions,settings,vehicle):
             RES.CM              = np.vstack((RES.CM             ,VLM_results.CM))
             RES.CN              = np.vstack((RES.CN             ,VLM_results.CN))
             RES.sectional_CLift = np.vstack((RES.sectional_CLift,VLM_results.sectional_CLift))   
+            RES.gamma           = np.vstack((RES.gamma          ,VLM_results.gamma))  
+            # RES.VD stays the same — geometry never changes between calls
     
     return RES

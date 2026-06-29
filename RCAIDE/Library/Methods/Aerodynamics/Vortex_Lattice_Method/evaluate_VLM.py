@@ -71,8 +71,21 @@ def evaluate_surrogate(state,settings,vehicle):
     conditions.static_stability.coefficients.M                  = results_alpha.CM
     
     conditions.static_stability.coefficients.M_0 = compute_stability_derivative(sub_sur.CM_0    ,trans_sur.CM_0    ,sup_sur.CM_0    ,h_sub,h_sup,Mach) 
-    conditions.aerodynamics.coefficients.lift.spanwise =  results_alpha.Clift_spanwise     
-    
+    conditions.aerodynamics.coefficients.lift.spanwise =  results_alpha.Clift_spanwise 
+
+    # Wing-to-rotor coupling: populate gamma and VD from surrogate
+    if hasattr(sub_sur, 'gamma_alpha') and sub_sur.gamma_alpha is not None:
+        sub_gamma = sub_sur.gamma_alpha(pts_alpha)              # (ctrl_pts, n_panels)
+        if trans_sur.gamma_alpha is not None and sup_sur.gamma_alpha is not None:
+            conditions.aerodynamics.gamma = (
+                h_sub(Mach) * sub_gamma
+                + (1 - h_sub(Mach) - h_sup(Mach)) * trans_sur.gamma_alpha(pts_alpha)
+                + h_sup(Mach) * sup_sur.gamma_alpha(pts_alpha)
+            )
+        else:
+            conditions.aerodynamics.gamma = h_sub(Mach) * sub_gamma
+        conditions.aerodynamics.VD = sub_sur.VD   
+
     # -----------------------------------------------------------------------------------------------------------------------
     # Query control surface surrogates if derivatives are not user defined
     # ----------------------------------------------------------------------------------------------------------------------- 
@@ -352,6 +365,8 @@ def evaluate_no_surrogate(state,settings,vehicle):
     conditions.aerodynamics.coefficients.differential_surface_pressure= VLM_results.CP
     conditions.aerodynamics.angles.induced                            = VLM_results.alpha_induced    
     conditions.aerodynamics.spanwise_stations                         = VLM_results.spanwise_stations
+    conditions.aerodynamics.VD                                        = VLM_results.VD
+    conditions.aerodynamics.gamma                                     = VLM_results.gamma
 
     # corrections 
     RCAIDE.Library.Methods.Aerodynamics.Common.Lift.fuselage_correction(state,settings,vehicle)     
