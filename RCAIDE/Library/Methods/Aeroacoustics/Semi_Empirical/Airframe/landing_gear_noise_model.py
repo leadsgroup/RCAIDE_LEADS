@@ -59,10 +59,10 @@ def compute_landing_gear_noise(microphone_locations, D, H, W, wheels, M, Weight,
 
     gear_params = Data(
         num_wheels = wheels,
-        wheel_diam = D / Units.inches,                  # Approximate (in)
-        wheel_width = W / Units.inches,                 # Approximate (in)
-        strut_lengths = [H / Units.inches],             # Total length L=317 in
-        strut_dims = [strut_diameter / Units.inches],   # Average dimension a=4.65 in
+        wheel_diam = D / Units.ft,                  # Approximate (in)
+        wheel_width = W / Units.ft,                 # Approximate (in)
+        strut_lengths = [H / Units.ft],             # Total length L=317 in
+        strut_dims = [strut_diameter / Units.ft],   # Average dimension a=4.65 in
         aircraft_weight = Weight / Units.pounds,        # Reference weight (lbs)
         track_angle = 0.0,                              # Assume track angle of zero
     )
@@ -70,12 +70,12 @@ def compute_landing_gear_noise(microphone_locations, D, H, W, wheels, M, Weight,
 
     flight_cond = Data(
         M_flight = M / 0.75, 
-        theta = theta / Units.degree, # (deg),
-        R = np.linalg.norm(microphone_locations, axis=1) if hasattr(microphone_locations, 'ndim') else microphone_locations,
-        c0 = segment.conditions.freestream.speed_of_sound / Units.foot_per_second, # sound speed (ft/s)
-        rho0 = segment.conditions.freestream.density / Units.slug/ft^3    # slug/ft^3
+        theta = theta / Units.rad, # (deg),
+        R = 10, #np.linalg.norm(microphone_locations, axis=1) if hasattr(microphone_locations, 'ndim') else microphone_locations,
+        c0 = (segment.state.conditions.freestream.speed_of_sound / Units.foot_per_second), # sound speed (ft/s)
+        rho0 = segment.state.conditions.freestream.density / Units["slugs/ft^3"]   # slug/ft^3
     )
-
+    print(gear_params,flight_cond)
     return predict_spectrum(frequency, gear_params, flight_cond)
 
 
@@ -146,14 +146,14 @@ def calculate_geometry(gear_params):
 
 def normalized_spectrum(St, comp_type):
     """Calculates F(St) using Eq. 43."""
-    p = NOISE_PARAMS.comp_type
+    p = NOISE_PARAMS[str(comp_type)]
     num = p.A * (St**p.sigma)
     den = (p.B + St**p.mu)**p.q
     return num / den
 
 def directivity_component(theta_deg, comp_type):
     """Calculates D(theta) using Eq. 51."""
-    h = NOISE_PARAMS.comp_type.h
+    h = NOISE_PARAMS[str(comp_type)].h
     theta_rad = np.radians(theta_deg)
     return (1 + h * np.cos(theta_rad)**2)**2
 
@@ -183,10 +183,11 @@ def predict_spectrum(frequencies, gear_params, flight_params):
     
     P_base = (amb_term * M_local**6) / (spread_term * conv_term)
     D0 = 1.0  # Installation effect
-    
-    results = Data(Freq= frequencies, Total= [], Low= [], Mid= [], High= [])
-    U = M_local * c0 
-    
+    U = M_local * c0
+    Low = []
+    Mid = []
+    High = []
+    Total = []
     for f in frequencies:
         # --- Low ---
         St_L = f * geom['Low']['l0'] / U
@@ -209,10 +210,10 @@ def predict_spectrum(frequencies, gear_params, flight_params):
         val_total = val_L + val_M + val_H
         
         # Append dB results
-        results.Low.append(to_db(val_L))
-        results.Mid.append(to_db(val_M))
-        results.High.append(to_db(val_H))
-        results.Total.append(to_db(val_total))
-        
+        Low.append(to_db(val_L)[0][0])
+        Mid.append(to_db(val_M)[0][0])
+        High.append(to_db(val_H)[0][0])
+        Total.append(to_db(val_total)[0][0])
+    results = Data(Freq= frequencies, Total= Total, Low= Low, Mid= Mid, High= High)
     return results
 

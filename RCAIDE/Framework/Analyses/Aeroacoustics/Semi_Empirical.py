@@ -8,8 +8,8 @@
 # ----------------------------------------------------------------------------------------------------------------------  
 # RCAIDE Imports
 import  RCAIDE
-from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.compute_aircraft_noise              import airframe_noise
-from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Propulsion.Engine_Noise.compute_engine_noise       import turbofan_engine_noise   
+#from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.compute_aircraft_noise              import airframe_noise
+#from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Propulsion.Engine_Noise.compute_engine_noise       import turbofan_engine_noise   
 from RCAIDE.Library.Methods.Aeroacoustics.Common.decibel_arithmetic                           import SPL_arithmetic  
 from RCAIDE.Library.Methods.Aeroacoustics.Common.generate_hemisphere_microphone_locations     import generate_hemisphere_microphone_locations  
 from .Aeroacoustics      import Aeroacoustics

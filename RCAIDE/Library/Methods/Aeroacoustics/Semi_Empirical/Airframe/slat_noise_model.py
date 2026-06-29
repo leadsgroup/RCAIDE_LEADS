@@ -17,7 +17,7 @@ import numpy as np
 #  Slat Noise Model 
 # ----------------------------------------------------------------------------------------------------------------------
 
-def slat_noise(microphone_locations, phi, theta, Ls, gamma_s, sigma_s, alpha, segment, settings, A=1e-5):
+def slat_noise(microphone_locations, phi, theta, Ls, gamma_s, sigma_s, alpha, segment, frequency, A=1e-5):
     """
     Computes the Slat Noise Power Spectral Density based on Guo (2010).
     
@@ -60,12 +60,12 @@ def slat_noise(microphone_locations, phi, theta, Ls, gamma_s, sigma_s, alpha, se
         Sound Pressure Level spectrum [dB] at the given frequencies.
     """
     #Unpack Segment Data:
-    M = segment.conditions.freestream.mach_number
-    distance = np.linalg.norm(microphone_locations,axis = 1)
-    frequency = settings.center_frequencies[5:]
-    rho_0 = segment.conditions.freestream.pressure
-    c_0 = segment.conditions.freestream.speed_of_sound
-    velocity = segment.conditions.freestream.velocity
+    M = segment.state.conditions.freestream.mach_number
+    distance = 24 #ft np.linalg.norm(microphone_locations,axis = 1)
+    rho_0 = segment.state.conditions.freestream.density / Units["slugs/ft^3"]
+    c_0 = segment.state.conditions.freestream.speed_of_sound / Units["ft/s"]
+    velocity = segment.state.conditions.freestream.velocity / Units["ft/s"]
+    Ls = Ls/Units.ft
 
     U_eff = velocity * np.cos(sigma_s)
     M_eff = M * np.cos(sigma_s)
@@ -107,13 +107,14 @@ def slat_noise(microphone_locations, phi, theta, Ls, gamma_s, sigma_s, alpha, se
     
     # Overall Scaling Factor
     ambient_scale = (rho_0 * c_0**2)**2
-    spherical_spreading = distance**(-2)
+    print(distance)
+    spherical_spreading = 1/(distance**2)
     
     # Assemble Far-Field Noise Power Spectral Density (Pi)
     Pi = A * ambient_scale * W_M * spherical_spreading * convective_amplification * D_theta_phi * F_St
     
     # Convert to Sound Pressure Level (dB)
-    p_ref_psf = segment.conditions.freestream.pressure / Units.psf
+    p_ref_psf = segment.state.conditions.freestream.pressure / Units.psf
     SPL = 10.0 * np.log10(Pi / (p_ref_psf**2) + 1e-12)
     
     return SPL

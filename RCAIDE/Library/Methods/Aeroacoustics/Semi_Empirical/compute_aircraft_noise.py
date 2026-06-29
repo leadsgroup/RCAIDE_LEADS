@@ -10,12 +10,11 @@
 # RCAIDE Imports
 import  RCAIDE
 from RCAIDE.Framework.Core                         import Data  
-from .Airframe.OLD.clean_wing_noise                import clean_wing_noise
 from .Airframe.OLD.landing_gear_noise              import landing_gear_noise 
 from .Airframe.OLD.trailing_edge_flap_noise        import trailing_edge_flap_noise 
 from .Propulsion.Engine_Noise.compute_core_noise   import compute_core_noise
 from .Propulsion.Engine_Noise.compute_fan_noise    import compute_fan_noise
-from .Propulsion.Engine_Noise.compute_jet_noise    import compute_fan_noise
+from .Propulsion.Engine_Noise.compute_jet_noise    import compute_jet_noise
 from RCAIDE.Library.Methods.Aeroacoustics.Metrics  import A_weighting_metric  
 from RCAIDE.Library.Methods.Aeroacoustics.Common   import SPL_arithmetic 
 

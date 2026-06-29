@@ -19,14 +19,14 @@ def flap_noise_model(microphone_locations,cf,thickness, deltaf, theta, frequency
     params = Data(
         h = thickness,                  # Flap thickness (m)
         L_f = cf,                       # Flap chord length (m)
-        alpha = segment.conditions.aerodynamics.angles.alpha,                          # Angle of attack (rad)
-        sigma_f = deltaf+segment.conditions.aerodynamics.angles.alpha,                 # Flap sweep angle (rad)
+        alpha = segment.state.conditions.aerodynamics.angles.alpha,                          # Angle of attack (rad)
+        sigma_f = deltaf+segment.state.conditions.aerodynamics.angles.alpha,                 # Flap sweep angle (rad)
         gamma_f = deltaf,                                                              # Flap deployment angle (rad)
-        M = segment.conditions.freestream.mach_number,                                 # Flight Mach number
-        U = segment.conditions.freestream.velocity,                                    # Flight velocity (m/s)
-        c0 = segment.conditions.freestream.speed_of_sound,                             # Speed of sound (m/s)
-        rho0 = segment.conditions.freestream.density,                                  # Ambient density (kg/m^3)
-        r = np.linalg.norm(microphone_locations,axis = 1),                             # Observer distance (m)
+        M = segment.state.conditions.freestream.mach_number,                                 # Flight Mach number
+        U = segment.state.conditions.freestream.velocity,                                    # Flight velocity (m/s)
+        c0 = segment.state.conditions.freestream.speed_of_sound,                             # Speed of sound (m/s)
+        rho0 = segment.state.conditions.freestream.density,                                  # Ambient density (kg/m^3)
+        r = 121.92, #np.linalg.norm(microphone_locations,axis = 1),                             # Observer distance (m)
         theta = theta/Units.degree,                                                    # Polar angle (overhead = 90 deg) 
     )
 
@@ -53,10 +53,9 @@ def flap_noise_model(microphone_locations,cf,thickness, deltaf, theta, frequency
         'r': Observer distance (m)
         'theta': Polar angle (overhead = 90 deg)
     """
-    if constants is None:
-        constants = Data(
-            A0= 3, mu0= 7.693, mu1= 10, mu2= 0.292, alpha_0= 0.005
-        )
+    constants = Data(
+        A0= 3, mu0= 7.693, mu1= 10, mu2= 0.292, alpha_0= 0.005
+    )
         
     p_ref = 2e-5 # Reference SPL in Pascals
     
@@ -88,11 +87,10 @@ def flap_noise_model(microphone_locations,cf,thickness, deltaf, theta, frequency
         A_G = calc_geometric_amplitude(params, is_high_freq, constants.A0)
         A_F = 1.0 # Standard assumption if flow is bundled into A0
         W_M = (M**n) / I_M
-        if is_high_freq == False:
-            f_source = f_source+10
-        if is_high_freq == True:
-            f_source = f_source+100
-
+        for is_high_freq in [False, True]:
+            # Calculate fresh for this band
+            f_source = (frequency * Delta) + (10 if not is_high_freq else 100)
+        print(params)
         F_f = calc_spectral_shape(f_source, M, l, c0, U, 
                                 constants.mu0, constants.mu1, constants.mu2)
 
@@ -103,7 +101,6 @@ def flap_noise_model(microphone_locations,cf,thickness, deltaf, theta, frequency
         atmospheric_absorption = np.exp(-constants.alpha_0 * r)
         # Combine all to get PSD
         PSD_component = (rho0**2) * (c0**4) * A_G * A_F * W_M * F_f  * (l / c0) * length_scale * atmospheric_absorption
-        PSD_total += PSD_component
         comp_li.append(shape_dB)
         
     # Convert total PSD [Pa^2/Hz] to SPL [dB/Hz]
