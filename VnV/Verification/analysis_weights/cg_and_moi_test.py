@@ -67,10 +67,10 @@ def BWB_Test():
     fuel_tank_1.tag                             = 'LNG_Fuel_Tank_1'
     fuel_tank_1.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas()
     fuel_tank_1.design_inlet_temperature        = 100
-    fuel_tank_1.design_altitude                        = 30000 * Units.ft
-    fuel_tank_1.design_heat_flux                       = 20
-    fuel_tank_1.design_total_heat_transfer             = 2000
-    fuel_tank_1.ullage_volume_fraction                 = 0.07
+    fuel_tank_1.design_altitude                 = 30000 * Units.ft
+    fuel_tank_1.design_heat_flux                = 20
+    fuel_tank_1.design_total_heat_transfer      = 2000
+    fuel_tank_1.ullage_volume_fraction          = 0.07
     fuel_tank_1.inner_structure.material        = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
     fuel_tank_1.insulation.material             = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_1.gravimetric_efficiency          = 0.5
@@ -85,10 +85,10 @@ def BWB_Test():
     fuel_tank_2.tag                           = 'LNG_Fuel_Tank_2'
     fuel_tank_2.fuel                          = RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas()
     fuel_tank_2.design_inlet_temperature      = 100
-    fuel_tank_2.design_altitude                        = 30000 * Units.ft
-    fuel_tank_2.design_heat_flux                       = 20
-    fuel_tank_2.design_total_heat_transfer             = 2000
-    fuel_tank_2.ullage_volume_fraction                 = 0.07
+    fuel_tank_2.design_altitude               = 30000 * Units.ft
+    fuel_tank_2.design_heat_flux              = 20
+    fuel_tank_2.design_total_heat_transfer    = 2000
+    fuel_tank_2.ullage_volume_fraction        = 0.07
     fuel_tank_2.inner_structure.material      = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
     fuel_tank_2.insulation.material           = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_2.gravimetric_efficiency        = 0.5
@@ -439,7 +439,7 @@ def EVTOL_base_analysis(vehicle):
     weights.settings.run_weights_analysis                = True
     weights.settings.run_center_of_gravity_analysis      = True
     weights.settings.run_moments_of_inertia_analysis     = True
-    weights.print_weight_analysis_report                  = False
+    weights.print_weight_analysis_report                 = False
     analyses.append(weights)
 
     return analyses

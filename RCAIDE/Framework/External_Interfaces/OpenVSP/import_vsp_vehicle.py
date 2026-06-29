@@ -140,18 +140,9 @@ def import_vsp_vehicle(tag,
     if isinstance(propulsor_type,RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor ) != True:
         raise Exception('Vehicle propulsor type must be defined. \n Choose from list in RCAIDE.Library.Components.Propulsors, i.e. \n RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() \n RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet() \n RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop() \n RCAIDE.Library.Components.Powertrain.Propulsors.ElectricRotor(), etc.' )     
 
-    # Get the last path from sys.path
-    system_path = sys.path[0]
-    # Append the system path to the filename
-    tag = os.path.join(system_path, tag)
+    vsp.ClearVSPModel()
 
-
-    vsp.ClearVSPModel() 
-    
-    # Get the last path from sys.path
-    system_path = sys.path[-1]
-    # Append the system path to the filename
-    tag = os.path.join(system_path, tag)
+    tag = os.path.abspath(tag)
     vsp.ReadVSPFile(tag)	
 
     vsp_fuselages     = []
@@ -333,46 +324,39 @@ def import_vsp_vehicle(tag,
                 # Append to Network             
                 network.propulsors.append(propulsor)
 
-    # Condition when only rotors are defined 
+    # Condition when only rotors are defined
     elif (len(vsp_rotors) >  0) and (len(vsp_nacelles) == 0):
         for idx , rotor_id in enumerate( vsp_rotors):
-            # define new propulsor 
-            propulsor = deepcopy(propulsor_type) 
+            # define new propulsor
+            propulsor = deepcopy(propulsor_type)
             propulsor.tag =  'propulsor_' +  str(i+1)
-            
-            # Rotor 
+
+            # Rotor
             rotor           = read_vsp_rotor(rotor_id,units_type)
-            rotor.tag       = vsp.GetGeomName(rotor_id) 
+            rotor.tag       = vsp.GetGeomName(rotor_id)
             propulsor.rotor = rotor
 
-            # Nacelle 
-            nacelle = read_vsp_nacelle(nacelle_id,vsp_nacelle_type[idx], units_type)
-            if calculate_wetted_area:
-                nacelle.areas.wetted = measurements[vsp.GetGeomName(nacelle_id)] * (units_factor**2)           
-            propulsor.nacelle = nacelle                      
-            
-            # Append to Network 
+            # Append to Network
             network.propulsors.append(propulsor)
-            
-            
+
+
             # If symmetry is defined
             if vsp.GetParmVal(rotor_id, 'Sym_Planar_Flag', 'Sym')== 2.0:
-                # update index 
+                # update index
                 i += 1
-                
-                # define new propulsor 
-                propulsor =  deepcopy(propulsor_type) 
+
+                # define new propulsor
+                propulsor =  deepcopy(propulsor_type)
                 propulsor.tag =  'propulsor_' +  str(i+1)
-                
-                
-                # Rotor 
+
+
+                # Rotor
                 rotor_sym = deepcopy(rotor)
-                rotor_sym.origin[0][1] = - rotor_sym.origin[0][1] 
-                propulsor.rotor = rotor_sym  
-                propulsor.nacelle = nacelle          
-                 
-                # Append to Network             
-                network.propulsors.append(propulsor) 
+                rotor_sym.origin[0][1] = - rotor_sym.origin[0][1]
+                propulsor.rotor = rotor_sym
+
+                # Append to Network
+                network.propulsors.append(propulsor)
             
     else:
         print ('Unequal numbers of rotors and nacelles defined. Skipping propulsor definition.') 

@@ -294,7 +294,7 @@ def vehicle_setup():
     cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
     economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
     economy_class.number_of_seats_abrest              = 4
-    economy_class.number_of_rows                      = 28
+    economy_class.number_of_rows                      = 27
     economy_class.number_of_passengers                = 106
     economy_class.galley_lavatory_percent_x_locations = [0, 1]      
     economy_class.emergency_exit_percent_x_locations  = [0.5, 0.5]      

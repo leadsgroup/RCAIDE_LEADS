@@ -282,9 +282,10 @@ def iterate_max_fuel_and_max_zero_fuel(analyses, max_iterations=100):
         residual_max_fuel = 0
         if compute_max_fuel:
             new_max_fuel       = analyses.vehicle.mass_properties.max_takeoff - analyses.vehicle.mass_properties.operating_empty - analyses.vehicle.mass_properties.min_payload
-            fuel_density       = next(ft.fuel.density for network in analyses.vehicle.networks for fl in network.fuel_lines for ft in fl.fuel_tanks)
-            max_fuel_by_volume = analyses.vehicle.volume_properties.max_fuel * fuel_density
-            new_max_fuel       = min(new_max_fuel, max_fuel_by_volume)
+            fuel_density       = next((ft.fuel.density for network in analyses.vehicle.networks for fl in network.fuel_lines for ft in fl.fuel_tanks), None)
+            if fuel_density is not None:
+                max_fuel_by_volume = analyses.vehicle.volume_properties.max_fuel * fuel_density
+                new_max_fuel       = min(new_max_fuel, max_fuel_by_volume)
             residual_max_fuel  = abs(new_max_fuel - analyses.vehicle.mass_properties.max_fuel)
             analyses.vehicle.mass_properties.max_fuel = new_max_fuel
         
