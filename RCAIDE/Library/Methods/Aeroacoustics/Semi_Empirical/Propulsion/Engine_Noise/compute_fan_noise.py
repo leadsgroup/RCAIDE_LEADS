@@ -1,16 +1,29 @@
-import math
-import numpy as np
+# RCAIDE/Methods/Aeroacoustics/Semi_Empirical/Turbofan/jet_noise.py
+# 
+# 
+# Created:  Jul 2026, P. Siripun, M. Clarke  
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
+
+# RCAIDE imports
 from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Propulsion.Engine_Noise.interpolate_fan_noise import get_spl_fan, create_interpolator_fan
 from RCAIDE.Library.Methods.Aeroacoustics.Common  import SPL_arithmetic 
 from RCAIDE.Library.Methods.Aeroacoustics.Metrics import A_weighting_metric
-
 from RCAIDE.Framework.Core                        import Units , Data
 
+# Python package imports  
+import math
+import numpy as np
 
 #initialize interpolators
 interpolator_fan = create_interpolator_fan()
-#help functions
+
+# ----------------------------------------------------------------------------------------------------------------------     
+#  turbofan fan noise 
+# ----------------------------------------------------------------------------------------------------------------------  
 
 def compute_fan_noise(microphone_locations, turbofan, aeroacoustic_data, segment, settings):
     #unpack
@@ -116,45 +129,45 @@ def compute_fan_noise(microphone_locations, turbofan, aeroacoustic_data, segment
     Cpp = R_gas/(1-1/gamma_primary)
     Cp  = R_gas/(1-1/gamma)
     
-    # densitys 
-    density_primary   = Pressure_primary/(R_gas*Temperature_primary-(0.5*R_gas*Velocity_primary**2/Cpp)) 
+    # densities
     density_secondary = Pressure_secondary/(R_gas*Temperature_secondary-(0.5*R_gas*Velocity_secondary**2/Cp))
 
-    delt_T =fan_conditions.outputs.static_temperature-fan_conditions.inputs.static_temperature   #find temp difference of moving air
-    M_TR = (Velocity_aircraft**2 + ((np.pi*Num_blades*Diameter_secondary)/60)**2) / sound_ambient#compute the Tip relative Mach number
-    fan_inputs = {
-    "m": (Area_secondary*Velocity_secondary*density_secondary)*2.20462 ,# Mass flow rate (kg/s -> lb/sec)
-    "delta_T": delt_T*180,                                              # Total temperature rise across the fan (K -> deg R)
-    "M_TR": M_TR,                                                       # Tip relative Mach number
-    "RSS": 150.0,                                                       # Rotor stator spacing / fan blade chord (%) Tune this
-    "f_b": (N1*Num_blades)/60,                                          # Blade passage frequency (Hz)
-    "M_Tip": (np.pi*Diameter_secondary*Num_blades)/(60*sound_ambient),  # Fan tip Mach number
-    "V_Number": 54,                                                     # Number of stator vanes
-    "B_Number": Num_blades,                                             # Number of rotor blades
-    "inlet_distortion": False                                           # Boolean
-    }
+    delt_T =fan_conditions.outputs.static_temperature-fan_conditions.inputs.static_temperature    #find temp difference of moving air
+    M_TR = (Velocity_aircraft**2 + ((np.pi*Num_blades*Diameter_secondary)/60)**2) / sound_ambient #compute the Tip relative Mach number
+    
+    fan_inputs = Data(
+    m = (Area_secondary*Velocity_secondary*density_secondary) / Units.lbs ,# Mass flow rate (kg/s -> lb/sec)
+    delta_T = delt_T*1.8,                                                  # Total temperature rise across the fan (K -> deg R)
+    M_TR = M_TR,                                                                   # Tip relative Mach number
+    RSS = 150.0,                                                                   # Rotor stator spacing / fan blade chord (%) Tune this
+    f_b = (N1*Num_blades) / Units.minute,                                          # Blade passage frequency (Hz)
+    M_Tip = (np.pi*Diameter_secondary*Num_blades)/(Units.minute*sound_ambient),    # Fan tip Mach number
+    V_Number = 54,                                                     # Number of stator vanes
+    B_Number = Num_blades,                                             # Number of rotor blades
+    inlet_distortion = False                                           # Boolean
+    )
 
     def calc_base_level(inputs):
     #Calculates the mass flow and temperature rise base terms.
         m_0 = 1.0     # 1 lb/sec reference
         delta_T_0 = 1.0 # 1 °R reference
-        return 10 * math.log10(inputs["m"] / m_0) + 40 * math.log10(inputs["delta_T"] / delta_T_0)
+        return 10 * math.log10(inputs.m / m_0) + 40 * math.log10(inputs.delta_T / delta_T_0)
 
     def calc_F2(inputs, multiplier):
         """Calculates the F2 spacing factor."""
         if not inputs.get("inlet_distortion", False):
-            return multiplier * math.log10(inputs["RSS"] / 300.0)
+            return multiplier * math.log10(inputs.RSS / 300)
         else:
-            if inputs["RSS"] < 100:
-                return multiplier * math.log10(inputs["RSS"] / 300.0)
+            if inputs.RSS < 100:
+                return multiplier * math.log10(inputs.RSS / 300)
             else:
-                return multiplier * math.log10(100.0 / 300.0)
+                return multiplier * math.log10(100 / 300)
 
     def calc_tone_F4(inputs, k):
         """Calculates F4 for inlet and aft tones (cut-on / cut-off logic)."""
         if k == 1:
-            cutoff_ratio = inputs["M_Tip"] / (1 - inputs["V_Number"] / inputs["B_Number"])
-            if cutoff_ratio > 1.05 or inputs["M_Tip"] > 1.05:
+            cutoff_ratio = inputs.M_Tip / (1 - inputs.V_Number / inputs.B_Number)
+            if cutoff_ratio > 1.05 or inputs.M_Tip > 1.05:
                 return 0     # Cut-on
             else:
                 return -8    # Cut-off
@@ -164,16 +177,16 @@ def compute_fan_noise(microphone_locations, turbofan, aeroacoustic_data, segment
     # Component Model Functions
 
     def calc_inlet_broadband(inputs, f, theta):
-        F1 = 34 if inputs["M_TR"] < 0.72 else 34 - 43 * (inputs["M_TR"] - 0.72)
+        F1 = 34 if inputs.M_TR < 0.72 else 34 - 43 * (inputs.M_TR - 0.72)
         F2 = calc_F2(inputs, -5.0)
         F3 = float(get_spl_fan(interpolator_fan,"Inlet Broadband",theta))
-        F5 = -0.5 * (math.log(f / (4 * inputs["f_b"])) / math.log(2.2))**2
+        F5 = -0.5 * (math.log(f / (4 * inputs.f_b)) / math.log(2.2))**2
         F4 = 10 * math.log10(math.exp(F5))
         
         return calc_base_level(inputs) + F1 + F2 + F3 + F4
 
     def calc_inlet_tones(inputs, theta, k):
-        F1 = 42 - 20 * inputs["M_TR"]
+        F1 = 42 - 20 * inputs.M_TR
         F2 = calc_F2(inputs, -10.0)
         F3 = float(get_spl_fan(interpolator_fan,"Inlet Tones",theta))
         F4 = calc_tone_F4(inputs, k)
@@ -181,16 +194,16 @@ def compute_fan_noise(microphone_locations, turbofan, aeroacoustic_data, segment
         return calc_base_level(inputs) + F1 + F2 + F3 + F4
 
     def calc_aft_broadband(inputs, f, theta):
-        F1 = 34 - 17 * (inputs["M_TR"] - 0.65)
+        F1 = 34 - 17 * (inputs.M_TR - 0.65)
         F2 = calc_F2(inputs, -5.0)
         F3 = float(get_spl_fan(interpolator_fan,"Aft Broadband",theta))
-        F5 = -0.5 * (math.log(f / (2.5 * inputs["f_b"])) / math.log(2.2))**2
+        F5 = -0.5 * (math.log(f / (2.5 * inputs.f_b)) / math.log(2.2))**2
         F4 = 10 * math.log10(math.exp(F5))
         
         return calc_base_level(inputs) + F1 + F2 + F3 + F4
 
     def calc_aft_tones(inputs, theta, k):
-        F1 = 46 - 20 * inputs["M_TR"]
+        F1 = 46 - 20 * inputs.M_TR
         F2 = calc_F2(inputs, -10.0)
         F3 = float(get_spl_fan(interpolator_fan,"Aft Tones",theta))
         F4 = calc_tone_F4(inputs, k)
@@ -201,8 +214,8 @@ def compute_fan_noise(microphone_locations, turbofan, aeroacoustic_data, segment
         """Only valid for supersonic tip speeds."""
         F3 = float(get_spl_fan(interpolator_fan,"Combination Tones",theta))
         F2 = 0
-        M_TR = inputs["M_TR"]
-        f_b = inputs["f_b"]
+        M_TR = inputs.M_TR
+        f_b = inputs.f_b
         base_spl = calc_base_level(inputs)
         
         # 1/2 BPF Peak

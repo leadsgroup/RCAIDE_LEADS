@@ -1,9 +1,25 @@
-import numpy as np
-import math
+# RCAIDE/Methods/Aeroacoustics/Semi_Empirical/Turbofan/core_noise.py
+# 
+# 
+# Created:  Jun 2026, M. Clarke , P. Siripun
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
+
+# RCAIDE imports
 from RCAIDE.Framework.Core import Units, Data
 from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Propulsion.Engine_Noise.interpolate_core_noise import get_spl, create_interpolator
 from RCAIDE.Library.Methods.Aeroacoustics.Common  import SPL_arithmetic 
-from RCAIDE.Library.Methods.Aeroacoustics.Metrics import A_weighting_metric  
+from RCAIDE.Library.Methods.Aeroacoustics.Metrics import A_weighting_metric
+
+# Python package imports 
+import numpy as np
+import math
+
+# ----------------------------------------------------------------------------------------------------------------------     
+#  turbofan engine core noise 
+# ---------------------------------------------------------------------------------------------------------------------- 
 
 def compute_core_noise(microphone_locations, turbofan, aeroacoustic_data, segment, settings):
     conditions = segment.conditions
@@ -144,74 +160,43 @@ def compute_core_noise(microphone_locations, turbofan, aeroacoustic_data, segmen
     interp_C1 = create_interpolator("table_c1")
     interp_C2 = create_interpolator("table_c2")
     interp_C3 = create_interpolator("table_c3")
-
     
-
-    def calc_core_param(W1, T_C_o, T_C_i, pressure_ratio, T_amb):
-        temp_ratio_diff = T_C_o - T_C_i
-        temp_ratio_amb = T_amb / T_C_i
-        inner_term = W1 * ((temp_ratio_diff * pressure_ratio * temp_ratio_amb) ** 2)
-        return math.log10(inner_term)
-
-    def calc_uol_c1(R, n_f, core_param_log):
-        C_C1, N_C1, F_C1 = 78.0, 7.0, 14.0
-        return C_C1 - (20.0 * math.log10(R)) + (N_C1 * core_param_log) - (F_C1 * math.log10(n_f))
-
-    def calc_uol_c2(R, n_f, core_param_log):
-        C_C2, N_C2, F_C2 = 60.3, 10.0, 18.0
-        return C_C2 - (20.0 * math.log10(R)) + (N_C2 * core_param_log) - (F_C2 * math.log10(n_f))
-
-    def calc_uol_c3(R, core_param_log):
-        C_C3, N_C3 = 42.5, 9.0
-        return C_C3 - (20.0 * math.log10(R)) + (N_C3 * core_param_log)
-
-    def calc_strouhal_c1(f, D_h_1, c_amb):
-        return (f * D_h_1) / c_amb
-
-    def calc_strouhal_c2_c3(f, D_C, c_C_o):
-        return (f * D_C) / c_C_o
+    for i in range(n_mic): #to vectorize next
     
-    for i in range(n_mic):
-    
-        model_inputs = {
-        "W1": (Area_secondary*Velocity_secondary*density_secondary)*2.20462,      # Total core mass flow rate (lbm/sec)
-        "T_C_o": combustor_conditions.outputs.static_temperature*1.8,             # Combustor outlet total temperature (deg R)
-        "T_C_i": combustor_conditions.inputs.static_temperature*1.8,              # Combustor inlet total temperature (deg R)
-        "P_amb": pressure_amb/6895,                                               # Ambient pressure (pa -> psia)
-        "T_amb": temp_amb*1.8,                                                    # Ambient temperature (deg R)
-        "n_f":  Num_nozzle,                                                       # Number of fuel nozzles
-        "R": distance_microphone[i]*3.281,                                        # Microphone distance (ft)
-        "D_h_1": core_nozzle.diameter*3.281,                                      #core nozzle hydraulic diameter
-        "c_amb": sound_ambient*3.281,                                             # Ambient sonic velocity (ft/sec)
-        "D_C": combustor.diameter*3.281,                                          # Combustor diameter (ft)
-        "c_C_o": (331.3*(1+((combustor_conditions.outputs.static_temperature-273)/273))**0.5)*3.281,  # Combustor exit sonic velocity (ft/sec)
-        "f": standard_freqs,                                                                          # Frequency (Hz) -> injected list
-        "theta_c": theta,                                                                             #theta
-        "pressure_ratio": lpt_conditions.outputs.stagnation_pressure/ram_conditions.outputs.stagnation_pressure #Pressure ratio
-    }
+        model_inputs = Data(
+        W1 = (Area_secondary*Velocity_secondary*density_secondary) / Units.lbm,  # Total core mass flow rate (lbm/sec)
+        T_C_o = combustor_conditions.outputs.static_temperature*1.8,             # Combustor outlet total temperature (deg R)
+        T_C_i = combustor_conditions.inputs.static_temperature*1.8,              # Combustor inlet total temperature (deg R)
+        P_amb = pressure_amb / Units.psi,                                               # Ambient pressure (pa -> psia)
+        T_amb = temp_amb*1.8,                                                           # Ambient temperature (deg R)
+        n_f =  Num_nozzle,                                                              # Number of fuel nozzles
+        R = distance_microphone[i] / Units.feet,                                        # Microphone distance (ft)
+        D_h_1 = core_nozzle.diameter / Units.feet,                                      # core nozzle hydraulic diameter
+        c_amb = sound_ambient / Units.feet,                                             # Ambient sonic velocity (ft/sec)
+        D_C = combustor.diameter / Units.feet,                                          # Combustor diameter (ft)
+        c_C_o = (331.3*(1+((combustor_conditions.outputs.static_temperature-273)/273))**0.5) / Units.feet,      # Combustor exit sonic velocity (ft/sec)
+        f = standard_freqs,                                                                                     # Frequency (Hz) -> injected list
+        theta_c = theta,                                                                                        # theta (radians)
+        pressure_ratio = lpt_conditions.outputs.stagnation_pressure/ram_conditions.outputs.stagnation_pressure  # Pressure ratio
+        )
 
-    # 1. Calculate Base Parameters
+        # Calculate Base Parameters
         core_param_log = calc_core_param(
-        model_inputs["W1"], model_inputs["T_C_o"], model_inputs["T_C_i"], 
-        model_inputs["pressure_ratio"], model_inputs["T_amb"]
+        model_inputs.W1, model_inputs.T_C_o, model_inputs.T_C_i, 
+        model_inputs.pressure_ratio, model_inputs.T_amb
     )
 
-        uol_c1 = calc_uol_c1(model_inputs["R"], model_inputs["n_f"], core_param_log)
-        uol_c2 = calc_uol_c2(model_inputs["R"], model_inputs["n_f"], core_param_log)
-        uol_c3 = calc_uol_c3(model_inputs["R"], core_param_log)
+        uol_c1 = calc_uol_c1(model_inputs.R, model_inputs.n_f, core_param_log)
+        uol_c2 = calc_uol_c2(model_inputs.R, model_inputs.n_f, core_param_log)
+        uol_c3 = calc_uol_c3(model_inputs.R, core_param_log)
         
-        # 2. Initialize output arrays and tables
+        #Initialize output arrays and tables
         spl_c1_list, spl_c2_list, spl_c3_list = [], [], []
-        theta_c = model_inputs["theta_c"]
-        def get_normalized_spl(interpolator_obj, strouhal_num, theta_c):
-            if strouhal_num <= 0:
-                return 0
-            log_S = math.log10(strouhal_num)
-            return get_spl(interpolator_obj, theta_c, log_S)
+        theta_c = model_inputs.theta_c
 
-        for f in model_inputs["f"]:
-            s_c1 = calc_strouhal_c1(f, model_inputs["D_h_1"], model_inputs["c_amb"])
-            s_c2_c3 = calc_strouhal_c2_c3(f, model_inputs["D_C"], model_inputs["c_C_o"]) #plot these strouhals (in future to correlate)
+        for f in model_inputs.f:
+            s_c1 = calc_strouhal_c1(f, model_inputs.D_h_1, model_inputs.c_amb)
+            s_c2_c3 = calc_strouhal_c2_c3(f, model_inputs.D_C, model_inputs.c_C_o) #plot these strouhals (in future to correlate)
             
             norm_spl_c1 = get_normalized_spl(interp_C1, s_c1, theta_c) 
             norm_spl_c2 = get_normalized_spl(interp_C2, s_c2_c3, theta_c)
@@ -224,7 +209,7 @@ def compute_core_noise(microphone_locations, turbofan, aeroacoustic_data, segmen
         c1_arr, c2_arr, c3_arr = np.array(spl_c1_list), np.array(spl_c2_list), np.array(spl_c3_list)
         SPL_total = 10 * np.log10(10**(c1_arr/10) + 10**(c2_arr/10) + 10**(c3_arr/10))
         # calculate log_S before get_spl
-                # Store SPL history      
+        # Store SPL history      
         SPL_1_3_spectrum[:,i,:]       = SPL_total 
         SPL[:,i]                      = SPL_arithmetic(SPL_total,sum_axis=1 )
         SPL_1_3_spectrum_dBA[:,i,:]   = A_weighting_metric(SPL_total,frequency)
@@ -238,4 +223,32 @@ def compute_core_noise(microphone_locations, turbofan, aeroacoustic_data, segmen
     return core_noise 
 # Standard 1/3-octave-band center frequencies (Hz)
 
+def get_normalized_spl(interpolator_obj, strouhal_num, theta_c):
+    if strouhal_num <= 0:
+        return 0
+    log_S = math.log10(strouhal_num)
+    return get_spl(interpolator_obj, theta_c, log_S)
 
+def calc_core_param(W1, T_C_o, T_C_i, pressure_ratio, T_amb):
+    temp_ratio_diff = T_C_o - T_C_i
+    temp_ratio_amb = T_amb / T_C_i
+    inner_term = W1 * ((temp_ratio_diff * pressure_ratio * temp_ratio_amb) ** 2)
+    return math.log10(inner_term)
+
+def calc_uol_c1(R, n_f, core_param_log):
+    C_C1, N_C1, F_C1 = 78.0, 7.0, 14.0
+    return C_C1 - (20.0 * math.log10(R)) + (N_C1 * core_param_log) - (F_C1 * math.log10(n_f))
+
+def calc_uol_c2(R, n_f, core_param_log):
+    C_C2, N_C2, F_C2 = 60.3, 10.0, 18.0
+    return C_C2 - (20.0 * math.log10(R)) + (N_C2 * core_param_log) - (F_C2 * math.log10(n_f))
+
+def calc_uol_c3(R, core_param_log):
+    C_C3, N_C3 = 42.5, 9.0
+    return C_C3 - (20.0 * math.log10(R)) + (N_C3 * core_param_log)
+
+def calc_strouhal_c1(f, D_h_1, c_amb):
+    return (f * D_h_1) / c_amb
+
+def calc_strouhal_c2_c3(f, D_C, c_C_o):
+    return (f * D_C) / c_C_o

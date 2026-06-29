@@ -1,7 +1,23 @@
 import numpy as np
+# RCAIDE/Methods/Aeroacoustics/Semi_Empirical/Engine/mixed_noise_component.py
+# 
+# 
+# Created:  Jun 2026, M. Clarke , P. Siripun
 
-def slat_noise(velocity, M, phi, theta, distance, frequency, 
-                Ls, rho_0, c_0, segment, A=1e-5):
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
+# RCAIDE imports 
+from RCAIDE.Framework.Core import Units, Data
+
+# Python package imports   
+import numpy as np   
+ 
+# ----------------------------------------------------------------------------------------------------------------------
+#  Slat Noise Model 
+# ----------------------------------------------------------------------------------------------------------------------
+
+def slat_noise(microphone_locations, phi, theta, Ls, gamma_s, sigma_s, alpha, segment, settings, A=1e-5):
     """
     Computes the Slat Noise Power Spectral Density based on Guo (2010).
     
@@ -43,19 +59,32 @@ def slat_noise(velocity, M, phi, theta, distance, frequency,
     SPL : array_like
         Sound Pressure Level spectrum [dB] at the given frequencies.
     """
+    #Unpack Segment Data:
+    M = segment.conditions.freestream.mach_number
+    distance = np.linalg.norm(microphone_locations,axis = 1)
+    frequency = settings.center_frequencies[5:]
+    rho_0 = segment.conditions.freestream.pressure
+    c_0 = segment.conditions.freestream.speed_of_sound
+    velocity = segment.conditions.freestream.velocity
+
+    U_eff = velocity * np.cos(sigma_s)
+    M_eff = M * np.cos(sigma_s)
     
-    # 1. Strouhal Number Calculation
-    St = (frequency * Ls) / velocity
+    # Strouhal Number Calculation
+    St = (frequency * Ls) / U_eff
     
-    # 2. Spectral Shape Function F(St)
-    St_peak = 2.0  # Assumed peak Strouhal number for the cove flow resonance
+    #Spectral Shape Function F(St)
+    St_peak = 2.0 
     F_St = (St / St_peak)**2 / ((1 + (St / St_peak)**2)**3.5)
     
-    # 3. Mach Number Dependence W(M) reference paper
-    W_M = M**4.5
+    # Angle of Attack Correction for Local Mach Number
+    local_accel_factor = 1.0 + 2.0 * np.sin(alpha)
+    M_local = M_eff * local_accel_factor
     
-    # 4. Convective Amplification (Doppler Factor)
-    # Lambda = 1 - M * cos(theta) for source moving towards observer
+    # Mach Number Dependence W(M) using the accelerated local flow
+    W_M = M_local**4.5
+    
+    # Convective Amplification (Doppler Factor)
     if theta < (np.pi/2):
         doppler_factor = 1.0 - M * np.cos(theta)
     elif theta > (np.pi/2):
@@ -64,21 +93,27 @@ def slat_noise(velocity, M, phi, theta, distance, frequency,
         doppler_factor = 1.0
     convective_amplification = doppler_factor**(-2)
     
-    # 5. Directivity Function D(theta, phi)
-    # Simplified dipole directivity:
-    D_theta_phi = np.sin(theta)**2 * np.cos(phi)**2
+    # Directivity Function D(theta, phi) with Coordinate Rotation
+    # Total pitch rotation is the aircraft AoA plus the mechanical slat angle.
+    total_pitch = alpha + gamma_s
     
-    # 6. Overall Scaling Factor (Ambient Medium & Distance)
-    # (rho_0 * c_0^2)^2 is the ambient medium pressure scaling squared
+    # Transform the observer coordinates into the local slat coordinate system.
+    # This projects the observer's vector onto the rotated dipole axis.
+    cos_theta_local = (np.cos(theta) * np.cos(total_pitch) + 
+                       np.sin(theta) * np.sin(phi) * np.sin(total_pitch))
+    
+    # Dipole directivity
+    D_theta_phi = (1.0 - cos_theta_local**2) * np.cos(sigma_s)**2
+    
+    # Overall Scaling Factor
     ambient_scale = (rho_0 * c_0**2)**2
     spherical_spreading = distance**(-2)
     
-    # 7. Assemble Far-Field Noise Power Spectral Density (Pi)
+    # Assemble Far-Field Noise Power Spectral Density (Pi)
     Pi = A * ambient_scale * W_M * spherical_spreading * convective_amplification * D_theta_phi * F_St
     
-    # Convert Power Spectral Density to Sound Pressure Level (dB)
-    # Reference pressure in air is typically 20e-6 Pa (converted to psf if using Imperial)
-    p_ref_psf = segment.conditions.freestream.pressure*0.0208854 # pascals converted to lb/sf
+    # Convert to Sound Pressure Level (dB)
+    p_ref_psf = segment.conditions.freestream.pressure / Units.psf
     SPL = 10.0 * np.log10(Pi / (p_ref_psf**2) + 1e-12)
     
     return SPL
