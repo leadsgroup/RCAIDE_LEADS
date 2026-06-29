@@ -330,7 +330,7 @@ def General_Aviation_Test(update_regression_values, show_figure):
         print('')
 
 def BWB_Hydrogen_Aircraft_Test(update_regression_values,show_figure):
-    cabin_types = ['Non-PERSUS','PERSUS']
+    cabin_types = ['Non-PRSEUS','PRSEUS']
     for cabin_type in cabin_types:
         for FLOPS_number in [0,1]:
             print(f'Testing Hydrogen Transport Aircraft Method: BWB| Composites: {cabin_type} | Method: {"Simple" if FLOPS_number == 0 else "Complex"}') 
@@ -356,7 +356,7 @@ def BWB_Hydrogen_Aircraft_Test(update_regression_values,show_figure):
 
             if cabin_type == 'PERSUS':
                 weight_analysis.settings.PRSEUS = True
-            elif cabin_type == 'Non-PERSUS':
+            elif cabin_type == 'Non-PRSEUS':
                 weight_analysis.settings.PRSEUS = False
             for wing in vehicle.wings: 
                 if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
@@ -395,7 +395,7 @@ def BWB_Hydrogen_Aircraft_Test(update_regression_values,show_figure):
     return
 
 def BWB_Aircraft_Test(update_regression_values,show_figure):
-    cabin_types = ['Non-PERSUS','PERSUS']
+    cabin_types = ['Non-PRSEUS','PRSEUS']
     systems = [True, False]
     for i in range(len(cabin_types)):
         for FLOPS_number in [0,1]:
@@ -403,9 +403,9 @@ def BWB_Aircraft_Test(update_regression_values,show_figure):
             weight_analysis          = RCAIDE.Framework.Analyses.Weights.Conventional_BWB()
             vehicle  = bwb_setup()
             system = 'systems' if systems[i] else 'none'
-            if cabin_types[i] == 'PERSUS':
+            if cabin_types[i] == 'PRSEUS':
                 weight_analysis.settings.PRSEUS = True
-            elif cabin_types[i] == 'Non-PERSUS':
+            elif cabin_types[i] == 'Non-PRSEUS':
                 weight_analysis.settings.PRSEUS = False
             for wing in vehicle.wings: 
                 if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):

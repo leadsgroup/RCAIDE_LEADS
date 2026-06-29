@@ -6,6 +6,9 @@
             "thrust_reversers": 0.0,
             "miscellaneous": 0.0,
             "fuel_system": 14.168577143178506,
+            "fuel_tanks": 0,
+            "electrical_cabling": 0,
+            "thermal_management": 0,
             "battery": 0,
             "motors": 0
         },
@@ -15,6 +18,7 @@
             "fuselage": 149.01833127792446,
             "landing_gear": 77.23621583887093,
             "nacelle": 0.0,
+            "booms": 0,
             "paint": 0,
             "total": 349.4096206310854
         },

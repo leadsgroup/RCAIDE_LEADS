@@ -101,6 +101,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
     W_oper.misc                      = 0.0
     W_oper.flight_crew               = 0.0
     W_oper.flight_attendants         = 0.0
+    W_oper.passenger_service         = 0.0
     W_oper.total                     = 0.0
                                       
     
@@ -131,6 +132,9 @@ def compute_operating_empty_weight(vehicle, settings=None):
     output.empty.propulsion.thrust_reversers    = 0
     output.empty.propulsion.miscellaneous       = 0
     output.empty.propulsion.fuel_system         = 0
+    output.empty.propulsion.fuel_tanks          = 0
+    output.empty.propulsion.electrical_cabling  = 0
+    output.empty.propulsion.thermal_management  = 0
 
     W_energy_network                   = Data()
     W_energy_network.total             = 0
@@ -153,7 +157,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
         for bus in network.busses:  
             for battery in bus.battery_modules: 
                 W_energy_network_total  += battery.mass_properties.mass * Units.kg
-                W_energy_network.W_battery = battery.mass_properties.mass * Units.kg
+                W_energy_network.W_battery += battery.mass_properties.mass * Units.kg
                 
         for propulsor in network.propulsors:
             if 'motor' in propulsor:                           
@@ -181,7 +185,10 @@ def compute_operating_empty_weight(vehicle, settings=None):
     output.empty.propulsion.thrust_reversers    = W_energy_network.W_thrust_reverser
     output.empty.propulsion.miscellaneous       = W_energy_network.W_engine_controls + W_energy_network.W_starter
     output.empty.propulsion.fuel_system         = W_energy_network.W_fuel_system
-   
+    output.empty.propulsion.fuel_tanks          = 0
+    output.empty.propulsion.electrical_cabling  = 0
+    output.empty.propulsion.thermal_management  = 0
+
     num_main_wings      = 0
     W_main_wing        = 0.0
     W_tail_horizontal  = 0.0
@@ -241,10 +248,11 @@ def compute_operating_empty_weight(vehicle, settings=None):
     output.empty.structural.empennage            = W_tail_horizontal +  W_tail_vertical 
     output.empty.structural.fuselage             = W_fuselage_total
     output.empty.structural.landing_gear         = landing_gear.main +  landing_gear.nose  
-    output.empty.structural.nacelle              = W_energy_network.W_nacelle 
+    output.empty.structural.nacelle              = W_energy_network.W_nacelle
+    output.empty.structural.booms                = 0
     output.empty.structural.paint                = 0  # TODO reconcile FLOPS paint calculations with Raymer and RCAIDE baseline
     output.empty.structural.total                = output.empty.structural.wings   + output.empty.structural.fuselage + output.empty.structural.landing_gear\
-                                                   + output.empty.structural.paint + output.empty.structural.nacelle + output.empty.structural.empennage 
+                                                   + output.empty.structural.paint + output.empty.structural.nacelle + output.empty.structural.empennage
 
     ##-------------------------------------------------------------------------------                 
     # Accumulate Systems Weight

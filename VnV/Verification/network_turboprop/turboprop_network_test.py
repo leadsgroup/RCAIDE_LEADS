@@ -63,12 +63,10 @@ def main():
     thrust     = results.segments.climbing_cruise.conditions.energy.propulsors['starboard_propulsor'].thrust[3][0]
     throttle   = results.segments.climbing_cruise.conditions.energy.propulsors['starboard_propulsor'].throttle[3][0]  
     
-    #print values for resetting regression
-    show_vals = True
-    if show_vals:
-        data = [thrust, throttle]
-        for val in data:
-            print(val)
+    #print values for resetting regression 
+    data = [thrust, throttle]
+    for val in data:
+        print(val)
     
     # Truth values
     thrust_truth     = 22849.679172145035

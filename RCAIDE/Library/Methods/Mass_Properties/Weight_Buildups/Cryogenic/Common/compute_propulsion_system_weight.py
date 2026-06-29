@@ -93,7 +93,7 @@ def compute_propulsion_system_weight(vehicle,ref_propulsor, settings):
     if ref_nacelle is not None:
         WEC, WSTART     = compute_misc_propulsion_system_weight(vehicle,ref_propulsor,ref_nacelle,NENG)
     WTHR            = compute_thrust_reverser_weight(ref_propulsor,NENG)
-    WPRO            = NENG * WENG +  WTANK + WLINE + WPUMP + WEC + WSTART + WTHR # Nacelle weight is not included in the propulsion system weight. it is included in the structural weight. 
+    WPRO            = NENG * WENG + WTANK + WLINE + WPUMP + WEC + WSTART + WTHR # Nacelle weight is not included in the propulsion system weight. it is included in the structural weight.
 
     output                      = Data()
     output.W_prop               = WPRO
@@ -131,11 +131,13 @@ def compute_fuel_system_weight(vehicle, NENG,settings):
  
     for network in vehicle.networks:
         for fuel_line in network.fuel_lines:
-            for fuel_tank in fuel_line.fuel_tanks: 
-                WTANK += fuel_tank.tank_accesories_weight_factor * (fuel_tank.insulation.mass_properties.mass + fuel_tank.inner_structure.mass_properties.mass) # The factor 0.5 covers all the other tank adjustments
+            for fuel_tank in fuel_line.fuel_tanks:
+                tank_weight = fuel_tank.tank_accesories_weight_factor * (fuel_tank.insulation.mass_properties.mass + fuel_tank.inner_structure.mass_properties.mass)
+                fuel_tank.mass_properties.mass = tank_weight
+                WTANK += tank_weight
             
             compute_distributor_center_of_gravity(fuel_line,vehicle, length=0)
-            WLINE = fuel_line.mass_properties.mass        
+            WLINE += fuel_line.mass_properties.mass
         
         for converter in network.converters:
             if issubclass(type(converter),RCAIDE.Library.Components.Powertrain.Converters.Pump):

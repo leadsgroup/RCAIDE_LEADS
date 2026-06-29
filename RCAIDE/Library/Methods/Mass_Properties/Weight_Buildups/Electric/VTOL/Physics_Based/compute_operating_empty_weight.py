@@ -45,24 +45,18 @@ def compute_operating_empty_weight(vehicle,settings = None):
         Output data dictionary has the following book-keeping hierarchical structure:
 
             Output
-                Total.
-                    Empty.
-                        Structural.
-                            Fuselage
-                            Wings
-                            Landing Gear
-                            Rotors
-                            Hubs
-                        Seats
-                        Battery
-                        Motors
-                        Servo
-                    Systems.
-                        Avionics
-                        ECS               - Environmental Control System
-                        BRS               - Ballistic Recovery System
-                        Wiring            - Aircraft Electronic Wiring
-                    Payload
+                empty.
+                    propulsion.
+                        total, engines, thrust_reversers, miscellaneous, fuel_system, battery, motors
+                    structural.
+                        total, wings, fuselage, empennage, landing_gear, nacelle, booms, paint
+                    systems.
+                        total, control_systems, apu, electrical, avionics, hydraulics, furnishings, air_conditioner, instruments
+                payload.
+                    total, passengers, baggage, cargo
+                operational_items.
+                    total, misc, flight_crew, flight_attendants, passenger_service
+                empty.total, zero_fuel_weight, max_takeoff
     """
 
     diff        = 100
@@ -309,53 +303,74 @@ def compute_operating_empty_weight(vehicle,settings = None):
         #-------------------------------------------------------------------------------
         output                                            = Data()
         output.empty                                      = Data()
-        
-        # structural 
+
+        # structural
         output.empty.structural                           = Data()
-        output.empty.structural.booms                     = miscelleneous_weight_factor *weight.booms
-        output.empty.structural.fusleage                  = miscelleneous_weight_factor *weight.fuselage
-        output.empty.structural.landing_gear              = miscelleneous_weight_factor *weight.landing_gear
-        output.empty.structural.wings                     = miscelleneous_weight_factor *weight.wings_total
-        output.empty.structural.total                     = output.empty.structural.booms + output.empty.structural.fusleage + output.empty.structural.landing_gear + output.empty.structural.wings
-        
-        # propulsion 
+        output.empty.structural.wings                     = miscelleneous_weight_factor * weight.wings_total
+        output.empty.structural.fuselage                  = miscelleneous_weight_factor * weight.fuselage
+        output.empty.structural.empennage                 = 0.0
+        output.empty.structural.landing_gear              = miscelleneous_weight_factor * weight.landing_gear
+        output.empty.structural.nacelle                   = 0.0
+        output.empty.structural.booms                     = miscelleneous_weight_factor * weight.booms
+        output.empty.structural.paint                     = 0.0
+        output.empty.structural.total                     = (output.empty.structural.wings + output.empty.structural.fuselage
+                                                            + output.empty.structural.empennage + output.empty.structural.landing_gear
+                                                            + output.empty.structural.nacelle + output.empty.structural.booms
+                                                            + output.empty.structural.paint)
+
+        # propulsion
         output.empty.propulsion                           = Data()
-        output.empty.propulsion.motors                    = miscelleneous_weight_factor *weight.motors
-        output.empty.propulsion.rotors                    = miscelleneous_weight_factor *weight.rotors
-        output.empty.propulsion.hubs                      = miscelleneous_weight_factor *weight.hubs
-        output.empty.propulsion.servos                    = miscelleneous_weight_factor *weight.servos
-        output.empty.propulsion.wiring                    = miscelleneous_weight_factor *weight.wiring
-        output.empty.propulsion.battery                   = miscelleneous_weight_factor *weight.battery
-        output.empty.propulsion.fuel_cell                 = miscelleneous_weight_factor *weight.fuel_cell
-        output.empty.propulsion.TMS                       = miscelleneous_weight_factor *weight.thermal_management_system.total
-        output.empty.propulsion.total                     = output.empty.propulsion.motors +  output.empty.propulsion.rotors +  output.empty.propulsion.hubs +\
-                                                            output.empty.propulsion.servos +  output.empty.propulsion.wiring +  output.empty.propulsion.battery +\
-                                                            output.empty.propulsion.fuel_cell +   output.empty.propulsion.TMS  
-        # systems 
+        output.empty.propulsion.engines                   = miscelleneous_weight_factor * (weight.rotors + weight.servos + weight.hubs)
+        output.empty.propulsion.thrust_reversers          = 0.0
+        output.empty.propulsion.miscellaneous             = miscelleneous_weight_factor * (weight.BRS + weight.fuel_cell)
+        output.empty.propulsion.fuel_system               = 0.0
+        output.empty.propulsion.fuel_tanks                = 0.0
+        output.empty.propulsion.electrical_cabling        = miscelleneous_weight_factor * weight.wiring
+        output.empty.propulsion.thermal_management        = miscelleneous_weight_factor * weight.thermal_management_system.total
+        output.empty.propulsion.battery                   = miscelleneous_weight_factor * weight.battery
+        output.empty.propulsion.motors                    = miscelleneous_weight_factor * weight.motors
+        output.empty.propulsion.total                     = (output.empty.propulsion.engines + output.empty.propulsion.thrust_reversers
+                                                            + output.empty.propulsion.miscellaneous + output.empty.propulsion.fuel_system
+                                                            + output.empty.propulsion.electrical_cabling + output.empty.propulsion.thermal_management
+                                                            + output.empty.propulsion.battery + output.empty.propulsion.motors)
+
+        # systems
         output.empty.systems                              = Data()
-        output.empty.systems.environmental_control_system = miscelleneous_weight_factor * weight.ECS
+        output.empty.systems.control_systems              = 0.0
+        output.empty.systems.apu                          = 0.0
+        output.empty.systems.electrical                   = 0.0
         output.empty.systems.avionics                     = miscelleneous_weight_factor * weight.avionics
-        output.empty.systems.seats                        = miscelleneous_weight_factor * weight.seats
-        output.empty.systems.balistic_recovery_system     = miscelleneous_weight_factor * weight.BRS
-        output.empty.systems.total                        = output.empty.systems.environmental_control_system + output.empty.systems.avionics +  output.empty.systems.seats +  output.empty.systems.balistic_recovery_system
-        
-        # operational items 
-        output.operational_items = Data()
-        output.operational_items.total = 0
-        
-        # payload 
-        output.payload            = Data()
-        output.payload.passengers = weight.passengers
-        output.payload.payload    = weight.payload
-        output.payload.total      = weight.passengers + weight.payload
-        
-        # total weight 
+        output.empty.systems.hydraulics                   = 0.0
+        output.empty.systems.furnishings                  = miscelleneous_weight_factor * weight.seats
+        output.empty.systems.air_conditioner              = miscelleneous_weight_factor * weight.ECS
+        output.empty.systems.instruments                  = 0.0
+        output.empty.systems.total                        = (output.empty.systems.control_systems + output.empty.systems.apu
+                                                            + output.empty.systems.electrical + output.empty.systems.avionics
+                                                            + output.empty.systems.hydraulics + output.empty.systems.furnishings
+                                                            + output.empty.systems.air_conditioner + output.empty.systems.instruments)
+
+        # payload
+        output.payload                  = Data()
+        output.payload.passengers       = weight.passengers
+        output.payload.baggage          = 0.0
+        output.payload.cargo            = weight.payload
+        output.payload.total            = output.payload.passengers + output.payload.baggage + output.payload.cargo
+
+        # operational items
+        output.operational_items                      = Data()
+        output.operational_items.misc                 = 0.0
+        output.operational_items.flight_crew          = 0.0
+        output.operational_items.flight_attendants    = 0.0
+        output.operational_items.passenger_service    = 0.0
+        output.operational_items.total                = (output.operational_items.misc + output.operational_items.flight_crew
+                                                        + output.operational_items.flight_attendants + output.operational_items.passenger_service)
+
+        # total weight
         output.empty.total        = output.empty.systems.total + output.empty.propulsion.total + output.empty.structural.total + output.operational_items.total
         output.zero_fuel_weight   = output.empty.total + output.payload.total
-        output.fuel               = 0
-        output.total              = output.empty.total + output.payload.total 
+        output.max_takeoff        = output.empty.total + output.payload.total
         
-        diff = MTOW -output.total
+        diff = MTOW - output.max_takeoff
         MTOW -= diff
         iterations     += 1 
     

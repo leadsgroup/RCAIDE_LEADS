@@ -48,6 +48,9 @@ def compute_operating_empty_weight(vehicle, settings=None):
     output.empty.propulsion.thrust_reversers    = 0
     output.empty.propulsion.miscellaneous       = 0
     output.empty.propulsion.fuel_system         = 0
+    output.empty.propulsion.fuel_tanks          = 0
+    output.empty.propulsion.electrical_cabling  = 0
+    output.empty.propulsion.thermal_management  = 0
 
     W_energy_network                   = Data()
     W_energy_network.total             = 0
@@ -96,8 +99,11 @@ def compute_operating_empty_weight(vehicle, settings=None):
     output.empty.propulsion.thrust_reversers    = W_energy_network.W_thrust_reverser
     output.empty.propulsion.miscellaneous       = W_energy_network.W_engine_controls + W_energy_network.W_starter
     output.empty.propulsion.fuel_system         = W_energy_network.W_fuel_system
+    output.empty.propulsion.fuel_tanks          = 0
+    output.empty.propulsion.electrical_cabling  = 0
+    output.empty.propulsion.thermal_management  = 0
 
-    ##-------------------------------------------------------------------------------                 
+    ##-------------------------------------------------------------------------------
     # Wing Weight 
     ##-------------------------------------------------------------------------------  
     num_main_wings      = 0
@@ -143,13 +149,15 @@ def compute_operating_empty_weight(vehicle, settings=None):
     # Landing Gear Weight
     ##------------------------------------------------------------------------------- 
     landing_gear = Raymer.compute_landing_gear_weight(vehicle)
+    num_main_gears = sum(1 for LG in vehicle.landing_gears if isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear))
+    num_nose_gears = sum(1 for LG in vehicle.landing_gears if isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear))
     for LG in vehicle.landing_gears:
-        if isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear): 
-            LG.mass_properties.mass = landing_gear.main 
-        elif isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear):  
-            LG.mass_properties.mass = landing_gear.nose    
-    
-    ##-------------------------------------------------------------------------------                 
+        if isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear):
+            LG.mass_properties.mass = landing_gear.main / max(num_main_gears, 1)
+        elif isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear):
+            LG.mass_properties.mass = landing_gear.nose / max(num_nose_gears, 1)
+
+    ##-------------------------------------------------------------------------------
     # Accumulate Structural Weight
     ##-------------------------------------------------------------------------------   
     output.empty.structural                       = Data()
@@ -158,6 +166,8 @@ def compute_operating_empty_weight(vehicle, settings=None):
     output.empty.structural.fuselage              = W_fuselage_total
     output.empty.structural.landing_gear          = landing_gear.main +  landing_gear.nose  
     output.empty.structural.nacelle               = W_energy_network.W_nacelle
+    output.empty.structural.booms                 = 0
+    output.empty.structural.paint                 = 0
     output.empty.structural.total                 = W_main_wing +   W_tail_horizontal +  W_tail_vertical + W_fuselage_total + landing_gear.main +  landing_gear.nose + W_energy_network.W_nacelle
 
     ##-------------------------------------------------------------------------------                 

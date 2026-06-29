@@ -115,7 +115,7 @@ def compute_propulsion_system_weight(vehicle,network,settings):
     WFSYS           = compute_fuel_system_weight(vehicle, NENG,settings) 
 
     output                      = Data()
-    output.W_prop               = WENG + WFSYS + WTHR + WSTART + WEC + WNAC
+    output.W_prop               = WENG + WFSYS + WTHR + WSTART + WEC
     output.W_thrust_reverser    = WTHR
     output.W_starter            = WSTART*JNENG
     output.W_engine_controls    = WEC*JNENG

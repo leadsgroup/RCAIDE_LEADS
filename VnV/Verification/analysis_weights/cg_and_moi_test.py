@@ -118,10 +118,10 @@ def BWB_Test():
     print('BWB  OEW CG Mass Percentage: ' + str(mission_vehicle.mass_properties.OEW_CG_mass_percentage) + ' %')
     print('BWB  Moment of Inertia')
     print(computed_moi)
-    truth_OEW_CG_mass_percentage = 99.34
-    truth_moi = np.array([[ 3718367.96918734,  1306523.97511038,  -831635.12697115],
-                          [ 1306523.97511038, 13798300.18477076,    52136.11018868],
-                          [ -831635.12697115,    52136.11018868, 16343590.45276982]])
+    truth_OEW_CG_mass_percentage = 95.66
+    truth_moi = np.array([[ 3673194.85814275,  1408681.72257896,  -792445.12519905],
+                          [ 1408681.72257896, 12678162.42794893,    45141.97278135],
+                          [ -792445.12519905,    45141.97278135, 15212804.74026015]])
 
     error_moi = abs((computed_moi - truth_moi) / truth_moi)
     assert np.all(error_moi < 1e-2),\
@@ -155,10 +155,10 @@ def Transport_Aircraft_Test():
     print('Transport Moment of Inertia')
     print(MOI)
 
-    truth_OEW_CG_mass_percentage = 111.88
-    truth_moi  = np.array([[ 7327797.65002217,  -102481.15213347,    92929.8510052 ],
-                           [ -102481.15213347, 34573821.33595975,   210365.5831478 ],
-                           [   92929.8510052 ,   210365.5831478 , 37408104.00563044]])
+    truth_OEW_CG_mass_percentage = 99.32
+    truth_moi  = np.array([[ 7065324.68531665,   -37427.59065828,  -251815.96462790],
+                           [  -37427.59065828, 33603798.78999502,   111974.20695348],
+                           [ -251815.96462790,   111974.20695348, 36335240.25372727]])
 
     error_moi = abs((MOI - truth_moi) / np.where(truth_moi != 0, truth_moi, 1))
     assert np.all(error_moi < 1e-6),\
@@ -332,12 +332,12 @@ def BWB_base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Weights
     # ------------------------------------------------------------------
-    weights = RCAIDE.Framework.Analyses.Weights.Conventional_BWB() 
-    weights.aircraft_type                                                    = 'BWB'
-    weights.settings.FLOPS.fidelity                                          = 'Complex' 
-    weights.settings.run_weights_analysis                                    = True
-    weights.settings.run_center_of_gravity_analysis                          = True
-    weights.settings.run_moments_of_inertia_analysis                         = True
+    weights = RCAIDE.Framework.Analyses.Weights.Cryogenic_BWB()
+    weights.aircraft_type                                 = 'BWB'
+    weights.settings.FLOPS.fidelity                       = 'Complex' 
+    weights.settings.run_weights_analysis                 = True
+    weights.settings.run_center_of_gravity_analysis       = True
+    weights.settings.run_moments_of_inertia_analysis      = True
     weights.print_weight_analysis_report                  = False
     analyses.append(weights)
 
