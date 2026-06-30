@@ -15,6 +15,7 @@ from RCAIDE.Library.Plots import *
 from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Airframe.landing_gear_noise_model import compute_landing_gear_noise
 from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Airframe.flap_noise_model import flap_noise_model
 from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Airframe.slat_noise_model import slat_noise
+from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Propulsion.Engine_Noise.compute_fan_noise import compute_fan_noise
 from RCAIDE.Framework.Mission.Common                                              import Results  
 from RCAIDE.Framework.Mission.Segments.Segment                                    import Segment 
 from RCAIDE.Framework.Mission.Common                                              import Conditions 
@@ -97,7 +98,8 @@ flight_params: dict
     gamma_s = np.radians(20)
     sigma_s =  np.radians(25)
     alpha =  np.radians(30)
-    # define operating conditions                                            
+
+ # define operating conditions                                            
     a                       = 343.376
     T                       = 288.16889478  
     density                 = 1.2250	
@@ -107,6 +109,33 @@ flight_params: dict
     U = 103 #aircraft velocity
     M = 0.2 #mach number
     frequency_flp = np.logspace(1, 4, 100)
+
+    #define params for core noise model
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Propulsor: Starboard Propulsor
+    #------------------------------------------------------------------------------------------------------------------------------------
+    turbofan                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan()
+    turbofan.tag                                = 'starboard_propulsor'
+    turbofan.bypass_ratio                       = 5.4
+    turbofan.design_altitude                    = 35000.0*Units.ft
+    turbofan.design_mach_number                 = 0.78
+    turbofan.design_thrust                      = 35000.0* Units.N             
+
+    # fan
+    fan                                         = RCAIDE.Library.Components.Powertrain.Converters.Fan()
+    fan.tag                                     = 'fan'
+    fan.polytropic_efficiency                   = 0.93
+    fan.pressure_ratio                          = 1.7
+    turbofan.fan                                = fan
+
+    # working fluid
+    turbofan.working_fluid                      = RCAIDE.Library.Attributes.Gases.Air()
+    ram                                         = RCAIDE.Library.Components.Powertrain.Converters.Ram()
+    ram.tag                                     = 'ram'
+    turbofan.ram                                = ram
+
+    m = None #mass flow rate
+
 
     # define microphone locations
     microphone_locations = np.zeros((1,3))   
@@ -133,7 +162,23 @@ flight_params: dict
     conditions.frames.body.transform_to_inertial[:,1,1]    = 1
     conditions.frames.body.transform_to_inertial[:,2,0]    = -np.sin(AoA)
     conditions.frames.body.transform_to_inertial[:,2,2]    = np.cos(AoA)     
-    segment.state.conditions                               = conditions 
+
+    segment.state.conditions                                 = conditions 
+
+
+    turbofan.append_operating_conditions(segment, segment.state.conditions.energy,segment.state.conditions.aeroacoustics)
+ 
+    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.angular_velocity = 4200
+    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.exit_velocity = 416
+    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.exit_stagnation_temperature = T+80
+    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.exit_stagnation_pressure = 152*1000
+    
+    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.number_of_blades = 54
+    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.diameter = 70 / Units.inches
+
+    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.static_temperature_output = T + 80
+    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.static_temperature_input  = T
+    
       
     segment.state.conditions.expand_rows(ctrl_pts)   
            
@@ -175,16 +220,18 @@ flight_params: dict
     # plt.show()
 
     slat_noise1 = slat_noise(microphone_locations, phi, theta, Ls, gamma_s, sigma_s, alpha, segment, frequency, A=1e-5)
-    print(slat_noise1)
-    fig, ax = plt.subplots(figsize=(8, 5))
-    ax.plot(frequency_flp,slat_noise1[0],label='HF Curve')
-    # # Logarithmic X-axis
-    ax.set_xscale('log')
-    plt.xlim([10**2,10**4])
+    # print(slat_noise1)
+    # fig, ax = plt.subplots(figsize=(8, 5))
+    # ax.plot(frequency_flp,slat_noise1[0],label='HF Curve')
+    # # # Logarithmic X-axis
+    # ax.set_xscale('log')
+    # plt.xlim([10**2,10**4])
 
-    plt.legend()
-    plt.show()
+    # plt.legend()
+    # plt.show()
 
+    core_noise1 = compute_fan_noise(microphone_locations, turbofan,m, segment.state.conditions.aeroacoustics, segment, frequency)
+    print(core_noise1)
     
     return  
 

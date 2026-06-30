@@ -18,10 +18,10 @@ import numpy as np
 import math
 
 # ----------------------------------------------------------------------------------------------------------------------     
-#  turbofan engine core noise 
+#  turbofan engine core noise
 # ---------------------------------------------------------------------------------------------------------------------- 
 
-def compute_core_noise(microphone_locations, turbofan, aeroacoustic_data, segment, settings):
+def compute_core_noise(microphone_locations, turbofan, aeroacoustic_data, segment, frequencies):
     conditions = segment.conditions
     N1                     = aeroacoustic_data.fan.angular_velocity / Units.rpm
     Velocity_secondary     = aeroacoustic_data.fan_nozzle.exit_velocity   
@@ -71,7 +71,7 @@ def compute_core_noise(microphone_locations, turbofan, aeroacoustic_data, segmen
     fan_nozzle_conditions   = conditions.energy.converters[fan_nozzle.tag]    
 
 
-    frequency              = settings.center_frequencies[5:]        
+    frequency              = frequencies    
     n_cpts                 = len(noise_time)     
     n_freq                  = len(frequency) 
     n_mic                  = len(microphone_locations)
