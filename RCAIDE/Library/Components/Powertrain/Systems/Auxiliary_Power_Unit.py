@@ -21,5 +21,5 @@ class Auxiliary_Power_Unit(Systems):
         """
         Sets default values for the auxillary power unit attributes.
         """                  
-        self.tag        = 'auxillary_power_unit'
+        self.tag        = 'auxiliary_power_unit'
     
