@@ -618,48 +618,46 @@ def vehicle_setup() :
     ##  Systems
     ##-------------------------------------------------------------------------------------------------------------------------   
     avionics =  RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.origin                   = [[1,0,0]]   
-    vehicle.append_component(avionics)
+    avionics.origin                   = [[1,0,0]]
+    net.systems.append(avionics)
 
-    flight_controls =  RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()    
-    flight_controls.origin            = [[0.5 * vehicle.wings.main_wing.chords.root,0,0]]  
-    vehicle.append_component(flight_controls)
-    
-    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()  
+    flight_controls =  RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
+    flight_controls.origin            = [[0.5 * vehicle.wings.main_wing.chords.root,0,0]]
+    net.systems.append(flight_controls)
+
+    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
     auxillary_power_unit.tag= 'fuel_cell_apu_0'
     auxillary_power_unit.mass_properties.mass = 235.8
-    auxillary_power_unit.origin       = [[0.76 * vehicle.wings.main_wing.chords.root,0,0]] 
-    vehicle.append_component(auxillary_power_unit)
-    
-    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()  
+    auxillary_power_unit.origin       = [[0.76 * vehicle.wings.main_wing.chords.root,0,0]]
+    net.systems.append(auxillary_power_unit)
+
+    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
     auxillary_power_unit.tag= 'fuel_cell_apu_1'
     auxillary_power_unit.mass_properties.mass = 235.8
-    auxillary_power_unit.origin       = [[0.76 * vehicle.wings.main_wing.chords.root,-2,0]]  
-    vehicle.append_component(auxillary_power_unit)
-    
-    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()  
-    auxillary_power_unit.origin       = [[0.76 * vehicle.wings.main_wing.chords.root,2,0]] 
+    auxillary_power_unit.origin       = [[0.76 * vehicle.wings.main_wing.chords.root,-2,0]]
+    net.systems.append(auxillary_power_unit)
+
+    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
+    auxillary_power_unit.origin       = [[0.76 * vehicle.wings.main_wing.chords.root,2,0]]
     auxillary_power_unit.mass_properties.mass = 235.8
     auxillary_power_unit.tag= 'fuel_cell_apu_2'
-    vehicle.append_component(auxillary_power_unit)
+    net.systems.append(auxillary_power_unit)
 
+    electrical =  RCAIDE.Library.Components.Powertrain.Systems.Electrical()
+    electrical.origin                 = [[0.2 * vehicle.wings.main_wing.chords.root,0,0]]
+    net.systems.append(electrical)
 
+    hydraulics =  RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
+    hydraulics.origin                 = [[0.70 * vehicle.wings.main_wing.chords.root,0,0]]
+    net.systems.append(hydraulics)
 
-    electrical =  RCAIDE.Library.Components.Powertrain.Systems.Electrical()      
-    electrical.origin                 = [[0.2 * vehicle.wings.main_wing.chords.root,0,0]]  
-    vehicle.append_component(electrical)
-    
-    hydraulics =  RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()  
-    hydraulics.origin                 = [[0.70 * vehicle.wings.main_wing.chords.root,0,0]]  
-    vehicle.append_component(hydraulics)
-    
-    environmental_controls =  RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()  
-    environmental_controls.origin     = [[0.2 * vehicle.wings.main_wing.chords.root,0,0]]   
-    vehicle.append_component(environmental_controls)
-    
-    instruments =  RCAIDE.Library.Components.Powertrain.Systems.Instruments()  
-    instruments.origin                = [[1,0,0]]  
-    vehicle.append_component(instruments)    
+    environmental_controls =  RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
+    environmental_controls.origin     = [[0.2 * vehicle.wings.main_wing.chords.root,0,0]]
+    net.systems.append(environmental_controls)
+
+    instruments =  RCAIDE.Library.Components.Powertrain.Systems.Instruments()
+    instruments.origin                = [[1,0,0]]
+    net.systems.append(instruments)    
 
     #------------------------------------------------------------------------------------------------------------------------- 
     #  PUMPS      

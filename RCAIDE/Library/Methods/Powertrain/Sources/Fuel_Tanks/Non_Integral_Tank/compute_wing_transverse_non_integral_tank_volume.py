@@ -266,7 +266,7 @@ def compute_wing_transverse_non_integral_tank_volume(fuel_tank, wing,fuel_tanks)
     # fuel tank C.G.
     fuel_tank.fuel.mass_properties.center_of_gravity = [[fuel_tank.lengths.external / 2, 0, 0]]
     fuel_tank.mass_properties.center_of_gravity      = [[fuel_tank.lengths.external / 2, 0, 0]]
-    if fuel_tank.orientation_euler_angles == [0., 0., np.pi/2]:
+    if np.allclose(fuel_tank.orientation_euler_angles, [0., 0., np.pi/2]):
         fuel_tank.fuel.mass_properties.center_of_gravity = [[fuel_tank.diameters.external / 2, 0, 0]]
         fuel_tank.mass_properties.center_of_gravity      = [[fuel_tank.diameters.external / 2, 0, 0]]
 

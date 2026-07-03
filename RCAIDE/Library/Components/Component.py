@@ -42,14 +42,24 @@ class Component(Data):
         Flag indicating if wing is xy_plane_symmetric about x-y plane, defaults to True
         
     origin : ndarray
-        3D coordinates [x, y, z] defining component's reference point, 
+        3D coordinates [x, y, z] defining component's reference point,
         defaults to [0.0, 0.0, 0.0]
+
+    orientation_euler_angles : list of float
+        Intrinsic X→Y→Z Euler angles ``[φ_x, φ_y, φ_z]`` in radians that map
+        the component frame to the vehicle body frame.
+        Applied via ``scipy.spatial.transform.Rotation.from_euler('xyz', ...)``:
+        first rotate φ_x about X, then φ_y about the new Y, then φ_z about the
+        new Z.  ``[0.0, 0.0, 0.0]`` (default) means the component is aligned with
+        the vehicle body axes (e.g. thrust along vehicle +x).
+        Common example: ``[0, π/2, 0]`` rotates 90° about Y, pointing thrust in
+        the vehicle +z direction (used for lift rotors).
 
     Notes
     -----
-    The Component class serves as the foundation for all physical parts in RCAIDE. 
+    The Component class serves as the foundation for all physical parts in RCAIDE.
     It provides:
-    
+
     * Basic geometric positioning
     * Mass properties tracking
     * Container functionality for sub-components

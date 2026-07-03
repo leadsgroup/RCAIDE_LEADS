@@ -83,7 +83,7 @@ def harmonic_noise_line(conditions,coordinates,rotor,settings,aeroacoustics,cpt)
     num_sec                 = len(rotor.radius_distribution)
     num_az                  = aeroacoustic_data.number_azimuthal_stations 
     orientation             = np.array(rotor.orientation_euler_angles) * 1 
-    body2thrust             = sp.spatial.transform.Rotation.from_rotvec(orientation).as_matrix()  
+    body2thrust             = sp.spatial.transform.Rotation.from_euler('xyz', orientation).as_matrix()
     commanded_thrust_vector = np.atleast_2d(conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle[cpt])
     for jj,airfoil in enumerate(airfoils):
         airfoil_points = airfoil.number_of_points

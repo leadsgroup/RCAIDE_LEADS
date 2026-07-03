@@ -618,11 +618,11 @@ def vehicle_setup(cell_chemistry, btms_type):
     flight_controls.length =  0.2
     flight_controls.width  =  0.2
     flight_controls.height =  0.2
-    vehicle.append_component(flight_controls)
-    
-    #------------------------------------------------------------------------------------------------------------------------------------  
+    net.systems.append(flight_controls)
+
+    #------------------------------------------------------------------------------------------------------------------------------------
     # Avionics
-    #------------------------------------------------------------------------------------------------------------------------------------  
+    #------------------------------------------------------------------------------------------------------------------------------------
     avionics                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
     avionics.power_draw          = 30. # Watts
     net.systems.append(avionics)
