@@ -24,17 +24,17 @@
             "total": 54265.227624668136
         },
         "systems": {
-            "control_systems": 1640.093734900792,
-            "apu": 647.3267839232889,
-            "electrical": 1146.4862471843442,
-            "avionics": 1297.751772059812,
-            "hydraulics": 1290.8506672836997,
+            "control_systems": 2.0,
+            "apu": 883.1267839232888,
+            "electrical": 2.0,
+            "avionics": 2.0,
+            "hydraulics": 2.0,
             "furnishings": 172.81869297,
-            "air_conditioner": 1726.34792113087,
-            "instruments": 449.3525469679759,
-            "total": 8371.028366420782
+            "air_conditioner": 2.0,
+            "instruments": 2.0,
+            "total": 1067.9454768932887
         },
-        "total": 81336.28488165275
+        "total": 74033.20199212526
     },
     "payload": {
         "total": 30390.68879,
@@ -49,6 +49,6 @@
         "passenger_service": 0.0,
         "total": 1433.5603762357728
     },
-    "zero_fuel_weight": 111726.97367165276,
+    "zero_fuel_weight": 104423.89078212527,
     "max_takeoff": 125000.0
 }
