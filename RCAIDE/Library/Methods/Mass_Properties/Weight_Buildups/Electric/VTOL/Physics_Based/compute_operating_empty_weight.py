@@ -320,7 +320,7 @@ def compute_operating_empty_weight(vehicle,settings = None):
 
         # propulsion
         output.empty.propulsion                           = Data()
-        output.empty.propulsion.engines                   = miscelleneous_weight_factor * (weight.rotors + weight.servos + weight.hubs)
+        output.empty.propulsion.engines                   = miscelleneous_weight_factor * weight.rotors 
         output.empty.propulsion.thrust_reversers          = 0.0
         output.empty.propulsion.miscellaneous             = miscelleneous_weight_factor * (weight.BRS + weight.fuel_cell)
         output.empty.propulsion.fuel_system               = 0.0
@@ -328,7 +328,7 @@ def compute_operating_empty_weight(vehicle,settings = None):
         output.empty.propulsion.electrical_cabling        = miscelleneous_weight_factor * weight.wiring
         output.empty.propulsion.thermal_management        = miscelleneous_weight_factor * weight.thermal_management_system.total
         output.empty.propulsion.battery                   = miscelleneous_weight_factor * weight.battery
-        output.empty.propulsion.motors                    = miscelleneous_weight_factor * weight.motors
+        output.empty.propulsion.motors                    = miscelleneous_weight_factor * (weight.motors+ weight.servos + weight.hubs)
         output.empty.propulsion.total                     = (output.empty.propulsion.engines + output.empty.propulsion.thrust_reversers
                                                             + output.empty.propulsion.miscellaneous + output.empty.propulsion.fuel_system
                                                             + output.empty.propulsion.electrical_cabling + output.empty.propulsion.thermal_management
