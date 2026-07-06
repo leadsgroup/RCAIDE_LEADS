@@ -61,12 +61,23 @@ If you use RCAIDE in your research, please cite:
 ```
 
 ## Userbase
-Shown below, the widespread adoption of RCAIDE demonstrates the reach of our codebase, providing validated and verified results to communities worldwide. Notable users include: 
+RCAIDE has seen widespread adoption across industry, government, and academia, providing validated and verified results to communities worldwide. Notable users include:
 * **Industry and Government:** NASA, Boeing, AFRL, Embraer, Joby, Vahana, Argonne National Labs, Bombardier, Raytheon, BAE, Google
 * **Academia:** MIT, Purdue, Embry Riddle, Carnegie Mellon, Princeton, Virginia Tech, Georgia Tech, Michigan, Stanford University, Cranfield University, University of Sydney, TU Delft, IIT, University of Toronto, Concordia University, ISAE
+
 <p align="center">
-  <img src="https://github.com/leadsgroup/RCAIDE_Website/blob/main/assets/img/SUAVE_Usage.png" width=50% height=50%> 
-</p> 
+  <a href="https://pepy.tech/projects/rcaide-leads">
+    <img src="https://static.pepy.tech/badge/rcaide-leads/month" alt="Downloads per month">
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://pepy.tech/projects/rcaide-leads">
+    <img src="https://static.pepy.tech/badge/rcaide-leads" alt="Total downloads">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://pepy.tech/projects/rcaide-leads">View live download statistics →</a>
+</p>
 
 ## Code Architecture 
 The code is arranged into repositories that house native data structures, functions, components, and subroutines for discipline analyses and support number-crunching operations. This allows developers or avid users seeking to modify the source code to navigate intuitively. Solely written in Python, an RCAIDE installation
