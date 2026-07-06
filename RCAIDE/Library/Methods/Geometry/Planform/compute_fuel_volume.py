@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_fuel_volume 
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_fuel_volume(vehicle, compute_fuel_volume = False, update_max_fuel = False):
+def compute_fuel_volume(vehicle, compute_fuel_volume = True, update_max_fuel = False):
     """
     Computes the total fuel volume and mass for all fuel tanks in a vehicle.
 
@@ -65,53 +65,34 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = False, update_max_fuel = 
     """
     wings             = vehicle.wings
     fuselages         = vehicle.fuselages 
-    total_fuel_volume = 0
-    total_fuel_mass   = 0
+    total_fuel_volume = 0    
     for network in vehicle.networks: 
         for fuel_line in network.fuel_lines:
             fuel_tanks = fuel_line.fuel_tanks
-            for fuel_tank in fuel_tanks:
-                # update fuel tag to ensure no overwriting of mass 
-                fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag          
-                try:
-                    compute_fuel_tank_volume = fuel_tank.compute_volume
-                except Exception as e:
-                    total_fuel_volume += getattr(fuel_tank.fuel.volume_properties, "net_volume", None)
-                    total_fuel_mass   += getattr(fuel_tank.fuel.mass_properties, "mass", None)
-                else:
-                    # if no error getting the method, run it normally
-                    if compute_fuel_volume:
-                        compute_fuel_tank_volume(wings, fuselages, fuel_tanks) 
-                        fuel_tank.fuel.volume_properties.net_volume = fuel_tank.fuel.mass_properties.mass / fuel_tank.fuel.density
-                    total_fuel_volume += fuel_tank.fuel.volume_properties.net_volume 
-                    total_fuel_mass   += fuel_tank.fuel.mass_properties.mass
-        
+            for fuel_tank in fuel_tanks: 
+                fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag 
+                if compute_fuel_volume:
+                    fuel_tank.compute_volume(wings, fuselages, fuel_tanks)
+                total_fuel_volume += fuel_tank.volume_properties.net_volume
+
         for bus in network.busses:
             fuel_tanks = bus.fuel_tanks
             for fuel_tank in fuel_tanks:
-            
-                # update fuel tag to ensure no overwriting of mass 
                 fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag
-                                
-                try:
-                    compute_fuel_tank_volume = fuel_tank.compute_volume
-                except Exception as e:
-                    total_fuel_volume += getattr(fuel_tank.fuel.volume_properties, "net_volume", None)
-                    total_fuel_mass   += getattr(fuel_tank.fuel.mass_properties, "mass", None)
-                else:
-                    # if no error getting the method, run it normally
-                    if compute_fuel_volume:
-                        compute_fuel_tank_volume(wings, fuselages, fuel_tanks) 
-                        fuel_tank.fuel.volume_properties.net_volume = fuel_tank.fuel.mass_properties.mass / fuel_tank.fuel.density
-                    total_fuel_volume += fuel_tank.fuel.volume_properties.net_volume 
-                    total_fuel_mass   += fuel_tank.fuel.mass_properties.mass
-                
-    # Assign Total Fuel Volume and to Vehicle 
-    if compute_fuel_volume:
-        vehicle.volume_properties.max_fuel   = total_fuel_volume
-
+                if compute_fuel_volume:
+                    fuel_tank.compute_volume(wings, fuselages, fuel_tanks)
+                total_fuel_volume += fuel_tank.volume_properties.net_volume
     
+    if compute_fuel_volume:
+        vehicle.volume_properties.max_fuel = total_fuel_volume
+
     if update_max_fuel:
+        total_fuel_mass = sum(
+            ft.volume_properties.net_volume * ft.fuel.density
+            for network in vehicle.networks
+            for distributor in list(network.fuel_lines) + list(network.busses)
+            for ft in distributor.fuel_tanks
+        )
         vehicle.mass_properties.max_fuel = total_fuel_mass
 
-    return 
+    return

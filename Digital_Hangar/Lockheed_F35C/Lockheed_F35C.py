@@ -365,15 +365,16 @@ def vehicle_setup():
     fuselage.heights.at_quarter_length          = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_three_quarters_length   = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_wing_root_quarter_chord = fuselage.heights.maximum * Units.meter
-    
-    # Segment  
-    segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment() 
-    segment.tag                                 = 'segment_0'    
+    fuselage.operational_items.origin = [[fuselage.lengths.total * 0.6, 0, 0]]
+
+    # Segment
+    segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
+    segment.tag                                 = 'segment_0'
     segment.percent_x_location                  = 0.0000
-    segment.percent_z_location                  = 0.00 
-    segment.height                              = 0.000 
-    segment.width                               = 0.000  
-    fuselage.append_segment(segment)   
+    segment.percent_z_location                  = 0.00
+    segment.height                              = 0.000
+    segment.width                               = 0.000
+    fuselage.append_segment(segment)
     
     # Segment  
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment() 
@@ -521,31 +522,75 @@ def vehicle_setup():
     # ------------------------------------------------------------------        
     #  Landing Gear
     # ------------------------------------------------------------------  
-    main_gear               = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
-    main_gear.tire_diameter = 24 * Units.inches
-    main_gear.strut_length  = 4.0 * Units.ft 
-    main_gear.units         = 2    
-    main_gear.wheels        = 1    
-    vehicle.append_component(main_gear)  
+    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
+    main_gear.tire_diameter                  = 30.0 * Units.inches
+    main_gear.rim_diameter                   = 15.0 * Units.inches
+    main_gear.tire_width                     = 9.5  * Units.inches
+    main_gear.strut_length                   = 4.0  * Units.ft
+    main_gear.origin                         = [[9.5, 2.2, 0.0]]
+    main_gear.units                          = 2
+    main_gear.wheels                         = 2
+    main_gear.number_of_gear_types_in_tandem = 1
+    main_gear.number_of_wheels_in_gear_type  = 1
+    main_gear.xz_plane_symmetric             = True
+    vehicle.append_component(main_gear)
 
-    nose_gear               = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()       
-    nose_gear.tire_diameter = 18. * Units.inches
-    nose_gear.units         = 1   
-    nose_gear.wheels        = 1    
-    nose_gear.strut_length  = 3.0 * Units.ft 
+    nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()
+    nose_gear.tire_diameter                  = 22.0 * Units.inches
+    nose_gear.rim_diameter                   = 10.0 * Units.inches
+    nose_gear.tire_width                     = 6.5  * Units.inches
+    nose_gear.strut_length                   = 3.0  * Units.ft
+    nose_gear.origin                         = [[2.0, 0, 0.0]]
+    nose_gear.units                          = 1
+    nose_gear.wheels                         = 2
+    nose_gear.number_of_gear_types_in_tandem = 1
+    nose_gear.number_of_wheels_in_gear_type  = 2
     vehicle.append_component(nose_gear)
 
     #------------------------------------------------------------------------------------------------------------------------------------
     # ########################################################## Energy Network ######################################################### 
     #------------------------------------------------------------------------------------------------------------------------------------ 
     #initialize the fuel network
-    net                                            = RCAIDE.Framework.Networks.Fuel() 
-    net.identical_propulsors                       = True 
-    
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    # Fuel Distribution Line 
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    fuel_line                                     = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line() 
+    net                                            = RCAIDE.Framework.Networks.Fuel()
+    net.identical_propulsors                       = True
+
+    ##  Systems
+    avionics =  RCAIDE.Library.Components.Powertrain.Systems.Avionics()
+    avionics.origin                   = [[1,0,0]]
+    net.systems.append(avionics)
+
+    flight_controls =  RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
+    flight_controls.origin            = [[6,0,0]]
+    net.systems.append(flight_controls)
+
+    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
+    auxillary_power_unit.origin       = [[12,0,0]]
+    net.systems.append(auxillary_power_unit)
+
+    electrical =  RCAIDE.Library.Components.Powertrain.Systems.Electrical()
+    electrical.origin                 = [[6,0,0]]
+    net.systems.append(electrical)
+
+    hydraulics =  RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
+    hydraulics.origin                 = [[6,0,0]]
+    net.systems.append(hydraulics)
+
+    environmental_controls =  RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
+    environmental_controls.origin     = [[6,0,-0.5]]
+    net.systems.append(environmental_controls)
+
+    instruments =  RCAIDE.Library.Components.Powertrain.Systems.Instruments()
+    instruments.origin                = [[5,0,0]]
+    net.systems.append(instruments)
+
+    furnishings = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
+    furnishings.origin                = [[6,0,0]]
+    net.systems.append(furnishings)
+
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Fuel Distribution Line
+    #------------------------------------------------------------------------------------------------------------------------------------
+    fuel_line                                     = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
 
     #------------------------------------------------------------------------------------------------------------------------------------ 
     # Propulsor: Starboard Propulsor

@@ -1,4 +1,3 @@
-  
 # Regression/scripts/Tests/network_ducted_fan/electric_ducted_fan_netowrk.py
 # 
 # Created:  Jul 2023, M. Clarke 
@@ -28,18 +27,20 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from NASA_X48    import vehicle_setup as vehicle_setup
 from NASA_X48    import configs_setup as configs_setup 
+import time
 
 # ----------------------------------------------------------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------------------------------------------------------
 
 def main():
+    ti = time.time()
 
     regression_flag = True # Keep True for regression 
     ducted_fan_type  = ['Blade_Element_Momentum_Theory', 'Rankine_Froude_Momentum_Theory']
     
     # truth values 
-    thrust_truth         = [68.13505513753238, 68.13505513753242]
+    thrust_truth         = [68.08079599102852, 68.08079599102851]
    
     for i in range(len(ducted_fan_type)):  
         # vehicle data
@@ -82,6 +83,10 @@ def main():
         for k,v in list(error.items()):
             assert(np.abs(v)<1e-5) 
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
 
 # ----------------------------------------------------------------------
@@ -190,8 +195,8 @@ def mission_setup(analyses):
     segment.assigned_control_variables.throttle.active                  = True           
     segment.assigned_control_variables.throttle.assigned_propulsors     = [['center_propulsor','starboard_propulsor','port_propulsor']] 
     segment.assigned_control_variables.throttle.initial_guess_values    = [[0.95]]    
-    segment.assigned_control_variables.body_angle.active                = True        
-    segment.assigned_control_variables.body_angle.initial_guess_values  = [[2.05 * Units.degree]]                   
+    segment.assigned_control_variables.pitch_angle.active                = True        
+    segment.assigned_control_variables.pitch_angle.initial_guess_values  = [[2.05 * Units.degree]]                   
       
     mission.append_segment(segment) 
     return mission

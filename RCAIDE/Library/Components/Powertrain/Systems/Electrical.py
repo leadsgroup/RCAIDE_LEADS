@@ -7,6 +7,8 @@
 # ----------------------------------------------------------------------------------------------------------------------   
 # RCAIDE imports  
 from .Systems import Systems
+from RCAIDE.Library.Methods.Powertrain.Systems.append_systems_conditions import append_systems_conditions
+from RCAIDE.Library.Methods.Powertrain.Systems.compute_systems_power_draw import compute_systems_power_draw
  
 # ----------------------------------------------------------------------------------------------------------------------
 #  Electrical
@@ -19,5 +21,4 @@ class Electrical(Systems):
         """
         Sets default values for the electrical system attributes.
         """                  
-        self.tag        = 'electrical'
-        self.power_draw = 0 
+        self.tag        = 'electrical'  

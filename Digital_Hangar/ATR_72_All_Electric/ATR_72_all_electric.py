@@ -53,7 +53,7 @@ def vehicle_setup():
     # mass properties
     vehicle.mass_properties.max_takeoff               = 23000  
     vehicle.mass_properties.max_zero_fuel             = 15651.8 
-    vehicle.mass_properties.max_payload               = 7100
+    vehicle.mass_properties.max_payload               = 7400
     vehicle.mass_properties.min_payload               = 0 
     vehicle.mass_properties.center_of_gravity         = [[13.0038, 0, 0.45]]  
     vehicle.mass_properties.moments_of_inertia.tensor = [[0,0,0]]  
@@ -76,18 +76,18 @@ def vehicle_setup():
 
 
     # ################################################# Landing Gear #############################################################    
-
     # ------------------------------------------------------------------
     #  Main Gear 
     # ------------------------------------------------------------------       
     main_gear                                 = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
-    main_gear.tire_diameter                   = 34  *  Units.inches 
-    main_gear.rim_diameter                    = 16  *  Units.inches 
-    main_gear.tire_width                      = 10  *  Units.inches 
+    main_gear.tire_diameter                   = 30   *  Units.inches
+    main_gear.rim_diameter                    = 14   *  Units.inches
+    main_gear.tire_width                      = 9.75 *  Units.inches
     main_gear.strut_length                    = 1 *  Units.meter 
     main_gear.wheels                          = 4   
     main_gear.number_of_gear_types_in_tandem  = 1
     main_gear.number_of_wheels_in_gear_type   = 2  
+    main_gear.origin                          = [[13.0, 2.05, -0.5]]
     main_gear.xz_plane_symmetric              = True
     vehicle.append_component(main_gear)  
 
@@ -96,22 +96,23 @@ def vehicle_setup():
     #  Nose Gear 
     # ------------------------------------------------------------------    
     nose_gear                                 = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
-    nose_gear.tire_diameter                   = 17   *  Units.inches   
-    nose_gear.rim_diameter                    = 7    *  Units.inches 
-    nose_gear.tire_width                      = 17   *  Units.inches 
+    nose_gear.tire_diameter                   = 18   *  Units.inches
+    nose_gear.rim_diameter                    = 8    *  Units.inches
+    nose_gear.tire_width                      = 5.5  *  Units.inches
     nose_gear.strut_length                    = 1 *  Units.meter 
     nose_gear.wheels                          = 2   
-    nose_gear.number_of_gear_types_in_tandem  = 1
+    nose_gear.number_of_gear_types_in_tandem  = 1 
+    nose_gear.origin                          = [[5,0,-0.5]]  
     nose_gear.number_of_wheels_in_gear_type   = 2    
-    vehicle.append_component(nose_gear)
-
+    vehicle.append_component(nose_gear) 
+    
     # ------------------------------------------------------------------
     #  Landing Gear Pod 
     # ------------------------------------------------------------------      
     landing_battery_gear_pod                                    = RCAIDE.Library.Components.Booms.Boom()
     landing_battery_gear_pod.tag                                = 'landing_gear_battery_pod' 
-    landing_battery_gear_pod.origin                             = [[ 6, 0,  -0.082]]    
-    landing_battery_gear_pod.lengths.total                      = 12 
+    landing_battery_gear_pod.origin                             = [[ 4, 0,  -0.2]]    
+    landing_battery_gear_pod.lengths.total                      = 14
     landing_battery_gear_pod.width                              = 3.5  
     landing_battery_gear_pod.heights.maximum                    = 1.30 
     landing_battery_gear_pod.heights.at_quarter_length          = 1.05    
@@ -415,21 +416,9 @@ def vehicle_setup():
     fuselage.heights.at_quarter_length          = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_three_quarters_length   = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_wing_root_quarter_chord = fuselage.heights.maximum* Units.meter
+    fuselage.operational_items.origin            = [[fuselage.lengths.total * 0.6, 0, 0]]
 
-    # define cabin    
-    cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-    cabin.origin                                      = [[2,0,0]] 
-    economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
-    economy_class.number_of_seats_abrest              = 4
-    economy_class.number_of_rows                      = 18
-    economy_class.galley_lavatory_percent_x_locations = [0, 9]  
-    economy_class.emergency_exit_percent_x_locations  = []      
-    economy_class.type_A_exit_percent_x_locations     = [0.01,1] 
-    economy_class.number_of_seats                     = economy_class.number_of_rows  * economy_class.number_of_seats_abrest 
-    cabin.append_cabin_class(economy_class)
-    fuselage.append_cabin(cabin)
-    
-     # Segment  
+     # Segment
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment() 
     segment.tag                                 = 'segment_1'    
     segment.percent_x_location                  = 0.0000
@@ -555,6 +544,22 @@ def vehicle_setup():
     segment.width                               = 0.401839552  
     fuselage.append_segment(segment) 
     
+
+    # define cabin    
+    cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
+    cabin.origin                                      = [[2,0,0]] 
+    cabin.segments_bounding_cabin                     = ['segment_9','segment_13'] 
+    economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
+    economy_class.number_of_seats_abrest              = 4
+    economy_class.number_of_rows                      = 18
+    economy_class.galley_lavatory_percent_x_locations = [0, 9]  
+    economy_class.emergency_exit_percent_x_locations  = []      
+    economy_class.type_A_exit_percent_x_locations     = [0.01,1] 
+    economy_class.number_of_seats                     = economy_class.number_of_rows  * economy_class.number_of_seats_abrest 
+    cabin.append_cabin_class(economy_class)
+    fuselage.append_cabin(cabin) 
+
+
     # add to vehicle
     vehicle.append_component(fuselage)
 
@@ -564,25 +569,26 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus
     #------------------------------------------------------------------------------------------------------------------------------------  
-    bus                              = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
-    
+    bus                              = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()  
+
     #------------------------------------------------------------------------------------------------------------------------------------           
     # Battery
     #------------------------------------------------------------------------------------------------------------------------------------  
     bat_module                                             = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC()
-    bat_module.electrical_configuration.series             = 135
-    bat_module.electrical_configuration.parallel           = 250
-    bat_module.cell.nominal_capacity                       = 6
-    bat_module.cell.mass                                   = 0.03 * Units.kg
-    bat_module.geometrtic_configuration.normal_count       = 135
-    bat_module.geometrtic_configuration.parallel_count     = 250 
-    for _ in range(4):
+    bat_module.electrical_configuration.series             = 20 
+    bat_module.electrical_configuration.parallel           = 420
+    bat_module.cell.nominal_capacity                       = 3.8 
+    bat_module.geometric_configuration.stacking_rows       = 10
+    bat_module.geometric_configuration.normal_count        = 140
+    bat_module.geometric_configuration.parallel_count      = 60
+
+    for i in range(12):
         bat_copy = deepcopy(bat_module)
+        bat_copy.origin   = [[7 + (i * 0.65) , 0, -0.5]]
         bus.battery_modules.append(bat_copy)
 
-    bus.battery_module_electric_configuration = 'Parallel' 
-    bus.initialize_bus_properties()
-
+    bus.battery_module_electric_configuration = 'Series' 
+    bus.initialize_bus_properties() 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Coolant Line
     #------------------------------------------------------------------------------------------------------------------------------------  
@@ -758,7 +764,7 @@ def vehicle_setup():
 
     # append bus   
     net.busses.append(bus)
-    vehicle.append_energy_network(net)  
+    vehicle.append_energy_network(net)   
 
     return vehicle
  

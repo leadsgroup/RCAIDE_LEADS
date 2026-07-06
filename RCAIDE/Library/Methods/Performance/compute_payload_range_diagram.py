@@ -10,10 +10,10 @@
 # RCAIDE imports
 import RCAIDE
 from RCAIDE.Framework.Core import Units , Data   
-from RCAIDE.Library.Mission.Common.Pre_Process import mass_properties,geometry
-
+from RCAIDE.Library.Mission.Common.Pre_Process import mass_properties,geometry 
+ 
 # Pacakge imports 
-import numpy as np
+import numpy as np  
 import os,sys
  
 # ----------------------------------------------------------------------
@@ -90,10 +90,7 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
     --------
     RCAIDE.Library.Methods.Performance.conventional_payload_range_diagram
     RCAIDE.Library.Methods.Performance.electric_payload_range_diagram
-    """ 
-            
-    if mission == None:
-        raise AssertionError('Mission not specifed!')
+    """  
     mission.tag = "payload_range_mission"
     
     initial_segment =  list(mission.segments.keys())[0]
@@ -222,11 +219,12 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
     R       = [0,0,0]
     
     for segment in  mission.segments:
-        segment.analyses.weights.settings.run_weights_analysis = False
-        segment.analyses.weights.settings.run_center_of_gravity_analysis = False
-        segment.analyses.weights.settings.run_moments_of_inertia_analysis = False
-        segment.analyses.geometry.settings.compute_fuel_volume = False
-        segment.analyses.geometry.settings.update_max_fuel  = False
+        segment.analyses.weights.settings.run_weights_analysis             = False
+        segment.analyses.weights.settings.run_center_of_gravity_analysis   = False
+        segment.analyses.weights.settings.run_moments_of_inertia_analysis  = False
+        segment.analyses.weights.settings.update_fuel_mass                 = False
+        segment.analyses.weights.settings.update_max_fuel_mass             = False
+        segment.analyses.geometry.settings.compute_fuel_volume             = False
 
 
     # loop for each point of Payload Range Diagram
@@ -371,7 +369,7 @@ def electric_payload_range_diagram(vehicle,mission,cruise_segment_tag):
     # Pack Results
     payload_range = Data()
     payload_range.range             = np.array(R)
-    payload_range.payload           = np.array(PLD)
-    payload_range.takeoff_weight    = np.array(TOW) 
+    payload_range.payload           = np.array(PLD) 
+    payload_range.takeoff_weight    = np.array(TOW)  
 
     return payload_range

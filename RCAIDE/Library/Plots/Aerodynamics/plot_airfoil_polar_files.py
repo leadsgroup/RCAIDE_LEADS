@@ -8,9 +8,8 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
 from RCAIDE.Framework.Core import Units
-from RCAIDE.Library.Plots.Common import set_axes, plot_style
-import matplotlib.pyplot as plt
-import matplotlib.cm as cm
+from RCAIDE.Library.Plots.Common import set_axes, plot_style,segment_colors
+import matplotlib.pyplot as plt 
 import numpy as np 
 
 
@@ -99,7 +98,7 @@ def plot_airfoil_polar_files(polar_data,
         
      
     # get line colors for plots 
-    line_colors   = cm.viridis(np.linspace(0,1,n_Re))     
+    line_colors   = segment_colors(n_Re)     
      
     fig   = plt.figure(save_filename)
     fig.set_size_inches(width,height) 

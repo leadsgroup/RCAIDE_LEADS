@@ -1,16 +1,14 @@
-    # RCAIDE/Library/Plots/Performance/__init__.py
+# RCAIDE/Library/Plots/Performance/__init__.py
 # 
 
 """
-Performance plotting module providing visualization tools for performance-related components and analysis.
-
-This module contains functions for plotting various performance-related metrics and characteristics
-including battery performance, propulsion system efficiency, and
-fuel consumption patterns.
+Powertrain plotting module providing visualization tools for energy-related components and analysis.
 """
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
  
-from .plot_payload_range_diagram import plot_payload_range_diagram
+from .plot_V_n_diagram            import plot_V_n_diagram 
+from .plot_load_diagram           import plot_load_diagram
+from .plot_payload_range_diagram  import plot_payload_range_diagram 

@@ -55,30 +55,38 @@ def vehicle_setup():
     vehicle.flight_envelope.design_mach_number        = 0.1931864244395293
     
  
-    # ------------------------------------------------------------------        
+    # ################################################# Landing Gear #############################################################
+    # ------------------------------------------------------------------
     #  Landing Gear
-    # ------------------------------------------------------------------  
-    main_gear                                  = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
-    main_gear.tire_diameter                    = 19 *  Units.inches 
-    main_gear.rim_diameter                     = 8 *  Units.inches 
-    main_gear.tire_width                       = 7 *  Units.inches 
-    main_gear.strut_length                     = 5 * Units.feet  
-    main_gear.wheels                           = 1   
-    main_gear.number_of_gear_types_in_tandem   = 1
-    main_gear.number_of_wheels_in_gear_type    = 1 
-    main_gear.xz_plane_symmetric               = True 
-    main_gear.origin                           = [[ 2.595 ,1.245, 0]]
-    vehicle.append_component(main_gear)  
+    #  Source: Ryan Navion Type Certificate Data Sheet A-785
+    #          Jane's All the World's Aircraft (Navion / L-17)
+    #  Main tire: 6.00-6  (~17.5 in diameter, 6 in wide)
+    #  Nose tire: 5.00-5  (~14 in diameter, 5 in wide)
+    #  Gear track: ~2.74 m  (each main at ±1.37 m from centerline)
+    #  Wheelbase:  ~2.07 m
+    # ------------------------------------------------------------------
+    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
+    main_gear.tire_diameter                  = 17.5 * Units.inches
+    main_gear.rim_diameter                   = 6.0  * Units.inches
+    main_gear.tire_width                     = 6.0  * Units.inches
+    main_gear.strut_length                   = 0.45 * Units.m
+    main_gear.origin                         = [[2.55, 1.37, -0.6]]
+    main_gear.wheels                         = 2
+    main_gear.number_of_gear_types_in_tandem = 1
+    main_gear.number_of_wheels_in_gear_type  = 1
+    main_gear.xz_plane_symmetric             = True
+    main_gear.gear_extended                  = True
+    vehicle.append_component(main_gear)
 
-    nose_gear                                 = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
-    nose_gear.tire_diameter                   =  19 *  Units.inches   
-    nose_gear.rim_diameter                    =  8 *  Units.inches 
-    nose_gear.tire_width                      =  7 *  Units.inches 
-    nose_gear.strut_length                    =  5 * Units.feet  
-    nose_gear.wheels                          = 1   
-    nose_gear.number_of_gear_types_in_tandem  = 1
-    nose_gear.origin                          = [[0.865 , 0, 0]] 
-    vehicle.append_component(nose_gear)    
+    nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()
+    nose_gear.tire_diameter                  = 14.0 * Units.inches
+    nose_gear.rim_diameter                   = 5.0  * Units.inches
+    nose_gear.tire_width                     = 5.0  * Units.inches
+    nose_gear.strut_length                   = 0.40 * Units.m
+    nose_gear.origin                         = [[0.48, 0, -0.6]]
+    nose_gear.wheels                         = 1
+    nose_gear.gear_extended                  = True
+    vehicle.append_component(nose_gear)
     
     # ------------------------------------------------------------------        
     #   Main Wing
@@ -252,14 +260,14 @@ def vehicle_setup():
     economy_class.type_A_exit_percent_x_locations     = []
     economy_class.number_of_seats                     = economy_class.number_of_rows  * economy_class.number_of_seats_abrest 
     cabin.append_cabin_class(economy_class)
-    fuselage.append_cabin(cabin)
-    
+    fuselage.append_cabin(cabin) 
     fuselage.lengths.total                      = 8.349950916 
     fuselage.width                              = 1.22028016 
     fuselage.heights.maximum                    = 1.634415138  
-    fuselage.areas.wetted                       = 12. # ESTIMATED 
+    fuselage.areas.wetted                       = 12. 
     fuselage.areas.front_projected              = fuselage.width*fuselage.heights.maximum
-    fuselage.effective_diameter                 = 1.22028016 
+    fuselage.effective_diameter                 = 1.22028016  
+    fuselage.operational_items.origin           = [[2.5, 0, 0]]
 
     # Segment
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
@@ -332,16 +340,47 @@ def vehicle_setup():
     segment.height                              = 0.092096616 
     segment.width                               = 0.046048308 
     fuselage.segments.append(segment)
-    
-    # add to vehicle
-    vehicle.append_component(fuselage) 
 
-    # ########################################################  Energy Network  #########################################################  
+    # add to vehicle
+    vehicle.append_component(fuselage)
+
+    # ########################################################  Energy Network  #########################################################
     net                                         = RCAIDE.Framework.Networks.Fuel()   
 
-    #------------------------------------------------------------------------------------------------------------------------------------  
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Avionics
+    #------------------------------------------------------------------------------------------------------------------------------------ 
+    avionics                                    = RCAIDE.Library.Components.Powertrain.Systems.Avionics() 
+    avionics.origin                             = [[1.5, 0, 0]]
+    net.systems.append(avionics)
+
+    flight_controls                             = RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
+    flight_controls.origin                      = [[5.0, 0, 0]]
+    net.systems.append(flight_controls)
+
+    electrical                                  = RCAIDE.Library.Components.Powertrain.Systems.Electrical()
+    electrical.origin                           = [[3.0, 0, 0]]
+    net.systems.append(electrical)
+
+    hydraulics                                  = RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
+    hydraulics.origin                           = [[2.5, 0, 0]]
+    net.systems.append(hydraulics)
+
+    environmental_controls                      = RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
+    environmental_controls.origin               = [[2.5, 0, -0.3]]
+    net.systems.append(environmental_controls)
+
+    instruments                                 = RCAIDE.Library.Components.Powertrain.Systems.Instruments()
+    instruments.origin                          = [[1.5, 0, 0]]
+    net.systems.append(instruments)
+
+    furnishings                                 = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
+    furnishings.origin                          = [[2.5, 0, 0]]
+    net.systems.append(furnishings)
+
+    #------------------------------------------------------------------------------------------------------------------------------------
     # Bus
-    #------------------------------------------------------------------------------------------------------------------------------------  
+    #------------------------------------------------------------------------------------------------------------------------------------
     fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()   
 
     #------------------------------------------------------------------------------------------------------------------------------------  
@@ -370,8 +409,9 @@ def vehicle_setup():
     engine.sea_level_power                     = 185. * Units.horsepower 
     engine.rated_speed                         = 2300. * Units.rpm 
     engine.power_specific_fuel_consumption     = 0.01  * Units['lb/hp/hr']
+    engine.origin                              = [[0.5,0,0]]
     ice_prop.engine                            = engine
-    ice_prop.origin                            = [[0.5,0, -0.2]]
+    ice_prop.origin                            = [[0.01,0, -0.2]]
     ice_prop.sealevel_static_thrust            = 2500 # N
      
     # Propeller 
@@ -382,7 +422,7 @@ def vehicle_setup():
     prop.hub_radius                         = 8.     * Units.inches
     prop.cruise.design_freestream_velocity  = 119.   * Units.knots
     prop.cruise.design_angular_velocity     = 2650.  * Units.rpm
-    prop.cruise.design_lift_coefficient                   = 0.8
+    prop.cruise.design_lift_coefficient     = 0.8
     prop.cruise.design_altitude             = 12000. * Units.feet
     prop.cruise.design_power                = .64 * 180. * Units.horsepower
     prop.variable_pitch                     = True    
@@ -404,18 +444,10 @@ def vehicle_setup():
     # Append energy network to aircraft 
     vehicle.append_energy_network(net)    
 
-    #------------------------------------------------------------------------------------------------------------------------------------ 
-    # Avionics
-    #------------------------------------------------------------------------------------------------------------------------------------ 
-    Wuav                                        = 2. * Units.lbs
-    avionics                                    = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.mass_properties.uninstalled        = Wuav
-    vehicle.avionics                            = avionics     
-
-    #------------------------------------------------------------------------------------------------------------------------------------ 
+    #------------------------------------------------------------------------------------------------------------------------------------
     #   Vehicle Definition Complete
-    #------------------------------------------------------------------------------------------------------------------------------------ 
-     
+    #------------------------------------------------------------------------------------------------------------------------------------
+
     return vehicle
 
 

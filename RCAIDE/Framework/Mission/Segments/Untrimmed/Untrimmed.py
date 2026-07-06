@@ -64,6 +64,7 @@ class Untrimmed(Segment):
         # conditions
         self.temperature_deviation                   = 0.0
         self.sideslip_angle                          = 0.0 
+        self.crosswind_speed                         = 0.0
         self.angle_of_attack                         = 1.0 *  Units.degree
         self.bank_angle                              = 0.0 
         self.linear_acceleration_x                   = 0.

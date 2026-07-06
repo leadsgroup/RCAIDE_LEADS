@@ -46,10 +46,10 @@ def main():
     series_hybrid    = True
     parallel_hybrid  = True
     
-    convetional_cruise_CL_truth      = 0.6862607106468576
-    electric_cruise_CL_truth         = 0.6926405588108964
-    series_hybrid_cruise_CL_truth    = 0.6907950151213047
-    parallel_hybrid_cruise_CL_truth  = 0.6922148639178914
+    convetional_cruise_CL_truth      = 0.6862607106121958
+    electric_cruise_CL_truth         = 0.795977976668617
+    series_hybrid_cruise_CL_truth    = 0.6907950151213048
+    parallel_hybrid_cruise_CL_truth  = 0.6922148639044265
 
     error = Data()
     
@@ -116,7 +116,7 @@ def main():
         powertrain_labels.append("Parallel Hybrid")
          
 
-    # add remaining networks MATTEO          
+    # add remaining networks           
     print("Elapsed Time", (time.time()-t0)/60)         
 
     print('Errors:')
@@ -255,7 +255,7 @@ def mission_setup(analyses,solver_type,solver_objective):
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]
     segment.assigned_control_variables.throttle.initial_guess_values = [[0.7]]
-    segment.assigned_control_variables.body_angle.active             = True     
+    segment.assigned_control_variables.pitch_angle.active             = True     
     mission.append_segment(segment)    
  
       

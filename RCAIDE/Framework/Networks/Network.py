@@ -9,8 +9,7 @@
 import  RCAIDE 
 from RCAIDE.Framework.Mission.Common                      import Residuals 
 from RCAIDE.Library.Mission.Common.Unpack_Unknowns.energy import unknowns
-from RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw                import compute_avionics_power_draw
-from RCAIDE.Library.Methods.Powertrain.Systems.compute_systems_power_draw                 import compute_systems_power_draw
+from RCAIDE.Library.Methods.Powertrain.Systems               import *
 from RCAIDE.Library.Methods.Powertrain.Converters.Motor.compute_motor_performance         import *
 from RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_performance import * 
 from RCAIDE.Library.Components import Component
@@ -74,21 +73,24 @@ class Network(Component):
         self.coolant_lines                = Container()
         self.fuel_lines                   = Container()
         self.converters                   = Container()
+        self.systems                      = Container()
         self.identical_propulsors         = True 
         self.reverse_thrust               = False
         self.wing_mounted                 = True   
         self.system_voltage               = None  
         
     # linking the different network components
-    def evaluate(network,state,center_of_gravity):
+    def evaluate(network,state,vehicle):
         """ Computes the performance of the network
         """  
         # unpack   
+        center_of_gravity    = vehicle.mass_properties.center_of_gravity
         conditions           = state.conditions 
         busses               = network.busses 
         fuel_lines           = network.fuel_lines 
         coolant_lines        = network.coolant_lines
         converters           = network.converters 
+        systems              = network.systems
         total_thrust         = 0. * state.ones_row(3) 
         total_mech_power     = 0. * state.ones_row(1) 
         total_elec_power     = 0. * state.ones_row(1) 
@@ -125,15 +127,12 @@ class Network(Component):
                         # compute total mass flow rate
                         conditions.energy.fuel_lines[fuel_line.tag].fuel_mass_flow_rate += conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate
                 
-        # 1.2 Electric Propulsors         
-        for bus in busses:            
-            avionics             = bus.avionics 
-            systems              = bus.systems 
-    
-            # Avionics Power Consumtion 
-            compute_avionics_power_draw(avionics,bus,conditions) 
-            compute_systems_power_draw(systems,bus,conditions) 
-    
+
+        for bus in busses:    
+            # 1.2 Electric Propulsors     
+            for system in systems:
+                system.compute_performance(vehicle,state,bus) 
+
             # Bus Voltage 
             bus_voltage = bus.voltage * state.ones_row(1)       
     
@@ -404,13 +403,14 @@ class Network(Component):
         segment.state.residuals.network = Residuals()
         
         for network in segment.analyses.vehicle.networks:
+
             for propulsor in network.propulsors: 
                 propulsor.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.aeroacoustics)     
     
             for converter in network.converters: 
                 converter.append_operating_conditions(segment,segment.state.conditions.energy)                 
     
-            for fuel_line_i, fuel_line in enumerate(network.fuel_lines):
+            for fuel_line in network.fuel_lines:
                 fuel_line.append_operating_conditions(segment)              
                   
                 # Assign network-specific  residuals, unknowns and results data structures 
@@ -426,9 +426,12 @@ class Network(Component):
             # ------------------------------------------------------------------------------------------------------            
             # Create bus results data structure  
             # ------------------------------------------------------------------------------------------------------     
-            for bus_i, bus in enumerate(network.busses): 
-                bus.append_operating_conditions(segment)                  
-    
+            for bus in network.busses: 
+                bus.append_operating_conditions(segment)   
+                
+                for system in network.systems:
+                    system.append_operating_conditions(segment, bus)               
+        
                 # ------------------------------------------------------------------------------------------------------
                 # Assign network-specific  residuals, unknowns and results data structures
                 # ------------------------------------------------------------------------------------------------------
@@ -453,7 +456,7 @@ class Network(Component):
                 for fuel_tank in  bus.fuel_tanks: 
                     fuel_tank.append_operating_conditions(segment,bus)
     
-            for coolant_line_i, coolant_line in enumerate(network.coolant_lines):  
+            for coolant_line in  network.coolant_lines:  
                 # ------------------------------------------------------------------------------------------------------            
                 # Create coolant_lines results data structure  
                 # ------------------------------------------------------------------------------------------------------
@@ -484,7 +487,7 @@ class Network(Component):
 class Container(Component.Container):
     """ The Network container class 
     """
-    def evaluate(self,state,center_of_gravity):
+    def evaluate(self,state,vehicle):
         """ This is used to evaluate the thrust and moments produced by the network.
 
             Assumptions:  
@@ -494,7 +497,7 @@ class Container(Component.Container):
                 None 
         """ 
         for net in self.values():             
-            net.evaluate(state,center_of_gravity)  
+            net.evaluate(state,vehicle)  
         return   
 
 # ----------------------------------------------------------------------

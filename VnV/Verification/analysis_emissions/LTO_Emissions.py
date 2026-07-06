@@ -25,12 +25,14 @@ vehicles_path = os.path.abspath(
 if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 import Boeing_787 
+import time
 
 # ----------------------------------------------------------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------------------------------------------------------
 
 def main():
+    ti = time.time()
     
     vehicle  = Boeing_787.vehicle_setup() 
     configs  = Boeing_787.configs_setup(vehicle) 
@@ -78,6 +80,10 @@ def main():
     assert (diff_LTO_H2O/truth_values['LTO_H2O_truth']) < 1e-5
     assert (diff_LTO_Soot/truth_values['LTO_Soot_truth']) < 1e-5
              
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
 
 def LTO_emisions_mission_setup(analyses):

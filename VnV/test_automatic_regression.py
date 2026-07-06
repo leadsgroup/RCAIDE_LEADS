@@ -54,7 +54,6 @@ modules = [
     'Verification/network_internal_combustion_engine/ICE_test.py',
     'Verification/network_internal_combustion_engine/ICE_constant_speed_test.py',
     'Verification/optimization/optimization_packages.py',
-    'Verification/optimization/multifidelity_optimization.py',
     'Verification/plots/plot_test.py', 
     'Verification/propulsion/rotor_performance_test.py',  
     'Verification/propulsion/propeller_non_uniform_inflow.py',    

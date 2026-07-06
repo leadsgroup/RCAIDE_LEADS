@@ -41,8 +41,7 @@ def main():
     analyses = analyses_setup(configs)
     
     landing_weight = 40000
-    landing_field_length = estimate_landing_field_length( analyses = analyses.landing, 
-                                                          landing_weight =landing_weight) 
+    landing_field_length = estimate_landing_field_length( analyses = analyses.landing) 
     
     print('Weight (kg): ', landing_weight)
     print('Landing Field Length (m): ',landing_field_length)
@@ -487,7 +486,7 @@ def vehicle_setup():
     net                                         = RCAIDE.Framework.Networks.Fuel() 
     
     #------------------------------------------------------------------------------------------------------------------------------------  
-    # Fuel Distrubition Line 
+    # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------------------  
     fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line() 
     

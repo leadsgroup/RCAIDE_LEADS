@@ -30,77 +30,48 @@ def plot_weight_breakdown(vehicle,
     Parameters
     ----------
     vehicle : Vehicle
-        RCAIDE vehicle data structure containing:
-        
-        * weight_breakdown : Data
-            Hierarchical weight data with structure:
-                * zero_fuel_weight : float
-                    Aircraft weight without fuel
-                * max_takeoff : float
-                    Maximum takeoff weight
-                * systems : Data
-                    System weights containing:
-                        * total : float
-                            Total systems weight
-                        * [system_name] : float/Data
-                            Individual system weights/subcomponents
-                * fuel : float
-                    Total fuel weight
-                
+        RCAIDE vehicle data structure containing mass_properties.weight_breakdown
+        with the following standard structure::
+
+            empty:
+                propulsion:
+                    total, engines, thrust_reversers, miscellaneous,
+                    fuel_system, fuel_tanks, electrical_cabling,
+                    thermal_management, battery, motors
+                structural:
+                    total, wings, fuselage (or center_body + aft_center_body for BWB),
+                    empennage, landing_gear, nacelle, booms, paint
+                systems:
+                    total, control_systems, apu, electrical, avionics,
+                    hydraulics, furnishings, air_conditioner, instruments
+            payload:
+                total, passengers, baggage, cargo
+            operational_items:
+                total, misc, flight_crew, flight_attendants, passenger_service
+            empty.total, zero_fuel_weight, max_takeoff
+
     save_figure : bool, optional
         Flag for saving the figure (default: False)
-        
     show_figure : bool, optional
         Flag to display interactive plot (default: True)
-        
     show_legend : bool, optional
-        Flag to display weight legend (default: True) 
-        
+        Flag to display weight legend (default: True)
     save_filename : str, optional
         Name of file for saved figure (default: "Weight_Breakdown")
-        
     aircraft_name : str, optional
         Name to display in plot title (default: None)
-        
     file_type : str, optional
         File extension for saved figure (default: ".png")
-        
     width : float, optional
         Figure width in inches (default: 10)
-        
     height : float, optional
         Figure height in inches (default: 7.2)
 
     Returns
     -------
     fig : plotly.graph_objects.Figure
-        Handle to the generated figure containing:
+        Interactive sunburst chart of the weight hierarchy.
 
-    Notes
-    -----
-    Creates visualization showing:
-        * Hierarchical weight breakdown
-        * Weight percentages
-        * Multi-level weight relationships
-        * Interactive exploration
-    
-    **Major Assumptions**
-        * All weights are positive
-        * Hierarchy is properly structured
-        * No duplicate component names
-        * Subcomponent weights sum to totals
-    
-    **Definitions**
-    
-    'Weight Breakdown'
-        Hierarchical decomposition of vehicle mass
-    'Weight Fraction'
-        Component weight divided by total weight
-    'Zero Fuel Weight'
-        Aircraft weight excluding fuel
-    'Maximum Takeoff Weight'
-        Maximum allowable total weight
-    
     See Also
     --------
     RCAIDE.Library.Analysis.Weights : Weight analysis tools

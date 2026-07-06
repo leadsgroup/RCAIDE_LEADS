@@ -37,8 +37,12 @@ def vehicle_setup():
     vehicle.flight_envelope.positive_limit_load      = 3.8  
     vehicle.flight_envelope.design_range             = 750 * Units.nmi 
     vehicle.flight_envelope.design_dynamic_pressure  = 2755 # max speed at 10 k feet
-    vehicle.flight_envelope.design_mach_number       = 0.18745866156304694
-                                                
+    vehicle.flight_envelope.design_mach_number       = 0.18745866156304694 
+    vehicle.flight_envelope.category                 = 'normal'
+    vehicle.flight_envelope.FAR_part_number          = '23' 
+    vehicle.flight_envelope.maximum_lift_coefficient = 3
+    vehicle.flight_envelope.minimum_lift_coefficient = -1.5
+    
     # basic parameters                          
     vehicle.reference_area                           = 174. * Units.feet**2       
     vehicle.number_of_passengers                     = 4
@@ -208,9 +212,7 @@ def vehicle_setup():
     fuselage.heights.maximum                    = 62. * Units.inches    # Height of the fuselage
     fuselage.lengths.total                      = 326.         * Units.inches            # Length of the fuselage
     fuselage.lengths.tail                       = 161. * Units.inches  
-    fuselage.lengths.cabin                      = 105. * Units.inches 
-    fuselage.volume_properties.volume           = .4*fuselage.lengths.total*(np.pi/4.)*(fuselage.heights.maximum**2.) #try this as approximation
-    fuselage.volume_properties.internal         = .3*fuselage.lengths.total*(np.pi/4.)*(fuselage.heights.maximum**2.)
+    fuselage.lengths.cabin                      = 105. * Units.inches  
     fuselage.areas.wetted                       = 30000. * Units.inches**2. 
     fuselage.fineness.nose                      = 1.6
     fuselage.fineness.tail                      = 2.
@@ -220,6 +222,7 @@ def vehicle_setup():
     fuselage.heights.at_wing_root_quarter_chord = 23. * Units.inches
     fuselage.areas.front_projected              = fuselage.width* fuselage.heights.maximum
     fuselage.effective_diameter                 = 50. * Units.inches
+    fuselage.operational_items.origin           = [[1.8, 0, 0]]
 
     cabin                                              = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
     economy_class = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
@@ -229,10 +232,8 @@ def vehicle_setup():
     economy_class.emergency_exit_percent_x_locations  = [0.0] 
     economy_class.type_A_exit_percent_x_locations     = [0.0]
     economy_class.number_of_seats                     = economy_class.number_of_rows  * economy_class.number_of_seats_abrest 
-    cabin.append_cabin_class(economy_class)
-    
-    fuselage.append_cabin(cabin)          
-
+    cabin.append_cabin_class(economy_class) 
+    fuselage.append_cabin(cabin)    
 
 
     # Segment  
@@ -333,7 +334,40 @@ def vehicle_setup():
     # ########################################################## Energy Network ######################################################### 
     #------------------------------------------------------------------------------------------------------------------------------------ 
     #initialize the fuel network
-    net                                         = RCAIDE.Framework.Networks.Fuel()   
+    net                                         = RCAIDE.Framework.Networks.Fuel()  
+    
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Systems 
+    #------------------------------------------------------------------------------------------------------------------------------------ 
+    avionics                                    = RCAIDE.Library.Components.Powertrain.Systems.Avionics() 
+    avionics.origin                             = [[1.3, 0, 0.2]]
+    avionics.uninstalled_mass                   = 50. * Units.lbs
+    net.systems.append(avionics)
+
+    flight_controls                             = RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
+    flight_controls.origin                      = [[4.0, 0, 0]]
+    net.systems.append(flight_controls)
+
+    electrical                                  = RCAIDE.Library.Components.Powertrain.Systems.Electrical()
+    electrical.origin                           = [[0.8, 0, 0]]
+    net.systems.append(electrical)
+
+    hydraulics                                  = RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
+    hydraulics.origin                           = [[2.3, 0, -0.4]]
+    net.systems.append(hydraulics)
+
+    environmental_controls                      = RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
+    environmental_controls.origin               = [[1.5, 0, 0]]
+    net.systems.append(environmental_controls)
+
+    instruments                                 = RCAIDE.Library.Components.Powertrain.Systems.Instruments()
+    instruments.origin                          = [[1.3, 0, 0.3]]
+    net.systems.append(instruments)
+
+    furnishings                                 = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
+    furnishings.origin                          = [[2.2, 0, 0]]
+    net.systems.append(furnishings)
+
 
     # add the network to the vehicle
     vehicle.append_energy_network(net) 
@@ -404,15 +438,7 @@ def vehicle_setup():
     
     #------------------------------------------------------------------------------------------------------------------------------------   
     # Append fuel line to fuel line to network      
-    net.fuel_lines.append(fuel_line)            
-
-    #------------------------------------------------------------------------------------------------------------------------------------ 
-    # Avionics
-    #------------------------------------------------------------------------------------------------------------------------------------ 
-    Wuav                                        = 2. * Units.lbs
-    avionics                                    = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.mass_properties.uninstalled        = Wuav
-    vehicle.avionics                            = avionics     
+    net.fuel_lines.append(fuel_line)             
 
     #------------------------------------------------------------------------------------------------------------------------------------ 
     #   Vehicle Definition Complete

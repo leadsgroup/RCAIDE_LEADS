@@ -27,11 +27,13 @@ vehicles_path = os.path.abspath(
 if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Navion    import vehicle_setup, configs_setup
+import time
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 
 def main(): 
+    ti = time.time()
     
     # vehicle data
     vehicle  = vehicle_setup()
@@ -51,43 +53,71 @@ def main():
     # mission analysis 
     results = missions.base_mission.evaluate()  
     
-    '''Values are different from trimmed stability derivative test because stability derivatives are different.'''
-    elevator_deflection        = results.segments.cruise.conditions.control_surfaces.elevator.deflection[0,0] / Units.deg
-    print('Elevator Defection',elevator_deflection)
-    elevator_deflection_true   = -2.5151578364353555
-    elevator_deflection_diff   = np.abs(elevator_deflection - elevator_deflection_true)
-    print('Elevator Error 1: ',elevator_deflection_diff)
-    assert np.abs(elevator_deflection_diff/elevator_deflection_true) < 5e-3
+    # ------------------------------------------------------------------
+    # Cruise segment (6-DOF with sideslip = 10 deg)
+    # ------------------------------------------------------------------
+    cruise_elevator       = results.segments.cruise.conditions.control_surfaces.elevator.deflection[0,0] / Units.deg
+    cruise_aileron        = results.segments.cruise.conditions.control_surfaces.aileron.deflection[0,0] / Units.deg
+    cruise_rudder         = results.segments.cruise.conditions.control_surfaces.rudder.deflection[0,0] / Units.deg
+    cruise_elevator_true  = -1.2951988200466242
+    cruise_aileron_true   = -7.634707088892023
+    cruise_rudder_true    = 14.063748124170242
+    print('Cruise elevator:', cruise_elevator, 'aileron:', cruise_aileron, 'rudder:', cruise_rudder)
+    assert np.abs((cruise_elevator - cruise_elevator_true) / cruise_elevator_true) < 5e-3
+    assert np.abs((cruise_aileron  - cruise_aileron_true)  / cruise_aileron_true)  < 5e-3
+    assert np.abs((cruise_rudder   - cruise_rudder_true)   / cruise_rudder_true)   < 5e-3
 
-    aileron_deflection        = results.segments.cruise.conditions.control_surfaces.aileron.deflection[0,0] / Units.deg
-    print('Aileron Defection',aileron_deflection)
-    aileron_deflection_true   = -7.799351008039411
-    aileron_deflection_diff   = np.abs(aileron_deflection - aileron_deflection_true)
-    print('Aileron Error 2: ',aileron_deflection_diff)
-    assert np.abs(aileron_deflection_diff/aileron_deflection_true) < 5e-3
+    # ------------------------------------------------------------------
+    # Cruise 2 segment (2-DOF longitudinal only)
+    # ------------------------------------------------------------------
+    cruise2_throttle       = results.segments.cruise_2.conditions.energy.propulsors['ice_propeller'].throttle[0,0]
+    cruise2_throttle_true  = 0.5282810040710573
+    print('Cruise 2 throttle:', cruise2_throttle)
+    assert np.abs((cruise2_throttle - cruise2_throttle_true) / cruise2_throttle_true) < 5e-3
 
-    rudder_deflection        = results.segments.cruise.conditions.control_surfaces.rudder.deflection[0,0] / Units.deg
-    print('Rudder Defection',rudder_deflection)
-    rudder_deflection_true   = 14.017583131023938
-    rudder_deflection_diff   = np.abs(rudder_deflection - rudder_deflection_true)
-    print('Rudder Error 3: ',rudder_deflection_diff)
-    assert np.abs(rudder_deflection_diff/rudder_deflection_true) < 5e-3  
+    # ------------------------------------------------------------------
+    # Cruise 3 segment (6-DOF with sideslip = 10 deg)
+    # ------------------------------------------------------------------
+    cruise3_throttle       = results.segments.cruise_3.conditions.energy.propulsors['ice_propeller'].throttle[0,0]
+    cruise3_throttle_true  = 0.5040747537875034
+    print('Cruise 3 throttle:', cruise3_throttle)
+    assert np.abs((cruise3_throttle - cruise3_throttle_true) / cruise3_throttle_true) < 5e-3
 
-    throttle        = results.segments.cruise_2.conditions.energy.propulsors['ice_propeller'].throttle[0,0]
-    throttle_true   = 0.48137503331478093
-    throttle_diff   = np.abs(throttle - throttle_true)
-    print('Throttle Error 1: ',throttle_diff)
-    assert np.abs(throttle_diff/throttle_true) < 5e-3    
+    # ------------------------------------------------------------------
+    # Crosswind segment (6-DOF, crosswind_speed → β computed kinematically)
+    # ------------------------------------------------------------------
+    cw_elevator       = results.segments.cruise_crosswind.conditions.control_surfaces.elevator.deflection[0,0] / Units.deg
+    cw_aileron        = results.segments.cruise_crosswind.conditions.control_surfaces.aileron.deflection[0,0]  / Units.deg
+    cw_rudder         = results.segments.cruise_crosswind.conditions.control_surfaces.rudder.deflection[0,0]   / Units.deg
+    cw_elevator_true  = -1.3055871396309358
+    cw_aileron_true   = -7.630757925642522
+    cw_rudder_true    = 14.064164436790977
+    print('Crosswind elevator:', cw_elevator, 'aileron:', cw_aileron, 'rudder:', cw_rudder)
+    assert np.abs((cw_elevator - cw_elevator_true) / cw_elevator_true) < 5e-3
+    assert np.abs((cw_aileron  - cw_aileron_true)  / cw_aileron_true)  < 5e-3
+    assert np.abs((cw_rudder   - cw_rudder_true)   / cw_rudder_true)   < 5e-3
 
-    throttle3        = results.segments.cruise_3.conditions.energy.propulsors['ice_propeller'].throttle[0,0]
-    throttle3_true   = 0.3771964497239476
-    throttle3_diff   = np.abs(throttle3 - throttle3_true)
-    print('Throttle Error 2: ',throttle3_diff)
-    assert np.abs(throttle3_diff/throttle3_true) < 5e-3   
+    # ------------------------------------------------------------------
+    # Free sideslip segment (symmetric, no crosswind → β ≈ 0)
+    # ------------------------------------------------------------------
+    fs_sideslip       = results.segments.cruise_free_sideslip.conditions.frames.wind.body_rotations[0,2] / Units.deg
+    fs_elevator       = results.segments.cruise_free_sideslip.conditions.control_surfaces.elevator.deflection[0,0] / Units.deg
+    fs_aileron        = results.segments.cruise_free_sideslip.conditions.control_surfaces.aileron.deflection[0,0] / Units.deg
+    fs_rudder         = results.segments.cruise_free_sideslip.conditions.control_surfaces.rudder.deflection[0,0]  / Units.deg
+    fs_elevator_true  = -1.312266286101222
+    print('Free sideslip beta:', fs_sideslip, 'elevator:', fs_elevator, 'rudder:', fs_rudder, 'aileron:', fs_aileron)
+    assert np.abs(fs_sideslip) < 1e-6
+    assert np.abs(fs_aileron)  < 1e-6
+    assert np.abs(fs_rudder)   < 1e-6
+    assert np.abs((fs_elevator - fs_elevator_true) / fs_elevator_true) < 5e-3
 
     # plt results
     plot_mission(results)
     
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return  
 # ----------------------------------------------------------------------
 #   Define the Vehicle Analyses
@@ -208,7 +238,7 @@ def mission_setup(analyses):
     # flight controls              
     segment.assigned_control_variables.throttle.active                          = True           
     segment.assigned_control_variables.throttle.assigned_propulsors             = [['ice_propeller']]   
-    segment.assigned_control_variables.body_angle.active                        = True       
+    segment.assigned_control_variables.pitch_angle.active                        = True       
     segment.assigned_control_variables.elevator_deflection.active               = True    
     segment.assigned_control_variables.elevator_deflection.assigned_surfaces    = [['elevator']] 
     segment.assigned_control_variables.aileron_deflection.active                = True    
@@ -235,7 +265,7 @@ def mission_setup(analyses):
     # flight controls              
     segment.assigned_control_variables.throttle.active                          = True           
     segment.assigned_control_variables.throttle.assigned_propulsors             = [['ice_propeller']]   
-    segment.assigned_control_variables.body_angle.active                        = True     
+    segment.assigned_control_variables.pitch_angle.active                        = True     
     mission.append_segment(segment)
  
     # ------------------------------------------------------------------    
@@ -259,17 +289,77 @@ def mission_setup(analyses):
     # flight controls              
     segment.assigned_control_variables.throttle.active                          = True           
     segment.assigned_control_variables.throttle.assigned_propulsors             = [['ice_propeller']]   
-    segment.assigned_control_variables.body_angle.active                        = True       
+    segment.assigned_control_variables.pitch_angle.active                        = True       
     segment.assigned_control_variables.elevator_deflection.active               = True    
     segment.assigned_control_variables.elevator_deflection.assigned_surfaces    = [['elevator']] 
     segment.assigned_control_variables.aileron_deflection.active                = True    
     segment.assigned_control_variables.aileron_deflection.assigned_surfaces     = [['aileron']] 
     segment.assigned_control_variables.rudder_deflection.active                 = True    
     segment.assigned_control_variables.rudder_deflection.assigned_surfaces      = [['rudder']] 
-    segment.assigned_control_variables.bank_angle.active                        = True                 
-    mission.append_segment(segment)  
+    segment.assigned_control_variables.bank_angle.active                        = True
+    mission.append_segment(segment)
 
-    return mission 
+    # ------------------------------------------------------------------
+    #   Mode 1: crosswind_speed → β computed kinematically
+    #   crosswind = air_speed * sin(10 deg), identical physics to cruise
+    # ------------------------------------------------------------------
+    segment     = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
+    segment.tag = "cruise_crosswind"
+    segment.analyses.extend( analyses.base )
+    segment.altitude                                                            = 1000. * Units.feet
+    segment.air_speed                                                           = 50.00
+    segment.crosswind_speed                                                     = 50.00 * np.sin(10.0 * Units.deg)
+
+    segment.flight_dynamics.force_x                                             = True
+    segment.flight_dynamics.force_z                                             = True
+    segment.flight_dynamics.force_y                                             = True
+    segment.flight_dynamics.moment_x                                            = True
+    segment.flight_dynamics.moment_z                                            = True
+    segment.flight_dynamics.moment_y                                            = True
+
+    segment.assigned_control_variables.throttle.active                          = True
+    segment.assigned_control_variables.throttle.assigned_propulsors             = [['ice_propeller']]
+    segment.assigned_control_variables.pitch_angle.active                       = True
+    segment.assigned_control_variables.elevator_deflection.active               = True
+    segment.assigned_control_variables.elevator_deflection.assigned_surfaces    = [['elevator']]
+    segment.assigned_control_variables.aileron_deflection.active                = True
+    segment.assigned_control_variables.aileron_deflection.assigned_surfaces     = [['aileron']]
+    segment.assigned_control_variables.rudder_deflection.active                 = True
+    segment.assigned_control_variables.rudder_deflection.assigned_surfaces      = [['rudder']]
+    segment.assigned_control_variables.bank_angle.active                        = True
+    mission.append_segment(segment)
+
+    # ------------------------------------------------------------------
+    #   Mode 2: sideslip_angle as free solver unknown
+    #   symmetric aircraft, no crosswind → solver finds β ≈ 0
+    #   bank_angle fixed at 0 to keep the system well-determined (6×6)
+    # ------------------------------------------------------------------
+    segment     = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
+    segment.tag = "cruise_free_sideslip"
+    segment.analyses.extend( analyses.base )
+    segment.altitude                                                            = 1000. * Units.feet
+    segment.air_speed                                                           = 50.00
+
+    segment.flight_dynamics.force_x                                             = True
+    segment.flight_dynamics.force_z                                             = True
+    segment.flight_dynamics.force_y                                             = True
+    segment.flight_dynamics.moment_x                                            = True
+    segment.flight_dynamics.moment_z                                            = True
+    segment.flight_dynamics.moment_y                                            = True
+
+    segment.assigned_control_variables.throttle.active                          = True
+    segment.assigned_control_variables.throttle.assigned_propulsors             = [['ice_propeller']]
+    segment.assigned_control_variables.pitch_angle.active                       = True
+    segment.assigned_control_variables.elevator_deflection.active               = True
+    segment.assigned_control_variables.elevator_deflection.assigned_surfaces    = [['elevator']]
+    segment.assigned_control_variables.aileron_deflection.active                = True
+    segment.assigned_control_variables.aileron_deflection.assigned_surfaces     = [['aileron']]
+    segment.assigned_control_variables.rudder_deflection.active                 = True
+    segment.assigned_control_variables.rudder_deflection.assigned_surfaces      = [['rudder']]
+    segment.assigned_control_variables.sideslip_angle.active                    = True
+    mission.append_segment(segment)
+
+    return mission
 
 def missions_setup(mission): 
  

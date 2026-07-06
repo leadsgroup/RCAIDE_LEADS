@@ -33,15 +33,21 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Test_Propeller    import Test_Propeller
 from Test_Rotor        import Test_Rotor 
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ---------------------------------------------------------------------- 
 def main():
+    ti = time.time()
     
     propeller_test()
     rotor_test(new_regression=True)
     
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 def propeller_test():

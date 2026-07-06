@@ -26,12 +26,14 @@ if vehicles_path not in sys.path:
 # the analysis functions 
  
 from Cessna_172  import vehicle_setup ,configs_setup
+import time
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  REGRESSION
 # ----------------------------------------------------------------------------------------------------------------------  
 def main():   
+    ti = time.time()
     
     # vehicle data
     vehicle  = vehicle_setup() 
@@ -73,6 +75,10 @@ def main():
     for k,v in list(error.items()):
         assert(np.abs(v)<1e-3)
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return    
 
 
@@ -115,7 +121,7 @@ def mission_setup(analyses):
     # define flight controls   
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['ice_propeller']]  
-    segment.assigned_control_variables.body_angle.active             = True                  
+    segment.assigned_control_variables.pitch_angle.active             = True                  
     
     mission.append_segment(segment)
 

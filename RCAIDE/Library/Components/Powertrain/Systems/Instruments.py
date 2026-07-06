@@ -7,16 +7,13 @@
 # ----------------------------------------------------------------------------------------------------------------------   
 # RCAIDE imports  
 from .Systems import Systems
- 
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  Instruments
-# ----------------------------------------------------------------------------------------------------------------------            
+# ----------------------------------------------------------------------------------------------------------------------
 class Instruments(Systems):
     """
-    A class representing instruments systems and their power requirements. 
-    """        
+    A class representing instruments systems and their power requirements.
+    """
     def __defaults__(self):
-        """
-        Sets default values for the instruments system attributes.
-        """                  
-        self.tag        = 'instruments' 
+        self.tag        = 'instruments'

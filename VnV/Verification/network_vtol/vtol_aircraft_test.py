@@ -40,19 +40,23 @@ from Stopped_Rotor_EVTOL    import configs_setup as  SR_configs_setup
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
-def main(): 
+def main():
+    ti = time.time()
     # make true only when resizing aircraft. should be left false for regression
     update_regression_values = False
-    
+
     # TEST 1
     tiltrotor_transition_test(update_regression_values)
-     
+
     # TEST 2
     tiltwing_transition_test(update_regression_values)
-    
+
     # TEST 3
     stopped_rotor_transition_test(update_regression_values)
-    
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 def tiltrotor_transition_test(update_regression_values): 
@@ -462,8 +466,8 @@ def TR_mission_setup(analyses):
     segment.flight_dynamics.force_z                       = True     
     
     # define flight controls                                       
-    segment.assigned_control_variables.body_angle                   
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle                   
+    segment.assigned_control_variables.pitch_angle.active             = True                
            
     segment.assigned_control_variables.blade_pitch_command.active                     = True        
     segment.assigned_control_variables.blade_pitch_command.assigned_rotors            =  [['front_port_rotor','front_starboard_rotor','outboard_port_rotor',

@@ -88,7 +88,7 @@ def vehicle_setup(redesign_rotors = False):
     wing.xz_plane_symmetric       = True
     wing.vertical                 = False
     airfoil                       = RCAIDE.Library.Components.Airfoils.Airfoil()
-    airfoil.coordinate_file       = 'NACA_63_412.txt'
+    airfoil.coordinate_file       = airfoil_file_path+ 'NACA_63_412.txt'
     
     # Segment                                  
     segment                       = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -258,8 +258,7 @@ def vehicle_setup(redesign_rotors = False):
 
     # define cabin    
     cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-    cabin.origin                                      = [[1, 0, 0]]
-    cabin.offset_x = 1.0
+    cabin.origin                                      = [[1, 0, 0]] 
     economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
     economy_class.number_of_seats_abrest              = 2
     economy_class.number_of_rows                      = 3 
@@ -481,10 +480,11 @@ def vehicle_setup(redesign_rotors = False):
     #------------------------------------------------------------------------------------------------------------------------------------ 
     battery_module                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC() 
     battery_module.tag                                                = 'bus_battery'
+    battery_module.origin                                             = [[2.5, 0,  0.]]
     battery_module.electrical_configuration.series                    = 140  
     battery_module.electrical_configuration.parallel                  = 30  
-    battery_module.geometrtic_configuration.normal_count              = 168
-    battery_module.geometrtic_configuration.parallel_count            = 25
+    battery_module.geometric_configuration.normal_count              = 210
+    battery_module.geometric_configuration.parallel_count            = 20
      
     modules_origins = [[0.25 , 0.0, 0.0],[1.5 , 0.0, 0.0]]  # large prop-rotor modules are beneath floor
     for m_i in range(prop_rotor_bus.number_of_battery_modules):
@@ -617,10 +617,19 @@ def vehicle_setup(redesign_rotors = False):
         loaded_propulsor = load_propulsor(os.path.join(local_path, 'tilt_rotor_propulsor.res'))
 
         for key,item in prop_rotor_propulsor.rotor.items():
-            prop_rotor_propulsor.rotor[key] = loaded_propulsor.rotor[key] 
+            prop_rotor_propulsor.rotor[key] = loaded_propulsor.rotor[key]
         for key,item in prop_rotor_propulsor.motor.items():
-            prop_rotor_propulsor.motor[key] = loaded_propulsor.motor[key]        
-        
+            prop_rotor_propulsor.motor[key] = loaded_propulsor.motor[key]
+        prop_rotor_propulsor.rotor.airfoils.airfoil.coordinate_file  =   airfoil_file_path+ 'NACA_4412.txt'
+        prop_rotor_propulsor.rotor.airfoils.airfoil.polar_files      = [polar_file_path + 'NACA_4412_polar_Re_50000.txt' ,
+                                                                         polar_file_path + 'NACA_4412_polar_Re_100000.txt' ,
+                                                                         polar_file_path + 'NACA_4412_polar_Re_200000.txt' ,
+                                                                         polar_file_path + 'NACA_4412_polar_Re_500000.txt' ,
+                                                                         polar_file_path + 'NACA_4412_polar_Re_1000000.txt',
+                                                                         polar_file_path + 'NACA_4412_polar_Re_3500000.txt',
+                                                                         polar_file_path + 'NACA_4412_polar_Re_5000000.txt',
+                                                                         polar_file_path + 'NACA_4412_polar_Re_7500000.txt' ]
+
     # Front Rotors Locations 
     origins       =  [[0.5, -1.75 ,1.4],  [0.5, 1.75 ,1.4] , [ 0.5 , -3.25  , 1.4] ,[ 0.5 ,  3.25, 1.4], [ 0.5 , -4.75  , 1.4] ,[ 0.5,4.75, 1.4]]
     rotor_origins =  [[0.5, -1.75 ,1.3],  [0.5, 1.75 ,1.3] , [ 0.5 , -3.25  , 1.3] ,[ 0.5 ,  3.25, 1.3], [ 0.5 , -4.75  , 1.3] ,[ 0.5,4.75, 1.3]]
@@ -666,10 +675,10 @@ def vehicle_setup(redesign_rotors = False):
     battery_module.tag                                                = 'lift_bus_battery'
     battery_module.electrical_configuration.series                    = 140   
     battery_module.electrical_configuration.parallel                  = 10  
-    battery_module.geometrtic_configuration.normal_count              = 56
-    battery_module.geometrtic_configuration.parallel_count            = 25
+    battery_module.geometric_configuration.normal_count              = 140 
+    battery_module.geometric_configuration.parallel_count            = 10
 
-    modules_origins = [[4, 0.0, 0.0],[4, 0.0, 0.2 ]]  # rear modules are stacked inside cabin
+    modules_origins = [[3.5, 0.0, 0.5],[3.5, 0.0, 0.5 ]]  # rear modules are stacked inside cabin
     for m_i in range(lift_rotor_bus.number_of_battery_modules):
         module =  deepcopy(battery_module)
         module.tag = 'nmc_module_' + str(m_i+1) 
@@ -743,10 +752,19 @@ def vehicle_setup(redesign_rotors = False):
         loaded_propulsor = load_propulsor(os.path.join(local_path, 'lift_rotor_propulsor.res'))
 
         for key,item in lift_propulsor.rotor.items():
-            lift_propulsor.rotor[key] = loaded_propulsor.rotor[key] 
+            lift_propulsor.rotor[key] = loaded_propulsor.rotor[key]
         for key,item in lift_propulsor.motor.items():
-            lift_propulsor.motor[key] = loaded_propulsor.motor[key]  
- 
+            lift_propulsor.motor[key] = loaded_propulsor.motor[key]
+        lift_propulsor.rotor.airfoils.airfoil.coordinate_file  =  airfoil_file_path+'NACA_4412.txt'
+        lift_propulsor.rotor.airfoils.airfoil.polar_files      = [polar_file_path + 'NACA_4412_polar_Re_50000.txt' ,
+                                                                   polar_file_path + 'NACA_4412_polar_Re_100000.txt' ,
+                                                                   polar_file_path + 'NACA_4412_polar_Re_200000.txt' ,
+                                                                   polar_file_path + 'NACA_4412_polar_Re_500000.txt' ,
+                                                                   polar_file_path + 'NACA_4412_polar_Re_1000000.txt',
+                                                                   polar_file_path + 'NACA_4412_polar_Re_3500000.txt',
+                                                                   polar_file_path + 'NACA_4412_polar_Re_5000000.txt',
+                                                                   polar_file_path + 'NACA_4412_polar_Re_7500000.txt' ]
+
     # Front Rotors Locations
     origins       =  [[ 4.7, -1.75 ,1.4],  [ 4.7, 1.75 ,1.4] , [ 4.7, -3.25  , 1.4] ,[ 4.7,  3.25, 1.4], [ 4.7, -4.75  , 1.4] ,[  4.7 , 4.75, 1.4]]   
     rotor_origins =  [[ 4.7, -1.75 ,1.3],  [ 4.7, 1.75 ,1.3] , [ 4.7, -3.25  , 1.3] ,[ 4.7,  3.25, 1.3], [ 4.7, -4.75  , 1.3] ,[  4.7 , 4.75, 1.3]]   
@@ -768,12 +786,36 @@ def vehicle_setup(redesign_rotors = False):
     lift_rotor_bus.assigned_propulsors = [assigned_propulsor_list] 
 
  
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    # Additional Bus Loads
+    #------------------------------------------------------------------------------------------------------------------------------------            
+    # Payload   
+    systems                         = RCAIDE.Library.Components.Powertrain.Systems.Systems()
+    systems.power_draw              = 10. # Watts 
+    systems.mass_properties.mass    = 1.0 * Units.kg
+    network.systems.append(systems)
+                             
     # Avionics                            
-    avionics                                               = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.power_draw                                    = 10. # Watts  
-    avionics.mass_properties.mass                          = 1.0 * Units.kg
-    lift_rotor_bus.avionics                                = avionics    
+    avionics                        = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
+    avionics.power_draw             = 10. # Watts  
+    avionics.mass_properties.mass   = 1.0 * Units.kg
+    network.systems.append(avionics)
+    
+    # Environmental Control System
+    environmental_controls                                  = RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
+    environmental_controls.origin                           = [[2.5, 0, 0]]
+    network.systems.append(environmental_controls)
 
+    # Electrical (wiring)
+    electrical                                              = RCAIDE.Library.Components.Powertrain.Systems.Electrical()
+    electrical.origin                                       = [[3.0, 0, 0]]
+    network.systems.append(electrical)
+
+    # Furnishings (seats)
+    furnishings                                             = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
+    furnishings.origin                                      = [[2.5, 0, 0]]
+    network.systems.append(furnishings) 
+   
    
     network.busses.append(lift_rotor_bus)       
         

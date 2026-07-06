@@ -37,8 +37,7 @@ def compute_load_and_trim_diagram(mission = None, cruise_segment_tag = "cruise",
     # where 2: is for the loading and unloading cases
     # and N is the number of object types i.e cabin,cargo and fuel 
   
-    """  
-            
+    """   
     #------------------------------------------------------------------------  
     # Remove Takeoff mass
     #------------------------------------------------------------------------   
@@ -91,7 +90,7 @@ def compute_load_and_trim_diagram(mission = None, cruise_segment_tag = "cruise",
     vehicle_0.mass_properties.payload = PLD  
     PLD_per_pax   =  (weight_breakdown.payload.passengers  + weight_breakdown.payload.baggage) / PAX
     OEW           =  vehicle_0.mass_properties.operating_empty
-    if mission.segments[cruise_segment_tag].analyses.weights.propulsion_architecture == 'Hydrogen': 
+    if mission.segments[cruise_segment_tag].analyses.weights.propulsion_architecture == 'Cryogenic':
         MLW = (vehicle_0.mass_properties.max_takeoff - 0.65 * vehicle_0.mass_properties.max_fuel)
     else:
         MLW =  estimate_maximum_landing_weight(MTOW)
@@ -104,12 +103,12 @@ def compute_load_and_trim_diagram(mission = None, cruise_segment_tag = "cruise",
     W_CARGO += PLD-W_PAX
      
 
-    m_f = []     
+    m_f = []
     for network in vehicle_0.networks:
         for fuel_line in  network.fuel_lines:
-            for fuel_tank in fuel_line.fuel_tanks: 
+            for fuel_tank in fuel_line.fuel_tanks:
                 m_f.append(fuel_tank.fuel.mass_properties.mass)
-    fuel_tank_ratio = np.array(m_f) / sum(np.array(m_f)) 
+    fuel_tank_ratio = np.array(m_f) / sum(np.array(m_f))
 
     #------------------------------------------------------------------------  
     # Compute Loading Points 

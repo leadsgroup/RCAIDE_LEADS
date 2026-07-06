@@ -31,12 +31,14 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from   ATR_72    import vehicle_setup as vehicle_setup
 from   ATR_72    import configs_setup as configs_setup 
+import time
 
 # ----------------------------------------------------------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------------------------------------------------------
 
 def main():
+    ti = time.time()
     
 
     # vehicle data
@@ -61,12 +63,10 @@ def main():
     thrust     = results.segments.climbing_cruise.conditions.energy.propulsors['starboard_propulsor'].thrust[3][0]
     throttle   = results.segments.climbing_cruise.conditions.energy.propulsors['starboard_propulsor'].throttle[3][0]  
     
-    #print values for resetting regression
-    show_vals = True
-    if show_vals:
-        data = [thrust, throttle]
-        for val in data:
-            print(val)
+    #print values for resetting regression 
+    data = [thrust, throttle]
+    for val in data:
+        print(val)
     
     # Truth values
     thrust_truth     = 22849.679172145035
@@ -85,6 +85,10 @@ def main():
     
     # plt the old results
     plot_mission(results)   
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
 
 def analyses_setup(configs):
@@ -200,7 +204,7 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle.active             = True                
     
     mission.append_segment(segment)   
     

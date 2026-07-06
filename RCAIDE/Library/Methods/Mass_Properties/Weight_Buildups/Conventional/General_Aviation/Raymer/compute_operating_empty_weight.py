@@ -177,17 +177,11 @@ def compute_operating_empty_weight(vehicle, settings=None):
             V_fuel_int      += m_fuel_tank/fuel_tank.fuel.density  #assume all fuel is in integral tanks 
             V_fuel          += m_fuel_tank/fuel_tank.fuel.density #total fuel  
          
-        # Electric-Powered Propulsors  
-        for bus in network.busses: 
-            # electrical payload 
-            W_energy_network_total  += bus.systems.mass_properties.mass * Units.kg
-     
-            # Avionics Weight 
-            W_energy_network_total  += bus.avionics.mass_properties.mass      
-    
-            for battery in bus.battery_modules: 
+        # Electric-Powered Propulsors
+        for bus in network.busses:
+            for battery in bus.battery_modules:
                 W_energy_network_total  += battery.mass_properties.mass * Units.kg
-                  
+
             for propulsor in bus.propulsors:
                 if 'motor' in propulsor: 
                     motor_mass = propulsor.motor.mass_properties.mass       
@@ -244,33 +238,41 @@ def compute_operating_empty_weight(vehicle, settings=None):
                 landing_gear.mass_properties.mass = W_landing_gear.main 
             elif isinstance(landing_gear, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear):
                 landing_gear.mass_properties.mass = W_landing_gear.nose 
-
-    # Calculating Empty Weight of Aircraft
-    W_systems           = Raymer.compute_systems_weight(vehicle,V_fuel, V_fuel_int, number_of_tanks, number_of_engines)
-    
-    # Calculate the equipment empty weight of the aircraft 
-    W_empty           = (W_wing + W_fuselage + W_landing_gear.main+W_landing_gear.nose + W_energy_network_cumulative + W_systems.total + \
-                          W_tail_horizontal +W_tail_vertical) 
+ 
 
     # packup outputs
-    W_payload = Raymer.compute_payload_weight(vehicle)       
+    W_payload = Raymer.compute_payload_weight(vehicle)    
+    
+    # Calculating Empty Weight of Aircraft
+    W_systems           = Raymer.compute_systems_weight(vehicle,V_fuel, V_fuel_int, number_of_tanks, number_of_engines)    
 
     # Distribute all weight in the output fields
     output                                    = Data()
     output.empty                              = Data()
     output.empty.structural                   = Data()
-    output.empty.structural.wings             = W_wing +  W_tail_horizontal + W_tail_vertical 
+    output.empty.structural.wings             = W_wing  
     output.empty.structural.fuselage          = W_fuselage
-    output.empty.structural.landing_gear      = W_landing_gear.main +  W_landing_gear.nose 
+    output.empty.structural.empennage         = W_tail_horizontal + W_tail_vertical
+    output.empty.structural.landing_gear      = W_landing_gear.main +  W_landing_gear.nose
     output.empty.structural.nacelle           = 0
-    output.empty.structural.paint             = 0  
+    output.empty.structural.booms             = 0
+    output.empty.structural.paint             = 0
     output.empty.structural.total             = output.empty.structural.wings \
-                                                     + output.empty.structural.fuselage  + output.empty.structural.landing_gear \
+                                                     + output.empty.structural.fuselage + output.empty.structural.empennage \
+                                                     + output.empty.structural.landing_gear \
                                                      + output.empty.structural.paint + output.empty.structural.nacelle
           
     output.empty.propulsion                   = Data()
     output.empty.propulsion.total             = W_energy_network_cumulative
+    output.empty.propulsion.engines           = 0
+    output.empty.propulsion.thrust_reversers  = 0
+    output.empty.propulsion.miscellaneous     = 0
     output.empty.propulsion.fuel_system       = W_systems.W_fuel_system
+    output.empty.propulsion.fuel_tanks        = 0
+    output.empty.propulsion.electrical_cabling = 0
+    output.empty.propulsion.thermal_management = 0
+    output.empty.propulsion.battery           = 0
+    output.empty.propulsion.motors            = 0
   
     output.empty.systems                      = Data()
     output.empty.systems.control_systems      = W_systems.W_flight_control
@@ -287,17 +289,18 @@ def compute_operating_empty_weight(vehicle, settings=None):
                                                   + output.empty.systems.hydraulics + output.empty.systems.furnishings \
                                                   + output.empty.systems.air_conditioner + output.empty.systems.instruments \
                                                   + output.empty.systems.anti_ice
-  
+
     output.payload                                = Data()
     output.payload                                = W_payload
-    output.operational_items                      = Data() # What is the point of these items?
-    output.operational_items.oper_items           = 0
+    output.operational_items                      = Data()
+    output.operational_items.misc                 = 0
     output.operational_items.flight_crew          = 0
     output.operational_items.flight_attendants    = 0
+    output.operational_items.passenger_service    = 0
     output.operational_items.total                = 0
 
-    output.empty.total      = output.empty.structural.total + output.empty.propulsion.total + output.empty.systems.total
-    output.operating_empty  = output.empty.total + output.operational_items.total
-    output.zero_fuel_weight =  output.operating_empty + output.payload.total 
-    
+    output.empty.total      = output.empty.structural.total + output.empty.propulsion.total + output.empty.systems.total + output.operational_items.total
+    output.zero_fuel_weight = output.empty.total + output.payload.total
+    output.max_takeoff      = vehicle.mass_properties.max_takeoff
+
     return output

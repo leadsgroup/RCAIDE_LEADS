@@ -1,14 +1,13 @@
-# RCAIDE/Library/Methods/Plots/Performance/plot_payload_range_diagram.py
-# 
-# 
-# Created:  Jul 2023, M. Clarke
+# RCAIDE/Library/Plots/Performance/plot_payload_range_diagram.py
+#
+# Created: Feb 2026, M. Clarke 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE imports
-from RCAIDE.Framework.Core import Units , Data   
+from RCAIDE.Framework.Core import Units    
 from RCAIDE.Library.Plots.Common import set_axes, plot_style    
 from RCAIDE.Library.Plots import *
 
@@ -55,4 +54,4 @@ def plot_payload_range_diagram(payload_range,
     
     if save_figure:
         plt.savefig(save_filename  + file_type)   
-    return fig     
+    return fig      

@@ -62,7 +62,30 @@ def geometry(mission):
         if i == 0 or segment.analyses.geometry.settings.unique_geometry: 
             geometry_preprocess_routine(segment.analyses) 
         else:
-            use_previous_segment_pre_processed_data(mission,segment,i)   
+            # Reuses previous segment pre processed data to save computational time.
+            # Ensures that changes in configuration are not overwritten. 
+            vehicle_0 = deepcopy(segment.analyses.vehicle)
+            segment.analyses.vehicle = deepcopy(mission.segments[i-1].analyses.vehicle)
+            for wing in segment.analyses.vehicle.wings:
+                for control_surface in wing.control_surfaces:
+                    control_surface.deflection = vehicle_0.wings[wing.tag].control_surfaces[control_surface.tag].deflection
+            for landing_gear in segment.analyses.vehicle.landing_gears:
+                landing_gear.gear_extended = vehicle_0.landing_gears[landing_gear.tag].gear_extended
+            for network in segment.analyses.vehicle.networks: 
+                network.reverse_thrust = vehicle_0.networks[network.tag].reverse_thrust
+                for bus in network.busses:
+                    bus.active = vehicle_0.networks[network.tag].busses[bus.tag].active
+                for propulsor in network.propulsors:
+                    propulsor_0              =  vehicle_0.networks[network.tag].propulsors[propulsor.tag]
+                    propulsor.active         = propulsor_0.active
+                    if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan):
+                        propulsor.fan.angular_velocity        = propulsor_0.fan.angular_velocity   
+                        propulsor.fan_nozzle.exit_velocity    = propulsor_0.fan_nozzle.exit_velocity 
+                        propulsor.core_nozzle.exit_velocity   = propulsor_0.core_nozzle.exit_velocity
+                    if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor):
+                        propulsor.rotor.orientation_euler_angles =  propulsor_0.rotor.orientation_euler_angles 
+                        propulsor.rotor.blade_pitch_command      =  propulsor_0.rotor.blade_pitch_command
+
     return 
         
 def geometry_preprocess_routine(analyses):
@@ -133,7 +156,7 @@ def geometry_preprocess_routine(analyses):
                     elif type(cabin_class) == RCAIDE.Library.Components.Fuselages.Cabins.Classes.First:
                         NPF +=  cabin_class.number_of_seats 
                 total_seats += cabin.number_of_seats 
-            for cabin in wing.cabins:     
+                
                 if cabin.number_of_passengers == 0: # if cabin class  passengers are not defined, use ratio of cabin to aircraft
                     cabin.number_of_passengers =  min(total_seats,int( np.round((cabin.number_of_seats / total_seats) *  vehicle.number_of_passengers)))
                         
@@ -183,41 +206,12 @@ def geometry_preprocess_routine(analyses):
     # --------------------------------------------------------------------------------------------------------------------
     # Compute fuel volume  
     # -------------------------------------------------------------------------------------------------------------------- 
-    compute_fuel_volume(vehicle,compute_fuel_volume = settings.compute_fuel_volume, update_max_fuel=settings.update_max_fuel)
+    compute_fuel_volume(vehicle, compute_fuel_volume=settings.compute_fuel_volume, update_max_fuel=settings.update_max_fuel)
 
     if settings.write_geometry_properties:
         write_geometry_to_excel(vehicle) 
                
-    return
-
-def use_previous_segment_pre_processed_data(mission,segment,i):
-    '''
-    Reuses previous segment pre processed data to save computational time.
-    Ensures that changes in configuration are not overwritten.    
-    '''
-    vehicle_0 = deepcopy(segment.analyses.vehicle)
-    segment.analyses.vehicle = deepcopy(mission.segments[i-1].analyses.vehicle)
-    for wing in segment.analyses.vehicle.wings:
-        for control_surface in wing.control_surfaces:
-            control_surface.deflection = vehicle_0.wings[wing.tag].control_surfaces[control_surface.tag].deflection
-    for landing_gear in segment.analyses.vehicle.landing_gears:
-        landing_gear.gear_extended = vehicle_0.landing_gears[landing_gear.tag].gear_extended
-    for network in segment.analyses.vehicle.networks: 
-        network.reverse_thrust = vehicle_0.networks[network.tag].reverse_thrust
-        for bus in network.busses:
-            bus.active = vehicle_0.networks[network.tag].busses[bus.tag].active
-        for propulsor in network.propulsors:
-            propulsor_0              =  vehicle_0.networks[network.tag].propulsors[propulsor.tag]
-            propulsor.active         = propulsor_0.active
-            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan):
-                propulsor.fan.angular_velocity        = propulsor_0.fan.angular_velocity   
-                propulsor.fan_nozzle.exit_velocity    = propulsor_0.fan_nozzle.exit_velocity 
-                propulsor.core_nozzle.exit_velocity   = propulsor_0.core_nozzle.exit_velocity
-            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor):
-                propulsor.rotor.orientation_euler_angles =  propulsor_0.rotor.orientation_euler_angles 
-                propulsor.rotor.blade_pitch_command      =  propulsor_0.rotor.blade_pitch_command
-    return
-
+    return 
 
 def write_geometry_to_excel(vehicle):
 
@@ -326,7 +320,7 @@ def write_geometry_to_excel(vehicle):
                     "Segments Bounding Tank"       : getattr(fuel_tank, "segments_bounding_tank", None),
                     "Segments % Chord Start"       : getattr(fuel_tank, "segments_percent_chord_start", None),
                     "Segments % Chord End"         : getattr(fuel_tank, "segments_percent_chord_end", None),
-                    "BWB Aft Tank"                 : getattr(fuel_tank, "bwb_aft_tank", None),
+                    "BWB Aft Tank"                 : getattr(fuel_tank, "transverse_tank", None),
                     "XZ Plane Symmetric"           : getattr(fuel_tank, "xz_plane_symmetric", None),
                     "Fuel Net Volume (m^3)"        : getattr(getattr(fuel_tank.fuel, "volume_properties", None), "net_volume", None) if fuel_tank.fuel else None,
                     "Fuel Gross Volume (m^3)"      : getattr(getattr(fuel_tank, "volume_properties", None), "gross_volume", None) if fuel_tank.fuel else None,

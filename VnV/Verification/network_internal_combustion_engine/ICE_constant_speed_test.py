@@ -28,12 +28,14 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Cessna_172                       import vehicle_setup  
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine import design_constant_speed_internal_combustion_engine
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 
 def main():   
+    ti = time.time()
      
     # Define internal combustion engine from Cessna Regression Aircraft 
     vehicle    = vehicle_setup()
@@ -73,6 +75,10 @@ def main():
     for k,v in list(error.items()):
         assert(np.abs(v)<1e-6)
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 
@@ -243,8 +249,8 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['ice_constant_speed_propeller']] 
-    segment.assigned_control_variables.body_angle                   
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle                   
+    segment.assigned_control_variables.pitch_angle.active             = True                
                 
     mission.append_segment(segment)
 

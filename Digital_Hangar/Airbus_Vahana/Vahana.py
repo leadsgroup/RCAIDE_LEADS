@@ -273,8 +273,8 @@ def vehicle_setup(redesign_rotors=True):
     bat.tag                                                = 'bus_battery'
     bat.electrical_configuration.series                    = 8 
     bat.electrical_configuration.parallel                  = 60 
-    bat.geometrtic_configuration.normal_count              = 20
-    bat.geometrtic_configuration.parallel_count            = 24  
+    bat.geometric_configuration.normal_count              = 20
+    bat.geometric_configuration.parallel_count            = 24  
     
     for _ in range(10):
         bus.battery_modules.append(deepcopy(bat))   
@@ -355,11 +355,17 @@ def vehicle_setup(redesign_rotors=True):
     else:
         regression_prop_rotor_propulsor = deepcopy(prop_rotor_propulsor)        
         design_electric_rotor(regression_prop_rotor_propulsor, iterations=2)
-        loaded_propulsor = load_propulsor(os.path.join(sys.path[0], 'vahana_tilt_rotor_propulsor.res'))  
+        loaded_propulsor = load_propulsor(os.path.join(sys.path[0], 'vahana_tilt_rotor_propulsor.res'))
         for key,item in prop_rotor_propulsor.rotor.items():
-            prop_rotor_propulsor.rotor[key] = loaded_propulsor.rotor[key] 
+            prop_rotor_propulsor.rotor[key] = loaded_propulsor.rotor[key]
         for key,item in prop_rotor_propulsor.motor.items():
-            prop_rotor_propulsor.motor[key] = loaded_propulsor.motor[key] 
+            prop_rotor_propulsor.motor[key] = loaded_propulsor.motor[key]
+        prop_rotor_propulsor.rotor.airfoils.airfoil.coordinate_file  =  airfoil_file_path + 'NACA_4412.txt'
+        prop_rotor_propulsor.rotor.airfoils.airfoil.polar_files      = [polar_file_path + 'NACA_4412_polar_Re_50000.txt' ,
+                                                                         polar_file_path + 'NACA_4412_polar_Re_100000.txt' ,
+                                                                         polar_file_path + 'NACA_4412_polar_Re_200000.txt' ,
+                                                                         polar_file_path + 'NACA_4412_polar_Re_500000.txt' ,
+                                                                         polar_file_path + 'NACA_4412_polar_Re_1000000.txt']
          
     # Front Rotors Locations 
     nacelle_origins = [[-0.2, 1.347, 0.0], [-0.2, 3.2969999999999997, 0.0], [-0.2, -1.347, 0.0], [-0.2, -3.2969999999999997, 0.0],\
@@ -388,6 +394,7 @@ def vehicle_setup(redesign_rotors=True):
         assigned_propulsor_list.append(prop_rotor_propulsor_i.tag)
         network.propulsors.append(prop_rotor_propulsor_i)  
     bus.assigned_propulsors = [assigned_propulsor_list]       
+    
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Additional Bus Loads
     #------------------------------------------------------------------------------------------------------------------------------------            
@@ -395,14 +402,29 @@ def vehicle_setup(redesign_rotors=True):
     systems                         = RCAIDE.Library.Components.Powertrain.Systems.Systems()
     systems.power_draw              = 10. # Watts 
     systems.mass_properties.mass    = 1.0 * Units.kg
-    bus.systems                     = systems 
+    network.systems.append(systems)
                              
     # Avionics                            
     avionics                        = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
     avionics.power_draw             = 10. # Watts  
     avionics.mass_properties.mass   = 1.0 * Units.kg
-    bus.avionics                    = avionics     
-    network.busses.append(bus) 
+    network.systems.append(avionics)
+    
+    # Environmental Control System
+    environmental_controls                                  = RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
+    environmental_controls.origin                           = [[2.5, 0, 0]]
+    network.systems.append(environmental_controls)
+
+    # Electrical (wiring)
+    electrical                                              = RCAIDE.Library.Components.Powertrain.Systems.Electrical()
+    electrical.origin                                       = [[3.0, 0, 0]]
+    network.systems.append(electrical)
+
+    # Furnishings (seats)
+    furnishings                                             = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
+    furnishings.origin                                      = [[2.5, 0, 0]]
+    network.systems.append(furnishings) 
+   
         
     # append energy network 
     vehicle.append_energy_network(network)  

@@ -27,12 +27,14 @@ vehicles_path = os.path.abspath(
 if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Navion    import vehicle_setup, configs_setup 
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 
 def main():
+    ti = time.time()
     
     new_regression_results = False  # Keep False, Only True when getting new results for regression 
 
@@ -49,6 +51,10 @@ def main():
     folder_name            = '_surrogate'
     AVL_Surrogate_Mission(use_surrogate,trim_aircraft,keep_regression_files,new_regression_results,folder_name)    
  
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
     
 def AVL_Surrogate_Mission(use_surrogate,trim_aircraft,keep_regression_files,new_regression_results,folder_name):
@@ -72,7 +78,7 @@ def AVL_Surrogate_Mission(use_surrogate,trim_aircraft,keep_regression_files,new_
  
     # Extract sample values from computation   
     cruise_CL        = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0] 
-    cruise_CL_thruth = 0.4210736644793703
+    cruise_CL_thruth = 0.4282429131385143
     # Truth values  
     error = Data()  
     error.cruise_CL   = np.max(np.abs(cruise_CL - cruise_CL_thruth))   
@@ -214,7 +220,7 @@ def AVL_Surrogate_mission_setup(analyses):
     segment.flight_dynamics.force_z                                 = True     
     
     # define flight controls 
-    segment.assigned_control_variables.body_angle.active             = True     
+    segment.assigned_control_variables.pitch_angle.active             = True     
     segment.assigned_control_variables.throttle.active               = True
     segment.assigned_control_variables.throttle.initial_guess_values = [[0.5]]
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['ice_propeller']]    
@@ -255,7 +261,7 @@ def AVL_Single_Point_mission_setup(analyses):
     segment.flight_dynamics.force_z                                 = True     
     
     # define flight controls 
-    segment.assigned_control_variables.body_angle.active             = True     
+    segment.assigned_control_variables.pitch_angle.active             = True     
     segment.assigned_control_variables.throttle.active               = True
     segment.assigned_control_variables.throttle.initial_guess_values = [[0.5]]
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['ice_propeller']]   

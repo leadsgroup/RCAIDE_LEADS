@@ -8,8 +8,6 @@
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
 
-from . import additive  
 from . import particle_swarm
-from . import pyopt  
+from . import pyopt
 from . import scipy
-from . import trmm
