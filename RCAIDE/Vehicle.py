@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
  
 from RCAIDE                    import Framework
-from RCAIDE.Framework.Core     import Data, DataOrdered
+from RCAIDE.Framework.Core     import Data 
 from RCAIDE.Library            import Components
 import numpy as np 
 
@@ -74,8 +74,7 @@ class Vehicle(Data):
         self.number_of_economy_class_seats                                 = 0
         self.Vref_VS_ratio                                                 = None
         self.maximum_cross_sectional_area                                  = 0.0
-        self.length                                                        = 0.0
-         
+        self.length                                                        = 0.0 
         
         self.flight_envelope                                               = Data()
         self.flight_envelope.design_dynamic_pressure                       = None 
@@ -120,7 +119,7 @@ class Vehicle(Data):
         self.flight_envelope.gust.load_factor.velocity_max_cruise          = 0
         self.flight_envelope.gust.load_factor.velocity_max_dive            = 0 
         
-        self.performance                              = DataOrdered()
+        self.performance                                                   = Data()
          
     _energy_network_root_map = None 
 
@@ -292,24 +291,26 @@ class Vehicle_Mass_Properties(Components.Mass_Properties):
                 None
             """         
 
-        self.tag                         = 'mass_properties'
-        self.operating_empty             = None
-        self.max_takeoff                 = None
-        self.takeoff                     = None
-        self.max_landing                 = None
-        self.landing                     = None
-        self.max_cargo                   = None
-        self.cargo                       = 0
-        self.max_payload                 = 0 
-        self.min_payload                 = 0 
-        self.payload                     = 0
-        self.passenger                   = None
-        self.crew                        = None
-        self.max_fuel                    = None
-        self.fuel                        = 0
-        self.max_zero_fuel               = None
-        self.center_of_gravity           = [[0.0,0.0,0.0]]
-        self.zero_fuel_center_of_gravity = np.array([[0.0,0.0,0.0]])    
+        self.tag                                    = 'mass_properties'
+        self.operating_empty                        = None
+        self.max_takeoff                            = None
+        self.takeoff                                = None
+        self.max_landing                            = None
+        self.landing                                = None
+        self.max_cargo                              = None
+        self.cargo                                  = 0
+        self.max_payload                            = 0 
+        self.min_payload                            = 0 
+        self.payload                                = 0
+        self.passenger                              = None
+        self.crew                                   = None
+        self.max_fuel                               = None
+        self.fuel                                   = 0
+        self.max_zero_fuel                          = None
+        self.center_of_gravity                      = [[0.0,0.0,0.0]]
+        self.zero_fuel_center_of_gravity            = [[0.0,0.0,0.0]]
+        self.operating_empty_center_of_gravity      = [[0.0,0.0,0.0]]
+        self.OEW_CG_mass_percentage                 = 0.0    
         
 class Vehicle_Mass_Container(Components.Component.Container,Vehicle_Mass_Properties):
         

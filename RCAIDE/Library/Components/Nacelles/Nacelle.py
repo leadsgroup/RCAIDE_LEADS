@@ -178,7 +178,7 @@ class Nacelle(Component):
         
         # Go from vehicle frame to nacelle vehicle frame
         rots = np.array(self.orientation_euler_angles) * 1. 
-        vehicle_2_nac_vec = sp.spatial.transform.Rotation.from_rotvec(rots).as_matrix()        
+        vehicle_2_nac_vec = sp.spatial.transform.Rotation.from_euler('xyz', rots).as_matrix()        
         
         # Go from nacelle vehicle frame to nacelle velocity frame
         nac_vec_2_nac_vel = self.vec_to_vel()

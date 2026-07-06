@@ -50,8 +50,8 @@ def compute_vehicle_center_of_gravity(vehicle,centre_of_gravity_df, overwrite_ce
         OEW_mass,OEW_moment = compute_component_center_of_gravity(centre_of_gravity_df,item,vehicle,OEW_mass,OEW_moment,None,False,False,False)    
     
     # center of gravity
-    OEW_CG = OEW_moment / OEW_mass 
-    OEW_mass_percentage = (OEW_mass[0] / vehicle.mass_properties.operating_empty) * 100 
+    OEW_CG = OEW_moment / OEW_mass
+    OEW_mass_percentage = (OEW_mass[0] / vehicle.mass_properties.operating_empty) * 100
      
     # --------------------------------------------------------------------------------------    
     # Mission Center of Gravity 
@@ -89,8 +89,9 @@ def compute_vehicle_center_of_gravity(vehicle,centre_of_gravity_df, overwrite_ce
         ones_row  = segment.state.ones_row  
         segment.state.conditions.weights.vehicle.global_center_of_gravity = CG * ones_row(1)
             
-    if overwrite_center_of_gravity and (mission_mass != 0.0): 
+    if overwrite_center_of_gravity and (mission_mass != 0.0):
         vehicle.mass_properties.center_of_gravity = CG.tolist()
         vehicle.mass_properties.operating_empty_center_of_gravity = OEW_CG.tolist()
-        
-    return vehicle.mass_properties.center_of_gravity, mission_mass, mission_moment, centre_of_gravity_df 
+        vehicle.mass_properties.OEW_CG_mass_percentage = round(OEW_mass_percentage, 2)
+
+    return vehicle.mass_properties.center_of_gravity, mission_mass, mission_moment, centre_of_gravity_df

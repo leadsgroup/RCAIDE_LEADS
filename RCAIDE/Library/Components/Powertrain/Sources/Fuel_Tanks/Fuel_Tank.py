@@ -13,7 +13,7 @@ from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Components          import Component
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks  import * 
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions import append_fuel_tank_conditions 
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_non_integral_tank_volume import *
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_prismatic_tank_volume   import compute_prismatic_tank_volume     
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_cuboid_moment_of_inertia
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_cuboid_center_of_gravity
 
@@ -61,29 +61,59 @@ class Fuel_Tank(Component):
         """          
         self.tag                            = 'fuel_tank'  
         self.fuel                           = None
-        self.secondary_mass_flow_rate       = 0.0   #kg/s
+        self.secondary_mass_flow_rate       = 0.0
         self.wall_clearance                 = 0.0
         self.wall_thickness                 = 1E-3
         self.fuel_flow_split_ratio          = None
         self.xz_plane_symmetric             = True
         self.wing_tag                       = None
         self.fuselage_tag                   = None
-        self.bwb_aft_tank                   = False
+        self.transverse_tank                = False
+        self.gravimetric_efficiency         = 1.0
         self.lengths                        = Data()
         self.lengths.external               = 0.0
-        self.lengths.interal                = 0.0  
+        self.lengths.internal               = 0.0  
         self.widths                         = Data()
         self.widths.external                = 0.0
-        self.widths.interal                 = 0.0
+        self.widths.internal                = 0.0
         self.heights                        = Data()
         self.heights.external               = 0.0
         self.heights.internal               = 0.0 
         self.diameters                      = Data()
         self.diameters.external             = 0.0
-        self.diameters.internal             = 0.0 
-        self.tank_accesories_weight_factor  = 1.0
-        self.structural                     = Component()                
-        self.insulation                     = Component()                    
+        self.diameters.internal             = 0.0  
+
+        # Insulation sub-component
+        self.insulation                     = Component()
+        self.insulation.lengths             = Data()
+        self.insulation.lengths.external    = 0.0
+        self.insulation.lengths.internal    = 0.0
+        self.insulation.widths              = Data()
+        self.insulation.widths.external     = 0.0
+        self.insulation.widths.internal     = 0.0
+        self.insulation.heights             = Data()
+        self.insulation.heights.external    = 0.0
+        self.insulation.heights.internal    = 0.0
+        self.insulation.diameters           = Data()
+        self.insulation.diameters.external  = 0.0
+        self.insulation.diameters.internal  = 0.0
+
+        # Inner structure (pressure vessel) sub-component
+        self.inner_structure                     = Component()
+        self.inner_structure.lengths             = Data()
+        self.inner_structure.lengths.external    = 0.0
+        self.inner_structure.lengths.internal    = 0.0
+        self.inner_structure.widths              = Data()
+        self.inner_structure.widths.external     = 0.0
+        self.inner_structure.widths.internal     = 0.0
+        self.inner_structure.heights             = Data()
+        self.inner_structure.heights.external    = 0.0
+        self.inner_structure.heights.internal    = 0.0
+        self.inner_structure.diameters           = Data()
+        self.inner_structure.diameters.external  = 0.0
+        self.inner_structure.diameters.internal  = 0.0
+
+        self.tank_accesories_weight_factor  = 1.0             
         self.segments_bounding_tank         = [None, None] 
         self.segments_percent_chord_start   = [0.1,0.1]
         self.segments_percent_chord_end     = [0.7,0.7]
@@ -139,7 +169,7 @@ class Fuel_Tank(Component):
         --------
         RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_non_integral_tank_volume
         """ 
-        compute_prismatic_fuel_tank_volume(self)
+        compute_prismatic_tank_volume(self)
         return
     
    

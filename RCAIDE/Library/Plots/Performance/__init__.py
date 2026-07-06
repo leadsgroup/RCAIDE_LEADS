@@ -10,4 +10,5 @@ Powertrain plotting module providing visualization tools for energy-related comp
 # ----------------------------------------------------------------------------------------------------------------------
  
 from .plot_V_n_diagram            import plot_V_n_diagram 
-from .plot_load_diagram             import plot_load_diagram
+from .plot_load_diagram           import plot_load_diagram
+from .plot_payload_range_diagram  import plot_payload_range_diagram 

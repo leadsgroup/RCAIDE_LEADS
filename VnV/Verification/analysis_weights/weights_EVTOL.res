@@ -1,41 +1,53 @@
 {
     "empty": {
         "structural": {
+            "wings": 142.4559459549765,
+            "fuselage": 163.69764322860365,
+            "empennage": 0.0,
+            "landing_gear": 57.34358805531064,
+            "nacelle": 0.0,
             "booms": 155.18838447725062,
-            "fusleage": 163.74738845848623,
-            "landing_gear": 57.370191942459876,
-            "wings": 142.4592118380854,
-            "total": 518.7651767162821
+            "paint": 0.0,
+            "total": 518.6855617161414
         },
         "propulsion": {
-            "motors": 525.7662807395955,
-            "rotors": 70.10419889443826,
-            "hubs": 48.400000000000006,
-            "servos": 17.875000000000007,
-            "wiring": 61.3640438318721,
+            "engines": 70.10257346173628,
+            "thrust_reversers": 0.0,
+            "miscellaneous": 35.2,
+            "fuel_system": 0.0,
+            "fuel_tanks": 0.0,
+            "electrical_cabling": 61.32523159135614,
+            "thermal_management": 0.0,
             "battery": 839.7312,
-            "fuel_cell": 0.0,
-            "TMS": 0.0,
-            "total": 1563.2407234659058
+            "motors": 592.0412807395955,
+            "total": 1598.400285792688
         },
         "systems": {
-            "environmental_control_system": 38.5,
-            "avionics": 18.700000000000003,
-            "seats": 82.5,
-            "balistic_recovery_system": 35.2,
-            "total": 174.89999999999998
+            "control_systems": 0.0,
+            "apu": 0.0,
+            "electrical": 0.0,
+            "avionics": 17.6,
+            "hydraulics": 0.0,
+            "furnishings": 82.5,
+            "air_conditioner": 38.5,
+            "instruments": 0.0,
+            "total": 138.6
         },
-        "total": 2256.905900182188
-    },
-    "operational_items": {
-        "total": 0
+        "total": 2255.6858475088293
     },
     "payload": {
         "passengers": 350.0,
-        "payload": 0.0,
+        "baggage": 0.0,
+        "cargo": 0.0,
         "total": 350.0
     },
-    "zero_fuel_weight": 2606.905900182188,
-    "fuel": 0,
-    "total": 2606.905900182188
+    "operational_items": {
+        "misc": 0.0,
+        "flight_crew": 0.0,
+        "flight_attendants": 0.0,
+        "passenger_service": 0.0,
+        "total": 0.0
+    },
+    "zero_fuel_weight": 2605.6858475088293,
+    "max_takeoff": 2605.6858475088293
 }

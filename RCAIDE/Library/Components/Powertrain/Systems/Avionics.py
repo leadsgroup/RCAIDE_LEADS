@@ -8,6 +8,7 @@
 # RCAIDE imports  
 from .Systems import Systems
 from RCAIDE.Library.Methods.Powertrain.Systems.append_systems_conditions import append_systems_conditions 
+from RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw import compute_avionics_power_draw
  
 # ----------------------------------------------------------------------------------------------------------------------
 #  Avionics
@@ -56,18 +57,4 @@ class Avionics(Systems):
         Sets default values for the avionics system attributes.
         """                  
         self.tag        = 'Avionics'
-        self.power_draw = 0
-
-    def append_operating_conditions(self, segment, bus): 
-        """
-        Adds operating conditions for the avionics system to a mission segment.
-
-        Parameters
-        ----------
-        segment : Data
-            Mission segment to which conditions are being added
-        bus : Data
-            Electrical bus supplying power to the avionics
-        """
-        append_systems_conditions(self, segment, bus)
-        return 
+        self.uninstalled_mass = 0.0

@@ -29,12 +29,14 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Hydrogen_BWB         import vehicle_setup as BWB_vehicle_setup
 from Hydrogen_BWB         import configs_setup as BWB_configs_setup
+import time
 
 # ----------------------------------------------------------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------------------------------------------------------
 
 def main():
+    ti = time.time()
 
     vehicle = BWB_vehicle_setup()
      # Step 2 create aircraft configuration based on vehicle 
@@ -49,7 +51,7 @@ def main():
     
     # Step 5 execute flight profile
     results = missions.base_mission.evaluate()
-    CL_truth = 0.39712057266000705
+    CL_truth = 0.4214239243140679
     CL    = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[0, 0]
 
     abs_error = np.abs((CL - CL_truth)) 
@@ -69,6 +71,10 @@ def main():
         if os.path.exists(file_path):
             os.remove(file_path)
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 # ----------------------------------------------------------------------
@@ -112,7 +118,7 @@ def base_analysis(vehicle):
 
     # ------------------------------------------------------------------
     #  Weights
-    weights = RCAIDE.Framework.Analyses.Weights.Hydrogen_BWB()                                                  
+    weights = RCAIDE.Framework.Analyses.Weights.Cryogenic_BWB()                                                  
     weights.aircraft_type                                                    = 'BWB'
     weights.settings.FLOPS.fidelity                                          = 'Complex' 
     weights.settings.weight_correction_additions.empty.structural.paint      = 464.6384576160517  
@@ -125,6 +131,7 @@ def base_analysis(vehicle):
     weights.settings.write_mass_properties                                   = True 
     weights.settings.run_weights_analysis                                    = True
     weights.settings.iterate_mtow                                            = True
+    weights.settings.mtow_capacity_fraction                                  = 0.955
     weights.settings.run_center_of_gravity_analysis                          = True
     weights.settings.run_moments_of_inertia_analysis                         = True
     analyses.append(weights)

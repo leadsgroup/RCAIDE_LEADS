@@ -1,0 +1,31 @@
+...Comp Geom...
+4 Num Comps
+6 Total Num Meshes
+14160 Total Num Tris
+
+Theo_Area   Wet_Area   Theo_Vol    Wet_Vol  Name
+  810.523    809.037   1008.151   1007.409  main_wing      
+  810.541    809.055   1008.160   1007.418  main_wing      
+   43.902     36.952      4.765      4.015  vertical_stabilizer
+   43.902     36.589      4.765      3.976  vertical_stabilizer
+   59.903     59.903      6.307      6.307  nacelle_1      
+   59.903     59.903      6.307      6.307  propulsor_2_nacelle
+-------------------------------------------------
+ 1828.675   1811.440   2038.455   2035.432  Totals         
+
+Tag_Theo_Area   Tag_Wet_Area    Tag_Name
+      713.342        712.819    main_wing_S_Surf0
+      713.342        712.819    main_wing_S_Surf1
+       43.902         36.952    vertical_stabilizer_S_Surf0
+       43.902         36.589    vertical_stabilizer_S_Surf1
+       59.903         59.903    nacelle_1_S_Surf0
+       59.903         59.903    propulsor_2_nacelle_S_Surf0
+       39.603         39.603    main_wing_S_Surf0,SS_CONT_0
+       36.350         35.388    main_wing_S_Surf0,SS_CONT_1
+       11.570         11.570    main_wing_S_Surf0,SS_CONT_2
+       39.621         39.621    main_wing_S_Surf1,SS_CONT_0
+       36.350         35.388    main_wing_S_Surf1,SS_CONT_1
+       11.570         11.570    main_wing_S_Surf1,SS_CONT_2
+        0.000          0.000    main_wing_S_Surf1,SS_CONT_3
+        9.658          9.658    main_wing_S_Surf0,SS_CONT_1,SS_CONT_3
+        9.658          9.658    main_wing_S_Surf1,SS_CONT_1,SS_CONT_3

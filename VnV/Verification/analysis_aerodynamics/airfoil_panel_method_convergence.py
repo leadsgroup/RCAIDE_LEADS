@@ -15,6 +15,7 @@ from RCAIDE.Library.Plots import *
 import os 
 import numpy as np
 import matplotlib.pyplot as plt    
+import time
  
 
 # ----------------------------------------------------------------------
@@ -22,7 +23,12 @@ import matplotlib.pyplot as plt
 # ----------------------------------------------------------------------
 
 def main():   
+    ti = time.time()
     single_airfoil()
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 def single_airfoil():

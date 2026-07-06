@@ -11,7 +11,8 @@
 import RCAIDE
 from .Fuel_Tank  import Fuel_Tank 
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions import append_fuel_tank_conditions 
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Integral_Tank.compute_integral_tank_volume import *
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Integral_Tank.compute_fuselage_integral_tank_volume  import compute_fuselage_integral_tank_volume
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Integral_Tank.compute_wing_integral_tank_volume      import compute_wing_integral_tank_volume
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_wing_integral_tank_moment_of_inertia     import  compute_wing_integral_tank_moment_of_inertia
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_wing_integral_tank_center_of_gravity     import  compute_wing_integral_tank_center_of_gravity
 
@@ -152,7 +153,7 @@ class Integral_Tank(Fuel_Tank):
             compute_wing_integral_tank_volume(self, wing)
         elif self.fuselage_tag is not None: 
             fuselage = fuselages[self.fuselage_tag]  
-            compute_fuselage_integral_tank_fuel_volume(self, fuselage)
+            compute_fuselage_integral_tank_volume(self, fuselage)
         return
     
     def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
@@ -173,8 +174,7 @@ class Integral_Tank(Fuel_Tank):
 
         if self.wing_tag != None:
             wing = vehicle.wings[self.wing_tag]  
-            _, _ = compute_wing_integral_tank_moment_of_inertia(self, wing, center_of_gravity = center_of_gravity)
-        #  MOI for fuselage Integral Tank is computed with the volume computations.
+            _, _ = compute_wing_integral_tank_moment_of_inertia(self, wing, center_of_gravity = center_of_gravity) 
          
         return
     

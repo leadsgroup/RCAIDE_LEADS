@@ -31,7 +31,6 @@ def vehicle_setup() :
     # ------------------------------------------------------------------      
     vehicle                                           = RCAIDE.Vehicle()    
     vehicle.tag                                       = 'BWB_2050_LH2' 
-    vehicle.staub_factor = 0.955
     vehicle.mass_properties.max_takeoff               = 125225.92487939  
     vehicle.mass_properties.takeoff                   = 125225.92487939  
     vehicle.mass_properties.payload                   = 55800* Units.lbs 
@@ -391,7 +390,7 @@ def vehicle_setup() :
     net                                         = RCAIDE.Framework.Networks.Fuel() 
 
     #------------------------------------------------------------------------------------------------------------------------- 
-    # Fuel Distrubition Line 
+    # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
     fuel_line                                      = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
     fuel_line.pipe.rigid_material                  = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304()
@@ -532,35 +531,50 @@ def vehicle_setup() :
     #------------------------------------------------------------------------------------------------------------------------- 
     #  Energy Source: Fuel Tank
     #------------------------------------------------------------------------------------------------------------------------- 
-    fuel_tank_1                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
-    fuel_tank_1.tag                                    = 'tank_1l_1r' 
-    fuel_tank_1.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
-    fuel_tank_1.insulation_material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
-    fuel_tank_1.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']                
-    fuel_tank_1.segments_percent_chord_bounds          = [0.1 ,0.1] 
+    fuel_tank_1                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
+    fuel_tank_1.tag                                    = 'tank_1l_1r'
+    fuel_tank_1.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+    fuel_tank_1.design_inlet_temperature               = 20
+    fuel_tank_1.design_altitude                        = 30000 * Units.ft
+    fuel_tank_1.design_heat_flux                   = 20
+    fuel_tank_1.design_total_heat_transfer             = 2000
+    fuel_tank_1.ullage_volume_fraction                 = 0.07
+    fuel_tank_1.inner_structure.material               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank_1.insulation.material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
+    fuel_tank_1.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']
+    fuel_tank_1.segments_percent_chord_bounds          = [0.1 ,0.1]
     fuel_tank_1.segments_percent_chord_end             = [0.55,0.55]
-    fuel_tank_1.fuel.tag                               = '_lh2' 
     fuel_line.fuel_tanks.append(fuel_tank_1)
 
-    fuel_tank_2                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
-    fuel_tank_2.tag                                    = 'tank_2l_2r' 
-    fuel_tank_2.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
-    fuel_tank_2.insulation_material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation() 
-    fuel_tank_2.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']                
-    fuel_tank_2.segments_percent_chord_bounds          = [0.1 ,0.1] 
-    fuel_tank_2.segments_percent_chord_end             = [0.55,0.55]  
-    fuel_tank_2.fuel.tag                               = '_lh2' 
-    
+    fuel_tank_2                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
+    fuel_tank_2.tag                                    = 'tank_2l_2r'
+    fuel_tank_2.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+    fuel_tank_2.design_inlet_temperature               = 20
+    fuel_tank_2.design_altitude                        = 30000 * Units.ft
+    fuel_tank_2.design_heat_flux                   = 20
+    fuel_tank_2.design_total_heat_transfer             = 2000
+    fuel_tank_2.ullage_volume_fraction                 = 0.07
+    fuel_tank_2.inner_structure.material               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank_2.insulation.material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
+    fuel_tank_2.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']
+    fuel_tank_2.segments_percent_chord_bounds          = [0.1 ,0.1]
+    fuel_tank_2.segments_percent_chord_end             = [0.55,0.55]
     fuel_line.fuel_tanks.append(fuel_tank_2)
-    fuel_tank_3                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
-    fuel_tank_3.tag                                    = 'tank_3l_3r' 
-    fuel_tank_3.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
-    fuel_tank_3.insulation_material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
-    fuel_tank_3.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']                     
-    fuel_tank_3.segments_percent_chord_bounds          = [0.1 ,0.1] 
-    fuel_tank_3.segments_percent_chord_end             = [0.55,0.55]  
-    fuel_tank_3.fuel.tag                               =  '_lh2' 
-    fuel_line.fuel_tanks.append(fuel_tank_3)    
+
+    fuel_tank_3                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
+    fuel_tank_3.tag                                    = 'tank_3l_3r'
+    fuel_tank_3.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+    fuel_tank_3.design_inlet_temperature               = 20
+    fuel_tank_3.design_altitude                        = 30000 * Units.ft
+    fuel_tank_3.design_heat_flux                   = 20
+    fuel_tank_3.design_total_heat_transfer             = 2000
+    fuel_tank_3.ullage_volume_fraction                 = 0.07
+    fuel_tank_3.inner_structure.material               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+    fuel_tank_3.insulation.material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
+    fuel_tank_3.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']
+    fuel_tank_3.segments_percent_chord_bounds          = [0.1 ,0.1]
+    fuel_tank_3.segments_percent_chord_end             = [0.55,0.55]
+    fuel_line.fuel_tanks.append(fuel_tank_3)
 
     # ------------------------------------------------
     # Bounds for aft tank
@@ -568,7 +582,7 @@ def vehicle_setup() :
     cabin_bound = cabin_length / vehicle.wings.main_wing.chords.root
 
     aft_segment_bound = 'cabin_wall'
-    engine2wall = abs(turbofan2.nacelle.origin[0][1]) + vehicle.wings.main_wing.segments[aft_segment_bound].percent_span_location * vehicle.wings.main_wing.spans.projected / 2 # Distance from engine to the far wall
+    engine2wall = abs(turbofan2.nacelle.origin[0][1]) + vehicle.wings.main_wing.segments[aft_segment_bound].percent_span_location * vehicle.wings.main_wing.spans.projected / 2
     forward_location = np.tan(15*Units.degrees) * engine2wall
     rotor_burst_bound = (turbofan2.nacelle.origin[0][0] - forward_location) / vehicle.wings.main_wing.chords.root
 
@@ -576,18 +590,23 @@ def vehicle_setup() :
         print("Error: rotor burst criteria and cabin bounds intersect. Tank 4 and 5 are impossible to place")
     else:
 
-        fuel_tank_4                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
-        fuel_tank_4.tag                                    = 'aft_tank' 
+        fuel_tank_4                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
+        fuel_tank_4.tag                                    = 'aft_tank'
+        fuel_tank_4.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+        fuel_tank_4.design_inlet_temperature               = 20
+        fuel_tank_4.design_altitude                        = 30000 * Units.ft
+        fuel_tank_4.design_heat_flux                   = 20
+        fuel_tank_4.design_total_heat_transfer             = 2000
+        fuel_tank_4.ullage_volume_fraction                 = 0.07
         fuel_tank_4.geometry_type                          = 'conformal'
-        fuel_tank_4.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
-        fuel_tank_4.insulation_material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
+        fuel_tank_4.inner_structure.material               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+        fuel_tank_4.insulation.material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
         fuel_tank_4.xz_plane_symmetric                     = False
         fuel_tank_4.orientation_euler_angles               = [0,0,np.pi/2]
-        fuel_tank_4.bwb_aft_tank                           = True
-        fuel_tank_4.aft_tank_root_chord_bounds             = [cabin_bound,rotor_burst_bound]
-        fuel_tank_4.aft_tank_segment_bound                 = aft_segment_bound
+        fuel_tank_4.transverse_tank                        = True
+        fuel_tank_4.transverse_tank_chord_bounds             = [cabin_bound,rotor_burst_bound]
+        fuel_tank_4.transverse_tank_segment_bound                 = aft_segment_bound
         fuel_tank_4.radial_offset                          = 0.1
-        fuel_tank_4.fuel.tag                               = '_lh2' 
         fuel_line.fuel_tanks.append(fuel_tank_4)
 
 
@@ -599,48 +618,46 @@ def vehicle_setup() :
     ##  Systems
     ##-------------------------------------------------------------------------------------------------------------------------   
     avionics =  RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.origin                   = [[1,0,0]]   
-    vehicle.append_component(avionics)
+    avionics.origin                   = [[1,0,0]]
+    net.systems.append(avionics)
 
-    flight_controls =  RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()    
-    flight_controls.origin            = [[0.5 * vehicle.wings.main_wing.chords.root,0,0]]  
-    vehicle.append_component(flight_controls)
-    
-    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit()  
+    flight_controls =  RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
+    flight_controls.origin            = [[0.5 * vehicle.wings.main_wing.chords.root,0,0]]
+    net.systems.append(flight_controls)
+
+    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
     auxillary_power_unit.tag= 'fuel_cell_apu_0'
     auxillary_power_unit.mass_properties.mass = 235.8
-    auxillary_power_unit.origin       = [[0.76 * vehicle.wings.main_wing.chords.root,0,0]] 
-    vehicle.append_component(auxillary_power_unit)
-    
-    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit()  
+    auxillary_power_unit.origin       = [[0.76 * vehicle.wings.main_wing.chords.root,0,0]]
+    net.systems.append(auxillary_power_unit)
+
+    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
     auxillary_power_unit.tag= 'fuel_cell_apu_1'
     auxillary_power_unit.mass_properties.mass = 235.8
-    auxillary_power_unit.origin       = [[0.76 * vehicle.wings.main_wing.chords.root,-2,0]]  
-    vehicle.append_component(auxillary_power_unit)
-    
-    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit()  
-    auxillary_power_unit.origin       = [[0.76 * vehicle.wings.main_wing.chords.root,2,0]] 
+    auxillary_power_unit.origin       = [[0.76 * vehicle.wings.main_wing.chords.root,-2,0]]
+    net.systems.append(auxillary_power_unit)
+
+    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
+    auxillary_power_unit.origin       = [[0.76 * vehicle.wings.main_wing.chords.root,2,0]]
     auxillary_power_unit.mass_properties.mass = 235.8
     auxillary_power_unit.tag= 'fuel_cell_apu_2'
-    vehicle.append_component(auxillary_power_unit)
+    net.systems.append(auxillary_power_unit)
 
+    electrical =  RCAIDE.Library.Components.Powertrain.Systems.Electrical()
+    electrical.origin                 = [[0.2 * vehicle.wings.main_wing.chords.root,0,0]]
+    net.systems.append(electrical)
 
+    hydraulics =  RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
+    hydraulics.origin                 = [[0.70 * vehicle.wings.main_wing.chords.root,0,0]]
+    net.systems.append(hydraulics)
 
-    electrical =  RCAIDE.Library.Components.Powertrain.Systems.Electrical()      
-    electrical.origin                 = [[0.2 * vehicle.wings.main_wing.chords.root,0,0]]  
-    vehicle.append_component(electrical)
-    
-    hydraulics =  RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()  
-    hydraulics.origin                 = [[0.70 * vehicle.wings.main_wing.chords.root,0,0]]  
-    vehicle.append_component(hydraulics)
-    
-    environmental_controls =  RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()  
-    environmental_controls.origin     = [[0.2 * vehicle.wings.main_wing.chords.root,0,0]]   
-    vehicle.append_component(environmental_controls)
-    
-    instruments =  RCAIDE.Library.Components.Powertrain.Systems.Instruments()  
-    instruments.origin                = [[1,0,0]]  
-    vehicle.append_component(instruments)    
+    environmental_controls =  RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
+    environmental_controls.origin     = [[0.2 * vehicle.wings.main_wing.chords.root,0,0]]
+    net.systems.append(environmental_controls)
+
+    instruments =  RCAIDE.Library.Components.Powertrain.Systems.Instruments()
+    instruments.origin                = [[1,0,0]]
+    net.systems.append(instruments)    
 
     #------------------------------------------------------------------------------------------------------------------------- 
     #  PUMPS      

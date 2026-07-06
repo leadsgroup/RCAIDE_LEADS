@@ -43,11 +43,14 @@ def sequential_segments(mission):
                     pbar.colour = "red"
                     error_flag = True
 
-            # do the init/skip dance
+            # expand state before evaluate, skip during segment's own process
+            original_expand = segment.process.initialize.expand_state
             segment.process.initialize.expand_state(segment)
             segment.process.initialize.expand_state = RCAIDE.Library.Methods.skip
 
             segment.evaluate()
+
+            segment.process.initialize.expand_state = original_expand
             segment.state.number_of_residuals = 0
             segment.state.number_of_unknowns  = 0
             pbar.update(1)

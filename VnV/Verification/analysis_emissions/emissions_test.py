@@ -12,10 +12,11 @@ from RCAIDE.Framework.Core                          import Units , Data
 from RCAIDE.Library.Plots                           import *        
 
 # python imports     
-import numpy as np  
+import numpy as np
 import sys
 import os
-import matplotlib.pyplot as plt  
+import matplotlib.pyplot as plt
+import time
 
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -34,18 +35,19 @@ from Boeing_737    import configs_setup as configs_setup
 # ----------------------------------------------------------------------------------------------------------------------
 
 def main():
+    ti = time.time()
     
     cantera_installation = False 
 
     emissions_methods = ['Emission_Index_Correlation_Method']
     use_surrogate     = [True, False]
 
-    try: 
+    try:
         import cantera as ct
-        cantera_installation = True 
+        cantera_installation = True
         emissions_methods = ['Emission_Index_Correlation_Method', 'Emission_Index_CRN_Method']
     except:
-        pass 
+        pass
        
     true_EI_CO2s =  [3.16, 3.0996295865239563, 3.1371106320136155]
     true_EI_H2Os =  [1.23, 1.1911420639654764, 1.2053455595806213]
@@ -89,8 +91,11 @@ def main():
                     print('EI H2O Error: ',diff_EI_H2O)
                     assert (diff_EI_H2O/true_EI_H2O) < 1e-1
                 i += 1
-             
-    return 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
+    return
 
 # ----------------------------------------------------------------------
 #   Define the Vehicle Analyses

@@ -53,7 +53,7 @@ def vehicle_setup():
     # mass properties
     vehicle.mass_properties.max_takeoff               = 23000  
     vehicle.mass_properties.max_zero_fuel             = 15651.8 
-    vehicle.mass_properties.max_payload               = 7100
+    vehicle.mass_properties.max_payload               = 7400
     vehicle.mass_properties.min_payload               = 0 
     vehicle.mass_properties.center_of_gravity         = [[13.0038, 0, 0.45]]  
     vehicle.mass_properties.moments_of_inertia.tensor = [[0,0,0]]  
@@ -111,8 +111,8 @@ def vehicle_setup():
     # ------------------------------------------------------------------      
     landing_battery_gear_pod                                    = RCAIDE.Library.Components.Booms.Boom()
     landing_battery_gear_pod.tag                                = 'landing_gear_battery_pod' 
-    landing_battery_gear_pod.origin                             = [[ 6, 0,  -0.082]]    
-    landing_battery_gear_pod.lengths.total                      = 12 
+    landing_battery_gear_pod.origin                             = [[ 4, 0,  -0.2]]    
+    landing_battery_gear_pod.lengths.total                      = 14
     landing_battery_gear_pod.width                              = 3.5  
     landing_battery_gear_pod.heights.maximum                    = 1.30 
     landing_battery_gear_pod.heights.at_quarter_length          = 1.05    
@@ -416,8 +416,9 @@ def vehicle_setup():
     fuselage.heights.at_quarter_length          = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_three_quarters_length   = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_wing_root_quarter_chord = fuselage.heights.maximum* Units.meter
- 
-     # Segment  
+    fuselage.operational_items.origin            = [[fuselage.lengths.total * 0.6, 0, 0]]
+
+     # Segment
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment() 
     segment.tag                                 = 'segment_1'    
     segment.percent_x_location                  = 0.0000
@@ -568,26 +569,26 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus
     #------------------------------------------------------------------------------------------------------------------------------------  
-    bus                              = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
-    
+    bus                              = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()  
+
     #------------------------------------------------------------------------------------------------------------------------------------           
     # Battery
     #------------------------------------------------------------------------------------------------------------------------------------  
     bat_module                                             = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC()
-    bat_module.origin                                      = [[10, 0,  -0.5]]
-    bat_module.electrical_configuration.series             = 135
-    bat_module.electrical_configuration.parallel           = 250
-    bat_module.cell.nominal_capacity                       = 6
-    bat_module.cell.mass                                   = 0.03 * Units.kg
-    bat_module.geometrtic_configuration.normal_count       = 224
-    bat_module.geometrtic_configuration.parallel_count     = 75
-    for _ in range(4):
+    bat_module.electrical_configuration.series             = 20 
+    bat_module.electrical_configuration.parallel           = 420
+    bat_module.cell.nominal_capacity                       = 3.8 
+    bat_module.geometric_configuration.stacking_rows       = 10
+    bat_module.geometric_configuration.normal_count        = 140
+    bat_module.geometric_configuration.parallel_count      = 60
+
+    for i in range(12):
         bat_copy = deepcopy(bat_module)
+        bat_copy.origin   = [[7 + (i * 0.65) , 0, -0.5]]
         bus.battery_modules.append(bat_copy)
 
-    bus.battery_module_electric_configuration = 'Parallel' 
-    bus.initialize_bus_properties()
-
+    bus.battery_module_electric_configuration = 'Series' 
+    bus.initialize_bus_properties() 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Coolant Line
     #------------------------------------------------------------------------------------------------------------------------------------  
@@ -763,7 +764,7 @@ def vehicle_setup():
 
     # append bus   
     net.busses.append(bus)
-    vehicle.append_energy_network(net)  
+    vehicle.append_energy_network(net)   
 
     return vehicle
  

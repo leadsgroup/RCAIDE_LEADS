@@ -31,10 +31,15 @@ from NASA_X57    import vehicle_setup, configs_setup
 # ----------------------------------------------------------------------
 
 def main():
+    ti = time.time()
     # fidelity zero wakes
     print('Wake Fidelity Zero, Identical Props')     
     Propeller_Slipstream(wake_fidelity=0,identical_props=False) 
     
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 

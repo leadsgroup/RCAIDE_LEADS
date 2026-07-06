@@ -27,11 +27,13 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Embraer_190    import vehicle_setup as E190_vehicle_setup 
 from NASA_X57       import vehicle_setup as X57_vehicle_setup      
+import time
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  REGRESSION
 # ----------------------------------------------------------------------------------------------------------------------  
 def main():
+    ti = time.time()
     # standard payload range
     fuel_aircraft_payload_range()
     
@@ -40,6 +42,10 @@ def main():
     
     # electric payload range 
     electric_aircraft_payload_range() 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 def fuel_aircraft_payload_range():
@@ -61,12 +67,13 @@ def fuel_aircraft_payload_range():
     # create mission instances (for multiple types of missions)
     missions = missions_setup(mission)
     
-    # run payload range analysis 
-    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage=0.05)
+    # run payload range analysis . To account for the simplified single segment analysis, 
+    # fuel reserve percentage is increased from 10 to 20%.
+    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage=0.20)
     plot_payload_range_diagram(payload_range_results, save_figure = False)  
                   
     fuel_r                 = payload_range_results.range[-1]  
-    fuel_r_true            = 5829050.080712738 # Reference ( https://www.embraercommercialaviation.com/wp-content/uploads/2017/06/APM_190.pdf) is 5556000.  
+    fuel_r_true            = 5602869.5530352555 # Reference ( https://www.embraercommercialaviation.com/wp-content/uploads/2017/06/APM_190.pdf) is 5556000.
     
     print('Fuel Range: ' + str(fuel_r))
     fuel_error =  abs(fuel_r - fuel_r_true) /fuel_r_true
@@ -96,11 +103,12 @@ def fuel_aircraft_payload_range_mzfw():
     # create mission instances (for multiple types of missions)
     missions = missions_setup(mission)  
         
-    # run payload range analysis 
-    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage=0.10)
+    # run payload range analysis . To account for the simplified single segment analysis, 
+    # fuel reserve percentage is increased from 10 to 20%.
+    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage=0.20)
                                 
     fuel_r                 = payload_range_results.range[-1]  
-    fuel_r_true            = 5865642.479882033
+    fuel_r_true            = 5602918.750601116
     # Correct value from reference ( https://www.embraercommercialaviation.com/wp-content/uploads/2017/06/APM_190.pdf) is 5556000. 
     # This value is high due to simplified single segment analysis i.e. only cruise. To compensate, reserve percentage is increased from 5 to 10%
     
@@ -175,10 +183,10 @@ def fuel_aircraft_base_analysis(vehicle):
     
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.settings.overwrite_reference   = False
+    geometry.settings.overwrite_reference       = False
     geometry.settings.update_wing_properties    = True
-    geometry.settings.compute_fuel_volume   = True
-    geometry.settings.update_max_fuel   = True
+    geometry.settings.compute_fuel_volume       = True
+    geometry.settings.update_max_fuel           = True
     analyses.append(geometry)
 
     # ------------------------------------------------------------------

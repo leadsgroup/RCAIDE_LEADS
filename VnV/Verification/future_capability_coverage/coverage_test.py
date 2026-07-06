@@ -17,6 +17,7 @@ import numpy as np
 import pylab as plt 
 import sys
 import os
+import time
  
 
 # ----------------------------------------------------------------------
@@ -24,6 +25,7 @@ import os
 # ----------------------------------------------------------------------
 
 def main():
+    ti = time.time()
     
  
     # materials 
@@ -101,6 +103,10 @@ def main():
     segment_5 = RCAIDE.Library.Components.Nacelles.Segments.Segment()
     nacelle.append_segment(segment_5)
     
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
     
     

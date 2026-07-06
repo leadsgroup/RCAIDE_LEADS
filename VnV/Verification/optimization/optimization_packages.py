@@ -15,8 +15,10 @@ import vehicle_opt_pack
 import procedure_opt_pack
 
 import os , sys
+import time
 
 def main():
+    ti = time.time()
     tolerance = 5e-2
     
     seed = np.random.seed(1)  
@@ -117,6 +119,10 @@ def main():
     assert abs(1.0  - x2 ) / 1.0 < tolerance
 
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 # ----------------------------------------------------------------------        

@@ -11,8 +11,8 @@ from   RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor                          import design_electric_rotor
 from RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator                 import design_turboelectric_generator   
 
-# python imports 
-import numpy as np  
+# python imports
+import numpy as np
 from   copy import deepcopy 
 import os
 
@@ -478,8 +478,8 @@ def vehicle_setup():
     bat_module.electrical_configuration.series             = 20 
     bat_module.electrical_configuration.parallel           = 210 *  4 
     bat_module.cell.nominal_capacity                       = 3.8 
-    bat_module.geometrtic_configuration.normal_count       = 42 
-    bat_module.geometrtic_configuration.parallel_count     = 100 *  4 
+    bat_module.geometric_configuration.normal_count       = 42 
+    bat_module.geometric_configuration.parallel_count     = 100 *  4 
 
     for _ in range(12):
         bat_copy = deepcopy(bat_module)
@@ -641,7 +641,7 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     avionics                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
     avionics.power_draw          = 30. # Watts
-    bus.avionics                 = avionics
+    net.systems.append(avionics)  
 
     #------------------------------------------------------------------------------------------------------------------------------------   
     # Assign propulsors to bus       
@@ -652,7 +652,7 @@ def vehicle_setup():
 
 
     #------------------------------------------------------------------------------------------------------------------------- 
-    # Fuel Distrubition Line 
+    # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
     fuel_line                                  = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line() 
 

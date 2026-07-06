@@ -6,7 +6,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------    
 # package imports
-def compute_flight_controls_power_draw(flight_controls,vehicle,bus,state):
+def compute_flight_controls_power_draw(flight_controls,vehicle,state,bus):
     """
     Computes the power draw of an flight_controls system.
     

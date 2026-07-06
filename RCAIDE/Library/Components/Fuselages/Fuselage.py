@@ -190,7 +190,9 @@ class Fuselage(Component):
         self.vsp_data.xsec_surf_id                  = ''    # There is only one XSecSurf in each VSP geom.
         self.vsp_data.xsec_num                      = None  # Number if XSecs in fuselage geom. 
         self.segments                               = Container()
-        self.cabins                                 = Container() 
+        self.cabins                                 = Container()
+        self.operational_items                      = Component()
+        self.operational_items.tag                  = 'operational_items'
         self.vsp_data                               = Data()
         self.vsp_data.xsec_id                       = ''       
         self.vsp_data.shape                         = ''                

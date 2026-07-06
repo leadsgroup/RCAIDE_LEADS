@@ -34,11 +34,17 @@ from  Cessna_172 import vehicle_setup   as GA_vehicle_setup
 from  Cessna_172 import configs_setup   as GA_configs_setup 
 from  Boeing_737 import vehicle_setup   as Transport_vehicle_setup  
 from  Boeing_737 import configs_setup   as Transport_configs_setup
+import time
 
 def main():
+    ti = time.time()
     part_23_V_n_Diagram()
     part_35_V_n_Diagram()
     
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
  
 def part_23_V_n_Diagram():

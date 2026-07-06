@@ -106,13 +106,24 @@ def plot_load_diagram(results,
     axis = fig.add_subplot(1,1,1)
 
     # ------------------------------------------------------------------------
-    # Stability Contours 
+    # Stability Contours
     # ------------------------------------------------------------------------
     CG_LEMAC       = results.trim_results.CG_percent_of_LEMAC_location*100
     SM             = results.trim_results.static_margin*100
     SM_levels      = np.linspace(static_margin_lower_limit*100, static_margin_upper_limit*100, static_margin_resolution)
-    CS             = axis.contourf(CG_LEMAC, results.trim_results.mass, SM, levels = SM_levels, cmap='coolwarm_r', extend='both', alpha = 0.5) 
-    CS2            = axis.contour(CG_LEMAC, results.trim_results.mass,SM, levels = SM_levels,  colors='black', extend='both') 
+
+    # extend contour grid vertically so it covers the full hull range
+    mass_grid      = results.trim_results.mass
+    mass_min       = mass_grid.min()
+    mass_max       = mass_grid.max()
+    pad_lo         = mass_min - 0.1 * (mass_max - mass_min)
+    pad_hi         = mass_max + 0.1 * (mass_max - mass_min)
+    CG_LEMAC       = np.vstack([CG_LEMAC[0:1, :], CG_LEMAC, CG_LEMAC[-1:, :]])
+    SM             = np.vstack([SM[0:1, :],        SM,        SM[-1:, :]])
+    mass_grid      = np.vstack([np.full_like(mass_grid[0:1, :], pad_lo), mass_grid, np.full_like(mass_grid[-1:, :], pad_hi)])
+
+    CS             = axis.contourf(CG_LEMAC, mass_grid, SM, levels = SM_levels, cmap='coolwarm_r', extend='both', alpha = 0.5)
+    CS2            = axis.contour(CG_LEMAC, mass_grid, SM, levels = SM_levels,  colors='black', extend='both')
     cbar           = fig.colorbar(CS, ax=axis)
     axis.clabel(CS2, fontsize=10)
     cbar.ax.set_ylabel('Static Margin', rotation =  90)        
@@ -156,10 +167,10 @@ def plot_load_diagram(results,
         x_axis_lower_limit = min(x_hull) - x_bound / 2
     if x_axis_upper_limit == None: 
         x_axis_upper_limit = max(x_hull) + x_bound / 2
-    if y_axis_lower_limit == None: 
+    if y_axis_lower_limit == None:
         y_axis_lower_limit =  min(y_hull)
-    if y_axis_upper_limit == None: 
-        y_axis_upper_limit =  max(y_hull) 
+    if y_axis_upper_limit == None:
+        y_axis_upper_limit =  max(y_hull)
     
     # ------------------------------------------------------------------------    
     # Maximum Takeoff Weight line

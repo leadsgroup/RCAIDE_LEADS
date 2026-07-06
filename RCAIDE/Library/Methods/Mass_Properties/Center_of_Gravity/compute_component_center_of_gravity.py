@@ -38,15 +38,18 @@ def compute_component_center_of_gravity(centre_of_gravity_df,component,vehicle,t
             total_mass,total_moment = compute_component_center_of_gravity(centre_of_gravity_df,item,vehicle,total_mass,total_moment,segment,verbose,include_payload,include_fuel)
     if isinstance(component,Component):
         component.compute_center_of_gravity(vehicle)
-        update_mass_and_moment(total_mass,total_moment,component,segment,verbose,include_payload,include_fuel,centre_of_gravity_df)     
+        update_mass_and_moment(total_mass,total_moment,component,segment,verbose,include_payload,include_fuel,centre_of_gravity_df)
+        is_cryo_tank = isinstance(component, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank)
         for key in component.keys():
             item = component[key]
             if isinstance(item,Component.Container):
                 total_mass,total_moment = compute_component_center_of_gravity(centre_of_gravity_df,item,vehicle,total_mass,total_moment,segment,verbose,include_payload,include_fuel)
             if isinstance(item,Component):
+                if is_cryo_tank and not isinstance(item, RCAIDE.Library.Attributes.Propellants.Propellant):
+                    continue
                 item.compute_center_of_gravity(vehicle)
-                update_mass_and_moment(total_mass,total_moment,item,segment,verbose,include_payload,include_fuel,centre_of_gravity_df)   
-    return total_mass,total_moment 
+                update_mass_and_moment(total_mass,total_moment,item,segment,verbose,include_payload,include_fuel,centre_of_gravity_df)
+    return total_mass,total_moment
 
 def update_mass_and_moment(total_mass,total_moment,C,segment,verbose,include_payload,include_fuel,centre_of_gravity_df):
     global_cg_loc = np.array(C.mass_properties.center_of_gravity) + np.array(C.origin) 

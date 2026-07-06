@@ -483,8 +483,8 @@ def vehicle_setup(redesign_rotors = False):
     battery_module.origin                                             = [[2.5, 0,  0.]]
     battery_module.electrical_configuration.series                    = 140  
     battery_module.electrical_configuration.parallel                  = 30  
-    battery_module.geometrtic_configuration.normal_count              = 210
-    battery_module.geometrtic_configuration.parallel_count            = 20
+    battery_module.geometric_configuration.normal_count              = 210
+    battery_module.geometric_configuration.parallel_count            = 20
      
     modules_origins = [[0.25 , 0.0, 0.0],[1.5 , 0.0, 0.0]]  # large prop-rotor modules are beneath floor
     for m_i in range(prop_rotor_bus.number_of_battery_modules):
@@ -675,8 +675,8 @@ def vehicle_setup(redesign_rotors = False):
     battery_module.tag                                                = 'lift_bus_battery'
     battery_module.electrical_configuration.series                    = 140   
     battery_module.electrical_configuration.parallel                  = 10  
-    battery_module.geometrtic_configuration.normal_count              = 140 
-    battery_module.geometrtic_configuration.parallel_count            = 10
+    battery_module.geometric_configuration.normal_count              = 140 
+    battery_module.geometric_configuration.parallel_count            = 10
 
     modules_origins = [[3.5, 0.0, 0.5],[3.5, 0.0, 0.5 ]]  # rear modules are stacked inside cabin
     for m_i in range(lift_rotor_bus.number_of_battery_modules):
@@ -786,12 +786,36 @@ def vehicle_setup(redesign_rotors = False):
     lift_rotor_bus.assigned_propulsors = [assigned_propulsor_list] 
 
  
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    # Additional Bus Loads
+    #------------------------------------------------------------------------------------------------------------------------------------            
+    # Payload   
+    systems                         = RCAIDE.Library.Components.Powertrain.Systems.Systems()
+    systems.power_draw              = 10. # Watts 
+    systems.mass_properties.mass    = 1.0 * Units.kg
+    network.systems.append(systems)
+                             
     # Avionics                            
-    avionics                                               = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.power_draw                                    = 10. # Watts  
-    avionics.mass_properties.mass                          = 1.0 * Units.kg
-    lift_rotor_bus.avionics                                = avionics    
+    avionics                        = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
+    avionics.power_draw             = 10. # Watts  
+    avionics.mass_properties.mass   = 1.0 * Units.kg
+    network.systems.append(avionics)
+    
+    # Environmental Control System
+    environmental_controls                                  = RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
+    environmental_controls.origin                           = [[2.5, 0, 0]]
+    network.systems.append(environmental_controls)
 
+    # Electrical (wiring)
+    electrical                                              = RCAIDE.Library.Components.Powertrain.Systems.Electrical()
+    electrical.origin                                       = [[3.0, 0, 0]]
+    network.systems.append(electrical)
+
+    # Furnishings (seats)
+    furnishings                                             = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
+    furnishings.origin                                      = [[2.5, 0, 0]]
+    network.systems.append(furnishings) 
+   
    
     network.busses.append(lift_rotor_bus)       
         

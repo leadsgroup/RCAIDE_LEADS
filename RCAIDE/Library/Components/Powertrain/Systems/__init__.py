@@ -16,7 +16,8 @@ from .Flight_Controls         import Flight_Controls
 from .Cabin_Loads             import Cabin_Loads
 from .Ice_Protection          import Ice_Protection
 from .Environmental_Controls  import Environmental_Controls
-from .Auxillary_Power_Unit    import Auxillary_Power_Unit 
+from .Furnishings             import Furnishings
+from .Auxiliary_Power_Unit    import Auxiliary_Power_Unit 
 from .Electrical              import Electrical 
 from .Hydraulics              import Hydraulics 
 from .Instruments             import Instruments 

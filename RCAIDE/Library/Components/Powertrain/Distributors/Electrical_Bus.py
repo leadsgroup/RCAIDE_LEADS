@@ -96,13 +96,6 @@ class Electrical_Bus(Component):
         self.fuel_tanks                             = Container()
         self.assigned_propulsors                    = []
         self.assigned_converters                    = [] 
-        self.avionics                               = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-        self.systems                                = RCAIDE.Library.Components.Powertrain.Systems.Systems()
-        self.environmental_controls                 = None
-        self.ice_protection                         = None
-        self.flight_controls                        = None
-        self.hydraulics                             = None
-        self.cabin_loads                            = None
         self.identical_battery_modules              = True      
         self.identical_fuel_cell_stacks             = True  
         self.active                                 = True
@@ -110,7 +103,8 @@ class Electrical_Bus(Component):
         self.voltage                                = 0.0 
         self.power_split_ratio                      = 1.0
         self.nominal_capacity                       = 0.0
-        self.charging_c_rate                        = 1.0 
+        self.maximum_energy                         = 0.0
+        self.charging_c_rate                        = 1.0
         self.battery_module_electric_configuration  = "Series"
         self.fuel_cell_stack_electric_configuration = "Series"
         
@@ -179,8 +173,7 @@ class Electrical_Bus(Component):
         --------
         RCAIDE.Library.Methods.weights.vehicle.moments_of_inertia.compute_fuselage_moment_of_inertia
             Implementation of the moment of inertia calculation
-        """
-        # _ , _ = compute_distributor_moment_of_inertia(self,center_of_gravity= center_of_gravity) 
+        """  
         return
     
 
@@ -192,6 +185,5 @@ class Electrical_Bus(Component):
         --------
         RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_fuselage_center_of_gravity
             Implementation of the moment of inertia calculation
-        """
-        # _  = compute_distributor_center_of_gravity(self,vehicle) 
+        """ 
         return

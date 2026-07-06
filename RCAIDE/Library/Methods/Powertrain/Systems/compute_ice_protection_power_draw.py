@@ -8,7 +8,7 @@
 # package imports
 import numpy as np
 
-def compute_ice_protection_power_draw(ice_protection,vehicle,bus,state):
+def compute_ice_protection_power_draw(ice_protection,vehicle,state,bus):
     """
     Computes the power draw of an ice protection system.
     

@@ -29,8 +29,10 @@ from Stopped_Rotor_EVTOL    import vehicle_setup as evtol_setup
 from Boeing_787             import vehicle_setup as hydrogen_transport_setup
 from Electric_Twin_Otter    import vehicle_setup as electric_general_aviation_setup
 from all_electric_ATR_72    import vehicle_setup as electric_transport_setup 
+import time
 
 def main():
+    ti = time.time()
     update_regression_values = False # should be false unless code functionally changes
     show_figure              = False # leave false for regression
 
@@ -42,6 +44,10 @@ def main():
     BWB_Hydrogen_Aircraft_Test(update_regression_values,show_figure)
     Electric_General_Aviation_Test(update_regression_values,show_figure)
     Electric_Transport_Test(update_regression_values,show_figure)
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 def Electric_Transport_Test(update_regression_values, show_figure):
@@ -131,11 +137,11 @@ def Transport_Hydrogen_Test(update_regression_values, show_figure):
     for fuel_line in vehicle.networks.fuel.fuel_lines:
         for fuel_tank in fuel_line.fuel_tanks:
             fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()   
-            fuel_tank.fuel.gravimetric_efficiency            = 0.5
+            fuel_tank.gravimetric_efficiency            = 0.5
 
     for method_type in method_types:
         print(f'Testing Transport Aircraft Method: {method_type} | Method: {"Complex"}')        
-        weight_analysis = RCAIDE.Framework.Analyses.Weights.Hydrogen_Transport() 
+        weight_analysis = RCAIDE.Framework.Analyses.Weights.Cryogenic_Transport() 
         for wing in vehicle.wings: 
             wing_planform(wing) 
             if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
@@ -324,42 +330,47 @@ def General_Aviation_Test(update_regression_values, show_figure):
         print('')
 
 def BWB_Hydrogen_Aircraft_Test(update_regression_values,show_figure):
-    cabin_types = ['Non-PERSUS','PERSUS']
+    cabin_types = ['Non-PRSEUS','PRSEUS']
     for cabin_type in cabin_types:
         for FLOPS_number in [0,1]:
             print(f'Testing Hydrogen Transport Aircraft Method: BWB| Composites: {cabin_type} | Method: {"Simple" if FLOPS_number == 0 else "Complex"}') 
-            weight_analysis          = RCAIDE.Framework.Analyses.Weights.Hydrogen_BWB()
+            weight_analysis          = RCAIDE.Framework.Analyses.Weights.Cryogenic_BWB()
             vehicle  = bwb_setup()
             for propulsor in vehicle.networks.fuel.propulsors:
                 propulsor.combustor.fuel_data =  RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen() 
             for fuel_line in vehicle.networks.fuel.fuel_lines:
                 fuel_line.fuel_tanks.clear()
-                fuel_tank                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Liquid_Hydrogen_Tank(vehicle.wings.main_wing)
-                fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()   
-                fuel_tank.fuel.gravimetric_efficiency            = 0.5
-                fuel_tank.material                               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
-                fuel_tank.insulation_material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
+                fuel_tank                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
+                fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+                fuel_tank.design_inlet_temperature               = 20
+                fuel_tank.design_altitude                        = 30000 * Units.ft
+                fuel_tank.design_heat_flux                       = 20
+                fuel_tank.design_total_heat_transfer             = 2000
+                fuel_tank.ullage_volume_fraction                 = 0.07
+                fuel_tank.gravimetric_efficiency                  = 0.5
+                fuel_tank.inner_structure.material                = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+                fuel_tank.insulation.material                     = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
                 fuel_tank.segments_bounding_tank                = ['fuel_wall', 'wing_section_1']
                 fuel_line.fuel_tanks.append(fuel_tank)
 
 
             if cabin_type == 'PERSUS':
                 weight_analysis.settings.PRSEUS = True
-            elif cabin_type == 'Non-PERSUS':
+            elif cabin_type == 'Non-PRSEUS':
                 weight_analysis.settings.PRSEUS = False
             for wing in vehicle.wings: 
                 if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
                     compute_layout_of_passenger_accommodations(wing)
                     wing_planform(wing)
                     vehicle.reference_area = wing.areas.reference 
-            compute_fuel_volume(vehicle,compute_fuel_volume =True, update_max_fuel = False)
+            compute_fuel_volume(vehicle, compute_fuel_volume=True)
             weight_analysis.settings.FLOPS.fidelity   = 'Simple' if FLOPS_number == 0 else 'Complex'
             weight                   = weight_analysis.evaluate(vehicle)
             plot_weight_breakdown(vehicle, show_figure = show_figure) 
 
             if update_regression_values:
-                save_results(weight, os.path.join(os.path.dirname(__file__), f"{cabin_type}_{'Simple' if FLOPS_number == 0 else 'Complex'}_weights_Hydrogen_BWB.res"))
-            old_weight = load_results(os.path.join(os.path.dirname(__file__), f"{cabin_type}_{'Simple' if FLOPS_number == 0 else 'Complex'}_weights_Hydrogen_BWB.res"))
+                save_results(weight, os.path.join(os.path.dirname(__file__), f"{cabin_type}_{'Simple' if FLOPS_number == 0 else 'Complex'}_weights_Cryogenic_BWB.res"))
+            old_weight = load_results(os.path.join(os.path.dirname(__file__), f"{cabin_type}_{'Simple' if FLOPS_number == 0 else 'Complex'}_weights_Cryogenic_BWB.res"))
 
             check_list = [
                 'empty.total',
@@ -384,7 +395,7 @@ def BWB_Hydrogen_Aircraft_Test(update_regression_values,show_figure):
     return
 
 def BWB_Aircraft_Test(update_regression_values,show_figure):
-    cabin_types = ['Non-PERSUS','PERSUS']
+    cabin_types = ['Non-PRSEUS','PRSEUS']
     systems = [True, False]
     for i in range(len(cabin_types)):
         for FLOPS_number in [0,1]:
@@ -392,9 +403,9 @@ def BWB_Aircraft_Test(update_regression_values,show_figure):
             weight_analysis          = RCAIDE.Framework.Analyses.Weights.Conventional_BWB()
             vehicle  = bwb_setup()
             system = 'systems' if systems[i] else 'none'
-            if cabin_types[i] == 'PERSUS':
+            if cabin_types[i] == 'PRSEUS':
                 weight_analysis.settings.PRSEUS = True
-            elif cabin_types[i] == 'Non-PERSUS':
+            elif cabin_types[i] == 'Non-PRSEUS':
                 weight_analysis.settings.PRSEUS = False
             for wing in vehicle.wings: 
                 if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
@@ -580,76 +591,76 @@ def Jet_engine():
     return(turbofan)
 
 def add_systems_weights(vehicle):
-    avionics =  RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.origin                   = [[1,0,0]]  
-    avionics.mass_properties.mass = 2 
-    vehicle.append_component(avionics)
+    net  = next(n for n in vehicle.networks if hasattr(n, 'systems'))
+    net.systems.clear()
 
-    flight_controls =  RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()    
-    flight_controls.origin            = [[0.5 * vehicle.wings.main_wing.chords.root,0,0]]  
-    flight_controls.mass_properties.mass = 2 
-    vehicle.append_component(flight_controls)
-    
-    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit()  
-    auxillary_power_unit.tag= 'fuel_cell_apu_0'
-    auxillary_power_unit.mass_properties.mass = 235.8
-    auxillary_power_unit.origin       = [[0.76 * vehicle.wings.main_wing.chords.root,0,0]] 
-    vehicle.append_component(auxillary_power_unit)
+    avionics                         = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
+    avionics.origin                  = [[1,0,0]]
+    avionics.mass_properties.mass    = 2
+    net.systems.append(avionics)
 
-    electrical =  RCAIDE.Library.Components.Powertrain.Systems.Electrical()      
-    electrical.origin                 = [[0.2 * vehicle.wings.main_wing.chords.root,0,0]]  
-    electrical.mass_properties.mass = 2
-    vehicle.append_component(electrical)
-    
-    hydraulics =  RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()  
-    hydraulics.origin                 = [[0.70 * vehicle.wings.main_wing.chords.root,0,0]] 
-    hydraulics.mass_properties.mass = 2 
-    vehicle.append_component(hydraulics)
-    
-    environmental_controls =  RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()  
-    environmental_controls.origin     = [[0.2 * vehicle.wings.main_wing.chords.root,0,0]]   
-    environmental_controls.mass_properties.mass = 2
-    vehicle.append_component(environmental_controls)
-    
-    instruments =  RCAIDE.Library.Components.Powertrain.Systems.Instruments()  
-    instruments.origin                = [[1,0,0]]  
-    instruments.mass_properties.mass = 2
-    vehicle.append_component(instruments)    
+    flight_controls                         = RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
+    flight_controls.origin                  = [[0.5 * vehicle.wings.main_wing.chords.root,0,0]]
+    flight_controls.mass_properties.mass    = 2
+    net.systems.append(flight_controls)
 
-    return
+    auxiliary_power_unit                         = RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
+    auxiliary_power_unit.origin                  = [[0.76 * vehicle.wings.main_wing.chords.root,0,0]]
+    auxiliary_power_unit.mass_properties.mass    = 235.8
+    net.systems.append(auxiliary_power_unit)
+
+    electrical                         = RCAIDE.Library.Components.Powertrain.Systems.Electrical()
+    electrical.origin                  = [[0.2 * vehicle.wings.main_wing.chords.root,0,0]]
+    electrical.mass_properties.mass    = 2
+    net.systems.append(electrical)
+
+    hydraulics                         = RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
+    hydraulics.origin                  = [[0.70 * vehicle.wings.main_wing.chords.root,0,0]]
+    hydraulics.mass_properties.mass    = 2
+    net.systems.append(hydraulics)
+
+    environmental_controls                         = RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
+    environmental_controls.origin                  = [[0.2 * vehicle.wings.main_wing.chords.root,0,0]]
+    environmental_controls.mass_properties.mass    = 2
+    net.systems.append(environmental_controls)
+
+    instruments                         = RCAIDE.Library.Components.Powertrain.Systems.Instruments()
+    instruments.origin                  = [[1,0,0]]
+    instruments.mass_properties.mass    = 2
+    net.systems.append(instruments)
 
 
 def add_systems_no_weights(vehicle):
-    avionics =  RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.origin                   = [[1,0,0]]  
-    vehicle.append_component(avionics)
+    net  = next(n for n in vehicle.networks if hasattr(n, 'systems'))
+    net.systems.clear()
 
-    flight_controls =  RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()    
-    flight_controls.origin            = [[0.5 * vehicle.wings.main_wing.chords.root,0,0]]  
-    vehicle.append_component(flight_controls)
-    
-    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit()  
-    auxillary_power_unit.tag= 'fuel_cell_apu_0'
-    auxillary_power_unit.origin       = [[0.76 * vehicle.wings.main_wing.chords.root,0,0]] 
-    vehicle.append_component(auxillary_power_unit)
+    avionics        = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
+    avionics.origin = [[1,0,0]]
+    net.systems.append(avionics)
 
-    electrical =  RCAIDE.Library.Components.Powertrain.Systems.Electrical()      
-    electrical.origin                 = [[0.2 * vehicle.wings.main_wing.chords.root,0,0]]  
-    vehicle.append_component(electrical)
-    
-    hydraulics =  RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()  
-    hydraulics.origin                 = [[0.70 * vehicle.wings.main_wing.chords.root,0,0]] 
-    vehicle.append_component(hydraulics)
-    
-    environmental_controls =  RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()  
-    environmental_controls.origin     = [[0.2 * vehicle.wings.main_wing.chords.root,0,0]]   
-    vehicle.append_component(environmental_controls)
-    
-    instruments =  RCAIDE.Library.Components.Powertrain.Systems.Instruments()  
-    instruments.origin                = [[1,0,0]]  
-    vehicle.append_component(instruments)    
+    flight_controls        = RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
+    flight_controls.origin = [[0.5 * vehicle.wings.main_wing.chords.root,0,0]]
+    net.systems.append(flight_controls)
 
-    return
+    auxiliary_power_unit        = RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
+    auxiliary_power_unit.origin = [[0.76 * vehicle.wings.main_wing.chords.root,0,0]]
+    net.systems.append(auxiliary_power_unit)
+
+    electrical        = RCAIDE.Library.Components.Powertrain.Systems.Electrical()
+    electrical.origin = [[0.2 * vehicle.wings.main_wing.chords.root,0,0]]
+    net.systems.append(electrical)
+
+    hydraulics        = RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
+    hydraulics.origin = [[0.70 * vehicle.wings.main_wing.chords.root,0,0]]
+    net.systems.append(hydraulics)
+
+    environmental_controls        = RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
+    environmental_controls.origin = [[0.2 * vehicle.wings.main_wing.chords.root,0,0]]
+    net.systems.append(environmental_controls)
+
+    instruments        = RCAIDE.Library.Components.Powertrain.Systems.Instruments()
+    instruments.origin = [[1,0,0]]
+    net.systems.append(instruments)
 
 if __name__ == '__main__':
     main()

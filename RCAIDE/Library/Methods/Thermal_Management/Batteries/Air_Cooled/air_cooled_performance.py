@@ -49,8 +49,8 @@ def air_cooled_performance(HAS,battery,bus,coolant_line, Q_heat_gen,T_cell,state
     H_cell                   = battery.cell.height              
     cell_mass                = battery.cell.mass    
     Cp                       = battery.cell.specific_heat_capacity    
-    Nn                       = battery.geometrtic_configuration.normal_count            
-    Np                       = battery.geometrtic_configuration.parallel_count    
+    Nn                       = battery.geometric_configuration.normal_count            
+    Np                       = battery.geometric_configuration.parallel_count    
     n_total_module           = Nn*Np  
     h                        = HAS.convective_heat_transfer_coefficient 
     heat_transfer_efficiency = HAS.heat_transfer_efficiency   
@@ -70,8 +70,8 @@ def air_cooled_performance(HAS,battery,bus,coolant_line, Q_heat_gen,T_cell,state
         V_coolant                    = state.conditions.freestream.velocity[t_idx,:]
         
         # Chapter 7 pg 437-446 of Fundamentals of heat and mass transfer 
-        S_T             = battery.geometrtic_configuration.normal_spacing          
-        S_L             = battery.geometrtic_configuration.parallel_spacing
+        S_T             = battery.geometric_configuration.normal_spacing          
+        S_L             = battery.geometric_configuration.parallel_spacing
 
         S_D = np.sqrt(S_T**2+S_L**2)
         if 2*(S_D-D_cell) < (S_T-D_cell):

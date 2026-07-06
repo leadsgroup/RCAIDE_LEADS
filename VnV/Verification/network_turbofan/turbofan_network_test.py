@@ -29,12 +29,14 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Boeing_737    import vehicle_setup as vehicle_setup
 from Boeing_737    import configs_setup as configs_setup 
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 
 def main(): 
+    ti = time.time()
     # -----------------------------------------
     # Multi-Point Mission Setup 
     # -----------------------------------------
@@ -197,6 +199,10 @@ def main():
         assert(np.abs(v)<1e-6)
         
     plot_results(results)
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
 # ----------------------------------------------------------------------
 #   Define the Vehicle Analyses
