@@ -1,8 +1,23 @@
-<p align="center">
-  <img src="https://github.com/leadsgroup/RCAIDE_Website/blob/main/assets/img/RCAIDE_Logo_No_Background.png" width=25% height=25%> 
-</p> 
+<p align=”center”>
+  <img src=”https://github.com/leadsgroup/RCAIDE_Website/blob/main/assets/img/RCAIDE_Logo_No_Background.png” width=25% height=25%>
+</p>
 
-<div align="center">
+<p align=”center”>
+  <a href=”https://aerospace.illinois.edu”>
+    <img src=”https://github.com/leadsgroup/RCAIDE_Website/blob/main/assets/img/Illinois_logo_fullcolor_rgb.png” height=”90”>
+  </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href=”https://www.leadsresearchgroup.com”>
+    <img src=”https://github.com/leadsgroup/RCAIDE_Website/blob/main/assets/img/LEADS_logo_1.png” height=”90”>
+  </a>
+</p>
+
+<p align=”center”>
+  Developed at the <strong>University of Illinois Urbana-Champaign</strong><br>
+  <a href=”https://www.leadsresearchgroup.com”><strong>Laboratory for Emerging Aircraft Design and Systems (LEADS)</strong></a>
+</p>
+
+<div align=”center”>
 
 [![CI](https://github.com/leadsgroup/RCAIDE_LEADS/actions/workflows/CI.yml/badge.svg?branch=master)](https://github.com/leadsgroup/RCAIDE_LEADS/actions/workflows/CI.yml)
 [![Documentation](https://github.com/leadsgroup/RCAIDE_LEADS/actions/workflows/sphinx_docs.yml/badge.svg)](https://github.com/leadsgroup/RCAIDE_LEADS/actions/workflows/sphinx_docs.yml)
@@ -11,10 +26,12 @@
 
 </div>
 
+---
+
 [RCAIDE: Research Community Aircraft Interdisciplinary Design Environment](https://www.rcaide.leadsresearchgroup.com/)
 =======
 
-The Research Community Aircraft Interdisciplinary Design Environment, or RCAIDE (pronounced “arcade”) is a powerful open-source Python platform for aircraft design and analysis. From commercial airliners to UAVs and next-generation hybrid-electric aircraft, RCAIDE provides comprehensive multi-disciplinary analysis tools backed by validated engineering methods. Its streamlined workflow and modular architecture help aerospace engineers and researchers accelerate development cycles and explore innovative designs with confidence. RCAIDE-LEADS is a GitHub fork of RCAIDE, developed and maintained by the [Lab for Electric Aircraft Design and Sustainability](https://www.leadsresearchgroup.com/).
+The Research Community Aircraft Interdisciplinary Design Environment, or RCAIDE (pronounced “arcade”) is a powerful open-source Python platform for aircraft design and analysis. From commercial airliners to UAVs and next-generation hybrid-electric aircraft, RCAIDE provides comprehensive multi-disciplinary analysis tools backed by validated engineering methods. Its streamlined workflow and modular architecture help aerospace engineers and researchers accelerate development cycles and explore innovative designs with confidence. RCAIDE-LEADS is a GitHub fork of RCAIDE, developed and maintained by the [Laboratory for Emerging Aircraft Design and Systems (LEADS)](https://www.leadsresearchgroup.com/) at the [University of Illinois Urbana-Champaign](https://aerospace.illinois.edu).
 
 ## Table of Contents
 - [Citing RCAIDE](#citing-rcaide)
@@ -191,7 +208,9 @@ RCAIDE is available on GNU/Linux, MacOS and Windows. We strongly recommend insta
 ## Contributing to RCAIDE
 
 **Contributing Institutions**
-* [University of Illinois — Lab for Electric Aircraft Design and Sustainability](https://www.leadsresearchgroup.com/)
+* [University of Illinois Urbana-Champaign — Laboratory for Emerging Aircraft Design and Systems (LEADS)](https://www.leadsresearchgroup.com/)
+
+RCAIDE is the primary open-source tool of the LEADS group, led by Prof. Matthew Clarke in the Department of Aerospace Engineering at the University of Illinois Urbana-Champaign. The group focuses on the design, analysis, and optimization of emerging aircraft concepts including hybrid-electric, fully electric, and hydrogen-powered vehicles.
 
 **Getting Involved**
 
