@@ -32,10 +32,10 @@ class Segment(Component):
         Longitudinal position as percentage of fuselage length, defaults to 0
         
     percent_y_location : float
-        Lateral position as percentage of fuselage width, defaults to 0
+        Lateral position as percentage of fuselage length, defaults to 0
         
     percent_z_location : float
-        Vertical position as percentage of fuselage height, defaults to 0
+        Vertical position as percentage of fuselage length, defaults to 0
         
     height : float
         Vertical dimension of the segment cross-section, defaults to 0
