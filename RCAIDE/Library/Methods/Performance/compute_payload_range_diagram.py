@@ -107,7 +107,7 @@ def compute_payload_range_diagram(mission = None, cruise_segment_tag = "cruise",
         segment.analyses.aerodynamics.settings.use_surrogate       = True
         
         # if stability analysis is defined and neutral point already computed
-        if segment.analyses.stability != None 
+        if segment.analyses.stability != None: 
             segment.analyses.stability.settings.compute_neutral_point = False
 
     # run preliminary mass properties analyss 
@@ -246,7 +246,7 @@ def conventional_payload_range_diagram(vehicle,mission,cruise_segment_tag,fuel_r
         for segment in  mission.segments:
             segment.analyses.aerodynamics.settings.reuse_training_data = True
             # Neutral point is now computed — disable recomputation for speed
-            if segment.analyses.stability != None 
+            if segment.analyses.stability != None: 
                 segment.analyses.stability.settings.compute_neutral_point = False
         
         
