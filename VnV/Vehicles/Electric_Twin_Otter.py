@@ -394,7 +394,7 @@ def vehicle_setup(rotor_type):
     # Bus
     #------------------------------------------------------------------------------------------------------------------------------------  
     bus                              = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
-    
+    '''
     if cell_chemistry == 'lithium_ion_nmc':
         #------------------------------------------------------------------------------------------------------------------------------------           
         # Battery
@@ -466,7 +466,7 @@ def vehicle_setup(rotor_type):
         # Reservoir for Battery TMS
         RES                                                    = RCAIDE.Library.Components.Thermal_Management.Reservoirs.Reservoir()
         coolant_line.reservoirs.append(RES)
-        
+    '''
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Starboard Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------   
@@ -502,8 +502,8 @@ def vehicle_setup(rotor_type):
         propeller.clockwise_rotation                     = True # Initially was set to False
         propeller.variable_pitch                         = True  
         propeller.origin                                 = [[3.5,2.8129,1.22 ]]   
-        propeller.use_2d_analysis                        = True # False for nominal case 
-        propeller.wing_to_rotor                          = True # False for nominal case 
+        propeller.use_2d_analysis                        = False # False for nominal case 
+        propeller.wing_to_rotor                          = False # False for nominal case 
         airfoil                                          = RCAIDE.Library.Components.Airfoils.Airfoil()
         airfoil.tag                                      = 'NACA_4412' 
         airfoil.coordinate_file                          =  rel_path + 'Airfoils' + separator + 'NACA_4412.txt'   # absolute path   

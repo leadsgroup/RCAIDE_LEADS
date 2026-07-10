@@ -8,7 +8,7 @@
  # RCAIDE imports
 import RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Actuator_Disc_Theory.Actuator_Disk_performance as Actuator_Disk_performance
 import RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.BEMT_Helmholtz_performance as BEMT_Helmholtz_performance
-import RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory.Lifting_Line_performance as Lifting_Line_performance
+import RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory.lifting_line_performance as lifting_line_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Generalized Rotor Class
 # ----------------------------------------------------------------------------------------------------------------------  
@@ -113,6 +113,6 @@ def compute_rotor_performance(rotor, conditions):
 
     elif rotor.fidelity == 'Lifting_Line_Theory':
 
-        Lifting_Line_performance(rotor,conditions)
+        lifting_line_performance(rotor,conditions)
      
     return

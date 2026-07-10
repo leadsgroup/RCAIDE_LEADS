@@ -17,7 +17,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory.evaluate_bound_vortex_circulation import evaluate_bound_vortex_circulation
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory.compute_lifting_line_loads        import compute_lifting_line_loads
 
-def Lifting_Line_performance(rotor, conditions, wake_geo_inputs=None):
+def lifting_line_performance(rotor, conditions, wake_geo_inputs=None):
     """
     Computes rotor performance using the lifting-line method with prescribed tip vortex wake.
     Drop-in replacement for BEMT_Helmholtz_performance with higher-fidelity inter-blade induction.
