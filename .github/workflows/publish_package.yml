@@ -97,6 +97,8 @@ jobs:
     name: Publish Package to PyPI
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+    permissions:
+      id-token: write
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -108,7 +110,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade build twine
+          python -m pip install --upgrade build
 
       - name: Prepare PyPI-Compatible README
         run: |
@@ -124,8 +126,4 @@ jobs:
           mv README_GitHub.md README.md
 
       - name: Publish to PyPI
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: |
-          twine upload dist/*
+        uses: pypa/gh-action-pypi-publish@release/v1
