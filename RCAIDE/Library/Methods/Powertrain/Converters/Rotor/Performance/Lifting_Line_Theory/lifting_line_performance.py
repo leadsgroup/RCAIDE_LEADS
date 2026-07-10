@@ -73,21 +73,21 @@ def lifting_line_performance(rotor, conditions, wake_geo_inputs=None):
     mu = V / (float(omega[0, 0]) * R)
 
     # ------------------------------------------------------------------------------------------------------------------
-    #  Default wake geometry inputs (validated Combination #22)
+    #  Default wake geometry inputs 
     # ------------------------------------------------------------------------------------------------------------------
     if wake_geo_inputs is None:
         wake_geo_inputs = Data()
-        wake_geo_inputs.wake_model                   = 1       # simple prescribed wake
-        wake_geo_inputs.vc_correction                = 1       # standard Rankine core
-        wake_geo_inputs.dpsi                         = np.radians(7.4)
-        wake_geo_inputs.n_turns                      = 5.0
-        wake_geo_inputs.CT                           = 0.00654
-        wake_geo_inputs.lamb_oseen_rc_0              = 0.008
-        wake_geo_inputs.lamb_oseen_alpha             = 1.25643
-        wake_geo_inputs.lamb_oseen_delta             = 8.243
-        wake_geo_inputs.lamb_oseen_sigma             = 1.0
-        wake_geo_inputs.lamb_oseen_core_growth_delay = np.radians(30.0)
-        wake_geo_inputs.r_R_shed                     = 1.0
+        wake_geo_inputs.wake_model                   = 1                 # 1 simple model, 2 landgrebe, 3 landgrebe KT
+        wake_geo_inputs.vc_correction                = 1                 # vortex core factor, 1 standard Rankine, 2 Rankine, 3, scully, 4 Vatistas, 5 Oseen
+        wake_geo_inputs.dpsi                         = np.radians(7.4)   # filament length [rad]
+        wake_geo_inputs.n_turns                      = 5.0               # Number of wake turns
+        wake_geo_inputs.CT                           = 0.00654           # initial guess for CT to intialize the wake geometry
+        wake_geo_inputs.lamb_oseen_rc_0              = 0.008             # initial core radius for the wake filaments [fraction of R]
+        wake_geo_inputs.lamb_oseen_alpha             = 1.25643           # parameters for the core radius growth rate Lamb-Oseen model  
+        wake_geo_inputs.lamb_oseen_delta             = 8.243             # ..
+        wake_geo_inputs.lamb_oseen_sigma             = 1.0               # ..
+        wake_geo_inputs.lamb_oseen_core_growth_delay = np.radians(30.0)  # paramter to delay the growth rate till certain wake age 
+        wake_geo_inputs.r_R_shed                     = 1.0               # location as fraction of R to shed the wake filament from               
 
     # Populate remaining wake_geo_inputs fields from conditions
     wake_geo_inputs.V_thrust      = V_thrust
@@ -125,7 +125,7 @@ def lifting_line_performance(rotor, conditions, wake_geo_inputs=None):
     wake_inputs.max_iter_0          = 300
     wake_inputs.max_iter            = int(wake_inputs.max_iter_0 * (1 + 5*mu))
     wake_inputs.CT_iter             = True
-    wake_inputs.aerofoil_aero       = 2   # full compute_airfoil_aerodynamics
+    wake_inputs.aerofoil_aero       = 2   # 1 simplified aerofoil aero, detailed panel aerofoil aero
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Step 1: Blade geometry

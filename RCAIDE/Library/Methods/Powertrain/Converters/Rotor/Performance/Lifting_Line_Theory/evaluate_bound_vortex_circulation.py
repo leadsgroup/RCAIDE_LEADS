@@ -76,11 +76,7 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
 
     Returns
     -------
-    va : (ctrl_pts, B, Nr) ndarray
-        Axial induced velocity at each station.
-    vt : (ctrl_pts, B, Nr) ndarray
-        Tangential induced velocity at each station.
-
+        None
 
     **Major Assumptions**
         * No trailing or shed wake is modeled; only bound-vortex mutual
@@ -138,7 +134,7 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
     nu            = wake_inputs.dynamic_viscosities
     max_iter      = wake_inputs.max_iter # 50
     tol           = wake_inputs.tol # 1e-4
-    relax         = wake_inputs.relax # 0.5
+    relax         = wake_inputs.relax # 0.2
 
     nodes_14c = wake_inputs.nodes_14c   # (ctrl_pts, B, Nr, 3), body frame inducing location
     nodes_34c = wake_inputs.nodes_34c   # (ctrl_pts, B, Nr, 3), body frame induced location
@@ -191,6 +187,7 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
     # ------------------------------------------------------------------------------------------------------------------
     Cl, _, _, _, _, _, _, _ = compute_airfoil_aerodynamics(
         beta, c, r, R, B, Ua, Ut, a_sound, nu, airfoils, a_loc, ctrl_pts, Nr, B, tc, use_2d_analysis=True)
+    
     Gamma_b = 0.5*U*c*Cl
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -264,9 +261,6 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
                     Gamma_wake = -Gamma_b[:, 0:1, :]
                 else:
                     Gamma_wake = Gamma_b[:, i_shed-1:i_shed, :] - Gamma_b[:, i_shed:i_shed+1, :]   # difference
-                    
-                # Debug: use max Gamma_b instead of shed station value
-                #Gamma_wake      = np.max(Gamma_b, axis=1, keepdims=True)   # (ctrl_pts, 1, B)
 
                 Gamma_wake      = Gamma_wake * np.ones((ctrl_pts, N_wake, B))
                 Gamma_wake_flat = Gamma_wake.reshape(ctrl_pts, N_wake*B)
@@ -287,8 +281,8 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
 
             # Project onto axial, tangential
             ua_ind = v_induced_thrust[:,:,:,0]
-            ur_ind = (v_induced_thrust[:,:,:,1]*radial_hat_thrust_y[None,:,:] +
-                      v_induced_thrust[:,:,:,2]*radial_hat_thrust_z[None,:,:])
+            #ur_ind = (v_induced_thrust[:,:,:,1]*radial_hat_thrust_y[None,:,:] +
+            #          v_induced_thrust[:,:,:,2]*radial_hat_thrust_z[None,:,:])
             ut_ind = (v_induced_thrust[:,:,:,1]*tang_hat_thrust_y[None,:,:] +
                       v_induced_thrust[:,:,:,2]*tang_hat_thrust_z[None,:,:])
 
@@ -301,7 +295,7 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
                 _, _, _, alpha_disc, Ma, _, Re, Re_disc = compute_airfoil_aerodynamics(
                     beta, c, r, R, B, Wa, Wt, a_sound, nu, airfoils, a_loc, ctrl_pts, Nr, B, tc, use_2d_analysis=True)
                 alpha    = beta - np.arctan2(Wa, Wt)
-                Cl       = (2.*np.pi/6.) * np.sin(6.*alpha)
+                Cl       = (2.*np.pi/6.) * np.sin(6.*alpha)  # Cl_a = 2 * pi
                 Cdval    = 0.0087 - 0.0216*alpha + 0.4*alpha**2
                 Tw_Tinf  = 1. + 1.78*(Ma*Ma)
                 Tp_Tinf  = 1. + 0.035*(Ma*Ma) + 0.45*(Tw_Tinf-1.)
