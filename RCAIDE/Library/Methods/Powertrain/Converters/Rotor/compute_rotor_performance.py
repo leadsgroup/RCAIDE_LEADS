@@ -8,7 +8,7 @@
  # RCAIDE imports
 import RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Actuator_Disc_Theory.Actuator_Disk_performance as Actuator_Disk_performance
 import RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.BEMT_Helmholtz_performance as BEMT_Helmholtz_performance
- 
+import RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory.Lifting_Line_performance as Lifting_Line_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Generalized Rotor Class
 # ----------------------------------------------------------------------------------------------------------------------  
@@ -94,6 +94,8 @@ def compute_rotor_performance(rotor, conditions):
     ----------
     [1] Drela, M. "Qprop Formulation", MIT AeroAstro, June 2006 http://web.mit.edu/drela/Public/web/qprop/qprop_theory.pdf
     [2] Leishman, Gordon J. Principles of helicopter aerodynamics Cambridge university press, 2006.
+    [3] J. Katz and A. Plotkin, Low-Speed Aerodynamics, 2nd ed., Cambridge University Press, 2001.
+    [4] W. Johnson, Rotorcraft Aeromechanics, Cambridge University Press, 2013.
     
     See Also
     --------
@@ -108,5 +110,9 @@ def compute_rotor_performance(rotor, conditions):
     elif rotor.fidelity == 'Actuator_Disk_Theory': 
 
         Actuator_Disk_performance(rotor,conditions)
+
+    elif rotor.fidelity == 'Lifting_Line_Theory':
+
+        Lifting_Line_performance(rotor,conditions)
      
     return

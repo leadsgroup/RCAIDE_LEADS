@@ -23,7 +23,7 @@ RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design
 # -------------------------------------------------------------------------------------------------------------------- 
 from . import Blade_Element_Momentum_Theory_Helmholtz_Wake
 from . import Actuator_Disc_Theory
-
+from . import Lifting_Line_Theory
 
 
 
