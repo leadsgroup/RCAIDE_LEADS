@@ -157,17 +157,14 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     # ------------------------------------------------------------------------------------------------------------------
     #  Unpack converged solution
     # ------------------------------------------------------------------------------------------------------------------
-    #U   = wake_inputs.velocity_total
     Ua       = wake_inputs.velocity_axial
     Ut       = wake_inputs.velocity_tangential
     ctrl_pts = wake_inputs.ctrl_pts
     Nr       = wake_inputs.Nr
-    #beta     = wake_inputs.twist_distribution
+    Nr_s     = Nr - 1
     c_1d     = wake_inputs.chord_distribution
-    #a        = wake_inputs.speed_of_sound
-    #nu       = wake_inputs.dynamic_viscosity
     psi      = rotor.blades.bound.psi   # (Nr, B)
-    
+    psi      = 0.5 * (psi[:-1, :] + psi[1:, :])              # (Nr-1, B)
     va         = rotor.blades.bound.va
     vt         = rotor.blades.bound.vt
     Gamma      = rotor.blades.bound.gamma      
@@ -177,8 +174,7 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     alpha_disc = rotor.blades.bound.alpha_disc 
     Ma         = rotor.blades.bound.Ma        
     Re         = rotor.blades.bound.Re        
-    Re_disc    = rotor.blades.bound.Re_disc  
-    #U = rotor.blades.bound.U     
+    Re_disc    = rotor.blades.bound.Re_disc     
     Ua         = rotor.blades.bound.Ua   
     Ut         = rotor.blades.bound.Ut   
     W          = rotor.blades.bound.W     
@@ -186,10 +182,9 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     Wt         = rotor.blades.bound.Wt   
     F          = rotor.blades.bound.F   
 
-    #a_loc     = rotor.airfoil_polar_stations
-    #airfoils  = rotor.airfoils
-    #tc        = rotor.thickness_to_chord
     r_1d      = rotor.radius_distribution   # (Nr,) -- use the 1D version from rotor
+    c_mid = 0.5*(c_1d[:, :-1, :] + c_1d[:, 1:, :])   # (ctrl_pts, Nr-1, B)
+    r_mid     = 0.5*(r_1d[:-1] + r_1d[1:])               # (Nr_s,)
 
     B         = rotor.number_of_blades
     R         = rotor.tip_radius
@@ -202,14 +197,10 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     omega                 = conditions.energy.converters[rotor.tag].omega  
     design_flag           = conditions.energy.converters[rotor.tag].design_flag
  
-
     # Unpack freestream conditions
     rho     = conditions.freestream.density[:,0,None]
-    mu      = conditions.freestream.dynamic_viscosity[:,0,None]
-    #a       = conditions.freestream.speed_of_sound[:,0,None]
     T       = conditions.freestream.temperature[:,0,None]
     Vv      = conditions.frames.inertial.velocity_vector
-    #nu      = mu/rho
     rho_0   = rho 
     
     T_body2inertial         = conditions.frames.body.transform_to_inertial
@@ -220,7 +211,7 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     V_thrust                = orientation_product(T_body2thrust,V_body)
 
     # Calculating rotational parameters
-    omegar = np.outer(omega, r_1d)[:, :, None] * np.ones((ctrl_pts, Nr, B))   # (ctrl_pts, Nr, B)
+    omegar = np.outer(omega, r_mid)[:, :, None] * np.ones((ctrl_pts, Nr_s, B))   # (ctrl_pts, Nr, B)
     n        = omega/(2.*np.pi)   # Rotations per second
 
     # Check and correct for hover
@@ -230,20 +221,12 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     # ------------------------------------------------------------------------------------------------------------------
     #  Integration weights -- trapezoidal rule along span
     # ------------------------------------------------------------------------------------------------------------------
-    r_dim_2d       = np.tile(r_1d[:, None] ,(1,B))
-    r_dim_2d       = np.repeat(r_dim_2d[None,:,:], ctrl_pts, axis=0)
-    diff_r         = np.diff(r_1d)
-    deltar         = np.zeros(Nr)
-    deltar[1:-1]   = diff_r[0:-1]/2 + diff_r[1:]/2
-    deltar[0]      = diff_r[0]/2
-    deltar[-1]     = diff_r[-1]/2
-    # (ctrl_pts, Nr, B)
-    deltar_3d = deltar[np.newaxis, :, np.newaxis] * np.ones((ctrl_pts, Nr, B))
-
-
-    # radial stations (ctrl_pts, Nr, B)
-    r_3d = r_1d[np.newaxis, :, np.newaxis] * np.ones((ctrl_pts, Nr, B))
-
+    diff_r    = np.diff(r_1d)                              # (Nr_s,)
+    deltar_3d = diff_r[np.newaxis, :, np.newaxis] * np.ones((ctrl_pts, Nr_s, B))  # (ctrl_pts, Nr-1, B)
+    r_3d      = r_mid[np.newaxis, :, np.newaxis] * np.ones((ctrl_pts, Nr_s, B))
+    r_dim_2d  = np.tile(r_mid[:, None], (1, B))
+    r_dim_2d  = np.repeat(r_dim_2d[None,:,:], ctrl_pts, axis=0)
+    
     #---------------------------------------------------------------------------      
     # tip loss correction for velocities, since tip loss correction is only applied to loads in prior BET iteration
     va     = F*va
@@ -271,7 +254,6 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     blade_dT_dr_2d          = blade_dT_dr
     blade_dQ_dr_2d          = blade_dQ_dr
     blade_Gamma_2d          = Gamma
-    alpha_2d                = alpha
 
     Va_2d   = Wa
     Vt_2d   = Wt
@@ -287,33 +269,32 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     Va_ind_avg = np.average(va, axis=2)
 
     # compute the hub force / rotor drag distribution along the blade
-    dL_2d = 0.5*rho[:, :, None]*c_1d*Cd*omegar**2*deltar_3d
-    dD_2d = 0.5*rho[:, :, None]*c_1d*Cl*omegar**2*deltar_3d
+    dL_2d = 0.5*rho[:, :, None]*c_mid*Cd*omegar**2*deltar_3d
+    dD_2d = 0.5*rho[:, :, None]*c_mid*Cl*omegar**2*deltar_3d
 
-    rotor_drag_distribution = np.mean(dL_2d*np.sin(psi[None,:,:]) + dD_2d*np.cos(psi[None,:,:]), axis=2)
+    rotor_drag_distribution = np.sum(dL_2d*np.sin(psi[None,:,:]) + dD_2d*np.cos(psi[None,:,:]), axis=2)
     
-
     # forces
-    thrust                  = np.atleast_2d((B * np.sum(blade_T_distribution, axis = 1))).T
-    torque                  = np.atleast_2d((B * np.sum(blade_Q_distribution, axis = 1))).T
-    rotor_drag              = np.atleast_2d((B * np.sum(rotor_drag_distribution, axis=1))).T
-    power                   = omega*torque
+    thrust     = np.sum(blade_T_distribution, axis=(1, 2))[:, None]   # (ctrl_pts, 1)
+    torque     = np.sum(blade_Q_distribution, axis=(1, 2))[:, None]   # (ctrl_pts, 1)
+    rotor_drag = np.sum(rotor_drag_distribution, axis=1)[:, None]   # (ctrl_pts, 1)
+    power      = omega*torque
 
     c_mean    = np.mean(rotor.chord_distribution)          # scalar, mean chord (Nr,) averaged
     sigma     = B * c_mean / (np.pi * R)                   # scalar solidity
 
     # calculate coefficients
+    A        = np.pi*(R**2)
     D         = 2*R
     Cq        = torque/(rho_0*(n*n)*(D*D*D*D*D))
-    Cq_rotor  = torque / (rho_0 * np.pi * R**2 * (omega*R)**2 * R)
+    Cq_rotor  = torque / (rho_0 * A * (omega*R)**2 * R)
     Ct        = thrust/(rho_0*(n*n)*(D*D*D*D))
-    Ct_rotor  = thrust / (rho_0 * np.pi * R**2 * (omega * R)**2)   # rotor convention
+    Ct_rotor  = thrust / (rho_0 * A * (omega * R)**2)   # rotor convention
     Ct_sigma  = Ct_rotor / sigma                                 
     Cp        = power/(rho_0*(n*n*n)*(D*D*D*D*D))
-    Cp_rotor  = power  / (rho_0 * np.pi * R**2 * (omega*R)**3)
+    Cp_rotor  = power  / (rho_0 * A * (omega*R)**3)
     Crd      = rotor_drag/(rho_0*(n*n)*(D*D*D*D))
     etap     = V*thrust/power
-    A        = np.pi*(R**2 - rotor.hub_radius**2)
     FoM      = thrust*np.sqrt(thrust/(2*rho_0*A))/power  
 
     print("FM: ", FoM)
@@ -357,7 +338,7 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
                 efficiency                        = etap,         
                 number_radial_stations            = Nr,
                 orientation                       = orientation,  
-                number_azimuthal_stations         = Na,
+                number_azimuthal_stations         = B,
                 advance_ratio                     = V/(n*D), 
                 disc_radial_distribution          = r_dim_2d,
                 speed_of_sound                    = conditions.freestream.speed_of_sound,
@@ -393,7 +374,7 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
                 thrust_coefficient                = Ct,
                 blade_loading                     = Ct_sigma,
                 solidity                          = sigma,
-                disc_azimuthal_distribution       = psi_2d,
+                disc_azimuthal_distribution       = psi,
                 blade_dQ_dr                       = blade_dQ_dr,
                 disc_dQ_dr                        = blade_dQ_dr_2d,
                 blade_torque_distribution         = blade_Q_distribution,
@@ -402,7 +383,7 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
                 torque_coefficient                = Cq,
                 power_coefficient                 = Cp, 
                 converged_inflow_ratio            = lamdaw, 
-                blade_H_distribution              = rotor_drag_distribution,
+                rotor_H_distribution              = rotor_drag_distribution,
                 rotor_drag                        = rotor_drag,
                 rotor_drag_coefficient            = Crd,
                 blade_pitch_command               = pitch_c,

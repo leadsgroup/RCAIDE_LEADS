@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Powertrain/Converters/Rotor/Performance/Lifting_Line_Theory/Biot_Savart_velocity_induction.py
+# RCAIDE/Library/Methods/Powertrain/Converters/Rotor/Performance/Lifting_Line_Theory/biot_savart_velocity_induction.py
 # 
 # Created:  Jun 2026, H. Hussien 
 
@@ -8,7 +8,7 @@ import  numpy as  np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Biot_Savart_velocity_induction
 # ----------------------------------------------------------------------------------------------------------------------
-def Biot_Savart_velocity_induction(P, A, B, rc=1e-6, vc_correction=1, tol=1e-3):
+def biot_savart_velocity_induction(P, A, B, rc=1e-6, vc_correction=1, tol=1e-6):
     # Created:  Jun 2026, H. Hussien
     """
     Computes the Biot-Savart influence tensor for a set of straight vortex filaments.
@@ -145,7 +145,7 @@ def Biot_Savart_velocity_induction(P, A, B, rc=1e-6, vc_correction=1, tol=1e-3):
 
     # Mask: skip contribution if P is on or near A, on or near B,
     # or if P is collinear with the segment (cross product near zero)
-    mask = (r1_norm < tol) | (r2_norm < tol) | (cross_norm_sq < tol)
+    mask = (r1_norm[..., 0] < tol) | (r2_norm[..., 0] < tol) | (cross_norm_sq < tol)
     K[mask] = 0.0
 
     return K

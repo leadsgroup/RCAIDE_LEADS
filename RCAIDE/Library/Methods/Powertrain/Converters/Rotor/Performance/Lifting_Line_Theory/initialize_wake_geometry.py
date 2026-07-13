@@ -100,7 +100,7 @@ def initialize_wake_geometry(rotor, wake_geo_inputs, conditions):
     # ------------------------------------------------------------------------------------------------------------------
     #  Step 3: Induced inflow ratio (momentum theory)
     # ------------------------------------------------------------------------------------------------------------------
-    T_thrust = CT * rho[:, 0] * np.pi * omegaR**2 * R**4
+    T_thrust = CT * rho[:, 0] * omegaR**2 * (np.pi * R**2)
     viavg    = np.sqrt(np.maximum(T_thrust / (2.0 * rho[:, 0] * np.pi * R**2), 1e-6))
     lam      = viavg / omegaR
 
@@ -146,7 +146,7 @@ def initialize_wake_geometry(rotor, wake_geo_inputs, conditions):
         wcf = k4 + (1.0 - k4) * np.exp(-k3 * wakeage)   # (N_wake+1,)
 
     # ------------------------------------------------------------------------------------------------------------------
-    #  Step 5: Shed point -- interpolated between nodes
+    #  Step 5: Shed point -- Closest to the nearest point
     # ------------------------------------------------------------------------------------------------------------------
     r_R_shed    = wake_geo_inputs.get('r_R_shed', 1.0)
     R_shed      = r_R_shed * R

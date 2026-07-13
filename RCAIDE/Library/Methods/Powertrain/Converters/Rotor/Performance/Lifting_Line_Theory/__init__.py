@@ -17,7 +17,7 @@ RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Mom
 # ----------------------------------------------------------------------------------------------------------------------
 from .initialize_lifting_line             import initialize_lifting_line
 from .initialize_wake_geometry            import initialize_wake_geometry
-from .Biot_Savart_velocity_induction      import Biot_Savart_velocity_induction
+from .biot_savart_velocity_induction      import biot_savart_velocity_induction
 from .lifting_line_performance            import lifting_line_performance
 from .evaluate_bound_vortex_circulation   import evaluate_bound_vortex_circulation
 from .compute_lifting_line_loads          import compute_lifting_line_loads

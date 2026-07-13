@@ -8,7 +8,7 @@
 import numpy as np
 from RCAIDE.Framework.Core                           import Data, orientation_product, orientation_transpose
 from RCAIDE.Library.Methods.Aerodynamics.Common.Lift  import compute_airfoil_aerodynamics, compute_inflow_and_tip_loss
-from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory import Biot_Savart_velocity_induction, initialize_wake_geometry
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory import biot_savart_velocity_induction, initialize_wake_geometry
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  evaluate_bound_vortex_circulation
@@ -130,14 +130,14 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
     beta          = wake_inputs.twist_distribution
     c             = wake_inputs.chord_distribution
     r             = wake_inputs.radius_distribution
-    a_sound       = wake_inputs.speed_of_sounds
-    nu            = wake_inputs.dynamic_viscosities
+    a_sound       = wake_inputs.speed_of_sound
+    nu            = wake_inputs.dynamic_viscosity
     max_iter      = wake_inputs.max_iter # 50
     tol           = wake_inputs.tol # 1e-4
     relax         = wake_inputs.relax # 0.2
 
-    nodes_14c = wake_inputs.nodes_14c   # (ctrl_pts, B, Nr, 3), body frame inducing location
-    nodes_34c = wake_inputs.nodes_34c   # (ctrl_pts, B, Nr, 3), body frame induced location
+    nodes_14c = wake_inputs.nodes_14c   # (ctrl_pts, Nr, B, 3), body frame inducing location
+    nodes_34c = wake_inputs.nodes_34c   # (ctrl_pts, Nr, B, 3), body frame induced location
 
     B        = rotor.number_of_blades
     R        = rotor.tip_radius
@@ -146,13 +146,26 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
     airfoils = rotor.airfoils
     r_1d     = rotor.radius_distribution   # (Nr,)
 
-    psi = rotor.blades.bound.psi   # (B, Nr)
+    psi = rotor.blades.bound.psi   # (Nr, B)
 
+    psi     = 0.5*(psi[:-1, :]          + psi[1:, :]          )   # (Nr-1, B)
+    Ua      = 0.5*(Ua[:,  :-1, :]       + Ua[:,   1:, :]      )   # (ctrl_pts, Nr-1, B)
+    Ut      = 0.5*(Ut[:,  :-1, :]       + Ut[:,   1:, :]      )   # (ctrl_pts, Nr-1, B)
+    U       = 0.5*(U[:,   :-1, :]       + U[:,    1:, :]      )   # (ctrl_pts, Nr-1, B)
+    beta    = 0.5*(beta[:, :-1,:]       + beta[:, 1:, :]      )   # (ctrl_pts, Nr-1, B)
+    c       = 0.5*(c[:,   :-1, :]       + c[:,    1:, :]      )   # (ctrl_pts, Nr-1, B)
+    r       = 0.5*(r[:,   :-1, :]       + r[:,    1:, :]      )   # (ctrl_pts, Nr-1, B)
+    a_sound = 0.5*(a_sound[:,   :-1, :] + a_sound[:,    1:, :])   # (ctrl_pts, Nr-1, B)
+    nu      = 0.5*(nu[:,   :-1, :]      + nu[:,    1:, :]     )   # (ctrl_pts, Nr-1, B)
+    tc      = 0.5*(tc[:-1]           + tc[1:]           )   # (Nr-1, )
+
+    a_loc = a_loc[:-1] # taken as the value at the inboard node
+    
     # ------------------------------------------------------------------------------------------------------------------
     #  Unpack -- CT_iter mode only
     # ------------------------------------------------------------------------------------------------------------------
     rho   = conditions.freestream.density[:, 0, None]
-    T     = conditions.freestream.temperature[:, 0, None]
+    T     = conditions.freestream.temperature[:, 0, None, None]
     rho_0 = rho
     omega = conditions.energy.converters[rotor.tag].omega
     #commanded_TV = conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle
@@ -160,12 +173,8 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
     #eta          = conditions.energy.converters[rotor.tag].throttle
     #design_flag  = conditions.energy.converters[rotor.tag].design_flag
     if wake_inputs.CT_iter:
-        diff_r       = np.diff(r_1d)
-        deltar       = np.zeros(Nr)
-        deltar[1:-1] = diff_r[0:-1]/2 + diff_r[1:]/2
-        deltar[0]    = diff_r[0]/2
-        deltar[-1]   = diff_r[-1]/2
-        deltar_3d    = deltar[np.newaxis, :, np.newaxis] * np.ones((ctrl_pts, Nr, B))
+        diff_r    = np.diff(r_1d)                                                     # (Nr-1,)
+        deltar_3d = diff_r[np.newaxis, :, np.newaxis] * np.ones((ctrl_pts, Nr-1, B))  # (ctrl_pts, Nr-1, B)
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Wake shedding radius
@@ -175,33 +184,34 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
         r_R_shed = wake_geo_inputs.get('r_R_shed', 1.0)
         R_shed   = r_R_shed * R
 
-    # Unit vectors per (b, r) station, in the rotor/thrust frame -- (B, Nr)
-    #  confirm sign convention matches CW/PORT used in initialize_lifting_line
-    radial_hat_thrust_y = -np.sin(psi)     # (B, Nr)
-    radial_hat_thrust_z =  np.cos(psi)     # (B, Nr)
-    tang_hat_thrust_y   = -np.cos(psi)     # (B, Nr)   
-    tang_hat_thrust_z   = -np.sin(psi)     # (B, Nr)   
+    # ------------------------------------------------------------------------------------------------------------------
+    #  Unit vectors in thrust frame -- (Nr-1, B)
+    # ------------------------------------------------------------------------------------------------------------------
+    radial_hat_thrust_y = -np.sin(psi)     # (Nr-1, B)
+    radial_hat_thrust_z =  np.cos(psi)     # 
+    tang_hat_thrust_y   = -np.cos(psi)     #    
+    tang_hat_thrust_z   = -np.sin(psi)     #    
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Initial guess: Cl from freestream, Gamma_b = 0.5*U*c*Cl
     # ------------------------------------------------------------------------------------------------------------------
     Cl, _, _, _, _, _, _, _ = compute_airfoil_aerodynamics(
-        beta, c, r, R, B, Ua, Ut, a_sound, nu, airfoils, a_loc, ctrl_pts, Nr, B, tc, use_2d_analysis=True)
+        beta, c, r, R, B, Ua, Ut, a_sound, nu, airfoils, a_loc, ctrl_pts, Nr-1, B, tc, use_2d_analysis=True)
     
     Gamma_b = 0.5*U*c*Cl
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Pre-compute bound influence matrix K_bound (geometry fixed throughout)
     # ------------------------------------------------------------------------------------------------------------------
-    P_colloc = nodes_34c.reshape(ctrl_pts, Nr*B, 3)
+    P_colloc = nodes_34c.reshape(ctrl_pts, (Nr-1)*B, 3)
     A_bound  = nodes_14c[:, :-1, :, :].reshape(ctrl_pts, (Nr-1)*B, 3)
     B_bound  = nodes_14c[:, 1:,  :, :].reshape(ctrl_pts, (Nr-1)*B, 3)
     rCb      = rotor.blades.bound.rCb
 
-    K_bound = np.zeros((ctrl_pts, Nr*B, (Nr-1)*B, 3))
+    K_bound = np.zeros((ctrl_pts, (Nr-1)*B, (Nr-1)*B, 3))
     for cp in range(ctrl_pts):
         rCb_flat    = rCb[cp, :, :].reshape((Nr-1)*B)
-        K_bound[cp] = Biot_Savart_velocity_induction(
+        K_bound[cp] = biot_savart_velocity_induction(
             P_colloc[cp], A_bound[cp], B_bound[cp], rCb_flat, wake_geo_inputs.vc_correction)
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -210,15 +220,15 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
     #  In simple mode:  K_wake is computed once before the loop
     # ------------------------------------------------------------------------------------------------------------------
     if wake_inputs.include_wake:
-        K_wake = np.zeros((ctrl_pts, Nr*B, N_wake*B, 3))
+        K_wake = np.zeros((ctrl_pts, (Nr-1)*B, N_wake*B, 3))
         if not wake_inputs.CT_iter:
             # compute wake geometry once
             A_wake = rotor.blades.wake.nodes_body[:, :-1, :, :].reshape(ctrl_pts, N_wake*B, 3)
             B_wake = rotor.blades.wake.nodes_body[:, 1:,  :, :].reshape(ctrl_pts, N_wake*B, 3)
             rCvf   = rotor.blades.wake.rCvf
             for cp in range(ctrl_pts):
-                rCvf_flat   = np.tile(rCvf[cp], B)
-                K_wake[cp]  = Biot_Savart_velocity_induction(
+                rCvf_flat   = np.repeat(rCvf[cp], B)
+                K_wake[cp]  = biot_savart_velocity_induction(
                     P_colloc[cp], A_wake[cp], B_wake[cp], rCvf_flat, wake_geo_inputs.vc_correction)
 
 
@@ -236,8 +246,8 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
             B_wake = rotor.blades.wake.nodes_body[:, 1:,  :, :].reshape(ctrl_pts, N_wake*B, 3)
             rCvf   = rotor.blades.wake.rCvf
             for cp in range(ctrl_pts):
-                rCvf_flat  = np.tile(rCvf[cp], B)
-                K_wake[cp] = Biot_Savart_velocity_induction(
+                rCvf_flat  = np.repeat(rCvf[cp], B)
+                K_wake[cp] = biot_savart_velocity_induction(
                     P_colloc[cp], A_wake[cp], B_wake[cp], rCvf_flat, wake_geo_inputs.vc_correction)
 
         # -- Inner Gamma_b loop --
@@ -245,14 +255,15 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
         for it1 in range(max_iter):
 
             # Step 4a: bound vortex induction
-            Gamma_bound = Gamma_b[:, :-1, :].reshape(ctrl_pts, (Nr-1)*B)
-            v_induced_bound_body = np.zeros((ctrl_pts, Nr*B, 3))
+            Gamma_bound = Gamma_b.reshape(ctrl_pts, (Nr-1)*B)
+            v_induced_bound_body = np.zeros((ctrl_pts, (Nr-1)*B, 3))
             for cp in range(ctrl_pts):
                 v_induced_bound_body[cp] = np.einsum('mnk,n->mk', K_bound[cp], Gamma_bound[cp])
-            v_induced_bound_body = v_induced_bound_body.reshape(ctrl_pts, Nr, B, 3)
+            v_induced_bound_body = v_induced_bound_body.reshape(ctrl_pts, Nr-1, B, 3)
 
             # Step 4b: wake induction
             if wake_inputs.include_wake:
+                '''
                 i_shed      = np.argmin(np.abs(r_1d - R_shed))            # nearest node
                 R_shed_near = r_1d[i_shed]
                 if R_shed_near >= r_1d[-1]:
@@ -261,14 +272,18 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
                     Gamma_wake = -Gamma_b[:, 0:1, :]
                 else:
                     Gamma_wake = Gamma_b[:, i_shed-1:i_shed, :] - Gamma_b[:, i_shed:i_shed+1, :]   # difference
+                '''
+
+                # Use max Gamma_b instead of shed station value
+                Gamma_wake      = np.max(Gamma_b, axis=1, keepdims=True)   # (ctrl_pts, 1, B)
 
                 Gamma_wake      = Gamma_wake * np.ones((ctrl_pts, N_wake, B))
                 Gamma_wake_flat = Gamma_wake.reshape(ctrl_pts, N_wake*B)
 
-                v_induced_wake_body = np.zeros((ctrl_pts, Nr*B, 3))
+                v_induced_wake_body = np.zeros((ctrl_pts, (Nr-1)*B, 3))
                 for cp in range(ctrl_pts):
                     v_induced_wake_body[cp] = np.einsum('mnk,n->mk', K_wake[cp], Gamma_wake_flat[cp])
-                v_induced_wake_body = v_induced_wake_body.reshape(ctrl_pts, Nr, B, 3)
+                v_induced_wake_body = v_induced_wake_body.reshape(ctrl_pts, Nr-1, B, 3)
 
             # Total induced velocity
             if wake_inputs.include_wake:
@@ -281,8 +296,8 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
 
             # Project onto axial, tangential
             ua_ind = v_induced_thrust[:,:,:,0]
-            #ur_ind = (v_induced_thrust[:,:,:,1]*radial_hat_thrust_y[None,:,:] +
-            #          v_induced_thrust[:,:,:,2]*radial_hat_thrust_z[None,:,:])
+            ur_ind = (v_induced_thrust[:,:,:,1]*radial_hat_thrust_y[None,:,:] +
+                       v_induced_thrust[:,:,:,2]*radial_hat_thrust_z[None,:,:])
             ut_ind = (v_induced_thrust[:,:,:,1]*tang_hat_thrust_y[None,:,:] +
                       v_induced_thrust[:,:,:,2]*tang_hat_thrust_z[None,:,:])
 
@@ -293,7 +308,7 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
             # Aerodynamics
             if wake_inputs.aerofoil_aero == 1:
                 _, _, _, alpha_disc, Ma, _, Re, Re_disc = compute_airfoil_aerodynamics(
-                    beta, c, r, R, B, Wa, Wt, a_sound, nu, airfoils, a_loc, ctrl_pts, Nr, B, tc, use_2d_analysis=True)
+                    beta, c, r, R, B, Wa, Wt, a_sound, nu, airfoils, a_loc, ctrl_pts, Nr-1, B, tc, use_2d_analysis=True)
                 alpha    = beta - np.arctan2(Wa, Wt)
                 Cl       = (2.*np.pi/6.) * np.sin(6.*alpha)  # Cl_a = 2 * pi
                 Cdval    = 0.0087 - 0.0216*alpha + 0.4*alpha**2
@@ -304,12 +319,17 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
                 Cd       = ((1/Tp_Tinf)*(1/Rp_Rinf)**0.2)*Cdval
             elif wake_inputs.aerofoil_aero == 2:
                 Cl, Cdval, alpha, alpha_disc, Ma, W, Re, Re_disc = compute_airfoil_aerodynamics(
-                    beta, c, r, R, B, Wa, Wt, a_sound, nu, airfoils, a_loc, ctrl_pts, Nr, B, tc, use_2d_analysis=True)
+                    beta, c, r, R, B, Wa, Wt, a_sound, nu, airfoils, a_loc, ctrl_pts, Nr-1, B, tc, use_2d_analysis=True)
                 Tw_Tinf  = 1. + 1.78*(Ma*Ma)
                 Tp_Tinf  = 1. + 0.035*(Ma*Ma) + 0.45*(Tw_Tinf-1.)
                 Tp       = Tp_Tinf * T
                 Rp_Rinf  = (Tp_Tinf**2.5)*(Tp+110.4)/(T+110.4)
                 Cd       = ((1/Tp_Tinf)*(1/Rp_Rinf)**0.2)*Cdval
+
+            # Prandtl tip loss
+            _, F, _ = compute_inflow_and_tip_loss(r, R, Wa, Wt,  B)
+
+            Cl = Cl * F
 
             # Relaxed Gamma_b update
             Gamma_b_new      = 0.5*W*c*Cl
@@ -330,8 +350,8 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
             epsilon[Cl <= 1e-3] = 10.0
 
             blade_T_distribution = rho[:, :, None] * (Gamma_b_new*(Wt - epsilon*Wa)) * deltar_3d
-            thrust               = np.atleast_2d(np.sum(blade_T_distribution)).T
-            Ct_rotor_new         = thrust / (rho_0 * np.pi * R**2 * (omega*R)**2)
+            thrust               = np.sum(blade_T_distribution, axis=(1, 2))[:, None]  # (ctrl_pts, 1)
+            Ct_rotor_new         = thrust / (rho_0 * (np.pi * R**2) * (omega*R)**2)
 
             print("CT", Ct_rotor_new)
 
@@ -351,17 +371,13 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
     if not conv and wake_inputs.CT_iter:
         print("CT did not converge. Residual =", residual_CT)
 
-
-    # Prandtl tip loss
-    _, F, _ = compute_inflow_and_tip_loss(r, R, Wa, Wt,  B)
-
     # ------------------------------------------------------------------------------------------------------------------
     #  Store converged results
     # ------------------------------------------------------------------------------------------------------------------
-    rotor.blades.bound.gamma      = Gamma_b * F
-    rotor.blades.bound.cl         = Cl * F
+    rotor.blades.bound.gamma      = Gamma_b 
+    rotor.blades.bound.cl         = Cl 
     rotor.blades.bound.Cdval      = Cdval
-    rotor.blades.bound.alpha      = alpha * F
+    rotor.blades.bound.alpha      = alpha 
     rotor.blades.bound.alpha_disc = alpha_disc
     rotor.blades.bound.Ma         = Ma
     rotor.blades.bound.Re         = Re
