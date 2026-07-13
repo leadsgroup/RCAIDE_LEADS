@@ -42,6 +42,7 @@ import time
 def main():
     ti = time.time()
     integral_fuel_tank_volume_test()
+    non_integral_tank_test()
     # -------------------------------------------------------------
     # Run test only if Python version >= 3.11
     # Shapely < 2.1 (and Python < 3.11) may not include functions
@@ -138,6 +139,71 @@ def integral_fuel_tank_volume_test():
         assert np.abs(v) < 1e-6, f'Integral tank regression failed: {k}'
 
     return
+
+def non_integral_tank_test():
+    print('\n----- Non-Integral Tank Test -----')
+
+    # --- Cylindrical MOI and CoG (lines 218 and 246 in Non_Integral_Tank) ---
+    # These branches are never reached via Cryogenic_Tank (which overrides the methods).
+    cyl_tank = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank()
+    cyl_tank.geometry_type      = 'cylindrical'
+    cyl_tank.lengths.external   = 8.0
+    cyl_tank.diameters.external = 2.0
+    cyl_tank.wall_thickness     = 0.05
+    cyl_tank.compute_moments_of_inertia(None)
+    cyl_tank.compute_center_of_gravity(None)
+
+    # --- Wing-mounted cylindrical and transverse Non_Integral_Tank (lines 174-181) ---
+    # These use shapely so require Python >= 3.11.
+    if sys.version_info >= (3, 11):
+        # Wing-mounted cylindrical tank (lines 174-177)
+        vehicle   = B737_vehicle_setup()
+        fuel_line = vehicle.networks.fuel.fuel_lines.fuel_line
+        fuel_line.fuel_tanks.clear()
+
+        wing_tank = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.wings.main_wing)
+        wing_tank.tag                    = 'wing_cyl_tank'
+        wing_tank.geometry_type          = 'cylindrical'
+        wing_tank.segments_bounding_tank = ['root', 'yehudi']
+        wing_tank.fuel                   = RCAIDE.Library.Attributes.Propellants.Jet_A()
+        fuel_line.fuel_tanks.append(wing_tank)
+
+        configs  = configs_setup(vehicle)
+        analyses = analyses_setup(configs)
+        for analysis in analyses:
+            analysis.geometry.settings.compute_fuel_volume = True
+        geometry(mission_setup(analyses))
+
+        assert wing_tank.volume_properties.net_volume > 0, \
+            f'Wing-mounted cylindrical Non_Integral_Tank volume should be > 0, got {wing_tank.volume_properties.net_volume}'
+
+        # Transverse Non_Integral_Tank (lines 178-181)
+        vehicle_bwb   = BWB_vehicle_setup()
+        fuel_line_bwb = vehicle_bwb.networks.fuel.fuel_lines.fuel_line
+        fuel_line_bwb.fuel_tanks.clear()
+
+        trans_tank = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle_bwb.wings.main_wing)
+        trans_tank.tag                          = 'transverse_tank'
+        trans_tank.transverse_tank              = True
+        trans_tank.transverse_tank_chord_bounds = [0.65, 0.9]
+        trans_tank.transverse_tank_segment_bound = 'fuel_wall'
+        trans_tank.radial_offset                = 0.2
+        trans_tank.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A()
+        fuel_line_bwb.fuel_tanks.append(trans_tank)
+
+        configs  = configs_setup(vehicle_bwb)
+        analyses = analyses_setup(configs)
+        for analysis in analyses:
+            analysis.geometry.settings.compute_fuel_volume = True
+        geometry(mission_setup(analyses))
+
+        assert trans_tank.volume_properties.net_volume > 0, \
+            f'Transverse Non_Integral_Tank volume should be > 0, got {trans_tank.volume_properties.net_volume}'
+    else:
+        print('  Skipping wing-mounted and transverse Non_Integral_Tank tests: shapely requires Python >= 3.11')
+
+    print('  PASSED')
+
 
 def non_conformal_lh2_fuel_tank_volume_test():
 

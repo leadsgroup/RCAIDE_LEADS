@@ -1068,22 +1068,3 @@ def compute_coefficients(sub_sur_Clift,sub_sur_Cdrag,sub_sur_CX,sub_sur_CY,sub_s
     return results
 
 
-def compute_coefficient(sub_sur_coef,trans_sur_coef, sup_sur_coef, h_sub,h_sup,Mach, pts): 
-
-    #  subsonic 
-    sub_coef  = np.atleast_2d(sub_sur_coef(pts)).T     
-   
-    if trans_sur_coef == None and sup_sur_coef == None:
-        coef = h_sub(Mach) 
-        return  coef
-    
-    # transonic 
-    trans_coef  = np.atleast_2d(trans_sur_coef(pts)).T    
-
-    # supersonic 
-    sup_coef  = np.atleast_2d(sub_sur_coef(pts)).T             
-
-    # apply  
-    coef = h_sub(Mach)*sub_coef +   (1 - (h_sup(Mach) + h_sub(Mach)))*trans_coef  + h_sub(Mach)*sup_coef 
-
-    return coef

@@ -487,6 +487,8 @@ def vehicle_setup():
     starboard_propulsor.gearbox.efficiency           = 0.99   
     starboard_propulsor.design_power                 = 462334                                          # [-]         Design Gearbox Efficiency
     starboard_propulsor.specific_fuel_consumption_reduction_factor = -3.5
+    starboard_propulsor.length                       = 1.5
+    starboard_propulsor.diameter                     = 0.45
 
     #Propeller Design              
     propeller                                        = RCAIDE.Library.Components.Powertrain.Converters.Propeller()   
