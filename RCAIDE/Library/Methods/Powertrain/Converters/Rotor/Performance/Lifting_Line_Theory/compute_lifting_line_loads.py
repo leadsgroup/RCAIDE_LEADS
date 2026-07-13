@@ -269,8 +269,8 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     Va_ind_avg = np.average(va, axis=2)
 
     # compute the hub force / rotor drag distribution along the blade
-    dL_2d = 0.5*rho[:, :, None]*c_mid*Cd*omegar**2*deltar_3d
-    dD_2d = 0.5*rho[:, :, None]*c_mid*Cl*omegar**2*deltar_3d
+    dL_2d = 0.5*rho[:, :, None]*c_mid*Cl*omegar**2*deltar_3d
+    dD_2d = 0.5*rho[:, :, None]*c_mid*Cd*omegar**2*deltar_3d
 
     rotor_drag_distribution = np.sum(dL_2d*np.sin(psi[None,:,:]) + dD_2d*np.cos(psi[None,:,:]), axis=2)
     
