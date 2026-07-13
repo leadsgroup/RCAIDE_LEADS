@@ -52,10 +52,11 @@ def lifting_line_performance(rotor, conditions, wake_geo_inputs=None):
     R        = rotor.tip_radius
     r_hub    = rotor.hub_radius
     r_1d     = rotor.radius_distribution
-    Nr       = len(r_1d)
+    Nr       = np.shape(r_1d)[0]
     ctrl_pts = conditions.freestream.density.shape[0]
 
     omega        = conditions.energy.converters[rotor.tag].omega
+    omega        = np.where(omega == 0, 1e-6, omega)
     commanded_TV = conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle
     pitch_c      = conditions.energy.converters[rotor.tag].blade_pitch_command
     theta_0      = float(pitch_c[0, 0])
@@ -77,7 +78,7 @@ def lifting_line_performance(rotor, conditions, wake_geo_inputs=None):
     # ------------------------------------------------------------------------------------------------------------------
     if wake_geo_inputs is None:
         wake_geo_inputs = Data()
-        wake_geo_inputs.wake_model                   = 1                 # 1 simple model, 2 landgrebe, 3 landgrebe KT
+        wake_geo_inputs.wake_model                   = 3                 # 1 simple model, 2 landgrebe, 3 landgrebe KT
         wake_geo_inputs.vc_correction                = 1                 # vortex core factor, 1 standard Rankine, 2 Rankine, 3, scully, 4 Vatistas, 5 Oseen
         wake_geo_inputs.dpsi                         = np.radians(7.4)   # filament length [rad]
         wake_geo_inputs.n_turns                      = 5.0               # Number of wake turns

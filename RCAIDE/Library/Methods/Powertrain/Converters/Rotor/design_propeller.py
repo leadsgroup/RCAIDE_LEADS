@@ -133,7 +133,7 @@ def design_propeller(prop, number_of_stations=20):
     RCAIDE.Library.Methods.Geometry.Airfoil.compute_naca_4series
     RCAIDE.Library.Methods.Geometry.Airfoil.import_airfoil_geometry
     """
-    if prop.fidelity == 'Blade_Element_Momentum_Theory_Helmholtz_Wake':
+    if prop.fidelity in ('Blade_Element_Momentum_Theory_Helmholtz_Wake', 'Lifting_Line_Theory'):
         # Unpack
         N            = number_of_stations       # this number determines the discretization of the propeller into stations
         B            = prop.number_of_blades

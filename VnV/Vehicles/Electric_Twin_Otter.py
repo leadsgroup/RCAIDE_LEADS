@@ -164,7 +164,7 @@ def vehicle_setup(rotor_type):
     segment.tag                           = 'tip'
     segment.percent_span_location         = 1.
     segment.twist                         = 0
-    segment.root_chord_percent            = 1.0
+    segment.root_chord_percent            = 0.99
     segment.dihedral_outboard             = 0.
     segment.sweeps.quarter_chord          = 0.
     segment.thickness_to_chord            = 0.12
@@ -394,79 +394,56 @@ def vehicle_setup(rotor_type):
     # Bus
     #------------------------------------------------------------------------------------------------------------------------------------  
     bus                              = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
-    '''
-    if cell_chemistry == 'lithium_ion_nmc':
-        #------------------------------------------------------------------------------------------------------------------------------------           
-        # Battery
-        #------------------------------------------------------------------------------------------------------------------------------------  
-        bat_module                                             = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC()
-        bat_module.electrical_configuration.series             = 10
-        bat_module.electrical_configuration.parallel           = 210
-        bat_module.cell.nominal_capacity                       = 3.8 
-        bat_module.geometrtic_configuration.normal_count       = 42
-        bat_module.geometrtic_configuration.parallel_count     = 50 
     
-        for i in range(12):
-            bat_copy = deepcopy(bat_module)
-            bat_copy.origin   = [[4 + (i * 0.5) , 0, -0.5]]
-            bus.battery_modules.append(bat_copy)
+ 
+    #------------------------------------------------------------------------------------------------------------------------------------           
+    # Battery
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    bat_module                                             = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC()
+    bat_module.electrical_configuration.series             = 10
+    bat_module.electrical_configuration.parallel           = 210
+    bat_module.cell.nominal_capacity                       = 3.8 
+    bat_module.geometrtic_configuration.normal_count       = 42
+    bat_module.geometrtic_configuration.parallel_count     = 50 
 
-        bus.battery_module_electric_configuration = 'Series' 
-        bus.initialize_bus_properties()
+    for i in range(12):
+        bat_copy = deepcopy(bat_module)
+        bat_copy.origin   = [[4 + (i * 0.5) , 0, -0.5]]
+        bus.battery_modules.append(bat_copy)
 
-    elif cell_chemistry == 'lithium_ion_lfp':
-        #------------------------------------------------------------------------------------------------------------------------------------           
-        # Battery
-        #------------------------------------------------------------------------------------------------------------------------------------          
-            bat_module                                             = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP()
-            bat_module.electrical_configuration.series             = 10
-            bat_module.electrical_configuration.parallel           = 210
-            bat_module.cell.nominal_capacity                       = 3.8 
-            bat_module.geometrtic_configuration.normal_count       = 42
-            bat_module.geometrtic_configuration.parallel_count     = 50
-            bat_module.nominal_capacity                            = bat_module.cell.nominal_capacity* bat_module.electrical_configuration.parallel
-            bat_module.origin                                      = [[4, 0, 0]]
+    bus.battery_module_electric_configuration = 'Series' 
+    bus.initialize_bus_properties()
+ 
+              
+    ##------------------------------------------------------------------------------------------------------------------------------------  
+    # Coolant Line
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    coolant_line                                           = RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line([bus])
+    coolant_line.tag                                       = 'liquid_cooled_coolant_line'
+    net.coolant_lines.append(coolant_line)
+    HAS                                                    = RCAIDE.Library.Components.Thermal_Management.Batteries.Liquid_Cooled_Wavy_Channel(coolant_line)
+    HAS.design_altitude                                    = 2500. * Units.feet  
+    atmosphere                                             = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976() 
+    atmo_data                                              = atmosphere.compute_values(altitude = HAS.design_altitude)     
+    HAS.coolant_inlet_temperature                          = atmo_data.temperature[0,0]  
+    HAS.design_battery_operating_temperature               = 313
+    HAS.design_heat_removed                                = 50000 /len(bus.battery_modules)
+    HAS                                                    = design_wavy_channel(HAS,bat_module) 
+    
+    for battery_module in bus.battery_modules:
+        coolant_line.battery_modules[battery_module.tag].append(HAS)
         
-            for i in range(12):
-                bat_copy = deepcopy(bat_module)
-                bat_copy.origin   = [[4 + (i * 0.5) ,0, -0.5]]
-                bus.battery_modules.append(bat_copy)
+    # Battery Heat Exchanger               
+    HEX                                                    = RCAIDE.Library.Components.Thermal_Management.Heat_Exchangers.Cross_Flow_Heat_Exchanger() 
+    HEX.design_altitude                                    = 2500. * Units.feet 
+    HEX.inlet_temperature_of_cold_fluid                    = atmo_data.temperature[0,0]   
+    HEX                                                    = design_cross_flow_heat_exchanger(HEX,coolant_line,bat_module)     
+    coolant_line.heat_exchangers.append(HEX)
+    
+    # Reservoir for Battery TMS
+    RES                                                    = RCAIDE.Library.Components.Thermal_Management.Reservoirs.Reservoir()
+    coolant_line.reservoirs.append(RES) 
         
-            bus.battery_module_electric_configuration = 'Series' 
-            bus.initialize_bus_properties()
-            
-    if btms_type ==  None:
-        pass
-    elif btms_type ==  'Liquid_Cooled_Wavy_Channel':
-        ##------------------------------------------------------------------------------------------------------------------------------------  
-        # Coolant Line
-        #------------------------------------------------------------------------------------------------------------------------------------  
-        coolant_line                                           = RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line([bus])
-        coolant_line.tag                                       = 'liquid_cooled_coolant_line'
-        net.coolant_lines.append(coolant_line)
-        HAS                                                    = RCAIDE.Library.Components.Thermal_Management.Batteries.Liquid_Cooled_Wavy_Channel(coolant_line)
-        HAS.design_altitude                                    = 2500. * Units.feet  
-        atmosphere                                             = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976() 
-        atmo_data                                              = atmosphere.compute_values(altitude = HAS.design_altitude)     
-        HAS.coolant_inlet_temperature                          = atmo_data.temperature[0,0]  
-        HAS.design_battery_operating_temperature               = 313
-        HAS.design_heat_removed                                = 50000 /len(bus.battery_modules)
-        HAS                                                    = design_wavy_channel(HAS,bat_module) 
-        
-        for battery_module in bus.battery_modules:
-            coolant_line.battery_modules[battery_module.tag].append(HAS)
-            
-        # Battery Heat Exchanger               
-        HEX                                                    = RCAIDE.Library.Components.Thermal_Management.Heat_Exchangers.Cross_Flow_Heat_Exchanger() 
-        HEX.design_altitude                                    = 2500. * Units.feet 
-        HEX.inlet_temperature_of_cold_fluid                    = atmo_data.temperature[0,0]   
-        HEX                                                    = design_cross_flow_heat_exchanger(HEX,coolant_line,bat_module)     
-        coolant_line.heat_exchangers.append(HEX)
-        
-        # Reservoir for Battery TMS
-        RES                                                    = RCAIDE.Library.Components.Thermal_Management.Reservoirs.Reservoir()
-        coolant_line.reservoirs.append(RES)
-    '''
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Starboard Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------   
@@ -488,9 +465,9 @@ def vehicle_setup(rotor_type):
         propeller.fidelity                               = rotor_type
         propeller.tag                                    = 'propeller_1'  
         propeller.tip_radius                             = 2.59
+        propeller.rc                                     = 0.01
         propeller.number_of_blades                       = 3
         propeller.hub_radius                             = 10.    * Units.inches
-        propeller.number_azimuthal_stations              = 36
         propeller.chord_distribution
         propeller.cruise.design_freestream_velocity      = 130 * Units.kts      
         speed_of_sound                                   = 343 
@@ -514,6 +491,7 @@ def vehicle_setup(rotor_type):
                                                             rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_1000000.txt']   
         propeller.append_airfoil(airfoil)                       
         propeller.airfoil_polar_stations                 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]    
+        propeller.radius_distribution                    = np.linspace(propeller.hub_radius,propeller.tip_radius, len(propeller.airfoil_polar_stations))   
         starboard_propulsor.rotor                        = propeller   
                 
         # DC_Motor       

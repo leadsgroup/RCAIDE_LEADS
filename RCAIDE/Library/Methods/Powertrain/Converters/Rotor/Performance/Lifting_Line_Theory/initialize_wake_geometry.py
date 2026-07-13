@@ -83,8 +83,8 @@ def initialize_wake_geometry(rotor, wake_geo_inputs, conditions):
     # ------------------------------------------------------------------------------------------------------------------
     #  Step 1: Wake age array
     # ------------------------------------------------------------------------------------------------------------------
-    wakeage = np.arange(0.0, 2.0*np.pi*n_turns + dpsi, dpsi)   # (N_wake+1,)
-    N_wake  = len(wakeage) - 1
+    wakeage = np.arange(0.0, 2.0*np.pi*n_turns + dpsi, dpsi)   # (N_wake+1,) number of nodes
+    N_wake  = len(wakeage) - 1 # number of filaments
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Step 2: Advance ratios
@@ -92,6 +92,7 @@ def initialize_wake_geometry(rotor, wake_geo_inputs, conditions):
     Uh     = V_thrust[:, 0]
     Vh     = V_thrust[:, 1]
     Wh     = V_thrust[:, 2]
+    omega  = np.where(omega == 0, 1e-6, omega)
     omegaR = omega[:, 0] * R
     muzs   = Uh / omegaR
     mu     = np.sqrt(Vh**2 + Wh**2) / omegaR
@@ -117,7 +118,7 @@ def initialize_wake_geometry(rotor, wake_geo_inputs, conditions):
         if wake_model == 2:
             # Landgrebe - Source: DATTA's lecture notes           
             k1 = 0.25 * (CT + 0.001 * theta_tip_deg)                 # near-wake axial rate
-            k2 = (1.41 + 0.0141 * theta_tip_deg) * np.sqrt(CT/2)       # far-wake axial rate
+            k2 = (1.41 + 0.0141 * theta_tip_deg) * np.sqrt(CT/2)     # far-wake axial rate
             k3 = 0.145 + 27.0 * CT                                   # contraction rate
             k4 = 0.78   
         else:
@@ -259,9 +260,9 @@ def initialize_wake_geometry(rotor, wake_geo_inputs, conditions):
     rotor.blades.wake.gamma      = np.zeros((ctrl_pts, N_wake, B)) # filled after Gamma_b converges
 
     # Debug
-    if True: # Plotting the blade geometry
-        nodes_14c_body = rotor.blades.bound.nodes_14c_body[0]    # (Nr, B, 3)  -- add [0]
-        nodes_34c_body = rotor.blades.bound.nodes_34c_body[0]    # (Nr, B, 3)  -- already correct
+    if False: # Plotting the blade geometry
+        nodes_14c_body = rotor.blades.bound.nodes_body_14c    # (ctrl_pts, Nr, B, 3)  
+        nodes_34c_body = rotor.blades.bound.nodes_body_34c    # (ctrl_pts, Nr-1, B, 3) 
 
         # ----------------------------------------------------------------------------------------------------------------------
         #  Plot 2: Blade and wake geometry -- 3D, rotor plane, side view
@@ -273,21 +274,22 @@ def initialize_wake_geometry(rotor, wake_geo_inputs, conditions):
         ax2 = fig.add_subplot(132)
         ax3 = fig.add_subplot(133)
 
+        cp = 0   # control point to plot
         for b in range(B):
-            ax1.plot(nodes_14c_body[:,b,0], nodes_14c_body[:,b,1], nodes_14c_body[:,b,2],
+            ax1.plot(nodes_14c_body[cp,:,b,0], nodes_14c_body[cp,:,b,1], nodes_14c_body[cp,:,b,2],
                     '-o', color=colors[b], markersize=2, linewidth=2, label=f'Blade {b}')
-            ax1.plot(nodes_34c_body[:,b,0], nodes_34c_body[:,b,1], nodes_34c_body[:,b,2],
+            ax1.plot(nodes_34c_body[cp,:,b,0], nodes_34c_body[cp,:,b,1], nodes_34c_body[cp,:,b,2],
                     '-o', color=colors[b], markersize=2, linewidth=2, label=f'Blade {b}')
-            ax1.plot(nodes_body[:,b,0], nodes_body[:,b,1], nodes_body[:,b,2],
+            ax1.plot(nodes_body[cp,:,b,0], nodes_body[cp,:,b,1], nodes_body[cp,:,b,2],
                     '-', color=colors[b], linewidth=0.8, alpha=0.7)
 
-            ax2.plot(nodes_14c_body[:,b,1], nodes_14c_body[:,b,2], '-o', color=colors[b], markersize=2, linewidth=2)
-            ax2.plot(nodes_34c_body[:,b,1], nodes_34c_body[:,b,2], '-o', color=colors[b], markersize=2, linewidth=2)
-            ax2.plot(nodes_body[:,b,1], nodes_body[:,b,2], '-', color=colors[b], linewidth=0.8, alpha=0.7)
+            ax2.plot(nodes_14c_body[cp,:,b,1], nodes_14c_body[cp,:,b,2], '-o', color=colors[b], markersize=2, linewidth=2)
+            ax2.plot(nodes_34c_body[cp,:,b,1], nodes_34c_body[cp,:,b,2], '-o', color=colors[b], markersize=2, linewidth=2)
+            ax2.plot(nodes_body[cp,:,b,1], nodes_body[cp,:,b,2], '-', color=colors[b], linewidth=0.8, alpha=0.7)
 
-            ax3.plot(nodes_14c_body[:,b,0], nodes_14c_body[:,b,2], '-o', color=colors[b], markersize=2, linewidth=2)
-            ax3.plot(nodes_34c_body[:,b,0], nodes_34c_body[:,b,2], '-o', color=colors[b], markersize=2, linewidth=2)
-            ax3.plot(nodes_body[:,b,0], nodes_body[:,b,2], '-', color=colors[b], linewidth=1.0, label=f'Blade {b}')
+            ax3.plot(nodes_14c_body[cp,:,b,0], nodes_14c_body[cp,:,b,2], '-o', color=colors[b], markersize=2, linewidth=2)
+            ax3.plot(nodes_34c_body[cp,:,b,0], nodes_34c_body[cp,:,b,2], '-o', color=colors[b], markersize=2, linewidth=2)
+            ax3.plot(nodes_body[cp,:,b,0], nodes_body[cp,:,b,2], '-', color=colors[b], linewidth=1.0, label=f'Blade {b}')
 
             ax1.set_xlabel('x (axial) [m]'); ax1.set_ylabel('y [m]'); ax1.set_zlabel('z [m]')
             ax1.set_title(f'Wake geometry: {B} blades (body frame)'); ax1.legend(fontsize=6)
