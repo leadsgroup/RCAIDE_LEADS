@@ -8,8 +8,6 @@
 # RCAIDE imports  
 from .Systems import Systems
 from RCAIDE.Library.Methods.Powertrain.Systems.append_systems_conditions import append_systems_conditions 
-from RCAIDE.Library.Methods.Powertrain.Systems.compute_avionics_power_draw import compute_avionics_power_draw
- 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Avionics
 # ----------------------------------------------------------------------------------------------------------------------            

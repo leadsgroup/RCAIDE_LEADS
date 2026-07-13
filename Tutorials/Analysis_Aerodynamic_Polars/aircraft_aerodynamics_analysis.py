@@ -46,10 +46,12 @@ def main():
                                                                           mach_numbers                     = Mach_number_range)
  
 
-    # plot results 
-    plot_aircraft_aerodynamics(results, save_filename = "B737_Aircraft_Aerodynamic_Analysis")    
-      
-    return   
+    # plot results
+    plot_aircraft_aerodynamics(results, save_filename = "B737_Aircraft_Aerodynamic_Analysis")
+    plot_pressure_coefficient_distribution(results)
+    plot_3d_vehicle_vlm_panelization(results.vortex_distribution)
+
+    return
  
  
 def vehicle_setup(): 

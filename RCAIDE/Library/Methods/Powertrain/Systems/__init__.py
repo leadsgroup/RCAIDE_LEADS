@@ -16,7 +16,6 @@ RCAIDE.Library.Methods.Powertrain.Sources
 # ----------------------------------------------------------------------------------------------------------------------
 
 from .append_systems_conditions                 import append_systems_conditions 
-from .compute_avionics_power_draw               import compute_avionics_power_draw
 from .compute_flight_controls_power_draw        import compute_flight_controls_power_draw
 from .compute_systems_power_draw                import compute_systems_power_draw
 from .compute_ecs_power_draw                    import compute_ecs_power_draw
