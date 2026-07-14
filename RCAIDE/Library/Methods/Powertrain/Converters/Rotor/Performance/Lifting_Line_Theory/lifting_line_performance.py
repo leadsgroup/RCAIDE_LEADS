@@ -59,7 +59,7 @@ def lifting_line_performance(rotor, conditions, wake_inputs=None):
     omega        = np.where(omega == 0, 1e-6, omega)
     commanded_TV = conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle
     pitch_c      = conditions.energy.converters[rotor.tag].blade_pitch_command
-    theta_0      = float(pitch_c[0, 0])
+    theta_0      = pitch_c[:, 0]   # (ctrl_pts,) -- per-control-point commanded pitch
 
     # Freestream velocity in thrust frame
     T_body2inertial = conditions.frames.body.transform_to_inertial
@@ -70,8 +70,10 @@ def lifting_line_performance(rotor, conditions, wake_inputs=None):
     T_body2thrust   = orientation_transpose(np.ones_like(T_body2inertial[:]) * body2thrust)
     V_thrust        = orientation_product(T_body2thrust, V_body)
 
-    V  = float(V_thrust[0, 0])
-    mu = V / (float(omega[0, 0]) * R)
+    CW = bool(omega[0, 0] > 0)
+
+    mu_tot = np.sqrt(V_thrust[:, 0]**2 + V_thrust[:, 1]**2
+                     + V_thrust[:, 2]**2)   / (np.abs(omega[:, 0]) * R)    # (ctrl_pts,) -- per-control-point advance ratio
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Default wake geometry inputs if not defined in the input file
@@ -96,6 +98,7 @@ def lifting_line_performance(rotor, conditions, wake_inputs=None):
         wake_inputs.aerofoil_aero                = 2   # 1 simplified aerofoil aero, detailed panel aerofoil aero
     else:
         wake_inputs = rotor.wake_inputs
+    
 
     # Populate remaining wake_inputs fields from conditions
     wake_inputs.V_thrust      = V_thrust
@@ -104,12 +107,30 @@ def lifting_line_performance(rotor, conditions, wake_inputs=None):
     wake_inputs.sigma         = np.mean(rotor.chord_distribution) / R / np.pi * B
 
     # ------------------------------------------------------------------------------------------------------------------
+    #  Step 1: Blade geometry (moved up -- psi is needed below for the Ut in-plane correction)
+    # ------------------------------------------------------------------------------------------------------------------
+    initialize_lifting_line(rotor, conditions)
+
+    wake_inputs.nodes_14c = rotor.blades.bound.nodes_body_14c
+    wake_inputs.nodes_34c = rotor.blades.bound.nodes_body_34c
+
+    psi = rotor.blades.bound.psi   # (Nr, B) blade azimuth at each node
+
+    # ------------------------------------------------------------------------------------------------------------------
     #  Build velocity arrays -- (ctrl_pts, Nr, B)
     # ------------------------------------------------------------------------------------------------------------------
     omegar = np.outer(omega, r_1d)[:, :, None] * np.ones((ctrl_pts, Nr, B))
-    beta   = (rotor.twist_distribution + theta_0)[None, :, None] * np.ones((ctrl_pts, Nr, B))
-    Ua     = V * np.ones((ctrl_pts, Nr, B))
-    Ut     = omegar.copy()
+    beta   = (rotor.twist_distribution[None, :, None] + theta_0[:, None, None]) * np.ones((ctrl_pts, Nr, B))
+    Ua     = V_thrust[:, 0, None, None] * np.ones((ctrl_pts, Nr, B))
+
+    # In-plane freestream velocity resolved onto each blade's local tangential direction.
+    # Ut is the air's relative tangential velocity in the same sense as omega*r, so a
+    # freestream component aligned with the blade's own rotation direction *reduces* Ut --
+    # same subtraction logic as Wt = Ut - ut_ind for induced velocity.
+    vy = V_thrust[:, 1]   # (ctrl_pts,) thrust-frame y freestream velocity
+    vz = V_thrust[:, 2]   # (ctrl_pts,) thrust-frame z freestream velocity
+    Ut = omegar + (vy[:, None, None] * np.cos(psi)[None, :, :] +
+                   vz[:, None, None] * np.sin(psi)[None, :, :])
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Inlcuding new terms in wake_inputs
@@ -124,19 +145,12 @@ def lifting_line_performance(rotor, conditions, wake_inputs=None):
     wake_inputs.twist_distribution  = beta
     wake_inputs.chord_distribution  = rotor.chord_distribution[None, :, None] * np.ones((ctrl_pts, Nr, B))
     wake_inputs.radius_distribution = r_1d[None, :, None] * np.ones((ctrl_pts, Nr, B))
-    wake_inputs.speed_of_sound      = conditions.freestream.speed_of_sound    * np.ones((ctrl_pts, Nr, B))
-    wake_inputs.dynamic_viscosity   = conditions.freestream.dynamic_viscosity * np.ones((ctrl_pts, Nr, B))
-    wake_inputs.kinematic_viscosity = wake_inputs.dynamic_viscosity/conditions.freestream.density[:, 0, None]
-    wake_inputs.relax               = wake_inputs.relax_0 / (1 + 50*mu)
-    wake_inputs.max_iter            = int(wake_inputs.max_iter_0 * (1 + 5*mu))
-
-    # ------------------------------------------------------------------------------------------------------------------
-    #  Step 1: Blade geometry
-    # ------------------------------------------------------------------------------------------------------------------
-    initialize_lifting_line(rotor, conditions)
-
-    wake_inputs.nodes_14c = rotor.blades.bound.nodes_body_14c
-    wake_inputs.nodes_34c = rotor.blades.bound.nodes_body_34c
+    wake_inputs.speed_of_sound      = conditions.freestream.speed_of_sound[:, :, None]    * np.ones((ctrl_pts, Nr, B))
+    wake_inputs.dynamic_viscosity   = conditions.freestream.dynamic_viscosity[:, :, None] * np.ones((ctrl_pts, Nr, B))
+    wake_inputs.kinematic_viscosity = wake_inputs.dynamic_viscosity/conditions.freestream.density[:, :, None]
+    wake_inputs.relax               = wake_inputs.relax_0 / (1 + 50*mu_tot)[:, None, None]   # (ctrl_pts,1,1) -- broadcasts against Gamma_b (ctrl_pts, Nr-1, B)
+    wake_inputs.max_iter_Gammab     = int(wake_inputs.max_iter_Gammab_0 * (1 + 5*np.max(mu_tot)))   # sized for the worst-case (highest advance ratio) control point
+    wake_inputs.max_iter_CT         = int(wake_inputs.max_iter_CT_0    * (1 + 5*np.max(mu_tot)))   # sized for the worst-case (highest advance ratio) control point
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Step 2: Wake geometry
@@ -153,7 +167,7 @@ def lifting_line_performance(rotor, conditions, wake_inputs=None):
     # ------------------------------------------------------------------------------------------------------------------
     compute_lifting_line_loads(rotor, wake_inputs, conditions)
 
-    if True: # Debug
+    if False: # Debug
 
         # Importing plotting libs
         import matplotlib.pyplot as plt

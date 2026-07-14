@@ -121,20 +121,21 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
     # ------------------------------------------------------------------------------------------------------------------
     #  Unpack
     # ------------------------------------------------------------------------------------------------------------------
-    U             = wake_inputs.velocity_total
-    Ua            = wake_inputs.velocity_axial
-    Ut            = wake_inputs.velocity_tangential
-    T_body2thrust = wake_inputs.T_body2thrust
-    ctrl_pts      = wake_inputs.ctrl_pts
-    Nr            = wake_inputs.Nr
-    beta          = wake_inputs.twist_distribution
-    c             = wake_inputs.chord_distribution
-    r             = wake_inputs.radius_distribution
-    a_sound       = wake_inputs.speed_of_sound
-    nu            = wake_inputs.kinematic_viscosity
-    max_iter      = wake_inputs.max_iter # 50
-    tol           = wake_inputs.tol # 1e-4
-    relax         = wake_inputs.relax # 0.2
+    U               = wake_inputs.velocity_total
+    Ua              = wake_inputs.velocity_axial
+    Ut              = wake_inputs.velocity_tangential
+    T_body2thrust   = wake_inputs.T_body2thrust
+    ctrl_pts        = wake_inputs.ctrl_pts
+    Nr              = wake_inputs.Nr
+    beta            = wake_inputs.twist_distribution
+    c               = wake_inputs.chord_distribution
+    r               = wake_inputs.radius_distribution
+    a_sound         = wake_inputs.speed_of_sound
+    nu              = wake_inputs.kinematic_viscosity
+    max_iter_Gammab = wake_inputs.max_iter_Gammab # 50
+    max_iter_CT     = wake_inputs.max_iter_CT # 50
+    tol             = wake_inputs.tol # 1e-4
+    relax           = wake_inputs.relax # 0.2
 
     nodes_14c = wake_inputs.nodes_14c   # (ctrl_pts, Nr, B, 3), body frame inducing location
     nodes_34c = wake_inputs.nodes_34c   # (ctrl_pts, Nr, B, 3), body frame induced location
@@ -186,13 +187,21 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
         i_shed      = np.argmin(np.abs(r_1d - R_shed))            # nearest node
         R_shed_near = r_1d[i_shed]
 
+    CW = bool(omega[0, 0] > 0)
+
     # ------------------------------------------------------------------------------------------------------------------
     #  Unit vectors in thrust frame -- (Nr-1, B)
     # ------------------------------------------------------------------------------------------------------------------
-    radial_hat_thrust_y = -np.sin(psi)     # (Nr-1, B)
-    radial_hat_thrust_z =  np.cos(psi)     # 
-    tang_hat_thrust_y   = -np.cos(psi)     #    
-    tang_hat_thrust_z   = -np.sin(psi)     #    
+    if CW:
+        radial_hat_thrust_y = -np.sin(psi)
+        radial_hat_thrust_z =  np.cos(psi)
+        tang_hat_thrust_y   = -np.cos(psi)
+        tang_hat_thrust_z   = -np.sin(psi)
+    else:
+        radial_hat_thrust_y =  np.sin(psi)
+        radial_hat_thrust_z =  np.cos(psi)
+        tang_hat_thrust_y   =  np.cos(psi)
+        tang_hat_thrust_z   = -np.sin(psi)
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Initial guess: Cl from freestream, Gamma_b = 0.5*U*c*Cl
@@ -238,7 +247,7 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
     #  Outer loop: CT (CT_iter=True) or single pass (CT_iter=False)
     # ------------------------------------------------------------------------------------------------------------------
     conv     = False
-    n_outer  = max_iter if wake_inputs.CT_iter else 1
+    n_outer  = max_iter_CT if wake_inputs.CT_iter else 1
 
     for it in range(n_outer):
 
@@ -253,8 +262,9 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
                     P_colloc[cp], A_wake[cp], B_wake[cp], rCvf_flat, wake_inputs.vc_correction)
 
         # -- Inner Gamma_b loop --
-        conv1 = False
-        for it1 in range(max_iter):
+        conv1     = False
+        diverged  = False
+        for it1 in range(max_iter_Gammab):
 
             # Step 4a: bound vortex induction
             Gamma_bound = Gamma_b.reshape(ctrl_pts, (Nr-1)*B)
@@ -301,8 +311,12 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
             ut_ind = (v_induced_thrust[:,:,:,1]*tang_hat_thrust_y[None,:,:] +
                       v_induced_thrust[:,:,:,2]*tang_hat_thrust_z[None,:,:])
 
-            Wa = Ua - ua_ind
-            Wt = Ut - ut_ind
+            if CW:
+                Wa = Ua - ua_ind
+                Wt = Ut - ut_ind
+            else:
+                Wa = Ua + ua_ind
+                Wt = Ut + ut_ind
             W  = np.sqrt(Wa**2 + Wt**2)
 
             # Aerodynamics
@@ -332,7 +346,15 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
             Cl = Cl * F
 
             # Relaxed Gamma_b update
-            Gamma_b_new      = 0.5*W*c*Cl
+            Gamma_b_new = 0.5*W*c*Cl
+
+            bad_cp = ~np.all(np.isfinite(Gamma_b_new) & (np.abs(Gamma_b_new) < 1e4), axis=(1, 2))   # (ctrl_pts,)
+            if np.any(bad_cp):
+                print(f"Gamma_b diverged at control point(s) {np.where(bad_cp)[0].tolist()} "
+                      f"at inner iteration {it1+1}. Stopping.")
+                diverged = True
+                break
+
             residual_Gamma_b = np.max(np.abs(Gamma_b_new - Gamma_b))
             Gamma_b          = Gamma_b + relax*(Gamma_b_new - Gamma_b)
 
@@ -341,17 +363,26 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
                 conv1 = True
                 break
 
+        if diverged:
+            break   # stop the outer CT loop too -- no point continuing once it has blown up
+
         if not conv1:
             print("Gamma_b did not converge. Residual =", residual_Gamma_b)
 
         # -- CT check (CT_iter mode only) --
         if wake_inputs.CT_iter:
-            epsilon             = Cd / (Cl + 1e-300)
-            epsilon[Cl <= 1e-3] = 10.0
+            epsilon                    = Cd / (Cl + 1e-300)
+            epsilon[np.abs(Cl) <= 1e-3] = 10.0 * np.sign(Cl[np.abs(Cl) <= 1e-3])
 
             blade_T_distribution = rho[:, :, None] * (Gamma_b_new*(Wt - epsilon*Wa)) * deltar_3d
             thrust               = np.sum(blade_T_distribution, axis=(1, 2))[:, None]  # (ctrl_pts, 1)
             Ct_rotor_new         = thrust / (rho_0 * (np.pi * R**2) * (omega*R)**2)
+
+            if np.any(~np.isfinite(Ct_rotor_new[:, 0])):
+                bad_cp_ct = np.where(~np.isfinite(Ct_rotor_new[:, 0]))[0]
+                print(f"CT diverged to NaN at control point(s) {bad_cp_ct.tolist()} "
+                      f"at outer iteration {it+1}. Stopping.")
+                break
 
             print("CT", Ct_rotor_new)
 

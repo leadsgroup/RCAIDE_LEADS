@@ -99,15 +99,18 @@ def initialize_wake_geometry(rotor, wake_inputs, conditions):
     Wh     = V_thrust[:, 2]
     omega  = np.where(omega == 0, 1e-6, omega)
     omegaR = omega[:, 0] * R
-    muzs   = Uh / omegaR
-    mu     = np.sqrt(Vh**2 + Wh**2) / omegaR
+    muxs   = Uh / np.abs(omegaR)
+    muys   = Vh / np.abs(omegaR)
+    muzs   = Wh / np.abs(omegaR)
+
+    CW = bool(omega[0, 0] > 0)
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Step 3: Induced inflow ratio (momentum theory)
     # ------------------------------------------------------------------------------------------------------------------
     T_thrust = CT * rho[:, 0] * omegaR**2 * (np.pi * R**2)
     viavg    = np.sqrt(np.maximum(T_thrust / (2.0 * rho[:, 0] * np.pi * R**2), 1e-6))
-    lam      = viavg / omegaR
+    lam      = viavg / np.abs(omegaR)
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Step 4: Wake contraction and axial convection -- MODEL DEPENDENT
@@ -151,7 +154,7 @@ def initialize_wake_geometry(rotor, wake_inputs, conditions):
             wakeage[np.newaxis, :] < phi_break,
             k1[:, np.newaxis] * wakeage[np.newaxis, :],
             k1[:, np.newaxis] * phi_break + k2[:, np.newaxis] * (wakeage[np.newaxis, :] - phi_break)
-        ) + lam[:, np.newaxis] * wakeage[np.newaxis, :] # (ctrl_pts, N_wake+1) non-dimensional x/R
+        ) + (lam[:, np.newaxis] + muxs[:, np.newaxis]) * wakeage[np.newaxis, :] # (ctrl_pts, N_wake+1) non-dimensional x/R
 
         # Radial contraction
         wcf = k4 + (1.0 - k4) * np.exp(-k3[:, np.newaxis] * wakeage[np.newaxis, :])   # (ctrl_pts, N_wake+1)
@@ -205,17 +208,23 @@ def initialize_wake_geometry(rotor, wake_inputs, conditions):
         y_c   = -y_tip[np.newaxis, np.newaxis, :] * wcf[:, :, np.newaxis]         # (ctrl_pts, N+1, B)
         z_c   =  z_tip[np.newaxis, np.newaxis, :] * wcf[:, :, np.newaxis]
 
-        y_rot = -(cwa[np.newaxis, :, np.newaxis] * y_c - swa[np.newaxis, :, np.newaxis] * z_c)
-        z_rot =  (swa[np.newaxis, :, np.newaxis] * y_c + cwa[np.newaxis, :, np.newaxis] * z_c)
+        if CW:
+            y_rot = -(cwa[np.newaxis, :, np.newaxis] * y_c - swa[np.newaxis, :, np.newaxis] * z_c)
+            z_rot =  (swa[np.newaxis, :, np.newaxis] * y_c + cwa[np.newaxis, :, np.newaxis] * z_c)
+        else: # CCW
+            y_rot = -(cwa[np.newaxis, :, np.newaxis] * y_c + swa[np.newaxis, :, np.newaxis] * z_c)
+            z_rot = -(swa[np.newaxis, :, np.newaxis] * y_c - cwa[np.newaxis, :, np.newaxis] * z_c)
+
 
         # axial convection -- broadcast (ctrl_pts,) with (N+1,) and (B,) -> (ctrl_pts, N+1, B)
         x_conv = (x_tip[np.newaxis, np.newaxis, :] +
-                  R_shed * (lam[:, np.newaxis, np.newaxis] + muzs[:, np.newaxis, np.newaxis]) *
+                  R_shed * (lam[:, np.newaxis, np.newaxis] + muxs[:, np.newaxis, np.newaxis]) *
                   wakeage[np.newaxis, :, np.newaxis])
 
-        y_conv = y_rot        # (ctrl_pts, N+1, B)
-        z_conv = (z_rot +
-                  R_shed * mu[:, np.newaxis, np.newaxis] * wakeage[np.newaxis, :, np.newaxis])
+        y_conv = (y_rot[np.newaxis, np.newaxis, :]   +
+                  R_shed * (muys[:, np.newaxis, np.newaxis]) * wakeage[np.newaxis, :, np.newaxis])
+        z_conv = (z_rot[np.newaxis, np.newaxis, :] +
+                  R_shed * (muzs[:, np.newaxis, np.newaxis]) * wakeage[np.newaxis, :, np.newaxis])
 
     elif wake_model in (2, 3):
         # Landgrebe/KT: azimuthal position from psi_blade - wakeage
@@ -229,9 +238,10 @@ def initialize_wake_geometry(rotor, wake_inputs, conditions):
 
         x_conv = (x_tip[np.newaxis, np.newaxis, :] +
                   R_shed * x_landgrebe[:, :, np.newaxis])              # (ctrl_pts, N+1, B)
-        y_conv = y_wake
+        y_conv = (y_wake +
+                  R_shed * muys[:, np.newaxis, np.newaxis] * wakeage[np.newaxis, :, np.newaxis])
         z_conv = (z_wake +
-                  R_shed * mu[:, np.newaxis, np.newaxis] * wakeage[np.newaxis, :, np.newaxis])
+                  R_shed * muzs[:, np.newaxis, np.newaxis] * wakeage[np.newaxis, :, np.newaxis])
 
     nodes_hub[:, :, :, 0] = x_conv
     nodes_hub[:, :, :, 1] = y_conv
@@ -251,7 +261,7 @@ def initialize_wake_geometry(rotor, wake_inputs, conditions):
     rCvf = np.sqrt(
         (lamb_oseen_rc_0 * R)**2 +
         4 * lamb_oseen_alpha * lamb_oseen_delta * lamb_oseen_sigma *
-        (nu[:, None] / omega[:, 0, None]) * wakeage_core[None, :]
+        (nu[:, None] / np.abs(omega[:, 0, None])) * wakeage_core[None, :]
     )   # (ctrl_pts, N_wake)
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -264,8 +274,9 @@ def initialize_wake_geometry(rotor, wake_inputs, conditions):
     rotor.blades.wake.wakeage    = wakeage     # (N_wake+1,)
     rotor.blades.wake.N_wake     = N_wake
     rotor.blades.wake.wcf        = wcf         # (ctrl_pts, N_wake+1)
-    rotor.blades.wake.mu         = mu          # (ctrl_pts,)
-    rotor.blades.wake.muzs       = muzs        # (ctrl_pts,)
+    rotor.blades.wake.muxs       = muxs          # (ctrl_pts,)
+    rotor.blades.wake.muys       = muys          # (ctrl_pts,)
+    rotor.blades.wake.muzs       = muzs          # (ctrl_pts,)
     rotor.blades.wake.lam        = lam         # (ctrl_pts,)
     rotor.blades.wake.rCvf       = rCvf        # (ctrl_pts, N_wake)
     rotor.blades.wake.gamma      = np.zeros((ctrl_pts, N_wake, B)) # filled after Gamma_b converges

@@ -133,7 +133,7 @@ def initialize_lifting_line(rotor, conditions):
         nodes_hub_14c[:, :, 0] = 0.0
         nodes_hub_14c[:, :, 1] = -r_2d * np.sin(psi)
         nodes_hub_14c[:, :, 2] =  r_2d * np.cos(psi)
-    else:
+    else: # CCW
         nodes_hub_14c[:, :, 0] = 0.0
         nodes_hub_14c[:, :, 1] =  r_2d * np.sin(psi)
         nodes_hub_14c[:, :, 2] =  r_2d * np.cos(psi)

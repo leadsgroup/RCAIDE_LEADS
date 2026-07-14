@@ -199,7 +199,7 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
  
     # Unpack freestream conditions
     rho     = conditions.freestream.density[:,0,None]
-    T       = conditions.freestream.temperature[:,0,None]
+    T       = conditions.freestream.temperature[:,0,None,None]
     Vv      = conditions.frames.inertial.velocity_vector
     rho_0   = rho 
     
@@ -212,7 +212,7 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
 
     # Calculating rotational parameters
     omegar = np.outer(omega, r_mid)[:, :, None] * np.ones((ctrl_pts, Nr_s, B))   # (ctrl_pts, Nr, B)
-    n        = omega/(2.*np.pi)   # Rotations per second
+    n        = np.abs(omega)/(2.*np.pi)   # Rotations per second
 
     # Check and correct for hover
     V         = V_thrust[:,0,None]
@@ -241,7 +241,7 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     Cd          = ((1/Tp_Tinf)*(1/Rp_Rinf)**0.2)*Cdval
 
     epsilon             = Cd/Cl
-    epsilon[Cl == 1e-6] = 10.
+    epsilon[np.abs(Cl) <= 1e-3] = 10.0 * np.sign(Cl[np.abs(Cl) <= 1e-3])
 
     # thrust and torque and their derivatives on the blade.
     blade_T_distribution     = rho[:, :, None]*(Gamma*(Wt-epsilon*Wa))*deltar_3d
@@ -278,7 +278,7 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     thrust     = np.sum(blade_T_distribution, axis=(1, 2))[:, None]   # (ctrl_pts, 1)
     torque     = np.sum(blade_Q_distribution, axis=(1, 2))[:, None]   # (ctrl_pts, 1)
     rotor_drag = np.sum(rotor_drag_distribution, axis=1)[:, None]   # (ctrl_pts, 1)
-    power      = omega*torque
+    power      = np.abs(omega)*torque
 
     c_mean    = np.mean(rotor.chord_distribution)          # scalar, mean chord (Nr,) averaged
     sigma     = B * c_mean / (np.pi * R)                   # scalar solidity
@@ -292,7 +292,7 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     Ct_rotor  = thrust / (rho_0 * A * (omega * R)**2)   # rotor convention
     Ct_sigma  = Ct_rotor / sigma                                 
     Cp        = power/(rho_0*(n*n*n)*(D*D*D*D*D))
-    Cp_rotor  = power  / (rho_0 * A * (omega*R)**3)
+    Cp_rotor  = power  / (rho_0 * A * (np.abs(omega)*R)**3)
     Crd      = rotor_drag/(rho_0*(n*n)*(D*D*D*D))
     etap     = V*thrust/power
     FoM      = thrust*np.sqrt(thrust/(2*rho_0*A))/power  
