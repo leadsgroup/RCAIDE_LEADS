@@ -183,6 +183,8 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
         N_wake   = rotor.blades.wake.N_wake
         r_R_shed = wake_geo_inputs.get('r_R_shed', 1.0)
         R_shed   = r_R_shed * R
+        i_shed      = np.argmin(np.abs(r_1d - R_shed))            # nearest node
+        R_shed_near = r_1d[i_shed]
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Unit vectors in thrust frame -- (Nr-1, B)
@@ -264,8 +266,6 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
             # Step 4b: wake induction
             if wake_inputs.include_wake:
                 '''
-                i_shed      = np.argmin(np.abs(r_1d - R_shed))            # nearest node
-                R_shed_near = r_1d[i_shed]
                 if R_shed_near >= r_1d[-1]:
                     Gamma_wake = Gamma_b[:, -1:, :]
                 elif R_shed_near <= r_1d[0]:
