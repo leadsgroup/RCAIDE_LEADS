@@ -2,7 +2,7 @@
 #
 # Created:  Jun 2026, H. Hussien
 #
-# Initializes the tip vortex wake geometry. Three models selectable via wake_geo_inputs.wake_model:
+# Initializes the tip vortex wake geometry. Three models selectable via wake_inputs.wake_model:
 #   1 -- Simple: single-rate axial convection using momentum theory lam + muzs
 #   2 -- Landgrebe (1972): piecewise axial convection k1/k2 + lam
 #   3 -- Kocurek-Tangler (1977): same as Landgrebe with KT empirical constants
@@ -23,21 +23,21 @@ from RCAIDE.Framework.Core import Data, orientation_transpose
 # ----------------------------------------------------------------------------------------------------------------------
 #  initialize_wake_geometry
 # ----------------------------------------------------------------------------------------------------------------------
-def initialize_wake_geometry(rotor, wake_geo_inputs, conditions):
+def initialize_wake_geometry(rotor, wake_inputs, conditions):
     """
     Initializes the tip vortex wake geometry.
 
     Parameters
     ----------
     rotor : Data
-    wake_geo_inputs : Data
+    wake_inputs : Data
         wake_model    : int   -- 1=simple, 2=Landgrebe, 3=KT
         V_thrust      : (ctrl_pts, 3)
         T_body2thrust : (ctrl_pts, 3, 3)
         omega         : (ctrl_pts, 1)
         dpsi          : float
         n_turns       : float
-        CT            : float
+        CT            : float or (ctrl_pts,) array_like
         r_R_shed      : float  -- wake shedding fraction (default 1.0 = tip)
         lamb_oseen_*  : float  -- Lamb-Oseen core growth parameters
     conditions : Data
@@ -64,19 +64,24 @@ def initialize_wake_geometry(rotor, wake_geo_inputs, conditions):
     pitch_c      = conditions.energy.converters[rotor.tag].blade_pitch_command
     ctrl_pts     = len(conditions.frames.inertial.velocity_vector)
 
-    V_thrust      = wake_geo_inputs.V_thrust
-    T_body2thrust = wake_geo_inputs.T_body2thrust
-    omega         = wake_geo_inputs.omega
-    dpsi          = wake_geo_inputs.get('dpsi',    np.radians(15.0))
-    n_turns       = wake_geo_inputs.get('n_turns', 5.0)
-    CT            = wake_geo_inputs.get('CT',      0.005)
-    wake_model    = wake_geo_inputs.get('wake_model', 1)
+    V_thrust      = wake_inputs.V_thrust
+    T_body2thrust = wake_inputs.T_body2thrust
+    omega         = wake_inputs.omega
+    dpsi          = wake_inputs.get('dpsi',    np.radians(15.0))
+    n_turns       = wake_inputs.get('n_turns', 5.0)
+    wake_model    = wake_inputs.get('wake_model', 1)
 
-    lamb_oseen_alpha             = wake_geo_inputs.lamb_oseen_alpha
-    lamb_oseen_delta             = wake_geo_inputs.lamb_oseen_delta
-    lamb_oseen_sigma             = wake_geo_inputs.lamb_oseen_sigma
-    lamb_oseen_core_growth_delay = wake_geo_inputs.lamb_oseen_core_growth_delay
-    lamb_oseen_rc_0              = wake_geo_inputs.lamb_oseen_rc_0
+    # CT may arrive as a scalar default (first call) or a per-control-point
+    # array (subsequent CT-convergence iterations) -- normalize to (ctrl_pts,)
+    CT = np.asarray(wake_inputs.get('CT', 0.005), dtype=float).reshape(-1)
+    if CT.size == 1:
+        CT = np.full(ctrl_pts, CT[0])
+
+    lamb_oseen_alpha             = wake_inputs.lamb_oseen_alpha
+    lamb_oseen_delta             = wake_inputs.lamb_oseen_delta
+    lamb_oseen_sigma             = wake_inputs.lamb_oseen_sigma
+    lamb_oseen_core_growth_delay = wake_inputs.lamb_oseen_core_growth_delay
+    lamb_oseen_rc_0              = wake_inputs.lamb_oseen_rc_0
 
     T_thrust2body = orientation_transpose(T_body2thrust)
     
@@ -109,50 +114,52 @@ def initialize_wake_geometry(rotor, wake_geo_inputs, conditions):
     # ------------------------------------------------------------------------------------------------------------------
     if wake_model == 1:
         # Simple: Landgrebe k3/k4 contraction + single-rate axial convection
-        Lambda = 0.145 + 27.0 * CT
-        wcf    = 0.78 + (1.0 - 0.78) * np.exp(-Lambda * wakeage)   # (N_wake+1,)
+        Lambda = 0.145 + 27.0 * CT   # (ctrl_pts,)
+        wcf    = 0.78 + (1.0 - 0.78) * np.exp(-Lambda[:, np.newaxis] * wakeage[np.newaxis, :])   # (ctrl_pts, N_wake+1)
     elif wake_model in (2, 3):
         # Landgrebe (2) or Landgrebe - Kocurek & Tangler (3): empirical constants from total tip pitch
         theta_tip_deg = (np.degrees(rotor.twist_distribution[-1]))
 
         if wake_model == 2:
-            # Landgrebe - Source: DATTA's lecture notes           
-            k1 = 0.25 * (CT + 0.001 * theta_tip_deg)                 # near-wake axial rate
-            k2 = (1.41 + 0.0141 * theta_tip_deg) * np.sqrt(CT/2)     # far-wake axial rate
-            k3 = 0.145 + 27.0 * CT                                   # contraction rate
-            k4 = 0.78   
+            # Landgrebe - Source: DATTA's lecture notes
+            k1 = 0.25 * (CT + 0.001 * theta_tip_deg)                 # near-wake axial rate (ctrl_pts,)
+            k2 = (1.41 + 0.0141 * theta_tip_deg) * np.sqrt(CT/2)     # far-wake axial rate (ctrl_pts,)
+            k3 = 0.145 + 27.0 * CT                                   # contraction rate (ctrl_pts,)
+            k4 = 0.78
         else:
-            ## Landgrebe - Kocurek & Tangler  
+            ## Landgrebe - Kocurek & Tangler
             BB  = (-0.000729 * theta_tip_deg)
             CC  = (-2.3 + 0.206  * theta_tip_deg)
             mm  = (1.-0.25 * np.exp(-0.04 * theta_tip_deg))
             nn  = (0.5-0.0172* theta_tip_deg)
-            CT0 = B**nn * (-BB/CC)**(1/mm)
-            k1 = -(BB + CC * (CT/B**nn)**mm)
-            if CT < CT0:
-                print(f"Warning: CT={CT:.5f} is below the Kocurek-Tangler far-wake "
-                      f"threshold CT0={CT0:.5f} (tip pitch {theta_tip_deg:.2f} deg) -- "
-                      f"k2 is undefined below CT0. Clamping k2 to 0.")
-            k2 = -(-(CT-CT0)**(0.5))
-            k3 = 4.*(CT)**0.5
+            CT0 = B**nn * (-BB/CC)**(1/mm)   # scalar -- depends only on rotor geometry
+            k1  = -(BB + CC * (CT/B**nn)**mm)   # (ctrl_pts,)
+            below_CT0 = CT < CT0
+            if np.any(below_CT0):
+                print(f"Warning: {np.sum(below_CT0)} control point(s) have CT below the "
+                      f"Kocurek-Tangler far-wake threshold CT0={CT0:.5f} "
+                      f"(tip pitch {theta_tip_deg:.2f} deg) -- k2 is undefined below CT0. "
+                      f"Clamping k2 to 0 for those points.")
+            k2 = -(-np.maximum(CT - CT0, 0.0)**(0.5))   # (ctrl_pts,) -- clamped, avoids NaN below CT0
+            k3 = 4.*(CT)**0.5                            # (ctrl_pts,)
             k4 = 0.78
 
         phi_break = 2.0 * np.pi / B
 
         # Piecewise axial convection + momentum theory base rate -- (ctrl_pts, N_wake+1)
         x_landgrebe = np.where(
-            wakeage < phi_break,
-            k1 * wakeage,
-            k1 * phi_break + k2 * (wakeage - phi_break)
-        ) + lam[:, np.newaxis] * wakeage[np.newaxis, :] # (N_wake+1,) non-dimensional x/R
+            wakeage[np.newaxis, :] < phi_break,
+            k1[:, np.newaxis] * wakeage[np.newaxis, :],
+            k1[:, np.newaxis] * phi_break + k2[:, np.newaxis] * (wakeage[np.newaxis, :] - phi_break)
+        ) + lam[:, np.newaxis] * wakeage[np.newaxis, :] # (ctrl_pts, N_wake+1) non-dimensional x/R
 
         # Radial contraction
-        wcf = k4 + (1.0 - k4) * np.exp(-k3 * wakeage)   # (N_wake+1,)
+        wcf = k4 + (1.0 - k4) * np.exp(-k3[:, np.newaxis] * wakeage[np.newaxis, :])   # (ctrl_pts, N_wake+1)
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Step 5: Shed point -- Closest to the nearest point
     # ------------------------------------------------------------------------------------------------------------------
-    r_R_shed    = wake_geo_inputs.get('r_R_shed', 1.0)
+    r_R_shed    = wake_inputs.get('r_R_shed', 1.0)
     R_shed      = r_R_shed * R
     nodes       = rotor.blades.bound.nodes_hub_14c   # (Nr, B, 3)
     i_shed      = np.argmin(np.abs(r_1d - R_shed))   # gets the closest node
@@ -186,7 +193,7 @@ def initialize_wake_geometry(rotor, wake_geo_inputs, conditions):
     #  -- In-plane convection in +z: forward flight velocity Wh in +z sweeps
     #     the wake in +z. Sign confirmed: positive Wh -> wake moves in +z.
     # ------------------------------------------------------------------------------------------------------------------
-    # shapes: wakeage (N+1,), wcf (N+1,), y_tip/z_tip (B,), lam/muzs/mu (ctrl_pts,)
+    # shapes: wakeage (N+1,), wcf (ctrl_pts, N+1), y_tip/z_tip (B,), lam/muzs/mu (ctrl_pts,)
 
     nodes_hub = np.zeros((ctrl_pts, N_wake+1, B, 3))
 
@@ -195,19 +202,19 @@ def initialize_wake_geometry(rotor, wake_geo_inputs, conditions):
         cwa = np.cos(wakeage)
         swa = np.sin(wakeage)
 
-        y_c   = -y_tip[np.newaxis, :] * wcf[:, np.newaxis]         # (N+1, B)
-        z_c   =  z_tip[np.newaxis, :] * wcf[:, np.newaxis]
+        y_c   = -y_tip[np.newaxis, np.newaxis, :] * wcf[:, :, np.newaxis]         # (ctrl_pts, N+1, B)
+        z_c   =  z_tip[np.newaxis, np.newaxis, :] * wcf[:, :, np.newaxis]
 
-        y_rot = -(cwa[:, np.newaxis] * y_c - swa[:, np.newaxis] * z_c)
-        z_rot =  (swa[:, np.newaxis] * y_c + cwa[:, np.newaxis] * z_c)
+        y_rot = -(cwa[np.newaxis, :, np.newaxis] * y_c - swa[np.newaxis, :, np.newaxis] * z_c)
+        z_rot =  (swa[np.newaxis, :, np.newaxis] * y_c + cwa[np.newaxis, :, np.newaxis] * z_c)
 
         # axial convection -- broadcast (ctrl_pts,) with (N+1,) and (B,) -> (ctrl_pts, N+1, B)
         x_conv = (x_tip[np.newaxis, np.newaxis, :] +
                   R_shed * (lam[:, np.newaxis, np.newaxis] + muzs[:, np.newaxis, np.newaxis]) *
                   wakeage[np.newaxis, :, np.newaxis])
-        
-        y_conv = y_rot[np.newaxis, :, :]        # (ctrl_pts, N+1, B)
-        z_conv = (z_rot[np.newaxis, :, :] +
+
+        y_conv = y_rot        # (ctrl_pts, N+1, B)
+        z_conv = (z_rot +
                   R_shed * mu[:, np.newaxis, np.newaxis] * wakeage[np.newaxis, :, np.newaxis])
 
     elif wake_model in (2, 3):
@@ -215,15 +222,15 @@ def initialize_wake_geometry(rotor, wake_geo_inputs, conditions):
         psi_blade = rotor.blades.bound.psi[-1, :]   # (B,) tip azimuth
 
         psi_wake     = psi_blade[np.newaxis, :] - wakeage[:, np.newaxis]   # (N+1, B)
-        r_contracted = R_shed * wcf                                          # (N+1,)
+        r_contracted = R_shed * wcf                                          # (ctrl_pts, N+1)
 
-        y_wake = -r_contracted[:, np.newaxis] * np.sin(psi_wake)   # (N+1, B)
-        z_wake =  r_contracted[:, np.newaxis] * np.cos(psi_wake)
+        y_wake = -r_contracted[:, :, np.newaxis] * np.sin(psi_wake)[np.newaxis, :, :]   # (ctrl_pts, N+1, B)
+        z_wake =  r_contracted[:, :, np.newaxis] * np.cos(psi_wake)[np.newaxis, :, :]
 
         x_conv = (x_tip[np.newaxis, np.newaxis, :] +
                   R_shed * x_landgrebe[:, :, np.newaxis])              # (ctrl_pts, N+1, B)
-        y_conv = y_wake[np.newaxis, :, :] * np.ones((ctrl_pts, 1, 1))
-        z_conv = (z_wake[np.newaxis, :, :] +
+        y_conv = y_wake
+        z_conv = (z_wake +
                   R_shed * mu[:, np.newaxis, np.newaxis] * wakeage[np.newaxis, :, np.newaxis])
 
     nodes_hub[:, :, :, 0] = x_conv
@@ -256,55 +263,11 @@ def initialize_wake_geometry(rotor, wake_geo_inputs, conditions):
     rotor.blades.wake.nodes_body = nodes_body  # (ctrl_pts, N_wake+1, B, 3)
     rotor.blades.wake.wakeage    = wakeage     # (N_wake+1,)
     rotor.blades.wake.N_wake     = N_wake
-    rotor.blades.wake.wcf        = wcf         # (N_wake+1,)
+    rotor.blades.wake.wcf        = wcf         # (ctrl_pts, N_wake+1)
     rotor.blades.wake.mu         = mu          # (ctrl_pts,)
     rotor.blades.wake.muzs       = muzs        # (ctrl_pts,)
     rotor.blades.wake.lam        = lam         # (ctrl_pts,)
     rotor.blades.wake.rCvf       = rCvf        # (ctrl_pts, N_wake)
     rotor.blades.wake.gamma      = np.zeros((ctrl_pts, N_wake, B)) # filled after Gamma_b converges
-
-    # Debug
-    if False: # Plotting the blade geometry
-        nodes_14c_body = rotor.blades.bound.nodes_body_14c    # (ctrl_pts, Nr, B, 3)  
-        nodes_34c_body = rotor.blades.bound.nodes_body_34c    # (ctrl_pts, Nr-1, B, 3) 
-
-        # ----------------------------------------------------------------------------------------------------------------------
-        #  Plot 2: Blade and wake geometry -- 3D, rotor plane, side view
-        # ----------------------------------------------------------------------------------------------------------------------
-        colors = plt.cm.tab10(np.linspace(0, 1, B))
-        
-        fig = plt.figure(figsize=(18, 6))
-        ax1 = fig.add_subplot(131, projection='3d')
-        ax2 = fig.add_subplot(132)
-        ax3 = fig.add_subplot(133)
-
-        cp = 0   # control point to plot
-        for b in range(B):
-            ax1.plot(nodes_14c_body[cp,:,b,0], nodes_14c_body[cp,:,b,1], nodes_14c_body[cp,:,b,2],
-                    '-o', color=colors[b], markersize=2, linewidth=2, label=f'Blade {b}')
-            ax1.plot(nodes_34c_body[cp,:,b,0], nodes_34c_body[cp,:,b,1], nodes_34c_body[cp,:,b,2],
-                    '-o', color=colors[b], markersize=2, linewidth=2, label=f'Blade {b}')
-            ax1.plot(nodes_body[cp,:,b,0], nodes_body[cp,:,b,1], nodes_body[cp,:,b,2],
-                    '-', color=colors[b], linewidth=0.8, alpha=0.7)
-
-            ax2.plot(nodes_14c_body[cp,:,b,1], nodes_14c_body[cp,:,b,2], '-o', color=colors[b], markersize=2, linewidth=2)
-            ax2.plot(nodes_34c_body[cp,:,b,1], nodes_34c_body[cp,:,b,2], '-o', color=colors[b], markersize=2, linewidth=2)
-            ax2.plot(nodes_body[cp,:,b,1], nodes_body[cp,:,b,2], '-', color=colors[b], linewidth=0.8, alpha=0.7)
-
-            ax3.plot(nodes_14c_body[cp,:,b,0], nodes_14c_body[cp,:,b,2], '-o', color=colors[b], markersize=2, linewidth=2)
-            ax3.plot(nodes_34c_body[cp,:,b,0], nodes_34c_body[cp,:,b,2], '-o', color=colors[b], markersize=2, linewidth=2)
-            ax3.plot(nodes_body[cp,:,b,0], nodes_body[cp,:,b,2], '-', color=colors[b], linewidth=1.0, label=f'Blade {b}')
-
-            ax1.set_xlabel('x (axial) [m]'); ax1.set_ylabel('y [m]'); ax1.set_zlabel('z [m]')
-            ax1.set_title(f'Wake geometry: {B} blades (body frame)'); ax1.legend(fontsize=6)
-            ax2.set_xlabel('y [m]'); ax2.set_ylabel('z [m]')
-            ax2.set_title('Rotor plane (y-z)'); ax2.set_aspect('equal'); ax2.invert_xaxis(); ax2.grid(True)
-            ax3.set_xlabel('x (axial) [m]'); ax3.set_ylabel('z [m]')
-            ax3.set_title('Side view (x-z)'); ax3.legend(fontsize=6); ax3.grid(True)
-
-            plt.tight_layout()
-            plt.savefig('plot_wake_geometry.png', dpi=120)
-            print("Saved plot_wake_geometry.png")
-            plt.show()
 
     return

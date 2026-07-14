@@ -190,42 +190,4 @@ def initialize_lifting_line(rotor, conditions):
     rotor.blades.wake.nodes            = None            # filled when wake is implemented
     rotor.blades.wake.gamma            = None            # filled when wake is implemented
 
-    # Debug
-    if False: # Plotting the blade geometry
-        # ----------------------------------------------------------------------------------------------------------------------
-        #  Plot 1: Blade geometry -- 3D, rotor plane, side view
-        # ----------------------------------------------------------------------------------------------------------------------
-        colors = plt.cm.tab10(np.linspace(0, 1, B))
-
-        fig = plt.figure(figsize=(18, 6))
-        ax1 = fig.add_subplot(131, projection='3d')
-        ax2 = fig.add_subplot(132)
-        ax3 = fig.add_subplot(133)
-
-        cp = 0   # control point to plot
-        for b in range(B):
-            ax1.plot(nodes_body_14c[cp,:,b,0], nodes_body_14c[cp,:,b,1], nodes_body_14c[cp,:,b,2],
-                    '-o', color=colors[b], markersize=2, linewidth=2, label=f'Blade {b}')
-            ax1.plot(nodes_body_34c[cp,:,b,0], nodes_body_34c[cp,:,b,1], nodes_body_34c[cp,:,b,2],
-                    '-o', color=colors[b], markersize=2, linewidth=2, label=f'Blade {b}')
-
-            ax2.plot(nodes_body_14c[cp,:,b,1], nodes_body_14c[cp,:,b,2], '-o', color=colors[b], markersize=2, linewidth=2)
-            ax2.plot(nodes_body_34c[cp,:,b,1], nodes_body_34c[cp,:,b,2], '-o', color=colors[b], markersize=2, linewidth=2)
-
-            ax3.plot(nodes_body_14c[cp,:,b,0], nodes_body_14c[cp,:,b,2], '-o', color=colors[b], markersize=2, linewidth=2)
-            ax3.plot(nodes_body_34c[cp,:,b,0], nodes_body_34c[cp,:,b,2], '-o', color=colors[b], markersize=2, linewidth=2)
-
-        ax1.set_xlabel('x (axial) [m]'); ax1.set_ylabel('y [m]'); ax1.set_zlabel('z [m]')
-        ax1.set_title(f'Wake geometry: {B} blades (body frame)'); ax1.legend(fontsize=6)
-        ax2.set_xlabel('y [m]'); ax2.set_ylabel('z [m]')
-        ax2.set_title('Rotor plane (y-z)'); ax2.set_aspect('equal'); ax2.invert_xaxis(); ax2.grid(True)
-        ax3.set_xlabel('x (axial) [m]'); ax3.set_ylabel('z [m]')
-        ax3.set_title('Side view (x-z)'); ax3.legend(fontsize=6); ax3.grid(True)
-
-        plt.tight_layout()
-        plt.savefig('plot_blades_LL.png', dpi=120)
-        print("Saved plot_blades_LL.png")
-        plt.show()
-
-    
     return

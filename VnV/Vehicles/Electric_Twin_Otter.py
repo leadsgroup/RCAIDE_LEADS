@@ -465,9 +465,9 @@ def vehicle_setup(rotor_type):
         propeller.fidelity                               = rotor_type
         propeller.tag                                    = 'propeller_1'  
         propeller.tip_radius                             = 2.59
-        propeller.rc                                     = 0.01
         propeller.number_of_blades                       = 3
         propeller.hub_radius                             = 10.    * Units.inches
+        propeller.rc                                     = 0.01
         propeller.chord_distribution
         propeller.cruise.design_freestream_velocity      = 130 * Units.kts      
         speed_of_sound                                   = 343 
@@ -490,8 +490,28 @@ def vehicle_setup(rotor_type):
                                                             rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_500000.txt',
                                                             rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_1000000.txt']   
         propeller.append_airfoil(airfoil)                       
-        propeller.airfoil_polar_stations                 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]    
+        propeller.airfoil_polar_stations                 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]    
         propeller.radius_distribution                    = np.linspace(propeller.hub_radius,propeller.tip_radius, len(propeller.airfoil_polar_stations))   
+        
+        # Propeller wake
+        propeller.wake_inputs = Data()
+        propeller.wake_inputs.wake_model                   = 1                 # 1 simple model, 2 landgrebe, 3 landgrebe KT
+        propeller.wake_inputs.vc_correction                = 1                 # vortex core factor, 1 standard Rankine, 2 Rankine, 3, scully, 4 Vatistas, 5 Oseen
+        propeller.wake_inputs.dpsi                         = np.radians(6.8)   # filament length [rad]
+        propeller.wake_inputs.n_turns                      = 5.0               # Number of wake turns
+        propeller.wake_inputs.CT                           = 0.00654           # initial guess for CT to intialize the wake geometry
+        propeller.wake_inputs.lamb_oseen_rc_0              = 0.05              # initial core radius for the wake filaments [fraction of R]
+        propeller.wake_inputs.lamb_oseen_alpha             = 1.25643           # parameters for the core radius growth rate Lamb-Oseen model  
+        propeller.wake_inputs.lamb_oseen_delta             = 120000            # 8.243
+        propeller.wake_inputs.lamb_oseen_sigma             = 1.0               # ..
+        propeller.wake_inputs.lamb_oseen_core_growth_delay = np.radians(30.0)  # paramter to delay the growth rate till certain wake age 
+        propeller.wake_inputs.r_R_shed                     = 1.0               # location as fraction of R to shed the wake filament from               
+        propeller.wake_inputs.tol                          = 1e-4
+        propeller.wake_inputs.relax_0                      = 0.2
+        propeller.wake_inputs.max_iter_0                   = 300
+        propeller.wake_inputs.CT_iter                      = True
+        propeller.wake_inputs.aerofoil_aero                = 2                # 1 simplified aerofoil aero, detailed panel aerofoil aero
+        
         starboard_propulsor.rotor                        = propeller   
                 
         # DC_Motor       

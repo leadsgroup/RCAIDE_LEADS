@@ -13,7 +13,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line
 # ----------------------------------------------------------------------------------------------------------------------
 #  evaluate_bound_vortex_circulation
 # ----------------------------------------------------------------------------------------------------------------------
-def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_inputs):
+def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
     """
     Iterates on bound circulation Gamma_b using Biot-Savart induction from all
     bound vortex segments on all blades, evaluated at 3/4c collocation points.
@@ -131,7 +131,7 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
     c             = wake_inputs.chord_distribution
     r             = wake_inputs.radius_distribution
     a_sound       = wake_inputs.speed_of_sound
-    nu            = wake_inputs.kinamtic_viscosity
+    nu            = wake_inputs.kinematic_viscosity
     max_iter      = wake_inputs.max_iter # 50
     tol           = wake_inputs.tol # 1e-4
     relax         = wake_inputs.relax # 0.2
@@ -181,7 +181,7 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
     # ------------------------------------------------------------------------------------------------------------------
     if wake_inputs.include_wake:
         N_wake   = rotor.blades.wake.N_wake
-        r_R_shed = wake_geo_inputs.get('r_R_shed', 1.0)
+        r_R_shed = wake_inputs.get('r_R_shed', 1.0)
         R_shed   = r_R_shed * R
         i_shed      = np.argmin(np.abs(r_1d - R_shed))            # nearest node
         R_shed_near = r_1d[i_shed]
@@ -214,7 +214,7 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
     for cp in range(ctrl_pts):
         rCb_flat    = rCb[cp, :, :].reshape((Nr-1)*B)
         K_bound[cp] = biot_savart_velocity_induction(
-            P_colloc[cp], A_bound[cp], B_bound[cp], rCb_flat, wake_geo_inputs.vc_correction)
+            P_colloc[cp], A_bound[cp], B_bound[cp], rCb_flat, wake_inputs.vc_correction)
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Pre-compute wake influence matrix K_wake
@@ -231,7 +231,7 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
             for cp in range(ctrl_pts):
                 rCvf_flat   = np.repeat(rCvf[cp], B)
                 K_wake[cp]  = biot_savart_velocity_induction(
-                    P_colloc[cp], A_wake[cp], B_wake[cp], rCvf_flat, wake_geo_inputs.vc_correction)
+                    P_colloc[cp], A_wake[cp], B_wake[cp], rCvf_flat, wake_inputs.vc_correction)
 
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -250,7 +250,7 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
             for cp in range(ctrl_pts):
                 rCvf_flat  = np.repeat(rCvf[cp], B)
                 K_wake[cp] = biot_savart_velocity_induction(
-                    P_colloc[cp], A_wake[cp], B_wake[cp], rCvf_flat, wake_geo_inputs.vc_correction)
+                    P_colloc[cp], A_wake[cp], B_wake[cp], rCvf_flat, wake_inputs.vc_correction)
 
         # -- Inner Gamma_b loop --
         conv1 = False
@@ -355,16 +355,16 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
 
             print("CT", Ct_rotor_new)
 
-            residual_CT = np.max(np.abs(Ct_rotor_new - wake_geo_inputs.CT))
+            residual_CT = np.max(np.abs(Ct_rotor_new - wake_inputs.CT))
             if residual_CT < tol:
                 print("CT converged after", it+1, "outer iterations")
                 conv = True
                 break
 
-            wake_geo_inputs.CT = float(Ct_rotor_new[0, 0])
+            wake_inputs.CT = Ct_rotor_new.copy()   # (ctrl_pts, 1) -- one CT per control point
 
             if wake_inputs.include_wake:
-                initialize_wake_geometry(rotor, wake_geo_inputs, conditions)
+                initialize_wake_geometry(rotor, wake_inputs, conditions)
         else:
             conv = True   # simple mode always exits after one outer pass
 
