@@ -129,6 +129,10 @@ def initialize_wake_geometry(rotor, wake_geo_inputs, conditions):
             nn  = (0.5-0.0172* theta_tip_deg)
             CT0 = B**nn * (-BB/CC)**(1/mm)
             k1 = -(BB + CC * (CT/B**nn)**mm)
+            if CT < CT0:
+                print(f"Warning: CT={CT:.5f} is below the Kocurek-Tangler far-wake "
+                      f"threshold CT0={CT0:.5f} (tip pitch {theta_tip_deg:.2f} deg) -- "
+                      f"k2 is undefined below CT0. Clamping k2 to 0.")
             k2 = -(-(CT-CT0)**(0.5))
             k3 = 4.*(CT)**0.5
             k4 = 0.78

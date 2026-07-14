@@ -131,7 +131,7 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions, wake_geo_i
     c             = wake_inputs.chord_distribution
     r             = wake_inputs.radius_distribution
     a_sound       = wake_inputs.speed_of_sound
-    nu            = wake_inputs.dynamic_viscosity
+    nu            = wake_inputs.kinamtic_viscosity
     max_iter      = wake_inputs.max_iter # 50
     tol           = wake_inputs.tol # 1e-4
     relax         = wake_inputs.relax # 0.2

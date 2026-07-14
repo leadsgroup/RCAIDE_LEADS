@@ -120,6 +120,7 @@ def lifting_line_performance(rotor, conditions, wake_geo_inputs=None):
     wake_inputs.radius_distribution = r_1d[None, :, None] * np.ones((ctrl_pts, Nr, B))
     wake_inputs.speed_of_sound      = conditions.freestream.speed_of_sound    * np.ones((ctrl_pts, Nr, B))
     wake_inputs.dynamic_viscosity   = conditions.freestream.dynamic_viscosity * np.ones((ctrl_pts, Nr, B))
+    wake_inputs.kinematic_viscosity = wake_inputs.dynamic_viscosity/conditions.freestream.density[:, 0, None]
     wake_inputs.tol                 = 1e-4
     wake_inputs.relax_0             = 0.2
     wake_inputs.relax               = wake_inputs.relax_0 / (1 + 50*mu)
