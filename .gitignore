@@ -84,3 +84,4 @@ nosetests.xml
 .vscode
 .idea
 *venv*
+*.png
