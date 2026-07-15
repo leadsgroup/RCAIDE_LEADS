@@ -34,7 +34,7 @@ def main():
     configs  = configs_setup(vehicle) 
     analyses = analyses_setup(configs)  
     
-    angle_of_attack_range                 = np.atleast_2d(np.linspace(-5, 15, 21)).T*Units.degrees   
+    angle_of_attack_range                 = np.atleast_2d(np.linspace(-5, 15, 5)).T*Units.degrees
     Mach_number_range                     = np.ones_like(angle_of_attack_range) * 0.78 
     temperatures                          = np.ones_like(angle_of_attack_range) * 340
     non_dimensional_reynolds_numbers      = np.ones_like(angle_of_attack_range) * 1E7 
