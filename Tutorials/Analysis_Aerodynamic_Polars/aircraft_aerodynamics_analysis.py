@@ -33,9 +33,8 @@ def main():
     vehicle  = vehicle_setup()    
     configs  = configs_setup(vehicle) 
     analyses = analyses_setup(configs)  
-
-    num_aoa_points                        = 5 if os.environ.get('RCAIDE_TUTORIAL_TEST_MODE') == '1' else 21
-    angle_of_attack_range                 = np.atleast_2d(np.linspace(-5, 15, num_aoa_points)).T*Units.degrees   
+ 
+    angle_of_attack_range                 = np.atleast_2d(np.linspace(-5, 15, 5)).T*Units.degrees   
     Mach_number_range                     = np.ones_like(angle_of_attack_range) * 0.78 
     temperatures                          = np.ones_like(angle_of_attack_range) * 340
     non_dimensional_reynolds_numbers      = np.ones_like(angle_of_attack_range) * 1E7 
