@@ -15,7 +15,7 @@ modules = [
     'Verification/analysis_aerodynamics/airfoil_panel_method_convergence.py', 
     'Verification/analysis_aerodynamics/VLM_moving_surface_test.py',   
     'Verification/analysis_aerodynamics/AVL_test.py',  
-    'Verification/analysis_aerodynamics/blended_wing_body_aerodynamics_test.py',
+    'Verification/analysis_aerodynamics/VLM_aerodynamics_test.py',
     'Verification/aircraft_performance/landing_field_length_test.py',
     'Verification/aircraft_performance/payload_range_test.py',
     'Verification/aircraft_performance/take_off_field_length_test.py',

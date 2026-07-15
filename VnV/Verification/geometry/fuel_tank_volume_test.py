@@ -150,6 +150,7 @@ def non_integral_tank_test():
     cyl_tank.lengths.external   = 8.0
     cyl_tank.diameters.external = 2.0
     cyl_tank.wall_thickness     = 0.05
+    cyl_tank.fuel               = RCAIDE.Library.Attributes.Propellants.Jet_A1()
     cyl_tank.compute_moments_of_inertia(None)
     cyl_tank.compute_center_of_gravity(None)
 
@@ -168,12 +169,7 @@ def non_integral_tank_test():
         wing_tank.fuel                   = RCAIDE.Library.Attributes.Propellants.Jet_A()
         fuel_line.fuel_tanks.append(wing_tank)
 
-        configs  = configs_setup(vehicle)
-        analyses = analyses_setup(configs)
-        for analysis in analyses:
-            analysis.geometry.settings.compute_fuel_volume = True
-        geometry(mission_setup(analyses))
-
+        wing_tank.compute_volume(vehicle.wings, vehicle.fuselages, fuel_line.fuel_tanks)
         assert wing_tank.volume_properties.net_volume > 0, \
             f'Wing-mounted cylindrical Non_Integral_Tank volume should be > 0, got {wing_tank.volume_properties.net_volume}'
 
@@ -183,20 +179,17 @@ def non_integral_tank_test():
         fuel_line_bwb.fuel_tanks.clear()
 
         trans_tank = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle_bwb.wings.main_wing)
-        trans_tank.tag                          = 'transverse_tank'
-        trans_tank.transverse_tank              = True
-        trans_tank.transverse_tank_chord_bounds = [0.65, 0.9]
-        trans_tank.transverse_tank_segment_bound = 'fuel_wall'
-        trans_tank.radial_offset                = 0.2
-        trans_tank.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A()
+        trans_tank.tag                           = 'transverse_tank'
+        trans_tank.transverse_tank               = True
+        trans_tank.transverse_tank_chord_bounds  = [0.65, 0.9]
+        trans_tank.transverse_tank_segment_bound = 'cabin_wall'
+        trans_tank.radial_offset                 = 0.2
+        trans_tank.orientation_euler_angles      = [0, 0, np.pi/2]
+        trans_tank.xz_plane_symmetric            = False
+        trans_tank.fuel                          = RCAIDE.Library.Attributes.Propellants.Jet_A()
         fuel_line_bwb.fuel_tanks.append(trans_tank)
 
-        configs  = configs_setup(vehicle_bwb)
-        analyses = analyses_setup(configs)
-        for analysis in analyses:
-            analysis.geometry.settings.compute_fuel_volume = True
-        geometry(mission_setup(analyses))
-
+        trans_tank.compute_volume(vehicle_bwb.wings, vehicle_bwb.fuselages, fuel_line_bwb.fuel_tanks)
         assert trans_tank.volume_properties.net_volume > 0, \
             f'Transverse Non_Integral_Tank volume should be > 0, got {trans_tank.volume_properties.net_volume}'
     else:
