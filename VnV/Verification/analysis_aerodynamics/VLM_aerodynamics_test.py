@@ -136,7 +136,7 @@ def aerodynamics_non_surrogate_test():
     temperatures                          = np.ones_like(angle_of_attack_range) * 340
     non_dimensional_reynolds_numbers      = np.ones_like(angle_of_attack_range) * 1E7
 
-    results                               = aircraft_aerodynamic_analysis(analyses                         = analyses.base,
+    results                               = aircraft_aerodynamic_analysis(analyses                         = analyses.cruise,
                                                                           angle_of_attacks                 = angle_of_attack_range,
                                                                           non_dimensional_reynolds_numbers = non_dimensional_reynolds_numbers,
                                                                           temperatures                     = temperatures,
