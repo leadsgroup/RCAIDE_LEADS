@@ -2,24 +2,14 @@
 
 import os
 os.environ['PYVISTA_OFF_SCREEN'] = 'true'
-os.environ['RCAIDE_TUTORIAL_TEST_MODE'] = '1'
 
 import pytest
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import pyvista as pv
-import RCAIDE.Library.Plots as rcaide_plots
 pv.OFF_SCREEN = True
 pv.Plotter.show = lambda self, *args, **kwargs: None
-
-
-def _noop_plot(*args, **kwargs):
-    return None
-
-
-rcaide_plots.plot_pressure_coefficient_distribution = _noop_plot
-rcaide_plots.plot_3d_vehicle_vlm_panelization = _noop_plot
 
 import sys, traceback, time
 
