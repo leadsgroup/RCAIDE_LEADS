@@ -394,8 +394,8 @@ def BEMT_Helmholtz_performance(rotor, conditions):
         blade_dQ_dr             = np.mean((blade_dQ_dr_2d), axis = 2)
 
         # compute the hub force / rotor drag distribution along the blade
-        dL_2d    = 0.5*rho*c_2d*Cd*omegar**2*deltar
-        dD_2d    = 0.5*rho*c_2d*Cl*omegar**2*deltar
+        dL_2d    = 0.5*rho*c_2d*Cl*omegar**2*deltar
+        dD_2d    = 0.5*rho*c_2d*Cd*omegar**2*deltar
 
         rotor_drag_distribution = np.mean(dL_2d*np.sin(psi_2d) + dD_2d*np.cos(psi_2d),axis=2)
 
@@ -420,9 +420,9 @@ def BEMT_Helmholtz_performance(rotor, conditions):
         Vt_ind_2d               = np.repeat(vt[ :, :, None], Na, axis=2)
 
         # compute the hub force / rotor drag distribution along the blade
-        dL    = 0.5*rho*c*Cd*omegar**2*deltar
+        dL    = 0.5*rho*c*Cl*omegar**2*deltar
         dL_2d = np.repeat(dL[:, :, None], Na, axis=2)
-        dD    = 0.5*rho*c*Cl*omegar**2*deltar
+        dD    = 0.5*rho*c*Cd*omegar**2*deltar
         dD_2d = np.repeat(dD[:, :, None], Na, axis=2)
 
         rotor_drag_distribution = np.mean(dL_2d*np.sin(psi_2d) + dD_2d*np.cos(psi_2d),axis=2)

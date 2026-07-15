@@ -131,7 +131,7 @@ def lifting_line_performance(rotor, conditions, wake_inputs=None):
     vz = V_thrust[:, 2]   # (ctrl_pts,) thrust-frame z freestream velocity
     vy_term = np.where(CW[:, None, None], vy[:, None, None], -vy[:, None, None])
     Ut = np.abs(omegar) + (vy_term * np.cos(psi)[None, :, :] +
-                       vz[:, None, None] * np.sin(psi)[None, :, :])
+                           vz[:, None, None] * np.sin(psi)[None, :, :])
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Inlcuding new terms in wake_inputs
@@ -150,8 +150,8 @@ def lifting_line_performance(rotor, conditions, wake_inputs=None):
     wake_inputs.dynamic_viscosity   = conditions.freestream.dynamic_viscosity[:, :, None] * np.ones((ctrl_pts, Nr, B))
     wake_inputs.kinematic_viscosity = wake_inputs.dynamic_viscosity/conditions.freestream.density[:, :, None]
     wake_inputs.relax               = wake_inputs.relax_0 / (1 + 50*mu_tot)[:, None, None]   # (ctrl_pts,1,1) -- broadcasts against Gamma_b (ctrl_pts, Nr-1, B)
-    wake_inputs.max_iter_Gammab     = int(wake_inputs.max_iter_Gammab_0 * (1 + 5*np.max(mu_tot)))   # sized for the worst-case (highest advance ratio) control point
-    wake_inputs.max_iter_CT         = int(wake_inputs.max_iter_CT_0    * (1 + 5*np.max(mu_tot)))   # sized for the worst-case (highest advance ratio) control point
+    wake_inputs.max_iter_Gammab     = wake_inputs.max_iter_Gammab_0 # int(wake_inputs.max_iter_Gammab_0 * (1 + 5*np.max(mu_tot)))   # sized for the worst-case (highest advance ratio) control point
+    wake_inputs.max_iter_CT         = wake_inputs.max_iter_CT_0 #int(wake_inputs.max_iter_CT_0    * (1 + 5*np.max(mu_tot)))   # sized for the worst-case (highest advance ratio) control point
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Step 2: Wake geometry

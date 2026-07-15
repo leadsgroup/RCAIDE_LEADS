@@ -369,7 +369,7 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
         # -- CT check (CT_iter mode only) --
         if wake_inputs.CT_iter:
             epsilon                    = Cd / (Cl + 1e-300)
-            epsilon[np.abs(Cl) <= 1e-3] = 10.0 * np.sign(Cl[np.abs(Cl) <= 1e-3])
+            epsilon[np.abs(Cl) <= 1e-6] = 10.0 * np.sign(Cl[np.abs(Cl) <= 1e-6])
 
             blade_T_distribution = rho[:, :, None] * (Gamma_b_new*(Wt - epsilon*Wa)) * deltar_3d
             thrust               = np.sum(blade_T_distribution, axis=(1, 2))[:, None]  # (ctrl_pts, 1)

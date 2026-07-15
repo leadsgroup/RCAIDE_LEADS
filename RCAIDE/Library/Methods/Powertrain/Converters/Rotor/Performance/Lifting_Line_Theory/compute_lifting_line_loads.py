@@ -241,7 +241,7 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     Cd          = ((1/Tp_Tinf)*(1/Rp_Rinf)**0.2)*Cdval
 
     epsilon             = Cd/Cl
-    epsilon[np.abs(Cl) <= 1e-3] = 10.0 * np.sign(Cl[np.abs(Cl) <= 1e-3])
+    epsilon[np.abs(Cl) <= 1e-6] = 10.0 * np.sign(Cl[np.abs(Cl) <= 1e-6])
 
     # thrust and torque and their derivatives on the blade.
     blade_T_distribution     = rho[:, :, None]*(Gamma*(Wt-epsilon*Wa))*deltar_3d
@@ -297,9 +297,7 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     etap     = V*thrust/power
     FoM      = thrust*np.sqrt(thrust/(2*rho_0*A))/power  
 
-    print("FM: ", FoM)
-    print("Ct_sigma: ", Ct_sigma)
-    print("Ct: ", Ct_rotor)
+    print("FM: ", FoM, ", Ct_sigma: ", Ct_sigma)
 
     # prevent things from breaking
     Cq[Cq<0]                   = 0.
