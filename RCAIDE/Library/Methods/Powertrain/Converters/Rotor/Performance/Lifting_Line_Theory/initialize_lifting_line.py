@@ -50,7 +50,7 @@ def initialize_lifting_line(rotor, conditions):
         rotor.blades.bound.chord             : (Nr, B)             chord distribution [m]
         rotor.blades.bound.radius            : (Nr, B)             radial stations [m]
         rotor.blades.bound.beta              : (ctrl_pts, Nr, B)    total blade pitch [rad]
-        rotor.blades.bound.nodes_hub_14c     : (Nr, B, 3)           1/4c nodes, hub/thrust frame
+        rotor.blades.bound.nodes_hub_14c     : (ctrl_pts, Nr, B, 3) 1/4c nodes, hub/thrust frame (varies with rotation sense)
         rotor.blades.bound.nodes_body_14c    : (ctrl_pts, Nr, B, 3) 1/4c nodes, body frame
         rotor.blades.bound.nodes_hub_34c     : (ctrl_pts, Nr, B, 3) 3/4c nodes, hub/thrust frame (varies with pitch_c)
         rotor.blades.bound.nodes_body_34c    : (ctrl_pts, Nr, B, 3) 3/4c nodes, body frame
@@ -83,6 +83,7 @@ def initialize_lifting_line(rotor, conditions):
     commanded_TV = conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle
     pitch_c      = conditions.energy.converters[rotor.tag].blade_pitch_command
     ctrl_pts     = len(conditions.frames.inertial.velocity_vector)
+    omega        = conditions.energy.converters[rotor.tag].omega
 
     # Total blade pitch  -- (ctrl_pts, Nr) then expanded to (ctrl_pts, Nr, B)
     # theta_tw is (Nr,), pitch_c is (ctrl_pts, 1) or scalar
@@ -111,7 +112,7 @@ def initialize_lifting_line(rotor, conditions):
     psi_root = psi_0 + np.arange(B) * dpsi
 
 
-    CW = rotor.clockwise_rotation
+    CW = omega[:, 0] > 0   # (ctrl_pts,) -- per-control-point rotation sense
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Azimuth per blade per station  -- (Nr, B)
@@ -119,40 +120,37 @@ def initialize_lifting_line(rotor, conditions):
     psi = psi_root[np.newaxis, :] - sweep[:, np.newaxis]      # (Nr, B)
 
     # ------------------------------------------------------------------------------------------------------------------
-    #  1/4c and 3/4c node positions, hub/thrust frame  -- (Nr, B, 3)
+    #  1/4c and 3/4c node positions, hub/thrust frame  -- (ctrl_pts, Nr, B, 3)
+    #  x and z don't depend on rotation sense; only the y-component's sign does
+    #  (kept consistent with the shared y/z axis convention used for both CW and CCW).
     # ------------------------------------------------------------------------------------------------------------------
-    nodes_hub_14c = np.zeros((Nr, B, 3))
-
     r_2d = r_1d[:, np.newaxis] * np.ones((Nr, B))    # (Nr, B)
     c_2d = c[:, np.newaxis]    * np.ones((Nr, B))    # (Nr, B)
 
-    if CW:
-        # x: along rotor axis (nodes lie in rotor plane)
-        # y: -r * sin(psi)
-        # z:  r * cos(psi)
-        nodes_hub_14c[:, :, 0] = 0.0
-        nodes_hub_14c[:, :, 1] = -r_2d * np.sin(psi)
-        nodes_hub_14c[:, :, 2] =  r_2d * np.cos(psi)
-    else: # CCW
-        nodes_hub_14c[:, :, 0] = 0.0
-        nodes_hub_14c[:, :, 1] =  r_2d * np.sin(psi)
-        nodes_hub_14c[:, :, 2] =  r_2d * np.cos(psi)
+    CW_3 = CW[:, np.newaxis, np.newaxis]   # (ctrl_pts, 1, 1) -- broadcast helper
+
+    nodes_hub_14c = np.zeros((ctrl_pts, Nr, B, 3))
+    # x: along rotor axis (nodes lie in rotor plane)
+    # y: -r*sin(psi) for CW, +r*sin(psi) for CCW
+    # z:  r*cos(psi) either way
+    nodes_hub_14c[:, :, :, 1] = np.where(CW_3, -r_2d[np.newaxis, :, :] * np.sin(psi)[np.newaxis, :, :],
+                                                r_2d[np.newaxis, :, :] * np.sin(psi)[np.newaxis, :, :])
+    nodes_hub_14c[:, :, :, 2] = (r_2d * np.cos(psi))[np.newaxis, :, :] * np.ones((ctrl_pts, 1, 1))
 
     # 3/4c node positions  -- offset from 1/4c by c/2 along local chord direction.
     # beta varies with ctrl_pts, so nodes_hub_34c also varies with ctrl_pts here;
     # shape becomes (ctrl_pts, Nr, B, 3) directly, skipping a separate hub-only 3/4c array.
-    c_3d    = c_2d[np.newaxis, :, :]                                  # (1, Nr, B)
-    psi_3d  =  psi[np.newaxis, :, :]                                  # (1, Nr, B)
-    nodes_hub_14c_3d = nodes_hub_14c[np.newaxis, :, :, :]             # (1, Nr, B, 3)
+    c_3d   = c_2d[np.newaxis, :, :]                                  # (1, Nr, B)
+    psi_3d = psi[np.newaxis, :, :]                                   # (1, Nr, B)
 
     nodes_hub_34c_at_nodes = np.zeros((ctrl_pts, Nr, B, 3))
     nodes_hub_34c_at_nodes[:, :, :, 0] = c_3d/2 * np.sin(beta)
-    if CW:
-        nodes_hub_34c_at_nodes[:, :, :, 1] = nodes_hub_14c_3d[:, :, :, 1] + (c_3d/2 * np.cos(beta)) * np.cos(psi_3d)
-        nodes_hub_34c_at_nodes[:, :, :, 2] = nodes_hub_14c_3d[:, :, :, 2] + (c_3d/2 * np.cos(beta)) * np.sin(psi_3d)
-    else: # CCW
-        nodes_hub_34c_at_nodes[:, :, :, 1] = nodes_hub_14c_3d[:, :, :, 1] - (c_3d/2 * np.cos(beta)) * np.cos(psi_3d)
-        nodes_hub_34c_at_nodes[:, :, :, 2] = nodes_hub_14c_3d[:, :, :, 2] + (c_3d/2 * np.cos(beta)) * np.sin(psi_3d)
+    nodes_hub_34c_at_nodes[:, :, :, 1] = np.where(
+        CW_3,
+        nodes_hub_14c[:, :, :, 1] + (c_3d/2 * np.cos(beta)) * np.cos(psi_3d),
+        nodes_hub_14c[:, :, :, 1] - (c_3d/2 * np.cos(beta)) * np.cos(psi_3d)
+    )
+    nodes_hub_34c_at_nodes[:, :, :, 2] = nodes_hub_14c[:, :, :, 2] + (c_3d/2 * np.cos(beta)) * np.sin(psi_3d)
 
     # collocation points are at segment midpoint -- (ctrl_pts, Nr-1, B, 3)
     nodes_hub_34c = 0.5 * (nodes_hub_34c_at_nodes[:, :-1, :, :] + nodes_hub_34c_at_nodes[:,  1:, :, :])
@@ -160,7 +158,7 @@ def initialize_lifting_line(rotor, conditions):
     # ------------------------------------------------------------------------------------------------------------------
     #  Transform to body frame  -- (ctrl_pts, Nr, B, 3)
     # ------------------------------------------------------------------------------------------------------------------
-    nodes_body_14c = np.einsum('cij, rbj -> crbi', T_thrust2body, nodes_hub_14c) \
+    nodes_body_14c = np.einsum('cij, crbj -> crbi', T_thrust2body, nodes_hub_14c) \
                    + hub_origin
     nodes_body_34c = np.einsum('cij, crbj -> crbi', T_thrust2body, nodes_hub_34c) \
                    + hub_origin
@@ -181,7 +179,7 @@ def initialize_lifting_line(rotor, conditions):
     rotor.blades.bound.chord           = c_2d            # (Nr, B)
     rotor.blades.bound.radius          = r_2d            # (Nr, B)
     rotor.blades.bound.beta            = beta            # (ctrl_pts, Nr, B)
-    rotor.blades.bound.nodes_hub_14c   = nodes_hub_14c   # (Nr, B, 3)
+    rotor.blades.bound.nodes_hub_14c   = nodes_hub_14c   # (ctrl_pts, Nr, B, 3)
     rotor.blades.bound.nodes_body_14c  = nodes_body_14c  # (ctrl_pts, Nr, B, 3)
     rotor.blades.bound.nodes_hub_34c   = nodes_hub_34c   # (ctrl_pts, Nr-1, B, 3)
     rotor.blades.bound.nodes_body_34c  = nodes_body_34c  # (ctrl_pts, Nr-1, B, 3)

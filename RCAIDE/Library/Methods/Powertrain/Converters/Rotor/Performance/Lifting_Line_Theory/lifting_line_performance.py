@@ -70,7 +70,7 @@ def lifting_line_performance(rotor, conditions, wake_inputs=None):
     T_body2thrust   = orientation_transpose(np.ones_like(T_body2inertial[:]) * body2thrust)
     V_thrust        = orientation_product(T_body2thrust, V_body)
 
-    CW = bool(omega[0, 0] > 0)
+    CW = omega[:, 0] > 0   # (ctrl_pts,) -- per-control-point rotation sense
 
     mu_tot = np.sqrt(V_thrust[:, 0]**2 + V_thrust[:, 1]**2
                      + V_thrust[:, 2]**2)   / (np.abs(omega[:, 0]) * R)    # (ctrl_pts,) -- per-control-point advance ratio
@@ -129,8 +129,9 @@ def lifting_line_performance(rotor, conditions, wake_inputs=None):
     # same subtraction logic as Wt = Ut - ut_ind for induced velocity.
     vy = V_thrust[:, 1]   # (ctrl_pts,) thrust-frame y freestream velocity
     vz = V_thrust[:, 2]   # (ctrl_pts,) thrust-frame z freestream velocity
-    Ut = omegar + (vy[:, None, None] * np.cos(psi)[None, :, :] +
-                   vz[:, None, None] * np.sin(psi)[None, :, :])
+    vy_term = np.where(CW[:, None, None], vy[:, None, None], -vy[:, None, None])
+    Ut = np.abs(omegar) + (vy_term * np.cos(psi)[None, :, :] +
+                       vz[:, None, None] * np.sin(psi)[None, :, :])
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Inlcuding new terms in wake_inputs

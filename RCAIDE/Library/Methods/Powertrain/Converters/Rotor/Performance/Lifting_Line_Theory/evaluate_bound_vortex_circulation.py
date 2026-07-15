@@ -187,21 +187,20 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
         i_shed      = np.argmin(np.abs(r_1d - R_shed))            # nearest node
         R_shed_near = r_1d[i_shed]
 
-    CW = bool(omega[0, 0] > 0)
+    CW = omega[:, 0] > 0   # (ctrl_pts,) -- per-control-point rotation sense
+    CW_3 = CW[:, np.newaxis, np.newaxis]   # (ctrl_pts, 1, 1) -- broadcast helper
 
     # ------------------------------------------------------------------------------------------------------------------
-    #  Unit vectors in thrust frame -- (Nr-1, B)
+    #  Unit vectors in thrust frame -- (ctrl_pts, Nr-1, B)
+    #  z-components don't actually depend on CW, but are still routed through
+    #  np.where(CW_3, ...) so all four carry the same (ctrl_pts, Nr-1, B) shape
+    #  as the y-components -- otherwise these silently stay (Nr-1, B) with no
+    #  ctrl_pts axis, which corrupts ut_ind/Wt (but not ua_ind/Wa) downstream.
     # ------------------------------------------------------------------------------------------------------------------
-    if CW:
-        radial_hat_thrust_y = -np.sin(psi)
-        radial_hat_thrust_z =  np.cos(psi)
-        tang_hat_thrust_y   = -np.cos(psi)
-        tang_hat_thrust_z   = -np.sin(psi)
-    else:
-        radial_hat_thrust_y =  np.sin(psi)
-        radial_hat_thrust_z =  np.cos(psi)
-        tang_hat_thrust_y   =  np.cos(psi)
-        tang_hat_thrust_z   = -np.sin(psi)
+    radial_hat_thrust_y = np.where(CW_3, -np.sin(psi), np.sin(psi))
+    radial_hat_thrust_z = np.where(CW_3,  np.cos(psi), np.cos(psi))
+    tang_hat_thrust_y   = np.where(CW_3, -np.cos(psi), np.cos(psi))
+    tang_hat_thrust_z   = np.where(CW_3, -np.sin(psi), -np.sin(psi))
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Initial guess: Cl from freestream, Gamma_b = 0.5*U*c*Cl
@@ -305,18 +304,16 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
             v_induced_thrust = np.einsum('cij,crbj->crbi', T_body2thrust, v_induced_body)
 
             # Project onto axial, tangential
+            # radial_hat_thrust_*/tang_hat_thrust_* are already (ctrl_pts, Nr-1, B) -- no extra axis needed
             ua_ind = v_induced_thrust[:,:,:,0]
-            ur_ind = (v_induced_thrust[:,:,:,1]*radial_hat_thrust_y[None,:,:] +
-                       v_induced_thrust[:,:,:,2]*radial_hat_thrust_z[None,:,:])
-            ut_ind = (v_induced_thrust[:,:,:,1]*tang_hat_thrust_y[None,:,:] +
-                      v_induced_thrust[:,:,:,2]*tang_hat_thrust_z[None,:,:])
+            ur_ind = (v_induced_thrust[:,:,:,1]*radial_hat_thrust_y +
+                       v_induced_thrust[:,:,:,2]*radial_hat_thrust_z)
+            ut_ind = (v_induced_thrust[:,:,:,1]*tang_hat_thrust_y +
+                      v_induced_thrust[:,:,:,2]*tang_hat_thrust_z)
 
-            if CW:
-                Wa = Ua - ua_ind
-                Wt = Ut - ut_ind
-            else:
-                Wa = Ua + ua_ind
-                Wt = Ut + ut_ind
+            Wa = np.where(CW_3, Ua - ua_ind, Ua + ua_ind)
+            Wt = np.where(CW_3, Ut - ut_ind, Ut + ut_ind)
+                
             W  = np.sqrt(Wa**2 + Wt**2)
 
             # Aerodynamics
