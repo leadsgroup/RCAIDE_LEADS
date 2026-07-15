@@ -136,6 +136,8 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
     max_iter_CT     = wake_inputs.max_iter_CT # 50
     tol             = wake_inputs.tol # 1e-4
     relax           = wake_inputs.relax # 0.2
+    mu              = wake_inputs.mu       # (ctrl_pts,) -- per-control-point edgewise advance ratio
+    mu_max          = wake_inputs.mu_max   # scalar threshold
 
     nodes_14c = wake_inputs.nodes_14c   # (ctrl_pts, Nr, B, 3), body frame inducing location
     nodes_34c = wake_inputs.nodes_34c   # (ctrl_pts, Nr, B, 3), body frame induced location
@@ -189,6 +191,18 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
 
     CW = omega[:, 0] > 0   # (ctrl_pts,) -- per-control-point rotation sense
     CW_3 = CW[:, np.newaxis, np.newaxis]   # (ctrl_pts, 1, 1) -- broadcast helper
+
+    # ------------------------------------------------------------------------------------------------------------------
+    #  Skip control points outside the model's valid advance-ratio range
+    #  (edgewise mu, not the axial/climb component -- see lifting_line_performance.py).
+    #  These are excluded from the convergence checks below so a single garbage
+    #  control point can't block the whole batch from registering as converged.
+    # ------------------------------------------------------------------------------------------------------------------
+    valid_cp = (mu <= mu_max)   # (ctrl_pts,)
+    if np.any(~valid_cp):
+        print(f"Skipping control point(s) {np.where(~valid_cp)[0].tolist()} -- "
+              f"edgewise advance ratio mu={mu[~valid_cp]} exceeds mu_max={mu_max}. "
+              f"Out of valid range for this method; not iterating on these.")
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Unit vectors in thrust frame -- (ctrl_pts, Nr-1, B)
@@ -345,15 +359,20 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
             # Relaxed Gamma_b update
             Gamma_b_new = 0.5*W*c*Cl
 
-            bad_cp = ~np.all(np.isfinite(Gamma_b_new) & (np.abs(Gamma_b_new) < 1e4), axis=(1, 2))   # (ctrl_pts,)
+            # Only flag divergence among VALID control points -- an out-of-range (high mu)
+            # control point is expected to potentially blow up and shouldn't halt the whole batch.
+            bad_cp = valid_cp & ~np.all(np.isfinite(Gamma_b_new) & (np.abs(Gamma_b_new) < 1e4), axis=(1, 2))   # (ctrl_pts,)
             if np.any(bad_cp):
                 print(f"Gamma_b diverged at control point(s) {np.where(bad_cp)[0].tolist()} "
                       f"at inner iteration {it1+1}. Stopping.")
                 diverged = True
                 break
 
-            residual_Gamma_b = np.max(np.abs(Gamma_b_new - Gamma_b))
-            Gamma_b          = Gamma_b + relax*(Gamma_b_new - Gamma_b)
+            residual_Gamma_b = np.max(np.abs(Gamma_b_new - Gamma_b)[valid_cp]) if np.any(valid_cp) else 0.0
+
+            # Only update Gamma_b for valid control points -- invalid ones stay frozen at
+            # their initial freestream-only guess rather than being iteratively (and pointlessly) refined.
+            Gamma_b[valid_cp] = Gamma_b[valid_cp] + relax[valid_cp]*(Gamma_b_new[valid_cp] - Gamma_b[valid_cp])
 
             if residual_Gamma_b < tol:
                 print("Gamma_b converged after", it1+1, "iterations")
@@ -375,21 +394,27 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
             thrust               = np.sum(blade_T_distribution, axis=(1, 2))[:, None]  # (ctrl_pts, 1)
             Ct_rotor_new         = thrust / (rho_0 * (np.pi * R**2) * (omega*R)**2)
 
-            if np.any(~np.isfinite(Ct_rotor_new[:, 0])):
-                bad_cp_ct = np.where(~np.isfinite(Ct_rotor_new[:, 0]))[0]
-                print(f"CT diverged to NaN at control point(s) {bad_cp_ct.tolist()} "
+            bad_cp_ct = valid_cp & ~np.isfinite(Ct_rotor_new[:, 0])
+            if np.any(bad_cp_ct):
+                print(f"CT diverged to NaN at control point(s) {np.where(bad_cp_ct)[0].tolist()} "
                       f"at outer iteration {it+1}. Stopping.")
                 break
 
             print("CT", Ct_rotor_new)
 
-            residual_CT = np.max(np.abs(Ct_rotor_new - wake_inputs.CT))
+            residual_CT = np.max(np.abs(Ct_rotor_new - wake_inputs.CT)[valid_cp]) if np.any(valid_cp) else 0.0
             if residual_CT < tol:
                 print("CT converged after", it+1, "outer iterations")
                 conv = True
                 break
 
-            wake_inputs.CT = Ct_rotor_new.copy()   # (ctrl_pts, 1) -- one CT per control point
+            # Only carry forward CT for valid control points -- invalid ones keep their
+            # existing (unrefined) CT rather than feeding a meaningless value into the next
+            # wake-geometry rebuild. wake_inputs.CT may still be the raw scalar default on the
+            # first outer iteration, so broadcast it to Ct_rotor_new's shape before copying.
+            new_CT = np.broadcast_to(np.asarray(wake_inputs.CT, dtype=float), Ct_rotor_new.shape).copy()
+            new_CT[valid_cp] = Ct_rotor_new[valid_cp]
+            wake_inputs.CT = new_CT   # (ctrl_pts, 1) -- one CT per control point
 
             if wake_inputs.include_wake:
                 initialize_wake_geometry(rotor, wake_inputs, conditions)

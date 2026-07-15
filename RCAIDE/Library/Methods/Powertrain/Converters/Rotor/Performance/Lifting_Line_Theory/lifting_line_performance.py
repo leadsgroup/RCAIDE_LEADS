@@ -75,6 +75,7 @@ def lifting_line_performance(rotor, conditions, wake_inputs=None):
     mu_tot = np.sqrt(V_thrust[:, 0]**2 + V_thrust[:, 1]**2
                      + V_thrust[:, 2]**2)   / (np.abs(omega[:, 0]) * R)    # (ctrl_pts,) -- per-control-point advance ratio
 
+    mu = np.sqrt(V_thrust[:, 1]**2 + V_thrust[:, 2]**2)   / (np.abs(omega[:, 0]) * R)
     # ------------------------------------------------------------------------------------------------------------------
     #  Default wake geometry inputs if not defined in the input file
     # ------------------------------------------------------------------------------------------------------------------
@@ -96,6 +97,7 @@ def lifting_line_performance(rotor, conditions, wake_inputs=None):
         wake_inputs.max_iter_0                   = 300
         wake_inputs.CT_iter                      = True
         wake_inputs.aerofoil_aero                = 2   # 1 simplified aerofoil aero, detailed panel aerofoil aero
+        wake_inputs.mu_max                       = 1.0 # edgewise advance ratio above which a control point is treated as out of the model's valid range
     else:
         wake_inputs = rotor.wake_inputs
     
@@ -103,6 +105,7 @@ def lifting_line_performance(rotor, conditions, wake_inputs=None):
     # Populate remaining wake_inputs fields from conditions
     wake_inputs.V_thrust      = V_thrust
     wake_inputs.T_body2thrust = T_body2thrust
+    wake_inputs.mu            = mu
     wake_inputs.omega         = omega
     wake_inputs.sigma         = np.mean(rotor.chord_distribution) / R / np.pi * B
 

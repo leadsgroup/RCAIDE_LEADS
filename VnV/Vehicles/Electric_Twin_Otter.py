@@ -23,7 +23,7 @@ import matplotlib.pyplot        as plt
 # ----------------------------------------------------------------------
 def main():
  
-    rotor_type = 'Blade_Element_Momentum_Theory_Helmholtz_Wake' # 'Lifting_Line_Theory'
+    rotor_type = 'Lifting_Line_Theory' # 'Blade_Element_Momentum_Theory_Helmholtz_Wake'
     
     # vehicle data
     vehicle  = vehicle_setup(rotor_type)
@@ -507,12 +507,13 @@ def vehicle_setup(rotor_type):
         propeller.wake_inputs.lamb_oseen_core_growth_delay = np.radians(30.0)  # paramter to delay the growth rate till certain wake age 
         propeller.wake_inputs.r_R_shed                     = 1.0               # location as fraction of R to shed the wake filament from               
         propeller.wake_inputs.tol                          = 1e-3
-        propeller.wake_inputs.relax_0                      = 0.4
+        propeller.wake_inputs.relax_0                      = 0.5
         propeller.wake_inputs.max_iter_Gammab_0            = 500
         propeller.wake_inputs.max_iter_CT_0                = 50
         propeller.wake_inputs.CT_iter                      = True
         propeller.wake_inputs.aerofoil_aero                = 2                # 1 simplified aerofoil aero, detailed panel aerofoil aero
-        
+        propeller.wake_inputs.mu_max                       = 1.0
+
         starboard_propulsor.rotor                        = propeller   
                 
         # DC_Motor       
