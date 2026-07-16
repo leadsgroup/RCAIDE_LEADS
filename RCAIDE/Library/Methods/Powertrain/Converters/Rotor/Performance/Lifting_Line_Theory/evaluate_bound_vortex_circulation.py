@@ -26,11 +26,10 @@ def compute_lifting_line_inflow_and_tip_loss(r, R, Wa, Wt, B, et1=1, et2=1, et3=
     """
     lamdaw = Wa / Wt
 
-    phii   = np.atan2(Wa,Wt)  
-
-    tipfactor = B/2.0 * ((R/r)**et1 - 1)**et2 / np.abs(phii)**et3
+    tipfactor = B/2.0 * ((R/r)**et1 - 1)**et2 / np.abs(lamdaw)**et3
 
     piece = np.exp(-tipfactor)
+
     Ftip  = (2./np.pi) * np.arccos(piece)
 
     return lamdaw, Ftip, piece
