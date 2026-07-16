@@ -171,7 +171,7 @@ def lifting_line_performance(rotor, conditions, wake_inputs=None):
     # ------------------------------------------------------------------------------------------------------------------
     compute_lifting_line_loads(rotor, wake_inputs, conditions)
 
-    if False: # Debug
+    if True: # Debug
 
         # Importing plotting libs
         import matplotlib.pyplot as plt
@@ -223,7 +223,7 @@ def lifting_line_performance(rotor, conditions, wake_inputs=None):
         #plt.savefig('plot_wake.png', dpi=120)
         #print("Saved plot_wake.png")
         plt.show()
-
+        '''
         # ----------------------------------------------------------------------------------------------------------------------
         #  Plot 2: Gamma and alpha distributions
         # ----------------------------------------------------------------------------------------------------------------------
@@ -250,5 +250,5 @@ def lifting_line_performance(rotor, conditions, wake_inputs=None):
         #plt.savefig('plot_gamma.png', dpi=120)
         #print("Saved plot_gamma.png")
         plt.show()
-
+        '''
     return

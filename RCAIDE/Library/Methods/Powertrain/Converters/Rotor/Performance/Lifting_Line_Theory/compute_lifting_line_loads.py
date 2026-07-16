@@ -312,7 +312,7 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
 
     advance_ratio                   = V/(n*D) 
     advance_ratio[omega==0.0]       = 0.
-    advance_ratio_rotor             = np.sqrt(V_thrust[:,2]**2)/(omega*R) 
+    advance_ratio_rotor              = np.sqrt(V_thrust[:,2,None]**2)/(omega*R)
     advance_ratio_rotor[omega==0.0] = 0.
 
     # Make the thrust a 3D vector
