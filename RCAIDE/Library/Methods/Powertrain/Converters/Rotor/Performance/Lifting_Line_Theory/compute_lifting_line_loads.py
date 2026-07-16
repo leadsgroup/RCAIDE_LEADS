@@ -157,19 +157,18 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     # ------------------------------------------------------------------------------------------------------------------
     #  Unpack converged solution
     # ------------------------------------------------------------------------------------------------------------------
-    Ua       = wake_inputs.velocity_axial
-    Ut       = wake_inputs.velocity_tangential
-    ctrl_pts = wake_inputs.ctrl_pts
-    Nr       = wake_inputs.Nr
-    Nr_s     = Nr - 1
-    c_1d     = wake_inputs.chord_distribution
-    psi      = rotor.blades.bound.psi   # (Nr, B)
-    psi      = 0.5 * (psi[:-1, :] + psi[1:, :])              # (Nr-1, B)
+    ctrl_pts   = wake_inputs.ctrl_pts
+    Nr         = wake_inputs.Nr
+    Nr_s       = Nr - 1
+    c_1d       = wake_inputs.chord_distribution
+    psi        = rotor.blades.bound.psi   # (Nr, B)
+    psi        = 0.5 * (psi[:-1, :] + psi[1:, :])              # (Nr-1, B)
     va         = rotor.blades.bound.va
     vt         = rotor.blades.bound.vt
     Gamma      = rotor.blades.bound.gamma      
-    Cl         = rotor.blades.bound.cl         
-    Cdval      = rotor.blades.bound.Cdval      
+    Cl         = rotor.blades.bound.Cl         
+    Cdval      = rotor.blades.bound.Cdval
+    Cd         = rotor.blades.bound.Cd      
     alpha      = rotor.blades.bound.alpha      
     alpha_disc = rotor.blades.bound.alpha_disc 
     Ma         = rotor.blades.bound.Ma        
@@ -180,10 +179,10 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     W          = rotor.blades.bound.W     
     Wa         = rotor.blades.bound.Wa   
     Wt         = rotor.blades.bound.Wt   
-    F          = rotor.blades.bound.F   
+    lamdaw     = rotor.blades.bound.lamdaw   
 
     r_1d      = rotor.radius_distribution   # (Nr,) -- use the 1D version from rotor
-    c_mid = 0.5*(c_1d[:, :-1, :] + c_1d[:, 1:, :])   # (ctrl_pts, Nr-1, B)
+    c_mid     = 0.5*(c_1d[:, :-1, :] + c_1d[:, 1:, :])   # (ctrl_pts, Nr-1, B)
     r_mid     = 0.5*(r_1d[:-1] + r_1d[1:])               # (Nr_s,)
 
     B         = rotor.number_of_blades
@@ -211,8 +210,7 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     V_thrust                = orientation_product(T_body2thrust,V_body)
 
     # Calculating rotational parameters
-    omegar = np.outer(omega, r_mid)[:, :, None] * np.ones((ctrl_pts, Nr_s, B))   # (ctrl_pts, Nr, B)
-    n        = np.abs(omega)/(2.*np.pi)   # Rotations per second
+    n         = np.abs(omega)/(2.*np.pi)   # Rotations per second
 
     # Check and correct for hover
     V         = V_thrust[:,0,None]
@@ -226,21 +224,8 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     r_3d      = r_mid[np.newaxis, :, np.newaxis] * np.ones((ctrl_pts, Nr_s, B))
     r_dim_2d  = np.tile(r_mid[:, None], (1, B))
     r_dim_2d  = np.repeat(r_dim_2d[None,:,:], ctrl_pts, axis=0)
-    
-    #---------------------------------------------------------------------------      
-    # tip loss correction for velocities, since tip loss correction is only applied to loads in prior BET iteration
-    va     = F*va
-    vt     = F*vt
-    lamdaw = r_3d*(Ua-va)/(R*(Ut-vt))
 
-    # More Cd scaling from Mach from AA241ab notes for turbulent skin friction
-    Tw_Tinf     = 1. + 1.78*(Ma*Ma)
-    Tp_Tinf     = 1. + 0.035*(Ma*Ma) + 0.45*(Tw_Tinf-1.)
-    Tp          = (Tp_Tinf)*T
-    Rp_Rinf     = (Tp_Tinf**2.5)*(Tp+110.4)/(T+110.4)
-    Cd          = ((1/Tp_Tinf)*(1/Rp_Rinf)**0.2)*Cdval
-
-    epsilon             = Cd/Cl
+    epsilon                     = Cd/(Cl+1e-300)
     epsilon[np.abs(Cl) <= 1e-6] = 10.0 * np.sign(Cl[np.abs(Cl) <= 1e-6])
 
     # thrust and torque and their derivatives on the blade.
@@ -284,41 +269,51 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     sigma     = B * c_mean / (np.pi * R)                   # scalar solidity
 
     # calculate coefficients
-    A        = np.pi*(R**2)
+    A         = np.pi*(R**2)
     D         = 2*R
-    Cq        = torque/(rho_0*(n*n)*(D*D*D*D*D))
+    Cq        = torque/(rho_0*(n**2)*(D**5))
     Cq_rotor  = torque / (rho_0 * A * (omega*R)**2 * R)
-    Ct        = thrust/(rho_0*(n*n)*(D*D*D*D))
+    Ct        = thrust/(rho_0*(n**2)*(D**4))
     Ct_rotor  = thrust / (rho_0 * A * (omega * R)**2)   # rotor convention
     Ct_sigma  = Ct_rotor / sigma                                 
-    Cp        = power/(rho_0*(n*n*n)*(D*D*D*D*D))
+    Cp        = power/(rho_0*(n**3)*(D**5))
     Cp_rotor  = power  / (rho_0 * A * (np.abs(omega)*R)**3)
-    Crd      = rotor_drag/(rho_0*(n*n)*(D*D*D*D))
-    etap     = V*thrust/power
-    FoM      = thrust*np.sqrt(thrust/(2*rho_0*A))/power  
+    Crd       = rotor_drag/(rho_0*(n**2)*(D**4))
+    etap      = V*thrust/power
+    FoM       = thrust*np.sqrt(thrust/(2*rho_0*A))/power  
 
     print("FM: ", FoM, ", Ct_sigma: ", Ct_sigma)
 
     # prevent things from breaking
-    Cq[Cq<0]                   = 0.
-    Ct[Ct<0]                   = 0.
-    Cp[Cp<0]                   = 0.
-    thrust[omega<0.0]          = -thrust[omega<0.0]
-    thrust[omega==0.0]         = 0.0
-    power[omega==0.0]          = 0.0
-    torque[omega==0.0]         = 0.0
-    rotor_drag[omega==0.0]     = 0.0
-    Ct[omega==0.0]             = 0.0
-    Cp[omega==0.0]             = 0.0
+    thrust[omega==0.0]         = 0.
+    power[omega==0.0]          = 0.
+    torque[omega==0.0]         = 0.
+    rotor_drag[omega==0.0]     = 0.
+    Ct[omega==0.0]             = 0.
+    Ct_rotor[omega==0.0]       = 0.
+    Cp[omega==0.0]             = 0.
+    Cp_rotor[omega==0.0]       = 0.
+    Cq[omega==0.0]             = 0.
+    Cq_rotor[omega==0.0]       = 0.
     etap[omega==0.0]           = 0.
-    thrust[eta[:,0]  <=0.0]    = 0.0
-    power[eta[:,0]  <=0.0]     = 0.0
-    torque[eta[:,0]  <=0.0]    = 0.0  
+
+    thrust[eta[:,0]  <=0.0]    = 0.
+    power[eta[:,0]   <=0.0]    = 0.
+    torque[eta[:,0]  <=0.0]    = 0.  
     power[eta>1.0]             = power[eta>1.0]*eta[eta>1.0]
     thrust[eta[:,0]>1.0,:]     = thrust[eta[:,0]>1.0,:]*eta[eta[:,0]>1.0,:] 
 
-    disc_loading           = thrust/(np.pi*(R**2))
-    power_loading          = thrust/(power)
+    disc_loading              = thrust/(np.pi*(R**2))
+    disc_loading[omega==0.0]  = 0.
+
+    power_loading             = thrust/(power)
+    power_loading[omega==0.0] = 0.
+    power_loading[eta[:,0]  <=0.0] = 0.
+
+    advance_ratio                   = V/(n*D) 
+    advance_ratio[omega==0.0]       = 0.
+    advance_ratio_rotor             = np.sqrt(V_thrust[:,2]**2)/(omega*R) 
+    advance_ratio_rotor[omega==0.0] = 0.
 
     # Make the thrust a 3D vector
     thrust_prop_frame      = np.zeros((ctrl_pts,3))
@@ -337,7 +332,8 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
                 number_radial_stations            = Nr,
                 orientation                       = orientation,  
                 number_azimuthal_stations         = B,
-                advance_ratio                     = V/(n*D), 
+                advance_ratio                     = advance_ratio, 
+                advance_ratio_rotor               = advance_ratio_rotor,
                 disc_radial_distribution          = r_dim_2d,
                 speed_of_sound                    = conditions.freestream.speed_of_sound,
                 density                           = conditions.freestream.density,
@@ -370,6 +366,7 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
                 disc_thrust_distribution          = blade_T_distribution_2d, 
                 thrust_per_blade                  = thrust/B,
                 thrust_coefficient                = Ct,
+                thrust_coefficient_rotor          = Ct_rotor,
                 blade_loading                     = Ct_sigma,
                 solidity                          = sigma,
                 disc_azimuthal_distribution       = psi,
@@ -379,7 +376,9 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
                 disc_torque_distribution          = blade_Q_distribution_2d,
                 torque_per_blade                  = torque/B,
                 torque_coefficient                = Cq,
-                power_coefficient                 = Cp, 
+                torque_coefficient_rotor          = Cq_rotor,
+                power_coefficient                 = Cp,
+                power_coefficient_rotor           = Cp_rotor, 
                 converged_inflow_ratio            = lamdaw, 
                 rotor_H_distribution              = rotor_drag_distribution,
                 rotor_drag                        = rotor_drag,

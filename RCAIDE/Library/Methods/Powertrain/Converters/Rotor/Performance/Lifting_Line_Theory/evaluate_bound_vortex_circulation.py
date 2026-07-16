@@ -352,7 +352,7 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
                 Cd       = ((1/Tp_Tinf)*(1/Rp_Rinf)**0.2)*Cdval
 
             # Prandtl tip loss
-            _, F, _ = compute_inflow_and_tip_loss(r, R, Wa, Wt,  B)
+            lamdaw, F, _ = compute_inflow_and_tip_loss(r, R, Wa, Wt,  B)
 
             Cl = Cl * F
 
@@ -428,8 +428,9 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
     #  Store converged results
     # ------------------------------------------------------------------------------------------------------------------
     rotor.blades.bound.gamma      = Gamma_b 
-    rotor.blades.bound.cl         = Cl 
+    rotor.blades.bound.Cl         = Cl 
     rotor.blades.bound.Cdval      = Cdval
+    rotor.blades.bound.Cd         = Cd
     rotor.blades.bound.alpha      = alpha 
     rotor.blades.bound.alpha_disc = alpha_disc
     rotor.blades.bound.Ma         = Ma
@@ -444,6 +445,7 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
     rotor.blades.bound.F          = F
     rotor.blades.bound.va         = ua_ind
     rotor.blades.bound.vt         = ut_ind
+    rotor.blades.bound.lamdaw     = lamdaw
 
     if wake_inputs.include_wake:
         rotor.blades.wake.gamma = Gamma_wake.reshape(ctrl_pts, N_wake, B)
