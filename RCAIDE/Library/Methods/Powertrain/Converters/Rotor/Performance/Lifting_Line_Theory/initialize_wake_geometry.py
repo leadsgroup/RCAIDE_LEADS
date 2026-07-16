@@ -118,7 +118,13 @@ def initialize_wake_geometry(rotor, wake_inputs, conditions):
     # ------------------------------------------------------------------------------------------------------------------
     if wake_model == 1:
         # Simple: Landgrebe k3/k4 contraction + single-rate axial convection
-        Lambda = 0.145 + 27.0 * CT   # (ctrl_pts,)
+        Lambda    = 0.145 + 27.0 * CT   # (ctrl_pts,)
+        #bad_CT = CT <= 0
+        #if np.any(bad_CT):
+        #    print(f"Warning: control point(s) {np.where(bad_CT)[0].tolist()} have "
+        #          f"CT={CT[bad_CT]} driving the wake-contraction rate "
+        #          f"Clamping CT to a small positive floor, 1e-3.")
+        #Lambda = np.where(bad_CT, 0.145 + 27.0 * 1e-3, Lambda)
         wcf    = 0.78 + (1.0 - 0.78) * np.exp(-Lambda[:, np.newaxis] * wakeage[np.newaxis, :])   # (ctrl_pts, N_wake+1)
     elif wake_model in (2, 3):
         # Landgrebe (2) or Landgrebe - Kocurek & Tangler (3): empirical constants from total tip pitch
