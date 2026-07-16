@@ -7,5 +7,4 @@
 
 from .Cabin          import Cabin
 from .Side_Cabin     import Side_Cabin
-from .               import Segments
 from .               import Classes 

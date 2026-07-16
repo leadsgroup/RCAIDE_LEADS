@@ -558,7 +558,9 @@ def vehicle_setup():
     starboard_propulsor.gearbox.efficiency           = 0.99                                             
     starboard_propulsor.design_thrust                = 8200.0 * Units.N 
     starboard_propulsor.design_altitude              = 25000*Units.ft                                
-    starboard_propulsor.design_freestream_velocity   = 270 * Units.kts  
+    starboard_propulsor.design_freestream_velocity   = 270 * Units.kts
+    starboard_propulsor.length                       = 1.8
+    starboard_propulsor.diameter                     = 0.52
 
     #Propeller Design              
     propeller                                        = RCAIDE.Library.Components.Powertrain.Converters.Propeller()   

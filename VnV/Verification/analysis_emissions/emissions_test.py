@@ -37,15 +37,14 @@ from Boeing_737    import configs_setup as configs_setup
 def main():
     ti = time.time()
     
-    cantera_installation = False 
+    cantera_installation = False
 
-    emissions_methods = ['Emission_Index_Correlation_Method']
+    emissions_methods = ['Emission_Index_Correlation_Method', 'Emission_Index_CRN_Method']
     use_surrogate     = [True, False]
 
     try:
         import cantera as ct
         cantera_installation = True
-        emissions_methods = ['Emission_Index_Correlation_Method', 'Emission_Index_CRN_Method']
     except:
         pass
        
@@ -72,24 +71,24 @@ def main():
                 # create mission instances (for multiple types of missions)
                 missions = missions_setup(mission) 
                  
-                # mission analysis 
+                # mission analysis - skip evaluate when Cantera is not installed
+                if emissions_methods[em] == 'Emission_Index_CRN_Method' and not cantera_installation:
+                    i += 1
+                    continue
                 results = missions.base_mission.evaluate()
-                
+
                 # check results
                 EI_CO2         = results.segments.cruise.conditions.emissions.index.CO2[0,0]
-                EI_H2O         = results.segments.cruise.conditions.emissions.index.H2O[0,0]  
+                EI_H2O         = results.segments.cruise.conditions.emissions.index.H2O[0,0]
                 true_EI_CO2    = true_EI_CO2s[i]
-                true_EI_H2O    = true_EI_H2Os[i]   
+                true_EI_H2O    = true_EI_H2Os[i]
                 diff_EI_CO2    = np.abs(EI_CO2 - true_EI_CO2)
                 diff_EI_H2O    = np.abs(EI_H2O - true_EI_H2O)
-                
-                if cantera_installation == False and  i > 0:
-                    pass
-                else:
-                    print('EI CO2 Error: ',diff_EI_CO2)
-                    assert (diff_EI_CO2/true_EI_CO2) < 1e-1
-                    print('EI H2O Error: ',diff_EI_H2O)
-                    assert (diff_EI_H2O/true_EI_H2O) < 1e-1
+
+                print('EI CO2 Error: ',diff_EI_CO2)
+                assert (diff_EI_CO2/true_EI_CO2) < 1e-1
+                print('EI H2O Error: ',diff_EI_H2O)
+                assert (diff_EI_H2O/true_EI_H2O) < 1e-1
                 i += 1
 
     elapsed_time = time.time() - ti

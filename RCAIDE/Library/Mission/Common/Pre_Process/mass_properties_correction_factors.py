@@ -51,71 +51,67 @@ def apply_correction_factors(analyses):
 def apply_component_weights(analyses):
     weight_correction_factors = analyses.weights.settings.weight_correction_factors
     for key in analyses.vehicle.keys():
-        if key =='wings':
+        structural = weight_correction_factors.empty.structural
+        propulsion = weight_correction_factors.empty.propulsion
+        systems    = weight_correction_factors.empty.systems
+        if key == 'wings':
             for wing in analyses.vehicle.wings:
                 if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
-                    if hasattr(weight_correction_factors.empty.structural, 'wing'):
-                        wing.mass_properties.mass *= weight_correction_factors.empty.structural.wing
+                    wing.mass_properties.mass *= structural.get('wing', 1.0)
                 if isinstance(wing, RCAIDE.Library.Components.Wings.Horizontal_Tail):
-                    if hasattr(weight_correction_factors.empty.structural, 'empennage'):
-                        wing.mass_properties.mass *= weight_correction_factors.empty.structural.empennage
+                    wing.mass_properties.mass *= structural.get('empennage', 1.0)
                 if isinstance(wing, RCAIDE.Library.Components.Wings.Vertical_Tail):
-                    if hasattr(weight_correction_factors.empty.structural, 'empennage'):
-                        wing.mass_properties.mass *= weight_correction_factors.empty.structural.empennage
+                    wing.mass_properties.mass *= structural.get('empennage', 1.0)
         elif key == 'fuselages':
             for fuselage in analyses.vehicle.fuselages:
                 if isinstance(fuselage, RCAIDE.Library.Components.Fuselages.Fuselage):
-                    if hasattr(weight_correction_factors.empty.structural, 'fuselage'):
-                        fuselage.mass_properties.mass *= weight_correction_factors.empty.structural.fuselage
+                    fuselage.mass_properties.mass *= structural.get('fuselage', 1.0)
         elif key == 'networks':
             for network in analyses.vehicle.networks:
-                for propulsor in network.propulsors: 
-                    if hasattr(weight_correction_factors.empty.structural, 'nacelle'):
-                        propulsor.nacelle.mass_properties.mass *= weight_correction_factors.empty.structural.nacelle
-                    if hasattr(weight_correction_factors.empty.propulsion, 'engines'):
-                        propulsor.mass_properties.mass *= weight_correction_factors.empty.propulsion.engines 
+                for propulsor in network.propulsors:
+                    if propulsor.nacelle is not None:
+                        propulsor.nacelle.mass_properties.mass *= structural.get('nacelle', 1.0)
+                    propulsor.mass_properties.mass *= propulsion.get('engines', 1.0)
         elif key == 'landing_gears':
             for landing_gear in analyses.vehicle.landing_gears:
-                if hasattr(weight_correction_factors.empty.structural, 'landing_gear'):
-                    landing_gear.mass_properties.mass *= weight_correction_factors.empty.structural.landing_gear
+                landing_gear.mass_properties.mass *= structural.get('landing_gear', 1.0)
         elif key == 'booms':
             for boom in analyses.vehicle.booms:
-                if hasattr(weight_correction_factors.empty.structural, 'boom'):
-                    boom.mass_properties.mass *= weight_correction_factors.empty.structural.boom    
-        elif key == 'systems': # If you have factor and a defined system weight, multiply those two in a calculator. 
+                boom.mass_properties.mass *= structural.get('boom', 1.0)
+        elif key == 'systems':
             for system in analyses.vehicle.systems:
                 if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Avionics:
-                    if hasattr(weight_correction_factors.empty.systems, 'avionics') and system.mass_properties.calculated_flag:
-                        system.mass_properties.mass *= weight_correction_factors.empty.systems.avionics
-                    elif hasattr(weight_correction_factors.empty.systems, 'avionics') and system.mass_properties.calculated_flag == False:
+                    if system.mass_properties.calculated_flag:
+                        system.mass_properties.mass *= systems.get('avionics', 1.0)
+                    else:
                         analyses.vehicle.mass_properties.weight_breakdown.empty.systems.avionics = system.mass_properties.mass
                 if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls:
-                    if hasattr(weight_correction_factors.empty.systems, 'control_systems') and system.mass_properties.calculated_flag:
-                        system.mass_properties.mass *= weight_correction_factors.empty.systems.control_systems 
-                    elif hasattr(weight_correction_factors.empty.systems, 'control_systems') and system.mass_properties.calculated_flag == False:
+                    if system.mass_properties.calculated_flag:
+                        system.mass_properties.mass *= systems.get('control_systems', 1.0)
+                    else:
                         analyses.vehicle.mass_properties.weight_breakdown.empty.systems.control_systems = system.mass_properties.mass
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit: 
-                    if hasattr(weight_correction_factors.empty.systems, 'apu') and system.mass_properties.calculated_flag:
-                        system.mass_properties.mass *= weight_correction_factors.empty.systems.apu  
-                    elif hasattr(weight_correction_factors.empty.systems, 'apu') and system.mass_properties.calculated_flag == False:
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit:
+                    if system.mass_properties.calculated_flag:
+                        system.mass_properties.mass *= systems.get('apu', 1.0)
+                    else:
                         analyses.vehicle.mass_properties.weight_breakdown.empty.systems.apu = system.mass_properties.mass
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Electrical: 
-                    if hasattr(weight_correction_factors.empty.systems, 'electrical') and system.mass_properties.calculated_flag:
-                        system.mass_properties.mass *= weight_correction_factors.empty.systems.electrical  
-                    elif hasattr(weight_correction_factors.empty.systems, 'electrical') and system.mass_properties.calculated_flag == False:
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Electrical:
+                    if system.mass_properties.calculated_flag:
+                        system.mass_properties.mass *= systems.get('electrical', 1.0)
+                    else:
                         analyses.vehicle.mass_properties.weight_breakdown.empty.systems.electrical = system.mass_properties.mass
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Hydraulics: 
-                    if hasattr(weight_correction_factors.empty.systems, 'hydraulics') and system.mass_properties.calculated_flag:
-                        system.mass_properties.mass *= weight_correction_factors.empty.systems.hydraulics 
-                    elif hasattr(weight_correction_factors.empty.systems, 'hydraulics') and system.mass_properties.calculated_flag == False:
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Hydraulics:
+                    if system.mass_properties.calculated_flag:
+                        system.mass_properties.mass *= systems.get('hydraulics', 1.0)
+                    else:
                         analyses.vehicle.mass_properties.weight_breakdown.empty.systems.hydraulics = system.mass_properties.mass
-                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls: 
-                    if hasattr(weight_correction_factors.empty.systems, 'air_conditioner') and system.mass_properties.calculated_flag:
-                        system.mass_properties.mass *= weight_correction_factors.empty.systems.air_conditioner  
-                    elif hasattr(weight_correction_factors.empty.systems, 'air_conditioner') and system.mass_properties.calculated_flag == False:
-                        analyses.vehicle.mass_properties.weight_breakdown.empty.systems.air_conditioner = system.mass_properties.mass  
+                if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls:
+                    if system.mass_properties.calculated_flag:
+                        system.mass_properties.mass *= systems.get('air_conditioner', 1.0)
+                    else:
+                        analyses.vehicle.mass_properties.weight_breakdown.empty.systems.air_conditioner = system.mass_properties.mass
                 if type(system) == RCAIDE.Library.Components.Powertrain.Systems.Instruments:
-                    if hasattr(weight_correction_factors.empty.systems, 'instruments') and system.mass_properties.calculated_flag:
-                        system.mass_properties.mass *= weight_correction_factors.empty.systems.instruments  
-                    elif hasattr(weight_correction_factors.empty.systems, 'instruments') and system.mass_properties.calculated_flag == False:
+                    if system.mass_properties.calculated_flag:
+                        system.mass_properties.mass *= systems.get('instruments', 1.0)
+                    else:
                         analyses.vehicle.mass_properties.weight_breakdown.empty.systems.instruments = system.mass_properties.mass  

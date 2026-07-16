@@ -33,8 +33,8 @@ def main():
     vehicle  = vehicle_setup()    
     configs  = configs_setup(vehicle) 
     analyses = analyses_setup(configs)  
-    
-    angle_of_attack_range                 = np.atleast_2d(np.linspace(-5, 15, 21)).T*Units.degrees   
+ 
+    angle_of_attack_range                 = np.atleast_2d(np.linspace(-5, 15, 5)).T*Units.degrees   
     Mach_number_range                     = np.ones_like(angle_of_attack_range) * 0.78 
     temperatures                          = np.ones_like(angle_of_attack_range) * 340
     non_dimensional_reynolds_numbers      = np.ones_like(angle_of_attack_range) * 1E7 
@@ -46,10 +46,12 @@ def main():
                                                                           mach_numbers                     = Mach_number_range)
  
 
-    # plot results 
-    plot_aircraft_aerodynamics(results, save_filename = "B737_Aircraft_Aerodynamic_Analysis")    
-      
-    return   
+    # plot results
+    plot_aircraft_aerodynamics(results, save_filename = "B737_Aircraft_Aerodynamic_Analysis")
+    plot_pressure_coefficient_distribution(results)
+    plot_3d_vehicle_vlm_panelization(results.vortex_distribution)
+
+    return
  
  
 def vehicle_setup(): 
@@ -885,7 +887,8 @@ def base_analysis(vehicle):
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
     analyses.append(geometry)
   
-    aerodynamics   = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()     
+    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
+    aerodynamics.settings.use_surrogate = False
     analyses.append(aerodynamics)
     
     return analyses 

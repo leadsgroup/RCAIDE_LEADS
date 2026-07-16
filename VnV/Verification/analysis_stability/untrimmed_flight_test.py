@@ -38,8 +38,17 @@ def main():
     # vehicle data
     vehicle  = vehicle_setup() 
 
+    # append slat to exercise the Slat branch in evaluate_no_surrogate
+    slat                     = RCAIDE.Library.Components.Wings.Control_Surfaces.Slat()
+    slat.tag                 = 'slat'
+    slat.span_fraction_start = 0.1
+    slat.span_fraction_end   = 0.7
+    slat.deflection          = 0.0 * Units.degrees
+    slat.chord_fraction      = 0.1
+    vehicle.wings.main_wing.append_control_surface(slat)
+
     # Set up vehicle configs
-    configs  = configs_setup(vehicle)
+    configs  = configs_setup(vehicle) 
 
     # create analyses
     analyses = analyses_setup(configs)
@@ -54,7 +63,7 @@ def main():
     results = missions.base_mission.evaluate() 
 
     CL        = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[0][0]
-    CL_true   = 0.729644445712727
+    CL_true   = 0.7130354497601528
     CL_diff   = np.abs(CL - CL_true)
     print('Error: ',CL_diff)
     assert np.abs(CL_diff/CL_true) < 1e-6

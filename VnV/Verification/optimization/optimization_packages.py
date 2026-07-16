@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------     
 from   RCAIDE.Framework.Core         import Units, Data
 import RCAIDE.Framework.Optimization.Packages.scipy as scipy_setup 
-from   RCAIDE.Framework.Optimization.Common         import Nexus
+from   RCAIDE.Framework.Optimization.Common         import Nexus, generate_carpet_plot, generate_line_plot, print_optimization_results
 
 import numpy as np
 import vehicle_opt_pack
@@ -35,6 +35,23 @@ def main():
         [ 'x2' , '<',   2., 1., 1*Units.less],
         ],dtype=object)        
     print('\n\n Checking basic additive with one active constraint...') 
+   
+    # testing carpet plot and line plot generation
+    carpet_plot_data =generate_carpet_plot(problem,
+                design_input_1_index            = 0, 
+                design_input_2_index            = 1,                
+                number_of_points                = 3,
+                generate_objective_plot         = True, 
+                objective_plot_constraint_index = 0, 
+                generate_constraint_plots       = True)
+    
+    # create line plot 
+    line_plot_data =generate_line_plot(problem,
+            design_input_1_index = 0, 
+            number_of_points     = 3, 
+            plot_objective       = True,
+            plot_constraint      = True) 
+        
     # suppress iteration printout 
     Nexus.translate(problem)
     sys.stdout = open(os.devnull,'w')   
@@ -45,9 +62,11 @@ def main():
     
     obj = scipy_setup.SciPy_Problem(problem,outputs[0])[0]
     x1 = outputs[0][0]
-    x2 = outputs[0][1] 
-    
-    # print results 
+    x2 = outputs[0][1]
+
+    print_optimization_results(problem)
+
+    # print results
     print(f"Objective: {obj}")
     print(f"x1: {x1}")
     print(f"x2: {x2}")
