@@ -7,8 +7,33 @@
 # ----------------------------------------------------------------------------------------------------------------------
 import numpy as np
 from RCAIDE.Framework.Core                           import Data, orientation_product, orientation_transpose
-from RCAIDE.Library.Methods.Aerodynamics.Common.Lift  import compute_airfoil_aerodynamics, compute_inflow_and_tip_loss
+from RCAIDE.Library.Methods.Aerodynamics.Common.Lift  import compute_airfoil_aerodynamics
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory import biot_savart_velocity_induction, initialize_wake_geometry
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  compute_lifting_line_inflow_and_tip_loss
+# ----------------------------------------------------------------------------------------------------------------------
+def compute_lifting_line_inflow_and_tip_loss(r, R, Wa, Wt, B, et1=1, et2=1, et3=1):
+    """
+    Lifting-line-specific inflow ratio and Prandtl tip loss factor.
+
+    Kept separate from RCAIDE.Library.Methods.Aerodynamics.Common.Lift.compute_inflow_and_tip_loss
+    (used by BEMT) because lamdaw here is not r/R-scaled -- BEMT's tip-loss iteration was
+    validated against the r/R-scaled, floored version, and sharing this function caused BEMT
+    to stop converging on cases that used to work.
+
+    Inputs/Outputs match compute_inflow_and_tip_loss (see that function's docstring).
+    """
+    lamdaw = Wa / Wt
+
+    phii   = np.atan2(Wa,Wt)  
+
+    tipfactor = B/2.0 * ((R/r)**et1 - 1)**et2 / np.abs(phii)**et3
+
+    piece = np.exp(-tipfactor)
+    Ftip  = (2./np.pi) * np.arccos(piece)
+
+    return lamdaw, Ftip, piece
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  evaluate_bound_vortex_circulation
@@ -352,7 +377,7 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
                 Cd       = ((1/Tp_Tinf)*(1/Rp_Rinf)**0.2)*Cdval
 
             # Prandtl tip loss
-            lamdaw, F, _ = compute_inflow_and_tip_loss(r, R, Wa, Wt,  B)
+            lamdaw, F, _ = compute_lifting_line_inflow_and_tip_loss(r, R, Wa, Wt,  B)
 
             Cl = Cl * F
 
