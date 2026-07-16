@@ -84,8 +84,13 @@ def compute_RHS_matrix(VD,delta,phi,conditions,settings,geometry,propeller_wake_
                     rotor =  propulsor.rotor
                 elif 'propeller' in  propulsor :
                     rotor =  propulsor.propeller
-                if rotor.fidelity == "Blade_Element_Momentum_Theory_Helmholtz_Wake":                 
-                    rot_V_wake_ind += RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.wake_model.evaluate_slipstream(rotor,VD,conditions,settings,geometry,num_ctrl_pts) 
+                if rotor.fidelity == "Blade_Element_Momentum_Theory_Helmholtz_Wake" :
+                    if rotor.tag not in conditions.energy.converters:
+                        # Rotor performance hasn't been evaluated for these conditions yet (e.g. VLM
+                        # surrogate training, which runs synthetic AoA/Mach sweeps with no propulsor
+                        # evaluation behind them) -- skip slipstream feedback rather than fail.
+                        continue
+                    rot_V_wake_ind += RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Blade_Element_Momentum_Theory_Helmholtz_Wake.wake_model.evaluate_slipstream(rotor,VD,conditions,settings,geometry,num_ctrl_pts)
                     
             # update the total induced velocity distribution
             Vx_ind_total = Vx_ind_total  + rot_V_wake_ind[:,:,0]
