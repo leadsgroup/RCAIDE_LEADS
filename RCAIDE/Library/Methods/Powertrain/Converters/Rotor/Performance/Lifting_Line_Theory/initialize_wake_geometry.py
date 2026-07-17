@@ -161,7 +161,7 @@ def initialize_wake_geometry(rotor, wake_inputs, conditions):
             wakeage[np.newaxis, :] < phi_break,
             k1[:, np.newaxis] * wakeage[np.newaxis, :],
             k1[:, np.newaxis] * phi_break + k2[:, np.newaxis] * (wakeage[np.newaxis, :] - phi_break)
-        ) + (lam[:, np.newaxis] + muxs[:, np.newaxis]) * wakeage[np.newaxis, :] # (ctrl_pts, N_wake+1) non-dimensional x/R
+        ) + (muxs[:, np.newaxis]) * wakeage[np.newaxis, :] # (ctrl_pts, N_wake+1) non-dimensional x/R
 
         # Radial contraction
         wcf = k4 + (1.0 - k4) * np.exp(-k3[:, np.newaxis] * wakeage[np.newaxis, :])   # (ctrl_pts, N_wake+1)

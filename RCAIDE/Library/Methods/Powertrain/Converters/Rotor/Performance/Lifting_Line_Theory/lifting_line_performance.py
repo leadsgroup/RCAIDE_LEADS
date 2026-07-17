@@ -171,7 +171,7 @@ def lifting_line_performance(rotor, conditions, wake_inputs=None):
     # ------------------------------------------------------------------------------------------------------------------
     compute_lifting_line_loads(rotor, wake_inputs, conditions)
 
-    if True: # Debug
+    if False: # Debug
 
         # Importing plotting libs
         import matplotlib.pyplot as plt

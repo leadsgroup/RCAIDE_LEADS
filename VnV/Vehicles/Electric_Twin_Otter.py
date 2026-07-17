@@ -536,7 +536,7 @@ def vehicle_setup(cell_chemistry, btms_type, rotor_type):
         
         # Propeller wake
         propeller.wake_inputs = Data()
-        propeller.wake_inputs.wake_model                   = 1                 # 1 simple model, 2 landgrebe, 3 landgrebe KT
+        propeller.wake_inputs.wake_model                   = 2                 # 1 simple model, 2 landgrebe, 3 landgrebe KT
         propeller.wake_inputs.vc_correction                = 1                 # vortex core factor, 1 standard Rankine, 2 Rankine, 3, scully, 4 Vatistas, 5 Oseen
         propeller.wake_inputs.dpsi                         = np.radians(6.8)   # filament length [rad]
         propeller.wake_inputs.n_turns                      = 5.0               # Number of wake turns
