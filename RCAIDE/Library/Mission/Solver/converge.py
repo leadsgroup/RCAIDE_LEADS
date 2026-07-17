@@ -133,12 +133,6 @@ def iterate_root_finder(unknowns, segment):
     segment.process.iterate(segment)
     
     residuals = segment.state.residuals.pack_array()
-    
-    # outer iteration counter and residual values
-    if not hasattr(segment.state.numerics, 'outer_iter_count'):
-        segment.state.numerics.outer_iter_count = 0
-    segment.state.numerics.outer_iter_count += 1
-    print(f"outer iteration: {segment.state.numerics.outer_iter_count}| residuals: {residuals}")
         
     return residuals
 
