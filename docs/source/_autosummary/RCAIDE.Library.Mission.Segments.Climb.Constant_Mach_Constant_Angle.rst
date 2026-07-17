@@ -17,7 +17,7 @@ Constant\_Mach\_Constant\_Angle
       :toctree:
    
       initialize_conditions
-      residual_total_forces
+      residual_altitude
       update_differentials
    
    

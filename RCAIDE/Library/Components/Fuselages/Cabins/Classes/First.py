@@ -1,4 +1,4 @@
-# RCAIDE/Compoments/Fuselages/Cabins/Cabin_Class.py
+# RCAIDE/Components/Fuselages/Cabins/Cabin_Class.py
 # 
 # Created:  Mar 2024, M. Clarke 
 
@@ -16,19 +16,22 @@ class First(Component):
     
     def __defaults__(self):
         """
-        Sets default values for all fuselage attributes.
+        Sets default values for first class portion of the cabin.
         """      
         
         self.tag                                 = 'first_class' 
         self.number_of_seats_abrest              = 0
+        self.number_of_passengers                = 0 
         self.number_of_rows                      = 0 
+        self.number_of_seats                     = 0 
         self.seat_width                          = 25 *  Units.inches
         self.seat_arm_rest_width                 = 2 *  Units.inches
         self.seat_length                         = 40 *  Units.inches
         self.seat_pitch                          = 50 *  Units.inches
-        self.aile_width                          = 18 *  Units.inches          
+        self.aisle_width                         = 18 *  Units.inches          
         self.galley_lavatory_percent_x_locations = []      
         self.emergency_exit_percent_x_locations  = []
-        self.type_A_exit_percent_x_locations     = [] 
+        self.type_A_exit_percent_x_locations     = []  
+        self.y_offset_distance                   = 0
                
      

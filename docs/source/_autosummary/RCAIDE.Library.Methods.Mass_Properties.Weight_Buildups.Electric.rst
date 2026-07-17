@@ -31,6 +31,7 @@ Electric
    :recursive:
 
    Common
+   Drone
    General_Aviation
    VTOL
 

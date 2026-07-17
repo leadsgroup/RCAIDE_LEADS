@@ -1,4 +1,4 @@
-# RCAIDE/Compoments/Fuselages/Cabins/Side_Cabin.py
+# RCAIDE/Components/Fuselages/Cabins/Side_Cabin.py
 # 
 # Created:  Mar 2024, M. Clarke 
 
@@ -19,5 +19,6 @@ class Side_Cabin(Cabin):
         Sets default values for all fuselage attributes.
         """      
         
-        self.tag                                    = 'side_cabin'    
-         
+        self.tag        = 'side_cabin'
+        self.side_aisle = False
+  

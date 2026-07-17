@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Wings/Stabilator.py
+# RCAIDE/Library/Components/Wings/Stabilator.py
 # 
 # Created:  Mar 2024, M. Clarke 
 
@@ -7,8 +7,7 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 # RCAIDE imports   
 from .Horizontal_Tail    import Horizontal_Tail
-from .All_Moving_Surface import All_Moving_Surface
-from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_wing_moment_of_inertia import  compute_wing_moment_of_inertia
+from .All_Moving_Surface import All_Moving_Surface 
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Stabilator
@@ -54,22 +53,3 @@ class Stabilator(Horizontal_Tail, All_Moving_Surface):
         """
         self.tag            = 'stabilator'
         self.sign_duplicate = 1.0
-
-    def moment_of_inertia(wing, center_of_gravity):
-        """
-        Computes the moment of inertia tensor for the stabilator.
-
-        Parameters
-        ----------
-        wing : Component
-            Wing component data
-        center_of_gravity : list
-            Reference point coordinates for moment calculation
-
-        Returns
-        -------
-        ndarray
-            3x3 moment of inertia tensor
-        """
-        I = compute_wing_moment_of_inertia(wing, center_of_gravity) 
-        return I  

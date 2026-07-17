@@ -35,4 +35,5 @@ Ground
    Ground
    Landing
    Takeoff
+   Test_Stand
 

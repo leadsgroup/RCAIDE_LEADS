@@ -7,12 +7,12 @@
 #  Imports
 # ---------------------------------------------------------------------------------------------------------------------
 # RCAIDE Imports  
-from .Hybrid                                              import Hybrid
+from .Network                                              import Network
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Fuel
 # ----------------------------------------------------------------------------------------------------------------------  
-class Fuel(Hybrid):
+class Fuel(Network):
     """ Fuel Network Class - Derivative of the hybrid energy network class
                                
     Attributes
@@ -25,10 +25,12 @@ class Fuel(Hybrid):
     RCAIDE.Library.Framework.Networks.Hybrid
         Hybrid network class 
     RCAIDE.Library.Framework.Networks.Fuel_Cell
-        Fuel_Cell network class 
+        Fuel Cell network class
     RCAIDE.Library.Framework.Networks.Electric
         All-Electric network class  
-    """      
+    RCAIDE.Library.Framework.Networks.Hydrogen
+        Hydrogen network class
+    """
     def __defaults__(self):
         """ This sets the default values for the network to function. 
         """  

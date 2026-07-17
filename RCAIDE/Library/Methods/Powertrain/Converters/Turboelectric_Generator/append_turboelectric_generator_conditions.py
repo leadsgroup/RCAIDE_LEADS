@@ -37,7 +37,7 @@ def append_turboelectric_generator_conditions(turboelectric_generator,segment,en
     energy_conditions.converters[turboelectric_generator.tag].throttle                                   = 0. * ones_row(1)     
     energy_conditions.converters[turboelectric_generator.tag].commanded_thrust_vector_angle              = 0. * ones_row(1)   
     energy_conditions.converters[turboelectric_generator.tag].power                                      = 0. * ones_row(1)
-    energy_conditions.converters[turboelectric_generator.tag].fuel_flow_rate                             = 0. * ones_row(1)
+    energy_conditions.converters[turboelectric_generator.tag].fuel_mass_flow_rate                        = 0. * ones_row(1)
     energy_conditions.converters[turboelectric_generator.tag].inputs                                     = Conditions()
     energy_conditions.converters[turboelectric_generator.tag].outputs                                    = Conditions() 
   

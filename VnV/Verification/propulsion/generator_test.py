@@ -18,15 +18,28 @@ import numpy as np
 import sys 
 
 # local imports 
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles' + os.path.sep + 'Rotors'))
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles", "Rotors")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
 from Test_Propeller    import Test_Propeller   
+import time
  
 def main():
+    ti = time.time()
     
     forward_mode_model()
     
     inverse_mode_model()
     
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
     
 def forward_mode_model():

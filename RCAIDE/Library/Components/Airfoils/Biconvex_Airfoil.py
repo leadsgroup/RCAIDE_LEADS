@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Airfoils/Biconvex_Airfoil.py
+# RCAIDE/Library/Components/Airfoils/Biconvex_Airfoil.py
 # 
 # 
 # Created:  Mar 2024, M. Clarke 

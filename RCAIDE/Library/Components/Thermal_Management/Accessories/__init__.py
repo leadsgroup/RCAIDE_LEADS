@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Thermal_Management/Accessories/__init__.py 
+# RCAIDE/Library/Components/Thermal_Management/Accessories/__init__.py 
 
 """
 Module containing accessory components for thermal management systems. This module provides 
@@ -17,4 +17,3 @@ RCAIDE.Library.Components.Thermal_Management.Reservoirs
 # ---------------------------------------------------------------------------------------------------------------------- 
 from .Fan  import Fan 
 from .Pump import Pump
-

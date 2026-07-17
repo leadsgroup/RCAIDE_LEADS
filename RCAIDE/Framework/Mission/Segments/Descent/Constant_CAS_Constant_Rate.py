@@ -39,21 +39,18 @@ class Constant_CAS_Constant_Rate(Evaluate):
         # -------------------------------------------------------------------------------------------------------------- 
         #   User Inputs
         # -------------------------------------------------------------------------------------------------------------- 
-        self.altitude_start      = None # Optional
-        self.altitude_end        = 10. * Units.km
-        self.descent_rate        = 3.  * Units.m / Units.s
-        self.calibrated_airspeed = 100 * Units.m / Units.s
-        self.true_course         = 0.0 * Units.degrees                                 
+        self.altitude_start       = None # Optional
+        self.altitude_end         = 10. * Units.km
+        self.descent_rate         = 3.  * Units.m / Units.s
+        self.calibrated_air_speed = 100 * Units.m / Units.s
+        self.true_course          = 0.0 * Units.degrees                                 
         
         # -------------------------------------------------------------------------------------------------------------- 
         #  Mission specific processes 
         # --------------------------------------------------------------------------------------------------------------  
         initialize                         = self.process.initialize  
         initialize.differentials_altitude  = Common.Initialize.differentials_altitude
-        initialize.conditions              = Segments.Descent.Constant_CAS_Constant_Rate.initialize_conditions
-        iterate                            = self.process.iterate   
-        iterate.residuals.flight_dynamics  = Common.Residuals.flight_dynamics
-        iterate.unknowns.mission           = Common.Unpack_Unknowns.orientation        
+        initialize.conditions              = Segments.Descent.Constant_CAS_Constant_Rate.initialize_conditions    
        
         return
 

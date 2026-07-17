@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Powertrain/Sources/Fuel_Cell/Proton_Exchange_Membrane_Fuel_Cell.py
+# RCAIDE/Library/Components/Powertrain/Sources/Fuel_Cell/Proton_Exchange_Membrane_Fuel_Cell.py
 # 
 # 
 # Created:  Dec 2024, M. Guidotti and M. Clarke 
@@ -154,7 +154,7 @@ class Proton_Exchange_Membrane_Fuel_Cell(Generic_Fuel_Cell_Stack):
         self.fuel_cell.area_specific_mass                                      = 2.5 
         return 
         
-    def energy_calc(self,state,bus,coolant_lines, t_idx, delta_t): 
+    def compute_performance(self,state,bus,coolant_lines, t_idx, delta_t): 
         """Computes the state of the fuel cell battery cell. 
         """        
         if not (self.fuel_cell.type == "LT") or  (self.fuel_cell.type == "HT"): 

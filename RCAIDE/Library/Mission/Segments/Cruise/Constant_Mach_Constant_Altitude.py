@@ -99,9 +99,9 @@ def initialize_conditions(segment):
     # check for initial velocity
     if mach is None: 
         if not segment.state.initials: raise AttributeError('airspeed not set')
-        air_speed = np.linalg.norm(segment.state.initials.conditions.frames.inertial.velocity_vector[-1])    
-    else:# compute speed, constant with constant altitude
-        air_speed = mach * a
+        mach = segment.state.initials.conditions.freestream.mach_number[-1]    
+     
+    air_speed = mach * a
     
     # dimensionalize time
     t_initial = conditions.frames.inertial.time[0,0]

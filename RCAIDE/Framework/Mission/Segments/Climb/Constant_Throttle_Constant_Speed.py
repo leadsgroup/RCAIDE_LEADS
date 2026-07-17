@@ -9,15 +9,14 @@
 
 # RCAIDE imports 
 from RCAIDE.Framework.Core                       import Units 
-from RCAIDE.Framework.Mission.Segments.Evaluate  import Evaluate
-from RCAIDE.Framework.Mission.Segments.Cruise    import Constant_Throttle_Constant_Altitude
+from RCAIDE.Framework.Mission.Segments.Evaluate  import Evaluate 
 from RCAIDE.Library.Mission                      import Common,Segments
 from RCAIDE.Framework.Analyses                   import Process  
+from RCAIDE.Library.Methods.skip                 import skip 
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Constant_Throttle_Constant_Speed
 # ---------------------------------------------------------------------------------------------------------------------- 
- 
 class Constant_Throttle_Constant_Speed(Evaluate):
     """ Climb at a constant throttle setting and true airspeed. This segment may not always converge as the vehicle 
         could be deficient in thrust. Useful as a check to see the climb rate at the top of climb.
@@ -63,7 +62,8 @@ class Constant_Throttle_Constant_Speed(Evaluate):
         initialize                         = self.process.initialize   
         initialize.conditions              = Segments.Climb.Constant_Throttle_Constant_Speed.initialize_conditions 
         
-        iterate                            = self.process.iterate 
+        iterate                            = self.process.iterate  
+        iterate.unknowns.mission           = skip  
          
         # Update Conditions
         iterate.conditions = Process()
@@ -82,8 +82,7 @@ class Constant_Throttle_Constant_Speed(Evaluate):
         iterate.conditions.weights                    = Common.Update.weights
         iterate.conditions.forces                     = Common.Update.forces
         iterate.conditions.moments                    = Common.Update.moments
-        iterate.conditions.planet_position            = Common.Update.planet_position
-        iterate.residuals.flight_dynamics             = Common.Residuals.flight_dynamics 
+        iterate.conditions.planet_position            = Common.Update.planet_position 
         
         return
 

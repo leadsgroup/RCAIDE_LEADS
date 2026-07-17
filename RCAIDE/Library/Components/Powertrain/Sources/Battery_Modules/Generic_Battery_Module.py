@@ -11,6 +11,8 @@
 from RCAIDE.Framework.Core        import Data
 from RCAIDE.Library.Components    import Component   
 from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_conditions import append_battery_conditions, append_battery_segment_conditions
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_cuboid_center_of_gravity import compute_cuboid_center_of_gravity
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_cuboid_moment_of_inertia import compute_cuboid_moment_of_inertia
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Battery
@@ -67,7 +69,7 @@ class Generic_Battery_Module(Component):
             - parallel : int
                 Number of parallel strings (default: 1)
             
-    geometrtic_configuration : Data
+    geometric_configuration : Data
         Physical arrangement of cells
             - normal_count : int
                 Cells in normal direction (default: 1)
@@ -132,12 +134,12 @@ class Generic_Battery_Module(Component):
         self.electrical_configuration.series                   = 1
         self.electrical_configuration.parallel                 = 1   
         
-        self.geometrtic_configuration                          = Data() 
-        self.geometrtic_configuration.normal_count             = 1
-        self.geometrtic_configuration.parallel_count           = 1
-        self.geometrtic_configuration.normal_spacing           = 0.02
-        self.geometrtic_configuration.stacking_rows            = 3
-        self.geometrtic_configuration.parallel_spacing         = 0.02                
+        self.geometric_configuration                          = Data() 
+        self.geometric_configuration.normal_count             = 1
+        self.geometric_configuration.parallel_count           = 1
+        self.geometric_configuration.normal_spacing           = 0.02
+        self.geometric_configuration.stacking_rows            = 3
+        self.geometric_configuration.parallel_spacing         = 0.02                
  
     def append_operating_conditions(self,segment,bus):  
         """
@@ -153,7 +155,7 @@ class Generic_Battery_Module(Component):
         append_battery_conditions(self,segment,bus)  
         return
     
-    def append_battery_segment_conditions(self,bus, conditions, segment):
+    def append_battery_segment_conditions(self,segment,bus):
         """
         Append segment-specific battery conditions
         
@@ -166,5 +168,44 @@ class Generic_Battery_Module(Component):
         segment : Segment
             Flight segment data
         """
-        append_battery_segment_conditions(self,bus, conditions, segment)
+        append_battery_segment_conditions(self,segment,bus)
         return
+    
+
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
+        """
+        Computes the moment of inertia tensor for a battery.
+
+        Parameters
+        ----------
+        center_of_gravity : list, optional
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
+
+        Returns
+        -------
+        I : ndarray
+            3x3 moment of inertia tensor in kg*m^2
+ 
+        """
+        _ , _ = compute_cuboid_moment_of_inertia(self, self.length, self.width, self.height, 0, 0, 0, center_of_gravity)
+                
+        return
+    
+
+    def compute_center_of_gravity(self,vehicle): 
+        """
+        Computes the center of gravity for a battery.
+
+        Parameters
+        ----------
+        center_of_gravity : list, optional
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
+
+        Returns
+        -------
+        I : ndarray
+            3x3 moment of inertia tensor in kg*m^2 
+        """
+        _  = compute_cuboid_center_of_gravity(self, self.length) 
+        return
+        

@@ -7,21 +7,29 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
-from RCAIDE.Framework.Core import Data
-from RCAIDE.Library.Plots.Geometry.Common.contour_surface_slice import contour_surface_slice
+from RCAIDE.Framework.Core import Data 
 from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry
-from RCAIDE.Library.Methods.Geometry.Airfoil import compute_naca_4series
+from RCAIDE.Library.Methods.Geometry.Airfoil import compute_naca_4series 
 
-# python imports 
-import numpy as np 
-import plotly.graph_objects as go     
+# python imports
+import numpy as np
+import pyvista as pv
+import matplotlib.colors as mcolors
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
-# ----------------------------------------------------------------------------------------------------------------------    
-def plot_3d_rotor(rotor, save_filename = "Rotor", save_figure = False, plot_data = None,
-                  show_figure = True, plot_axis = False, cpt = 0, 
-                  number_of_airfoil_points = 21, color_map = 'turbid', alpha = 1):
+# ------------------------- ---------------------------------------------------------------------------------------------     
+def plot_3d_rotor(rotor,
+                  save_filename            = "rotor",
+                  save_figure              = False,
+                  plot_data                = None, 
+                  show_figure              = True, 
+                  camera_eye_x             = -1, 
+                  camera_eye_y             = -1, 
+                  camera_eye_z             = 0.35,                 
+                  number_of_airfoil_points = 101,
+                  color                    = 'black',
+                  opacity                  = 1):
     """
     Creates a 3D visualization of a rotor with multiple blades.
 
@@ -40,13 +48,7 @@ def plot_3d_rotor(rotor, save_filename = "Rotor", save_figure = False, plot_data
         Existing plot data to append to (default: None)
         
     show_figure : bool, optional
-        Flag to display the figure (default: True)
-        
-    plot_axis : bool, optional
-        Flag to show coordinate axes (default: False)
-        
-    cpt : int, optional
-        Control point at which to plot the rotor (default: 0)
+        Flag to display the figure (default: True) 
         
     number_of_airfoil_points : int, optional
         Number of points used to discretize airfoil sections (default: 21)
@@ -71,64 +73,31 @@ def plot_3d_rotor(rotor, save_filename = "Rotor", save_figure = False, plot_data
         - Adjustable view angles
     
     """
-    plot_propeller_only = False
-    if plot_data == None: 
-        print("\nPlotting rotor") 
-    
-        plot_propeller_only = True         
-        camera        = dict(up=dict(x=0.5, y=0.5, z=1), center=dict(x=0, y=0, z=-0.5), eye=dict(x=1.5, y=1.5, z=.8))
-        plot_data     = []
-        
-    num_B     = rotor.number_of_blades 
-    af_pts    = number_of_airfoil_points-1
-    dim       = len(rotor.radius_distribution)
+
+    rotor_rgb_color = mcolors.to_rgb(color)
+    num_B = rotor.number_of_blades
+    dim   = len(rotor.radius_distribution)
+
+    plotter = pv.Plotter(off_screen=save_figure)
 
     for i in range(num_B):
-        G = generate_3d_blade_points(rotor,number_of_airfoil_points,dim,i)
-        # ------------------------------------------------------------------------
-        # Plot Rotor Blade
-        # ------------------------------------------------------------------------
-        for sec in range(dim-1):
-            for loc in range(af_pts):
-                X = np.array([[G.XA1[cpt,sec,loc],G.XA2[cpt,sec,loc]],
-                     [G.XB1[cpt,sec,loc],G.XB2[cpt,sec,loc]]])
-                Y = np.array([[G.YA1[cpt,sec,loc],G.YA2[cpt,sec,loc]],
-                     [G.YB1[cpt,sec,loc],G.YB2[cpt,sec,loc]]])
-                Z = np.array([[G.ZA1[cpt,sec,loc],G.ZA2[cpt,sec,loc]],
-                     [G.ZB1[cpt,sec,loc],G.ZB2[cpt,sec,loc]]]) 
-                 
-                values      = np.ones_like(X) 
-                verts       = contour_surface_slice(X, Y, Z ,values,color_map)
-                plot_data.append(verts)      
-            
-    axis_limits = np.maximum(np.max(G.XA1), np.maximum(np.max(G.YA1),np.max(G.ZA1)))*2 
-    if plot_propeller_only:
-        fig = go.Figure(data=plot_data)
-        fig.update_scenes(aspectmode   = 'auto',
-                          xaxis_visible=plot_axis,
-                          yaxis_visible=plot_axis,
-                          zaxis_visible=plot_axis
-                          )
-        fig.update_layout( 
-                 width     = 1500,
-                 height    = 1500, 
-                 scene = dict(
-                            xaxis = dict(backgroundcolor="lightgrey", gridcolor="white", showbackground=plot_axis,
-                                         zerolinecolor="white", range=[-axis_limits,axis_limits]),
-                            yaxis = dict(backgroundcolor="lightgrey", gridcolor="white", showbackground=plot_axis, 
-                                         zerolinecolor="white", range=[-axis_limits,axis_limits]),
-                            zaxis = dict(backgroundcolor="lightgrey",gridcolor="white",showbackground=plot_axis,
-                                         zerolinecolor="white", range=[-axis_limits,axis_limits])),             
-                 scene_camera=camera) 
-        fig.update_coloraxes(showscale=False)
-        fig.update_traces(opacity = alpha) 
-        if save_figure: 
-            fig.write_image(save_filename + ".png")
-        if show_figure:
-            fig.write_html( save_filename + '.html', auto_open=True)
-        return 
-    else: 
-        return plot_data
+        GEOM = generate_3d_blade_points(rotor, number_of_airfoil_points, dim, i)
+        make_object(plotter, GEOM, rotor_rgb_color, opacity)
+
+    plotter.camera_position = [
+        (camera_eye_x, camera_eye_y, camera_eye_z),
+        (0, 0, 0),
+        (0, 0, 1),
+    ]
+    plotter.set_background('white')
+    plotter.window_size = [1500, 1500]
+
+    if save_figure:
+        plotter.screenshot(save_filename + ".png")
+    elif show_figure:
+        plotter.show()
+
+    return
  
 def generate_3d_blade_points(rotor, n_points, dim, i, aircraftRefFrame = True):
     """
@@ -189,12 +158,7 @@ def generate_3d_blade_points(rotor, n_points, dim, i, aircraftRefFrame = True):
     MCA          = rotor.mid_chord_alignment
     t            = rotor.max_thickness_distribution
     a_loc        = rotor.airfoil_polar_stations
-    origin       = rotor.origin
-
-    if rotor.clockwise_rotation:
-        # negative chord and twist to give opposite rotation direction
-        b    = -b    
-        beta = -beta
+    origin       = rotor.origin 
 
     theta  = np.linspace(0,2*np.pi,num_B+1)[:-1] 
     flip_2 =  (np.pi/2)
@@ -230,6 +194,9 @@ def generate_3d_blade_points(rotor, n_points, dim, i, aircraftRefFrame = True):
     xp      = (- MCA_2d + xpts*b_2d - airfoil_le_offset)     # x-coord of airfoil
     yp      = r_2d*np.ones_like(xp)                          # radial location
     zp      = zpts*(t_2d/max_t2d)                            # former airfoil y coord
+    
+    if rotor.clockwise_rotation:
+        zp *= -1
      
     commanded_thrust_vector      = np.zeros((1,1))
     rotor_vel_to_body,orientaion = rotor.prop_vel_to_body(commanded_thrust_vector)
@@ -279,29 +246,69 @@ def generate_3d_blade_points(rotor, n_points, dim, i, aircraftRefFrame = True):
     G = Data()
 
     # store node points
-    G.X  = mat[:,:,:,0] + origin[0][0]
-    G.Y  = mat[:,:,:,1] + origin[0][1]
-    G.Z  = mat[:,:,:,2] + origin[0][2]
+    G.X  = mat[0,:,:,0] + origin[0][0]
+    G.Y  = mat[0,:,:,1] + origin[0][1]
+    G.Z  = mat[0,:,:,2] + origin[0][2]
 
-    G.PTS = np.zeros((cpts,len(zp),n_points,3))    
-    G.PTS[:,:,:,0] =  mat[:,:,:,0] + origin[0][0]    
-    G.PTS[:,:,:,1] =  mat[:,:,:,1] + origin[0][1]    
-    G.PTS[:,:,:,2] =  mat[:,:,:,2] + origin[0][2]    
+    G.PTS = np.zeros((len(zp),n_points,3))    
+    G.PTS[:,:,0] =  mat[0,:,:,0] + origin[0][0]    
+    G.PTS[:,:,1] =  mat[0,:,:,1] + origin[0][1]    
+    G.PTS[:,:,2] =  mat[0,:,:,2] + origin[0][2]    
 
     # store points
-    G.XA1  = mat[:,:-1,:-1,0] + origin[0][0]
-    G.YA1  = mat[:,:-1,:-1,1] + origin[0][1]
-    G.ZA1  = mat[:,:-1,:-1,2] + origin[0][2]
-    G.XA2  = mat[:,:-1,1:,0]  + origin[0][0]
-    G.YA2  = mat[:,:-1,1:,1]  + origin[0][1]
-    G.ZA2  = mat[:,:-1,1:,2]  + origin[0][2]
+    G.XA1  = mat[0,:-1,:-1,0] + origin[0][0]
+    G.YA1  = mat[0,:-1,:-1,1] + origin[0][1]
+    G.ZA1  = mat[0,:-1,:-1,2] + origin[0][2]
+    G.XA2  = mat[0,:-1,1:,0]  + origin[0][0]
+    G.YA2  = mat[0,:-1,1:,1]  + origin[0][1]
+    G.ZA2  = mat[0,:-1,1:,2]  + origin[0][2]
 
-    G.XB1  = mat[:,1:,:-1,0] + origin[0][0]
-    G.YB1  = mat[:,1:,:-1,1] + origin[0][1]
-    G.ZB1  = mat[:,1:,:-1,2] + origin[0][2]
-    G.XB2  = mat[:,1:,1:,0]  + origin[0][0]
-    G.YB2  = mat[:,1:,1:,1]  + origin[0][1]
-    G.ZB2  = mat[:,1:,1:,2]  + origin[0][2]    
+    G.XB1  = mat[0,1:,:-1,0] + origin[0][0]
+    G.YB1  = mat[0,1:,:-1,1] + origin[0][1]
+    G.ZB1  = mat[0,1:,:-1,2] + origin[0][2]
+    G.XB2  = mat[0,1:,1:,0]  + origin[0][0]
+    G.YB2  = mat[0,1:,1:,1]  + origin[0][1]
+    G.ZB2  = mat[0,1:,1:,2]  + origin[0][2]    
     
     return G
- 
+
+def make_object(plotter, GEOM, rgb_color, opacity):
+    mesh  = generate_vtk_object(GEOM.PTS)
+    actor = plotter.add_mesh(mesh, color=rgb_color, opacity=opacity, show_scalar_bar=False)
+    prop  = actor.GetProperty()
+    prop.SetDiffuse(1.0)
+    prop.SetSpecular(0.0)
+    return
+
+
+def generate_vtk_object(pts):
+    """Convert a GEOM.PTS array to a pv.PolyData quad mesh."""
+    n_r, n_a = pts.shape[0], pts.shape[1]
+    n = n_a * (n_r - 1)
+    X     = pts.reshape(n_r * n_a, 3).astype(float)
+    cells = write_azimuthal_cell_values(X, n, n_a).astype(int)
+    faces = np.empty((n, 5), dtype=int)
+    faces[:, 0] = 4
+    faces[:, 1:] = cells
+    return pv.PolyData(X, faces.ravel())
+
+
+def write_azimuthal_cell_values(f, n_cells, n_a):
+    rlap = 0
+    adjacent_cells = np.zeros((n_cells, 4))
+
+    for i in range(n_cells):
+        if i == (n_a - 1 + n_a * rlap):
+            b = i - (n_a - 1)
+            c = i + 1
+            rlap += 1
+        else:
+            b = i + 1
+            c = i + n_a + 1
+        a = i
+        d = i + n_a
+        adjacent_cells[i, 0] = a
+        adjacent_cells[i, 1] = b
+        adjacent_cells[i, 2] = c
+        adjacent_cells[i, 3] = d
+    return adjacent_cells 

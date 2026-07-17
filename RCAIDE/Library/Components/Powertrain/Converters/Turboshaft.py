@@ -114,7 +114,7 @@ class Turboshaft(Converter):
         self.diamter                                          = 0.0
         self.design_isa_deviation                             = 0.0
         self.design_altitude                                  = 0.0
-        self.specific_fuel_consumption_reduction_factor       = 0.0  
+        self.specific_fuel_consumption_reduction_factor       = -3.875 
         self.reference_temperature                            = 288.15
         self.reference_pressure                               = 1.01325*10**5 
         self.design_power                                     = 0.0
@@ -126,7 +126,7 @@ class Turboshaft(Converter):
 
     def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None): 
         """
-        Appends operating conditions to the segment.
+        Appends operating conditions of the segment.
         """  
         append_turboshaft_conditions(self,segment,energy_conditions,noise_conditions) 
         return

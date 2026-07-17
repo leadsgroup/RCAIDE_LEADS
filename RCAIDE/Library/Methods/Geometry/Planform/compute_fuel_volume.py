@@ -1,0 +1,98 @@
+# RCAIDE/Library/Methods/Geometry/Planform/compute_fuel_volume.py
+# 
+# 
+# Created:  Jul 2024, M. Clarke 
+# Modified: Aug 2025, S. Shekar 
+
+# ----------------------------------------------------------------------------------------------------------------------
+# compute_fuel_volume 
+# ----------------------------------------------------------------------------------------------------------------------
+def compute_fuel_volume(vehicle, compute_fuel_volume = True, update_max_fuel = False):
+    """
+    Computes the total fuel volume and mass for all fuel tanks in a vehicle.
+
+    This function iterates through all networks, fuel lines, and fuel tanks in the vehicle
+    to calculate the total fuel volume and mass. It updates each fuel tank's internal volume
+    and sets the vehicle's total fuel volume attribute.
+
+    Parameters
+    ----------
+    vehicle : Vehicle
+        The vehicle object containing networks, wings, and fuselages
+            - networks : list
+                Collection of propulsion networks containing fuel lines
+            - wings : list
+                Collection of wing objects for volume calculations
+            - fuselages : list
+                Collection of fuselage objects for volume calculations
+
+    Returns
+    -------
+    None
+        Function modifies the vehicle object in-place by setting total_fuel_volume
+
+    Notes
+    -----
+    This function performs the following operations:
+        1. Initializes total fuel volume and mass counters
+        2. Iterates through all propulsion networks in the vehicle
+        3. For each network, iterates through all fuel lines
+        4. For each fuel line, iterates through all fuel tanks
+        5. Resets each fuel tank's internal volume to zero (This is updated by the compute fuel volume function)
+        6. Calls the fuel tank's compute_volume method with wings and fuselages
+        7. Accumulates the volume and mass contributions
+        8. Sets the vehicle's total_fuel_volume attribute
+
+    **Major Assumptions**
+        * All fuel tanks have a compute_volume method that accepts wings and fuselages
+        * Fuel tanks have mass_properties.fuel attribute for fuel mass
+        * Vehicle object has networks, wings, and fuselages attributes
+
+    **Definitions**
+
+    'Fuel Line'
+        A collection of fuel tanks that are connected in series within a propulsion network
+
+    'Fuel Tank'
+        A container that stores fuel and has methods to compute its volume based on vehicle geometry
+
+    'Internal Volume'
+        The calculated volume of a fuel tank based on its geometry and position within the vehicle
+
+    See Also
+    --------
+    Vehicle : RCAIDE.Vehicle
+    """
+    wings             = vehicle.wings
+    fuselages         = vehicle.fuselages 
+    total_fuel_volume = 0    
+    for network in vehicle.networks: 
+        for fuel_line in network.fuel_lines:
+            fuel_tanks = fuel_line.fuel_tanks
+            for fuel_tank in fuel_tanks: 
+                fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag 
+                if compute_fuel_volume:
+                    fuel_tank.compute_volume(wings, fuselages, fuel_tanks)
+                total_fuel_volume += fuel_tank.volume_properties.net_volume
+
+        for bus in network.busses:
+            fuel_tanks = bus.fuel_tanks
+            for fuel_tank in fuel_tanks:
+                fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag
+                if compute_fuel_volume:
+                    fuel_tank.compute_volume(wings, fuselages, fuel_tanks)
+                total_fuel_volume += fuel_tank.volume_properties.net_volume
+    
+    if compute_fuel_volume:
+        vehicle.volume_properties.max_fuel = total_fuel_volume
+
+    if update_max_fuel:
+        total_fuel_mass = sum(
+            ft.volume_properties.net_volume * ft.fuel.density
+            for network in vehicle.networks
+            for distributor in list(network.fuel_lines) + list(network.busses)
+            for ft in distributor.fuel_tanks
+        )
+        vehicle.mass_properties.max_fuel = total_fuel_mass
+
+    return

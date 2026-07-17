@@ -23,18 +23,31 @@ import sys
 import os
 
 # local imports 
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles' + os.path.sep + 'Rotors'))
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles", "Rotors")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
 from Test_Propeller    import Test_Propeller
 from Test_Rotor        import Test_Rotor 
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ---------------------------------------------------------------------- 
 def main():
+    ti = time.time()
     
-    #propeller_test()
-    rotor_test(new_regression=False)
+    propeller_test()
+    rotor_test(new_regression=True)
     
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 def propeller_test():
@@ -89,7 +102,7 @@ def rotor_test(new_regression):
     results        = rotor_aerodynamic_analysis(rotor, velocity_range, angular_velocity = angular_velocity, angle_of_attack=angle_of_attack)
     
     thrust      = np.linalg.norm(results.thrust,axis=1)[0]
-    thrust_true = 11498.853524041924
+    thrust_true = 16686.234080457703
 
     diff_thrust = np.abs((thrust- thrust_true)/thrust_true)  
     print('\nthrust difference')

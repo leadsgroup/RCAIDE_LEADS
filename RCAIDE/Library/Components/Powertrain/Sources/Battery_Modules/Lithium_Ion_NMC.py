@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Powertrain/Sources/Batteries/Lithium_Ion_LiNiMnCoO2_18650.py
+# RCAIDE/Library/Components/Powertrain/Sources/Batteries/Lithium_Ion_LiNiMnCoO2_18650.py
 # 
 # 
 # Created:  Mar 2024, M. Clarke
@@ -134,10 +134,10 @@ class Lithium_Ion_NMC(Generic_Battery_Module):
         #  Module Level Properties
         # ----------------------------------------------------------------------------------------------------------------------
         
-        self.tag                                         = 'lithium_ion_nmc'
-        self.maximum_energy                              = 0.0
-        self.maximum_power                               = 0.0
-        self.maximum_voltage                             = 0.0  
+        self.tag                              = 'lithium_ion_nmc'
+        self.maximum_energy                   = 0.0
+        self.maximum_power                    = 0.0
+        self.maximum_voltage                  = 0.0  
          
         # ----------------------------------------------------------------------------------------------------------------------
         #  Cell Level Properties
@@ -158,7 +158,7 @@ class Lithium_Ion_NMC(Generic_Battery_Module):
         
         self.cell.watt_hour_rating            = self.cell.nominal_capacity  * self.cell.nominal_voltage                          # [Watt-hours]      
         self.cell.specific_energy             = self.cell.watt_hour_rating*Units.Wh/self.cell.mass                               # [J/kg]
-        self.cell.specific_power              = self.cell.specific_energy/self.cell.nominal_capacity                             # [W/kg]   
+        self.cell.specific_power              = self.maximum_power /self.cell.mass                                               # [W/kg] 
         self.cell.resistance                  = 0.025                                                                            # [Ohms] 
                                                             
         self.cell.specific_heat_capacity      = 1108                                                                             # [J/kgK]    
@@ -171,7 +171,7 @@ class Lithium_Ion_NMC(Generic_Battery_Module):
 
         return  
     
-    def energy_calc(self,state,bus,coolant_lines, t_idx, delta_t): 
+    def compute_performance(self,state,bus,coolant_lines, t_idx, delta_t): 
         """
         Computes the state of the NMC battery cell
         

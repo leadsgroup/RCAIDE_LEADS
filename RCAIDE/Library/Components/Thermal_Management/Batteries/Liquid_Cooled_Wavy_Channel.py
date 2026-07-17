@@ -77,8 +77,8 @@ class Liquid_Cooled_Wavy_Channel(Component):
         append_wavy_channel_conditions(self,segment,coolant_line)
         return
     
-    def append_segment_conditions(self, segment,coolant_line, conditions):
-        append_wavy_channel_segment_conditions(self, segment,coolant_line, conditions)
+    def append_segment_conditions(self, segment,coolant_line):
+        append_wavy_channel_segment_conditions(self, segment,coolant_line)
         return
     
     def compute_thermal_performance(self,battery,bus,coolant_line,Q_heat_gen,T_cell,state,delta_t,t_idx):

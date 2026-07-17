@@ -1,4 +1,4 @@
-# RCAIDE/Compoments/Fuselages/Fuselage.py
+# RCAIDE/Components/Fuselages/Fuselage.py
 # 
 # Created:  Mar 2024, M. Clarke 
 
@@ -11,6 +11,7 @@ from RCAIDE.Framework.Core                import Data
 from RCAIDE.Library.Components.Component  import Container
 from RCAIDE.Library.Components            import Component
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_fuselage_moment_of_inertia import  compute_fuselage_moment_of_inertia
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_fuselage_center_of_gravity import  compute_fuselage_center_of_gravity
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Fuselage
@@ -141,10 +142,8 @@ class Fuselage(Component):
 
     See Also
     --------
-    RCAIDE.Library.Components.Fuselages.Tube_Fuselage
-        Implementation for conventional tube-and-wing aircraft
-    RCAIDE.Library.Components.Fuselages.Blended_Wing_Body_Fuselage
-        Implementation for blended wing body aircraft
+    RCAIDE.Library.Components.Fuselages.Fuselage
+        Implementation for conventional tube-and-wing aircraft 
     """
     
     def __defaults__(self):
@@ -156,47 +155,44 @@ class Fuselage(Component):
         self.origin                                 = [[0.0,0.0,0.0]]
         self.aerodynamic_center                     = [0.0,0.0,0.0] 
         self.differential_pressure                  = 0.0
-        self.number_of_passengers                   = 0.0  
-        self.layout_of_passenger_accommodations     = None
-
+        self.number_of_passengers                   = 1  
+        self.number_of_seats                        = 1  
+        self.supersonic                             = False
+        self.layout_of_passenger_accommodations     = None 
         self.areas                                  = Data()
         self.areas.front_projected                  = 0.0
         self.areas.side_projected                   = 0.0
-        self.areas.wetted                           = 0.0
-        
+        self.areas.wetted                           = 0.0 
         self.effective_diameter                     = 0.0
-        self.width                                  = 0.0  
-        
+        self.width                                  = 0.0   
         self.heights                                = Data() 
         self.heights.maximum                        = 0.0
         self.heights.at_quarter_length              = 0.0
         self.heights.at_three_quarters_length       = 0.0
         self.heights.at_wing_root_quarter_chord     = 0.0
         self.heights.at_vertical_root_quarter_chord = 0.0 
-        
+
+        self.outer_mold_line_cabin_offset_factor    = 0.95        
         self.lengths                                = Data()     
         self.lengths.nose                           = 0.0
         self.lengths.tail                           = 0.0
         self.lengths.total                          = 0.0
-        
         self.x_rotation                             = 0.0
         self.y_rotation                             = 0.0
-        self.z_rotation                             = 0.0 
-
+        self.z_rotation                             = 0.0  
         self.fineness                               = Data() 
         self.fineness.nose                          = 0.0 
         self.fineness.tail                          = 0.0  
         self.nose_curvature                         = 1.5
-        self.tail_curvature                         = 1.5   
-    
-        self.fuel_tanks                             = Container()
- 
+        self.tail_curvature                         = 1.5
+        self.fuel_tank                              = Data() 
         self.vsp_data                               = Data()
         self.vsp_data.xsec_surf_id                  = ''    # There is only one XSecSurf in each VSP geom.
         self.vsp_data.xsec_num                      = None  # Number if XSecs in fuselage geom. 
         self.segments                               = Container()
         self.cabins                                 = Container()
-
+        self.operational_items                      = Component()
+        self.operational_items.tag                  = 'operational_items'
         self.vsp_data                               = Data()
         self.vsp_data.xsec_id                       = ''       
         self.vsp_data.shape                         = ''                
@@ -258,7 +254,7 @@ class Fuselage(Component):
 
         return 
 
-    def compute_moment_of_inertia(self, center_of_gravity=[[0, 0, 0]]): 
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
         """
         Computes the moment of inertia tensor for the fuselage.
 
@@ -267,15 +263,22 @@ class Fuselage(Component):
         center_of_gravity : list, optional
             Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
 
-        Returns
-        -------
-        I : ndarray
-            3x3 moment of inertia tensor in kg*m^2
+        See Also
+        --------
+        RCAIDE.Library.Methods.weights.vehicle.moments_of_inertia.compute_fuselage_moment_of_inertia
+            Implementation of the moment of inertia calculation
+        """
+        _ , _ = compute_fuselage_moment_of_inertia(self,center_of_gravity) 
+        return
+
+    def compute_center_of_gravity(self,vehicle): 
+        """
+        Computes the center of gravity for the fuselage.
 
         See Also
         --------
-        RCAIDE.Library.Methods.Weights.Moment_of_Inertia.compute_fuselage_moment_of_inertia
-            Implementation of the moment of inertia calculation
+        RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_wing_center_of_gravity
+            Implementation of the center of gravity calculation
         """
-        I = compute_fuselage_moment_of_inertia(self,center_of_gravity) 
-        return I    
+        _  = compute_fuselage_center_of_gravity(self) 
+        return       

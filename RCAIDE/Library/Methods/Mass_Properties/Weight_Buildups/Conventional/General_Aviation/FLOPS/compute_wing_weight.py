@@ -1,5 +1,4 @@
-
-# 
+# RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/General_Aviation/FLOPS/compute_wing_weight.py
 # 
 # Created:  Sep 2024, M. Clarke
 
@@ -18,7 +17,7 @@ import  copy
 # ----------------------------------------------------------------------------------------------------------------------
 # Main Wing Weight 
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_wing_weight(vehicle, wing, WPOD, complexity, settings, num_main_wings):
+def compute_wing_weight(vehicle, wing, WPOD, fidelity  , settings, num_main_wings):
     """
     Calculate the wing weight using FLOPS methodology for general aviation aircraft. The wing weight consists of:
         - Bending Material Weight
@@ -61,7 +60,7 @@ def compute_wing_weight(vehicle, wing, WPOD, complexity, settings, num_main_wing
                 Flap area to wing area ratio
     WPOD : float
         Weight of engine pod including nacelle [kg]
-    complexity : str
+    fidelity   : str
         Wing weight method, either "simple" or "complex"
     settings : Data()
         Settings containing:
@@ -205,14 +204,16 @@ def compute_wing_weight(vehicle, wing, WPOD, complexity, settings, num_main_wing
     NEW  = 0
     for network in  vehicle.networks:
         for propulsor in network.propulsors:
-            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet):
+            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or\
+               isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet) or \
+               isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop): 
                 NENG += 1  
                 if propulsor.wing_mounted: 
                     NEW += 1
                         
     DG              = vehicle.mass_properties.max_takeoff / Units.lbs  # Design gross weight in lb
 
-    if complexity == 'Simple':
+    if fidelity   == 'Simple':
         EMS  = 1 - 0.25 * FSTRT  # Wing strut bracing factor
         TLAM = np.tan(wing.sweeps.quarter_chord) \
                - 2 * (1 - TR) / (AR * (1 + TR))  # Tangent of the 3/4 chord sweep angle
@@ -343,12 +344,10 @@ def compute_wing_weight(vehicle, wing, WPOD, complexity, settings, num_main_wing
     # Composite utilization factor [0 no composite, 1 full composite]
     FCOMP   = composite_utilization_factor  
     ULF     = vehicle.flight_envelope.ultimate_load
-    if len(vehicle.fuselages) == 1:
+    if len(vehicle.fuselages) <= 1:
         CAYF    = 1  # Multiple fuselage factor [1 one fuselage, 0.5 multiple fuselages]
-    elif len(vehicle.fuselage) > 1:
-        CAYF    = 0.5
-    else:
-        raise NotImplementedError
+    elif len(vehicle.fuselages) > 1:
+        CAYF    = 0.5 
     VFACT   = 1  # Variable sweep factor, TODO: add equation to allow variable sweep penalty
     PCTL    = 1/num_main_wings  # Fraction of load carried by this wing
     W1NIR   = A[0] * BT * (1 + np.sqrt(A[1] / SPAN)) * ULF * SPAN * (1 - 0.4 * FCOMP) * (
@@ -562,7 +561,9 @@ def get_spanwise_engine(networks, SEMISPAN):
     EETA =  []
     for network in  networks:
         for propulsor in network.propulsors:
-            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet):
+            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or\
+               isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet) or \
+               isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop): 
                 if propulsor.wing_mounted and propulsor.origin[0][1] > 0:  
                     EETA.append((propulsor.origin[0][1] / Units.ft) * 1 / SEMISPAN) 
     EETA =  np.array(EETA)

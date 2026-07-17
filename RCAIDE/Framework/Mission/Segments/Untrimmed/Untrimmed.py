@@ -64,6 +64,7 @@ class Untrimmed(Segment):
         # conditions
         self.temperature_deviation                   = 0.0
         self.sideslip_angle                          = 0.0 
+        self.crosswind_speed                         = 0.0
         self.angle_of_attack                         = 1.0 *  Units.degree
         self.bank_angle                              = 0.0 
         self.linear_acceleration_x                   = 0.
@@ -75,7 +76,7 @@ class Untrimmed(Segment):
         self.battery_fuel_cell_power_split_ratio     = None 
         self.yaw_rate                                = 0.  
         self.state.numerics.number_of_control_points = 2     
-        self.trim_lift_coefficient                   = None
+        self.lift_coefficient                        = None
         self.state.conditions.update(Results())
         
         # ---------------------------------------------------------------
@@ -135,7 +136,7 @@ class Untrimmed(Segment):
         post_process                    = self.process.post_process   
         post_process.inertial_position  = skip
         post_process.energy             = skip
-        post_process.noise              = Common.Update.noise
+        post_process.aeroacoustics      = Common.Update.aeroacoustics
         post_process.emissions          = skip
         
         return 

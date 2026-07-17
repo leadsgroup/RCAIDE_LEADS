@@ -15,11 +15,12 @@ from .Vehicle   import Vehicle
 
 from . import Common
 from . import Aerodynamics
+from . import Planets
 from . import Atmospheric
 from . import Emissions
 from . import Energy
-from . import Noise
-from . import Planets
+from . import Geometry
+from . import Aeroacoustics
 from . import Propulsion
 from . import Stability
 from . import Weights

@@ -98,12 +98,12 @@ def compute_wing_induced_velocity(VD,mach,compute_EW=False):
     XA_TE[boolean], XB_TE[boolean] = XB_TE[boolean], XA_TE[boolean]
     
     # These vortices will use AH and BH, rather than the typical location
-    xa = XAH
-    ya = YAH
-    za = ZAH
-    xb = XBH
-    yb = YBH
-    zb = ZBH
+    xa = XAH[:,None,:]
+    ya = YAH[:,None,:]
+    za = ZAH[:,None,:]
+    xb = XBH[:,None,:]
+    yb = YBH[:,None,:]
+    zb = ZBH[:,None,:]
     
     # This is not the control point for the panel, its the middle front of the vortex
     xc = 0.5*(xa+xb)
@@ -111,9 +111,9 @@ def compute_wing_induced_velocity(VD,mach,compute_EW=False):
     zc = 0.5*(za+zb)
     
     # This is the receiving point, or the control points
-    xo = XC.T
-    yo = YC.T
-    zo = ZC.T
+    xo = XC[:,:,None] 
+    yo = YC[:,:,None] 
+    zo = ZC[:,:,None] 
     
     # Incline the vortex
     theta    = np.arctan2(zb-za,yb-ya)
@@ -129,13 +129,9 @@ def compute_wing_induced_velocity(VD,mach,compute_EW=False):
     zobar =-(yo - yc)*sintheta + (zo - zc)*costheta
     
     # COMPUTE COORDINATES OF RECEIVING POINT WITH RESPECT TO END POINTS OF SKEWED LEG.
-    shape   = np.shape(xobar)
-    shape_0 = shape[0]
-    shape_1 = shape[1]
-    s       = np.abs(y1bar)
-    t       = x1bar/y1bar  
-    s       = np.repeat(s,shape_0,axis=0)
-    t       = np.repeat(t,shape_0,axis=0)
+    shape   = np.shape(xobar)  
+    s       = np.repeat(np.abs(y1bar),shape[1],axis=1)
+    t       = np.repeat(x1bar/y1bar ,shape[1],axis=1)
     
     X1 = xobar + t*s # In a planar case XC-XAH
     Y1 = yobar + s   # In a planar case YC-YAH
@@ -164,35 +160,29 @@ def compute_wing_induced_velocity(VD,mach,compute_EW=False):
     XSQ2   = X2 *X2
     
     # Split the vectors into subsonic and supersonic
-    sub      = (B2<0)[:,0,0]
-    B2_sub   = B2[sub,:,:]
-    RO1_sub  = B2_sub*RTV1
-    RO2_sub  = B2_sub*RTV2
+    sub      = (B2<0)[:,0,0] 
+    RO1      = B2*RTV1 
+    RO2      = B2*RTV2 
     
     # ZERO-OUT PERTURBATION VELOCITY COMPONENTS
-    U = np.zeros((n_mach,shape_0,shape_1),dtype=np.float32)
-    V = np.zeros((n_mach,shape_0,shape_1),dtype=np.float32)
-    W = np.zeros((n_mach,shape_0,shape_1),dtype=np.float32)    
+    U = np.zeros((n_mach,shape[1],shape[2] ),dtype=np.float32)
+    V = np.zeros((n_mach,shape[1],shape[2] ),dtype=np.float32)
+    W = np.zeros((n_mach,shape[1],shape[2] ),dtype=np.float32)    
     
     if np.sum(sub)>0:
         # COMPUTATION FOR SUBSONIC HORSESHOE VORTEX
-        U[sub], V[sub], W[sub] = subsonic(zobar,XSQ1,RO1_sub,XSQ2,RO2_sub,XTY,t,B2_sub,ZSQ,TOLSQ,X1,Y1,X2,Y2,RTV1,RTV2)   
-
+        U_sub, V_sub, W_sub = subsonic(zobar,XSQ1,RO1,XSQ2,RO2,XTY,t,B2,ZSQ,TOLSQ,X1,Y1,X2,Y2,RTV1,RTV2)   
+        U[sub], V[sub], W[sub] = U_sub[sub], V_sub[sub], W_sub[sub]
     
     # COMPUTATION FOR SUPERSONIC HORSESHOE VORTEX. some values computed in a preprocessing section in VLM
-    sup         = (B2>=0)[:,0,0]
-    B2_sup      = B2[sup,:,:]
-    RO1_sup     = B2[sup,:,:]*RTV1
-    RO2_sup     = B2[sup,:,:]*RTV2
-    RNMAX       = VD.panels_per_strip
-    CHORD       = VD.chord_lengths
-    CHORD       = np.repeat(CHORD,shape_0,axis=0)
-    RFLAG       = np.ones((n_mach,shape_1),dtype=np.int8)
-    
-    if np.sum(sup)>0:
-        U[sup], V[sup], W[sup], RFLAG[sup,:] = supersonic(zobar,XSQ1,RO1_sup,XSQ2,RO2_sup,XTY,t,B2_sup,ZSQ,TOLSQ,TOL,TOLSQ2,\
+    sup = (B2>=0)[:,0,0]
+    RFLAG = np.ones((n_mach,shape[2]),dtype=np.int8)
+    if np.sum(sup)>0:  
+        RNMAX       = VD.panels_per_strip 
+        CHORD       = np.repeat(VD.chord_lengths[:, np.newaxis, :],shape[1],axis=1)
+        U_sup, V_sup, W_sup, RFLAG_sup  = supersonic(zobar,XSQ1,RO1,XSQ2,RO2,XTY,t,B2,ZSQ,TOLSQ,TOL,TOLSQ2,\
                                                     X1,Y1,X2,Y2,RTV1,RTV2,CUTOFF,CHORD,RNMAX,n_cp,TE_ind,LE_ind)
-         
+        U[sup], V[sup], W[sup], RFLAG[sup,:]  = U_sup[sup], V_sup[sup], W_sup[sup], RFLAG_sup[sup,:] 
     
     # Rotate into the vehicle frame and pack into a velocity matrix
     C_mn = np.stack([U, V*costheta - W*sintheta, V*sintheta + W*costheta],axis=-1)
@@ -201,8 +191,8 @@ def compute_wing_induced_velocity(VD,mach,compute_EW=False):
     if compute_EW == True:
         # Calculate the W velocity in the VORLAX frame for later calcs
         # The angles are Dihedral angle of the current panel - dihedral angle of the influencing panel
-        COS1   = np.cos(DL.T - DL)
-        SIN1   = np.sin(DL.T - DL) 
+        COS1   = np.cos(DL[:,:,None] - DL[:,None,:])
+        SIN1   = np.sin(DL[:,:,None] - DL[:,None,:]) 
         WEIGHT = 1
         
         EW = (W*COS1-V*SIN1)*WEIGHT
@@ -351,9 +341,9 @@ def supersonic(Z,XSQ1,RO1,XSQ2,RO2,XTY,T,B2,ZSQ,TOLSQ,TOL,TOLSQ2,X1,Y1,X2,Y2,RTV
     
     # Create a boolean for various conditions for F1 that goes to zero
     bool1           = np.ones(shape,dtype=bool)  
-    bool1[:,X1<TOL] = False
+    bool1[X1<TOL]   = False
     bool1[RAD1==0.] = False
-    RAD1[:,X1<TOL]  = 0.0
+    RAD1[X1<TOL]    = 0.0
     
     REPS = CUTOFF*XSQ1
     FRAD = RAD1
@@ -374,9 +364,9 @@ def supersonic(Z,XSQ1,RO1,XSQ2,RO2,XTY,T,B2,ZSQ,TOLSQ,TOL,TOLSQ2,X1,Y1,X2,Y2,RTV
     # Round 2
     # Create a boolean for various conditions for F2 that goes to zero
     bool2           = np.ones(shape,dtype=bool)  
-    bool2[:,X2<TOL] = False
+    bool2[X2<TOL] = False
     bool2[RAD2==0.] = False
-    RAD2[:,X2<TOL]  = 0.0
+    RAD2[X2<TOL]  = 0.0
     
     REPS = CUTOFF *XSQ2
     FRAD = RAD2    
@@ -422,23 +412,23 @@ def supersonic(Z,XSQ1,RO1,XSQ2,RO2,XTY,T,B2,ZSQ,TOLSQ,TOL,TOLSQ2,X1,Y1,X2,Y2,RTV
     # LINE)? IF SO THEN RFLAG = 0.0, OTHERWISE RFLAG = 1.0.
     size   = shape[1]
     n_mach = shape[0]    
-    T2S = np.atleast_2d(T2[0,:])*np.ones((n_mach,1))
-    T2F = np.zeros((n_mach,size))
-    T2A = np.zeros((n_mach,size))
+    T2S    = T2[:,0,:] 
+    T2F    = np.zeros((n_mach,size))
+    T2A    = np.zeros((n_mach,size))
     
     # Setup masks
     F_mask = np.ones((n_mach,size),dtype=bool) 
     A_mask = np.ones((n_mach,size),dtype=bool) 
-    F_mask[:,TE_ind] = False
-    A_mask[:,LE_ind] = False
+    F_mask[TE_ind] = False
+    A_mask[LE_ind] = False
     
     # Apply the mask
     T2F[A_mask] = T2S[F_mask]
     T2A[F_mask] = T2S[A_mask]
     
     # Zero out terms on the LE and TE
-    T2F[:,TE_ind] = 0.
-    T2A[:,LE_ind] = 0.
+    T2F[TE_ind] = 0.
+    T2A[LE_ind] = 0.
 
     TRANS = (B2[:,:,0]-T2F)*(B2[:,:,0]-T2A)
     
@@ -453,11 +443,10 @@ def supersonic(Z,XSQ1,RO1,XSQ2,RO2,XTY,T,B2,ZSQ,TOLSQ,TOL,TOLSQ2,X1,Y1,X2,Y2,RTV
     # COMPUTE THE GENERALIZED PRINCIPAL PART OF THE VORTEX-INDUCED VELOCITY INTEGRAL, WWAVE.
     # FROM LINE 2647 VORLAX, the IR .NE. IRR means that we're looking at vortices that affect themselves
     WWAVE   = np.zeros(shape,dtype=np.float32)
-    COX     = CHORD /RNMAX
-    eye     = np.eye(n_cp,dtype=np.int8)
-    T2      = np.broadcast_to(T2,shape)*eye
-    B2_full = np.broadcast_to(B2,shape)*eye
-    COX     = np.broadcast_to(COX,shape)*eye
+    COX     = CHORD /RNMAX[:, :, None] 
+    T2      = np.broadcast_to(T2,shape)*np.eye(n_cp[0, 0],dtype=np.int8)
+    B2_full = np.broadcast_to(B2,shape)*np.eye(n_cp[0, 0],dtype=np.int8)
+    COX     = np.broadcast_to(COX,shape)*np.eye(n_cp[0, 0],dtype=np.int8)
     WWAVE[B2_full>T2] = - 0.5 *np.sqrt(B2_full[B2_full>T2] -T2[B2_full>T2] )/COX[B2_full>T2] 
 
     W = W + WWAVE    

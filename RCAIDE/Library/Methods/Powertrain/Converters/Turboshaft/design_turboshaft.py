@@ -61,7 +61,7 @@ def design_turboshaft(turboshaft):
                 Non-dimensional thrust [-]
             - design_core_mass_flow_rate : float
                 Core mass flow rate [kg/s]
-            - design_fuel_flow_rate : float
+            - design_fuel_mass_flow_rate : float
                 Fuel flow rate [kg/s]
             - design_power : float
                 Power output [W]
@@ -156,7 +156,7 @@ def design_turboshaft(turboshaft):
     
     segment                  = RCAIDE.Framework.Mission.Segments.Segment()  
     segment.state.conditions = conditions
-    turboshaft.append_operating_conditions(segment,conditions.energy,conditions.noise)  
+    turboshaft.append_operating_conditions(segment,conditions.energy,conditions.aeroacoustics)  
             
     ram                     = turboshaft.ram
     inlet_nozzle            = turboshaft.inlet_nozzle
@@ -241,8 +241,7 @@ def design_turboshaft(turboshaft):
     lpt_conditions.inputs.mach_number                         = hpt_conditions.outputs.mach_number  
     low_pressure_turbine.working_fluid                        = high_pressure_turbine.working_fluid    
     lpt_conditions.inputs.compressor                          = Data()
-    lpt_conditions.inputs.compressor.work_done                = 0.0 
-    lpt_conditions.inputs.compressor.external_shaft_work_done = 0.0 
+    lpt_conditions.inputs.compressor.work_done                = 0.0  
     lpt_conditions.inputs.fuel_to_air_ratio                   = combustor_conditions.outputs.fuel_to_air_ratio 
     lpt_conditions.inputs.bypass_ratio                        = 0.0
     lpt_conditions.inputs.fan                                 = Data()
@@ -293,7 +292,7 @@ def design_turboshaft(turboshaft):
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
     atmo_data_sea_level  = atmosphere.compute_values(0.0,0.0)   
     V                    = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
-    operating_state      = setup_operating_conditions(turboshaft, altitude = 0,velocity_range=np.array([V]))  
+    operating_state      = setup_operating_conditions(turboshaft,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0,temperature_deviation=0)  
     operating_state.conditions.energy.converters[turboshaft.tag].throttle[:,0] = 1.0  
     sls_P,_,_                                                       = turboshaft.compute_performance(operating_state,fuel_line) 
     turboshaft.sealevel_static_power                                = sls_P[0][0]

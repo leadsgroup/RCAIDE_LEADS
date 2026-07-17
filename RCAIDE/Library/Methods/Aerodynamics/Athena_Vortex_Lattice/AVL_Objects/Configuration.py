@@ -53,14 +53,7 @@ class Configuration(Data):
             N/A
         """ 		
         self.tag                          = 'configuration'
-        self.parasite_drag                = 0.0
-
-        self.reference_values             = Data()     
-        self.reference_values.sref        = 0.0        # [m]
-        self.reference_values.bref        = 0.0        # [m]
-        self.reference_values.cref        = 0.0        # [m]
-        self.reference_values.cg_coords   = [0.,0.,0.] # [m]
-
+        self.parasite_drag                = 0.0 
         self.mass_properties              = Data()
         self.mass_properties.inertial     = Data()
         self.mass_properties.mass         = 0.0        # [kg]

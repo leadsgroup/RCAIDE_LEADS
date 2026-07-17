@@ -28,7 +28,7 @@ from shutil import rmtree
 # ----------------------------------------------------------------------------------------------------------------------
 # run_analysis
 # ---------------------------------------------------------------------------------------------------------------------- 
-def run_AVL_analysis(aerodynamics,run_conditions):
+def run_AVL_analysis(aerodynamics,run_conditions,vehicle):
     """Process vehicle to setup avl geometry, condititons, and configurations.
 
     Assumptions:
@@ -73,13 +73,13 @@ def run_AVL_analysis(aerodynamics,run_conditions):
     print_output                     = aerodynamics.settings.print_output 
 
     # rename defaul avl aircraft tag
-    aerodynamics.tag                         = 'avl_analysis_of_{}'.format(aerodynamics.vehicle.tag) 
-    aerodynamics.settings.filenames.features = aerodynamics.vehicle.tag + '.avl'
-    aerodynamics.settings.filenames.mass_file= aerodynamics.vehicle.tag + '.mass'
+    aerodynamics.tag                         = 'avl_analysis_of_{}'.format(vehicle.tag) 
+    aerodynamics.settings.filenames.features = vehicle.tag + '.avl'
+    aerodynamics.settings.filenames.mass_file= vehicle.tag + '.mass'
     
     # update current status
     aerodynamics.current_status.batch_index += 1
-    batch_index                      = aerodynamics.current_status.batch_index
+    batch_index                              = aerodynamics.current_status.batch_index
     aerodynamics.current_status.batch_file   = batch_template.format(batch_index)
     aerodynamics.current_status.deck_file    = deck_template.format(batch_index)
            
@@ -89,29 +89,35 @@ def run_AVL_analysis(aerodynamics,run_conditions):
     cs_functions     = [] 
     control_surfaces = False
     
-    for wing in aerodynamics.vehicle.wings: # this parses through the wings to determine how many control surfaces does the vehicle have 
+    for wing in vehicle.wings: # this parses through the wings to determine how many control surfaces does the vehicle have 
         if wing.control_surfaces:
             control_surfaces = True 
             wing = populate_control_sections(wing)     
             num_cs_on_wing = len(wing.control_surfaces)
             num_cs +=  num_cs_on_wing
-            for cs in wing.control_surfaces:
-                ctrl_surf = cs    
+            for ctrl_surf in wing.control_surfaces: 
                 cs_names.append(ctrl_surf.tag)  
                 if (type(ctrl_surf) ==  Slat):
                     ctrl_surf_function  = 'slat'
+                    aerodynamics.slat_flag   = True 
                 elif (type(ctrl_surf) ==  Flap):
-                    ctrl_surf_function  = 'flap' 
+                    ctrl_surf_function  = 'flap'  
+                    aerodynamics.flap_flag   = True 
                 elif (type(ctrl_surf) ==  Aileron):
-                    ctrl_surf_function  = 'aileron'                          
+                    ctrl_surf_function  = 'aileron'     
+                    aerodynamics.aileron_flag   = True                      
                 elif (type(ctrl_surf) ==  Elevator):
                     ctrl_surf_function  = 'elevator' 
+                    aerodynamics.elevator_flag   = True 
                 elif (type(ctrl_surf) ==  Rudder):
-                    ctrl_surf_function = 'rudder'                      
+                    ctrl_surf_function = 'rudder'   
+                    aerodynamics.rudder_flag      = True                    
                 cs_functions.append(ctrl_surf_function)  
+    
+    aerodynamics.settings.control_surface_tags =  cs_functions
 
     # translate conditions
-    cases = translate_conditions_to_cases(aerodynamics,run_conditions)    
+    cases = translate_conditions_to_cases(aerodynamics,run_conditions,vehicle)    
     for case in cases:
         case.stability_and_control.number_of_control_surfaces = num_cs
         case.stability_and_control.control_surface_names      = cs_names
@@ -127,17 +133,17 @@ def run_AVL_analysis(aerodynamics,run_conditions):
     
     # write the input files
     with redirect.folder(run_folder,force=False):
-        write_geometry(aerodynamics,run_script_path)
-        write_mass_file(aerodynamics,run_conditions)
-        write_run_cases(aerodynamics,trim_aircraft)
-        write_input_deck(aerodynamics, trim_aircraft,control_surfaces)
+        write_geometry(aerodynamics,run_script_path,vehicle)
+        write_mass_file(aerodynamics,run_conditions,vehicle)
+        write_run_cases(aerodynamics,trim_aircraft,vehicle)
+        write_input_deck(aerodynamics, trim_aircraft,control_surfaces,vehicle)
 
         # RUN AVL! 
         exit_status = call_avl(aerodynamics,print_output)
-        results_avl = read_results(aerodynamics)
+        results_avl = read_results(aerodynamics,vehicle)
         
     # translate results
-    translate_results_to_conditions(cases,run_conditions,results_avl) 
+    translate_results_to_conditions(cases,run_conditions,results_avl,aerodynamics.settings) 
 
     if not aerodynamics.settings.keep_files:
         rmtree( run_folder )

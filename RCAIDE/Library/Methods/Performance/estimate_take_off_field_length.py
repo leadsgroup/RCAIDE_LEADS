@@ -1,15 +1,8 @@
-# estimate_take_off_field_length.py
+# estimate_take_off_field_length.py 
 #
-# Created:  Jun 2014, T. Orra, C. Ilario, Celso, 
-# Modified: Apr 2015, M. Vegh 
-#           Jan 2016, E. Botero
-#           Mar 2020, M. Clarke
-#           May 2020, E. Botero
-#           Jul 2020, E. Botero 
-
-
+# Created: Apr 2025, M. Clarke  
 # ----------------------------------------------------------------------
-#  Imports
+#   Imports
 # ----------------------------------------------------------------------
 
 # RCAIDE Imports
@@ -17,6 +10,8 @@ import RCAIDE
 from RCAIDE.Framework.Core            import Data, Units     
 from RCAIDE.Library.Methods.Aerodynamics.Common.Drag import * 
 from RCAIDE.Library.Methods.Aerodynamics.Common.Lift import *
+from RCAIDE.Library.Mission.Common.Pre_Process.energy import energy 
+from RCAIDE.Library.Mission.Common.Pre_Process  import geometry_preprocess_routine 
 
 # package imports
 import numpy as np
@@ -24,7 +19,7 @@ import numpy as np
 # ----------------------------------------------------------------------
 #  Compute field length required for takeoff
 # ----------------------------------------------------------------------
-def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0, compute_2nd_seg_climb = False):
+def estimate_take_off_field_length(analyses=None,altitude = 0, delta_isa = 0, compute_2nd_seg_climb = False):
     """
     Computes the takeoff field length and optionally the second segment climb gradient for a given vehicle configuration.
 
@@ -95,35 +90,36 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
     --------
     RCAIDE.Library.Methods.Aerodynamics.Common.Drag.windmilling_drag
     RCAIDE.Library.Methods.Aerodynamics.Common.Drag.asymmetry_drag
-    """        
+    """  
+    if type(analyses) != RCAIDE.Framework.Analyses.Vehicle:
+        raise AttributeError('RCAIDE analyses must be defined')
 
-    # ==============================================
-        # Unpack
-    # ==============================================
+    # ---------------------------------------------- 
+    # Preprocess Geometry 
+    # ---------------------------------------------- 
+    geometry_preprocess_routine(analyses)
+
+    # ----------------------------------------------
+    # Unpack
+    # ---------------------------------------------- 
+    vehicle         = analyses.vehicle
     atmo            = analyses.atmosphere 
     weight          = vehicle.mass_properties.takeoff
-    reference_area  = vehicle.reference_area
-    try:
-        V2_VS_ratio = vehicle.V2_VS_ratio
-    except:
-        V2_VS_ratio = 1.20
-        
-        
-    
+    reference_area  = vehicle.reference_area 
+    V2_VS_ratio     = vehicle.flight_envelope.V2_VS_ratio 
 
     # ==============================================
     # Computing atmospheric conditions
     # ==============================================
     atmo_values       = atmo.compute_values(altitude,delta_isa)
-    conditions        = RCAIDE.Framework.Mission.Common.Results()
-    
-    p   = atmo_values.pressure
-    T   = atmo_values.temperature
-    rho = atmo_values.density
-    a   = atmo_values.speed_of_sound
-    mu  = atmo_values.dynamic_viscosity
+    conditions        = RCAIDE.Framework.Mission.Common.Results() 
+    p                 = atmo_values.pressure
+    T                 = atmo_values.temperature
+    rho               = atmo_values.density
+    a                 = atmo_values.speed_of_sound
+    mu                = atmo_values.dynamic_viscosity
     sea_level_gravity = atmo.planet.sea_level_gravity
-    
+
     # ==============================================
     # Determining vehicle maximum lift coefficient
     # ==============================================
@@ -134,7 +130,7 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
     state.conditions.freestream.density           = rho
     state.conditions.freestream.velocity          = 90. * Units.knots
     state.conditions.freestream.dynamic_viscosity = mu
-    
+
     settings = analyses.aerodynamics.settings
 
     maximum_lift_coefficient, induced_drag_high_lift = compute_max_lift_coeff(state,settings,vehicle)
@@ -144,7 +140,6 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
     # ==============================================
     stall_speed       = (2 * weight * sea_level_gravity / (rho * reference_area * maximum_lift_coefficient)) ** 0.5
     V2_speed          = V2_VS_ratio * stall_speed
-    speed_for_thrust  = 0.70 * V2_speed
 
     # ==============================================
     # Determining vehicle number of engines
@@ -158,19 +153,19 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
     # ==============================================
     # Getting engine thrust
     # ==============================================
-    
+
 
     # Step 28: Static Sea Level Thrust  
     planet                                            = RCAIDE.Library.Attributes.Planets.Earth()
     atmosphere_sls                                    = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
     atmo_data                                         = atmosphere_sls.compute_values(0.0,0.0)
-                                                      
+
     p                                                 = atmo_data.pressure          
     T                                                 = atmo_data.temperature       
     rho                                               = atmo_data.density          
     a                                                 = atmo_data.speed_of_sound    
     mu                                                = atmo_data.dynamic_viscosity 
-    
+
     conditions                                        = RCAIDE.Framework.Mission.Common.Results() 
     conditions.freestream.altitude                    = np.atleast_1d(0)
     conditions.freestream.mach_number                 = np.atleast_1d(0.01)
@@ -181,26 +176,37 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
     conditions.freestream.gravity                     = np.atleast_2d(planet.sea_level_gravity) 
     conditions.freestream.speed_of_sound              = np.atleast_1d(a)
     conditions.freestream.velocity                    = np.atleast_1d(a*0.01)   
+ 
 
-    # setup conditions   
-    segment                                           = RCAIDE.Framework.Mission.Segments.Segment()  
-    segment.state.conditions                          = conditions
-    
-    thrust =  np.array([[0.0, 0.0, 0.0]])
+    analysis                 = RCAIDE.Framework.Analyses.Vehicle() 
+    analysis.vehicle         = vehicle 
+    energy_analysis          = RCAIDE.Framework.Analyses.Energy.Energy()
+    analysis.append(energy_analysis)
      
-    analysis = RCAIDE.Framework.Analyses.Vehicle() 
-    energy   = RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle  = vehicle 
-    analysis.append(energy)            
-    segment.analyses = analysis      
+    mission = RCAIDE.Framework.Mission.Sequential_Segments() 
+    segment = RCAIDE.Framework.Mission.Segments.Segment() 
+    segment.hybrid_power_split_ratio            = None
+    segment.battery_fuel_cell_power_split_ratio = None
+    segment.analyses.extend( analysis) 
+    mission.append_segment(segment) 
+    segment.state.conditions  = conditions    
     
-    for network in vehicle.networks:
-        network.add_unknowns_and_residuals_to_segment(segment) 
+    # initalize mission
+    energy(mission)      
+
+    thrust =  np.array([[0.0, 0.0, 0.0]]) 
+    for network in vehicle.networks:   
         for propulsor in  network.propulsors: 
-            segment.state.conditions.energy.propulsors[propulsor.tag].throttle = np.array([[1]]) 
-        network.evaluate(segment.state,center_of_gravity = vehicle.mass_properties.center_of_gravity) 
+            segment.state.conditions.energy.propulsors[propulsor.tag].throttle = np.array([[1]])
+            
+        for fuel_line in network.fuel_lines:
+            for fuel_tank in  fuel_line.fuel_tanks:
+                fuel = fuel_tank.fuel
+                segment.state.conditions.weights.components.mass[fuel.tag] = np.array([[0]])                
+                
+        network.evaluate(segment.state,vehicle) 
         thrust += conditions.energy.thrust_force_vector
-         
+
     # ==============================================
     # Calculate takeoff distance
     # ==============================================
@@ -232,23 +238,23 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
 
     # Define takeoff index   (V2^2 / (T/W)
     takeoff_index = V2_speed**2. / (thrust[0][0] / weight)
-    
+
     # Calculating takeoff field length
     takeoff_field_length = 0.
     for idx,constant in enumerate(takeoff_constants):
         takeoff_field_length += constant * takeoff_index**idx
     takeoff_field_length = takeoff_field_length * Units.ft
-    
+
     # calculating second segment climb gradient, if required by user input
     if compute_2nd_seg_climb:
-        
+
         # Getting engine thrust at V2 (update only speed related conditions)
         state.conditions.freestream.dynamic_pressure  = np.array(np.atleast_1d(0.5 * rho * V2_speed**2))
         state.conditions.freestream.velocity          = np.array(np.atleast_1d(V2_speed))
         state.conditions.freestream.mach_number       = np.array(np.atleast_1d(V2_speed/ a))
         state.conditions.freestream.dynamic_viscosity = np.array(np.atleast_1d(mu))
         state.conditions.freestream.density           =  np.array(np.atleast_1d(rho))
-        
+
         # engine condition
         num_propulsors =  0
         for network in vehicle.networks:
@@ -263,16 +269,16 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
 
         # Compute asymmetry drag   
         asymmetry_drag_coefficient = asymmetry_drag(state, vehicle,engine_out_location, single_engine_thrust, windmilling_drag_coefficient)
-           
+
         # Compute l over d ratio for takeoff condition, NO engine failure
         l_over_d = estimate_2ndseg_lift_drag_ratio(state,settings,vehicle) 
-        
+
         # Compute L over D ratio for takeoff condition, WITH engine failure
         clv2            = maximum_lift_coefficient / (V2_VS_ratio) **2
         cdv2_all_engine = clv2 / l_over_d
         cdv2            = cdv2_all_engine + asymmetry_drag_coefficient + windmilling_drag_coefficient
         l_over_d_v2     = clv2 / cdv2
-    
+
         # Compute 2nd segment climb gradient
         second_seg_climb_gradient = thrust / (weight*sea_level_gravity) - 1. / l_over_d_v2
 
@@ -281,3 +287,49 @@ def estimate_take_off_field_length(vehicle,analyses,altitude = 0, delta_isa = 0,
     else:
         # return only takeoff_field_length
         return takeoff_field_length[0][0],0
+    
+    
+def estimate_2ndseg_lift_drag_ratio(state,settings,geometry):
+    """Estimates the 2nd segment climb lift to drag ratio (all engine operating)
+    
+    Assumptions:
+    All engines operating
+
+    Source:
+    Fig. 27.34 of "Aerodynamic Design of Transport Airplane" - Obert
+
+    Inputs:
+    config.
+      V2_VS_ratio              [Unitless]
+      wings.
+        areas.reference        [m^2]
+	spans.projected        [m]
+	aspect_ratio           [Unitless]
+      maximum_lift_coefficient [Unitless]
+
+    Outputs:
+    lift_drag_ratio            [Unitless]
+
+    Properties Used:
+    N/A
+    """ 
+    # Unpack 
+    V2_VS_ratio    = geometry.flight_envelope.V2_VS_ratio 
+
+    # getting geometrical data (aspect ratio) 
+    for wing in geometry.wings:
+        if not (isinstance(wing,RCAIDE.Library.Components.Wings.Main_Wing) or isinstance(wing,RCAIDE.Library.Components.Wings.Blended_Wing_Body)): continue 
+        aspect_ratio = wing.aspect_ratio  
+
+    # ==============================================
+    # Determining vehicle maximum lift coefficient
+    # ==============================================
+    maximum_lift_coefficient, induced_drag_high_lift = compute_max_lift_coeff(state,settings,geometry)
+
+    # Compute CL in V2
+    lift_coeff = maximum_lift_coefficient / (V2_VS_ratio ** 2)
+
+    # Estimate L/D in 2nd segment condition, ALL ENGINES OPERATIVE!
+    lift_drag_ratio = -6.464 * lift_coeff + 7.264 * aspect_ratio ** 0.5
+
+    return lift_drag_ratio    

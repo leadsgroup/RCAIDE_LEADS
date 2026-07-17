@@ -1,6 +1,8 @@
 # RCAIDE/Library/Methods/Powertrain/Converters/Turbine/compute_turbine_performance.py
 # 
-# Created:  Jun 2024, M. Clarke    
+# Created:  Jun 2024, M. Clarke
+
+import numpy as  np
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_turbine_performance
@@ -52,8 +54,7 @@ def compute_turbine_performance(turbine,conditions):
                                     - compressor : Data
                                         Compressor data
                                             - work_done : array_like
-                                                Compressor work [J/(kg/s)]
-                                            - external_shaft_work_done : array_like
+                                                Compressor work [J/(kg/s)] 
                                                 Shaft power off take [J/(kg/s)]
                                     - fan : Data
                                         Fan data
@@ -157,18 +158,17 @@ def compute_turbine_performance(turbine,conditions):
     R               = working_fluid.compute_R(T0,P0)    
     
     #Unpack turbine entering properties 
-    eta_mech              = turbine.mechanical_efficiency
-    etapolt               = turbine.polytropic_efficiency
-    alpha                 = turbine_conditions.inputs.bypass_ratio
-    Tt_in                 = turbine_conditions.inputs.stagnation_temperature
-    Pt_in                 = turbine_conditions.inputs.stagnation_pressure
-    compressor_work       = turbine_conditions.inputs.compressor.work_done
-    fan_work              = turbine_conditions.inputs.fan.work_done
-    f                     = turbine_conditions.inputs.fuel_to_air_ratio  
-    external_power        = turbine_conditions.inputs.compressor.external_shaft_work_done  
-  
+    eta_mech                    = turbine.mechanical_efficiency
+    etapolt                     = turbine.polytropic_efficiency
+    alpha                       = turbine_conditions.inputs.bypass_ratio
+    Tt_in                       = turbine_conditions.inputs.stagnation_temperature
+    Pt_in                       = turbine_conditions.inputs.stagnation_pressure
+    compressor_work             = turbine_conditions.inputs.compressor.work_done
+    fan_work                    = turbine_conditions.inputs.fan.work_done
+    f                           = turbine_conditions.inputs.fuel_to_air_ratio    
+    
     # Using the work done by the compressors/fan and the fuel to air ratio to compute the energy drop across the turbine
-    deltah_ht = -1/(1+f) * (compressor_work + external_power + alpha * fan_work) * 1/eta_mech
+    deltah_ht = -1/(1+f) * (compressor_work + alpha * fan_work) * 1/eta_mech
     
     # Compute the output stagnation quantities from the inputs and the energy drop computed above
     Tt_out    = Tt_in+deltah_ht/Cp
@@ -177,7 +177,9 @@ def compute_turbine_performance(turbine,conditions):
     pi_t      = Pt_out/Pt_in
     tau_t     = Tt_out/Tt_in
     T_out     = Tt_out/(1.+(gamma-1.)/2.*M0*M0)
-    P_out     = Pt_out/((1.+(gamma-1.)/2.*M0*M0)**(gamma/(gamma-1.)))         
+    P_out     = Pt_out/((1.+(gamma-1.)/2.*M0*M0)**(gamma/(gamma-1.)))   
+    h_out     = T_out * Cp
+    u_out     = np.sqrt(2*(ht_out-h_out))      
     
     # Pack outputs of turbine 
     turbine_conditions.outputs.stagnation_pressure     = Pt_out
@@ -185,6 +187,7 @@ def compute_turbine_performance(turbine,conditions):
     turbine_conditions.outputs.stagnation_enthalpy     = ht_out
     turbine_conditions.outputs.static_temperature      = T_out
     turbine_conditions.outputs.static_pressure         = P_out 
+    turbine_conditions.outputs.velocity                = u_out 
     turbine_conditions.outputs.mach_number             = M0 
     turbine_conditions.outputs.gas_constant            = R 
     turbine_conditions.outputs.pressure_ratio          = pi_t   

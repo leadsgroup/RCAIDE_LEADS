@@ -8,9 +8,8 @@
 # ----------------------------------------------------------------------------------------------------------------------  
 
 from RCAIDE.Framework.Core import Units
-from RCAIDE.Library.Plots.Common import set_axes, plot_style
+from RCAIDE.Library.Plots.Common import set_axes, plot_style, segment_colors
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
 import numpy as np 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -36,7 +35,7 @@ def plot_air_cooled_conditions(air_cooled, results, coolant_line,
         RCAIDE results data structure containing:
             * segments[i].conditions.frames.inertial.time[:,0]
                 Time history for each segment
-            * segments[i].conditions.energy[coolant_line.tag][air_cooled.tag]
+            * segments[i].conditions.energy.coolant_lines[coolant_line.tag][air_cooled.tag]
                 Heat exchanger performance data containing:
                     * effectiveness[:,0]
                         Heat exchanger effectiveness
@@ -104,7 +103,7 @@ def plot_air_cooled_conditions(air_cooled, results, coolant_line,
     plt.rcParams.update(parameters)
      
     # get line colors for plots 
-    line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))     
+    line_colors   = segment_colors(len(results.segments))     
 
     fig = plt.figure(save_filename)
     fig.set_size_inches(width,height)  
@@ -113,14 +112,14 @@ def plot_air_cooled_conditions(air_cooled, results, coolant_line,
     
 
  
-    for network in results.segments[0].analyses.energy.vehicle.networks: 
+    for network in results.segments[0].analyses.vehicle.networks: 
         busses  = network.busses 
         for bus in busses:
             for b_i, battery in enumerate(bus.battery_modules):
                 if b_i == 0 or bus.identical_battery_modules == False:
                     for i in range(len(results.segments)): 
                         time                       = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min    
-                        air_cooled_conditions      = results.segments[i].conditions.energy[coolant_line.tag][air_cooled.tag]   
+                        air_cooled_conditions      = results.segments[i].conditions.energy.coolant_lines[coolant_line.tag][air_cooled.tag]
                         effectiveness              = air_cooled_conditions.effectiveness[:,0]
                         total_heat_removed         = air_cooled_conditions.total_heat_removed[:,0] 
                         

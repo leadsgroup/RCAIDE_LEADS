@@ -1,4 +1,4 @@
-# RCAIDE/Compoments/Landing_Gear/Main_Landing_Gear.py
+# RCAIDE/Components/Landing_Gear/Main_Landing_Gear.py
 # 
 # Created:  Nov 2024, M. Clarke 
 
@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 # RCAIDE imports     
 from .Landing_Gear import Landing_Gear
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia import compute_cuboid_moment_of_inertia
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Main_Landing_Gear
@@ -64,8 +65,28 @@ class Main_Landing_Gear(Landing_Gear):
         """
         Sets default values for the main landing gear attributes.
         """
-        self.tag           = 'main_gear'
-        self.units         = 0. # number of main landing gear units        
-        self.strut_length  = 0.
-        self.tire_diameter = 0. 
-        self.wheels        = 0. # number of wheels on the main landing gear 
+        self.tag                  = 'main_gear'  
+        self.xz_plane_symmetric   = True 
+        self.units                = 1
+        
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
+        """
+        Computes the moment of inertia tensor for the landing gear.
+
+        Parameters
+        ---------- 
+        center_of_gravity : list, optional
+            Reference point coordinates, defaults to [[0, 0, 0]]
+        
+        Returns
+        -------
+        ndarray
+            3x3 moment of inertia tensor
+        """
+
+        length = self.tire_diameter* 1.1
+        width  = self.strut_length* 1.1
+        height = self.tire_diameter* 1.1   
+        
+        _, _  = compute_cuboid_moment_of_inertia(self,length,width,height, inner_length = 0, inner_width = 0, inner_height = 0, center_of_gravity = [[length / 2,width / 2, height / 2]] )  
+        return                           

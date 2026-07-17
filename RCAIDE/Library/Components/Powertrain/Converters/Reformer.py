@@ -1,4 +1,4 @@
-# RCAIDE/Compoments/Propulsors/Converters/Reformer.py
+# RCAIDE/Components/Propulsors/Converters/Reformer.py
 # 
 # 
 # Created:  Jan 2025, M. Clarke, M. Guidotti

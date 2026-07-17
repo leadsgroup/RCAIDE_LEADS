@@ -1,4 +1,4 @@
-# Regressions/Vehicles/Isolated_Battery_Cell.py
+# VnV/Vehicles/Isolated_Battery_Cell.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke 
@@ -40,13 +40,12 @@ def vehicle_setup(current,C_rat,cell_chemistry,electrical_config):
     bus.battery_modules.append(battery)  
     bus.initialize_bus_properties()
     
-    #------------------------------------------------------------------------------------------------------------------------------------           
-    # Payload 
     #------------------------------------------------------------------------------------------------------------------------------------  
-    payload                      = RCAIDE.Library.Components.Payloads.Payload()
-    payload.power_draw           = current * bus.voltage  
-    payload.mass_properties.mass = 1.0 * Units.kg
-    bus.payload                  = payload  
+    # Systems
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    systems                     = RCAIDE.Library.Components.Powertrain.Systems.Systems()
+    systems.power_draw          = current * bus.voltage  
+    bus.systems                 = systems 
       
     # append bus   
     net.busses.append(bus) 
@@ -65,7 +64,7 @@ def configs_setup(vehicle):
     
     charge_config     = RCAIDE.Library.Components.Configs.Config(vehicle)
     charge_config.tag = 'charge'
-    charge_config.networks.electric.busses.bus.payload.power_draw =  0
+    charge_config.networks.electric.busses.bus.systems.power_draw =  0
     configs.append(charge_config)
    
     

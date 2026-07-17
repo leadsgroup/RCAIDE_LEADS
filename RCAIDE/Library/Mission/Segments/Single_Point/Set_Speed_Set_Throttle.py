@@ -126,7 +126,7 @@ def unpack_unknowns(segment):
         Inputs:
             segment.state.unknowns:
                 acceleration                        [meters/second^2]
-                body_angle                          [radians]
+                pitch_angle                          [radians]
             
         Outputs:
             segment.state.conditions:
@@ -140,4 +140,4 @@ def unpack_unknowns(segment):
     
     # unpack unknowns  
     acceleration  = segment.state.unknowns.acceleration 
-    segment.state.conditions.frames.inertial.acceleration_vector[0,0] = acceleration         
+    segment.state.conditions.frames.inertial.acceleration_vector[:,0] = acceleration[:,0]     

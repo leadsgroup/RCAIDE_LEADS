@@ -53,7 +53,7 @@ class Body(Data):
             N/A
         """ 		
         self.tag                      = 'body'
-        self.symmetric                = True
+        self.xz_plane_symmetric       = True
         self.origin                   = [0.,0.,0.]
 
         self.lengths                  = Data()

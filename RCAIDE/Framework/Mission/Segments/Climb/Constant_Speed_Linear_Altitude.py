@@ -8,8 +8,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE imports 
-from RCAIDE.Framework.Core                                     import Units 
-from RCAIDE.Framework.Mission.Segments.Evaluate       import Evaluate
+from RCAIDE.Framework.Core                           import Units 
+from RCAIDE.Framework.Mission.Segments.Evaluate      import Evaluate
 from RCAIDE.Library.Mission                          import Common,Segments
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -58,8 +58,5 @@ class Constant_Speed_Linear_Altitude(Evaluate):
         # --------------------------------------------------------------------------------------------------------------   
         initialize                         = self.process.initialize  
         initialize.differentials_altitude  = Common.Initialize.differentials_altitude
-        initialize.conditions              = Segments.Climb.Constant_Speed_Linear_Altitude.initialize_conditions  
-        iterate                            = self.process.iterate
-        iterate.residuals.flight_dynamics  = Common.Residuals.flight_dynamics
-        iterate.unknowns.mission           = Common.Unpack_Unknowns.orientation  
+        initialize.conditions              = Segments.Climb.Constant_Speed_Linear_Altitude.initialize_conditions    
         return

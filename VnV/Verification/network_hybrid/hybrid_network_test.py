@@ -18,7 +18,14 @@ import matplotlib.cm as cm
 import os 
 import sys
 
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles')) 
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path) 
 from ATR_72                          import vehicle_setup as conventional_vehicle_setup
 from ATR_72                          import configs_setup as conventional_configs_setup
 from all_electric_ATR_72             import vehicle_setup as all_electric_vehicle_setup
@@ -39,10 +46,10 @@ def main():
     series_hybrid    = True
     parallel_hybrid  = True
     
-    convetional_cruise_CL_truth      = 0.6881157129805212
-    electric_cruise_CL_truth         = 0.6940128366994059
-    series_hybrid_cruise_CL_truth    = 0.6940130981166039
-    parallel_hybrid_cruise_CL_truth  = 0.6939609375214035
+    convetional_cruise_CL_truth      = 0.6862607106121958
+    electric_cruise_CL_truth         = 0.795977976668617
+    series_hybrid_cruise_CL_truth    = 0.6907950151213048
+    parallel_hybrid_cruise_CL_truth  = 0.6922148639044265
 
     error = Data()
     
@@ -54,7 +61,7 @@ def main():
         vehicle  = conventional_vehicle_setup() 
         vehicle.networks.fuel.identical_propulsors = False         
         configs  = conventional_configs_setup(vehicle) 
-        analyses = analyses_setup(configs) 
+        analyses = analyses_setup(configs, weights_method='conventional') 
         missions = missions_setup(analyses,solver_type,solver_objective)  
         conventional_results  = missions.base_mission.evaluate()
 
@@ -69,7 +76,7 @@ def main():
         vehicle  = all_electric_vehicle_setup()  
         vehicle.networks.electric.identical_propulsors = False      
         configs  = all_electric_configs_setup(vehicle) 
-        analyses = analyses_setup(configs) 
+        analyses = analyses_setup(configs,weights_method='electric') 
         missions = missions_setup(analyses,solver_type,solver_objective)  
         electric_results  = missions.base_mission.evaluate()
 
@@ -83,7 +90,7 @@ def main():
         print("\n Series Hybrid Powertrain Test") 
         vehicle  = series_hybrid_vehicle_setup() 
         configs  = series_hybrid_configs_setup(vehicle) 
-        analyses = analyses_setup(configs) 
+        analyses = analyses_setup(configs,weights_method='electric')
         missions = missions_setup(analyses,solver_type,solver_objective)  
         series_hybrid_results  = missions.base_mission.evaluate()
     
@@ -97,7 +104,7 @@ def main():
         print("\n Parallel Hybrid Powertrain Test") 
         vehicle  = parallel_hybrid_vehicle_setup() 
         configs  = parallel_hybrid_configs_setup(vehicle) 
-        analyses = analyses_setup(configs) 
+        analyses = analyses_setup(configs,weights_method='electric')
         missions = missions_setup(analyses,solver_type,solver_objective)  
         parallel_hybrid_results  = missions.base_mission.evaluate() 
     
@@ -109,7 +116,7 @@ def main():
         powertrain_labels.append("Parallel Hybrid")
          
 
-    # add remaining networks MATTEO          
+    # add remaining networks           
     print("Elapsed Time", (time.time()-t0)/60)         
 
     print('Errors:')
@@ -121,20 +128,17 @@ def main():
     
     return
 
-
-
-
 # ----------------------------------------------------------------------
 #   Define the Analyses
 # ----------------------------------------------------------------------
 
-def analyses_setup(configs):
+def analyses_setup(configs,weights_method=None):
 
     analyses = RCAIDE.Framework.Analyses.Analysis.Container()
 
     # build a base analysis for each config
     for tag,config in configs.items():
-        analysis = base_analysis(config)
+        analysis = base_analysis(config,weights_method)
         analyses[tag] = analysis
 
     return analyses
@@ -143,25 +147,42 @@ def analyses_setup(configs):
 #   Define the Base Analysis
 # ----------------------------------------------------------------------
 
-def base_analysis(vehicle):
+def base_analysis(vehicle,weights_method):
 
     # ------------------------------------------------------------------
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
-    analyses = RCAIDE.Framework.Analyses.Vehicle()  
+    analyses = RCAIDE.Framework.Analyses.Vehicle() 
+    analyses.vehicle = vehicle
+    
+    # ------------------------------------------------------------------
+    #  Geometry
+    # ------------------------------------------------------------------
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    analyses.append(geometry)
+
+    
+    # ------------------------------------------------------------------
+    #  Weights
+    # ------------------------------------------------------------------
+    if weights_method == 'conventional': 
+        weights = RCAIDE.Framework.Analyses.Weights.Conventional_General_Aviation()
+    if weights_method == 'electric': 
+        weights = RCAIDE.Framework.Analyses.Weights.Electric_General_Aviation()
+    analyses.append(weights) 
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     # ------------------------------------------------------------------     
-    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.vehicle                            = vehicle 
+    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()   
+    aerodynamics.settings.number_of_spanwise_vortices    = 10 # reducing the number of vortices to speed up the test 
+    aerodynamics.settings.number_of_chordwise_vortices   = 5  # reducing the number of vortices to speed up the test 
     analyses.append(aerodynamics) 
 
     # ------------------------------------------------------------------
     #  Energy
     # ------------------------------------------------------------------     
-    energy= RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle = vehicle 
+    energy= RCAIDE.Framework.Analyses.Energy.Energy() 
     analyses.append(energy)
 
     # ------------------------------------------------------------------
@@ -174,7 +195,6 @@ def base_analysis(vehicle):
     #  Atmosphere Analysis
     # ------------------------------------------------------------------     
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
     analyses.append(atmosphere)   
 
     # done!
@@ -235,7 +255,7 @@ def mission_setup(analyses,solver_type,solver_objective):
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]
     segment.assigned_control_variables.throttle.initial_guess_values = [[0.7]]
-    segment.assigned_control_variables.body_angle.active             = True     
+    segment.assigned_control_variables.pitch_angle.active             = True     
     mission.append_segment(segment)    
  
       
@@ -296,23 +316,19 @@ def plot_battery_pack_conditions(plot_data,
             # ---------------------------------------------------------------------------
 
             time         = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min 
-            Weight       = results.segments[i].conditions.weights.total_mass[:, 0] * 9.81   
-            mdot         = results.segments[i].conditions.weights.vehicle_mass_rate[:, 0]
+            Weight       = results.segments[i].conditions.weights.vehicle.mass[:, 0] * 9.81   
+            mdot         = results.segments[i].conditions.weights.vehicle.mass_rate[:, 0]
             thrust       = results.segments[i].conditions.frames.body.thrust_force_vector[:, 0]
             sfc          = (mdot / Units.lb) / (thrust / Units.lbf) * Units.hr    
             cl           = results.segments[i].conditions.aerodynamics.coefficients.lift.total[:,0,None]
             cd           = results.segments[i].conditions.aerodynamics.coefficients.drag.total[:,0,None]
             aoa          = results.segments[i].conditions.aerodynamics.angles.alpha[:,0] / Units.deg
-            l_d          = cl/cd    
-            segment_tag  =  results.segments[i].tag
-            segment_name = segment_tag.replace('_', ' ')
-            
-
+            l_d          = cl/cd     
             # ---------------------------------------------------------------------------
             # Plot battery pack results if any            
             # ---------------------------------------------------------------------------            
             
-            for network in results.segments[0].analyses.energy.vehicle.networks: 
+            for network in results.segments[0].analyses.vehicle.networks: 
                 busses  = network.busses
                 
                 for  b_i , bus in  enumerate(busses):  
@@ -320,7 +336,7 @@ def plot_battery_pack_conditions(plot_data,
                     bus_config         = bus.battery_module_electric_configuration 
                     battery_module_tag = list(bus.battery_modules.keys())[0]
                     
-                    battery_conditions  = results.segments[i].conditions.energy[bus.tag].battery_modules[battery_module_tag] 
+                    battery_conditions  = results.segments[i].conditions.energy.busses['bus'].battery_modules[battery_module_tag] 
                  
                     if bus_config == 'Series':
                         pack_current        = battery_conditions.current[:,0] 
@@ -369,7 +385,7 @@ def plot_battery_pack_conditions(plot_data,
             
             axis_2_1.set_ylabel(r'Throttle')
             set_axes(axis_2_1)               
-            for network in results.segments[i].analyses.energy.vehicle.networks:   
+            for network in results.segments[i].analyses.vehicle.networks:   
                 propulsor_tag = list(network.propulsors.keys())[0] 
                 eta = results.segments[i].conditions.energy.propulsors[propulsor_tag].throttle[:,0] 
                 if i ==0:

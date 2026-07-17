@@ -1,94 +1,60 @@
-# RCAIDE/Library/Plots/Emissions/plot_CO2e_emissions
-# 
-# 
+# RCAIDE/Library/Plots/Emissions/plot_gCO2e_emissions
+#
+#
 # Created:  Jul 2024, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------  
+# ----------------------------------------------------------------------------------------------------------------------
 from RCAIDE.Framework.Core import Units
-from RCAIDE.Library.Plots.Common import set_axes, plot_style 
+from RCAIDE.Library.Plots.Common import set_axes, plot_style
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-import numpy as np 
+import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
-# ----------------------------------------------------------------------------------------------------------------------   
-## @ingroup Library-Plots-Performance-Emissions 
+# ----------------------------------------------------------------------------------------------------------------------
 def plot_CO2e_emissions(results,
-                             save_figure = False,
-                             show_legend = True,
-                             save_filename = "CO2e_Emissions" ,
-                             file_type = ".png",
-                             width = 11, height = 7):
+                    save_figure = False,
+                    save_filename = "CO2e_Emissions" ,
+                    show_legend = True,
+                    file_type = ".png",
+                    width = 8, height = 5):
     """
-    Generate plots showing CO2-equivalent emissions over mission segments.
+    Generate a plot showing cumulative gCO2e emissions over the mission.
 
     Parameters
     ----------
     results : Data
         Mission results data structure containing:
-        results.segments[i].conditions.emissions.total with fields:
-            - CO2 : array
-                Carbon dioxide emissions [kg]
-            - NOx : array
-                Nitrogen oxide emissions [kg]
-            - H2O : array
-                Water vapor emissions [kg]
-            - Contrails : array
-                Contrail formation impact [kg CO2e]
-            - Soot : array
-                Particulate emissions [kg]
-            - SO2 : array
-                Sulfur dioxide emissions [kg]
+        results.segments[i].conditions.emissions with fields:
+            - cumulative_gCO2e : array
+                Cumulative GWP-weighted CO2 equivalent emissions [g CO2e]
 
     save_figure : bool, optional
         Save figure to file if True, default False
 
-    show_legend : bool, optional
-        Display segment legend if True, default True
-
     save_filename : str, optional
         Name for saved figure file, default "CO2e_Emissions"
+
+    show_legend : bool, optional
+        Show legend on the plot if True, default True   
 
     file_type : str, optional
         File extension for saved figure, default ".png"
 
     width : float, optional
-        Figure width in inches, default 11
+        Figure width in inches, default 8
 
     height : float, optional
-        Figure height in inches, default 7
+        Figure height in inches, default 5
 
     Returns
     -------
     fig : matplotlib.figure.Figure
-        Figure showing stacked emissions contributions
-
-    Notes
-    -----
-    Creates a stacked area plot showing:
-        - Individual contributions from each emission type
-        - Cumulative total CO2-equivalent impact
-        - Breakdown by mission segment
-        - Time history of emissions
-
-    Different emission types are distinguished by fill colors
-    and segments use different shades from the inferno colormap.
-
-    **Definitions**
-
-    'CO2-equivalent (CO2e)'
-        Combined climate impact normalized to CO2
-    
-    'Global Warming Potential (GWP)'
-        Relative impact factor for different emissions
-    
-    'Contrail Impact'
-        Climate forcing from aviation-induced cloudiness
-    """
- 
+        Figure showing cumulative gCO2e over the full mission timeline
+    """ 
     # get plotting style 
     ps      = plot_style()  
 
@@ -97,48 +63,37 @@ def plot_CO2e_emissions(results,
                   'ytick.labelsize': ps.axis_font_size,
                   'axes.titlesize': ps.title_font_size}
     plt.rcParams.update(parameters)
-      
+     
+    # get line colors for plots 
+    line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))     
+     
     fig   = plt.figure(save_filename)
-    fig.set_size_inches(width,height) 
-    axis_1 = plt.subplot(1,1,1)
-
-    line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))
-    
-    cum_y0  = 0
-    cum_y1  = 0 
-    cum_y1_0 = 0  
-    
+    fig.set_size_inches(width,height)
+     
     for i in range(len(results.segments)): 
-        time                = results.segments[i].conditions.frames.inertial.time[:, 0] / Units.min 
-        emissions_CO2       = results.segments[i].conditions.emissions.total.CO2[:, 0]  
-        emissions_NOx       = results.segments[i].conditions.emissions.total.NOx[:, 0] 
-        emissions_H2O       = results.segments[i].conditions.emissions.total.H2O[:, 0] 
-        emissions_Contrails = results.segments[i].conditions.emissions.total.Contrails[:, 0]
-        emissions_Soot      = results.segments[i].conditions.emissions.total.Soot[:, 0]
-        emissions_SO2       = results.segments[i].conditions.emissions.total.SO2[:, 0]  
-
-        cum_y0 = np.zeros_like(emissions_CO2)  
-        cum_y1 = cum_y1_0 + emissions_CO2 +  emissions_NOx  + emissions_H2O  + emissions_Contrails +  emissions_Soot +  emissions_SO2    
-
+        time = results.segments[i].conditions.frames.inertial.time[:,0] / Units.min
+        gCO2e   = results.segments[i].conditions.emissions.cumulative_gCO2e[:, 0] / 1E6  
+                       
         segment_tag  =  results.segments[i].tag
-        segment_name = segment_tag.replace('_', ' ')    
-        axis_1.fill_between(time, cum_y0, cum_y1, where=(cum_y0 < cum_y1), color= line_colors[i],  interpolate=True, label = segment_name)   
-        cum_y1_0 = cum_y1[-1] 
-                
-        axis_1.set_ylabel(r'CO2e Emissions (kg)') 
-        set_axes(axis_1)
-        
+        segment_name = segment_tag.replace('_', ' ')
+        axis_1 = plt.subplot(1,1,1) 
+        axis_1.plot(time, gCO2e, color = line_colors[i], marker = ps.markers[0],markersize = ps.marker_size, linewidth = ps.line_width, label = segment_name)            
+        axis_1.set_ylim([0, max(gCO2e)*1.1])
+        axis_1.set_ylabel(r'$CO_2e$ (Metric Tons)')    
+        axis_1.set_xlabel('Time (mins)') 
+        set_axes(axis_1)   
+
     if show_legend:
-        leg =  fig.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol = 4) 
-        leg.set_title('Flight Segment', prop={'size': ps.legend_font_size, 'weight': 'heavy'})    
+        leg =  fig.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol = 4)  
     
-    # Adjusting the sub-plots for legend 
-    fig.subplots_adjust(top=0.8)
+    # Adjusting the sub-plots for legend
+    fig.tight_layout() 
+    fig.subplots_adjust(top=0.8) 
     
     # set title of plot 
-    title_text    = 'CO2e Emissions'      
-    fig.suptitle(title_text)
+    title_text    = 'Cumulative CO2e Emissions'      
+    fig.suptitle(title_text)    
     
     if save_figure:
-        plt.savefig(save_filename + file_type)   
-    return fig 
+        fig.savefig(save_filename   + file_type) 
+    return fig

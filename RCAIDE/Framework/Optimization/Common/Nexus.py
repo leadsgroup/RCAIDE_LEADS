@@ -2,7 +2,7 @@
 
 # ----------------------------------------------------------------------------------------------------------------- 
 #  IMPORT
-# --- ------------------------------------------------------------------------------------------------------------- 
+# ----------------------------------------------------------------------------------------------------------------- 
  
 import RCAIDE
 from RCAIDE.Framework.Core import Data,  Units
@@ -14,8 +14,7 @@ import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------- 
 #  Nexus Class
-# --- ------------------------------------------------------------------------------------------------------------- 
-## @ingroupFramework-Optimization-Common
+# ----------------------------------------------------------------------------------------------------------------- 
 class Nexus(Data):
     """noun (plural same or nexuses)
         -a connection or series of connections linking two or more things
@@ -380,7 +379,7 @@ class Nexus(Data):
             newx     = np.asarray(x)*1.0
             newx[ii] = newx[ii] + diff_interval
             
-            grad_obj[ii]  = self.objective(newx)
+            grad_obj[ii]  = self.objective(newx)[0]
             jac_con[ii,:] = self.all_constraints(newx)
         
         grad_obj = (grad_obj - obj)/diff_interval

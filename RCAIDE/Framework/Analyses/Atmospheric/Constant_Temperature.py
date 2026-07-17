@@ -1,15 +1,21 @@
+#RCAIDE/Frameworks/Analyses/Atmospheric/Constant_Temperature.py
+#
+# Created: Dec 2024, M. Clarke
+
+# ----------------------------------------------------------------------
+#  Imports
+# ----------------------------------------------------------------------
+# RCAIDE imports 
+import RCAIDE 
+from RCAIDE.Framework.Analyses.Atmospheric      import Atmospheric
+from RCAIDE.Framework.Mission.Common.Conditions import Conditions 
+from RCAIDE.Framework.Core.Arrays               import atleast_2d_col 
+from RCAIDE.Library.Attributes.Gases            import Air
+from RCAIDE.Library.Attributes.Planets          import Earth
+
+# python imports
 import numpy as np
 from warnings import warn
- 
-import RCAIDE
-from RCAIDE.Framework.Core import Units
-from RCAIDE.Framework.Analyses.Atmospheric import Atmospheric
-from RCAIDE.Framework.Mission.Common.Conditions import Conditions 
-from RCAIDE.Framework.Core.Arrays import atleast_2d_col 
-from RCAIDE.Library.Attributes.Gases import Air
-from RCAIDE.Library.Attributes.Planets import Earth
-
-
 
 # ----------------------------------------------------------------------
 #  Classes
@@ -44,7 +50,9 @@ class Constant_Temperature(Atmospheric):
         """
         
         atmo_data = RCAIDE.Library.Attributes.Atmospheres.Earth.Constant_Temperature()
-        self.update(atmo_data)
+        self.update(atmo_data) 
+        planet = RCAIDE.Framework.Analyses.Planets.Earth()
+        self.features.planet = planet.features
     
     def compute_values(self,altitude,temperature=288.15):
         """

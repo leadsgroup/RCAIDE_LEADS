@@ -188,7 +188,7 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_thurst
     """ 
     conditions                = state.conditions   
-    noise_conditions          = conditions.noise.propulsors[turbofan.tag] 
+    noise_conditions          = conditions.aeroacoustics.propulsors[turbofan.tag] 
     turbofan_conditions       = conditions.energy.propulsors[turbofan.tag] 
     U0                        = conditions.freestream.velocity
     T                         = conditions.freestream.temperature
@@ -293,7 +293,6 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     hpt_conditions.inputs.static_pressure           = combustor_conditions.outputs.static_pressure
     hpt_conditions.inputs.mach_number               = combustor_conditions.outputs.mach_number  
     hpt_conditions.inputs.compressor                = hpc_conditions.outputs 
-    hpt_conditions.inputs.fan                       = fan_conditions.outputs
     hpt_conditions.inputs.bypass_ratio              = 0.0 #set to zero to ensure that fan not linked here 
     high_pressure_turbine.working_fluid             = combustor.working_fluid 
         
@@ -305,7 +304,8 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     lpt_conditions.inputs.stagnation_pressure        = hpt_conditions.outputs.stagnation_pressure
     lpt_conditions.inputs.static_temperature         = hpt_conditions.outputs.static_temperature
     lpt_conditions.inputs.static_pressure            = hpt_conditions.outputs.static_pressure  
-    lpt_conditions.inputs.mach_number                = hpt_conditions.outputs.mach_number    
+    lpt_conditions.inputs.mach_number                = hpt_conditions.outputs.mach_number   
+    lpt_conditions.inputs.velocity                   = hpt_conditions.outputs.velocity    
     lpt_conditions.inputs.compressor                 = lpc_conditions.outputs 
     lpt_conditions.inputs.fuel_to_air_ratio          = combustor_conditions.outputs.fuel_to_air_ratio 
     lpt_conditions.inputs.fan                        = fan_conditions.outputs  
@@ -319,7 +319,8 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     core_nozzle_conditions.inputs.stagnation_temperature     = lpt_conditions.outputs.stagnation_temperature
     core_nozzle_conditions.inputs.stagnation_pressure        = lpt_conditions.outputs.stagnation_pressure
     core_nozzle_conditions.inputs.static_temperature         = lpt_conditions.outputs.static_temperature
-    core_nozzle_conditions.inputs.static_pressure            = lpt_conditions.outputs.static_pressure  
+    core_nozzle_conditions.inputs.static_pressure            = lpt_conditions.outputs.static_pressure 
+    core_nozzle_conditions.inputs.velocity                   = lpt_conditions.outputs.velocity                
     core_nozzle_conditions.inputs.mach_number                = lpt_conditions.outputs.mach_number   
     core_nozzle.working_fluid                                = turbofan.working_fluid 
         
@@ -360,13 +361,11 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
 
     # Compute forces and moments
     moment_vector              = 0*state.ones_row(3)
-    thrust_vector              = 0*state.ones_row(3)
-    thrust_vector[:,0]         =  turbofan_conditions.thrust[:,0]
     center_of_gravity = [[0.0, 0.0,0.0]] 
     moment_vector[:,0]         =  turbofan.origin[0][0] -   center_of_gravity[0][0]
     moment_vector[:,1]         =  turbofan.origin[0][1]  -  center_of_gravity[0][1] 
     moment_vector[:,2]         =  turbofan.origin[0][2]  -  center_of_gravity[0][2]
-    M                          =  np.cross(moment_vector, thrust_vector)   
+    M                          =  np.cross(moment_vector, turbofan_conditions.thrust)   
     moment                     = M 
     power                      = turbofan_conditions.power 
     turbofan_conditions.moment = moment 
@@ -375,13 +374,13 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     mdot_air_core                                  = turbofan_conditions.core_mass_flow_rate
     mdot_air_fan                                   = bypass_ratio *  mdot_air_core  
     fuel_enthalpy                                  = combustor.fuel_data.specific_energy 
-    mdot_fuel                                      = turbofan_conditions.fuel_flow_rate  
+    mdot_fuel                                      = turbofan_conditions.fuel_mass_flow_rate  
     h_e_f                                          = fan_nozzle_conditions.outputs.static_enthalpy
     h_e_c                                          = core_nozzle_conditions.outputs.static_enthalpy
     h_0                                            = turbofan.working_fluid.compute_cp(T,P) * T 
     h_t4                                           = combustor_conditions.outputs.stagnation_enthalpy
     h_t3                                           = hpc_conditions.outputs.stagnation_enthalpy 
-    turbofan_conditions.overall_efficiency         = thrust_vector* U0 / (mdot_fuel * fuel_enthalpy)  
+    turbofan_conditions.overall_efficiency         = turbofan_conditions.thrust[:, 0]* U0 / (mdot_fuel * fuel_enthalpy)  
     turbofan_conditions.thermal_efficiency         = 1 - ((mdot_air_core +  mdot_fuel)*(h_e_c -  h_0) + mdot_air_fan*(h_e_f - h_0) + mdot_fuel *h_0)/((mdot_air_core +  mdot_fuel)*h_t4 - mdot_air_core *h_t3)  
      
     # compute shaft RPMs 
@@ -407,6 +406,10 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     
   
     # store data
+    fan_res         = Data(
+                    angular_velocity   = fan.angular_velocity
+    )
+    
     core_nozzle_res = Data(
                 exit_static_temperature             = core_nozzle_conditions.outputs.static_temperature,
                 exit_static_pressure                = core_nozzle_conditions.outputs.static_pressure,
@@ -428,12 +431,13 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
             )
 
     noise_conditions.fan_nozzle             = fan_nozzle_res
-    noise_conditions.core_nozzle            = core_nozzle_res  
+    noise_conditions.core_nozzle            = core_nozzle_res 
+    noise_conditions.fan                    = fan_res  
     noise_conditions.low_pressure_spool     = lpc_res
     stored_results_flag                     = True
     stored_propulsor_tag                    = turbofan.tag 
     
-    return thrust_vector,moment,power,power_elec,stored_results_flag,stored_propulsor_tag 
+    return turbofan_conditions.thrust,moment,power,power_elec,stored_results_flag,stored_propulsor_tag 
     
 def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one turbofan for identical turbofans
@@ -483,7 +487,7 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
     
     # deep copy results 
     conditions.energy.propulsors[turbofan.tag]                 = deepcopy(conditions.energy.propulsors[stored_propulsor_tag])
-    conditions.noise.propulsors[turbofan.tag]                  = deepcopy(conditions.noise.propulsors[stored_propulsor_tag]) 
+    conditions.aeroacoustics.propulsors[turbofan.tag]          = deepcopy(conditions.aeroacoustics.propulsors[stored_propulsor_tag]) 
     conditions.energy.converters[ram.tag]                      = deepcopy(conditions.energy.converters[ram_0.tag]                     )
     conditions.energy.converters[inlet_nozzle.tag]             = deepcopy(conditions.energy.converters[inlet_nozzle_0.tag]            )
     conditions.energy.converters[fan.tag]                      = deepcopy(conditions.energy.converters[fan_0.tag]                     )

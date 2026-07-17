@@ -30,7 +30,8 @@ Fuel\_Tanks
    :template: custom-module-template.rst
    :recursive:
 
-   Central_Fuel_Tank
    Fuel_Tank
-   Wing_Fuel_Tank
+   Integral_Tank
+   Liquid_Hydrogen_Tank
+   Non_Integral_Tank
 

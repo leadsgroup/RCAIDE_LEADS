@@ -68,7 +68,7 @@ def append_electric_rotor_conditions(propulsor, segment, energy_conditions, nois
     # add propulsor conditions              
     energy_conditions.propulsors[propulsor.tag]                               = Conditions()  
     energy_conditions.propulsors[propulsor.tag].throttle                      = 0. * ones_row(1)      
-    energy_conditions.propulsors[propulsor.tag].commanded_thrust_vector_angle = 0. * ones_row(1)  
+    energy_conditions.propulsors[propulsor.tag].commanded_thrust_vector_angle = 0. * ones_row(1)   
     energy_conditions.propulsors[propulsor.tag].thrust                        = 0. * ones_row(3) 
     energy_conditions.propulsors[propulsor.tag].power                         = 0. * ones_row(1) 
     energy_conditions.propulsors[propulsor.tag].moment                        = 0. * ones_row(3)  

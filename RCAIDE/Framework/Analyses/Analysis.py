@@ -84,7 +84,6 @@ class Analysis(Data):
                 N/A
             """             
         raise NotImplementedError
-        return Data()
     
     def post_process(self,*args,**kwarg):
         """This is used to post_process 

@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Weights/Correlation_Buildups/FLOPS/ccompute_propulsion_system_weight.py
+# RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/General_Aviation/FLOPS/ccompute_propulsion_system_weight.py
 # 
 # 
 # Created:  Sep 2024, M. Clarke
@@ -17,7 +17,7 @@ import  numpy as  np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Propulsion Systems Weight 
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_propulsion_system_weight(vehicle,network):
+def compute_propulsion_system_weight(vehicle,network,settings):
     """
     Calculate the weight of the complete propulsion system using FLOPS methodology.
 
@@ -28,8 +28,7 @@ def compute_propulsion_system_weight(vehicle,network):
             - networks : list
                 List of all propulsion networks
             - design_mach_number : float
-                Design cruise Mach number
-            - mass_properties.max_zero_fuel : float
+                Design cruise Mach number 
                 Maximum zero fuel weight [kg]
     network : RCAIDE.Network()
         Network data structure
@@ -69,10 +68,15 @@ def compute_propulsion_system_weight(vehicle,network):
         * All nacelles are identical
     """
      
-    JNENG =  0 
-    PNENG =  0
-    WENG  = 0.0
+    JNENG  =  0 
+    PNENG  =  0
+    WENG   = 0.0
+    WTHR   = 0.0
+    WEC    = 0.0
+    WSTART = 0.0
+    WNAC   = 0.0
     number_of_tanks =  0
+    ref_nacelle =  None
     for network in  vehicle.networks:
         for propulsor in network.propulsors:
             if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or\
@@ -84,41 +88,48 @@ def compute_propulsion_system_weight(vehicle,network):
             if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Internal_Combustion_Engine) or\
                isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine):
                 WENG          += compute_piston_engine_weight(propulsor)
-                PNENG  += 1 
+                PNENG  += 1
+            
+            if propulsor.nacelle !=  None:                    
+                ref_nacelle =  propulsor.nacelle                   
                 
         for fuel_line in network.fuel_lines:
             for _ in fuel_line.fuel_tanks:
                 number_of_tanks +=  1
     
-    WTHR = 0.0
-    WEC = 0.0
-    WSTART = 0.0
-    WNAC = 0.0
-    for network in  vehicle.networks:
-        for propulsor in network.propulsors:
-            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet):
-                if 'nacelle' in propulsor:
-                    ref_nacelle =  propulsor.nacelle   
-                    WNAC = compute_nacelle_weight(propulsor,ref_nacelle,JNENG)
-                WTHR = compute_thrust_reverser_weight(propulsor,JNENG)
-                WEC, WSTART = compute_misc_propulsion_system_weight(vehicle,propulsor,ref_nacelle,JNENG )
+    # nacelle weight
+    if ref_nacelle != None: 
+        WNAC = compute_nacelle_weight(propulsor,ref_nacelle,JNENG)
+        
+    # thrust reverser weight 
+    WTHR = compute_thrust_reverser_weight(propulsor,JNENG)
     
+    # engine starter and controls weight
+    if ref_nacelle != None: 
+        WEC, WSTART = compute_misc_propulsion_system_weight(vehicle,propulsor,ref_nacelle,JNENG )
+    
+    # total number of engines 
     NENG = JNENG + PNENG
-                  
-    WFSYS           = compute_fuel_system_weight(vehicle, NENG)
-    
-    WPRO            = NENG * WENG + WFSYS
+                
+    # fuel systems weight  
+    WFSYS           = compute_fuel_system_weight(vehicle, NENG,settings) 
 
     output                      = Data()
-    output.W_prop               = WPRO
+    output.W_prop               = WENG + WFSYS + WTHR + WSTART + WEC
     output.W_thrust_reverser    = WTHR
-    output.W_starter            = WSTART
-    output.W_engine_controls    = WEC
+    output.W_starter            = WSTART*JNENG
+    output.W_engine_controls    = WEC*JNENG
     output.W_fuel_system        = WFSYS
     output.W_nacelle            = WNAC
     output.W_engine             = WENG
     output.number_of_engines    = NENG 
-    output.number_of_fuel_tanks = number_of_tanks  
+    output.number_of_fuel_tanks = number_of_tanks
+
+    # append nacelle weight to object: 
+    for network in  vehicle.networks:
+        for propulsor in network.propulsors:
+            if propulsor.nacelle != None:
+                propulsor.nacelle.mass_properties.mass = WNAC    
     return output
 
 def compute_piston_engine_weight(ref_propulsor):
@@ -361,7 +372,7 @@ def compute_misc_propulsion_system_weight(vehicle,ref_propulsor,ref_nacelle,NENG
     return WEC * Units.lbs, WSTART * Units.lbs
 
  
-def compute_fuel_system_weight(vehicle, NENG):
+def compute_fuel_system_weight(vehicle, NENG,settings):
     """
     Calculate the weight of the general aviation aircraft fuel system using FLOPS methodology.
 

@@ -1,28 +1,18 @@
 # RCAIDE/Framework/External_Interfaces/OpenVSP/export_vsp_vehicle.py
 # 
-# Created:  Jul 2016, T. MacDonald
-# Modified: Jun 2017, T. MacDonald
-#           Jul 2017, T. MacDonald
-#           Oct 2018, T. MacDonald
-#           Nov 2018, T. MacDonald
-#           Jan 2019, T. MacDonald
-#           Jan 2020, T. MacDonald 
-#           Mar 2020, M. Clarke
-#           May 2020, E. Botero
-#           Jul 2020, E. Botero 
-#           Feb 2021, T. MacDonald
-#           May 2021, E. Botero 
+# Created:  Jul 2025, M. Clarke 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
 # RCAIDE imports 
-import RCAIDE
-from RCAIDE.Framework.Core import Units, Data 
+import RCAIDE 
+from RCAIDE.Library.Methods.Geometry.Planform                   import  fuselage_planform, wing_planform 
 from RCAIDE.Framework.External_Interfaces.OpenVSP.vsp_rotor     import write_vsp_rotor_bem
 from RCAIDE.Framework.External_Interfaces.OpenVSP.vsp_fuselage  import write_vsp_fuselage
 from RCAIDE.Framework.External_Interfaces.OpenVSP.vsp_wing      import write_vsp_wing
-from RCAIDE.Framework.External_Interfaces.OpenVSP.vsp_nacelle   import write_vsp_nacelle 
+from RCAIDE.Framework.External_Interfaces.OpenVSP.vsp_nacelle   import write_vsp_nacelle
+
 try:
     import vsp as vsp
 except ImportError:
@@ -33,6 +23,7 @@ except ImportError:
         pass
 import numpy as np
 import os
+from copy import deepcopy
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 # export_vsp_vehicle
@@ -103,10 +94,24 @@ def export_vsp_vehicle(vehicle, vehicle_tag, fuel_tank_set_ind=3, verbose=True, 
 
     Properties Used:
     N/A
-    """    
+    """
+    geometry = deepcopy(vehicle)
+    # -------------------------------------------------------------------------     
+    # Preprocess geometry 
+    # ------------------------------------------------------------------------- 
+    # update fuselage properties 
+    for fuselage in geometry.fuselages: 
+        fuselage_planform(fuselage) 
+    
+    # update wing properties 
+    for wing in geometry.wings:  
+        wing_planform(wing)
+        geometry.reference_area = wing.areas.reference 
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
+            geometry.reference_area = wing.areas.reference 
 
     # -------------------------------------------------------------------------     
-    # Reset OpenVSP to avoid including a previous vehicle
+    # Reset OpenVSP to avoid including a previous geometry
     # ------------------------------------------------------------------------- 
     if verbose:
         print('Reseting OpenVSP Model in Memory')
@@ -125,22 +130,23 @@ def export_vsp_vehicle(vehicle, vehicle_tag, fuel_tank_set_ind=3, verbose=True, 
     vsp.SetSetName(fuel_tank_set_ind, 'fuel_tanks')
     vsp.SetSetName(OML_set_ind, 'OML')
     
-    for wing in vehicle.wings:       
+    for wing in geometry.wings:       
         if verbose:
             print('Writing '+wing.tag+' to OpenVSP Model')
-            area_tags, wing_id = write_vsp_wing(vehicle,wing,area_tags, fuel_tank_set_ind, OML_set_ind) 
+            area_tags, wing_id = write_vsp_wing(geometry,wing,area_tags, fuel_tank_set_ind, OML_set_ind) 
     
     # ------------------------------------------------------------------------- 
     # Engines
     # -------------------------------------------------------------------------  
-    for network in vehicle.networks: 
+    for network in geometry.networks: 
         for propulsor in network.propulsors: 
             for  tag ,  item in  propulsor.items():
                 if isinstance(item, RCAIDE.Library.Components.Powertrain.Converters.Rotor):
-                    vsp_bem_filename = item.tag + '.bem' 
-                    write_vsp_rotor_bem(vsp_bem_filename,item) 
-   
-            if 'nacelle' in propulsor:
+                    if item.radius_distribution is not None and len(item.airfoil_polar_stations) != 0: 
+                        vsp_bem_filename = item.tag + '.bem' 
+                        write_vsp_rotor_bem(vsp_bem_filename,item)
+                    
+            if propulsor.nacelle !=  None:                
                 nacelle =  propulsor.nacelle
                 if verbose:
                     print('Writing '+ nacelle.tag +' to OpenVSP Model')
@@ -149,36 +155,31 @@ def export_vsp_vehicle(vehicle, vehicle_tag, fuel_tank_set_ind=3, verbose=True, 
     # ------------------------------------------------------------------------- 
     # Fuselage
     # ------------------------------------------------------------------------- 
-    for fuselage in vehicle.fuselages:
-        if type(fuselage) !=  RCAIDE.Library.Components.Fuselages.Blended_Wing_Body_Fuselage: 
-            if verbose:
-                print('Writing '+fuselage.tag+' to OpenVSP Model')
-            try:
-                area_tags = write_vsp_fuselage(fuselage, area_tags, vehicle.wings.main_wing, 
-                                               fuel_tank_set_ind, OML_set_ind)
-            except AttributeError:
-                area_tags = write_vsp_fuselage(fuselage, area_tags, None, fuel_tank_set_ind,
-                                               OML_set_ind)
-        else:
-            print('Blended Wing Body Fuselage defined')
-    
-    vsp.Update()
-    
-
+    for fuselage in geometry.fuselages: 
+        if verbose:
+            print('Writing '+fuselage.tag+' to OpenVSP Model')
+        try:
+            area_tags = write_vsp_fuselage(fuselage, area_tags, geometry.wings.main_wing, 
+                                           fuel_tank_set_ind, OML_set_ind)
+        except AttributeError:
+            area_tags = write_vsp_fuselage(fuselage, area_tags, None, fuel_tank_set_ind,
+                                           OML_set_ind)
+            
     # ------------------------------------------------------------------------- 
-    # Fuselage
+    # Boom
     # ------------------------------------------------------------------------- 
-    for boom in vehicle.booms: 
+    for boom in geometry.booms: 
         if verbose:
             print('Writing '+boom.tag+' to OpenVSP Model')
         try:
-            area_tags = write_vsp_fuselage(boom, area_tags, vehicle.wings.main_wing, 
+            area_tags = write_vsp_fuselage(boom, area_tags, geometry.wings.main_wing, 
                                            fuel_tank_set_ind, OML_set_ind)
         except AttributeError:
             area_tags = write_vsp_fuselage(boom, area_tags, None, fuel_tank_set_ind,
-                                               OML_set_ind) 
+                                               OML_set_ind)
+            
     # -------------------------------------------------------------------------     
-    # Write the vehicle to the file    
+    # Write the geometry to the file    
     # ------------------------------------------------------------------------- 
     if write_file ==True:
         cwd = os.getcwd()
@@ -192,8 +193,8 @@ def export_vsp_vehicle(vehicle, vehicle_tag, fuel_tank_set_ind=3, verbose=True, 
     if write_igs:
         if verbose:
             print('Exporting IGS File')        
-        vehicle_id = vsp.FindContainersWithName('Vehicle')[0]
-        parm_id = vsp.FindParm(vehicle_id,'LabelID','IGESSettings')
+        geometry_id = vsp.FindContainersWithName('Vehicle')[0]
+        parm_id = vsp.FindParm(geometry_id,'LabelID','IGESSettings')
         vsp.SetParmVal(parm_id, 0.)
         vsp.ExportFile(vehicle_tag + ".igs", OML_set_ind, vsp.EXPORT_IGES)
     

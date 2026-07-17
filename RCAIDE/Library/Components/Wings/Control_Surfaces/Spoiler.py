@@ -1,4 +1,4 @@
-# RCAIDE/Compoments/Wings/Control_Surfaces/Spoiler.py
+# RCAIDE/Components/Wings/Control_Surfaces/Spoiler.py
 # 
 # Created:  Mar 2024, M. Clarke 
 

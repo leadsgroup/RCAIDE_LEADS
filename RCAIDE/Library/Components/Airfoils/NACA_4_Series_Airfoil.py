@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Airfoils/NACA_4_Series_Airfoil.py
+# RCAIDE/Library/Components/Airfoils/NACA_4_Series_Airfoil.py
 # 
 # 
 # Created:  Mar 2024, M. Clarke 

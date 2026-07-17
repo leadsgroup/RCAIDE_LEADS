@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Nacelles/Segment.py
+# RCAIDE/Library/Components/Nacelles/Segment.py
 # 
 # Created:  Mar 2024, M. Clarke 
 
@@ -79,7 +79,7 @@ class Segment(Component):
         self.percent_z_location       = 0 
         self.height                   = 0 
         self.width                    = 0 
-        self.curvature                = 2 # super ellipse 
+        self.curvature                = 2  
          
 class Segment_Container(Container):
     """

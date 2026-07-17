@@ -1,0 +1,250 @@
+# RCAIDE/Library/Components/Powertrain/Energy/Sources/Fuel_Tanks/Non_Integral_Tank.py
+# 
+# 
+# Created:  September 2024, A. Molloy and M. Clarke 
+# Modified: Aug 2025, S. Shekar
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
+
+# RCAIDE imports
+import RCAIDE
+from .Fuel_Tank  import Fuel_Tank 
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions import append_fuel_tank_conditions 
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_wing_non_integral_tank_volume             import compute_wing_non_integral_tank_volume
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_prismatic_tank_volume                     import compute_prismatic_tank_volume      
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_rounded_end_cylindrical_tank_volume       import compute_rounded_end_cylindrical_tank_volume
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_wing_transverse_non_integral_tank_volume  import compute_wing_transverse_non_integral_tank_volume
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_rounded_end_cylinder_moment_of_inertia, compute_cuboid_moment_of_inertia
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_cuboid_center_of_gravity,  compute_cylinder_center_of_gravity
+# ----------------------------------------------------------------------------------------------------------------------
+#  Fuel Tank
+# ---------------------------------------------------------------------------------------------------------------------    
+class Non_Integral_Tank(Fuel_Tank):
+    """
+    Class for modeling non-integral fuel tank characteristics and behavior.
+    
+    Non-integral tanks are separate fuel storage containers that are not structurally
+    integrated into the wing or fuselage. They can be attached to wings, fuselages,
+    or configured as specialized tanks for blended wing body (BWB) aircraft.
+    
+    Attributes
+    ----------
+    tag : str
+        Identifier for the fuel tank (default: 'non_integral_tank')
+        
+    orientation_euler_angles : list
+        Euler angles defining tank orientation [rad] (default: [0., 0., 0.])
+        
+    transverse_tank : bool
+        Flag indicating if tank is configured as BWB aft tank (default: False)
+        
+    aft_tank_start_root_chord : float, optional
+        Starting position of aft tank along root chord [m] (default: None)
+        
+    aft_tank_end_rood_chord : float, optional
+        Ending position of aft tank along root chord [m] (default: None)
+        
+    aft_tank_end_segment_tag : str, optional
+        Tag of wing segment where aft tank ends (default: None)
+        
+    wing_root_tag : str, optional
+        Tag of the root wing for BWB configurations (default: None)
+        
+    radial_offset : float
+        Radial offset from attachment surface [m] (default: 0.0)
+        
+    wing_tag : str, optional
+        Tag of the wing this tank is attached to (default: None)
+        
+    fuselage_tag : str, optional
+        Tag of the fuselage this tank is attached to (default: None)
+        
+    length : float
+        Tank length [m] (default: 0.0)
+        
+    width : float
+        Tank width [m] (default: 0.0)
+        
+    height : float
+        Tank height [m] (default: 0.0)
+        
+    fuel : Component, optional
+        Fuel type stored in tank (default: None)
+
+    radial_offset : float
+        Reduction in radius for a tank (default: None)
+
+    Notes
+    -----
+    Non-integral tanks provide flexibility in fuel storage placement and can be
+    positioned to optimize aircraft balance and structural efficiency. They are
+    commonly used in aircraft where integral wing tanks are not feasible or
+    additional fuel capacity is required.
+
+
+
+    **Definitions**
+
+    'Non-integral Tank'
+        A fuel storage container that is separate from the primary aircraft structure
+        and attached externally to wings, fuselages, or other components.
+
+    'BWB Aft Tank'
+        A specialized non-integral tank configuration for blended wing body aircraft
+        positioned in the aft section of the wing root.
+
+    See Also
+    --------
+    RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank
+        Base fuel tank class
+    RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank
+        Integral fuel tank class
+    """
+    
+    def __defaults__(self):
+        """
+        Sets default values for central fuel tank attributes
+        """          
+        self.tag                         = 'non_integral_tank' 
+        self.orientation_euler_angles    = [0.,0.,0.]
+        self.geometry_type               = 'cylindrical'   # ['prismatic', 'cylindrical']
+        self.transverse_tank_segment_bound      = None # This only has one bound since it is more of a end bound and it will always start from the rootchord and grow symmetrically till bound
+        self.radial_offset               = None
+        self.aspect_ratio                = None # Defined as the ratio of total length of the tank to the diameter of the tank. or for a conformal tank it is defined as the ratio of length to height
+
+
+    def __init__ (self, compoment=None):
+        """
+        Initialize  
+        """ 
+        if compoment is not None:
+            if isinstance(compoment, RCAIDE.Library.Components.Wings.Wing):  
+                self.wing_tag  =  compoment.tag  
+            if isinstance(compoment, RCAIDE.Library.Components.Fuselages.Fuselage):  
+                self.fuselage_tag = compoment.tag        
+       
+    def append_operating_conditions(self,segment,fuel_line):  
+        """
+        Append fuel tank operating conditions for a flight segment
+        
+        Parameters
+        ----------
+        segment : Segment
+            Flight segment containing state conditions
+        fuel_line : Component
+            Connected fuel line component
+        """
+        append_fuel_tank_conditions(self,segment, fuel_line)  
+        return                      
+    
+    def compute_volume(self, wings, fuselages,fuel_tanks):
+        """
+        Compute the volume of the non-integral fuel tank based on its attachment location.
+
+        Parameters
+        ----------
+        wings : dict
+            Dictionary containing wing components indexed by their tags
+        fuselages : dict
+            Dictionary containing fuselage components indexed by their tags
+
+        Returns
+        -------
+        volume : float
+            Computed volume of the fuel tank [m³]
+
+        Notes
+        -----
+        The volume computation method depends on where the tank is attached:
+            - If attached to a wing, uses wing geometry and tank dimensions
+            - If attached to a fuselage, uses fuselage geometry and tank dimensions  
+            - If configured as a BWB aft tank, uses special BWB-specific computation
+
+        **Major Assumptions**
+            * Tank dimensions (length, width, height) are properly defined
+            * Wing or fuselage components exist in the provided dictionaries
+            * For BWB aft tanks, the wing_root_tag is properly set
+
+        See Also
+        --------
+        RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_non_integral_tank_volume
+        """
+        if self.wing_tag is not None and self.transverse_tank is False:
+            if self.geometry_type == 'cylindrical':
+                wing = wings[self.wing_tag]  
+                compute_wing_non_integral_tank_volume(self,wing,fuel_tanks)             
+        elif self.transverse_tank is True:
+            if self.transverse_tank == True:
+                wing = wings[self.wing_tag]  
+                compute_wing_transverse_non_integral_tank_volume(self,wing,fuel_tanks)
+        else:
+            if self.geometry_type == 'prismatic':
+                compute_prismatic_tank_volume(self)
+            if self.geometry_type == 'cylindrical':
+                compute_rounded_end_cylindrical_tank_volume(self)
+        return
+    
+   
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
+        """
+        Computes the moment of inertia tensor for a fuel tank.
+
+        Parameters
+        ----------
+        center_of_gravity : list, optional
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
+
+        Returns
+        -------
+        I : ndarray
+            3x3 moment of inertia tensor in kg*m^2
+ 
+        """
+        
+        if self.geometry_type == 'prismatic': 
+            _, _ = compute_cuboid_moment_of_inertia(self,
+                                                    outer_length=self.lengths.external,
+                                                    outer_width=self.widths.external,
+                                                    outer_height=self.heights.external,\
+                                                    inner_length=self.lengths.external- 2*self.wall_thickness,
+                                                    inner_width=self.widths.external- 2*self.wall_thickness,
+                                                    inner_height=self.heights.external- 2*self.wall_thickness,
+                                                    center_of_gravity=center_of_gravity,
+                                                    fuel_tank=True)
+ 
+        else: 
+            _, _ = compute_rounded_end_cylinder_moment_of_inertia(self,
+                                                                  outer_length=self.lengths.external,
+                                                                  outer_radius=self.diameters.external/2,
+                                                                  inner_length=self.lengths.external - 2*self.wall_thickness,
+                                                                  inner_radius=self.diameters.external/2 - self.wall_thickness,
+                                                                  center_of_gravity=center_of_gravity, 
+                                                                  fuel_tank = True)
+                
+        return
+    
+
+    def compute_center_of_gravity(self,vehicle): 
+        """
+        Computes the center of gravity for a fuel tank.
+
+        Parameters
+        ----------
+        center_of_gravity : list, optional
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
+
+        Returns
+        -------
+        I : ndarray
+            3x3 moment of inertia tensor in kg*m^2 
+        """
+        if self.geometry_type == 'prismatic': 
+            _  = compute_cuboid_center_of_gravity(self,length=self.lengths.external) 
+        else:
+            length = self.lengths.external +  self.diameters.external
+            _ = compute_cylinder_center_of_gravity(self, length )
+            
+        return
+        

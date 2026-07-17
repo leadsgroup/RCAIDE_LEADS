@@ -65,7 +65,7 @@ def compute_bus_conditions(bus, state, t_idx, delta_t):
     RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.append_bus_conditions
     RCAIDE.Library.Methods.Powertrain.Energy_Storage.Battery.compute_battery_module_conditions
     """
-    bus_conditions = state.conditions.energy[bus.tag]
+    bus_conditions = state.conditions.energy.busses[bus.tag]
     phi   = state.conditions.energy.hybrid_power_split_ratio
      
     if len(bus.battery_modules) != 0: 

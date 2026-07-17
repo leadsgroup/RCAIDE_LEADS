@@ -1,10 +1,11 @@
-# RCAIDE/Library/Methods/Weights/Correlation_Buildups/Common/compute_payload_weight.py
+# RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/Common/compute_payload_weight.py
 # 
 # Created: Sep 2024, M. Clarke 
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Imports
 # ----------------------------------------------------------------------------------------------------------------------
+import RCAIDE
 from RCAIDE.Framework.Core import Data, Units 
 
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -20,8 +21,7 @@ def compute_payload_weight(vehicle, W_passenger=195 * Units.lbs, W_baggage=30 * 
     vehicle : Vehicle
         The vehicle instance containing:
             - passengers : int
-                Number of passengers
-            - mass_properties.cargo : float
+                Number of passengers 
                 Mass of cargo [kg]
     W_passenger : float, optional
         Standard passenger weight [kg], default 195 lbs
@@ -67,15 +67,45 @@ def compute_payload_weight(vehicle, W_passenger=195 * Units.lbs, W_baggage=30 * 
     --------
     RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional
     """
-
-    # process
-    num_pax    = vehicle.passengers
+ 
+    num_pax    = vehicle.number_of_passengers
     W_pax      = W_passenger * num_pax
-    W_bag      = W_baggage * num_pax
-    if vehicle.mass_properties.payload == 0:
-        vehicle.mass_properties.payload  = W_pax + W_bag + vehicle.mass_properties.cargo
+    W_bag      = W_baggage * num_pax 
+
+    if W_pax + W_bag > vehicle.mass_properties.payload: 
+        vehicle.mass_properties.cargo = 0
     else:
-        vehicle.mass_properties.cargo = vehicle.mass_properties.payload - W_pax - W_bag
+        if vehicle.mass_properties.cargo == 0 and vehicle.mass_properties.payload != 0:
+            vehicle.mass_properties.cargo = vehicle.mass_properties.payload - W_pax - W_bag  
+    
+    #-------------------------------------------------------------------------------   
+    # Cargo
+    #-------------------------------------------------------------------------------         
+    
+    total_volume =  0
+    for cargo_bay in vehicle.cargo_bays:
+        total_volume += (cargo_bay.length * cargo_bay.width * cargo_bay.height) 
+    for cargo_bay in vehicle.cargo_bays:
+        cargo_bay_volume   = (cargo_bay.length * cargo_bay.width * cargo_bay.height)  
+        if cargo_bay.mass_properties.mass == 0: 
+            cargo_bay.mass_properties.mass   = (vehicle.mass_properties.cargo+W_bag) * (cargo_bay_volume / total_volume) # WE put the bags in cargo because thats where they go
+        
+    #-------------------------------------------------------------------------------   
+    # Paylpad 
+    #-------------------------------------------------------------------------------                
+    if vehicle.mass_properties.payload == 0: 
+        vehicle.mass_properties.payload  = W_pax + W_bag + vehicle.mass_properties.cargo
+            
+    ##-------------------------------------------------------------------------------   
+    # Cabin
+    ##------------------------------------------------------------------------------- 
+    for fuselage in vehicle.fuselages:
+        for cabin in fuselage.cabins:  
+            cabin.mass_properties.mass = W_pax* (cabin.number_of_passengers / vehicle.number_of_passengers )              
+    for wing in vehicle.wings:
+        if isinstance(wing, RCAIDE.Library.Components.Wings.Blended_Wing_Body):
+            for cabin in wing.cabins:  
+                cabin.mass_properties.mass = W_pax * (cabin.number_of_passengers / vehicle.number_of_passengers )                           
 
     # packup outputs
     output              = Data()

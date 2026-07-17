@@ -165,7 +165,7 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.compute_thrust
     """ 
     conditions               = state.conditions 
-    noise_conditions         = conditions.noise.propulsors[turboprop.tag]  
+    noise_conditions         = conditions.aeroacoustics.propulsors[turboprop.tag]  
     turboprop_conditions     = conditions.energy.propulsors[turboprop.tag]
     U0                       = conditions.freestream.velocity
     T                        = conditions.freestream.temperature
@@ -247,8 +247,7 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     lpt_conditions.inputs.static_pressure                 = hpt_conditions.outputs.static_pressure 
     lpt_conditions.inputs.mach_number                     = hpt_conditions.outputs.mach_number     
     lpt_conditions.inputs.compressor                      = Data()
-    lpt_conditions.inputs.compressor.work_done            = 0.0   
-    lpt_conditions.inputs.compressor.external_shaft_work_done = 0.0
+    lpt_conditions.inputs.compressor.work_done            = 0.0    
     lpt_conditions.inputs.bypass_ratio                    = 0.0 
     lpt_conditions.inputs.fuel_to_air_ratio               = combustor_conditions.outputs.fuel_to_air_ratio 
     low_pressure_turbine.working_fluid                    = high_pressure_turbine.working_fluid    
@@ -275,25 +274,21 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     compute_thrust(turboprop,conditions) 
 
     # Compute forces and moments
-    moment_vector      = 0*state.ones_row(3)
-    thrust_vector      = 0*state.ones_row(3)
-    thrust_vector[:,0] = turboprop_conditions.thrust[:,0]
+    moment_vector      = 0*state.ones_row(3)  
     moment_vector[:,0] = turboprop.origin[0][0] -   center_of_gravity[0][0] 
     moment_vector[:,1] = turboprop.origin[0][1]  -  center_of_gravity[0][1] 
     moment_vector[:,2] = turboprop.origin[0][2]  -  center_of_gravity[0][2]
-    M                  = np.cross(moment_vector, thrust_vector)   
-    moment             = M 
-    power              = turboprop_conditions.power 
+    turboprop_conditions.moment = np.cross(moment_vector, turboprop_conditions.thrust)   
   
     # compute efficiencies 
     mdot_air_core                                  = turboprop_conditions.core_mass_flow_rate 
     fuel_enthalpy                                  = combustor.fuel_data.specific_energy 
-    mdot_fuel                                      = turboprop_conditions.fuel_flow_rate   
+    mdot_fuel                                      = turboprop_conditions.fuel_mass_flow_rate   
     h_e_c                                          = core_nozzle_conditions.outputs.static_enthalpy
     h_0                                            = turboprop.working_fluid.compute_cp(T,P) * T 
     h_t4                                           = combustor_conditions.outputs.stagnation_enthalpy
     h_t3                                           = compressor_conditions.outputs.stagnation_enthalpy 
-    turboprop_conditions.overall_efficiency        = thrust_vector* U0 / (mdot_fuel * fuel_enthalpy)  
+    turboprop_conditions.overall_efficiency        = turboprop_conditions.thrust[:, 0]* U0 / (mdot_fuel * fuel_enthalpy)  
     turboprop_conditions.thermal_efficiency        = 1 - ((mdot_air_core +  mdot_fuel)*(h_e_c -  h_0) + mdot_fuel *h_0)/((mdot_air_core +  mdot_fuel)*h_t4 - mdot_air_core *h_t3)   
     compressor_conditions.omega                    = compressor.design_angular_velocity * turboprop_conditions.throttle 
     
@@ -301,14 +296,14 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     power_elec = 0*state.ones_row(1)
     if compressor.motor != None and  len(state.numerics.time.differentiate) > 0: 
         compressor_motor_conditions                 = conditions.energy.converters[compressor.motor.tag] 
-        compressor_motor_conditions.outputs.power   = power *conditions.energy.hybrid_power_split_ratio   
+        compressor_motor_conditions.outputs.power   = turboprop_conditions.power  *conditions.energy.hybrid_power_split_ratio   
         compressor_motor_conditions.outputs.omega   = compressor_conditions.omega
         compressor_motor_conditions.outputs.torque  = compressor_motor_conditions.outputs.power / compressor_motor_conditions.outputs.omega   
         power_elec =  compressor_motor_conditions.outputs.power  
     
     if compressor.generator != None and len(state.numerics.time.differentiate) > 0: 
         compressor_generator_conditions                = conditions.energy.converters[compressor.generator.tag] 
-        compressor_generator_conditions.inputs.power   = power *conditions.energy.hybrid_power_split_ratio  
+        compressor_generator_conditions.inputs.power   = turboprop_conditions.power  *conditions.energy.hybrid_power_split_ratio  
         compressor_generator_conditions.inputs.omega   = compressor_conditions.omega
         compressor_generator_conditions.outputs.torque = compressor_generator_conditions.outputs.power / compressor_generator_conditions.outputs.omega  
         power_elec =  compressor_generator_conditions.inputs.power  
@@ -327,7 +322,7 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     # Pack results    
     stored_results_flag    = True
     stored_propulsor_tag   = turboprop.tag
-    return thrust_vector,moment,power,power_elec,stored_results_flag,stored_propulsor_tag 
+    return turboprop_conditions.thrust,turboprop_conditions.moment,turboprop_conditions.power,power_elec,stored_results_flag,stored_propulsor_tag 
 
 def reuse_stored_turboprop_data(turboprop,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one turboprop for identical propulsors
@@ -369,7 +364,7 @@ def reuse_stored_turboprop_data(turboprop,state,network,stored_propulsor_tag,cen
 
     # deep copy results 
     conditions.energy.propulsors[turboprop.tag]                = deepcopy(conditions.energy.propulsors[stored_propulsor_tag])
-    conditions.noise.propulsors[turboprop.tag]                 = deepcopy(conditions.noise.propulsors[stored_propulsor_tag]) 
+    conditions.aeroacoustics.propulsors[turboprop.tag]         = deepcopy(conditions.aeroacoustics.propulsors[stored_propulsor_tag]) 
     conditions.energy.converters[ram.tag]                      = deepcopy(conditions.energy.converters[ram_0.tag]                     )
     conditions.energy.converters[inlet_nozzle.tag]             = deepcopy(conditions.energy.converters[inlet_nozzle_0.tag]            ) 
     conditions.energy.converters[compressor.tag]               = deepcopy(conditions.energy.converters[compressor_0.tag] ) 

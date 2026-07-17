@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Powertrain/Sources/Fuel_Cells/Generic_Fuel_Cell.py
+# RCAIDE/Library/Components/Powertrain/Sources/Fuel_Cells/Generic_Fuel_Cell.py
 # 
 # 
 # Created:  Jan 2025, M. Clarke
@@ -10,9 +10,10 @@
 import RCAIDE
 from RCAIDE.Framework.Core                                     import Units, Data
 from RCAIDE.Library.Components                                 import Component    
-from RCAIDE.Library.Attributes.Gases                           import Air  
 from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_fuel_cell_performance import *
 from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.append_fuel_cell_conditions   import *
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_cuboid_center_of_gravity import compute_cuboid_center_of_gravity
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_cuboid_moment_of_inertia import compute_cuboid_moment_of_inertia
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Generic_Fuel_Cell
@@ -60,7 +61,7 @@ class Generic_Fuel_Cell_Stack(Component):
                      
         self.fuel_cell                                  = Data()  
         self.fuel_cell.propellant                       = RCAIDE.Library.Attributes.Propellants.Gaseous_Hydrogen()
-        self.fuel_cell.oxidizer                         = Air()
+        self.fuel_cell.oxidizer                         = RCAIDE.Library.Attributes.Gases.Air()
         self.fuel_cell.efficiency                       = .65                                 # normal fuel cell operating efficiency at sea level
         self.fuel_cell.specific_power                   = 2080                                # specific power of fuel cell [W/kg]; default is Nissan 2011 level
         self.fuel_cell.mass_density                     = 1203.208556                         # take default as specs from Nissan 2011 fuel cell      
@@ -87,15 +88,15 @@ class Generic_Fuel_Cell_Stack(Component):
         self.electrical_configuration.series            = 1
         self.electrical_configuration.parallel          = 1   
         
-        self.geometrtic_configuration                   = Data() 
-        self.geometrtic_configuration.normal_count      = 1
-        self.geometrtic_configuration.parallel_count    = 1
-        self.geometrtic_configuration.normal_spacing    = 0.02
-        self.geometrtic_configuration.stacking_rows     = 3
-        self.geometrtic_configuration.parallel_spacing  = 0.02
+        self.geometric_configuration                   = Data() 
+        self.geometric_configuration.normal_count      = 1
+        self.geometric_configuration.parallel_count    = 1
+        self.geometric_configuration.normal_spacing    = 0.02
+        self.geometric_configuration.stacking_rows     = 3
+        self.geometric_configuration.parallel_spacing  = 0.02
         
          
-    def energy_calc(self,state,bus,coolant_lines, t_idx, delta_t): 
+    def compute_performance(self,state,bus,coolant_lines, t_idx, delta_t): 
         """Computes the state of the NMC battery cell.
            
         Assumptions:
@@ -129,4 +130,40 @@ class Generic_Fuel_Cell_Stack(Component):
     def reuse_stored_data(self,state,bus,stored_results_flag, stored_fuel_cell_tag):
         reuse_stored_fuel_cell_data(self,state,bus,stored_results_flag, stored_fuel_cell_tag)
         return     
+
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
+        """
+        Computes the moment of inertia tensor for a fuel cell.
+
+        Parameters
+        ----------
+        center_of_gravity : list, optional
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
+
+        Returns
+        -------
+        I : ndarray
+            3x3 moment of inertia tensor in kg*m^2
+ 
+        """
+        _ , _ = compute_cuboid_moment_of_inertia(self, self.length, self.width, self.height, 0, 0, 0, center_of_gravity)
+                
+        return
     
+
+    def compute_center_of_gravity(self,vehicle): 
+        """
+        Computes the center of gravity for a fuel cell.
+
+        Parameters
+        ----------
+        center_of_gravity : list, optional
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
+
+        Returns
+        -------
+        I : ndarray
+            3x3 moment of inertia tensor in kg*m^2 
+        """
+        _  = compute_cuboid_center_of_gravity(self, self.length) 
+        return    

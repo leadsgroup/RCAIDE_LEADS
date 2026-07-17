@@ -1,0 +1,51 @@
+# RCAIDE/Framework/Analyses/Geometry/Geometry.py
+#
+# Created:  
+# Modified: Apr 2025, S Shekar
+
+# ----------------------------------------------------------------------
+#  Imports
+# ---------------------------------------------------------------------- 
+from RCAIDE.Framework.Core import Data 
+from RCAIDE.Framework.Analyses import Analysis
+
+# ----------------------------------------------------------------------
+#  Analysis
+# ----------------------------------------------------------------------
+class Geometry(Analysis):
+    """ RCAIDE.Framework.Analyses.Geometry()
+    """
+    
+    def __defaults__(self):
+        
+        """This sets the default values and methods for the analysis.
+    
+            Assumptions:
+            N/A
+    
+            Source:
+            N/A
+    
+            Inputs:
+            None
+    
+            Outputs:
+            None
+    
+            Properties Used:
+            N/A
+            """                  
+        
+        
+        self.tag                                = 'geometry'
+        self.vehicle                            = None
+        self.settings                           = Data() 
+        self.settings.overwrite_reference       = True 
+        self.settings.compute_fuel_volume       = True
+        self.settings.update_max_fuel           = False
+        self.settings.unique_geometry           = False
+        self.settings.write_geometry_properties = False
+
+        
+        
+        

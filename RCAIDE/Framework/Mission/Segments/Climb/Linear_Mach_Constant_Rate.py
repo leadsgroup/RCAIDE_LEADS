@@ -51,7 +51,7 @@ class Linear_Mach_Constant_Rate(Evaluate):
         self.altitude_end      = 10. * Units.km
         self.climb_rate        = 3.  * Units.m / Units.s
         self.mach_number_end   = 0.7
-        self.mach_number_start = 0.8
+        self.mach_number_start = None
         self.true_course       = 0.0 * Units.degrees    
       
         # -------------------------------------------------------------------------------------------------------------- 
@@ -59,10 +59,7 @@ class Linear_Mach_Constant_Rate(Evaluate):
         # --------------------------------------------------------------------------------------------------------------   
         initialize                         = self.process.initialize  
         initialize.differentials_altitude  = Common.Initialize.differentials_altitude
-        initialize.conditions              = Segments.Climb.Linear_Mach_Constant_Rate.initialize_conditions  
-        iterate                            = self.process.iterate
-        iterate.residuals.flight_dynamics  = Common.Residuals.flight_dynamics
-        iterate.unknowns.mission           = Common.Unpack_Unknowns.orientation   
+        initialize.conditions              = Segments.Climb.Linear_Mach_Constant_Rate.initialize_conditions     
         
         return
 

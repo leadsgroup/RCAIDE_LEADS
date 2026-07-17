@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Fuselage/Circle_Segment.py
+# RCAIDE/Library/Components/Fuselage/Circle_Segment.py
 # 
 # Created:  Mar 2024, M. Clarke 
 
@@ -77,5 +77,5 @@ class Circle_Segment(Segment):
         """
         Sets default values for the fuselage segment attributes.
         """
-        self.tag                     = 'super_ellipse_segment' 
+        self.tag                     = 'circle_segment' 
           

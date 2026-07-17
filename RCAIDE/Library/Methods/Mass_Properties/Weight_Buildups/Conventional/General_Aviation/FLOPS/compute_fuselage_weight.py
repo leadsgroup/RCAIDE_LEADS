@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Weights/Correlation_Buildups/FLOPS/compute_fuselage_weight.py
+# RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/General_Aviation/FLOPS/compute_fuselage_weight.py
 # 
 # 
 # Created:  Sep 2024, M. Clarke
@@ -7,12 +7,8 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-# RCAIDE
-import RCAIDE 
-from RCAIDE.Framework.Core    import Units
-
-# python imports 
-import  numpy as  np
+# RCAIDE 
+from RCAIDE.Framework.Core    import Units 
  
 # ----------------------------------------------------------------------------------------------------------------------
 # Fuselage Weight 

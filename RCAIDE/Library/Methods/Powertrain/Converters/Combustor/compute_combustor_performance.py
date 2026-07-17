@@ -116,7 +116,7 @@ def compute_combustor_performance(combustor, conditions):
     # compute stanation pressure 
     Pt_out  = pib * Pt_in 
     
-    #Computing stagnation enthalpies from stagnation temperatures
+    # Computing stagnation enthalpies from stagnation temperatures
     ht4     = nondim_r * Cp* Tt4 
     ht_in   = nondim_r * Cp* Tt_in
     

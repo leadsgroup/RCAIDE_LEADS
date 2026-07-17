@@ -1,4 +1,4 @@
-# RCAIDE/Compoments/Booms/Boom.py
+# RCAIDE/Components/Booms/Boom.py
 # 
 # 
 # Created:  Mar 2024, M. Clarke 
@@ -6,9 +6,12 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
-# RCAIDE imports 
+# RCAIDE imports
+import RCAIDE
 from RCAIDE.Library.Components import Component 
-from RCAIDE.Framework.Core     import Data, Container 
+from RCAIDE.Framework.Core     import Data, Container
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_boom_center_of_gravity     import compute_boom_center_of_gravity
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_cylinder_moment_of_inertia import compute_cylinder_moment_of_inertia
  
 # ----------------------------------------------------------------------------------------------------------------------
 #  BOOM
@@ -126,16 +129,7 @@ class Boom(Component):
     """
     
     def __defaults__(self):
-        """ :meta private:"""
-        #This sets the default values.
-    
-        #Assumptions:
-        #    None
-        
-        #Source:
-        #    None
-              
-        
+        """ :meta private:"""         
         self.tag                                    = 'boom'
         self.origin                                 = [[0.0,0.0,0.0]]
         self.aerodynamic_center                     = [0.0,0.0,0.0]  
@@ -158,6 +152,7 @@ class Boom(Component):
         self.x_rotation                             = 0.0
         self.y_rotation                             = 0.0
         self.z_rotation                             = 0.0
+        self.supersonic                             = False
              
         self.lengths                                = Data()
         self.lengths.nose                           = 0.0 
@@ -176,48 +171,60 @@ class Boom(Component):
         self.vsp_data.xsec_num                      = None  # Number if XSecs in rotor_boom geom.
                         
         self.segments                               = Container()
-        
+         
     def append_segment(self,segment):
         """
-        Assumptions:
-           None
-            
-        Source:
-           None
-        
-        Args:
-           self       : boom                  [unitless]
-           segment    : cross-section of boom [unitless]   
-            
-        Outputs:
-           None 
+        Adds a new segment to the boom's segment container.
+
+        Parameters
+        ----------
+        segment : Data
+            Boom segment to be added
         """
 
         # Assert database type
-        if not isinstance(segment,Data):
-            raise Exception('input component must be of type Data()')
+        if not isinstance(segment,RCAIDE.Library.Components.Booms.Segments.Segment):
+            raise Exception('input component must be of type Segment')
 
         # Store data
-        self.segments.append(segment) 
-        
-        return 
+        self.segments.append(segment)
+
+        return
+
+
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
+        """
+        Computes the moment of inertia tensor for the boom.
+
+        Parameters
+        ----------
+        center_of_gravity : list, optional
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]] 
+
+        See Also
+        --------
+        RCAIDE.Library.Methods.weights.vehicle.moments_of_inertia.compute_fuselage_moment_of_inertia
+            Implementation of the moment of inertia calculation
+        """
+        _ , _ = compute_cylinder_moment_of_inertia(self,outer_length=self.lengths.total,outer_radius=self.width/2,center_of_gravity= center_of_gravity) 
+        return
+    
+
+    def compute_center_of_gravity(self,vehicle): 
+        """
+        Computes the center of gravity for the boom.
+
+        See Also
+        --------
+        RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_fuselage_center_of_gravity
+            Implementation of the center of gravity calculation
+        """
+        _  = compute_boom_center_of_gravity(self) 
+        return
+    
 
 class Container(Component.Container):
-    def get_children(self):
-        """ :meta private: """
-        #Returns the components that can go inside
-    
-        #Assumptions:
-        #    None
-            
-        #Source:
-        #    None
-
-        #Args:
-        #    self       : container of booms [unitless]    
-            
-        #Outputs:
-        #    Boom       : boom               [unitless] 
+    def get_children(self): 
         
         return [Boom]
 

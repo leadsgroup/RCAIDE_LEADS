@@ -31,13 +31,16 @@ Geometry
    :recursive:
 
    Common
-   plot_3d_fuselage
-   plot_3d_nacelle
+   generate_3d_cargo_bay_points
+   generate_3d_fuel_tank_points
+   generate_3d_fuselage_points
+   generate_3d_lopa_points
+   generate_3d_nacelle_points
+   generate_3d_wing_points
    plot_3d_rotor
    plot_3d_vehicle
    plot_3d_vehicle_vlm_panelization
-   plot_3d_wing
    plot_airfoil
    plot_layout_of_passenger_accommodations
-   plot_rotor
+   plot_rotor_geometry
 

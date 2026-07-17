@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Weights/Correlation_Buildups/FLOPS/compute_operating_items_weight.py
+# RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/General_Aviation/FLOPS/compute_operating_items_weight.py
 # 
 # 
 # Created:  Sep 2024, M. Clarke
@@ -6,14 +6,9 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-
-# RCAIDE
-import  RCAIDE 
+# RCAIDE 
 from RCAIDE.Framework.Core    import Units ,  Data
 
-# python imports 
-import  numpy as  np
- 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Operating Items Weight 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -71,7 +66,7 @@ def compute_operating_items_weight(vehicle):
     WFLCRB = NFLCR * 225  # flight crew and baggage weight
 
     output                           = Data()
-    output.misc = 0
+    output.misc                      = 0
     output.flight_crew               = WFLCRB * Units.lbs
     output.flight_attendants         = 0.0
     output.total                     = output.misc + output.flight_crew + \

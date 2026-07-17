@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Wings/Wing.py
+# RCAIDE/Library/Components/Wings/Wing.py
 # 
 # Created:  Mar 2024, M. Clarke 
 
@@ -8,8 +8,9 @@
 # RCAIDE imports
 import RCAIDE
 from RCAIDE.Framework.Core      import Data,Container 
-from RCAIDE.Library.Components  import Mass_Properties, Component   
+from RCAIDE.Library.Components  import Component   
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_wing_moment_of_inertia import  compute_wing_moment_of_inertia
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_wing_center_of_gravity import  compute_wing_center_of_gravity
 
 import numpy as np
 
@@ -30,10 +31,7 @@ class Wing(Component):
         Mass and inertia properties, initialized empty
         
     origin : ndarray
-        3D coordinates [x, y, z] defining wing's reference point, defaults to [0.0, 0.0, 0.0]
-        
-    symmetric : bool
-        Flag indicating if wing is symmetric about x-z plane, defaults to True
+        3D coordinates [x, y, z] defining wing's reference point, defaults to [0.0, 0.0, 0.0] 
         
     vertical : bool
         Flag indicating if wing is vertically oriented, defaults to False
@@ -56,7 +54,7 @@ class Wing(Component):
     aerodynamic_center : list
         Location of aerodynamic center [x, y, z], defaults to [0.0, 0.0, 0.0]
         
-    exposed_root_chord_offset : float
+    percent_span_unexposed : float
         Offset of exposed root from centerline, defaults to 0.0
         
     total_length : float
@@ -100,9 +98,7 @@ class Wing(Component):
         - quarter_chord : float
             Quarter-chord sweep angle, defaults to 0.0
         - leading_edge : float
-            Leading edge sweep angle, defaults to None
-        - half_chord : float
-            Half-chord sweep angle, defaults to 0.0
+            Leading edge sweep angle, defaults to None 
             
     twists : Data
         Collection of twist angles
@@ -111,15 +107,9 @@ class Wing(Component):
             Root section twist angle, defaults to 0.0
         - tip : float
             Tip section twist angle, defaults to 0.0
-            
-    high_lift : bool
-        Flag indicating presence of high-lift devices, defaults to False
         
     symbolic : bool
-        Flag for symbolic computation mode, defaults to False
-        
-    high_mach : bool
-        Flag for high Mach number flow, defaults to False
+        Flag for symbolic computation mode, defaults to False 
         
     vortex_lift : bool
         Flag for vortex lift modeling, defaults to False
@@ -129,9 +119,6 @@ class Wing(Component):
         
     transition_x_lower : float
         Lower surface transition location, defaults to 0.0
-        
-    dynamic_pressure_ratio : float
-        Local to freestream dynamic pressure ratio, defaults to 0.0
         
     Airfoil : Container
         Collection of airfoil definitions, initialized empty
@@ -170,61 +157,60 @@ class Wing(Component):
         """
         Sets default values for the wing attributes.
         """         
-        self.tag                               = 'wing'
-        self.mass_properties                   = Mass_Properties()
-        self.origin                            = np.array([[0.0,0.0,0.0]])
-                                               
-        self.symmetric                         = True
-        self.vertical                          = False
-        self.t_tail                            = False
-        self.taper                             = 0.0
-        self.dihedral                          = 0.0
-        self.aspect_ratio                      = 0.0
-        self.thickness_to_chord                = 0.0
-        self.aerodynamic_center                = [0.0,0.0,0.0]
-        self.exposed_root_chord_offset         = 0.0
-        self.total_length                      = 0.0
-                                               
-        self.spans                             = Data()
-        self.spans.projected                   = 0.0
-        self.spans.total                       = 0.0
-                                               
-        self.areas                             = Data()
-        self.areas.reference                   = 0.0
-        self.areas.exposed                     = 0.0
-        self.areas.affected                    = 0.0
-        self.areas.wetted                      = 0.0
-                                               
-        self.chords                            = Data()
-        self.chords.mean_aerodynamic           = 0.0
-        self.chords.mean_geometric             = 0.0
-        self.chords.root                       = 0.0
-        self.chords.tip                        = 0.0
-                                               
-        self.sweeps                            = Data()
-        self.sweeps.quarter_chord              = 0.0
-        self.sweeps.leading_edge               = None
-        self.sweeps.half_chord                 = 0.0        
-                                               
-        self.twists                            = Data()
-        self.twists.root                       = 0.0
-        self.twists.tip                        = 0.0
-                                               
-        self.high_lift                         = False
-        self.symbolic                          = False 
-        self.high_mach                         = False
-        self.vortex_lift                       = False
-                                               
-        self.transition_x_upper                = 0.0
-        self.transition_x_lower                = 0.0
-                                               
-        self.dynamic_pressure_ratio            = 0.0
-                                               
-        self.airfoil                           = None 
+        self.tag                                    = 'wing'
+        self.origin                                 = np.array([[0.0,0.0,0.0]]) 
+        self.xz_plane_symmetric                     = True 
+        self.vertical                               = False
+        self.t_tail                                 = False 
+        self.taper                                  = 0.0
+        self.dihedral                               = 0.0
+        self.aspect_ratio                           = 0.0
+        self.thickness_to_chord                     = 0.0
+        self.aerodynamic_center                     = [0.0,0.0,0.0]
+        self.percent_span_unexposed                 = 0.0
+        self.total_length                           = 0.0 
+             
+        self.spans                                  = Data()
+        self.spans.projected                        = 0.0
+        self.spans.total                            = 0.0
+                                                    
+        self.areas                                  = Data()
+        self.areas.reference                        = 0.0
+        self.areas.exposed                          = 0.0
+        self.areas.affected                         = 0.0
+        self.areas.wetted                           = 0.0
+        self.areas.planform                         = 0.0
+                                                    
+        self.chords                                 = Data()
+        self.chords.mean_aerodynamic                = 0.0
+        self.chords.mean_geometric                  = 0.0
+        self.chords.root                            = 0.0
+        self.chords.tip                             = 0.0
+        self.outer_mold_line_cabin_offset_factor    = 0.95
+                                                    
+        self.sweeps                                 = Data()
+        self.sweeps.quarter_chord                   = None
+        self.sweeps.leading_edge                    = None         
+                                                    
+        self.twists                                 = Data()
+        self.twists.root                            = 0.0
+        self.twists.tip                             = 0.0
+                                                     
+        self.symbolic                               = False  
+        self.vortex_lift                            = False
+                                                    
+        self.transition_x_upper                     = 0.45
+        self.transition_x_lower                     = 0.45
+        self.airfoil                                = None 
         
-        self.segments                          = Container()
-        self.control_surfaces                  = Container()
-        self.fuel_tanks                        = Container()
+        self.segments                               = Container()
+        self.control_surfaces                       = Container()
+   
+        self.structural                             = Data()  
+        self.structural.rib                         = False   
+        self.structural.front_spar_percent_chord    = 0.1  
+        self.structural.rear_spar_percent_chord     = 0.6  
+        self.structural.stringer_percent_chords     = []         
 
     def append_segment(self, segment):
         """
@@ -280,32 +266,12 @@ class Wing(Component):
 
         return
     
-    def append_fuel_tank(self, fuel_tank):
-        """
-        Adds a fuel tank to the wing.
-
-        Parameters
-        ----------
-        fuel_tank : Data
-            Fuel tank to be added
-        """
-        # Assert database type
-        if not isinstance(fuel_tank,Data):
-            raise Exception('input component must be of type Data()')
-
-        # Store data
-        self.fuel_tanks.append(fuel_tank)
-
-        return
- 
-    def compute_moment_of_inertia(self, mass, center_of_gravity=[[0, 0, 0]], fuel_flag=False): 
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
         """
         Computes the moment of inertia tensor for the wing.
 
         Parameters
-        ----------
-        mass : float
-            Wing mass
+        ---------- 
         center_of_gravity : list, optional
             Reference point coordinates, defaults to [[0, 0, 0]]
         fuel_flag : bool, optional
@@ -315,9 +281,23 @@ class Wing(Component):
         -------
         ndarray
             3x3 moment of inertia tensor
+        """ 
+        _, _ = compute_wing_moment_of_inertia(self, center_of_gravity) 
+        return
+    
+
+    def compute_center_of_gravity(self,vehicle): 
         """
-        I = compute_wing_moment_of_inertia(self, mass, center_of_gravity, fuel_flag) 
-        return I   
+        Computes the center of gravity for the wing.
+
+        See Also
+        --------
+        RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_fuselage_center_of_gravity
+            Implementation of the center of gravity calculation
+        """
+        compute_wing_center_of_gravity(self, vehicle)
+        return
+    
     
 class Container(Component.Container):
     def get_children(self):

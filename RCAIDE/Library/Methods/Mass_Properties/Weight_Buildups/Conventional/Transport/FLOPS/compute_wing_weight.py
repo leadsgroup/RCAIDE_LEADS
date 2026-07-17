@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Weights/Correlation_Buildups/FLOPS/compute_main_wing_weight.py
+# RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/Transport/FLOPS/compute_main_wing_weight.py
 # 
 # 
 # Created:  Sep 2024, M. Clarke
@@ -18,115 +18,51 @@ import  copy
 # ----------------------------------------------------------------------------------------------------------------------
 # Main Wing Weight 
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_wing_weight(vehicle, wing, WPOD, complexity, settings, num_main_wings):
-    """
-    Calculate the wing weight based on the FLOPS method.
-    
-    The wing weight consists of:
-    - Total Wing Shear Material and Control Surface Weight
-    - Total Wing Miscellaneous Items Weight
-    - Total Wing Bending Material Weight
+def compute_wing_weight(vehicle, wing, WPOD, fidelity  , settings, num_main_wings):
+    """ Calculate the wing weight based on the flops method. The wing weight consists of:
+        - Total Wing Shear Material and Control Surface Weight
+        - Total Wing Miscellaneous Items Weight
+        - Total Wing Bending Material Weight
 
-    Parameters
-    ----------
-    vehicle : Data
-        Data dictionary with vehicle properties
-        - reference_area : float
-            Wing surface area [m²]
-        - mass_properties.max_takeoff : float
-            Maximum takeoff weight [kg]
-        - flight_envelope.ultimate_load : float
-            Ultimate load factor (default: 3.75)
-        - systems.accessories : str
-            Type of aircraft (short-range, commuter, medium-range, long-range, sst, cargo)
-        - fuselages : list
-            List of fuselage objects
-            - width : float
-                Width of the fuselage [m]
-        - networks : list
-            List of network objects containing propulsion properties
-            - propulsors : list
-                List of propulsor objects
-                - wing_mounted : bool
-                    Flag indicating if propulsor is wing-mounted
-    wing : Data
-        Data dictionary with wing properties
-        - taper : float
-            Taper ratio
-        - sweeps.quarter_chord : float
-            Quarter chord sweep angle [deg]
-        - thickness_to_chord : float
-            Thickness to chord ratio
-        - spans.projected : float
-            Wing span [m]
-        - chords.root : float
-            Root chord [m]
-        - chords.tip : float
-            Tip chord [m]
-        - twists.root : float
-            Twist of wing at root [deg]
-        - twists.tip : float
-            Twist of wing at tip [deg]
-        - flap_ratio : float
-            Flap surface area over wing surface area
-        - areas.reference : float
-            Reference wing area [m²]
-        - segments : dict
-            Dictionary of wing segments
-    WPOD : float
-        Weight of engine pod including the nacelle [kg]
-    complexity : str
-        "simple" or "complex" depending on the wing weight method chosen
-    settings : Data
-        Configuration settings
-        - FLOPS.aeroelastic_tailoring_factor : float
-            Factor for aeroelastic tailoring [0-1]
-        - FLOPS.strut_braced_wing_factor : float
-            Factor for strut bracing [0-1]
-        - advanced_composites : bool
-            Flag for advanced composite construction
-    num_main_wings : int
-        Number of main wings on the aircraft
+        Assumptions:
+            Wing is elliptically loaded
+            Gloved wing area is 0
+            Load between multiple main wings is distributed equally
+            Wing sweep is fixed
 
-    Returns
-    -------
-    WWING : float
-        Wing weight [kg]
+        Source:
+            The Flight Optimization System Weight Estimation Method
 
-    Notes
-    -----
-    This function implements the Flight Optimization System (FLOPS) weight estimation
-    methodology for aircraft wings. The calculations are performed in imperial units
-    and converted to metric for output.
-    
-    **Major Assumptions**
-        * Gloved wing area is 0
-        * Load between multiple main wings is distributed equally
-        * Wing sweep is fixed
-    
-    **Theory**
-    
-    The wing weight is calculated using empirical correlations based on wing geometry,
-    loading, and construction techniques. For complex wings, the method integrates
-    spanwise loading to determine bending moments.
-    
-    .. math::
-        W_{wing} = W_1 + W_2 + W_3
-    
-    Where:
-        - W₁ is the bending material weight
-        - W₂ is the shear material and control surface weight
-        - W₃ is the miscellaneous items weight
-    
-    References
-    ----------
-    [1] McCullers, L. A. (1984). "Aircraft Configuration Optimization Including Optimized Flight Profiles", NASA Symposium on Recent Experiences in Multidisciplinary Analysis and Optimization.
-    [2] Ardema, M. D., Chambers, M. C., Patron, A. P., Hahn, A. S., Miura, H., & Moore, M. D. (1996). "Analytical Fuselage and Wing Weight Estimation of Transport Aircraft", NASA Technical Memorandum 110392.
-    
-    See Also
-    --------
-    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_fuselage_weight
-    RCAIDE.Library.Methods.Mass_Properties.Weight_Buildups.Conventional.Transport.FLOPS.compute_systems_weight
+       Inputs:
+            vehicle - data dictionary with vehicle properties                   [dimensionless]
+                -.reference_area: wing surface area                             [m^2]
+                -.mass_properties.max_takeoff: MTOW                             [kilograms]
+                -.flight_envelope.ultimate_load: ultimate load factor (default: 3.75)
+                -.systems.accessories: type of aircraft (short-range, commuter
+                                                        medium-range, long-range,
+                                                        sst, cargo)
+                -.fuselages.fuselage.width: width of the fuselage               [m]
+             -wing: data dictionary with wing properties
+                    -.taper: taper ratio
+                    -.sweeps.quarter_chord: quarter chord sweep angle           [deg]
+                    -.thickness_to_chord: thickness to chord
+                    -.spans.projected: wing span                                [m]
+                    -.chords.root: root chord                                   [m]
+                    -.tip.root: tip chord                                       [m]
+                    -.twists.root: twist of wing at root                        [deg]
+                    -.twists.tip: twist of wing at tip                          [deg]
+                    -.flap_ratio: flap surface area over wing surface area
+                 -.networks: data dictionary containing all propulsion properties
+                    -.number_of_engines: number of engines
+                    -.sealevel_static_thrust: thrust at sea level               [N]
+            WPOD - weight of engine pod including the nacelle                   [kilograms]
+            fidelity   - "simple" or "complex" depending on the wing weight method chosen
+
+       Outputs:
+            WWING - wing weight                                          [kilograms]
+
+        Properties Used:
+            N/A
     """
     SW          = wing.areas.reference / (Units.ft ** 2)  # Reference wing area, ft^2
     GLOV        = 0 
@@ -156,14 +92,16 @@ def compute_wing_weight(vehicle, wing, WPOD, complexity, settings, num_main_wing
     NEW  = 0
     for network in  vehicle.networks:
         for propulsor in network.propulsors:
-            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet):
+            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or\
+               isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet) or \
+               isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop): 
                 NENG += 1  
                 if propulsor.wing_mounted: 
                     NEW += 1
                         
     DG              = vehicle.mass_properties.max_takeoff / Units.lbs  # Design gross weight in lb
 
-    if complexity == 'Simple':
+    if fidelity   == 'Simple':
         EMS  = 1 - 0.25 * FSTRT  # Wing strut bracing factor
         TLAM = np.tan(wing.sweeps.quarter_chord) \
                - 2 * (1 - TR) / (AR * (1 + TR))  # Tangent of the 3/4 chord sweep angle
@@ -294,9 +232,15 @@ def compute_wing_weight(vehicle, wing, WPOD, complexity, settings, num_main_wing
     # Composite utilization factor [0 no composite, 1 full composite]
     FCOMP   = composite_utilization_factor  
     ULF     = vehicle.flight_envelope.ultimate_load
-    if len(vehicle.fuselages) == 1:
+    
+
+    num_fus = len(vehicle.fuselages)  
+    if type(wing) == RCAIDE.Library.Components.Wings.Blended_Wing_Body:
+        num_fus = 1
+            
+    if num_fus == 1:
         CAYF    = 1  # Multiple fuselage factor [1 one fuselage, 0.5 multiple fuselages]
-    elif len(vehicle.fuselage) > 1:
+    elif num_fus > 1:
         CAYF    = 0.5
     else:
         raise NotImplementedError
@@ -347,35 +291,12 @@ def generate_wing_stations(fuselage_width, wing):
     """
     SPAN        = wing.spans.projected / Units.ft  # Wing span, ft
     SEMISPAN    = SPAN / 2
-    root_chord  = wing.chords.root / Units.ft
-    num_seg     = len(wing.segments.keys())
-
-    if num_seg == 0:
-        segment                         = RCAIDE.Library.Components.Wings.Segments.Segment()
-        segment.tag                     = 'root'
-        segment.percent_span_location   = 0.
-        segment.twist                   = wing.twists.root
-        segment.root_chord_percent      = 1
-        segment.dihedral_outboard       = 0.
-        segment.sweeps.quarter_chord    = wing.sweeps.quarter_chord
-        segment.thickness_to_chord      = wing.thickness_to_chord
-        wing.segments.append(segment)
-
-        segment                         = RCAIDE.Library.Components.Wings.Segments.Segment()
-        segment.tag                     = 'tip'
-        segment.percent_span_location   = 1.
-        segment.twist                   = wing.twists.tip
-        segment.root_chord_percent      = wing.chords.tip / wing.chords.root
-        segment.dihedral_outboard       = 0.
-        segment.sweeps.quarter_chord    = wing.sweeps.quarter_chord
-        segment.thickness_to_chord      = wing.thickness_to_chord
-        wing.segments.append(segment)
-        num_seg = len(wing.segments.keys())
-        
-    ETA    = np.zeros(num_seg + 1)
-    C      = np.zeros(num_seg + 1)
-    T      = np.zeros(num_seg + 1)
-    SWP    = np.zeros(num_seg + 1)
+    root_chord  = wing.chords.root / Units.ft 
+    num_seg     = len(wing.segments.keys()) 
+    ETA         = np.zeros(num_seg + 1)
+    C           = np.zeros(num_seg + 1)
+    T           = np.zeros(num_seg + 1)
+    SWP         = np.zeros(num_seg + 1)
 
     segment_keys  = list(wing.segments.keys())     
     ETA[0] = wing.segments[segment_keys[0]].percent_span_location
@@ -513,8 +434,10 @@ def get_spanwise_engine(networks, SEMISPAN):
     EETA =  []
     for network in  networks:
         for propulsor in network.propulsors:
-            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet):
-                if propulsor.wing_mounted and propulsor.origin[0][1] > 0:  
+            if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) \
+               or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet)\
+               or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop):
+                if propulsor.wing_mounted and propulsor.origin[0][1] > 0:  # CHECK !!!!
                     EETA.append((propulsor.origin[0][1] / Units.ft) * 1 / SEMISPAN) 
     EETA =  np.array(EETA)
     return EETA

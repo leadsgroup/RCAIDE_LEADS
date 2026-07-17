@@ -20,6 +20,7 @@ import os
 # local imports 
 sys.path.append(os.path.abspath(os.path.join(os.path.join(sys.path[0]), "../../Vehicles/Rotors")))
 from APC_11x4_Propeller    import APC_11x4_Propeller
+import time
 
 # ----------------------------------------------------------------------
 #   Reference
@@ -32,9 +33,14 @@ from APC_11x4_Propeller    import APC_11x4_Propeller
 #   Main
 # ---------------------------------------------------------------------- 
 def main():
+    ti = time.time()
     
     propeller_test()
     
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 def propeller_test():

@@ -30,6 +30,14 @@ Center\_of\_Gravity
    :template: custom-module-template.rst
    :recursive:
 
-   compute_component_centers_of_gravity
+   compute_boom_center_of_gravity
+   compute_cabin_center_of_gravity
+   compute_cargo_bay_center_of_gravity
+   compute_component_center_of_gravity
+   compute_cuboid_center_of_gravity
+   compute_cylinder_center_of_gravity
+   compute_fuselage_center_of_gravity
    compute_vehicle_center_of_gravity
+   compute_wing_center_of_gravity
+   update_center_of_gravity
 

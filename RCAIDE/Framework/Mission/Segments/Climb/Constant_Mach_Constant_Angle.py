@@ -57,22 +57,18 @@ class Constant_Mach_Constant_Angle(Evaluate):
         # -------------------------------------------------------------------------------------------------------------- 
         #  Unique Mission Unknowns and Residuals
         # --------------------------------------------------------------------------------------------------------------  
-        ones_row = self.state.ones_row        
-        self.state.unknowns.altitude   = ones_row(1) * 0.0   
-        self.state.residuals.altitude  = ones_row(1) * 0.0   
-    
+        self.assigned_control_variables.altitude.active = True
+        
         # -------------------------------------------------------------------------------------------------------------- 
         #  Mission specific processes 
         # --------------------------------------------------------------------------------------------------------------   
         initialize                         = self.process.initialize  
         initialize.differentials_altitude  = Common.Initialize.differentials_altitude
         initialize.conditions              = Segments.Climb.Constant_Mach_Constant_Angle.initialize_conditions  
-        iterate                            = self.process.iterate
-        iterate.residuals.flight_dynamics  = Segments.Climb.Constant_Mach_Constant_Angle.residual_total_forces
-        iterate.conditions.differentials   = Segments.Climb.Constant_Mach_Constant_Angle.update_differentials 
-        iterate.unknowns.mission           = Common.Unpack_Unknowns.orientation
-        iterate.unknowns.controls          = Common.Unpack_Unknowns.control_surfaces
+        iterate                            = self.process.iterate 
+        iterate.conditions.differentials   = Segments.Climb.Constant_Mach_Constant_Angle.update_differentials  
         iterate.unknowns.kinematics        = Segments.Climb.Constant_Mach_Constant_Angle.initialize_conditions
+        iterate.residuals.altitude         = Segments.Climb.Constant_Mach_Constant_Angle.residual_altitude
           
         return
 

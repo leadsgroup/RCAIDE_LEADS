@@ -108,14 +108,14 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, bus, coolant_lines, t_
     n_total           = n_series*n_parallel  
      
     # Compute Bus electrical properties  
-    bus_conditions              = state.conditions.energy[bus.tag] 
+    bus_conditions              = state.conditions.energy.busses[bus.tag]
     P_bus                       = bus_conditions.power_draw
     bus_config                  = bus.fuel_cell_stack_electric_configuration 
     P_module                    = P_bus  /len(bus.fuel_cell_stacks)
     P_cell                      = P_module[t_idx]/n_total 
      
     # Compute fuel_cell_stack Conditions 
-    fuel_cell_stack_conditions = state.conditions.energy[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag]
+    fuel_cell_stack_conditions = state.conditions.energy.busses[bus.tag].fuel_cell_stacks[fuel_cell_stack.tag]
     
     # append atmospheric conditions to fuel cell 
     fuel_cell_stack_conditions.fuel_cell.stagnation_temperature[t_idx] = stagnation_temperature[t_idx]
@@ -134,7 +134,7 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, bus, coolant_lines, t_
     # Future State 
     # --------------------------------------------------------------------------------------------------- 
     if t_idx != state.numerics.number_of_control_points-1:   
-        dT_dt              =  gross_heat / (fuel_cell.mass *fuel_cell.specific_heat_capacity) 
+        dT_dt              =  gross_heat[0] / (fuel_cell.mass *fuel_cell.specific_heat_capacity) 
         fuel_cell_stack_conditions.fuel_cell.stack_temperature[t_idx+1,0]  = fuel_cell_stack_conditions.fuel_cell.stack_temperature[t_idx, 0] + dT_dt*delta_t[t_idx]  
     
     I_cell  = P_fuel_cell / V_fuel_cell

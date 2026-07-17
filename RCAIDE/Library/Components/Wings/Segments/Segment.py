@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Wings/Segment.py
+# RCAIDE/Library/Components/Wings/Segment.py
 # 
 # Created:  Mar 2024, M. Clarke 
 
@@ -90,29 +90,32 @@ class Segment(Component):
         """
         Sets default values for the wing segment attributes.
         """         
-        self.tag                     = 'segment'
-        self.prev                    = None
-        self.next                    = None  
-        self.percent_span_location   = 0.0
-        self.twist                   = 0.0
-        self.taper                   = 0.0
-        self.root_chord_percent      = 0.0
-        self.dihedral_outboard       = 0.0
-        self.thickness_to_chord      = 0.0
+        self.tag                                       = 'segment'
+        self.prev                                      = None
+        self.next                                      = None  
+        self.percent_span_location                     = 0.0
+        self.twist                                     = 0.0
+        self.taper                                     = 0.0
+        self.root_chord_percent                        = 0.0
+        self.dihedral_outboard                         = 0.0
+        self.thickness_to_chord                        = 0.0
+        self.ignore_segment                            = False
+        self.sweeps                                    = Data()
+        self.sweeps.quarter_chord                      = None
+        self.sweeps.leading_edge                       = None 
+        self.chords                                    = Data()
+        self.chords.mean_aerodynamic                   = 0.0 
+        self.chords.reference_area_root                = False 
+        self.areas                                     = Data()
+        self.areas.reference                           = 0.0
+        self.areas.exposed                             = 0.0
+        self.areas.wetted                              = 0.0   
+        self.structural                                = Data()  
+        self.structural.rib                            = False   
+        self.structural.front_spar_percent_chord       = 0.1  
+        self.structural.rear_spar_percent_chord        = 0.6  
+        self.airfoil                                   = None
         
-        self.sweeps                  = Data()
-        self.sweeps.quarter_chord    = 0.0
-        self.sweeps.leading_edge     = None
-    
-        self.chords                  = Data()
-        self.chords.mean_aerodynamic = 0.0
-        
-        self.areas                   = Data()
-        self.areas.reference         = 0.0
-        self.areas.exposed           = 0.0
-        self.areas.wetted            = 0.0
-
-        self.airfoil                 = None
         
     def append_airfoil(self, airfoil):
         """

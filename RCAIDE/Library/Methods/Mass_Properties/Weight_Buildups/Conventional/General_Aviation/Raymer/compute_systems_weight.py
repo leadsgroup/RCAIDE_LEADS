@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Weights/Correlation_Buildups/General_Aviation/compute_systems_weight.py
+# RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/General_Aviation/Raymer/compute_systems_weight.py
 # 
 # 
 # Created:  Sep 2024, M. Clarke 
@@ -10,6 +10,7 @@
 # RCAIDE
 import RCAIDE
 from RCAIDE.Framework.Core import  Units , Data 
+from RCAIDE.Library.Components import Component
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Systems Weight 
@@ -52,7 +53,8 @@ def compute_systems_weight(vehicle, V_fuel, V_int, N_tank, N_eng):
 
     TOW        = vehicle.mass_properties.max_takeoff
     Nult       = vehicle.flight_envelope.ultimate_load 
-    num_seats  = vehicle.passengers
+    num_seats  = vehicle.number_of_first_class_seats + vehicle.number_of_business_class_seats + vehicle.number_of_economy_class_seats
+
     mach_number = vehicle.flight_envelope.design_mach_number
     span        = vehicle.wings.main_wing.spans.projected
 
@@ -76,12 +78,13 @@ def compute_systems_weight(vehicle, V_fuel, V_int, N_tank, N_eng):
     hyd_pnu_wt = (.001*W_0) * Units.lb
 
     # Avionics weight
-    if len(vehicle.avionics) == 0:
-        avionics     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-        W_uav        = 0. 
-    else:
-        avionics = vehicle.avionics
-        W_uav    = avionics.mass_properties.uninstalled
+    W_uav        = 0. 
+
+    Systems = RCAIDE.Library.Components.Powertrain.Systems
+    for network in  vehicle.networks: 
+        for system in network.systems: 
+            if isinstance(system, Systems.Avionics):  
+                W_uav    = system.uninstalled_mass
     
     W_avionics = 2.117*((W_uav/Units.lbs)**.933)*Units.lb 
 
@@ -94,8 +97,34 @@ def compute_systems_weight(vehicle, V_fuel, V_int, N_tank, N_eng):
     # Furnishings Group Wt
     W_furnish = (.0582*W_0-65.)*Units.lb
 
-    # packup outputs
-    output = Data()   
+
+    for network in  vehicle.networks: 
+        for system in network.systems: 
+            if system.mass_properties.mass == 0 or system.mass_properties.calculated_flag: 
+                if isinstance(system, Systems.Avionics):
+                    system.mass_properties.mass = W_avionics * Units.lbs
+                elif isinstance(system, Systems.Flight_Controls):
+                    system.mass_properties.mass = W_flight_controls * Units.lbs
+                elif isinstance(system, Systems.Electrical):
+                    system.mass_properties.mass = W_electrical * Units.lbs
+                elif isinstance(system, Systems.Hydraulics):
+                    system.mass_properties.mass = hyd_pnu_wt * Units.lbs
+                elif isinstance(system, Systems.Environmental_Controls):
+                    system.mass_properties.mass = W_air_conditioning * Units.lbs
+                system.mass_properties.calculated_flag = True
+            else:
+                if isinstance(system, Systems.Avionics):
+                    W_avionics = system.mass_properties.mass / Units.lbs
+                elif isinstance(system, Systems.Flight_Controls):
+                    W_flight_controls = system.mass_properties.mass / Units.lbs
+                elif isinstance(system, Systems.Electrical):
+                    W_electrical = system.mass_properties.mass / Units.lbs
+                elif isinstance(system, Systems.Hydraulics):
+                    hyd_pnu_wt = system.mass_properties.mass / Units.lbs
+                elif isinstance(system, Systems.Environmental_Controls):
+                    W_air_conditioning = system.mass_properties.mass / Units.lbs
+                     
+    output = Data()
     output.W_flight_control    = W_flight_controls
     output.W_hyd_pnu           = hyd_pnu_wt
     output.W_avionics          = W_avionics
@@ -106,36 +135,5 @@ def compute_systems_weight(vehicle, V_fuel, V_int, N_tank, N_eng):
     output.total               = output.W_flight_control + output.W_hyd_pnu \
                                   + output.W_ac + output.W_avionics + output.W_electrical \
                                   + output.W_furnish + output.W_fuel_system
-    
-    # Assign mass properties to components
-    if has_air_conditioner:
-        vehicle.air_conditioner.mass_properties.mass    = output.empty.systems.air_conditioner 
-    
-    avionics.mass_properties.mass           = W_avionics
-    vehicle.avionics                                    = avionics
-
-    control_systems                                  = RCAIDE.Library.Components.Component()
-    control_systems.tag                              = 'control_systems'  
-    electrical_systems                               = RCAIDE.Library.Components.Component()
-    electrical_systems.tag                           = 'electrical_systems'
-    furnishings                                      = RCAIDE.Library.Components.Component()
-    furnishings.tag                                  = 'furnishings'
-    air_conditioner                                  = RCAIDE.Library.Components.Component() 
-    air_conditioner.tag                              = 'air_conditioner' 
-    hydraulics                                       = RCAIDE.Library.Components.Component()
-    hydraulics.tag                                   = 'hydraulics'  
-
-    control_systems.mass_properties.mass    = W_flight_controls
-    electrical_systems.mass_properties.mass = W_electrical
-    furnishings.mass_properties.mass        = W_furnish
-    air_conditioner.mass_properties.mass    = W_air_conditioning
-    hydraulics.mass_properties.mass         = hyd_pnu_wt
-
-    # assign components to vehicle
-    vehicle.control_systems                             = control_systems
-    vehicle.electrical_systems                          = electrical_systems
-    vehicle.furnishings                                 = furnishings 
-    vehicle.hydraulics                                  = hydraulics
-    
 
     return output

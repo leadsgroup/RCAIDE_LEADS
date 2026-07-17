@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Weights/Correlation_Buildups/General_Aviation/compute_vertical_tail_weight.py
+# RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/General_Aviation/Raymer/compute_vertical_tail_weight.py
 # 
 # 
 # Created:  Sep 2024, M. Clarke 
@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE 
-from RCAIDE.Framework.Core import  Units,  Data
+from RCAIDE.Framework.Core import  Units
 import  numpy as  np
 
 # ----------------------------------------------------------------------------------------------------------------------

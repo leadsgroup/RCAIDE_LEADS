@@ -9,9 +9,13 @@
  # RCAIDE imports
 from RCAIDE.Framework.Core     import Data
 from .                         import Propulsor
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan          .append_turbofan_conditions     import append_turbofan_conditions 
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan          .compute_turbofan_performance   import compute_turbofan_performance, reuse_stored_turbofan_data
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.append_turbofan_conditions     import append_turbofan_conditions 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_turbofan_performance   import compute_turbofan_performance, reuse_stored_turbofan_data
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia                             import compute_cylinder_moment_of_inertia 
  
+# python imports 
+import numpy as np
+
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Fan Component
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -151,10 +155,7 @@ class Turbofan(Propulsor):
         self.high_pressure_turbine                      = None 
         self.combustor                                  = None 
         self.core_nozzle                                = None 
-        self.fan_nozzle                                 = None       
-        self.diameter                                   = 0.0      
-        self.length                                     = 0.0
-        self.height                                     = 0.0     # Engine centerline heigh above the ground plane 
+        self.fan_nozzle                                 = None      
         self.plug_diameter                              = 0.1     # dimater of the engine plug
         self.geometry_xe                                = 1.      # Geometry information for the installation effects function
         self.geometry_ye                                = 1.      # Geometry information for the installation effects function
@@ -162,13 +163,12 @@ class Turbofan(Propulsor):
         self.bypass_ratio                               = 0.0 
         self.design_isa_deviation                       = 0.0
         self.design_altitude                            = 0.0
-        self.specific_fuel_consumption_reduction_factor = 0.0 # Less than 1 is a reduction
+        self.specific_fuel_consumption_reduction_factor = 0.0 
         self.compressor_nondimensional_massflow         = 0.0
         self.reference_temperature                      = 288.15
         self.reference_pressure                         = 1.01325*10**5 
         self.design_thrust                              = 0.0
         self.mass_flow_rate_design                      = 0.0
-
         self.emission_indices                           = Data()  
         self.emission_indices.NOx                       = None
         self.emission_indices.CO2                       = None
@@ -181,7 +181,7 @@ class Turbofan(Propulsor):
     
     def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
         """
-        Appends operating conditions to the segment.
+        Appends operating conditions of the segment.
         """
         append_turbofan_conditions(self,segment,energy_conditions,noise_conditions)
         return
@@ -207,4 +207,4 @@ class Turbofan(Propulsor):
         Reuses stored turbofan data for performance calculations.
         """
         thrust,moment,power_mech,power_elec  = reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,center_of_gravity)
-        return thrust,moment,power_mech,power_elec
+        return thrust,moment,power_mech,power_elec   

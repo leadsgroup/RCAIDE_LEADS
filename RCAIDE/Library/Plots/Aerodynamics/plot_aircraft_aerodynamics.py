@@ -9,8 +9,6 @@
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Plots.Common import set_axes, plot_style 
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
-import numpy as np 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
@@ -118,29 +116,24 @@ def plot_aircraft_aerodynamics(results,
     #------------------------------------------------------------------------
     # setup figures
     #------------------------------------------------------------------------
-    fig = plt.figure(save_filename + " Lift Coefficients")  
+    fig = plt.figure("Aircraft_Aerodynamic_Analysis")  
     fig.set_size_inches(12,6) 
-    axis_1 = fig.add_subplot(1, 2, 1, projection='3d')
-    axis_2 = fig.add_subplot(1, 2, 2, projection='3d') 
- 
-    X, Y = np.meshgrid(results.Mach, results.alpha)
-    surf = axis_1.plot_surface(X, Y/Units.degree, results.lift_coefficient   , cmap=cm.jet,linewidth=0, antialiased=False) 
-    surf = axis_2.plot_surface(X, Y/Units.degree, results.drag_coefficient   , cmap=cm.jet,linewidth=0, antialiased=False) 
-
-    axis_1.set_title('$C_L$') 
-    axis_2.set_title('$C_D$')            
-    axis_1.set_ylabel('AoA') 
-    axis_2.set_ylabel('AoA')  
-    axis_1.set_xlabel('Mach') 
-    axis_2.set_xlabel('Mach')   
+    axis_1 = fig.add_subplot(1, 2, 1)
+    axis_2 = fig.add_subplot(1, 2, 2) 
+  
+    axis_1.plot( results.aerodynamics.angles.alpha/Units.degree, results.aerodynamics.coefficients.lift.total) 
+    axis_2.plot( results.aerodynamics.angles.alpha/Units.degree, results.aerodynamics.coefficients.drag.total) 
+            
+    axis_1.set_xlabel('AoA') 
+    axis_2.set_xlabel('AoA')  
+    axis_1.set_ylabel('$C_L$') 
+    axis_2.set_ylabel('$C_D$')
     
-    # set title of plot 
-    title_text    = 'Aircraft Aerodynamic Analysis '    
-    fig.suptitle(title_text) 
+    set_axes(axis_1)
+    set_axes(axis_2)
     
     plt.tight_layout()    
     if save_figure:    
         fig.savefig(save_filename + file_type) 
     
-    plt.tight_layout()
     return

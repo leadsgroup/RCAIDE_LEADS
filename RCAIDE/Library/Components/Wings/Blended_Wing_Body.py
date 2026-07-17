@@ -1,0 +1,167 @@
+# RCAIDE/Components/Wings/Blended_Wing_Body.py
+# 
+# Created:  Mar 2024, M. Clarke 
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ---------------------------------------------------------------------------------------------------------------------- 
+# RCAIDE imports
+import RCAIDE
+from RCAIDE.Framework.Core import Data 
+from .Main_Wing import Main_Wing
+from RCAIDE.Library.Components.Component  import Container
+from RCAIDE.Library.Components  import Component  
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_bwb_moment_of_inertia import  compute_bwb_moment_of_inertia
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_bwb_center_of_gravity import  compute_bwb_center_of_gravity
+
+# python imports 
+import numpy as np
+
+# ---------------------------------------------------------------------------------------------------------------------- 
+#  Blended_Wing_Body
+# ----------------------------------------------------------------------------------------------------------------------  
+class Blended_Wing_Body(Main_Wing):
+    """
+    A blended wing body (BWB) design that smoothly integrates the wing and fuselage 
+    into a single lifting body configuration.
+
+    Attributes
+    ----------
+    tag : str
+        Unique identifier for the BWB fuselage component, defaults to 'bwb_fuselage'
+    
+    aft_center_body.area : float
+        Cross-sectional area of the aft centerbody section in square meters
+        
+    aft_center_body.taper : float
+        Taper ratio of the aft centerbody section, defined as the ratio of tip 
+        to root chord lengths
+        
+    cabin_area : float
+        Total available cabin floor area in square meters
+
+    Notes
+    -----
+    The blended wing body design offers several advantages over conventional tube-and-wing
+    configurations:
+    
+    * Reduced wetted area leading to lower skin friction drag
+    * Improved lift-to-drag ratio due to the lifting body design
+    * Potential for increased internal volume and better weight distribution
+
+    **Definitions**
+
+    'Centerbody'
+        The central section of the BWB that houses the passenger cabin and cargo hold
+        
+    'Aft Centerbody'
+        The rear section of the centerbody that transitions into the outer wing sections
+
+    See Also
+    --------
+    RCAIDE.Library.Components.Fuselages.Fuselage
+        Base fuselage class that provides common functionality
+    """
+    
+    def __defaults__(self):
+        """
+        Sets the default values for the BWB fuselage component attributes.
+
+        Notes
+        -----
+        This method initializes all required attributes with default values. Users should 
+        modify these values based on their specific design requirements after instantiation.
+        """      
+          
+        self.tag                                    = 'blended_wing_body'  
+
+        self.center_body                            = Component()          
+        self.center_body.tag                        = 'center_body'
+        self.center_body.area                       = 0.0
+        self.aft_center_body                        = Component()
+        self.aft_center_body.tag                    = 'aft_center_body'
+        self.aft_center_body.taper                  = 1.0
+        self.aft_center_body.length                 = 0.0
+        self.aft_center_body.area                   = 0.0
+        self.cabin_area                             = 0.0 
+          
+        self.number_of_passengers                   = 1  
+        self.number_of_seats                        = 1 
+        self.layout_of_passenger_accommodations     = None 
+ 
+        self.effective_diameter                     = 0.0
+        self.width                                  = 0.0  
+        
+        self.heights                                = Data() 
+        self.heights.maximum                        = 0.0
+        self.heights.at_quarter_length              = 0.0
+        self.heights.at_three_quarters_length       = 0.0
+        self.heights.at_wing_root_quarter_chord     = 0.0
+        self.heights.at_vertical_root_quarter_chord = 0.0 
+        
+        self.lengths                                = Data()     
+        self.lengths.nose                           = 0.0
+        self.lengths.tail                           = 0.0
+        self.lengths.total                          = 0.0 
+
+        self.fineness                               = Data() 
+        self.fineness.nose                          = 0.0 
+        self.fineness.tail                          = 0.0
+        
+        self.x_rotation                             = 0.0
+        self.y_rotation                             = 0.0
+        self.z_rotation                             = 0.0    
+        self.cabins                                 = Container()
+        self.operational_items                      = Component()
+        self.operational_items.tag                  = 'operational_items'
+
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
+        """
+        Computes the moment of inertia tensor for the wing.
+
+        Parameters
+        ---------- 
+        center_of_gravity : list, optional
+            Reference point coordinates, defaults to [[0, 0, 0]]
+        fuel_flag : bool, optional
+            Flag to include fuel mass, defaults to False
+
+        Returns
+        -------
+        ndarray
+            3x3 moment of inertia tensor
+        """ 
+        _, _ = compute_bwb_moment_of_inertia(self, center_of_gravity) 
+        return
+    
+    def compute_center_of_gravity(self,vehicle): 
+        """
+        Computes the center of gravity for the wing.
+
+        See Also
+        --------
+        RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_fuselage_center_of_gravity
+            Implementation of the center of gravity calculation
+        """
+        compute_bwb_center_of_gravity(self, vehicle)
+        return 
+
+    
+    def append_cabin(self,cabin):
+        """
+        Adds a new segment to the fuselage's segment container.
+
+        Parameters
+        ----------
+        segment : Data
+            Fuselage segment to be added
+        """
+
+        # Assert database type
+        if not isinstance(cabin,RCAIDE.Library.Components.Fuselages.Cabins.Cabin):
+            raise Exception('input component must be of type Cabin')
+
+        # Store data
+        self.cabins.append(cabin)
+
+        return       

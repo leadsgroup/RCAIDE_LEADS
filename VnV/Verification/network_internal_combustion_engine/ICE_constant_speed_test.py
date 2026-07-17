@@ -18,15 +18,24 @@ import numpy as np
 import sys 
 import os
 
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
 from Cessna_172                       import vehicle_setup  
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine import design_constant_speed_internal_combustion_engine
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 
 def main():   
+    ti = time.time()
      
     # Define internal combustion engine from Cessna Regression Aircraft 
     vehicle    = vehicle_setup()
@@ -44,11 +53,15 @@ def main():
     # mission analysis 
     results = missions.base_mission.evaluate()   
     
-    P_truth     = 45927.53923183845
-    mdot_truth  = 0.004035298046424517
+    P_truth     = 61213.88277906869
+    mdot_truth  = 0.005378390955054601
     
     P    = results.segments.cruise.state.conditions.energy.converters['internal_combustion_engine'].power[-1,0]
-    mdot = results.segments.cruise.state.conditions.weights.vehicle_mass_rate[-1,0]     
+    mdot = results.segments.cruise.state.conditions.weights.vehicle.mass_rate[-1,0]     
+
+    # Print the results
+    print('Power: ' + str(P))
+    print('Mass Flow Rate: ' + str(mdot))
 
     # Check the errors
     error = Data()
@@ -62,6 +75,10 @@ def main():
     for k,v in list(error.items()):
         assert(np.abs(v)<1e-6)
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 
@@ -86,8 +103,7 @@ def ICE_CS(vehicle):
     fuel_tank.origin                            = vehicle.wings.main_wing.origin  
     fuel                                        = RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline() 
     fuel.mass_properties.mass                   = 319 *Units.lbs 
-    fuel.mass_properties.center_of_gravity      =  vehicle.wings.main_wing.mass_properties.center_of_gravity
-    fuel.internal_volume                        = fuel.mass_properties.mass/fuel.density  
+    fuel.mass_properties.center_of_gravity      =  vehicle.wings.main_wing.mass_properties.center_of_gravity 
     fuel_tank.fuel                              = fuel  
     fuel_line.fuel_tanks.append(fuel_tank)
 
@@ -115,16 +131,19 @@ def ICE_CS(vehicle):
     prop.hub_radius                        = 8.     * Units.inches
     prop.cruise.design_freestream_velocity = 119.   * Units.knots
     prop.cruise.design_angular_velocity    = 2650.  * Units.rpm
-    prop.cruise.design_Cl                  = 0.8
+    prop.cruise.design_lift_coefficient                  = 0.8
     prop.cruise.design_altitude            = 12000. * Units.feet
     prop.cruise.design_power               = .64 * 180. * Units.horsepower 
     airfoil                                = RCAIDE.Library.Components.Airfoils.Airfoil()   
-    airfoil.coordinate_file                = '../../Vehicles/Airfoils/NACA_4412.txt'
-    airfoil.polar_files                    = ['../../Vehicles/Airfoils/Polars/NACA_4412_polar_Re_50000.txt' ,
-                                           '../../Vehicles/Airfoils/Polars/NACA_4412_polar_Re_100000.txt' ,
-                                           '../../Vehicles/Airfoils/Polars/NACA_4412_polar_Re_200000.txt' ,
-                                           '../../Vehicles/Airfoils/Polars/NACA_4412_polar_Re_500000.txt' ,
-                                           '../../Vehicles/Airfoils/Polars/NACA_4412_polar_Re_1000000.txt' ] 
+    ospath                                  = os.path.abspath(__file__)
+    separator                               = os.path.sep
+    rel_path                                = os.path.dirname(ospath) + separator + '..' + separator + '..' + separator + 'Vehicles' + separator
+    airfoil.coordinate_file                 =  rel_path + 'Airfoils' + separator + 'NACA_4412.txt'   # absolute path   
+    airfoil.polar_files                     =[ rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_50000.txt',
+                                               rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_100000.txt',
+                                               rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_200000.txt',
+                                               rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_500000.txt',
+                                               rel_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_1000000.txt']
     prop.append_airfoil(airfoil)  
     prop.airfoil_polar_stations            = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] 
     propulsor.propeller                    = prop  
@@ -230,8 +249,8 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['ice_constant_speed_propeller']] 
-    segment.assigned_control_variables.body_angle                   
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle                   
+    segment.assigned_control_variables.pitch_angle.active             = True                
                 
     mission.append_segment(segment)
 
@@ -246,18 +265,29 @@ def base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle()
-
+    analyses.vehicle    = vehicle 
 
     # ------------------------------------------------------------------
-    #  Aerodynamics Analysis
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    analyses.append(geometry)
+
+    # ------------------------------------------------------------------
+    #  Weights
+    weights = RCAIDE.Framework.Analyses.Weights.Conventional_General_Aviation()
+    weights.method = 'Raymer'
+    analyses.append(weights)     
+    
+    # ------------------------------------------------------------------
+    #  Aerodynamics  
     aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.vehicle                            = vehicle 
+    aerodynamics.settings.number_of_spanwise_vortices    = 10 # reducing the number of vortices to speed up the test 
+    aerodynamics.settings.number_of_chordwise_vortices   = 5  # reducing the number of vortices to speed up the test 
     analyses.append(aerodynamics)
 
     # ------------------------------------------------------------------
     #  Energy
-    energy= RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle  = vehicle 
+    energy= RCAIDE.Framework.Analyses.Energy.Energy() 
     analyses.append(energy)
 
     # ------------------------------------------------------------------
@@ -268,7 +298,6 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Atmosphere Analysis
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
     analyses.append(atmosphere)   
 
     # done!

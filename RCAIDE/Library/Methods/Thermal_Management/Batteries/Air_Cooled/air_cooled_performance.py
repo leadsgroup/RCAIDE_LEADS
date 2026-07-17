@@ -49,8 +49,8 @@ def air_cooled_performance(HAS,battery,bus,coolant_line, Q_heat_gen,T_cell,state
     H_cell                   = battery.cell.height              
     cell_mass                = battery.cell.mass    
     Cp                       = battery.cell.specific_heat_capacity    
-    Nn                       = battery.geometrtic_configuration.normal_count            
-    Np                       = battery.geometrtic_configuration.parallel_count    
+    Nn                       = battery.geometric_configuration.normal_count            
+    Np                       = battery.geometric_configuration.parallel_count    
     n_total_module           = Nn*Np  
     h                        = HAS.convective_heat_transfer_coefficient 
     heat_transfer_efficiency = HAS.heat_transfer_efficiency   
@@ -67,11 +67,11 @@ def air_cooled_performance(HAS,battery,bus,coolant_line, Q_heat_gen,T_cell,state
         Pr_coolant                   = state.conditions.freestream.prandtl_number[t_idx,:]
         rho_coolant                  = state.conditions.freestream.density[t_idx,:]    
         Cp_coolant                   = HAS.cooling_fluid.compute_cp(state.conditions.freestream.temperature[t_idx,:],state.conditions.freestream.pressure[t_idx,:] )
-        V_coolant                    = HAS.cooling_fluid.flowspeed  
+        V_coolant                    = state.conditions.freestream.velocity[t_idx,:]
         
         # Chapter 7 pg 437-446 of Fundamentals of heat and mass transfer 
-        S_T             = battery.geometrtic_configuration.normal_spacing          
-        S_L             = battery.geometrtic_configuration.parallel_spacing
+        S_T             = battery.geometric_configuration.normal_spacing          
+        S_L             = battery.geometric_configuration.parallel_spacing
 
         S_D = np.sqrt(S_T**2+S_L**2)
         if 2*(S_D-D_cell) < (S_T-D_cell):
@@ -102,8 +102,8 @@ def air_cooled_performance(HAS,battery,bus,coolant_line, Q_heat_gen,T_cell,state
     T_current                 = T_cell + dT_dt*delta_t
     heat_transfer_efficiency  = (Tw_To - T_ambient) / (T_cell - T_ambient)
     
-    state.conditions.energy[coolant_line.tag][HAS.tag].total_heat_removed[t_idx+1]               = Q_convec
-    state.conditions.energy[coolant_line.tag][HAS.tag].effectiveness[t_idx+1]                    = heat_transfer_efficiency
+    state.conditions.energy.coolant_lines[coolant_line.tag][HAS.tag].total_heat_removed[t_idx+1]               = Q_convec
+    state.conditions.energy.coolant_lines[coolant_line.tag][HAS.tag].effectiveness[t_idx+1]                    = heat_transfer_efficiency
        
     
     return  T_current

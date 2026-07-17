@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
  
 from RCAIDE                    import Framework
-from RCAIDE.Framework.Core     import Data, DataOrdered
+from RCAIDE.Framework.Core     import Data 
 from RCAIDE.Library            import Components
 import numpy as np 
 
@@ -56,16 +56,25 @@ class Vehicle(Data):
         self.fuselages                                                     = Components.Fuselages.Fuselage.Container()
         self.wings                                                         = Components.Wings.Wing.Container()
         self.nacelles                                                      = Components.Nacelles.Nacelle.Container()
-        self.systems                                                       = Components.Powertrain.Systems.System()
-        self.avionics                                                      = Components.Powertrain.Systems.Avionics()
+        self.systems                                                       = Components.Powertrain.Systems.Systems.Container() 
         self.booms                                                         = Components.Booms.Boom.Container()
-        self.mass_properties                                               = Vehicle_Mass_Container()
-        self.payload                                                       = Components.Payloads.Payload.Container()
-        self.costs                                                         = Data()     
         self.landing_gears                                                 = Components.Landing_Gear.Landing_Gear.Container()  
-        self.reference_area                                                = 0.0
-        self.passengers                                                    = 0.0
+        self.cargo_bays                                                    = Components.Cargo_Bays.Cargo_Bay.Container() 
+        self.mass_properties                                               = Vehicle_Mass_Container()
+        self.volume_properties                                             = Vehicle_Volume_Container()
+        self.costs                                                         = Data()      
+        self.reference_area                                                = 0.0      
+        self.reference_span                                                = 0.0      
+        self.reference_chord                                               = 0.0      
+        self.neutral_point                                                 = None
+        self.number_of_passengers                                          = 0 
+        self.number_of_seats                                               = 0 
+        self.number_of_first_class_seats                                   = 0 
+        self.number_of_business_class_seats                                = 0 
+        self.number_of_economy_class_seats                                 = 0
+        self.Vref_VS_ratio                                                 = None
         self.maximum_cross_sectional_area                                  = 0.0
+        self.length                                                        = 0.0 
         
         self.flight_envelope                                               = Data()
         self.flight_envelope.design_dynamic_pressure                       = None 
@@ -81,10 +90,11 @@ class Vehicle(Data):
         self.flight_envelope.alt_vc                                        = 0.0
         self.flight_envelope.alt_gust                                      = 0.0
         self.flight_envelope.max_ceiling                                   = 0.0
+        self.flight_envelope.V2_VS_ratio                                   = 1.21
         self.flight_envelope.maximum_dynamic_pressure                      = 0.0
         self.flight_envelope.maximum_mach_operational                      = 0.0
         self.flight_envelope.maximum_lift_coefficient                      = None
-        self.flight_envelope.minimum_lift_coefficient                      = None
+        self.flight_envelope.minimum_lift_coefficient                      = -1.5
 
         self.flight_envelope.maneuver                                      = Data()
         self.flight_envelope.maneuver.load_alleviation_factor              = 0.0 
@@ -109,7 +119,7 @@ class Vehicle(Data):
         self.flight_envelope.gust.load_factor.velocity_max_cruise          = 0
         self.flight_envelope.gust.load_factor.velocity_max_dive            = 0 
         
-        self.performance                              = DataOrdered()
+        self.performance                                                   = Data()
          
     _energy_network_root_map = None 
 
@@ -137,13 +147,13 @@ class Vehicle(Data):
         self._component_root_map = {
             Components.Fuselages.Fuselage              : self['fuselages']        ,
             Components.Wings.Wing                      : self['wings']            ,
-            Components.Powertrain.Systems.System       : self['systems']          ,
-            Components.Powertrain.Systems.Avionics     : self['avionics']         ,
-            Components.Payloads.Payload                : self['payload']          , 
+            Components.Powertrain.Systems.Systems      : self['systems']          ,
             Components.Nacelles.Nacelle                : self['nacelles']         , 
             Components.Booms.Boom                      : self['booms']            ,
-            Components.Landing_Gear.Landing_Gear       : self['landing_gears']     ,
+            Components.Landing_Gear.Landing_Gear       : self['landing_gears']    ,
+            Components.Cargo_Bays.Cargo_Bay            : self['cargo_bays']       , 
             Vehicle_Mass_Properties                    : self['mass_properties']  ,
+            Vehicle_Volume_Properties                  : self['volume_properties'],
         }
          
         self._energy_network_root_map= {
@@ -151,6 +161,7 @@ class Vehicle(Data):
             }    
         
         self.append_component(Vehicle_Mass_Properties())
+        self.append_component(Vehicle_Volume_Properties())
          
         return
     
@@ -280,28 +291,69 @@ class Vehicle_Mass_Properties(Components.Mass_Properties):
                 None
             """         
 
-        self.tag                         = 'mass_properties'
-        self.operating_empty             = 0.0
-        self.max_takeoff                 = 0.0
-        self.takeoff                     = 0.0
-        self.max_landing                 = 0.0
-        self.landing                     = 0.0
-        self.max_cargo                   = 0.0
-        self.cargo                       = 0.0
-        self.max_payload                 = 0.0
-        self.payload                     = 0.0
-        self.passenger                   = 0.0
-        self.crew                        = 0.0
-        self.max_fuel                    = 0.0
-        self.fuel                        = 0.0
-        self.max_zero_fuel               = 0.0
-        self.center_of_gravity           = [[0.0,0.0,0.0]]
-        self.zero_fuel_center_of_gravity = np.array([[0.0,0.0,0.0]])    
+        self.tag                                    = 'mass_properties'
+        self.operating_empty                        = None
+        self.max_takeoff                            = None
+        self.takeoff                                = None
+        self.max_landing                            = None
+        self.landing                                = None
+        self.max_cargo                              = None
+        self.cargo                                  = 0
+        self.max_payload                            = 0 
+        self.min_payload                            = 0 
+        self.payload                                = 0
+        self.passenger                              = None
+        self.crew                                   = None
+        self.max_fuel                               = None
+        self.fuel                                   = 0
+        self.max_zero_fuel                          = None
+        self.center_of_gravity                      = [[0.0,0.0,0.0]]
+        self.zero_fuel_center_of_gravity            = [[0.0,0.0,0.0]]
+        self.operating_empty_center_of_gravity      = [[0.0,0.0,0.0]]
+        self.OEW_CG_mass_percentage                 = 0.0    
         
 class Vehicle_Mass_Container(Components.Component.Container,Vehicle_Mass_Properties):
         
     def append(self,value,key=None):
         """ Appends the vehicle mass, but only let's one ever exist. Keeps the newest one
+        
+            Assumptions:
+                None
+    
+            Source:
+                None
+        """      
+        self.clear()
+        for key in value.keys():
+            self[key] = value[key]
+
+class Vehicle_Volume_Properties(Components.Volume_Properties): 
+    """ The vehicle's mass properties.
+        
+            Assumptions:
+                None
+    
+            Source:
+                None
+    """
+
+    def __defaults__(self):
+        """This sets the default values.
+        
+            Assumptions:
+                None
+    
+            Source:
+                None
+            """         
+
+        self.tag                         = 'volume_properties'
+        self.fuel                        = 0.0
+        
+class Vehicle_Volume_Container(Components.Component.Container,Vehicle_Volume_Properties):
+        
+    def append(self,value,key=None):
+        """ Appends the vehicle volume, but only let's one ever exist. Keeps the newest one
         
             Assumptions:
                 None

@@ -18,7 +18,7 @@ def plot_thermal_management_performance(results,
     ----------
     results : Results
         RCAIDE results data structure containing:
-            - segments[i].analyses.energy.vehicle.networks
+            - segments[i].analyses.vehicle.networks
                 Network data containing:
                     - coolant_lines
                         List of coolant circuits with:
@@ -83,7 +83,7 @@ def plot_thermal_management_performance(results,
     RCAIDE.Library.Plots.Thermal_Management.plot_reservoir_conditions : Reservoir analysis
     """     
     
-    for network in  results.segments[0].analyses.energy.vehicle.networks:
+    for network in  results.segments[0].analyses.vehicle.networks:
         for coolant_line in  network.coolant_lines:
             for tag, item in  coolant_line.items():
                 if coolant_line.identical_battery_modules:

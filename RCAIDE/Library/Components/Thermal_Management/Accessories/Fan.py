@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Thermal_Management/Accessories/Fan.py
+# RCAIDE/Library/Components/Thermal_Management/Accessories/Fan.py
 # 
 #
 # Created: March 2024  S. Shekar

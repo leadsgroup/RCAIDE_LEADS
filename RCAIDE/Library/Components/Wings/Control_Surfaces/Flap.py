@@ -1,4 +1,4 @@
-# RCAIDE/Compoments/Wings/Control_Surfaces/Flap.py
+# RCAIDE/Components/Wings/Control_Surfaces/Flap.py
 # 
 # Created:  Mar 2024, M. Clarke 
 
@@ -62,5 +62,6 @@ class Flap(Control_Surface):
         """
         self.tag            = 'flap'
         self.hinge_fraction = 0.0
+        self.type           = 'double_slotted'
         self.sign_duplicate = 1.0
  

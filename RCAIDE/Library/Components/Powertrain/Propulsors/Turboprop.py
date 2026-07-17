@@ -9,9 +9,12 @@
  # RCAIDE imports   
 from .                     import Propulsor
 from RCAIDE.Framework.Core import Data
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop          .append_turboprop_conditions     import append_turboprop_conditions 
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop          .compute_turboprop_performance   import compute_turboprop_performance, reuse_stored_turboprop_data
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.append_turboprop_conditions     import append_turboprop_conditions 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.compute_turboprop_performance   import compute_turboprop_performance, reuse_stored_turboprop_data
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia                               import compute_cylinder_moment_of_inertia 
  
+# python imports 
+import numpy as np
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Fan Component
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -52,10 +55,7 @@ class Turboprop(Propulsor):
         Specific fuel consumption adjustment factor (Less than 1 is a reduction). Default is 0.0.
         
     design_altitude : float
-        Design altitude of the engine [m]. Default is 0.0.
-        
-    propeller_efficiency : float
-        Design point propeller efficiency. Default is 0.0.
+        Design altitude of the engine [m]. Default is 0.0. 
         
     gearbox.efficiency : float
         Design point gearbox efficiency. Default is 0.0.
@@ -101,16 +101,15 @@ class Turboprop(Propulsor):
         self.turbine                                    = None  
         self.combustor                                  = None       
         self.diameter                                   = 0.0      
-        self.length                                     = 0.0
+        self.length                                     = 0.0   
+        self.propeller                                  = None
         self.height                                     = 0.0      
         self.design_isa_deviation                       = 0.0
-        self.design_altitude                            = 0.0
-        self.propeller_efficiency                       = 0.0
+        self.design_altitude                            = 0.0 
         self.gearbox                                    = Data()
-        self.specific_fuel_consumption_reduction_factor =  0.0
+        self.specific_fuel_consumption_reduction_factor = -3.875 
         self.gearbox.gear_ratio                         = 1.0
-        self.gearbox.efficiency                         = 0.0 
-        self.design_angular_velocity                    = 0.0
+        self.gearbox.efficiency                         = 0.0  
         self.design_mach_number                         = None 
         self.design_freestream_velocity                 = None
         self.compressor_nondimensional_massflow         = 0.0 
@@ -119,7 +118,7 @@ class Turboprop(Propulsor):
     
     def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
         """
-        Appends operating conditions to the segment.
+        Appends operating conditions of the segment.
         """
         append_turboprop_conditions(self,segment,energy_conditions,noise_conditions)
         return
@@ -145,4 +144,4 @@ class Turboprop(Propulsor):
         Reuses stored turboprop data for performance calculations.
         """
         thrust,moment,power_mech,power_elec  = reuse_stored_turboprop_data(turboprop,state,network,stored_propulsor_tag,center_of_gravity)
-        return thrust,moment,power_mech,power_elec 
+        return thrust,moment,power_mech,power_elec

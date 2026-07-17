@@ -64,8 +64,6 @@ def Actuator_Disk_performance(rotor, conditions):
                         Converter energy conditions indexed by tag
                         - commanded_thrust_vector_angle : numpy.ndarray
                             Commanded thrust vector angle [rad]
-                        - blade_pitch_command : numpy.ndarray
-                            Blade pitch command [rad]
                         - omega : numpy.ndarray
                             Angular velocity [rad/s]
     
@@ -111,8 +109,6 @@ def Actuator_Disk_performance(rotor, conditions):
                 Thrust per blade [N]
             - torque_per_blade : numpy.ndarray
                 Torque per blade [N·m]
-            - blade_pitch_command : numpy.ndarray
-                Blade pitch command [rad]
             - commanded_thrust_vector_angle : numpy.ndarray
                 Commanded thrust vector angle [rad]
             - figure_of_merit : numpy.ndarray
@@ -168,7 +164,6 @@ def Actuator_Disk_performance(rotor, conditions):
     """
     rho                   = conditions.freestream.density     
     commanded_TV          = conditions.energy.converters[rotor.tag].commanded_thrust_vector_angle   
-    pitch_c               = conditions.energy.converters[rotor.tag].blade_pitch_command
     omega                 = conditions.energy.converters[rotor.tag].omega
     B                     = rotor.number_of_blades   
     R                     = rotor.tip_radius 
@@ -226,8 +221,7 @@ def Actuator_Disk_performance(rotor, conditions):
             disc_loading                      = disc_loading, 
             power_loading                     = power_loading,  
             thrust_per_blade                  = thrust/B, 
-            torque_per_blade                  = torque/B,
-            blade_pitch_command               = pitch_c,
+            torque_per_blade                  = torque/B, 
             commanded_thrust_vector_angle     = commanded_TV,  
             figure_of_merit                   = FoM,) 
 

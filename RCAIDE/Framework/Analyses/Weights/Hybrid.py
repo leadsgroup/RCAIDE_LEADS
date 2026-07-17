@@ -3,9 +3,7 @@
 # Created:  Feb 2025, S. Shekar
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
-# ----------------------------------------------------------------------------------------------------------------------
-
-import RCAIDE
+# ---------------------------------------------------------------------------------------------------------------------- 
 from RCAIDE.Framework.Core import Data 
 from .Weights import Weights
 
@@ -50,8 +48,8 @@ class Hybrid(Weights):
         Properties Used:
         N/A
         """
-        # self.method        = 'Semi_Emperical'
-        # self.aircraft_type = 'Transport'
+        # self.method                  = 'Semi_Empirical'
+        # self.aircraft_type           = 'Transport'
         # self.propulsion_architecture = 'Hydrogen'
 
         

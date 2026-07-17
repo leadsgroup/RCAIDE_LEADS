@@ -8,7 +8,7 @@ for various engine installations.
 See Also
 --------
 RCAIDE.Library.Components.Fuselages
-    Related module for fuselage components that may interface with engine nacelles
+    Related module for nacelle components that may interface with engine nacelles
 RCAIDE.Library.Components.Landing_Gear
     Related module for landing gear design which may affect nacelle ground clearance
 RCAIDE.Library.Components.Airfoils

@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Powertrain/Systems/Avionics.py
+# RCAIDE/Library/Components/Powertrain/Systems/Avionics.py
 # 
 # Created:  Mar 2024, M. Clarke 
 
@@ -6,13 +6,12 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------   
 # RCAIDE imports  
-from RCAIDE.Library.Components import Component
-from RCAIDE.Library.Methods.Powertrain.Systems.append_avionics_conditions import append_avionics_conditions
- 
+from .Systems import Systems
+from RCAIDE.Library.Methods.Powertrain.Systems.append_systems_conditions import append_systems_conditions 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Avionics
 # ----------------------------------------------------------------------------------------------------------------------            
-class Avionics(Component):
+class Avionics(Systems):
     """
     A class representing aircraft avionics systems and their power requirements.
 
@@ -48,43 +47,12 @@ class Avionics(Component):
 
     See Also
     --------
-    RCAIDE.Library.Components.Powertrain.Systems.System
+    RCAIDE.Library.Components.Powertrain.Systems.Systems
         Base system class
     """        
     def __defaults__(self):
         """
         Sets default values for the avionics system attributes.
-        """                 
-        self.power_draw = 0.0
+        """                  
         self.tag        = 'Avionics'
-
-    def append_operating_conditions(self, segment, bus): 
-        """
-        Adds operating conditions for the avionics system to a mission segment.
-
-        Parameters
-        ----------
-        segment : Data
-            Mission segment to which conditions are being added
-        bus : Data
-            Electrical bus supplying power to the avionics
-        """
-        append_avionics_conditions(self, segment, bus)
-        return
-            
-    def power(self):
-        """
-        Calculates the power draw from the avionics system.
-
-        Returns
-        -------
-        float
-            Power draw in Watts
-
-        Notes
-        -----
-        Sets both the input power and returns the power draw value for use
-        in energy calculations.
-        """                 
-        self.inputs.power = self.power_draw
-        return self.power_draw
+        self.uninstalled_mass = 0.0

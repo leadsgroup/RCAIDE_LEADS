@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Powertrain/Converters/Rotor.py
+# RCAIDE/Library/Components/Powertrain/Converters/Rotor.py
 # 
 # 
 # Created:  Mar 2024, M. Clarke
@@ -183,7 +183,7 @@ class Rotor(Component):
         self.blade_solidity                    = 0.0 
         self.flap_angle                        = 0.0
         self.number_azimuthal_stations         = 16 
-        self.vtk_airfoil_points                = 40        
+        self.vtk_airfoil_points                = 40 
         self.airfoils                          = Airfoil_Container() 
         self.airfoil_polar_stations            = []       
 
@@ -198,14 +198,14 @@ class Rotor(Component):
         self.cruise.design_power_coefficient   = 0.01 
         self.cruise.design_thrust_coefficient  = 0.01
         self.cruise.design_torque_coefficient  = 0.005
-        self.cruise.design_Cl                  = 0.7 
+        self.cruise.design_lift_coefficient    = 0.7 
         self.cruise.design_efficiency          = 0.86  
         self.cruise.design_angular_velocity    = None
         self.cruise.design_tip_mach            = None
         self.cruise.design_acoustics           = None
         self.cruise.design_performance         = None
         self.cruise.design_SPL_dBA             = None
-        self.cruise.design_blade_pitch_command       = 0.0     
+        self.cruise.design_blade_pitch_command = 0.0     
 
         # operating conditions 
         self.induced_power_factor              = 1.48        # accounts for interference effects
@@ -226,11 +226,12 @@ class Rotor(Component):
  
         # blade optimization parameters     
         self.optimization_parameters                                    = Data() 
-        self.optimization_parameters.tip_mach_range                     = [0.3,0.7] 
+        self.optimization_parameters.tip_mach_range                     = [0.1,0.6] 
         self.optimization_parameters.multiobjective_aeroacoustic_weight = 1.0
         self.optimization_parameters.multiobjective_performance_weight  = 1.0
         self.optimization_parameters.multiobjective_acoustic_weight     = 1.0
-        self.optimization_parameters.noise_evaluation_angle             = 135 * Units.degrees 
+        self.optimization_parameters.noise_evaluation_angle             = 135 * Units.degrees
+        self.optimization_parameters.noise_evaluation_distance          = 20
         self.optimization_parameters.tolerance                          = 1E-4
         self.optimization_parameters.ideal_SPL_dBA                      = 30
         self.optimization_parameters.ideal_efficiency                   = 1.0     
@@ -378,9 +379,9 @@ class Rotor(Component):
         cpts       = len(np.atleast_1d(commanded_thrust_vector))
         rots       = np.array(self.orientation_euler_angles) * 1.
         rots       = np.repeat(rots[None,:], cpts, axis=0) 
-        rots[:,1] += commanded_thrust_vector[:,0] 
+        rots[:,1] += commanded_thrust_vector[:,0]
         
-        vehicle_2_prop_vec = sp.spatial.transform.Rotation.from_rotvec(rots).as_matrix()
+        vehicle_2_prop_vec = sp.spatial.transform.Rotation.from_euler('xyz', rots).as_matrix()
 
         # GO from the propeller vehicle frame to the propeller velocity frame: rot 2
         prop_vec_2_prop_vel = self.vec_to_vel()

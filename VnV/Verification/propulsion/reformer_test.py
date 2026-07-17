@@ -22,9 +22,11 @@ import numpy as np
 import pylab as plt 
 import sys
 import os
+import time
 
  
 def main(): 
+    ti = time.time()
 
     Q_R_truth     = [541.1430179999999]    
     eta_ref_truth = [84.71907896694455]
@@ -74,6 +76,10 @@ def main():
     for k,v in list(error.items()):
         assert(np.abs(v)<1e-6) 
                
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return    
 
 if __name__ == '__main__':

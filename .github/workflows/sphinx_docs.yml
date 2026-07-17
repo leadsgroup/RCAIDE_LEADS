@@ -24,7 +24,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.X"
+          python-version: "3.11"
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
@@ -57,7 +57,7 @@ jobs:
               # Execute notebook and save to temporary location
               jupyter nbconvert --to notebook --execute "$notebook" \
                 --output "$tmp_dir/$notebook_name" \
-                --ExecutePreprocessor.timeout=1800 \
+                --ExecutePreprocessor.timeout=2400 \
                 || { echo "Error executing notebook $notebook"; exit 1; }
               
               # If execution succeeded, move the executed notebook back
@@ -75,7 +75,7 @@ jobs:
         run: |
              # Clean old build files
              rm -rf docs/source/_autosummary
-             rm -rf docs/source/tutorials/Optimization docs/source/tutorials/Missions docs/source/tutorials/Performance
+             rm -rf docs/source/tutorials/Airfoils_and_Polars docs/source/tutorials/Analysis_Aerodynamic_Polars docs/source/tutorials/Analysis_Approach_Sideline_Takeoff_Noise docs/source/tutorials/Analysis_Landing_Field_Length docs/source/tutorials/Analysis_Loading_and_Trim_Diagram docs/source/tutorials/Analysis_Payload_Range docs/source/tutorials/Analysis_Take_Off_Field_Length docs/source/tutorials/Analysis_V_n_Diagram docs/source/tutorials/Missions docs/source/tutorials/Optimization_Wing_Planform_Fuel_Burn docs/source/tutorials/Performance docs/source/tutorials/Simulation_Turbofan_Transonic_Aircraft_5000nmi_Mission docs/source/tutorials/Simulation_Turbojet_Supersonic_Aircraft_4500nmi_Mission docs/source/tutorials/Simulation_Turboprop_Aircraft_1000nmi_Mission
   
       - name:  Copy tutorials to Docs
         run: |

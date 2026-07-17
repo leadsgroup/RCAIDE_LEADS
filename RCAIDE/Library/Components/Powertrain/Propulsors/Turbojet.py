@@ -9,9 +9,12 @@
 ## RCAIDE imports   
 from RCAIDE.Framework.Core      import Data
 from .                          import Propulsor
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet          .append_turbojet_conditions     import append_turbojet_conditions 
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet          .compute_turbojet_performance   import compute_turbojet_performance, reuse_stored_turbojet_data
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.append_turbojet_conditions     import append_turbojet_conditions 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.compute_turbojet_performance   import compute_turbojet_performance, reuse_stored_turbojet_data
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia                             import compute_cylinder_moment_of_inertia 
  
+# python imports 
+import numpy as np
  
 # ----------------------------------------------------------------------
 #  Turbojet Propulsor

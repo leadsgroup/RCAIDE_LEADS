@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Weights/Correlation_Buildups/General_Aviation/compute_fuselage_weight.py
+# RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Conventional/General_Aviation/Raymer/compute_fuselage_weight.py
 # 
 # 
 # Created:  Sep 2024, M. Clarke 
@@ -45,7 +45,7 @@ def compute_fuselage_weight(fuselage, vehicle, l_ht):
     w_fus       = fuselage.width
     h_fus       = fuselage.heights.maximum 
     l_fus       = fuselage.lengths.total-fuselage.lengths.tail  
-    V_fuse      = fuselage.mass_properties.volume  
+    V_fuse      = fuselage.volume_properties.gross_volume  
     Nult        = vehicle.flight_envelope.ultimate_load 
     TOW         = vehicle.mass_properties.max_takeoff
     q_c         = vehicle.flight_envelope.design_dynamic_pressure

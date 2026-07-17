@@ -32,11 +32,11 @@ class Emission_Index_CRN_Method(Emissions):
         """
 
         # conditions table, used for surrogate model training
-        self.training                   = Data() 
-        self.training.pressure          = np.linspace(10,30, 5) *1E6
-        self.training.temperature       = np.linspace(700, 900, 5) 
-        self.training.air_mass_flowrate = np.linspace(10, 60, 5) 
-        self.training.fuel_to_air_ratio = np.linspace(0.01, 0.05, 5)        
+        self.training                    = Data() 
+        self.training.pressure           = np.linspace(10,30, 5) *1E6
+        self.training.temperature        = np.linspace(700, 900, 5) 
+        self.training.air_mass_flow_rate = np.linspace(10, 60, 5) 
+        self.training.fuel_to_air_ratio  = np.linspace(0.01, 0.05, 5)        
         
         # surrogoate models                 
         self.surrogates                 = Data() 
@@ -49,7 +49,7 @@ class Emission_Index_CRN_Method(Emissions):
         
         return
     
-    def initialize(self):
+    def initialize(self, vehicle):
         
         """
         This function defines the analysis of the combustor emisisons with the CRN method.
@@ -71,7 +71,7 @@ class Emission_Index_CRN_Method(Emissions):
         # If we are using the surrogate
         if use_surrogate == True: 
             # sample training data
-            train_CRN_EI_surrogates(self)
+            train_CRN_EI_surrogates(self, vehicle)
 
             # build surrogate
             build_CRN_EI_surrogates(self)  
@@ -79,13 +79,13 @@ class Emission_Index_CRN_Method(Emissions):
         # build the evaluation process
         compute   =  self.process.compute                  
         if use_surrogate == True: 
-            compute.emissions  = evaluate_CRN_emission_indices_surrogate
+            compute.emissions  = evaluate_CRN_emissions_surrogate
         else:
-            compute.emissions  = evaluate_CRN_emission_indices_no_surrogate
+            compute.emissions  = evaluate_CRN_emissions_no_surrogate
         return 
 
 
-    def evaluate(self,segment):
+    def evaluate(self,segment, vehicle):
         """The default evaluate function.
 
         Assumptions:
@@ -104,8 +104,7 @@ class Emission_Index_CRN_Method(Emissions):
         self.settings
         self.vehicle
         """          
-        settings = self.settings
-        vehicle  = self.vehicle 
+        settings = self.settings 
         results  = self.process.compute(segment,settings,vehicle)
 
         return results

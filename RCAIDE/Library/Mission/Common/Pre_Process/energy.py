@@ -14,7 +14,7 @@ def energy(mission):
     """ Pre-processes energy network by appending all unknowns and residuals             
     """       
     for segment in mission.segments: 
-        for network in segment.analyses.energy.vehicle.networks: 
+        for network in segment.analyses.vehicle.networks: 
             if type(network) == RCAIDE.Framework.Networks.Hybrid:
                 if segment.hybrid_power_split_ratio == None:
                     raise AssertionError('Hybridization power split ratio not set! Specify in mission segment') 

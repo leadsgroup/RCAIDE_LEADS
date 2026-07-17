@@ -80,8 +80,7 @@ def initialize_bus_properties(bus):
     cumulative_fuel_cell_stack =  0
     if len(bus.fuel_cell_stacks) > 0: 
         if bus.fuel_cell_stack_electric_configuration == 'Series':
-            bus.maximum_energy   = 0
-            for fuel_cell_stack in  bus.fuel_cell_stacks: 
+            for fuel_cell_stack in  bus.fuel_cell_stacks:
                 compute_stack_properties(fuel_cell_stack)
                 cumulative_fuel_cell_stack += fuel_cell_stack.voltage 
             bus.voltage  =  min(fuel_cell_stack.voltage, cumulative_fuel_cell_stack) 

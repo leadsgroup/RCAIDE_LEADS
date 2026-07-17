@@ -11,6 +11,7 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core import Units, Data  
+from RCAIDE.Library.Methods.Geometry.Planform  import  fuselage_planform 
 import numpy as np
 try:
     import vsp as vsp
@@ -185,6 +186,7 @@ def read_vsp_fuselage(fuselage_id,fux_idx,sym_flag, units_type='SI', fineness=Tr
 
     fuselage = compute_fuselage_fineness(fuselage, x_locs, eff_diams, eff_diam_gradients_fwd)	
 
+    fuselage_planform(fuselage)  
     return fuselage
 
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -287,7 +289,7 @@ def write_vsp_fuselage(fuselage,area_tags, main_wing, fuel_tank_set_ind, OML_set
         for seg in segs:
             widths.append(seg.width)
             heights.append(seg.height)
-            radii.append(seg.radius)
+            radii.append(seg.curvature)
             x_poses.append(seg.percent_x_location)
             z_poses.append(seg.percent_z_location)
 
@@ -302,8 +304,7 @@ def write_vsp_fuselage(fuselage,area_tags, main_wing, fuel_tank_set_ind, OML_set
     # set fuselage relative location and rotation
     vsp.SetParmVal( fuse_id,'X_Rel_Rotation','XForm',fuse_x_rotation)
     vsp.SetParmVal( fuse_id,'Y_Rel_Rotation','XForm',fuse_y_rotation)
-    vsp.SetParmVal( fuse_id,'Z_Rel_Rotation','XForm',fuse_z_rotation)
-
+    vsp.SetParmVal( fuse_id,'Z_Rel_Rotation','XForm',fuse_z_rotation) 
     vsp.SetParmVal( fuse_id,'X_Rel_Location','XForm',fuse_x)
     vsp.SetParmVal( fuse_id,'Y_Rel_Location','XForm',fuse_y)
     vsp.SetParmVal( fuse_id,'Z_Rel_Location','XForm',fuse_z)
@@ -412,7 +413,15 @@ def write_vsp_fuselage(fuselage,area_tags, main_wing, fuel_tank_set_ind, OML_set
 
     
         vsp.SetParmVal(fuse_id,"TopLAngle","XSec_"+str(0),90)
-        vsp.SetParmVal(fuse_id,"RightLAngle","XSec_"+str(0),90)
+        vsp.SetParmVal(fuse_id,"RightLAngle","XSec_"+str(0),90) 
+        if fuselage.supersonic: 
+            vsp.SetParmVal(fuse_id,"TopRStrength","XSec_"+str(0), 0.)
+            vsp.SetParmVal(fuse_id,"RightRStrength","XSec_"+str(0), 0.)
+            vsp.SetParmVal(fuse_id,"BottomRStrength","XSec_"+str(0), 0.)
+            vsp.SetParmVal(fuse_id,"TopLStrength","XSec_"+str(0), 0.)
+            vsp.SetParmVal(fuse_id,"RightLStrength","XSec_"+str(0), 0.)
+            vsp.SetParmVal(fuse_id,"AllSym","XSec_"+str(0),1) 
+        
         vsp.SetParmVal(fuse_id, "XLocPercent", "XSec_"+str(0),x_poses[0])
         vsp.SetParmVal(fuse_id, "ZLocPercent", "XSec_"+str(0),z_poses[0])
         vsp.SetParmVal(fuse_id, "XLocPercent", "XSec_"+str(end_ind),x_poses[-1])

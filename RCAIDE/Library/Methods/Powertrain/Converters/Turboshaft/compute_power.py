@@ -139,7 +139,7 @@ def compute_power(turboshaft,conditions):
          
     #fuel to air ratio
     f                                          = (Cp*total_temperature_reference/LHV)*(tau_lambda - tau_r*tau_c)                                                                              
-    fuel_flow_rate                             = (1 - SFC_adjustment) *f*m_dot_air
+    m_dot_fuel                                 = (1 - SFC_adjustment) *f*m_dot_air
     
     #Computing the PSFC                        
     PSFC                                       = f/Psp                                                                                                
@@ -149,7 +149,7 @@ def compute_power(turboshaft,conditions):
 
     #pack outputs
     turboshaft_conditions.power_specific_fuel_consumption   = PSFC
-    turboshaft_conditions.fuel_flow_rate                    = fuel_flow_rate                                                                              
+    turboshaft_conditions.fuel_mass_flow_rate               = m_dot_fuel                                                                              
     turboshaft_conditions.power                             = Power
     turboshaft_conditions.non_dimensional_power             = Psp
     turboshaft_conditions.non_dimensional_thrust            = Tsp

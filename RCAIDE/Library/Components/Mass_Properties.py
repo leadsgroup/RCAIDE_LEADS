@@ -1,4 +1,4 @@
-# RCAIDE/Library/Compoments/Mass_Properties.py
+# RCAIDE/Library/Components/Mass_Properties.py
 # 
 # Created:  Mar 2024, M. Clarke 
 
@@ -61,12 +61,14 @@ class Mass_Properties(Data):
         """
         Sets default values for mass property attributes.
         """         
-        self.mass   = 0.0
-        self.volume = 0.0
-        self.center_of_gravity = np.array([[0.0,0.0,0.0]])
-        
-        self.moments_of_inertia = Data()
-        self.moments_of_inertia.center = np.array([0.0,0.0,0.0])
-        self.moments_of_inertia.tensor = np.array([[0.0,0.0,0.0],
-                                                  [0.0,0.0,0.0],
-                                                  [0.0,0.0,0.0]])
+        self.mass                                      = 0
+        self.center_of_gravity                         = np.array([[0.0,0.0,0.0]])
+                               
+        self.moments_of_inertia                        = Data()
+        self.moments_of_inertia.center                 = np.array([0.0,0.0,0.0])
+        self.moments_of_inertia.tensor                 = np.array([[0.0,0.0,0.0],
+                                                                   [0.0,0.0,0.0],
+                                                                   [0.0,0.0,0.0]])
+        self.moments_of_inertia.non_dimensional_tensor = np.array([[0.0,0.0,0.0],
+                                                                   [0.0,0.0,0.0],
+                                                                   [0.0,0.0,0.0]])

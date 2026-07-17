@@ -30,5 +30,5 @@ Emissions
    :template: custom-module-template.rst
    :recursive:
 
-   plot_CO2e_emissions
+   plot_emissions
 

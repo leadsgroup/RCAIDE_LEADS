@@ -10,8 +10,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports 
 import RCAIDE
-from RCAIDE.Framework.Core import Units    
-from RCAIDE.Library.Methods.Geometry.Planform                                import wing_segmented_planform 
+from RCAIDE.Framework.Core import Units     
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor                          import design_electric_rotor
 
 # python imports 
@@ -34,24 +33,48 @@ def vehicle_setup(rotor_type):
     vehicle.mass_properties.takeoff                   = 2712. * Units.pounds
     vehicle.mass_properties.max_zero_fuel             = 2712. * Units.pounds 
     vehicle.mass_properties.max_payload               = 50.  * Units.pounds  #
+    vehicle.mass_properties.cargo                     = 0. * Units.pounds
     
     
     vehicle.flight_envelope.ultimate_load             = 3.75
     vehicle.flight_envelope.positive_limit_load       = 2.5 
-    vehicle.flight_envelope.design_mach_number        = 0.78 
-    # vehicle.flight_envelope.design_cruise_altitude    = 2500. * Units.ft
-    # vehicle.flight_envelope.design_range              = 200 * Units.nmi 
-    # vehicle.flight_envelope.design_dynamic_pressure   = 2072.1614727510914
-    # vehicle.flight_envelope.design_mach_number        = 0.17734782770792362
+    vehicle.flight_envelope.design_mach_number        = 0.78  
     vehicle.flight_envelope.design_cruise_altitude    = 30
     vehicle.flight_envelope.design_range              = 1 * Units.nmi 
     vehicle.flight_envelope.design_dynamic_pressure   = 3735.49
     vehicle.flight_envelope.design_mach_number        = 0.228
     
     vehicle.reference_area                            = 14.76
-    vehicle.passengers                                = 4
+    vehicle.number_of_passengers                      = 1
     vehicle.systems.control                           = "fully powered"
-    vehicle.systems.accessories                       = "commuter"     
+    vehicle.systems.accessories                       = "commuter"
+    
+
+    
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # ##################################################### Landing Gear ################################################################    
+    #------------------------------------------------------------------------------------------------------------------------------------ 
+    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
+    main_gear.tire_diameter                  = 6  *  Units.inches 
+    main_gear.rim_diameter                   = 3  *  Units.inches 
+    main_gear.tire_width                     = 6  *  Units.inches 
+    main_gear.strut_length                   = 12  * Units.ft 
+    main_gear.wheels                         = 4   
+    main_gear.number_of_gear_types_in_tandem = 1
+    main_gear.number_of_wheels_in_gear_type  = 2  
+    main_gear.xz_plane_symmetric             = True
+    vehicle.append_component(main_gear)  
+
+    nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
+    nose_gear.tire_diameter                  =  5 *  Units.inches   
+    nose_gear.rim_diameter                   =  3 *  Units.inches 
+    nose_gear.tire_width                     =  5 *  Units.inches 
+    nose_gear.strut_length                   =  6.* Units.ft 
+    nose_gear.wheels                         = 2   
+    nose_gear.number_of_gear_types_in_tandem = 1
+    nose_gear.number_of_wheels_in_gear_type  = 2    
+    vehicle.append_component(nose_gear)
+        
          
     #------------------------------------------------------------------------------------------------------------------------------------
     # ######################################################## Wings ####################################################################  
@@ -76,7 +99,7 @@ def vehicle_setup(rotor_type):
     wing.origin                           = [[2.93, 0., 1.01]]
     wing.aerodynamic_center               = [3., 0., 1.01] 
     wing.vertical                         = False
-    wing.symmetric                        = True
+    wing.xz_plane_symmetric               = True
     wing.high_lift                        = True 
     wing.winglet_fraction                 = 0.0  
     wing.dynamic_pressure_ratio           = 1.0  
@@ -134,10 +157,7 @@ def vehicle_setup(rotor_type):
     segment.sweeps.quarter_chord          = 0.
     segment.thickness_to_chord            = 0.12
     segment.append_airfoil(airfoil)
-    wing.append_segment(segment)    
-    
-    # Fill out more segment properties automatically
-    wing = wing_segmented_planform(wing)           
+    wing.append_segment(segment)        
     
     # add to vehicle
     vehicle.append_component(wing)
@@ -164,7 +184,7 @@ def vehicle_setup(rotor_type):
     wing.aerodynamic_center               = [7.8, 0., 0.25] 
     wing.vertical                         = False
     wing.winglet_fraction                 = 0.0  
-    wing.symmetric                        = True
+    wing.xz_plane_symmetric               = True
     wing.high_lift                        = False 
     wing.dynamic_pressure_ratio           = 0.9
 
@@ -191,7 +211,7 @@ def vehicle_setup(rotor_type):
     wing.origin                           = [[6.75 ,0, 0.623]]
     wing.aerodynamic_center               = [0.508 ,0,0]  
     wing.vertical                         = True 
-    wing.symmetric                        = False
+    wing.xz_plane_symmetric               = False
     wing.t_tail                           = False
     wing.winglet_fraction                 = 0.0  
     wing.dynamic_pressure_ratio           = 1.0
@@ -201,7 +221,7 @@ def vehicle_setup(rotor_type):
 
  
     # ##########################################################   Fuselage  ############################################################    
-    fuselage = RCAIDE.Library.Components.Fuselages.Tube_Fuselage()
+    fuselage = RCAIDE.Library.Components.Fuselages.Fuselage()
 
     # define cabin
     cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
@@ -357,11 +377,11 @@ def vehicle_setup(rotor_type):
     bat                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC() 
     bat.tag                                                = 'li_ion_battery'
     bat.electrical_configuration.series                    = 30   
-    bat.electrical_configuration.parallel                  = 40
-    bat.geometrtic_configuration.normal_count              = 30
-    bat.geometrtic_configuration.parallel_count            = 40
+    bat.electrical_configuration.parallel                  = 12
+    bat.geometric_configuration.normal_count              = 30
+    bat.geometric_configuration.parallel_count            = 12
      
-    for _ in range(8):
+    for _ in range(16):
         bus.battery_modules.append(deepcopy(bat))      
     bus.initialize_bus_properties()      
     #------------------------------------------------------------------------------------------------------------------------------------  
@@ -450,7 +470,7 @@ def vehicle_setup(rotor_type):
         propeller.hub_radius                             = 10.     * Units.inches 
         propeller.cruise.design_freestream_velocity      = 175.*Units['mph']   
         propeller.cruise.design_angular_velocity         = 2700. * Units.rpm 
-        propeller.cruise.design_Cl                       = 0.7 
+        propeller.cruise.design_lift_coefficient                       = 0.7 
         propeller.cruise.design_altitude                 = 30. * Units.feet 
         propeller.cruise.design_thrust                   = 6000   
         propeller.clockwise_rotation                     = False
@@ -540,20 +560,11 @@ def vehicle_setup(rotor_type):
     # append propulsor to distribution line 
     net.propulsors.append(port_propulsor) 
 
-
-    #------------------------------------------------------------------------------------------------------------------------------------           
-    # Payload 
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    payload                      = RCAIDE.Library.Components.Payloads.Payload()
-    payload.power_draw           = 10. # Watts
-    payload.mass_properties.mass = 1.0 * Units.kg
-    bus.payload                  = payload
-
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Avionics
     #------------------------------------------------------------------------------------------------------------------------------------  
     avionics                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.power_draw          = 20. # Watts
+    avionics.power_draw          = 30. # Watts
     bus.avionics                 = avionics   
  
     #------------------------------------------------------------------------------------------------------------------------------------   

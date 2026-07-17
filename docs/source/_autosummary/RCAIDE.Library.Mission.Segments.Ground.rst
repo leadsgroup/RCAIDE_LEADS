@@ -33,4 +33,5 @@ Ground
    Battery_Charge_Discharge
    Landing
    Takeoff
+   Test_Stand
 

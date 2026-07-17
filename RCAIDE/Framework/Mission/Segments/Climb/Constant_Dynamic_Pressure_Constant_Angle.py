@@ -57,22 +57,17 @@ class Constant_Dynamic_Pressure_Constant_Angle(Evaluate):
         
         # -------------------------------------------------------------------------------------------------------------- 
         #  Mission Specific Unknowns and Residuals 
-        # --------------------------------------------------------------------------------------------------------------    
-        ones_row = self.state.ones_row             
-        self.state.residuals.altitude      = ones_row(1) * 0.0
-        self.state.unknowns.altitude       = ones_row(1) * 0.0                                         
+        # --------------------------------------------------------------------------------------------------------------           
+        self.assigned_control_variables.altitude.active = True                             
         
         # -------------------------------------------------------------------------------------------------------------- 
         #  Mission specific processes 
         # --------------------------------------------------------------------------------------------------------------   
         initialize                         = self.process.initialize
         initialize.conditions              = Segments.Climb.Constant_Dynamic_Pressure_Constant_Angle.initialize_conditions_unpack_unknowns 
-        iterate                            = self.process.iterate 
-        iterate.unknowns.mission           = Common.Unpack_Unknowns.orientation
-        iterate.unknowns.controls          = Common.Unpack_Unknowns.control_surfaces
+        iterate                            = self.process.iterate  
         iterate.unknowns.kinematics        = Segments.Climb.Constant_Dynamic_Pressure_Constant_Angle.initialize_conditions_unpack_unknowns
         iterate.conditions.differentials   = Segments.Climb.Constant_Dynamic_Pressure_Constant_Angle.update_differentials 
-        iterate.residuals.flight_dynamics  = Common.Residuals.flight_dynamics
         iterate.residuals.altitude         = Segments.Climb.Constant_Dynamic_Pressure_Constant_Angle.residual_altitude
         return
        

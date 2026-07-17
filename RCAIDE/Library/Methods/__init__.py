@@ -22,7 +22,7 @@ from . import Gas_Dynamics
 from . import Geodesics
 from . import Geometry
 from . import Mass_Properties
-from . import Noise
+from . import Aeroacoustics
 from . import Performance 
 from . import Powertrain
 from . import Stability

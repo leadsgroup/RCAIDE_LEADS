@@ -1,15 +1,21 @@
-# RCAIDE/Library/Compoments/Powertrain/Sources/Fuel_Tanks/Fuel_Tank.py
+# RCAIDE/Library/Components/Powertrain/Sources/Fuel_Tanks/Fuel_Tank.py
 # 
 # 
 # Created:  Mar 2024, M. Clarke 
+# Modified: Aug 2025, S. Shekar
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE imports 
+from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Components          import Component
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks  import * 
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions import append_fuel_tank_conditions 
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_prismatic_tank_volume   import compute_prismatic_tank_volume     
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_cuboid_moment_of_inertia
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_cuboid_center_of_gravity
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Fuel Tank
@@ -23,7 +29,7 @@ class Fuel_Tank(Component):
     tag : str
         Identifier for the fuel tank (default: 'fuel_tank')
         
-    fuel_selector_ratio : float
+    fuel_flow_split_ratio : float
         Ratio of fuel flow allocation (default: 1.0)
         
     mass_properties.empty_mass : float
@@ -53,13 +59,66 @@ class Fuel_Tank(Component):
         """
         Sets default values for fuel tank attributes
         """          
-        self.tag                         = 'fuel_tank'
-        self.fuel_selector_ratio         = 1.0 
-        self.mass_properties.empty_mass  = 0.0   
-        self.secondary_fuel_flow         = 0.0
-        self.fuel                        = None
-         
+        self.tag                            = 'fuel_tank'  
+        self.fuel                           = None
+        self.secondary_mass_flow_rate       = 0.0
+        self.wall_clearance                 = 0.0
+        self.wall_thickness                 = 1E-3
+        self.fuel_flow_split_ratio          = None
+        self.xz_plane_symmetric             = True
+        self.wing_tag                       = None
+        self.fuselage_tag                   = None
+        self.transverse_tank                = False
+        self.gravimetric_efficiency         = 1.0
+        self.lengths                        = Data()
+        self.lengths.external               = 0.0
+        self.lengths.internal               = 0.0  
+        self.widths                         = Data()
+        self.widths.external                = 0.0
+        self.widths.internal                = 0.0
+        self.heights                        = Data()
+        self.heights.external               = 0.0
+        self.heights.internal               = 0.0 
+        self.diameters                      = Data()
+        self.diameters.external             = 0.0
+        self.diameters.internal             = 0.0  
 
+        # Insulation sub-component
+        self.insulation                     = Component()
+        self.insulation.lengths             = Data()
+        self.insulation.lengths.external    = 0.0
+        self.insulation.lengths.internal    = 0.0
+        self.insulation.widths              = Data()
+        self.insulation.widths.external     = 0.0
+        self.insulation.widths.internal     = 0.0
+        self.insulation.heights             = Data()
+        self.insulation.heights.external    = 0.0
+        self.insulation.heights.internal    = 0.0
+        self.insulation.diameters           = Data()
+        self.insulation.diameters.external  = 0.0
+        self.insulation.diameters.internal  = 0.0
+
+        # Inner structure (pressure vessel) sub-component
+        self.inner_structure                     = Component()
+        self.inner_structure.lengths             = Data()
+        self.inner_structure.lengths.external    = 0.0
+        self.inner_structure.lengths.internal    = 0.0
+        self.inner_structure.widths              = Data()
+        self.inner_structure.widths.external     = 0.0
+        self.inner_structure.widths.internal     = 0.0
+        self.inner_structure.heights             = Data()
+        self.inner_structure.heights.external    = 0.0
+        self.inner_structure.heights.internal    = 0.0
+        self.inner_structure.diameters           = Data()
+        self.inner_structure.diameters.external  = 0.0
+        self.inner_structure.diameters.internal  = 0.0
+
+        self.tank_accesories_weight_factor  = 1.0             
+        self.segments_bounding_tank         = [None, None] 
+        self.segments_percent_chord_start   = [0.1,0.1]
+        self.segments_percent_chord_end     = [0.7,0.7]
+        self.percent_span_location          = 0.0
+ 
     def append_operating_conditions(self,segment,fuel_line):  
         """
         Append fuel tank operating conditions for a flight segment
@@ -72,4 +131,91 @@ class Fuel_Tank(Component):
             Connected fuel line component
         """
         append_fuel_tank_conditions(self,segment, fuel_line)  
-        return                                          
+        return
+    
+    def compute_tank_properties(self,state,fuel_line):
+        compute_fuel_tank_properties(self,state,fuel_line)
+        return
+    
+    def compute_volume(self, wings, fuselages,fuel_tanks):
+        """
+        Compute the volume of the non-integral fuel tank based on its attachment location.
+
+        Parameters
+        ----------
+        wings : dict
+            Dictionary containing wing components indexed by their tags
+        fuselages : dict
+            Dictionary containing fuselage components indexed by their tags
+
+        Returns
+        -------
+        volume : float
+            Computed volume of the fuel tank [m³]
+
+        Notes
+        -----
+        The volume computation method depends on where the tank is attached:
+            - If attached to a wing, uses wing geometry and tank dimensions
+            - If attached to a fuselage, uses fuselage geometry and tank dimensions  
+            - If configured as a BWB aft tank, uses special BWB-specific computation
+
+        **Major Assumptions**
+            * Tank dimensions (length, width, height) are properly defined
+            * Wing or fuselage components exist in the provided dictionaries
+            * For BWB aft tanks, the wing_root_tag is properly set
+
+        See Also
+        --------
+        RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_non_integral_tank_volume
+        """ 
+        compute_prismatic_tank_volume(self)
+        return
+    
+   
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
+        """
+        Computes the moment of inertia tensor for a fuel tank.
+
+        Parameters
+        ----------
+        center_of_gravity : list, optional
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
+
+        Returns
+        -------
+        I : ndarray
+            3x3 moment of inertia tensor in kg*m^2
+ 
+        """ 
+        _, _ = compute_cuboid_moment_of_inertia(self,
+                                                outer_length=self.lengths.external,
+                                                outer_width=self.widths.external,
+                                                outer_height=self.heights.external,\
+                                                inner_length=self.lengths.external- 2*self.wall_thickness,
+                                                inner_width=self.widths.external- 2*self.wall_thickness,
+                                                inner_height=self.heights.external- 2*self.wall_thickness,
+                                                center_of_gravity=center_of_gravity,
+                                                fuel_tank=True) 
+                
+        return
+    
+
+    def compute_center_of_gravity(self,vehicle): 
+        """
+        Computes the center of gravity for a fuel tank.
+
+        Parameters
+        ----------
+        center_of_gravity : list, optional
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]
+
+        Returns
+        -------
+        I : ndarray
+            3x3 moment of inertia tensor in kg*m^2 
+        """
+        
+        _  = compute_cuboid_center_of_gravity(self, length=self.lengths.external)
+            
+        return

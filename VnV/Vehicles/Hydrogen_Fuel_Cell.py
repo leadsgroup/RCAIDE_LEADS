@@ -1,4 +1,4 @@
-# Regressions/Vehicles/Hydrogen_Fuel_Cell.py
+# VnV/Vehicles/Hydrogen_Fuel_Cell.py
 # 
 # 
 # Created:   Jan 2025, M. Clarke
@@ -26,6 +26,7 @@ def vehicle_setup(fuel_cell_model):
     # mass properties
     vehicle.mass_properties.takeoff         = 1 * Units.kg 
     vehicle.mass_properties.max_takeoff     = 1 * Units.kg 
+    vehicle.mass_properties.operating_empty = 1 * Units.kg
          
     net                              = RCAIDE.Framework.Networks.Fuel_Cell()  
 
@@ -48,20 +49,20 @@ def vehicle_setup(fuel_cell_model):
         bus.fuel_cell_stacks.append(fuel_cell_stack_2)
         
     bus.initialize_bus_properties()
-        
-    #------------------------------------------------------------------------------------------------------------------------------------           
-    # Payload 
+
     #------------------------------------------------------------------------------------------------------------------------------------  
-    payload                      = RCAIDE.Library.Components.Payloads.Payload()
-    payload.power_draw           = 50
-    payload.mass_properties.mass = 1.0 * Units.kg
-    bus.payload                  = payload  
-       
+    # Avionics
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    avionics                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
+    avionics.power_draw          = 50. # Watts
+    net.systems.append(avionics)
+
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Crogenic Tank
     #------------------------------------------------------------------------------------------------------------------------------------       
-    cryogenic_tank = RCAIDE.Library.Components.Powertrain.Sources.Cryogenic_Tanks.Cryogenic_Tank()  
-    bus.cryogenic_tanks.append(cryogenic_tank)     
+    cryogenic_tank = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank()  
+    cryogenic_tank.fuel = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+    bus.fuel_tanks.append(cryogenic_tank)     
 
     # append bus   
     net.busses.append(bus)

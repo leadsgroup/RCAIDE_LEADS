@@ -1,21 +1,17 @@
-# Atmospheric.py
+#RCAIDE/Frameworks/Analyses/Atmospheric/Atmospheric.py
 #
-# Created:  Feb 2015, T. MacDonald
-# Modified: Feb 2016, A. Wendorff
-
+# Created: Dec 2024, M. Clarke
 
 # ----------------------------------------------------------------------
 #  Imports
 # ----------------------------------------------------------------------
-
 from RCAIDE.Library.Attributes.Atmospheres.Atmosphere import Atmosphere
 from RCAIDE.Framework.Analyses import Analysis
 
 
 # ----------------------------------------------------------------------
 #  Analysis
-# ----------------------------------------------------------------------
-
+# ---------------------------------------------------------------------- 
 class Atmospheric(Analysis):
     """This is the base class for atmospheric analyses. It contains functions
     that are built into the default class.

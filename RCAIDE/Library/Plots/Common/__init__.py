@@ -14,4 +14,5 @@ capabilities. It includes functions for consistent axis formatting and plot styl
 # ----------------------------------------------------------------------------------------------------------------------
  
 from .set_axes            import set_axes
-from .plot_style          import plot_style  
+from .plot_style          import plot_style
+from .rcaide_colormap     import segment_colors, _RCAIDE_CMAP

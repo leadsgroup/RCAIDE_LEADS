@@ -22,14 +22,23 @@ import matplotlib.cm as cm
 # local imports 
 import sys 
 import os
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
 from Battery_Cell   import vehicle_setup , configs_setup  
+import time
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  REGRESSION
 # ----------------------------------------------------------------------------------------------------------------------  
 
 def main(): 
+    ti = time.time()
     Ereq                           = 3000*Units.Wh  
     Preq                           = 2000.  
 
@@ -44,6 +53,10 @@ def main():
         
     # Lithium-Ion Test
     lithium_ion_battery_test()
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
     
      
@@ -77,9 +90,8 @@ def lithium_ion_battery_test():
     C_rat                 = [0.5,1]  
     marker_size           = 5 
     mAh                   = np.array([3800,2600]) 
-    V_ul_true             = np.array([[3.176391931635407,3.1422615279089],[3.176391931635407,3.1422615279089]])
-    bat_temp_true         = np.array([[309.47942727882105,304.7804077267032], [309.65733640183896,304.9861235766863]])  
-
+    V_ul_true             = np.array([[3.1746312064954223, 3.14117403134389],[3.1746312064954223,3.14117403134389]])
+    bat_temp_true         =  np.array([[309.51908573114554,304.75340976482204], [309.51908573114554,304.75240451615923]])  
     # PLot parameters 
     marker                = ['s' ,'o' ,'P']
     linestyles            = ['-','--',':']
@@ -117,7 +129,7 @@ def lithium_ion_battery_test():
             results = missions.base_mission.evaluate()  
             
             # Voltage Cell Regression
-            V_ul        = results.segments[0].conditions.energy.bus.battery_modules[battery_chemistry[i]].cell.voltage_under_load[2][0]   
+            V_ul        = results.segments[0].conditions.energy.busses['bus'].battery_modules[battery_chemistry[i]].cell.voltage_under_load[2][0]   
             print('Under load voltage: ' + str(V_ul))
             V_ul_diff   = np.abs(V_ul - V_ul_true[j,i])
             print('Under load voltage difference')
@@ -125,7 +137,7 @@ def lithium_ion_battery_test():
             assert np.abs((V_ul_diff)/V_ul_true[j,i]) < 1e-6  
            
             # Temperature Regression
-            bat_temp        = results.segments[1].conditions.energy.bus.battery_modules[battery_chemistry[i]].cell.temperature[2][0]  
+            bat_temp        = results.segments[1].conditions.energy.busses['bus'].battery_modules[battery_chemistry[i]].cell.temperature[2][0]  
             print('Cell temperature: ' + str(bat_temp))
             bat_temp_diff   = np.abs(bat_temp  - bat_temp_true[j,i]) 
             print('cell temperature difference')
@@ -133,10 +145,10 @@ def lithium_ion_battery_test():
             assert np.abs((bat_temp_diff)/bat_temp_true[j,i]) < 1e-6
        
             for segment in results.segments.values(): 
-                volts         = segment.conditions.energy.bus.voltage_under_load[:,0] 
-                SOC           = segment.conditions.energy.bus.battery_modules[battery_chemistry[i]].cell.state_of_charge[:,0]   
-                cell_temp     = segment.conditions.energy.bus.battery_modules[battery_chemistry[i]].cell.temperature[:,0]   
-                Amp_Hrs       = segment.conditions.energy.bus.battery_modules[battery_chemistry[i]].cell.charge_throughput[:,0]                   
+                volts         = segment.conditions.energy.busses['bus'].voltage_under_load[:,0] 
+                SOC           = segment.conditions.energy.busses['bus'].battery_modules[battery_chemistry[i]].cell.state_of_charge[:,0]   
+                cell_temp     = segment.conditions.energy.busses['bus'].battery_modules[battery_chemistry[i]].cell.temperature[:,0]   
+                Amp_Hrs       = segment.conditions.energy.busses['bus'].battery_modules[battery_chemistry[i]].cell.charge_throughput[:,0]                   
                   
                 if battery_chemistry[i] == 'lithium_ion_nmc':
                     axes1.plot(Amp_Hrs , volts , marker= marker[i], linestyle = linestyles[i],  color= linecolors[j]  , markersize=marker_size   ,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C') 
@@ -188,11 +200,20 @@ def analyses_setup(configs):
 
 def base_analysis(vehicle):    
     #   Initialize the Analyses     
-    analyses = RCAIDE.Framework.Analyses.Vehicle()  
+    analyses = RCAIDE.Framework.Analyses.Vehicle()
+    analyses.vehicle = vehicle
+
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
+    analyses.append(geometry)
+
+    #  Weights
+    weights = RCAIDE.Framework.Analyses.Weights.Weights()
+    weights.settings.run_weights_analysis = False
+    analyses.append(weights)    
     
     #  Energy
-    energy          = RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle  = vehicle 
+    energy          = RCAIDE.Framework.Analyses.Energy.Energy() 
     analyses.append(energy)
  
     #  Planet Analysis
@@ -201,7 +222,6 @@ def base_analysis(vehicle):
  
     #  Atmosphere Analysis
     atmosphere                 = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
     analyses.append(atmosphere)   
  
     return analyses     

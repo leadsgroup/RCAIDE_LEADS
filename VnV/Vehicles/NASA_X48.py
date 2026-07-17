@@ -7,20 +7,21 @@
 
 # RCAIDE imports 
 import RCAIDE
-from RCAIDE.Framework.Core import Units, Data       
-from RCAIDE.Library.Methods.Geometry.Planform                               import segment_properties    
+from RCAIDE.Framework.Core import Units 
 from RCAIDE.Library.Plots                                                   import *     
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Ducted_Fan       import design_electric_ducted_fan
 
-# python imports 
-import numpy as np  
-from copy import deepcopy 
+# python imports  
+from copy import deepcopy  
 import os
 
 # ----------------------------------------------------------------------
 #   Define the Vehicle
 # ---------------------------------------------------------------------- 
 def vehicle_setup(regression_flag, ducted_fan_type):
+    ospath                                = os.path.abspath(__file__)
+    separator                             = os.path.sep
+    rel_path                              = os.path.dirname(ospath) + separator + 'Airfoils'+ separator
 
     # ------------------------------------------------------------------
     #   Initialize the Vehicle
@@ -32,13 +33,14 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     #   Vehicle-level Properties
     # ------------------------------------------------------------------    
     # mass properties
-    vehicle.mass_properties.max_takeoff   = 227  
-    vehicle.mass_properties.takeoff       = 227  
-    vehicle.mass_properties.max_zero_fuel = 227 
-    vehicle.mass_properties.cargo         = 0.0 
+    vehicle.mass_properties.max_takeoff               = 227  
+    vehicle.mass_properties.takeoff                   = 227  
+    vehicle.mass_properties.max_zero_fuel             = 227 
+    vehicle.mass_properties.cargo                     = 0.0 
     vehicle.flight_envelope.design_mach_number        = 0.12
     vehicle.flight_envelope.design_range              = 5000
     vehicle.flight_envelope.design_dynamic_pressure   = 854.5 
+    vehicle.number_of_passengers                      = 1
 
     # envelope properties
     vehicle.flight_envelope.ultimate_load = 2.5
@@ -53,7 +55,7 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     # ------------------------------------------------------------------        
     #   Main Wing
     # ------------------------------------------------------------------ 
-    wing                                  = RCAIDE.Library.Components.Wings.Main_Wing()
+    wing                                  = RCAIDE.Library.Components.Wings.Blended_Wing_Body()
     wing.tag                              = 'main_wing' 
     wing.aspect_ratio                     = 4.1
     wing.sweeps.quarter_chord             = 33. * Units.deg
@@ -70,11 +72,22 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     wing.origin                           = [[0,0,0]]
     wing.aerodynamic_center               = [0,0,0] 
     wing.vertical                         = False
-    wing.symmetric                        = True
+    wing.xz_plane_symmetric               = True
     wing.high_lift                        = True 
     wing.dynamic_pressure_ratio           = 1.0
+
+    cabin                                              = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
+    cabin.origin                                       = [[0.05, 0, 0]]
     
-    segment = RCAIDE.Library.Components.Wings.Segments.Segment() 
+    economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
+    economy_class.number_of_seats_abrest              = 1
+    economy_class.number_of_rows                      = 1
+    economy_class.galley_lavatory_percent_x_locations = [0,1.0]       
+    economy_class.type_A_exit_percent_x_locations     = [0, 1.0]
+    cabin.append_cabin_class(economy_class)
+    wing.append_cabin(cabin)  
+    
+    segment = RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment()
     segment.tag                   = 'section_1'
     segment.percent_span_location = 0.0
     segment.twist                 = 3. * Units.deg
@@ -82,9 +95,12 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     segment.dihedral_outboard     = 0. * Units.degrees
     segment.sweeps.quarter_chord  = 40.0 * Units.degrees
     segment.thickness_to_chord    = 0.165 
+    airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
+    airfoil.coordinate_file               = rel_path + 's1016.txt' 
+    segment.append_airfoil(airfoil )
     wing.append_segment(segment)
     
-    segment = RCAIDE.Library.Components.Wings.Segments.Segment()
+    segment = RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment()
     segment.tag                      = 'section_2'
     segment.percent_span_location    = 0.052
     segment.twist                    = 3. * Units.deg
@@ -92,9 +108,12 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     segment.dihedral_outboard        = 0.   * Units.degrees
     segment.sweeps.quarter_chord     = 52.5 * Units.degrees
     segment.thickness_to_chord       = 0.167 
+    airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
+    airfoil.coordinate_file               = rel_path + 's1016.txt' 
+    segment.append_airfoil(airfoil )
     wing.append_segment(segment)
 
-    segment = RCAIDE.Library.Components.Wings.Segments.Segment()
+    segment = RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment()
     segment.tag                      = 'section_3'
     segment.percent_span_location    = 0.138
     segment.twist                    = 0. * Units.deg
@@ -102,9 +121,12 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     segment.dihedral_outboard        = 1.85 * Units.degrees
     segment.sweeps.quarter_chord     = 36.9 * Units.degrees  
     segment.thickness_to_chord       = 0.171 
+    airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
+    airfoil.coordinate_file               = rel_path + 's1016.txt' 
+    segment.append_airfoil(airfoil )
     wing.append_segment(segment)
     
-    segment = RCAIDE.Library.Components.Wings.Segments.Segment()
+    segment = RCAIDE.Library.Components.Wings.Segments.Blended_Wing_Body_Fuselage_Segment()
     segment.tag                      = 'section_4'
     segment.percent_span_location    = 0.221
     segment.twist                    = 2.5 * Units.deg
@@ -112,6 +134,9 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     segment.dihedral_outboard        = 1.85 * Units.degrees
     segment.sweeps.quarter_chord     = 30.4 * Units.degrees    
     segment.thickness_to_chord       = 0.175 
+    airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
+    airfoil.coordinate_file               = rel_path + 's1016.txt' 
+    segment.append_airfoil(airfoil )
     wing.append_segment(segment)
     
     segment = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -122,6 +147,9 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     segment.dihedral_outboard     = 1.85  * Units.degrees
     segment.sweeps.quarter_chord  = 30.85 * Units.degrees
     segment.thickness_to_chord    = 0.118
+    airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
+    airfoil.coordinate_file               = rel_path + 's1016.txt' 
+    segment.append_airfoil(airfoil )
     wing.append_segment(segment)
     
     segment = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -132,6 +160,9 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     segment.dihedral_outboard     = 1.85 * Units.degrees
     segment.sweeps.quarter_chord  = 34.3 * Units.degrees
     segment.thickness_to_chord    = 0.10
+    airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
+    airfoil.coordinate_file               = rel_path + 's1016.txt' 
+    segment.append_airfoil(airfoil )
     wing.append_segment(segment)
      
     segment = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -142,17 +173,13 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     segment.dihedral_outboard     = 0. * Units.degrees
     segment.sweeps.quarter_chord  = 0. * Units.degrees
     segment.thickness_to_chord    = 0.10
-    wing.append_segment(segment)
-    
-    # Fill out more segment properties automatically
-    wing = segment_properties(wing)        
+    airfoil                               = RCAIDE.Library.Components.Airfoils.Airfoil()
+    airfoil.coordinate_file               = rel_path + 's1016.txt' 
+    segment.append_airfoil(airfoil )
+    wing.append_segment(segment)      
 
     # add to vehicle
-    vehicle.append_component(wing)
-  
-    fuselage = RCAIDE.Library.Components.Fuselages.Blended_Wing_Body_Fuselage()  
-    fuselage.lengths.total                      = 6.4 
-    vehicle.append_component(fuselage)    
+    vehicle.append_component(wing) 
     
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Electric Network
@@ -172,15 +199,16 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     bat.tag                                                = 'li_ion_battery'
     bat.electrical_configuration.series                    = 40  
     bat.electrical_configuration.parallel                  = 10 
-    bat.geometrtic_configuration.normal_count              = 40  
-    bat.geometrtic_configuration.parallel_count            = 10
+    bat.geometric_configuration.normal_count              = 40  
+    bat.geometric_configuration.parallel_count            = 10
     bus.battery_modules.append(bat)      
     bus.initialize_bus_properties()
     
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Starboard Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------   
-    center_propulsor                              = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan()  
+    center_propulsor                              = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan()
+    center_propulsor.wing_mounted                 = False
     center_propulsor.tag                          = 'center_propulsor' 
   
     # Electronic Speed Controller       
@@ -193,7 +221,7 @@ def vehicle_setup(regression_flag, ducted_fan_type):
 
     # Ducted_fan                            
     ducted_fan                                   = RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan()
-    ducted_fan.tag                               = 'ducted_fan'
+    ducted_fan.tag                               = 'ducted_fan' 
     ducted_fan.number_of_rotor_blades            = 12 
     ducted_fan.number_of_radial_stations         = 20
     ducted_fan.tip_radius                        = 6 * Units.inches  / 2
@@ -277,21 +305,12 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     # append propulsor to network
     net.propulsors.append(port_propulsor)     
 
-
-    #------------------------------------------------------------------------------------------------------------------------------------           
-    # Payload 
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    payload                      = RCAIDE.Library.Components.Payloads.Payload()
-    payload.power_draw           = 10. # Watts
-    payload.mass_properties.mass = 1.0 * Units.kg
-    bus.payload                  = payload
-
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Avionics
     #------------------------------------------------------------------------------------------------------------------------------------  
     avionics                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.power_draw          = 20. # Watts
-    bus.avionics                 = avionics   
+    avionics.power_draw          = 30. # Watts
+    net.systems.append(avionics)   
 
     #------------------------------------------------------------------------------------------------------------------------------------   
     # Assign propulsors to bus       

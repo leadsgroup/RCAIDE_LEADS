@@ -114,12 +114,12 @@ def compute_power_from_throttle(engine,conditions):
     torque = P/omega
     
     # Determine fuel flow rate and cap at 0
-    fuel_flow_rate  = np.fmax(m_dot,np.zeros_like(altitude)) 
+    m_dot_fuel  = np.fmax(m_dot,np.zeros_like(altitude)) 
     
     # Store results 
     engine_conditions.power                           = P
     engine_conditions.power_specific_fuel_consumption = PSFC
-    engine_conditions.fuel_flow_rate                  = fuel_flow_rate
+    engine_conditions.fuel_mass_flow_rate             = m_dot_fuel
     engine_conditions.torque                          = torque
 
     return

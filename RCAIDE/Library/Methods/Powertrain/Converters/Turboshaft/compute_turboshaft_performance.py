@@ -201,8 +201,7 @@ def compute_turboshaft_performance(turboshaft,state,fuel_line=None,bus=None):
     lpt_conditions.inputs.mach_number                         = hpt_conditions.outputs.mach_number  
     low_pressure_turbine.working_fluid                        = high_pressure_turbine.working_fluid    
     lpt_conditions.inputs.compressor                          = Data()
-    lpt_conditions.inputs.compressor.work_done                = 0.0
-    lpt_conditions.inputs.compressor.external_shaft_work_done = 0.0
+    lpt_conditions.inputs.compressor.work_done                = 0.0 
     lpt_conditions.inputs.fuel_to_air_ratio                   = combustor_conditions.outputs.fuel_to_air_ratio 
     lpt_conditions.inputs.bypass_ratio                        = 0.0
     lpt_conditions.inputs.fan                                 = Data()

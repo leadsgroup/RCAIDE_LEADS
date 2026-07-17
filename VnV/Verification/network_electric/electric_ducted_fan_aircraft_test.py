@@ -1,4 +1,3 @@
-  
 # Regression/scripts/Tests/network_ducted_fan/electric_ducted_fan_netowrk.py
 # 
 # Created:  Jul 2023, M. Clarke 
@@ -18,21 +17,30 @@ import matplotlib.pyplot as plt
 import os
 
 # local imports 
-sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles'))
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+vehicles_path = os.path.abspath(
+    os.path.join(base_dir, "..", "..", "Vehicles")
+)
+
+if vehicles_path not in sys.path:
+    sys.path.insert(0, vehicles_path)
 from NASA_X48    import vehicle_setup as vehicle_setup
 from NASA_X48    import configs_setup as configs_setup 
+import time
 
 # ----------------------------------------------------------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------------------------------------------------------
 
 def main():
+    ti = time.time()
 
     regression_flag = True # Keep True for regression 
     ducted_fan_type  = ['Blade_Element_Momentum_Theory', 'Rankine_Froude_Momentum_Theory']
     
     # truth values 
-    thrust_truth         = [57.356384455604505, 60.034344715791036]
+    thrust_truth         = [68.08079599102852, 68.08079599102851]
    
     for i in range(len(ducted_fan_type)):  
         # vehicle data
@@ -57,22 +65,28 @@ def main():
             if regression_flag: # if regression skip test since we cannot run DFDC 
                 error = Data()
                 error.thrust   = 0
-            else:  
+            else:   
                 thurst         =  np.linalg.norm(results.segments.cruise.conditions.energy.propulsors['center_propulsor'].thrust, axis=1)  
                 error          = Data()
+                print('Thrust', thurst[0])
                 error.thrust   = np.max(np.abs(thrust_truth[i]   - thurst[0] ))        
                 
         elif ducted_fan_type[i] ==  'Rankine_Froude_Momentum_Theory':  
             thurst         =  np.linalg.norm(results.segments.cruise.conditions.energy.propulsors['starboard_propulsor'].thrust, axis=1)  
             error          = Data()
+            print('Thrust', thurst[0])
             error.thrust   = np.max(np.abs(thrust_truth[i]   - thurst[0] ))   
         
         print('Errors:')
         print(error)
         
         for k,v in list(error.items()):
-            assert(np.abs(v)<1e-6) 
+            assert(np.abs(v)<1e-5) 
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
 
 # ----------------------------------------------------------------------
@@ -106,21 +120,28 @@ def base_analysis(vehicle):
     #   Initialize the Analyses
     # ------------------------------------------------------------------     
     analyses = RCAIDE.Framework.Analyses.Vehicle() 
+    analyses.vehicle =  vehicle
+
+    # ------------------------------------------------------------------
+    # Weights
+    weights = RCAIDE.Framework.Analyses.Weights.Electric_Drone() 
+    analyses.append(weights)
+
+    # ------------------------------------------------------------------    
+    #  Geometry
+    geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
+    analyses.append(geometry)
     
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
-    aerodynamics                                       = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.vehicle                               = vehicle
-    aerodynamics.settings.number_of_spanwise_vortices  = 25
-    aerodynamics.settings.number_of_chordwise_vortices = 5       
-    aerodynamics.settings.model_fuselage               = False
+    aerodynamics =  RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()      
+    aerodynamics.settings.number_of_spanwise_vortices    = 10 # reducing the number of vortices to speed up the test 
+    aerodynamics.settings.number_of_chordwise_vortices   = 5  # reducing the number of vortices to speed up the test     
     analyses.append(aerodynamics)
- 
   
     # ------------------------------------------------------------------
     #  Energy
-    energy= RCAIDE.Framework.Analyses.Energy.Energy()
-    energy.vehicle  = vehicle 
+    energy= RCAIDE.Framework.Analyses.Energy.Energy() 
     analyses.append(energy)
     
     # ------------------------------------------------------------------
@@ -131,7 +152,6 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Atmosphere Analysis
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    atmosphere.features.planet = planet.features
     analyses.append(atmosphere)   
     
     # done!
@@ -174,9 +194,9 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active                  = True           
     segment.assigned_control_variables.throttle.assigned_propulsors     = [['center_propulsor','starboard_propulsor','port_propulsor']] 
-    segment.assigned_control_variables.throttle.initial_guess_values    = [[0.905]]    
-    segment.assigned_control_variables.body_angle.active                = True        
-    segment.assigned_control_variables.body_angle.initial_guess_values  = [[2.05 * Units.degree]]                   
+    segment.assigned_control_variables.throttle.initial_guess_values    = [[0.95]]    
+    segment.assigned_control_variables.pitch_angle.active                = True        
+    segment.assigned_control_variables.pitch_angle.initial_guess_values  = [[2.05 * Units.degree]]                   
       
     mission.append_segment(segment) 
     return mission

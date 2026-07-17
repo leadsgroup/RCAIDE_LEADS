@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Propulsors/Turboelectric_Generator.py
+# RCAIDE/Library/Components/Converters/Turboelectric_Generator.py
 # 
 #  
 # Created:  Jan 2025, M. Clarke 
@@ -61,7 +61,7 @@ class Turboelectric_Generator(Converter):
 
     def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None): 
         """
-        Appends operating conditions to the segment.
+        Appends operating conditions of the segment.
         """  
         append_turboelectric_generator_conditions(self,segment,energy_conditions) 
         return
@@ -73,6 +73,6 @@ class Turboelectric_Generator(Converter):
         P_mech,P_elec,stored_results_flag,stored_propulsor_tag =  compute_turboelectric_generator_performance(self,state,fuel_line, bus)
         return P_mech,P_elec,stored_results_flag,stored_propulsor_tag
     
-    def reuse_stored_data(turboelectric_generator,state,stored_propulsor_tag):
-        power  = reuse_stored_turboelectric_generator_data(turboelectric_generator,state,stored_propulsor_tag)
-        return power 
+    def reuse_stored_data(self,state, network,stored_conveter_tag,fuel_line, bus):
+        P_mech,P_elec  = reuse_stored_turboelectric_generator_data(self,state,network,stored_conveter_tag,fuel_line, bus)
+        return  P_mech,P_elec 

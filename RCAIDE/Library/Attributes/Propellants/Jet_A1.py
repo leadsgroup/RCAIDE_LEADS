@@ -143,6 +143,8 @@ class Jet_A1(Propellant):
         self.temperatures.flash        = 311.15                           # K
         self.temperatures.autoignition = 483.15                           # K
         self.temperatures.freeze       = 226.15                           # K
+        self.temperatures.boiling      = 0.0                              # K 
+        self.stoichiometric_fuel_to_air= 0.068
         self.temperatures.boiling      = 0.0                              # K
 
         self.stoichiometric_fuel_air_ratio = 0.068          # [-] Stoichiometric Fuel to Air ratio
@@ -161,14 +163,16 @@ class Jet_A1(Propellant):
         
         self.emission_indices.Production  = 0.4656   # kg/kg Greet 
         self.emission_indices.CO2         = 3.16    # kg/kg  fuel
+        self.emission_indices.CO          = 0.00201 # kg/kg  fuel
         self.emission_indices.H2O         = 1.23    # kg/kg  fuel 
-        self.emission_indices.SO2         = 0.0012  # kg/kg  fuel
-        self.emission_indices.NOx         = 0.01514 # kg/kg  fuel
-        self.emission_indices.Soot        = 0.0012  # kg/kg  fuel
+        self.emission_indices.SO2         = 0.0012   # kg/kg  fuel  (2 × ~600 ppm sulfur content)
+        self.emission_indices.NOx         = 0.01514  # kg/kg  fuel
+        self.emission_indices.Soot        = 0.000025 # kg/kg  fuel  (0.025 g/kg, Lee et al. 2021 Table 2)
 
         self.global_warming_potential_100.CO2       = 1     # CO2e/kg  
         self.global_warming_potential_100.H2O       = 0.06  # CO2e/kg  
         self.global_warming_potential_100.SO2       = -226  # CO2e/kg  
+        self.global_warming_potential_100.CO        = 1     # CO2e/kg  
         self.global_warming_potential_100.NOx       = 52    # CO2e/kg  
         self.global_warming_potential_100.Soot      = 1166  # CO2e/kg    
-        self.global_warming_potential_100.Contrails = 11 # kg/CO2e/km  
+        self.global_warming_potential_100.Contrails = 11    # kg/CO2e/km  

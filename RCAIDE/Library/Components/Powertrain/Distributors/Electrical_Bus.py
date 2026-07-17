@@ -12,6 +12,8 @@ import RCAIDE
 from RCAIDE.Library.Components                                 import Component
 from RCAIDE.Library.Components.Component                       import Container
 from RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus import *
+from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_distributor_moment_of_inertia import *
+from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_distributor_center_of_gravity import * 
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -33,10 +35,7 @@ class Electrical_Bus(Component):
         List of propulsion systems powered by this bus
         
     avionics : Component
-        Aircraft avionics system
-        
-    payload : Component
-        Aircraft payload system
+        Aircraft avionics system 
         
     identical_battery_modules : bool
         Flag indicating if all battery modules are identical (default: True)
@@ -94,11 +93,9 @@ class Electrical_Bus(Component):
         self.tag                                    = 'bus' 
         self.battery_modules                        = Container()
         self.fuel_cell_stacks                       = Container()
-        self.cryogenic_tanks                        = Container()
+        self.fuel_tanks                             = Container()
         self.assigned_propulsors                    = []
         self.assigned_converters                    = [] 
-        self.avionics                               = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-        self.payload                                = RCAIDE.Library.Components.Payloads.Payload()         
         self.identical_battery_modules              = True      
         self.identical_fuel_cell_stacks             = True  
         self.active                                 = True
@@ -106,7 +103,8 @@ class Electrical_Bus(Component):
         self.voltage                                = 0.0 
         self.power_split_ratio                      = 1.0
         self.nominal_capacity                       = 0.0
-        self.charging_c_rate                        = 1.0 
+        self.maximum_energy                         = 0.0
+        self.charging_c_rate                        = 1.0
         self.battery_module_electric_configuration  = "Series"
         self.fuel_cell_stack_electric_configuration = "Series"
         
@@ -122,7 +120,7 @@ class Electrical_Bus(Component):
         append_bus_conditions(self, segment)
         return
         
-    def append_segment_conditions(self, conditions, segment):
+    def append_segment_conditions(self, segment):
         """
         Append segment-specific conditions to the bus
         
@@ -133,7 +131,7 @@ class Electrical_Bus(Component):
         segment : Segment
             Flight segment data
         """
-        append_bus_segment_conditions(self, conditions, segment)
+        append_bus_segment_conditions(self,segment)
         return    
     
     def initialize_bus_properties(self):
@@ -161,3 +159,31 @@ class Electrical_Bus(Component):
         """
         compute_bus_conditions(self,state,t_idx, delta_t)
         return    
+
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
+        """
+        Computes the moment of inertia tensor for the fuel line.
+
+        Parameters
+        ----------
+        center_of_gravity : list, optional
+            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]] 
+
+        See Also
+        --------
+        RCAIDE.Library.Methods.weights.vehicle.moments_of_inertia.compute_fuselage_moment_of_inertia
+            Implementation of the moment of inertia calculation
+        """  
+        return
+    
+
+    def compute_center_of_gravity(self,vehicle): 
+        """
+        Computes the center of gravity for the distributor. 
+
+        See Also
+        --------
+        RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_fuselage_center_of_gravity
+            Implementation of the moment of inertia calculation
+        """ 
+        return

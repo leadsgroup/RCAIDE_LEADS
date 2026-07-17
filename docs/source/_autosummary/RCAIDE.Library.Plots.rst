@@ -33,12 +33,12 @@ Plots
    Aerodynamics
    Common
    Emissions
-   Energy
    Geometry
+   Mass_Properties
    Mission
    Noise
+   Performance
    Stability
    Thermal_Management
    Topography
-   Weights
 

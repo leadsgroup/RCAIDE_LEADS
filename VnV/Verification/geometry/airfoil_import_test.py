@@ -13,26 +13,25 @@ from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry, com
 from RCAIDE.Library.Plots import *
 
 import os
-import sys
 import numpy as np
 import matplotlib.pyplot as plt
-
-#sys.path.append(os.path.join( os.path.split(os.path.split(sys.path[0])[0])[0], 'Vehicles' + os.path.sep + 'Airfoils')) 
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 
 def main():    
+    ti = time.time()
     # ----------------------------------------------------------------------------------------------------------------
     #  Define airfoil geometry and polar files 
     # ---------------------------------------------------------------------------------------------------------------- 
     separator     = os.path.sep
-    if  os.path.split(sys.path[0])[1] == 'geometry':
-        airfoils_path =  os.path.split(os.path.split(sys.path[0])[0])[0] + separator +  'Vehicles' + os.path.sep + 'Airfoils' + os.path.sep
-    else:
-        airfoils_path = sys.path[0] + separator +  'Vehicles' + os.path.sep + 'Airfoils' + os.path.sep
-    airfoil_geometry_with_selig =  [airfoils_path + 'NACA_4412.txt','airfoil_geometry_2.txt', 'airfoil_geometry_2-selig.txt']        
+    test_dir      = os.path.dirname(os.path.abspath(__file__)) + separator
+    airfoils_path = os.path.abspath(
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "Vehicles", "Airfoils")
+    ) + separator
+    airfoil_geometry_with_selig =  [airfoils_path + 'NACA_4412.txt', test_dir + 'airfoil_geometry_2.txt', test_dir + 'airfoil_geometry_2-selig.txt']
     airfoil_geometry_files      = airfoils_path + 'NACA_4412.txt'
     airfoil_polar_files         =  [airfoils_path + 'Polars' + separator + 'NACA_4412_polar_Re_50000.txt',
                                      airfoils_path + 'Polars' + separator + 'NACA_4412_polar_Re_100000.txt',
@@ -58,7 +57,7 @@ def main():
     airfoil_geometry_4  = import_airfoil_geometry(airfoil_geometry_with_selig[2])
 
     # Actual t/c values  
-    airfoil_tc_actual = [0.12031526401402462, 0.11177619218206997, 0.11177619218206997] 
+    airfoil_tc_actual = [0.12019145780605714, 0.11060080697249712, 0.11060080697249712] 
 
     # Check t/c calculation against previously calculated values  
     assert(np.abs(airfoil_tc_actual[0]-airfoil_geometry_2.thickness_to_chord) < 1E-8 ) 
@@ -72,10 +71,14 @@ def main():
     # Multiple meshes use too much memory on AppVeyor 
     A_MASK_1 = convert_airfoil_to_meshgrid(airfoil_geometry_1) 
 
-    assert (len(np.where(A_MASK_1)[0]) == 32313) 
+    assert (len(np.where(A_MASK_1)[0]) == 811) 
 
     plot_airfoil(airfoil_geometry_with_selig[1])
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return  
 
 if __name__ == '__main__': 

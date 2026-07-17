@@ -98,7 +98,7 @@ def residual_altitude(segment):
     Inputs:
     segment.state.conditions.frames.inertial.total_force_vector   [Newtons]
     segment.state.conditions.frames.inertial.acceleration_vector  [meter/second^2]
-    segment.state.conditions.weights.total_mass                   [kilogram]
+    segment.state.conditions.weights.vehicle.mass                 [kilogram]
     segment.state.conditions.freestream.altitude                  [meter]
 
     Outputs:
