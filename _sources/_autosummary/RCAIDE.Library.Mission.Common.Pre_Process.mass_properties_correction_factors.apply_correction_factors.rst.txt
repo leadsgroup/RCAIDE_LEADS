@@ -1,0 +1,6 @@
+RCAIDE.Library.Mission.Common.Pre\_Process.mass\_properties\_correction\_factors.apply\_correction\_factors
+===========================================================================================================
+
+.. currentmodule:: RCAIDE.Library.Mission.Common.Pre_Process.mass_properties_correction_factors
+
+.. autofunction:: apply_correction_factors

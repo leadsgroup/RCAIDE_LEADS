@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Methods/Performance/generate_V_n_diagram';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Methods/Performance/generate_V_n_diagram.html" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script src="../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -377,7 +396,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for RCAIDE.Library.Methods.Performance.generate_V_n_diagram</h1><div class="highlight"><pre>
-<span></span> <span class="c1"># generate_V_n_diagram.py</span>
+<span></span><span class="c1"># RCAIDE/Library/Methods/Performance/generate_V_n_diagram.py</span>
 <span class="c1">#</span>
 <span class="c1"># Created:  Nov 2018, S. Karpuk</span>
 <span class="c1"># Modified:</span>
@@ -388,20 +407,20 @@
 
 <span class="c1"># RCAIDE Imports</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Units</span> 
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Mission.Common</span><span class="w">  </span><span class="kn">import</span> <span class="n">Results</span>  
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span><span class="p">,</span> <span class="n">Units</span>  
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Aerodynamics.Common.Drag</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Aerodynamics.Common.Lift</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Mission.Common.Pre_Process</span><span class="w">  </span><span class="kn">import</span> <span class="n">geometry_preprocess_routine</span> 
 
 <span class="c1"># package imports</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span> 
 
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
 <span class="c1">#  Compute a V-n diagram</span>
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
 <div class="viewcode-block" id="generate_V_n_diagram">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Methods.Performance.generate_V_n_diagram.html#RCAIDE.Library.Methods.Performance.generate_V_n_diagram.generate_V_n_diagram">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">generate_V_n_diagram</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span><span class="n">analyses</span><span class="p">,</span><span class="n">altitude</span><span class="p">,</span><span class="n">delta_ISA</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_V_n_diagram</span><span class="p">(</span><span class="n">analyses</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">altitude</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span><span class="n">delta_ISA</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes a V-n (velocity-load factor) diagram for an aircraft according to FAR requirements.</span>
@@ -483,30 +502,34 @@
 <span class="sd">    [3] Gudmundsson, S. (2022). General Aviation Aircraft Design: Applied Methods and procedures. Elsevier. </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="n">weight</span> <span class="o">=</span>  <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span>
- 
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">analyses</span><span class="p">)</span> <span class="o">!=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Vehicle</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;RCAIDE analyses must be defined&#39;</span><span class="p">)</span>
+    <span class="c1"># ---------------------------------------------- </span>
+    <span class="c1"># Preprocess Geometry </span>
+    <span class="c1"># ---------------------------------------------- </span>
+    <span class="n">geometry_preprocess_routine</span><span class="p">(</span><span class="n">analyses</span><span class="p">)</span>
+
     <span class="c1"># ----------------------------------------------</span>
     <span class="c1"># Unpack</span>
     <span class="c1"># ---------------------------------------------- </span>
-    <span class="n">FAR_part_number</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">FAR_part_number</span>
-    <span class="n">atmo</span>            <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">atmosphere</span>
-    <span class="n">Mc</span>              <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">design_mach_number</span>
-
-    <span class="k">for</span> <span class="n">wing</span> <span class="ow">in</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">wings</span><span class="p">:</span> 
-        <span class="n">reference_area</span>  <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">reference_area</span> 
-        <span class="n">Cmac</span>            <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_aerodynamic</span> 
-        <span class="n">pos_limit_load</span>  <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">positive_limit_load</span>
-        <span class="n">neg_limit_load</span>  <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">positive_limit_load</span>
-
-    <span class="n">category_tag</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">category</span>
+    <span class="n">vehicle</span>                  <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span>
+    <span class="n">atmo</span>                     <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">atmosphere</span>
+    <span class="n">weight</span>                   <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span> 
+    <span class="n">FAR_part_number</span>          <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">FAR_part_number</span>
+    <span class="n">Mc</span>                       <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">design_mach_number</span>
+    <span class="n">reference_area</span>           <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">reference_area</span> 
+    <span class="n">Cmac</span>                     <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">reference_chord</span> 
+    <span class="n">pos_limit_load</span>           <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">positive_limit_load</span>
+    <span class="n">neg_limit_load</span>           <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">negative_limit_load</span>
+    <span class="n">category_tag</span>             <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">category</span>
+    <span class="n">minimum_lift_coefficient</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">minimum_lift_coefficient</span>
+ 
     
     <span class="c1"># ----------------------------------------------</span>
     <span class="c1"># Computing atmospheric conditions</span>
     <span class="c1"># ----------------------------------------------</span>
     <span class="n">atmo_values</span>       <span class="o">=</span> <span class="n">atmo</span><span class="o">.</span><span class="n">compute_values</span><span class="p">(</span><span class="n">altitude</span><span class="p">,</span><span class="n">delta_ISA</span><span class="p">)</span>
-    <span class="n">SL_atmo_values</span>    <span class="o">=</span> <span class="n">atmo</span><span class="o">.</span><span class="n">compute_values</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">delta_ISA</span><span class="p">)</span>
-    <span class="n">conditions</span>        <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
-
+    <span class="n">SL_atmo_values</span>    <span class="o">=</span> <span class="n">atmo</span><span class="o">.</span><span class="n">compute_values</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">delta_ISA</span><span class="p">)</span> 
     <span class="n">rho</span>               <span class="o">=</span> <span class="n">atmo_values</span><span class="o">.</span><span class="n">density</span>
     <span class="n">sea_level_rho</span>     <span class="o">=</span> <span class="n">SL_atmo_values</span><span class="o">.</span><span class="n">density</span>
     <span class="n">sea_level_gravity</span> <span class="o">=</span> <span class="n">atmo</span><span class="o">.</span><span class="n">planet</span><span class="o">.</span><span class="n">sea_level_gravity</span>
@@ -515,9 +538,9 @@
     <span class="c1"># ------------------------------</span>
     <span class="c1"># Computing lift-curve slope</span>
     <span class="c1"># ------------------------------ </span>
-    <span class="n">results</span> <span class="o">=</span>  <span class="n">evalaute_aircraft</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span><span class="n">altitude</span><span class="p">,</span><span class="n">Vc</span><span class="p">)</span> 
+    <span class="n">results</span> <span class="o">=</span>  <span class="n">evalaute_aircraft</span><span class="p">(</span><span class="n">analyses</span><span class="p">,</span><span class="n">altitude</span><span class="p">,</span><span class="n">Vc</span><span class="p">)</span>
     <span class="n">CLa</span>     <span class="o">=</span>  <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">static_stability</span><span class="o">.</span><span class="n">derivatives</span><span class="o">.</span><span class="n">Clift_alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> 
-
+ 
     <span class="c1"># -----------------------------------------------------------</span>
     <span class="c1"># Determining vehicle minimum and maximum lift coefficients</span>
     <span class="c1"># -----------------------------------------------------------</span>
@@ -530,7 +553,7 @@
         <span class="n">minimum_lift_coefficient</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">minimum_lift_coefficient</span>
     <span class="k">else</span><span class="p">:</span> 
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Minimum lift coefficient not specified.&quot;</span><span class="p">)</span>
-             
+    
     <span class="c1"># -----------------------------------------------------------------------------</span>
     <span class="c1"># Convert all terms to English (Used for FAR) and remove elements from arrays</span>
     <span class="c1"># -----------------------------------------------------------------------------</span>
@@ -641,7 +664,10 @@
     <span class="n">V_n_data</span><span class="o">.</span><span class="n">maximum_lift_coefficient</span> <span class="o">=</span> <span class="n">maximum_lift_coefficient</span>
     <span class="n">V_n_data</span><span class="o">.</span><span class="n">minimum_lift_coefficient</span> <span class="o">=</span> <span class="n">minimum_lift_coefficient</span>
     <span class="n">V_n_data</span><span class="o">.</span><span class="n">positive_limit_load</span>      <span class="o">=</span> <span class="n">load_factors_pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-    <span class="n">V_n_data</span><span class="o">.</span><span class="n">negative_limit_load</span>      <span class="o">=</span> <span class="n">load_factors_neg</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">V_n_data</span><span class="o">.</span><span class="n">negative_limit_load</span>      <span class="o">=</span> <span class="n">load_factors_neg</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> 
+    <span class="n">V_n_data</span><span class="o">.</span><span class="n">tag</span>                      <span class="o">=</span>  <span class="n">vehicle</span><span class="o">.</span><span class="n">tag</span>  
+    <span class="n">V_n_data</span><span class="o">.</span><span class="n">category</span>                 <span class="o">=</span>  <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">category</span>  
+    <span class="n">V_n_data</span><span class="o">.</span><span class="n">FAR_part_number</span>          <span class="o">=</span>  <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">FAR_part_number</span>   
     
     <span class="c1"># --------------------------------------------------</span>
     <span class="c1"># Computing critical speeds (Va, Vc, Vb, Vd, Vs1)</span>
@@ -789,21 +815,19 @@
     <span class="c1"># Post-processing the V-n diagram</span>
     <span class="c1"># ---------------------------------------------- </span>
     <span class="n">V_n_data</span><span class="o">.</span><span class="n">positive_limit_load</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">V_n_data</span><span class="o">.</span><span class="n">load_factors</span><span class="o">.</span><span class="n">positive</span><span class="p">)</span>
-    <span class="n">V_n_data</span><span class="o">.</span><span class="n">negative_limit_load</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">V_n_data</span><span class="o">.</span><span class="n">load_factors</span><span class="o">.</span><span class="n">negative</span><span class="p">)</span> 
-    <span class="n">post_processing</span><span class="p">(</span><span class="n">category_tag</span><span class="p">,</span> <span class="n">Uref_rough</span><span class="p">,</span> <span class="n">Uref_cruise</span><span class="p">,</span> <span class="n">Uref_dive</span><span class="p">,</span> <span class="n">V_n_data</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">)</span> 
+    <span class="n">V_n_data</span><span class="o">.</span><span class="n">negative_limit_load</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">V_n_data</span><span class="o">.</span><span class="n">load_factors</span><span class="o">.</span><span class="n">negative</span><span class="p">)</span>
+    
+    <span class="n">V_n_data</span><span class="o">.</span><span class="n">category_tag</span> <span class="o">=</span> <span class="n">category_tag</span>
+    <span class="n">V_n_data</span><span class="o">.</span><span class="n">Uref_rough</span>   <span class="o">=</span> <span class="n">Uref_rough</span>  
+    <span class="n">V_n_data</span><span class="o">.</span><span class="n">Uref_cruise</span>  <span class="o">=</span> <span class="n">Uref_cruise</span>
+    <span class="n">V_n_data</span><span class="o">.</span><span class="n">Uref_dive</span>    <span class="o">=</span> <span class="n">Uref_dive</span> 
     <span class="k">return</span> <span class="n">V_n_data</span></div>
 
 
       
 <div class="viewcode-block" id="evalaute_aircraft">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Methods.Performance.generate_V_n_diagram.html#RCAIDE.Library.Methods.Performance.generate_V_n_diagram.evalaute_aircraft">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">evalaute_aircraft</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span><span class="n">altitude</span><span class="p">,</span><span class="n">Vc</span><span class="p">):</span> 
-    
-    <span class="c1"># Set up vehicle configs</span>
-    <span class="n">configs</span>  <span class="o">=</span> <span class="n">configs_setup</span><span class="p">(</span><span class="n">vehicle</span><span class="p">)</span>
-
-    <span class="c1"># create analyses</span>
-    <span class="n">analyses</span> <span class="o">=</span> <span class="n">analyses_setup</span><span class="p">(</span><span class="n">configs</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">evalaute_aircraft</span><span class="p">(</span><span class="n">analyses</span><span class="p">,</span><span class="n">altitude</span><span class="p">,</span><span class="n">Vc</span><span class="p">):</span> 
 
     <span class="c1"># mission analyses</span>
     <span class="n">mission</span>  <span class="o">=</span> <span class="n">base_mission_setup</span><span class="p">(</span><span class="n">analyses</span><span class="p">,</span><span class="n">altitude</span><span class="p">,</span><span class="n">Vc</span><span class="p">)</span> 
@@ -814,91 +838,12 @@
     <span class="c1"># mission analysis </span>
     <span class="n">results</span> <span class="o">=</span> <span class="n">missions</span><span class="o">.</span><span class="n">base_mission</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span> 
 
-    <span class="k">return</span> <span class="n">results</span></div>
-
- 
-<div class="viewcode-block" id="analyses_setup">
-<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Methods.Performance.generate_V_n_diagram.html#RCAIDE.Library.Methods.Performance.generate_V_n_diagram.analyses_setup">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">analyses_setup</span><span class="p">(</span><span class="n">configs</span><span class="p">):</span>
-
-    <span class="n">analyses</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Analysis</span><span class="o">.</span><span class="n">Container</span><span class="p">()</span>
-
-    <span class="c1"># build a base analysis for each config</span>
-    <span class="k">for</span> <span class="n">tag</span><span class="p">,</span><span class="n">config</span> <span class="ow">in</span> <span class="n">configs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">analysis</span> <span class="o">=</span> <span class="n">base_analysis</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-        <span class="n">analyses</span><span class="p">[</span><span class="n">tag</span><span class="p">]</span> <span class="o">=</span> <span class="n">analysis</span>
-
-    <span class="k">return</span> <span class="n">analyses</span></div>
+    <span class="k">return</span> <span class="n">results</span> </div>
 
 
-<div class="viewcode-block" id="base_analysis">
-<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Methods.Performance.generate_V_n_diagram.html#RCAIDE.Library.Methods.Performance.generate_V_n_diagram.base_analysis">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">base_analysis</span><span class="p">(</span><span class="n">vehicle</span><span class="p">):</span>
-
-       <span class="c1"># ------------------------------------------------------------------</span>
-    <span class="c1">#   Initialize the Analyses</span>
-    <span class="c1"># ------------------------------------------------------------------     </span>
-    <span class="n">analyses</span>        <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Vehicle</span><span class="p">()</span> 
-
-    <span class="c1"># ------------------------------------------------------------------</span>
-    <span class="c1">#  Weights</span>
-    <span class="c1"># ------------------------------------------------------------------</span>
-    <span class="n">weights</span>         <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Weights</span><span class="o">.</span><span class="n">Conventional</span><span class="p">()</span>
-    <span class="n">weights</span><span class="o">.</span><span class="n">aircraft_type</span> <span class="o">=</span> <span class="s1">&#39;General_Aviation&#39;</span>
-    <span class="n">weights</span><span class="o">.</span><span class="n">vehicle</span> <span class="o">=</span> <span class="n">vehicle</span>
-    <span class="n">analyses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
-
-    <span class="c1"># ------------------------------------------------------------------</span>
-    <span class="c1">#  Aerodynamics Analysis</span>
-    <span class="c1"># ------------------------------------------------------------------</span>
-    <span class="n">aerodynamics</span>                                      <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Aerodynamics</span><span class="o">.</span><span class="n">Vortex_Lattice_Method</span><span class="p">()</span> 
-    <span class="n">aerodynamics</span><span class="o">.</span><span class="n">vehicle</span>                              <span class="o">=</span> <span class="n">vehicle</span>  
-    <span class="n">aerodynamics</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">use_surrogate</span>               <span class="o">=</span> <span class="kc">False</span> 
-    <span class="n">aerodynamics</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">trim_aircraft</span>               <span class="o">=</span> <span class="kc">False</span> 
-    <span class="n">analyses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">aerodynamics</span><span class="p">)</span>
-    
-    
-    <span class="c1"># ------------------------------------------------------------------</span>
-    <span class="c1">#  Energy</span>
-    <span class="c1"># ------------------------------------------------------------------</span>
-    <span class="n">energy</span>     <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Energy</span><span class="o">.</span><span class="n">Energy</span><span class="p">()</span>
-    <span class="n">energy</span><span class="o">.</span><span class="n">vehicle</span> <span class="o">=</span> <span class="n">vehicle</span>  
-    <span class="n">analyses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">energy</span><span class="p">)</span>
-
-    <span class="c1"># ------------------------------------------------------------------</span>
-    <span class="c1">#  Planet Analysis</span>
-    <span class="c1"># ------------------------------------------------------------------</span>
-    <span class="n">planet</span>     <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Planets</span><span class="o">.</span><span class="n">Earth</span><span class="p">()</span>
-    <span class="n">analyses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">planet</span><span class="p">)</span>
-
-    <span class="c1"># ------------------------------------------------------------------</span>
-    <span class="c1">#  Atmosphere Analysis</span>
-    <span class="c1"># ------------------------------------------------------------------</span>
-    <span class="n">atmosphere</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Atmospheric</span><span class="o">.</span><span class="n">US_Standard_1976</span><span class="p">()</span>
-    <span class="n">atmosphere</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">planet</span> <span class="o">=</span> <span class="n">planet</span><span class="o">.</span><span class="n">features</span>
-    <span class="n">analyses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atmosphere</span><span class="p">)</span>   
-
-    <span class="c1"># done!</span>
-    <span class="k">return</span> <span class="n">analyses</span></div>
-
-
-  
-<div class="viewcode-block" id="configs_setup">
-<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Methods.Performance.generate_V_n_diagram.html#RCAIDE.Library.Methods.Performance.generate_V_n_diagram.configs_setup">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">configs_setup</span><span class="p">(</span><span class="n">vehicle</span><span class="p">):</span> 
-    <span class="c1"># ------------------------------------------------------------------</span>
-    <span class="c1">#   Initialize Configurations</span>
-    <span class="c1"># ------------------------------------------------------------------ </span>
-    <span class="n">configs</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Configs</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">Container</span><span class="p">()</span> 
-    <span class="n">base_config</span>                                                       <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Configs</span><span class="o">.</span><span class="n">Config</span><span class="p">(</span><span class="n">vehicle</span><span class="p">)</span>
-    <span class="n">base_config</span><span class="o">.</span><span class="n">tag</span>                                                   <span class="o">=</span> <span class="s1">&#39;base&#39;</span>     
-    <span class="n">configs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">base_config</span><span class="p">)</span>  
-    <span class="k">return</span> <span class="n">configs</span></div>
-
- 
 <div class="viewcode-block" id="base_mission_setup">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Methods.Performance.generate_V_n_diagram.html#RCAIDE.Library.Methods.Performance.generate_V_n_diagram.base_mission_setup">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">base_mission_setup</span><span class="p">(</span><span class="n">analyses</span><span class="p">,</span><span class="n">altitude</span><span class="p">,</span><span class="n">Vc</span><span class="p">):</span>   
+<span class="k">def</span><span class="w"> </span><span class="nf">base_mission_setup</span><span class="p">(</span><span class="n">analyses</span><span class="p">,</span><span class="n">altitude</span><span class="p">,</span><span class="n">Vc</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    This sets up the nominal cruise of the aircraft</span>
 <span class="sd">    &#39;&#39;&#39;</span>
@@ -911,7 +856,7 @@
 
     <span class="c1">#   Cruise Segment: constant Speed, constant altitude </span>
     <span class="n">segment</span>                           <span class="o">=</span> <span class="n">Segments</span><span class="o">.</span><span class="n">Untrimmed</span><span class="o">.</span><span class="n">Untrimmed</span><span class="p">()</span>
-    <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="n">analyses</span><span class="o">.</span><span class="n">base</span> <span class="p">)</span>   
+    <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="n">analyses</span><span class="p">)</span>   
     <span class="n">segment</span><span class="o">.</span><span class="n">tag</span>                       <span class="o">=</span> <span class="s2">&quot;cruise&quot;</span> 
     <span class="n">segment</span><span class="o">.</span><span class="n">altitude</span>                  <span class="o">=</span> <span class="n">altitude</span>
     <span class="n">segment</span><span class="o">.</span><span class="n">air_speed</span>                 <span class="o">=</span> <span class="n">Vc</span>
@@ -1007,18 +952,13 @@
     <span class="n">airspeeds_neg</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">weight</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">load_factors_neg</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">rho</span> <span class="o">*</span> <span class="n">reference_area</span> <span class="o">*</span> \
                                                                  <span class="nb">abs</span><span class="p">(</span><span class="n">min_lift_coef</span><span class="p">)))</span> <span class="o">**</span> <span class="mf">0.5</span>
     
-    <span class="c1"># Pack</span>
-    <span class="n">V_n_data</span><span class="o">.</span><span class="n">airspeeds</span><span class="o">.</span><span class="n">positive</span>           <span class="o">=</span> <span class="n">airspeeds_pos</span>
-    <span class="n">V_n_data</span><span class="o">.</span><span class="n">airspeeds</span><span class="o">.</span><span class="n">negative</span>           <span class="o">=</span> <span class="n">airspeeds_neg</span>
-    <span class="n">V_n_data</span><span class="o">.</span><span class="n">load_factors</span><span class="o">.</span><span class="n">positive</span>        <span class="o">=</span> <span class="n">load_factors_pos</span>
-    <span class="n">V_n_data</span><span class="o">.</span><span class="n">load_factors</span><span class="o">.</span><span class="n">negative</span>        <span class="o">=</span> <span class="n">load_factors_neg</span>
+    <span class="c1"># Pack </span>
     <span class="n">V_n_data</span><span class="o">.</span><span class="n">Vs1</span><span class="o">.</span><span class="n">positive</span>                 <span class="o">=</span> <span class="n">airspeeds_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">V_n_data</span><span class="o">.</span><span class="n">Vs1</span><span class="o">.</span><span class="n">negative</span>                 <span class="o">=</span> <span class="n">airspeeds_neg</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">V_n_data</span><span class="o">.</span><span class="n">Va</span><span class="o">.</span><span class="n">positive</span>                  <span class="o">=</span> <span class="n">airspeeds_pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
     <span class="n">V_n_data</span><span class="o">.</span><span class="n">Va</span><span class="o">.</span><span class="n">negative</span>                  <span class="o">=</span> <span class="n">airspeeds_neg</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span></div>
 
     
-<span class="c1">#------------------------------------------------------------------------------------------------------------</span>
 
 <div class="viewcode-block" id="stall_line">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Methods.Performance.generate_V_n_diagram.html#RCAIDE.Library.Methods.Performance.generate_V_n_diagram.stall_line">[docs]</a>
@@ -1095,7 +1035,7 @@
     
     <span class="k">return</span> </div>
 
-<span class="c1">#--------------------------------------------------------------------------------------------------------------</span>
+
 
 <div class="viewcode-block" id="gust_loads">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Methods.Performance.generate_V_n_diagram.html#RCAIDE.Library.Methods.Performance.generate_V_n_diagram.gust_loads">[docs]</a>
@@ -1147,10 +1087,8 @@
 <span class="sd">    For more details, refer to S. Gudmundsson &quot;General Aviation Aircraft Design: Applied Methods and Procedures&quot;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># Unpack</span>
-    <span class="n">weight</span>          <span class="o">=</span> <span class="n">V_n_data</span><span class="o">.</span><span class="n">weight</span>
-    <span class="n">wing_loading</span>    <span class="o">=</span> <span class="n">V_n_data</span><span class="o">.</span><span class="n">wing_loading</span>
-    <span class="n">reference_area</span>  <span class="o">=</span> <span class="n">V_n_data</span><span class="o">.</span><span class="n">reference_area</span>
+    <span class="c1"># Unpack </span>
+    <span class="n">wing_loading</span>    <span class="o">=</span> <span class="n">V_n_data</span><span class="o">.</span><span class="n">wing_loading</span> 
     <span class="n">density</span>         <span class="o">=</span> <span class="n">V_n_data</span><span class="o">.</span><span class="n">density</span>
     <span class="n">density_ratio</span>   <span class="o">=</span> <span class="n">V_n_data</span><span class="o">.</span><span class="n">density_ratio</span>
     <span class="n">Vc</span>              <span class="o">=</span> <span class="n">V_n_data</span><span class="o">.</span><span class="n">Vc</span>
@@ -1355,116 +1293,8 @@
 
     <span class="k">return</span> <span class="n">airspeeds</span><span class="p">,</span> <span class="n">load_factors</span></div>
 
-<span class="c1">#--------------------------------------------------------------------------------------------------------------------------</span>
-
-<div class="viewcode-block" id="post_processing">
-<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Methods.Performance.generate_V_n_diagram.html#RCAIDE.Library.Methods.Performance.generate_V_n_diagram.post_processing">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">post_processing</span><span class="p">(</span><span class="n">category_tag</span><span class="p">,</span> <span class="n">Uref_rough</span><span class="p">,</span> <span class="n">Uref_cruise</span><span class="p">,</span> <span class="n">Uref_dive</span><span class="p">,</span> <span class="n">V_n_data</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">):</span>
-
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Plot graph, save the final figure, and create results output file</span>
-
-<span class="sd">    Source:</span>
-
-<span class="sd">    Inputs:</span>
-<span class="sd">    V_n_data.</span>
-<span class="sd">        airspeeds.positive                  [kts]</span>
-<span class="sd">        airspeeds.negative                  [kts]</span>
-<span class="sd">        Vc                                  [kts]</span>
-<span class="sd">        Vd                                  [kts]</span>
-<span class="sd">        Vs1.positive                        [kts]</span>
-<span class="sd">            negative                        [kts]</span>
-<span class="sd">        Va.positive                         [kts]</span>
-<span class="sd">            negative                        [kts]</span>
-<span class="sd">        load_factors.positive               [Unitless]</span>
-<span class="sd">            negative                        [Unitless]</span>
-<span class="sd">        gust_load_factors.positive          [Unitless]</span>
-<span class="sd">            negative                        [Unitless]</span>
-<span class="sd">        weight                              [lb]</span>
-<span class="sd">        altitude                            [ft]</span>
-<span class="sd">    vehicle._base.tag                       [Unitless]</span>
-<span class="sd">    Uref_rough                              [ft/s]</span>
-<span class="sd">    Uref_cruise                             [ft/s]</span>
-<span class="sd">    Uref_dive                               [ft/s]</span>
-
-<span class="sd">    Outputs:</span>
-
-<span class="sd">    Properties Used:</span>
-<span class="sd">    N/A</span>
-
-<span class="sd">    Description:</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1"># Unpack</span>
-    <span class="n">load_factors_pos</span>        <span class="o">=</span> <span class="n">V_n_data</span><span class="o">.</span><span class="n">load_factors</span><span class="o">.</span><span class="n">positive</span>
-    <span class="n">load_factors_neg</span>        <span class="o">=</span> <span class="n">V_n_data</span><span class="o">.</span><span class="n">load_factors</span><span class="o">.</span><span class="n">negative</span>
-    <span class="n">airspeeds_pos</span>           <span class="o">=</span> <span class="n">V_n_data</span><span class="o">.</span><span class="n">airspeeds</span><span class="o">.</span><span class="n">positive</span>
-    <span class="n">airspeeds_neg</span>           <span class="o">=</span> <span class="n">V_n_data</span><span class="o">.</span><span class="n">airspeeds</span><span class="o">.</span><span class="n">negative</span>
-    <span class="n">Vc</span>                      <span class="o">=</span> <span class="n">V_n_data</span><span class="o">.</span><span class="n">Vc</span>
-    <span class="n">Vd</span>                      <span class="o">=</span> <span class="n">V_n_data</span><span class="o">.</span><span class="n">Vd</span>
-    <span class="n">Vs1_pos</span>                 <span class="o">=</span> <span class="n">V_n_data</span><span class="o">.</span><span class="n">Vs1</span><span class="o">.</span><span class="n">positive</span>
-    <span class="n">Vs1_neg</span>                 <span class="o">=</span> <span class="n">V_n_data</span><span class="o">.</span><span class="n">Vs1</span><span class="o">.</span><span class="n">negative</span>
-    <span class="n">Va_pos</span>                  <span class="o">=</span> <span class="n">V_n_data</span><span class="o">.</span><span class="n">Va</span><span class="o">.</span><span class="n">positive</span>
-    <span class="n">Va_neg</span>                  <span class="o">=</span> <span class="n">V_n_data</span><span class="o">.</span><span class="n">Va</span><span class="o">.</span><span class="n">negative</span>
-    <span class="n">gust_load_factors_pos</span>   <span class="o">=</span> <span class="n">V_n_data</span><span class="o">.</span><span class="n">gust_load_factors</span><span class="o">.</span><span class="n">positive</span>
-    <span class="n">gust_load_factors_neg</span>   <span class="o">=</span> <span class="n">V_n_data</span><span class="o">.</span><span class="n">gust_load_factors</span><span class="o">.</span><span class="n">negative</span>
-    <span class="n">weight</span>                  <span class="o">=</span> <span class="n">V_n_data</span><span class="o">.</span><span class="n">weight</span>
-    <span class="n">altitude</span>                <span class="o">=</span> <span class="n">V_n_data</span><span class="o">.</span><span class="n">altitude</span>
-
-    <span class="c1">#-----------------------------</span>
-    <span class="c1"># Plotting the V-n diagram</span>
-    <span class="c1">#-----------------------------</span>
-    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">airspeeds_pos</span><span class="p">,</span> <span class="n">load_factors_pos</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">airspeeds_neg</span><span class="p">,</span> <span class="n">load_factors_neg</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">airspeeds_pos</span><span class="p">,</span> <span class="n">load_factors_pos</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">airspeeds_neg</span><span class="p">,</span> <span class="n">load_factors_neg</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
-
-    <span class="c1"># Plotting gust lines</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span><span class="mf">1.05</span><span class="o">*</span><span class="n">Vd</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="n">gust_load_factors_pos</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">gust_load_factors_pos</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">gust_load_factors_pos</span><span class="p">)</span><span class="o">-</span><span class="mi">3</span><span class="p">]],</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Gust &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">Uref_cruise</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;fps&#39;</span><span class="p">))</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">Vd</span><span class="p">,</span><span class="mf">1.05</span><span class="o">*</span><span class="n">Vd</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="n">gust_load_factors_pos</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="n">gust_load_factors_pos</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">gust_load_factors_pos</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="p">]],</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Gust &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">Uref_dive</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;fps&#39;</span><span class="p">))</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span><span class="mf">1.05</span><span class="o">*</span><span class="n">Vd</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="n">gust_load_factors_neg</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">gust_load_factors_neg</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">gust_load_factors_neg</span><span class="p">)</span><span class="o">-</span><span class="mi">3</span><span class="p">]],</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">Vd</span><span class="p">,</span><span class="mf">1.05</span><span class="o">*</span><span class="n">Vd</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="n">gust_load_factors_neg</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="n">gust_load_factors_neg</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">gust_load_factors_neg</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="p">]],</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">category_tag</span> <span class="o">==</span> <span class="s1">&#39;commuter&#39;</span><span class="p">:</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.05</span><span class="o">*</span><span class="n">Vd</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="n">gust_load_factors_pos</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">gust_load_factors_pos</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Gust &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">Uref_rough</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;fps&#39;</span><span class="p">))</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.05</span><span class="o">*</span><span class="n">Vd</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="n">gust_load_factors_neg</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">gust_load_factors_neg</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;m&#39;</span><span class="p">)</span>
-
-    <span class="c1"># Formating the plot</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Airspeed, KEAS&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Load Factor&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">vehicle</span><span class="o">.</span><span class="n">tag</span> <span class="o">+</span> <span class="s1">&#39;  Weight=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">weight</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;lb  &#39;</span> <span class="o">+</span> <span class="s1">&#39; Altitude=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">altitude</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;ft &#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span> 
-
-    <span class="c1">#---------------------------------</span>
-    <span class="c1"># Creating results output file</span>
-    <span class="c1">#---------------------------------</span>
-    <span class="n">fres</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;V_n_diagram_results_&quot;</span> <span class="o">+</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">tag</span> <span class="o">+</span><span class="s2">&quot;.dat&quot;</span><span class="p">,</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
-    <span class="n">fres</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;V-n diagram summary</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">fres</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;-------------------</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">fres</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Aircraft: &#39;</span> <span class="o">+</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">tag</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">fres</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;category: &#39;</span> <span class="o">+</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">category</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">fres</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;FAR certification: Part &#39;</span> <span class="o">+</span>  <span class="n">vehicle</span><span class="o">.</span><span class="n">flight_envelope</span><span class="o">.</span><span class="n">FAR_part_number</span>  <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">fres</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Weight = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">weight</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39; lb</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">fres</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Altitude = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">altitude</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39; ft</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">fres</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;---------------------------------------------------------------</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">fres</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Airspeeds: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">fres</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;    Positive stall speed (Vs1)   = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">Vs1_pos</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39; KEAS</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">fres</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;    Negative stall speed (Vs1)   = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">Vs1_neg</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39; KEAS</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">fres</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;    Positive maneuver speed (Va) = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">Va_pos</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>  <span class="o">+</span> <span class="s1">&#39; KEAS</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">fres</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;    Negative maneuver speed (Va) = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">Va_neg</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>  <span class="o">+</span> <span class="s1">&#39; KEAS</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">fres</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;    Cruise speed (Vc)            = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">Vc</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>      <span class="o">+</span> <span class="s1">&#39; KEAS</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">fres</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;    Dive speed (Vd)              = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">Vd</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>      <span class="o">+</span> <span class="s1">&#39; KEAS</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">fres</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Load factors: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">fres</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;    Positive limit load factor (n+) = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">load_factors_pos</span><span class="p">),</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">fres</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;    Negative limit load factor (n-) = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">load_factors_neg</span><span class="p">),</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">fres</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;    Positive load factor at Vd      = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">V_n_data</span><span class="o">.</span><span class="n">limit_loads</span><span class="o">.</span><span class="n">dive</span><span class="o">.</span><span class="n">positive</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">fres</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;    Negative load factor at Vd      = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">V_n_data</span><span class="o">.</span><span class="n">limit_loads</span><span class="o">.</span><span class="n">dive</span><span class="o">.</span><span class="n">negative</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-   
-    <span class="k">return</span></div>
 
 <span class="c1">#------------------------------------------------------------------------------------------------------------------------</span>
-
 <div class="viewcode-block" id="convert_keas">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Methods.Performance.generate_V_n_diagram.html#RCAIDE.Library.Methods.Performance.generate_V_n_diagram.convert_keas">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">convert_keas</span><span class="p">(</span><span class="n">V_n_data</span><span class="p">):</span>
@@ -1561,8 +1391,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1582,7 +1412,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -1596,7 +1426,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

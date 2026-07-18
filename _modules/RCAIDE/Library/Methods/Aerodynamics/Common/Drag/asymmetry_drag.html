@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Methods/Aerodynamics/Common/Drag/asymmetry_drag';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Methods/Aerodynamics/Common/Drag/asymmetry_drag.html" />
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../../../_static/language_data.js"></script>
+    <script src="../../../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -393,48 +412,121 @@
 <div class="viewcode-block" id="asymmetry_drag">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Aerodynamics.Common.Drag.asymmetry_drag.html#RCAIDE.Library.Methods.Aerodynamics.Common.Drag.asymmetry_drag.asymmetry_drag">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">asymmetry_drag</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">geometry</span><span class="p">,</span> <span class="n">engine_out_location</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>  <span class="n">single_engine_thrust</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>  <span class="n">windmilling_drag_coefficient</span> <span class="o">=</span> <span class="mf">0.</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes asymmetry drag due to engine failure</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes asymmetry drag coefficient due to engine failure and resulting trim requirements.</span>
 
-<span class="sd">    Assumptions:</span>
-<span class="sd">    Two engine aircraft</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    state : Data</span>
+<span class="sd">        Flight conditions and aerodynamic state containing:</span>
+<span class="sd">            - conditions.freestream.dynamic_pressure : float</span>
+<span class="sd">                Freestream dynamic pressure [Pa]</span>
+<span class="sd">            - conditions.aerodynamics.coefficients.drag.windmilling.total : float, optional</span>
+<span class="sd">                Windmilling drag coefficient [unitless]</span>
+<span class="sd">    geometry : Data</span>
+<span class="sd">        Vehicle geometry containing:</span>
+<span class="sd">            - reference_area : float, optional</span>
+<span class="sd">                Reference area for drag coefficient calculation [m²]</span>
+<span class="sd">            - mass_properties.center_of_gravity : array</span>
+<span class="sd">                Center of gravity location [m]</span>
+<span class="sd">            - networks : list</span>
+<span class="sd">                List of propulsion networks containing:</span>
+<span class="sd">                    - number_of_engines : int</span>
+<span class="sd">                        Total number of engines [unitless]</span>
+<span class="sd">            - wings : list</span>
+<span class="sd">                List of wing objects containing:</span>
+<span class="sd">                    - tag : str</span>
+<span class="sd">                        Unique identifier for the wing</span>
+<span class="sd">                    - sref : float</span>
+<span class="sd">                        Reference area of the wing [m²]</span>
+<span class="sd">                    - spans.projected : float</span>
+<span class="sd">                        Projected span of the wing [m]</span>
+<span class="sd">                    - aerodynamic_center : array</span>
+<span class="sd">                        Aerodynamic center location [m]</span>
+<span class="sd">                    - origin : array</span>
+<span class="sd">                        Wing origin location [m]</span>
+<span class="sd">                    - vertical : bool</span>
+<span class="sd">                        Flag indicating if wing is vertical tail</span>
+<span class="sd">    engine_out_location : float, optional</span>
+<span class="sd">        Lateral distance of failed engine from aircraft centerline [m]</span>
+<span class="sd">    single_engine_thrust : float, optional</span>
+<span class="sd">        Thrust produced by remaining operational engine [N]</span>
+<span class="sd">    windmilling_drag_coefficient : float, optional</span>
+<span class="sd">        Windmilling drag coefficient for failed engine [unitless]</span>
 
-<span class="sd">    Source:</span>
-<span class="sd">    Unknown source</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    asymm_trim_drag_coefficient : float</span>
+<span class="sd">        Asymmetry trim drag coefficient [unitless]</span>
 
-<span class="sd">    Inputs:</span>
-<span class="sd">    state.conditions.freestream.dynamic_pressure                                                [Pa]</span>
-<span class="sd">    state.conditions.aerodynamics.drag_breakdown.windmilling_drag.windmilling_drag_coefficient  [Unitless]</span>
-<span class="sd">    geometry.</span>
-<span class="sd">      mass_properties.center_of_gravity                                                         [m]</span>
-<span class="sd">      networks. </span>
-<span class="sd">        number_of_engines                                                                       [Unitless]</span>
-<span class="sd">      wings.</span>
-<span class="sd">        tag                                                                                     </span>
-<span class="sd">        sref (this function probably doesn&#39;t run)                                               [m^2]</span>
-<span class="sd">	spans.projected                                                                         [m]</span>
-<span class="sd">      reference_area                                                                            [m^2]</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function calculates the additional drag required to trim the aircraft when one engine</span>
+<span class="sd">    fails, creating an asymmetric thrust condition. The calculation accounts for the drag caused by yawing</span>
+<span class="sd">    moment created by the asymmetric thrust and the counteracting moment from the vertical tail.</span>
 
-<span class="sd">    Outputs:</span>
-<span class="sd">    asymm_trim_drag_coefficient                                                                 [Unitless]</span>
-<span class="sd">    (packed in state.conditions.aerodynamics.drag_breakdown.asymmetry_trim_coefficient)</span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Two-engine aircraft configuration</span>
+<span class="sd">        * Vertical tail provides the primary yawing moment for trim</span>
+<span class="sd">        * Linear relationship between trim drag and asymmetric thrust moment</span>
+<span class="sd">        * Windmilling drag contributes to the asymmetric moment</span>
 
-<span class="sd">    Properties Used:</span>
-<span class="sd">    N/A</span>
+<span class="sd">    **Theory**</span>
+
+<span class="sd">    The asymmetry drag is calculated from the trim requirement to balance the yawing moment:</span>
+
+<span class="sd">    :math:`D_{trim} = \\frac{(y_{engine})^2 (T_{single} + D_{windmilling})^2}{q_{\\infty} \\pi (h_{vt} \\cdot l_{vt})^2}`</span>
+
+<span class="sd">    where:</span>
+<span class="sd">        - :math:`y_{engine}` is the lateral distance of the failed engine [m]</span>
+<span class="sd">        - :math:`T_{single}` is the thrust of the remaining engine [N]</span>
+<span class="sd">        - :math:`D_{windmilling}` is the windmilling drag force [N]</span>
+<span class="sd">        - :math:`q_{\\infty}` is the freestream dynamic pressure [Pa]</span>
+<span class="sd">        - :math:`h_{vt}` is the vertical tail height [m]</span>
+<span class="sd">        - :math:`l_{vt}` is the moment arm of the vertical tail [m]</span>
+
+<span class="sd">    The windmilling drag force is:</span>
+
+<span class="sd">    :math:`D_{windmilling} = C_{D,windmilling} \\cdot q_{\\infty} \\cdot S_{ref}`</span>
+
+<span class="sd">    The asymmetry drag coefficient is:</span>
+
+<span class="sd">    :math:`C_{D,asymmetry} = \\frac{D_{trim}}{q_{\\infty} \\cdot S_{ref}}`</span>
+
+<span class="sd">    **Definitions**</span>
+
+<span class="sd">    &#39;Asymmetry Drag&#39;</span>
+<span class="sd">        Additional drag required to trim the aircraft when thrust is asymmetric due to engine failure.</span>
+
+<span class="sd">    &#39;Windmilling Drag&#39;</span>
+<span class="sd">        Drag produced by a failed engine that continues to rotate due to incoming airflow.</span>
+
+<span class="sd">    &#39;Trim Drag&#39;</span>
+<span class="sd">        Drag increment required to maintain aircraft equilibrium in asymmetric flight conditions.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Unknown source</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Components.Wings.Main_Wing</span>
+<span class="sd">    RCAIDE.Library.Methods.Aerodynamics.Common.Drag.windmilling_drag</span>
 <span class="sd">    &quot;&quot;&quot;</span> 
     <span class="c1"># ==============================================</span>
-	<span class="c1"># Unpack</span>
+        <span class="c1"># Unpack</span>
     <span class="c1"># ==============================================</span>
     <span class="n">vehicle</span>    <span class="o">=</span> <span class="n">geometry</span> 
     <span class="n">wings</span>      <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">wings</span>
     <span class="n">dyn_press</span>  <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">dynamic_pressure</span>
-    
-     <span class="c1"># Defining reference area</span>
+
+    <span class="c1"># Defining reference area</span>
     <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">reference_area</span><span class="p">:</span>
-            <span class="n">reference_area</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">reference_area</span>
+        <span class="n">reference_area</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">reference_area</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">n_wing</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">wing</span> <span class="ow">in</span> <span class="n">wings</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wing</span><span class="p">,</span><span class="n">Wings</span><span class="o">.</span><span class="n">Main_Wing</span><span class="p">):</span> <span class="k">continue</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">wing</span><span class="p">,</span><span class="n">Wings</span><span class="o">.</span><span class="n">Main_Wing</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wing</span><span class="p">,</span><span class="n">Wings</span><span class="o">.</span><span class="n">Blended_Wing_Body</span><span class="p">)):</span> <span class="k">continue</span>
             <span class="n">n_wing</span> <span class="o">=</span> <span class="n">n_wing</span> <span class="o">+</span> <span class="mi">1</span>
             <span class="n">reference_area</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">sref</span>
         <span class="k">if</span> <span class="n">n_wing</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -445,10 +537,10 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wing</span><span class="p">,</span><span class="n">Wings</span><span class="o">.</span><span class="n">Wing</span><span class="p">):</span> <span class="k">continue</span>
                 <span class="n">reference_area</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">sref</span>
                 <span class="k">break</span>
-            
+
     <span class="c1"># getting cg x position</span>
     <span class="n">xcg</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  
-    
+
     <span class="c1"># finding vertical tail</span>
     <span class="k">for</span> <span class="n">idx</span><span class="p">,</span><span class="n">wing</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">wings</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">wing</span><span class="o">.</span><span class="n">vertical</span><span class="p">:</span> <span class="k">continue</span>
@@ -463,18 +555,18 @@
     <span class="c1"># getting vertical tail data (span, distance to cg)</span>
     <span class="n">vertical_height</span> <span class="o">=</span> <span class="n">wings</span><span class="p">[</span><span class="n">vertical_idx</span><span class="p">]</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span>
     <span class="n">vertical_dist</span>   <span class="o">=</span> <span class="n">wings</span><span class="p">[</span><span class="n">vertical_idx</span><span class="p">]</span><span class="o">.</span><span class="n">aerodynamic_center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">wings</span><span class="p">[</span><span class="n">vertical_idx</span><span class="p">]</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">xcg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    
+
     <span class="c1"># colculating windmilling drag</span>
     <span class="k">if</span> <span class="n">windmilling_drag_coefficient</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">windmilling_drag_coefficient</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">windmilling</span><span class="o">.</span><span class="n">total</span>  
         <span class="k">except</span><span class="p">:</span> <span class="k">pass</span>
-    
+
     <span class="n">windmilling_drag</span> <span class="o">=</span> <span class="n">windmilling_drag_coefficient</span> <span class="o">*</span> <span class="n">dyn_press</span> <span class="o">*</span> <span class="n">reference_area</span>
-    
+
     <span class="c1"># calculating Drag force due to trim     </span>
     <span class="n">trim_drag</span> <span class="o">=</span> <span class="p">(</span><span class="n">engine_out_location</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">single_engine_thrust</span><span class="o">+</span><span class="n">windmilling_drag</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span> <span class="o">/</span>      \
-                <span class="p">(</span><span class="n">dyn_press</span> <span class="o">*</span> <span class="mf">3.141593</span><span class="o">*</span> <span class="p">(</span><span class="n">vertical_height</span><span class="o">*</span><span class="n">vertical_dist</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">dyn_press</span> <span class="o">*</span> <span class="mf">3.141593</span><span class="o">*</span> <span class="p">(</span><span class="n">vertical_height</span><span class="o">*</span><span class="n">vertical_dist</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
 
     <span class="c1"># Compute asymmetry trim drag coefficient</span>
     <span class="n">asymm_trim_drag_coefficient</span> <span class="o">=</span> <span class="n">trim_drag</span> <span class="o">/</span> <span class="n">dyn_press</span> <span class="o">/</span> <span class="n">reference_area</span>
@@ -513,8 +605,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -534,7 +626,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -548,7 +640,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

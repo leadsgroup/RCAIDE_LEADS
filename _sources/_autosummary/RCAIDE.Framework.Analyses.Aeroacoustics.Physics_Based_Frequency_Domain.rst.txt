@@ -1,0 +1,25 @@
+RCAIDE.Framework.Analyses.Aeroacoustics.Physics_Based_Frequency_Domain
+
+Physics\_Based\_Frequency\_Domain
+=================================
+
+.. automodule:: RCAIDE.Framework.Analyses.Aeroacoustics.Physics_Based_Frequency_Domain
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

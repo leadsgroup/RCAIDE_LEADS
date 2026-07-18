@@ -1,0 +1,734 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RCAIDE.Library.Plots.Geometry.generate_3d_cabin_points &#8212; RCAIDE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=d103512f" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Plots/Geometry/generate_3d_cabin_points';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Plots/Geometry/generate_3d_cabin_points.html" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script src="../../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../_static/leads_logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../../_static/leads_logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">RCAIDE</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">RCAIDE.Library.Plots.Geometry.generate_3d_cabin_points</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for RCAIDE.Library.Plots.Geometry.generate_3d_cabin_points</h1><div class="highlight"><pre>
+<span></span><span class="c1"># RCAIDE/Library/Plots/Geometry/generate_3d_cabin_points.py</span>
+<span class="c1"># </span>
+<span class="c1"># </span>
+<span class="c1"># Created:  Jul 2023, M. Clarke</span>
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  IMPORT</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>     
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Geometry.Airfoil</span><span class="w">                </span><span class="kn">import</span>  <span class="n">compute_naca_4series</span><span class="p">,</span> <span class="n">import_airfoil_geometry</span>  
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>     
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  generate_3d_cabin_points</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------   </span>
+<div class="viewcode-block" id="generate_3d_cabin_points">
+<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Plots.Geometry.generate_3d_cabin_points.html#RCAIDE.Library.Plots.Geometry.generate_3d_cabin_points.generate_3d_cabin_points">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_3d_cabin_points</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">n_points</span><span class="p">,</span><span class="n">plot_centerline</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates 3D coordinate points that define a cabin surface.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cabin : Cabin</span>
+<span class="sd">        RCAIDE cabin data structure containing geometry information</span>
+<span class="sd">    component : Component</span>
+<span class="sd">        RCAIDE component data structure containing geometry information </span>
+<span class="sd">    n_points : int</span>
+<span class="sd">        Number of points used to discretize airfoil sections</span>
+<span class="sd">        </span>
+<span class="sd">    dim : int</span>
+<span class="sd">        Number of wing segments plus one</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    G : Data</span>
+<span class="sd">        Data structure containing generated points with attributes:</span>
+<span class="sd">            - X, Y, Z : ndarray</span>
+<span class="sd">                Raw coordinate points</span>
+<span class="sd">            - PTS : ndarray</span>
+<span class="sd">                Combined coordinate array</span>
+<span class="sd">            - XA1, YA1, ZA1, XA2, YA2, ZA2 : ndarray</span>
+<span class="sd">                Leading edge surface points</span>
+<span class="sd">            - XB1, YB1, ZB1, XB2, YB2, ZB2 : ndarray</span>
+<span class="sd">                Trailing edge surface points</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Generates wing geometry by:</span>
+<span class="sd">        1. Creating airfoil sections at specified span positions</span>
+<span class="sd">        2. Applying twist, sweep, and dihedral</span>
+<span class="sd">        3. Scaling sections by local chord</span>
+<span class="sd">        4. Positioning in aircraft coordinate system</span>
+<span class="sd">    </span>
+<span class="sd">    **Definitions**</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Leading Edge Sweep&#39;</span>
+<span class="sd">        Angle between leading edge and y-axis</span>
+<span class="sd">    &#39;Quarter Chord Sweep&#39;</span>
+<span class="sd">        Angle between quarter chord line and y-axis</span>
+<span class="sd">    &#39;Dihedral&#39;</span>
+<span class="sd">        Upward angle of wing from horizontal</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+
+    <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">component</span><span class="p">),</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Wing</span><span class="p">):</span> 
+        <span class="n">G</span> <span class="o">=</span> <span class="n">generate_3d_wing_cabin_points</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">n_points</span><span class="p">,</span> <span class="n">plot_centerline</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">generate_3d_fuselage_cabin_points</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">n_points</span><span class="p">,</span> <span class="n">plot_centerline</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="generate_3d_wing_cabin_points">
+<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Plots.Geometry.generate_3d_cabin_points.html#RCAIDE.Library.Plots.Geometry.generate_3d_cabin_points.generate_3d_wing_cabin_points">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_3d_wing_cabin_points</span><span class="p">(</span><span class="n">wing</span><span class="p">,</span> <span class="n">n_points</span><span class="p">,</span> <span class="n">plot_centerline</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+    <span class="c1"># LOPA gives the seat layout; col 2=X (chord), col 3=Y (span), col 4=Z, col 5=seat pitch in X</span>
+    <span class="n">LOPA_data</span>            <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">layout_of_passenger_accommodations</span>
+    <span class="n">LOPA</span>                 <span class="o">=</span> <span class="n">LOPA_data</span><span class="o">.</span><span class="n">object_coordinates</span>
+    <span class="n">z_min</span>                <span class="o">=</span> <span class="n">LOPA</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>        <span class="c1"># floor Z: lowest seat position used to cut the semi-cylinder</span>
+    <span class="n">cabin_factor</span>         <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">outer_mold_line_cabin_offset_factor</span>
+
+    <span class="c1"># Slice the ordered segment list between the two bounding tags (case-insensitive, RCAIDE lowercases tags)</span>
+    <span class="n">bounding_tags</span>        <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">cabins</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">segments_bounding_cabin</span>
+    <span class="n">all_segs</span>             <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">)</span>
+    <span class="n">seg_tags</span>             <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">all_segs</span><span class="p">]</span>
+    <span class="n">i_start</span>              <span class="o">=</span> <span class="n">seg_tags</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">bounding_tags</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+    <span class="n">i_end</span>                <span class="o">=</span> <span class="n">seg_tags</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">bounding_tags</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+    <span class="n">cabin_segs</span>           <span class="o">=</span> <span class="n">all_segs</span><span class="p">[</span><span class="n">i_start</span><span class="p">:</span><span class="n">i_end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Global X (chordwise) extent of the cabin floor plan — used to trim sections fore and aft</span>
+    <span class="n">x_cabin_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">LOPA</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">LOPA_data</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">x_cabin_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">LOPA</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">LOPA_data</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">n_segments</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cabin_segs</span><span class="p">)</span>
+    <span class="n">origin</span>     <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">origin</span>
+    <span class="n">semispan</span>   <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">wing</span><span class="o">.</span><span class="n">xz_plane_symmetric</span><span class="p">)</span>
+
+    <span class="c1"># pts holds local-frame section coordinates; section_twist is initialised to identity</span>
+    <span class="n">pts</span>           <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_segments</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_points</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">section_twist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_segments</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_points</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">section_twist</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">section_twist</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">section_twist</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">translation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_segments</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_points</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">translation</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">translation</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">translation</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_segments</span><span class="o">+</span><span class="mi">2</span><span class="p">):</span>
+        <span class="c1"># i=0 and i=n_segments+1 are flat end-caps that reuse the first/last segment&#39;s shape</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">current_seg</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cabin_segs</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">i</span> <span class="o">==</span> <span class="n">n_segments</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">current_seg</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cabin_segs</span><span class="p">)[</span><span class="n">n_segments</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">current_seg</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cabin_segs</span><span class="p">)[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">airfoil</span> <span class="o">=</span> <span class="n">current_seg</span><span class="o">.</span><span class="n">airfoil</span>
+        <span class="k">if</span> <span class="n">airfoil</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">airfoil</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">NACA_4_Series_Airfoil</span><span class="p">:</span>
+                <span class="n">geometry</span> <span class="o">=</span> <span class="n">compute_naca_4series</span><span class="p">(</span><span class="n">airfoil</span><span class="o">.</span><span class="n">NACA_4_Series_code</span><span class="p">,</span> <span class="n">n_points</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">airfoil</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">Airfoil</span><span class="p">:</span>
+                <span class="n">geometry</span> <span class="o">=</span> <span class="n">import_airfoil_geometry</span><span class="p">(</span><span class="n">airfoil</span><span class="o">.</span><span class="n">coordinate_file</span><span class="p">,</span> <span class="n">n_points</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">t_c</span>      <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">current_seg</span><span class="o">.</span><span class="n">thickness_to_chord</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+            <span class="n">geometry</span> <span class="o">=</span> <span class="n">compute_naca_4series</span><span class="p">(</span><span class="n">t_c</span><span class="p">,</span> <span class="n">n_points</span><span class="p">)</span>
+
+        <span class="n">twist</span>      <span class="o">=</span> <span class="n">current_seg</span><span class="o">.</span><span class="n">twist</span>
+        <span class="c1"># end-caps average upper and lower surfaces to produce a flat closing face</span>
+        <span class="n">is_end_cap</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">==</span> <span class="n">n_segments</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># shrink thickness by cabin_factor so the surface sits inside the outer mold line</span>
+        <span class="n">geometry</span><span class="o">.</span><span class="n">y_coordinates</span> <span class="o">*=</span> <span class="n">cabin_factor</span>
+
+        <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">vertical</span><span class="p">:</span>
+            <span class="n">pts</span><span class="p">[</span><span class="n">i</span><span class="p">,:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">x_coordinates</span> <span class="o">*</span> <span class="n">current_seg</span><span class="o">.</span><span class="n">root_chord_percent</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span>
+            <span class="n">pts</span><span class="p">[</span><span class="n">i</span><span class="p">,:,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">geometry</span><span class="o">.</span><span class="n">y_coordinates</span> <span class="o">+</span> <span class="n">geometry</span><span class="o">.</span><span class="n">y_coordinates</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">is_end_cap</span> <span class="k">else</span> <span class="n">geometry</span><span class="o">.</span><span class="n">y_coordinates</span> <span class="o">*</span> <span class="n">current_seg</span><span class="o">.</span><span class="n">root_chord_percent</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span>
+            <span class="n">pts</span><span class="p">[</span><span class="n">i</span><span class="p">,:,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">geometry</span><span class="o">.</span><span class="n">y_coordinates</span><span class="p">)</span>
+            <span class="n">section_twist</span><span class="p">[</span><span class="n">i</span><span class="p">,:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">twist</span><span class="p">)</span>
+            <span class="n">section_twist</span><span class="p">[</span><span class="n">i</span><span class="p">,:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">twist</span><span class="p">)</span>
+            <span class="n">section_twist</span><span class="p">[</span><span class="n">i</span><span class="p">,:,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">twist</span><span class="p">)</span>
+            <span class="n">section_twist</span><span class="p">[</span><span class="n">i</span><span class="p">,:,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">twist</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pts</span><span class="p">[</span><span class="n">i</span><span class="p">,:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">x_coordinates</span> <span class="o">*</span> <span class="n">current_seg</span><span class="o">.</span><span class="n">root_chord_percent</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span>
+            <span class="n">pts</span><span class="p">[</span><span class="n">i</span><span class="p">,:,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">geometry</span><span class="o">.</span><span class="n">y_coordinates</span><span class="p">)</span>
+            <span class="n">pts</span><span class="p">[</span><span class="n">i</span><span class="p">,:,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">geometry</span><span class="o">.</span><span class="n">y_coordinates</span> <span class="o">+</span> <span class="n">geometry</span><span class="o">.</span><span class="n">y_coordinates</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">is_end_cap</span> <span class="k">else</span> <span class="n">geometry</span><span class="o">.</span><span class="n">y_coordinates</span> <span class="o">*</span> <span class="n">current_seg</span><span class="o">.</span><span class="n">root_chord_percent</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span>
+            <span class="n">section_twist</span><span class="p">[</span><span class="n">i</span><span class="p">,:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">twist</span><span class="p">)</span>
+            <span class="n">section_twist</span><span class="p">[</span><span class="n">i</span><span class="p">,:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">twist</span><span class="p">)</span>
+            <span class="n">section_twist</span><span class="p">[</span><span class="n">i</span><span class="p">,:,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">twist</span><span class="p">)</span>
+            <span class="n">section_twist</span><span class="p">[</span><span class="n">i</span><span class="p">,:,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">twist</span><span class="p">)</span>
+
+        <span class="c1"># tip end-cap has no stored origin — its translation is copied from the outermost section below</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">n_segments</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">translation</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+=</span> <span class="n">current_seg</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">translation</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+=</span> <span class="n">current_seg</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">translation</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+=</span> <span class="n">current_seg</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">n_segments</span><span class="p">:</span>
+            <span class="c1"># outermost section has no segment origin past the last stored one;</span>
+            <span class="c1"># compute its position by projecting from the previous section using sweep and dihedral</span>
+            <span class="n">prev_seg</span>     <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cabin_segs</span><span class="p">)[</span><span class="n">i</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">sweep</span>        <span class="o">=</span> <span class="n">prev_seg</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">leading_edge</span>
+            <span class="n">dihedral</span>     <span class="o">=</span> <span class="n">prev_seg</span><span class="o">.</span><span class="n">dihedral_outboard</span>
+            <span class="n">segment_percent_span</span> <span class="o">=</span> <span class="n">current_seg</span><span class="o">.</span><span class="n">percent_span_location</span> <span class="o">-</span> <span class="n">prev_seg</span><span class="o">.</span><span class="n">percent_span_location</span>
+            <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">vertical</span><span class="p">:</span>
+                <span class="n">dz</span> <span class="o">=</span> <span class="n">semispan</span> <span class="o">*</span> <span class="n">segment_percent_span</span>
+                <span class="n">dy</span> <span class="o">=</span> <span class="n">dz</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">dihedral</span><span class="p">)</span>
+                <span class="n">l</span>  <span class="o">=</span> <span class="n">dz</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">dihedral</span><span class="p">)</span>
+                <span class="n">dx</span> <span class="o">=</span> <span class="n">l</span>  <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">sweep</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dy</span> <span class="o">=</span> <span class="n">semispan</span> <span class="o">*</span> <span class="n">segment_percent_span</span>
+                <span class="n">dz</span> <span class="o">=</span> <span class="n">dy</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">dihedral</span><span class="p">)</span>
+                <span class="n">l</span>  <span class="o">=</span> <span class="n">dy</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">dihedral</span><span class="p">)</span>
+                <span class="n">dx</span> <span class="o">=</span> <span class="n">l</span>  <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">sweep</span><span class="p">)</span>
+            <span class="n">translation</span><span class="p">[</span><span class="n">i</span><span class="p">,:,</span><span class="mi">0</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">translation</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,:,</span><span class="mi">0</span><span class="p">,:]</span> <span class="o">+</span> <span class="n">dx</span>
+            <span class="n">translation</span><span class="p">[</span><span class="n">i</span><span class="p">,:,</span><span class="mi">1</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">translation</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,:,</span><span class="mi">1</span><span class="p">,:]</span> <span class="o">+</span> <span class="n">dy</span>
+            <span class="n">translation</span><span class="p">[</span><span class="n">i</span><span class="p">,:,</span><span class="mi">2</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">translation</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,:,</span><span class="mi">2</span><span class="p">,:]</span> <span class="o">+</span> <span class="n">dz</span>
+
+        <span class="k">elif</span> <span class="n">i</span> <span class="o">==</span> <span class="n">n_segments</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># tip end-cap sits at the same position as the outermost section</span>
+            <span class="n">translation</span><span class="p">[</span><span class="n">i</span><span class="p">,:,:,:]</span> <span class="o">=</span> <span class="n">translation</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,:,:,:]</span>
+
+    <span class="n">mat</span> <span class="o">=</span> <span class="n">translation</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">section_twist</span><span class="p">,</span> <span class="n">pts</span><span class="p">)</span>
+
+    <span class="c1"># Trim chord (X) to the fore/aft extent of the cabin floor plan</span>
+    <span class="n">mat</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">mat</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">x_cabin_min</span><span class="p">,</span> <span class="n">x_cabin_max</span><span class="p">)</span>
+
+    <span class="c1"># Cut the bottom of the cabin at the lowest seat Z, forming a semi-cylinder</span>
+    <span class="n">mat</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">mat</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">z_min</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">plot_centerline</span><span class="p">:</span>
+        <span class="n">mat</span> <span class="o">=</span> <span class="n">mat</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span>
+
+    <span class="n">G</span>      <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">X</span>    <span class="o">=</span> <span class="n">mat</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">Y</span>    <span class="o">=</span> <span class="n">mat</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">Z</span>    <span class="o">=</span> <span class="n">mat</span><span class="p">[:,:,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">PTS</span>  <span class="o">=</span> <span class="n">mat</span><span class="p">[:,:,:,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">XA1</span>  <span class="o">=</span> <span class="n">mat</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">YA1</span>  <span class="o">=</span> <span class="n">mat</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">ZA1</span>  <span class="o">=</span> <span class="n">mat</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">XA2</span>  <span class="o">=</span> <span class="n">mat</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">YA2</span>  <span class="o">=</span> <span class="n">mat</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">ZA2</span>  <span class="o">=</span> <span class="n">mat</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">XB1</span>  <span class="o">=</span> <span class="n">mat</span><span class="p">[</span><span class="mi">1</span><span class="p">:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">YB1</span>  <span class="o">=</span> <span class="n">mat</span><span class="p">[</span><span class="mi">1</span><span class="p">:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">ZB1</span>  <span class="o">=</span> <span class="n">mat</span><span class="p">[</span><span class="mi">1</span><span class="p">:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">XB2</span>  <span class="o">=</span> <span class="n">mat</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span><span class="mi">1</span><span class="p">:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">YB2</span>  <span class="o">=</span> <span class="n">mat</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span><span class="mi">1</span><span class="p">:,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">ZB2</span>  <span class="o">=</span> <span class="n">mat</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span><span class="mi">1</span><span class="p">:,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">G</span></div>
+
+     
+ 
+<div class="viewcode-block" id="generate_3d_fuselage_cabin_points">
+<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Plots.Geometry.generate_3d_cabin_points.html#RCAIDE.Library.Plots.Geometry.generate_3d_cabin_points.generate_3d_fuselage_cabin_points">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_3d_fuselage_cabin_points</span><span class="p">(</span><span class="n">fuselage</span><span class="p">,</span> <span class="n">n_points</span><span class="p">,</span> <span class="n">plot_centerline</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">cabin_factor</span>  <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">fuselage</span><span class="p">,</span> <span class="s1">&#39;outer_mold_line_cabin_offset_factor&#39;</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">)</span>
+
+    <span class="c1"># Slice the ordered segment list between the two bounding tags (case-insensitive, RCAIDE lowercases tags)</span>
+    <span class="n">bounding_tags</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">fuselage</span><span class="o">.</span><span class="n">cabins</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">segments_bounding_cabin</span>
+    <span class="n">all_segs</span>      <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">fuselage</span><span class="o">.</span><span class="n">segments</span><span class="p">)</span>
+    <span class="n">seg_tags</span>      <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">all_segs</span><span class="p">]</span>
+    <span class="n">i_start</span>       <span class="o">=</span> <span class="n">seg_tags</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">bounding_tags</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+    <span class="n">i_end</span>         <span class="o">=</span> <span class="n">seg_tags</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">bounding_tags</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+    <span class="n">cabin_segs</span>    <span class="o">=</span> <span class="n">all_segs</span><span class="p">[</span><span class="n">i_start</span><span class="p">:</span><span class="n">i_end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">LOPA_data</span> <span class="o">=</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">layout_of_passenger_accommodations</span>
+    <span class="n">LOPA</span>      <span class="o">=</span> <span class="n">LOPA_data</span><span class="o">.</span><span class="n">object_coordinates</span>
+    <span class="n">z_min</span>     <span class="o">=</span> <span class="n">LOPA</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>   <span class="c1"># floor Z: lowest seat position used to cut the semi-cylinder</span>
+
+    <span class="n">theta</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">n_points</span><span class="p">)</span>
+    <span class="n">cabin_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">cabin_segs</span><span class="p">),</span> <span class="n">n_points</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">segment</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cabin_segs</span><span class="p">):</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">width</span>  <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">cabin_factor</span>   <span class="c1"># semi-axis in Y</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">cabin_factor</span>   <span class="c1"># semi-axis in Z</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">curvature</span>                    <span class="c1"># superellipse exponent (n=2 → ellipse, n→∞ → rectangle)</span>
+
+        <span class="n">cabin_points</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">segment</span><span class="o">.</span><span class="n">percent_x_location</span> <span class="o">*</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">total</span>
+                                  <span class="o">+</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="c1"># superellipse: r(θ) = |cos θ|^(2/n) * a * sign(cos θ)  — generalises ellipse to squarer shapes</span>
+        <span class="n">cabin_points</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span> <span class="o">**</span> <span class="p">(</span><span class="mi">2</span> <span class="o">/</span> <span class="n">n</span><span class="p">))</span> <span class="o">*</span> <span class="n">a</span>
+                                  <span class="o">*</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span><span class="p">)</span>
+                                  <span class="o">+</span> <span class="n">segment</span><span class="o">.</span><span class="n">percent_y_location</span> <span class="o">*</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">total</span>
+                                  <span class="o">+</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">cabin_points</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span> <span class="o">**</span> <span class="p">(</span><span class="mi">2</span> <span class="o">/</span> <span class="n">n</span><span class="p">))</span> <span class="o">*</span> <span class="n">b</span>
+                                  <span class="o">*</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span><span class="p">)</span>
+                                  <span class="o">+</span> <span class="n">segment</span><span class="o">.</span><span class="n">percent_z_location</span> <span class="o">*</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">total</span>
+                                  <span class="o">+</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span>
+
+    <span class="c1"># Cut the bottom of the cabin at the lowest seat Z, forming a semi-cylinder</span>
+    <span class="n">cabin_points</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">cabin_points</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">z_min</span><span class="p">)</span>
+
+    <span class="n">G</span>     <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">PTS</span> <span class="o">=</span> <span class="n">cabin_points</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Laboratory for Electric Aircraft Design and Sustainability.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

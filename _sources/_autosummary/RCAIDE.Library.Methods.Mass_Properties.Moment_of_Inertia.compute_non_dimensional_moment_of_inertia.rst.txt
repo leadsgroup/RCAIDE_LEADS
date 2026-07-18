@@ -1,0 +1,33 @@
+RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_non_dimensional_moment_of_inertia
+
+compute\_non\_dimensional\_moment\_of\_inertia
+==============================================
+
+.. automodule:: RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_non_dimensional_moment_of_inertia
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      compute_cuboid_non_dimensional_moi
+      compute_rounded_end_cylinder_non_dimensional_moi
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

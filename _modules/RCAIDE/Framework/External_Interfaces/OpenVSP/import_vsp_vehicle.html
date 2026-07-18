@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Framework/External_Interfaces/OpenVSP/import_vsp_vehicle';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Framework/External_Interfaces/OpenVSP/import_vsp_vehicle.html" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script src="../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -419,29 +438,45 @@
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
 <div class="viewcode-block" id="import_vsp_vehicle">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Framework.External_Interfaces.OpenVSP.import_vsp_vehicle.html#RCAIDE.Framework.External_Interfaces.OpenVSP.import_vsp_vehicle.import_vsp_vehicle">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">import_vsp_vehicle</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span><span class="n">main_wing_tag</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">network_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">propulsor_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">units_type</span><span class="o">=</span><span class="s1">&#39;SI&#39;</span><span class="p">,</span><span class="n">use_scaling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">calculate_wetted_area</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span> 
+<span class="k">def</span><span class="w"> </span><span class="nf">import_vsp_vehicle</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span>
+                       <span class="n">main_wing_tag</span>     <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">network_type</span>      <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">propulsor_type</span>    <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">blended_wing_body</span> <span class="o">=</span> <span class="kc">False</span> <span class="p">,</span>
+                       <span class="n">last_blended_wing_body_center_body_section_index</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">units_type</span>           <span class="o">=</span> <span class="s1">&#39;SI&#39;</span><span class="p">,</span>
+                       <span class="n">use_scaling</span>          <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                       <span class="n">calculate_wetted_area</span><span class="o">=</span> <span class="kc">True</span><span class="p">,):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This reads an OpenVSP vehicle geometry and writes it into a RCAIDE vehicle format.</span>
 <span class="sd">    Includes wings, fuselages, and rotors.</span>
 
 <span class="sd">    Assumptions:</span>
-<span class="sd">    1. OpenVSP vehicle is composed of conventionally shaped fuselages, wings, and rotors. </span>
-<span class="sd">    1a. OpenVSP fuselage: generally narrow at nose and tail, wider in center). </span>
+<span class="sd">    1. OpenVSP vehicle is composed of conventionally shaped fuselages, wings, and rotors.</span>
+<span class="sd">    1a. OpenVSP fuselage: generally narrow at nose and tail, wider in center).</span>
 <span class="sd">    1b. Fuselage is designed in VSP as it appears in real life. That is, the VSP model does not rely on</span>
 <span class="sd">       superficial elements such as canopies, stacks, or additional fuselages to cover up internal lofting oddities.</span>
 <span class="sd">    1c. This program will NOT account for multiple geometries comprising the fuselage. For example: a wingbox mounted beneath</span>
 <span class="sd">       is a separate geometry and will NOT be processed.</span>
 <span class="sd">    2. Fuselage origin is located at nose. VSP file origin can be located anywhere, preferably at the forward tip</span>
-<span class="sd">       of the vehicle or in front (to make all X-coordinates of vehicle positive). </span>
-<span class="sd">    4. Written for OpenVSP 3.21.1</span>
+<span class="sd">       of the vehicle or in front (to make all X-coordinates of vehicle positive).</span>
+<span class="sd">    3. Written for OpenVSP 3.21.1</span>
 
 <span class="sd">    Source:</span>
 <span class="sd">    N/A</span>
 
 <span class="sd">    Inputs:</span>
-<span class="sd">    1. A tag for an XML file in format .vsp3.</span>
-<span class="sd">    2. Units_type set to &#39;SI&#39; (default) or &#39;Imperial&#39;</span>
-<span class="sd">    3. User-specified network</span>
-<span class="sd">    4. Boolean for whether or not to use the scaling from OpenVSP (default = True).</span>
+<span class="sd">    tag                    &lt;str&gt;   path to .vsp3 file</span>
+<span class="sd">    main_wing_tag          &lt;str&gt;   VSP geometry name of the main wing (optional). If None, the</span>
+<span class="sd">                                   largest non-vertical wing by reference area is promoted to</span>
+<span class="sd">                                   RCAIDE.Library.Components.Wings.Main_Wing automatically.</span>
+<span class="sd">    network_type           RCAIDE.Framework.Networks.Network  (optional). If None, propulsion</span>
+<span class="sd">                                   geometry is skipped and only airframe components are imported.</span>
+<span class="sd">    propulsor_type         RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor  (optional).</span>
+<span class="sd">                                   Required alongside network_type to import rotors/nacelles.</span>
+<span class="sd">    blended_wing_body      &lt;bool&gt;  set True for blended wing body configurations (default False)</span>
+<span class="sd">    units_type             &lt;str&gt;   &#39;SI&#39; (default), &#39;imperial&#39;, or &#39;inches&#39;</span>
+<span class="sd">    use_scaling            &lt;bool&gt;  apply VSP scaling factor (default True)</span>
+<span class="sd">    calculate_wetted_area  &lt;bool&gt;  compute wetted areas via OpenVSP (default True)</span>
 
 <span class="sd">    Outputs:</span>
 <span class="sd">    Writes RCAIDE vehicle with these geometries from VSP:    (All values default to SI. Any other 2nd argument outputs Imperial.)</span>
@@ -507,24 +542,9 @@
 <span class="sd"> </span>
 <span class="sd">    &quot;&quot;&quot;</span>  	
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">network_type</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Networks</span><span class="o">.</span><span class="n">Network</span><span class="p">)</span> <span class="o">!=</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Vehicle energy network type must be defined. </span><span class="se">\n</span><span class="s1"> Choose from list in RCAIDE.Framework.Networks&#39;</span><span class="p">)</span> 
+    <span class="n">vsp</span><span class="o">.</span><span class="n">ClearVSPModel</span><span class="p">()</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">propulsor_type</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Propulsor</span> <span class="p">)</span> <span class="o">!=</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Vehicle propulsor type must be defined. </span><span class="se">\n</span><span class="s1"> Choose from list in RCAIDE.Library.Compoments.Propulsors&#39;</span><span class="p">)</span>     
-
-    <span class="c1"># Get the last path from sys.path</span>
-    <span class="n">system_path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="c1"># Append the system path to the filename</span>
-    <span class="n">tag</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">system_path</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
-
-
-    <span class="n">vsp</span><span class="o">.</span><span class="n">ClearVSPModel</span><span class="p">()</span> 
-    
-    <span class="c1"># Get the last path from sys.path</span>
-    <span class="n">system_path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="c1"># Append the system path to the filename</span>
-    <span class="n">tag</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">system_path</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
     <span class="n">vsp</span><span class="o">.</span><span class="n">ReadVSPFile</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>	
 
     <span class="n">vsp_fuselages</span>     <span class="o">=</span> <span class="p">[]</span>
@@ -556,8 +576,7 @@
     <span class="k">for</span> <span class="n">geom</span> <span class="ow">in</span> <span class="n">vsp_geoms</span><span class="p">:</span> 
         <span class="n">geom_name</span> <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetGeomName</span><span class="p">(</span><span class="n">geom</span><span class="p">)</span>
         <span class="n">geom_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">geom_name</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">geom_name</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;: &#39;</span> <span class="o">+</span> <span class="n">geom</span><span class="p">)</span>
-        
+        <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">geom_name</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;: &#39;</span> <span class="o">+</span> <span class="n">geom</span><span class="p">)</span> 
     
     <span class="c1"># ------------------------------------------------------------------        </span>
     <span class="c1"># Use OpenVSP to calculate wetted area</span>
@@ -609,151 +628,168 @@
             
             <span class="n">vehicle</span><span class="o">.</span><span class="n">append_component</span><span class="p">(</span><span class="n">fuselage</span><span class="p">)</span>
         
-    <span class="c1"># ------------------------------------------------------------------			    </span>
-    <span class="c1"># Read Wings </span>
-    <span class="c1"># ------------------------------------------------------------------			</span>
-    <span class="k">for</span> <span class="n">wing_id</span> <span class="ow">in</span> <span class="n">vsp_wings</span><span class="p">:</span>
-        <span class="n">wing</span> <span class="o">=</span> <span class="n">read_vsp_wing</span><span class="p">(</span><span class="n">wing_id</span><span class="p">,</span> <span class="n">main_wing_tag</span><span class="p">,</span> <span class="n">units_type</span><span class="p">,</span><span class="n">use_scaling</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">calculate_wetted_area</span><span class="p">:</span>
-            <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span> <span class="o">=</span> <span class="n">measurements</span><span class="p">[</span><span class="n">vsp</span><span class="o">.</span><span class="n">GetGeomName</span><span class="p">(</span><span class="n">wing_id</span><span class="p">)]</span> <span class="o">*</span> <span class="p">(</span><span class="n">units_factor</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>  
-        <span class="n">vehicle</span><span class="o">.</span><span class="n">append_component</span><span class="p">(</span><span class="n">wing</span><span class="p">)</span>		 
-        
-    <span class="c1"># ------------------------------------------------------------------			    </span>
-    <span class="c1"># Read Enegy Network </span>
     <span class="c1"># ------------------------------------------------------------------</span>
-    <span class="n">network</span> <span class="o">=</span>  <span class="n">deepcopy</span><span class="p">(</span><span class="n">network_type</span><span class="p">)</span>  
-    <span class="n">i</span>       <span class="o">=</span> <span class="mi">0</span>
-    <span class="c1"># Condition when equal number of rotors and nacelles are defined </span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vsp_rotors</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">vsp_nacelles</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">idx</span> <span class="p">,</span> <span class="p">(</span><span class="n">rotor_id</span><span class="p">,</span><span class="n">nacelle_id</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">vsp_rotors</span><span class="p">,</span> <span class="n">vsp_nacelles</span><span class="p">)):</span>
-            <span class="c1"># define new propulsor </span>
-            <span class="n">propulsor</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">propulsor_type</span><span class="p">)</span> 
-            <span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span>  <span class="s1">&#39;propulsor_&#39;</span> <span class="o">+</span>  <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-            
-            <span class="c1"># Rotor </span>
-            <span class="n">rotor</span>           <span class="o">=</span> <span class="n">read_vsp_rotor</span><span class="p">(</span><span class="n">rotor_id</span><span class="p">,</span><span class="n">units_type</span><span class="p">)</span>
-            <span class="n">rotor</span><span class="o">.</span><span class="n">tag</span>       <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetGeomName</span><span class="p">(</span><span class="n">rotor_id</span><span class="p">)</span> 
-            <span class="n">propulsor</span><span class="o">.</span><span class="n">rotor</span> <span class="o">=</span> <span class="n">rotor</span>
-            
-            <span class="c1"># Nacelle </span>
-            <span class="n">nacelle</span> <span class="o">=</span> <span class="n">read_vsp_nacelle</span><span class="p">(</span><span class="n">nacelle_id</span><span class="p">,</span><span class="n">vsp_nacelle_type</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">units_type</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">calculate_wetted_area</span><span class="p">:</span>
-                <span class="n">nacelle</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span> <span class="o">=</span> <span class="n">measurements</span><span class="p">[</span><span class="n">vsp</span><span class="o">.</span><span class="n">GetGeomName</span><span class="p">(</span><span class="n">nacelle_id</span><span class="p">)]</span> <span class="o">*</span> <span class="p">(</span><span class="n">units_factor</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>           
-            <span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span> <span class="o">=</span> <span class="n">nacelle</span>          
-             
-            <span class="c1"># Append to Network </span>
-            <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span>
-            
-            
-            <span class="c1"># If symmetry is defined</span>
-            <span class="k">if</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetParmVal</span><span class="p">(</span><span class="n">rotor_id</span><span class="p">,</span> <span class="s1">&#39;Sym_Planar_Flag&#39;</span><span class="p">,</span> <span class="s1">&#39;Sym&#39;</span><span class="p">)</span><span class="o">==</span> <span class="mf">2.0</span><span class="p">:</span>
-                <span class="c1"># update index </span>
-                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-                
+    <span class="c1"># Read Wings</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="k">for</span> <span class="n">wing_id</span> <span class="ow">in</span> <span class="n">vsp_wings</span><span class="p">:</span>
+        <span class="n">wing</span> <span class="o">=</span> <span class="n">read_vsp_wing</span><span class="p">(</span><span class="n">wing_id</span><span class="p">,</span> <span class="n">main_wing_tag</span><span class="p">,</span> <span class="n">blended_wing_body</span><span class="p">,</span> <span class="n">last_blended_wing_body_center_body_section_index</span><span class="p">,</span> <span class="n">units_type</span><span class="p">,</span> <span class="n">use_scaling</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">calculate_wetted_area</span><span class="p">:</span>
+            <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span> <span class="o">=</span> <span class="n">measurements</span><span class="p">[</span><span class="n">vsp</span><span class="o">.</span><span class="n">GetGeomName</span><span class="p">(</span><span class="n">wing_id</span><span class="p">)]</span> <span class="o">*</span> <span class="p">(</span><span class="n">units_factor</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">vehicle</span><span class="o">.</span><span class="n">append_component</span><span class="p">(</span><span class="n">wing</span><span class="p">)</span>
+
+    <span class="c1"># If no main wing tag was specified, promote the largest non-vertical wing to Main_Wing</span>
+    <span class="k">if</span> <span class="n">main_wing_tag</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">non_vertical</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">wings</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="s1">&#39;vertical&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">non_vertical</span><span class="p">:</span>
+            <span class="n">largest</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">non_vertical</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <span class="n">w</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">largest</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Main_Wing</span><span class="p">):</span>
+                <span class="n">largest</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Main_Wing</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Read Energy Network (optional — only if network_type and propulsor_type are provided)</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="k">if</span> <span class="n">network_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">propulsor_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">network_type</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Networks</span><span class="o">.</span><span class="n">Network</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s1">&#39;network_type must be an instance of RCAIDE.Framework.Networks.Network, &#39;</span>
+                <span class="s1">&#39;e.g. RCAIDE.Framework.Networks.Fuel()&#39;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">propulsor_type</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Propulsor</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s1">&#39;propulsor_type must be an instance of RCAIDE.Library.Components.Powertrain.Propulsors.Propulsor, &#39;</span>
+                <span class="s1">&#39;e.g. RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan()&#39;</span>
+            <span class="p">)</span>
+        <span class="n">i</span>       <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># Condition when equal number of rotors and nacelles are defined </span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vsp_rotors</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">vsp_nacelles</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">idx</span> <span class="p">,</span> <span class="p">(</span><span class="n">rotor_id</span><span class="p">,</span><span class="n">nacelle_id</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">vsp_rotors</span><span class="p">,</span> <span class="n">vsp_nacelles</span><span class="p">)):</span>
                 <span class="c1"># define new propulsor </span>
-                <span class="n">propulsor</span> <span class="o">=</span>  <span class="n">deepcopy</span><span class="p">(</span><span class="n">propulsor_type</span><span class="p">)</span> 
+                <span class="n">propulsor</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">propulsor_type</span><span class="p">)</span> 
                 <span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span>  <span class="s1">&#39;propulsor_&#39;</span> <span class="o">+</span>  <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-                
                 
                 <span class="c1"># Rotor </span>
-                <span class="n">rotor_sym</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">rotor</span><span class="p">)</span>
-                <span class="n">rotor_sym</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">rotor_sym</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> 
-                <span class="n">propulsor</span><span class="o">.</span><span class="n">rotor</span> <span class="o">=</span> <span class="n">rotor_sym</span>
+                <span class="n">rotor</span>           <span class="o">=</span> <span class="n">read_vsp_rotor</span><span class="p">(</span><span class="n">rotor_id</span><span class="p">,</span><span class="n">units_type</span><span class="p">)</span>
+                <span class="n">rotor</span><span class="o">.</span><span class="n">tag</span>       <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetGeomName</span><span class="p">(</span><span class="n">rotor_id</span><span class="p">)</span> 
+                <span class="n">propulsor</span><span class="o">.</span><span class="n">rotor</span> <span class="o">=</span> <span class="n">rotor</span>
                 
-        
                 <span class="c1"># Nacelle </span>
-                <span class="n">nacelle_sym</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">nacelle</span><span class="p">)</span>
-                <span class="n">nacelle_sym</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">nacelle_sym</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>  
-                <span class="n">nacelle_sym</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span> <span class="o">=</span> <span class="n">nacelle</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span>
+                <span class="n">nacelle</span> <span class="o">=</span> <span class="n">read_vsp_nacelle</span><span class="p">(</span><span class="n">nacelle_id</span><span class="p">,</span><span class="n">vsp_nacelle_type</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">units_type</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">calculate_wetted_area</span><span class="p">:</span>
+                    <span class="n">nacelle</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span> <span class="o">=</span> <span class="n">measurements</span><span class="p">[</span><span class="n">vsp</span><span class="o">.</span><span class="n">GetGeomName</span><span class="p">(</span><span class="n">nacelle_id</span><span class="p">)]</span> <span class="o">*</span> <span class="p">(</span><span class="n">units_factor</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>           
                 <span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span> <span class="o">=</span> <span class="n">nacelle</span>          
-                 
-                <span class="c1"># Append to Network             </span>
-                <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span>
                 
-    <span class="c1"># Condition when only nacelles are defined </span>
-    <span class="k">elif</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vsp_rotors</span><span class="p">)</span> <span class="o">==</span>  <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vsp_nacelles</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="c1"># Append to Network</span>
+                <span class="n">network_type</span><span class="o">.</span><span class="n">propulsors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">idx</span> <span class="p">,</span>  <span class="n">nacelle_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">vsp_nacelles</span><span class="p">):</span>
-            <span class="c1"># define new propulsor </span>
-            <span class="n">propulsor</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">propulsor_type</span><span class="p">)</span> 
-            <span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span>  <span class="s1">&#39;propulsor_&#39;</span> <span class="o">+</span>  <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-             
-            <span class="c1"># Nacelle </span>
-            <span class="n">nacelle</span> <span class="o">=</span> <span class="n">read_vsp_nacelle</span><span class="p">(</span><span class="n">nacelle_id</span><span class="p">,</span><span class="n">vsp_nacelle_type</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">units_type</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">calculate_wetted_area</span><span class="p">:</span>
-                <span class="n">nacelle</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span> <span class="o">=</span> <span class="n">measurements</span><span class="p">[</span><span class="n">vsp</span><span class="o">.</span><span class="n">GetGeomName</span><span class="p">(</span><span class="n">nacelle_id</span><span class="p">)]</span> <span class="o">*</span> <span class="p">(</span><span class="n">units_factor</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>           
-            <span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span> <span class="o">=</span> <span class="n">nacelle</span>          
-             
-            <span class="c1"># Append to Network </span>
-            <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span>
-            
-            
-            <span class="c1"># If symmetry is defined</span>
-            <span class="k">if</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetParmVal</span><span class="p">(</span><span class="n">nacelle_id</span><span class="p">,</span> <span class="s1">&#39;Sym_Planar_Flag&#39;</span><span class="p">,</span> <span class="s1">&#39;Sym&#39;</span><span class="p">)</span><span class="o">==</span> <span class="mf">2.0</span><span class="p">:</span>
-                <span class="c1"># update index </span>
-                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-                
-                <span class="c1"># define new propulsor </span>
-                <span class="n">propulsor</span> <span class="o">=</span>  <span class="n">deepcopy</span><span class="p">(</span><span class="n">propulsor_type</span><span class="p">)</span> 
-                <span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span>  <span class="s1">&#39;propulsor_&#39;</span> <span class="o">+</span>  <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-                 
-        
-                <span class="c1"># Nacelle </span>
-                <span class="n">nacelle_sym</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">nacelle</span><span class="p">)</span>
-                <span class="n">nacelle_sym</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
-                <span class="n">nacelle_sym</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span> <span class="o">=</span> <span class="n">nacelle</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span>
-                <span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span> <span class="o">=</span> <span class="n">nacelle_sym</span>          
-                 
-                <span class="c1"># Append to Network             </span>
-                <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span>
 
-    <span class="c1"># Condition when only rotors are defined </span>
-    <span class="k">elif</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vsp_rotors</span><span class="p">)</span> <span class="o">&gt;</span>  <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vsp_nacelles</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">idx</span> <span class="p">,</span> <span class="n">rotor_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span> <span class="n">vsp_rotors</span><span class="p">):</span>
-            <span class="c1"># define new propulsor </span>
-            <span class="n">propulsor</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">propulsor_type</span><span class="p">)</span> 
-            <span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span>  <span class="s1">&#39;propulsor_&#39;</span> <span class="o">+</span>  <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-            
-            <span class="c1"># Rotor </span>
-            <span class="n">rotor</span>           <span class="o">=</span> <span class="n">read_vsp_rotor</span><span class="p">(</span><span class="n">rotor_id</span><span class="p">,</span><span class="n">units_type</span><span class="p">)</span>
-            <span class="n">rotor</span><span class="o">.</span><span class="n">tag</span>       <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetGeomName</span><span class="p">(</span><span class="n">rotor_id</span><span class="p">)</span> 
-            <span class="n">propulsor</span><span class="o">.</span><span class="n">rotor</span> <span class="o">=</span> <span class="n">rotor</span>
-            
-            <span class="c1"># Append to Network </span>
-            <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span>
-            
-            
-            <span class="c1"># If symmetry is defined</span>
-            <span class="k">if</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetParmVal</span><span class="p">(</span><span class="n">rotor_id</span><span class="p">,</span> <span class="s1">&#39;Sym_Planar_Flag&#39;</span><span class="p">,</span> <span class="s1">&#39;Sym&#39;</span><span class="p">)</span><span class="o">==</span> <span class="mf">2.0</span><span class="p">:</span>
-                <span class="c1"># update index </span>
-                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-                
-                <span class="c1"># define new propulsor </span>
-                <span class="n">propulsor</span> <span class="o">=</span>  <span class="n">deepcopy</span><span class="p">(</span><span class="n">propulsor_type</span><span class="p">)</span> 
+                <span class="c1"># If symmetry is defined</span>
+                <span class="k">if</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetParmVal</span><span class="p">(</span><span class="n">rotor_id</span><span class="p">,</span> <span class="s1">&#39;Sym_Planar_Flag&#39;</span><span class="p">,</span> <span class="s1">&#39;Sym&#39;</span><span class="p">)</span><span class="o">==</span> <span class="mf">2.0</span><span class="p">:</span>
+                    <span class="c1"># update index</span>
+                    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                    <span class="c1"># define new propulsor</span>
+                    <span class="n">propulsor</span> <span class="o">=</span>  <span class="n">deepcopy</span><span class="p">(</span><span class="n">propulsor_type</span><span class="p">)</span>
+                    <span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span>  <span class="s1">&#39;propulsor_&#39;</span> <span class="o">+</span>  <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+
+                    <span class="c1"># Rotor</span>
+                    <span class="n">rotor_sym</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">rotor</span><span class="p">)</span>
+                    <span class="n">rotor_sym</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">rotor_sym</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">propulsor</span><span class="o">.</span><span class="n">rotor</span> <span class="o">=</span> <span class="n">rotor_sym</span>
+
+
+                    <span class="c1"># Nacelle</span>
+                    <span class="n">nacelle_sym</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">nacelle</span><span class="p">)</span>
+                    <span class="n">nacelle_sym</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">nacelle_sym</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">nacelle_sym</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span> <span class="o">=</span> <span class="n">nacelle</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span>
+                    <span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span> <span class="o">=</span> <span class="n">nacelle</span>
+
+                    <span class="c1"># Append to Network</span>
+                    <span class="n">network_type</span><span class="o">.</span><span class="n">propulsors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span>
+
+        <span class="c1"># Condition when only nacelles are defined</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vsp_rotors</span><span class="p">)</span> <span class="o">==</span>  <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vsp_nacelles</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">nacelle_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">vsp_nacelles</span><span class="p">):</span>
+                <span class="c1"># define new propulsor</span>
+                <span class="n">propulsor</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">propulsor_type</span><span class="p">)</span>
                 <span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span>  <span class="s1">&#39;propulsor_&#39;</span> <span class="o">+</span>  <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-                
-                
-                <span class="c1"># Rotor </span>
-                <span class="n">rotor_sym</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">rotor</span><span class="p">)</span>
-                <span class="n">rotor_sym</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">rotor_sym</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> 
-                <span class="n">propulsor</span><span class="o">.</span><span class="n">rotor</span> <span class="o">=</span> <span class="n">rotor_sym</span>  
-                <span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span> <span class="o">=</span> <span class="n">nacelle</span>          
-                 
-                <span class="c1"># Append to Network             </span>
-                <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span> 
-            
-    <span class="k">else</span><span class="p">:</span>
-        <span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;Unequal numbers of rotors and nacelles defined. Skipping propulsor definition.&#39;</span><span class="p">)</span> 
-                
-    <span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">network</span><span class="p">)</span>
-   
+
+                <span class="c1"># Nacelle</span>
+                <span class="n">nacelle</span> <span class="o">=</span> <span class="n">read_vsp_nacelle</span><span class="p">(</span><span class="n">nacelle_id</span><span class="p">,</span> <span class="n">vsp_nacelle_type</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">units_type</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">calculate_wetted_area</span><span class="p">:</span>
+                    <span class="n">nacelle</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span> <span class="o">=</span> <span class="n">measurements</span><span class="p">[</span><span class="n">vsp</span><span class="o">.</span><span class="n">GetGeomName</span><span class="p">(</span><span class="n">nacelle_id</span><span class="p">)]</span> <span class="o">*</span> <span class="p">(</span><span class="n">units_factor</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+                <span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span> <span class="o">=</span> <span class="n">nacelle</span>
+
+                <span class="c1"># Append to Network</span>
+                <span class="n">network_type</span><span class="o">.</span><span class="n">propulsors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span>
+
+
+                <span class="c1"># If symmetry is defined</span>
+                <span class="k">if</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetParmVal</span><span class="p">(</span><span class="n">nacelle_id</span><span class="p">,</span> <span class="s1">&#39;Sym_Planar_Flag&#39;</span><span class="p">,</span> <span class="s1">&#39;Sym&#39;</span><span class="p">)</span><span class="o">==</span> <span class="mf">2.0</span><span class="p">:</span>
+                    <span class="c1"># update index</span>
+                    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                    <span class="c1"># define new propulsor</span>
+                    <span class="n">propulsor</span> <span class="o">=</span>  <span class="n">deepcopy</span><span class="p">(</span><span class="n">propulsor_type</span><span class="p">)</span>
+                    <span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span>  <span class="s1">&#39;propulsor_&#39;</span> <span class="o">+</span>  <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+
+                    <span class="c1"># Nacelle</span>
+                    <span class="n">nacelle_sym</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">nacelle</span><span class="p">)</span>
+                    <span class="n">nacelle_sym</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+                    <span class="n">nacelle_sym</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span> <span class="o">=</span> <span class="n">nacelle</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span>
+                    <span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span> <span class="o">=</span> <span class="n">nacelle_sym</span>
+
+                    <span class="c1"># Append to Network</span>
+                    <span class="n">network_type</span><span class="o">.</span><span class="n">propulsors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span>
+
+        <span class="c1"># Condition when only rotors are defined</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vsp_rotors</span><span class="p">)</span> <span class="o">&gt;</span>  <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vsp_nacelles</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">rotor_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">vsp_rotors</span><span class="p">):</span>
+                <span class="c1"># define new propulsor</span>
+                <span class="n">propulsor</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">propulsor_type</span><span class="p">)</span>
+                <span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span>  <span class="s1">&#39;propulsor_&#39;</span> <span class="o">+</span>  <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+                <span class="c1"># Rotor</span>
+                <span class="n">rotor</span>           <span class="o">=</span> <span class="n">read_vsp_rotor</span><span class="p">(</span><span class="n">rotor_id</span><span class="p">,</span> <span class="n">units_type</span><span class="p">)</span>
+                <span class="n">rotor</span><span class="o">.</span><span class="n">tag</span>       <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetGeomName</span><span class="p">(</span><span class="n">rotor_id</span><span class="p">)</span>
+                <span class="n">propulsor</span><span class="o">.</span><span class="n">rotor</span> <span class="o">=</span> <span class="n">rotor</span>
+
+                <span class="c1"># Append to Network</span>
+                <span class="n">network_type</span><span class="o">.</span><span class="n">propulsors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span>
+
+
+                <span class="c1"># If symmetry is defined</span>
+                <span class="k">if</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetParmVal</span><span class="p">(</span><span class="n">rotor_id</span><span class="p">,</span> <span class="s1">&#39;Sym_Planar_Flag&#39;</span><span class="p">,</span> <span class="s1">&#39;Sym&#39;</span><span class="p">)</span><span class="o">==</span> <span class="mf">2.0</span><span class="p">:</span>
+                    <span class="c1"># update index</span>
+                    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                    <span class="c1"># define new propulsor</span>
+                    <span class="n">propulsor</span> <span class="o">=</span>  <span class="n">deepcopy</span><span class="p">(</span><span class="n">propulsor_type</span><span class="p">)</span>
+                    <span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span>  <span class="s1">&#39;propulsor_&#39;</span> <span class="o">+</span>  <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+
+                    <span class="c1"># Rotor</span>
+                    <span class="n">rotor_sym</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">rotor</span><span class="p">)</span>
+                    <span class="n">rotor_sym</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">rotor_sym</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">propulsor</span><span class="o">.</span><span class="n">rotor</span> <span class="o">=</span> <span class="n">rotor_sym</span>
+
+                    <span class="c1"># Append to Network</span>
+                    <span class="n">network_type</span><span class="o">.</span><span class="n">propulsors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Unequal numbers of rotors and nacelles defined. Skipping propulsor definition.&#39;</span><span class="p">)</span>
+
+        <span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">network_type</span><span class="p">)</span>
+    
     
     <span class="c1"># get origin of fuselage</span>
     <span class="n">vsp_origin</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">fuselage</span> <span class="ow">in</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">fuselages</span><span class="p">:</span>
         <span class="n">vsp_origin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">vsp_origin</span><span class="p">,</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
         
-    <span class="c1"># shift all compoments to new origin</span>
+    <span class="c1"># shift all Components to new origin</span>
     <span class="n">origin_shift</span> <span class="o">=</span>  <span class="o">-</span><span class="n">vsp_origin</span>
     
 
@@ -813,8 +849,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -834,7 +870,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -848,7 +884,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

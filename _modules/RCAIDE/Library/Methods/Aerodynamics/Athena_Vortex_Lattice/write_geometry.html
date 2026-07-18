@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Methods/Aerodynamics/Athena_Vortex_Lattice/write_geometry';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Methods/Aerodynamics/Athena_Vortex_Lattice/write_geometry.html" />
     <link rel="index" title="Index" href="../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../../_static/language_data.js"></script>
+    <script src="../../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -394,7 +413,7 @@
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
 <div class="viewcode-block" id="write_geometry">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Methods.Aerodynamics.Athena_Vortex_Lattice.write_geometry.html#RCAIDE.Library.Methods.Aerodynamics.Athena_Vortex_Lattice.write_geometry.write_geometry">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">write_geometry</span><span class="p">(</span><span class="n">avl_object</span><span class="p">,</span><span class="n">run_script_path</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">write_geometry</span><span class="p">(</span><span class="n">avl_object</span><span class="p">,</span><span class="n">run_script_path</span><span class="p">,</span><span class="n">vehicle</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This function writes the translated aircraft geometry into text file read </span>
 <span class="sd">    by AVL when it is called</span>
 
@@ -414,38 +433,23 @@
 <span class="sd">        N/A</span>
 <span class="sd">    &quot;&quot;&quot;</span>    
     
-    <span class="c1"># unpack inputs</span>
-    <span class="n">aircraft</span>                          <span class="o">=</span> <span class="n">avl_object</span><span class="o">.</span><span class="n">vehicle</span>
+    <span class="c1"># unpack inputs </span>
     <span class="n">geometry_file</span>                     <span class="o">=</span> <span class="n">avl_object</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">filenames</span><span class="o">.</span><span class="n">features</span>
     <span class="n">number_of_spanwise_vortices</span>       <span class="o">=</span> <span class="n">avl_object</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">number_of_spanwise_vortices</span>
-    <span class="n">number_of_chordwise_vortices</span>      <span class="o">=</span> <span class="n">avl_object</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">number_of_chordwise_vortices</span> 
-    
-    <span class="n">avl_object</span><span class="o">.</span><span class="n">reference_values</span><span class="o">.</span><span class="n">S_ref</span>        <span class="o">=</span> <span class="n">avl_object</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">wings</span><span class="p">[</span><span class="s1">&#39;main_wing&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span>
-    <span class="n">avl_object</span><span class="o">.</span><span class="n">reference_values</span><span class="o">.</span><span class="n">c_ref</span>        <span class="o">=</span> <span class="n">avl_object</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">wings</span><span class="p">[</span><span class="s1">&#39;main_wing&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_aerodynamic</span>
-    <span class="n">avl_object</span><span class="o">.</span><span class="n">reference_values</span><span class="o">.</span><span class="n">b_ref</span>        <span class="o">=</span> <span class="n">avl_object</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">wings</span><span class="p">[</span><span class="s1">&#39;main_wing&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span>
-    <span class="n">avl_object</span><span class="o">.</span><span class="n">reference_values</span><span class="o">.</span><span class="n">X_ref</span>        <span class="o">=</span> <span class="n">avl_object</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">avl_object</span><span class="o">.</span><span class="n">reference_values</span><span class="o">.</span><span class="n">Y_ref</span>        <span class="o">=</span> <span class="n">avl_object</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">avl_object</span><span class="o">.</span><span class="n">reference_values</span><span class="o">.</span><span class="n">Z_ref</span>        <span class="o">=</span> <span class="n">avl_object</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
-    <span class="n">avl_object</span><span class="o">.</span><span class="n">reference_values</span><span class="o">.</span><span class="n">aspect_ratio</span> <span class="o">=</span> <span class="p">(</span><span class="n">avl_object</span><span class="o">.</span><span class="n">reference_values</span><span class="o">.</span><span class="n">b_ref</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">avl_object</span><span class="o">.</span><span class="n">reference_values</span><span class="o">.</span><span class="n">S_ref</span> 
+    <span class="n">number_of_chordwise_vortices</span>      <span class="o">=</span> <span class="n">avl_object</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">number_of_chordwise_vortices</span>   
     
     <span class="c1"># Open the geometry file after purging if it already exists</span>
     <span class="n">purge_files</span><span class="p">([</span><span class="n">geometry_file</span><span class="p">])</span> 
     <span class="n">geometry</span>             <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">geometry_file</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">geometry_file</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">geometry</span><span class="p">:</span>
-        <span class="n">header_text</span>       <span class="o">=</span> <span class="n">make_header_text</span><span class="p">(</span><span class="n">avl_object</span><span class="p">)</span>
+        <span class="n">header_text</span>       <span class="o">=</span> <span class="n">make_header_text</span><span class="p">(</span><span class="n">avl_object</span><span class="p">,</span><span class="n">vehicle</span><span class="p">)</span>
         <span class="n">geometry</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">header_text</span><span class="p">)</span>
         
-        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">aircraft</span><span class="o">.</span><span class="n">wings</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">wings</span><span class="p">:</span>
             <span class="n">avl_wing</span>      <span class="o">=</span> <span class="n">translate_avl_wing</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
             <span class="n">wing_text</span>     <span class="o">=</span> <span class="n">make_surface_text</span><span class="p">(</span><span class="n">avl_wing</span><span class="p">,</span><span class="n">number_of_spanwise_vortices</span><span class="p">,</span><span class="n">number_of_chordwise_vortices</span><span class="p">)</span>
-            <span class="n">geometry</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">wing_text</span><span class="p">)</span>  
-        
-        <span class="k">if</span> <span class="n">avl_object</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">model_fuselage</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">aircraft</span><span class="o">.</span><span class="n">fuselages</span><span class="p">:</span>
-                <span class="n">avl_body</span>  <span class="o">=</span> <span class="n">translate_avl_body</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-                <span class="n">body_text</span> <span class="o">=</span> <span class="n">make_body_text</span><span class="p">(</span><span class="n">avl_body</span><span class="p">,</span><span class="n">number_of_chordwise_vortices</span><span class="p">)</span>
-                <span class="n">geometry</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">body_text</span><span class="p">)</span>
+            <span class="n">geometry</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">wing_text</span><span class="p">)</span>   
             
     <span class="k">return</span></div>
 
@@ -453,7 +457,7 @@
 
 <div class="viewcode-block" id="make_header_text">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Methods.Aerodynamics.Athena_Vortex_Lattice.write_geometry.html#RCAIDE.Library.Methods.Aerodynamics.Athena_Vortex_Lattice.write_geometry.make_header_text">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">make_header_text</span><span class="p">(</span><span class="n">avl_object</span><span class="p">):</span>  
+<span class="k">def</span><span class="w"> </span><span class="nf">make_header_text</span><span class="p">(</span><span class="n">avl_object</span><span class="p">,</span><span class="n">vehicle</span><span class="p">):</span>  
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This function writes the header using the template required for the AVL executable to read</span>
 
 <span class="sd">    Assumptions:</span>
@@ -466,11 +470,11 @@
 <span class="sd">        avl_object.settings.flow_symmetry.xz_plane                      [-]</span>
 <span class="sd">        avl_object.settings.flow_symmetry.xy_parallel                   [-]</span>
 <span class="sd">        avl_object.settings.flow_symmetry.z_symmetry_plane              [-]</span>
-<span class="sd">        avl_object.vehicle.wings[&#39;main_wing&#39;].areas.reference          [meters**2]</span>
-<span class="sd">        avl_object.vehicle.wings[&#39;main_wing&#39;].chords.mean_aerodynamic  [meters]</span>
-<span class="sd">        avl_object.vehicle.wings[&#39;main_wing&#39;].spans.projected          [meters]</span>
-<span class="sd">        avl_object.vehicle.mass_properties.center_of_gravity           [meters]</span>
-<span class="sd">        avl_object.vehicle.tag                                         [-]</span>
+<span class="sd">        vehicle.wings[&#39;main_wing&#39;].areas.reference          [meters**2]</span>
+<span class="sd">        vehicle.wings[&#39;main_wing&#39;].chords.mean_aerodynamic  [meters]</span>
+<span class="sd">        vehicle.wings[&#39;main_wing&#39;].spans.projected          [meters]</span>
+<span class="sd">        vehicle.mass_properties.center_of_gravity           [meters]</span>
+<span class="sd">        vehicle.tag                                         [-]</span>
 <span class="sd">    </span>
 <span class="sd">    Outputs:</span>
 <span class="sd">        header_text                                                     [-]</span>
@@ -499,13 +503,13 @@
     <span class="n">Iysym</span> <span class="o">=</span> <span class="n">avl_object</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">flow_symmetry</span><span class="o">.</span><span class="n">xz_plane</span>
     <span class="n">Izsym</span> <span class="o">=</span> <span class="n">avl_object</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">flow_symmetry</span><span class="o">.</span><span class="n">xy_parallel</span>
     <span class="n">Zsym</span>  <span class="o">=</span> <span class="n">avl_object</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">flow_symmetry</span><span class="o">.</span><span class="n">z_symmetry_plane</span>
-    <span class="n">Sref</span>  <span class="o">=</span> <span class="n">avl_object</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">wings</span><span class="p">[</span><span class="s1">&#39;main_wing&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span>
-    <span class="n">Cref</span>  <span class="o">=</span> <span class="n">avl_object</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">wings</span><span class="p">[</span><span class="s1">&#39;main_wing&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_aerodynamic</span>
-    <span class="n">Bref</span>  <span class="o">=</span> <span class="n">avl_object</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">wings</span><span class="p">[</span><span class="s1">&#39;main_wing&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span>
-    <span class="n">Xref</span>  <span class="o">=</span> <span class="n">avl_object</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">Yref</span>  <span class="o">=</span> <span class="n">avl_object</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">Zref</span>  <span class="o">=</span> <span class="n">avl_object</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
-    <span class="n">name</span>  <span class="o">=</span> <span class="n">avl_object</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">tag</span>     
+    <span class="n">Sref</span>  <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">wings</span><span class="p">[</span><span class="s1">&#39;main_wing&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span>
+    <span class="n">Cref</span>  <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">wings</span><span class="p">[</span><span class="s1">&#39;main_wing&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_aerodynamic</span>
+    <span class="n">Bref</span>  <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">wings</span><span class="p">[</span><span class="s1">&#39;main_wing&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span>
+    <span class="n">Xref</span>  <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">Yref</span>  <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">Zref</span>  <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">name</span>  <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">tag</span>     
     <span class="n">mach</span> <span class="o">=</span> <span class="mf">0.0</span>
 
     <span class="c1"># Insert inputs into the template</span>
@@ -527,7 +531,7 @@
 <span class="sd">        None</span>
 
 <span class="sd">    Inputs:</span>
-<span class="sd">       avl_wing.symmetric</span>
+<span class="sd">       avl_wing.xz_plane_symmetric</span>
 <span class="sd">       avl_wing.tag</span>
 <span class="sd">        </span>
 <span class="sd">    Outputs:</span>
@@ -547,7 +551,7 @@
 <span class="sd">{1}         {2}         {3}      {4}{5}</span>
 <span class="sd">&#39;&#39;&#39;</span>        
     <span class="c1"># Unpack inputs</span>
-    <span class="n">symm</span> <span class="o">=</span> <span class="n">avl_wing</span><span class="o">.</span><span class="n">symmetric</span>
+    <span class="n">symm</span> <span class="o">=</span> <span class="n">avl_wing</span><span class="o">.</span><span class="n">xz_plane_symmetric</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">avl_wing</span><span class="o">.</span><span class="n">tag</span>
 
     <span class="k">if</span> <span class="n">symm</span><span class="p">:</span>
@@ -827,8 +831,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -848,7 +852,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -862,7 +866,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

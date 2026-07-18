@@ -1,0 +1,6 @@
+RCAIDE.Library.Methods.Mass\_Properties.Center\_of\_Gravity.compute\_wing\_integral\_tank\_center\_of\_gravity.compute\_wing\_integral\_tank\_center\_of\_gravity
+=================================================================================================================================================================
+
+.. currentmodule:: RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_wing_integral_tank_center_of_gravity
+
+.. autofunction:: compute_wing_integral_tank_center_of_gravity

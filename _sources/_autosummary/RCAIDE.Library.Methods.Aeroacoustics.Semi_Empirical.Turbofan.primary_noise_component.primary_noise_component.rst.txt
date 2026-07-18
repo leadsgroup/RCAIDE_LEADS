@@ -1,0 +1,6 @@
+RCAIDE.Library.Methods.Aeroacoustics.Semi\_Empirical.Turbofan.primary\_noise\_component.primary\_noise\_component
+=================================================================================================================
+
+.. currentmodule:: RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Turbofan.primary_noise_component
+
+.. autofunction:: primary_noise_component

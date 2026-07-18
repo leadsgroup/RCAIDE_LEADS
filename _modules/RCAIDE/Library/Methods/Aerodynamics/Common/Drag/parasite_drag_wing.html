@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Methods/Aerodynamics/Common/Drag/parasite_drag_wing';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Methods/Aerodynamics/Common/Drag/parasite_drag_wing.html" />
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../../../_static/language_data.js"></script>
+    <script src="../../../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -398,132 +417,161 @@
 <div class="viewcode-block" id="parasite_drag_wing">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Aerodynamics.Common.Drag.parasite_drag_wing.html#RCAIDE.Library.Methods.Aerodynamics.Common.Drag.parasite_drag_wing.parasite_drag_wing">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">parasite_drag_wing</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">settings</span><span class="p">,</span><span class="n">geometry</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the parasite drag due to wings</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the parasite drag coefficient for wings accounting for segments and compressibility effects.</span>
 
-<span class="sd">    Assumptions:</span>
-<span class="sd">    Basic fit</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    state : Data</span>
+<span class="sd">        Flight conditions containing:</span>
+<span class="sd">            - conditions.freestream.mach_number : float</span>
+<span class="sd">                Freestream Mach number [unitless]</span>
+<span class="sd">            - conditions.freestream.temperature : float</span>
+<span class="sd">                Freestream static temperature [K]</span>
+<span class="sd">            - conditions.freestream.reynolds_number : float</span>
+<span class="sd">                Freestream Reynolds number per unit length [unitless/m]</span>
+<span class="sd">    settings : dict</span>
+<span class="sd">        Aerodynamic analysis settings containing:</span>
+<span class="sd">            - wing_parasite_drag_form_factor : float</span>
+<span class="sd">                Form factor for wing parasite drag [unitless]</span>
+<span class="sd">    geometry : Data</span>
+<span class="sd">        Wing geometry containing:</span>
+<span class="sd">            - tag : str</span>
+<span class="sd">                Unique identifier for the wing</span>
+<span class="sd">            - thickness_to_chord : float</span>
+<span class="sd">                Thickness-to-chord ratio [unitless]</span>
+<span class="sd">            - areas.reference : float</span>
+<span class="sd">                Reference area of the wing [m²]</span>
+<span class="sd">            - areas.wetted : float</span>
+<span class="sd">                Wetted area of the wing [m²]</span>
+<span class="sd">            - transition_x_upper : float</span>
+<span class="sd">                Upper surface transition point as fraction of chord [unitless]</span>
+<span class="sd">            - transition_x_lower : float</span>
+<span class="sd">                Lower surface transition point as fraction of chord [unitless]</span>
+<span class="sd">            - segments : dict, optional</span>
+<span class="sd">                Dictionary of wing segments containing:</span>
+<span class="sd">                    - thickness_to_chord : float</span>
+<span class="sd">                        Thickness-to-chord ratio of segment [unitless]</span>
+<span class="sd">                    - chords.mean_aerodynamic : float</span>
+<span class="sd">                        Mean aerodynamic chord of segment [m]</span>
+<span class="sd">                    - areas.reference : float</span>
+<span class="sd">                        Reference area of segment [m²]</span>
+<span class="sd">                    - areas.wetted : float</span>
+<span class="sd">                        Wetted area of segment [m²]</span>
+<span class="sd">                    - sweeps.leading_edge : float</span>
+<span class="sd">                        Leading edge sweep angle of segment [radians]</span>
+<span class="sd">            - chords.mean_aerodynamic : float</span>
+<span class="sd">                Mean aerodynamic chord of wing [m]</span>
+<span class="sd">            - sweeps.leading_edge : float</span>
+<span class="sd">                Leading edge sweep angle of wing [radians]</span>
 
-<span class="sd">    Source:</span>
-<span class="sd">    http://aerodesign.stanford.edu/aircraftdesign/aircraftdesign.html (Stanford AA241 A/B Course Notes)</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Results are stored in state.conditions.aerodynamics.coefficients.drag.parasite[wing.tag]</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    settings.wing_parasite_drag_form_factor      [Unitless]</span>
-<span class="sd">    state.conditions.freestream.</span>
-<span class="sd">      mach_number                                [Unitless]</span>
-<span class="sd">      temperature                                [K]</span>
-<span class="sd">      reynolds_number                            [Unitless]</span>
-<span class="sd">    geometry.</span>
-<span class="sd">      areas.reference                            [m^2]</span>
-<span class="sd">      chords.mean_aerodynamic                    [m]</span>
-<span class="sd">      thickness_to_chord                         [Unitless]</span>
-<span class="sd">      sweeps.quarter_chord                       [radians]</span>
-<span class="sd">      aspect_ratio                               [Unitless]</span>
-<span class="sd">      spans.projected                            [m]</span>
-<span class="sd">      areas.affected                             [m^2]</span>
-<span class="sd">      areas.wetted                               [m^2]</span>
-<span class="sd">      transition_x_upper                         [Unitless]</span>
-<span class="sd">      transition_x_lower                         [Unitless]</span>
-<span class="sd">      </span>
-<span class="sd">      </span>
-<span class="sd">    Returns:</span>
-<span class="sd">    wing_parasite_drag                           [Unitless] </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function calculates the parasite drag coefficient for wings using compressible</span>
+<span class="sd">    mixed flat plate theory with form factor corrections. The calculation handles both</span>
+<span class="sd">    segmented and non-segmented wings, accounting for different transition points on</span>
+<span class="sd">    upper and lower surfaces.</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Mixed laminar-turbulent boundary layer with specified transition points</span>
+<span class="sd">        * Compressible flat plate skin friction correlation</span>
+<span class="sd">        * Form factor accounts for airfoil thickness and sweep effects</span>
+<span class="sd">        * Cubic spline blending smooths transition between subsonic and supersonic regimes</span>
+<span class="sd">        * Segmented wings are analyzed segment by segment and area-weighted</span>
+<span class="sd">    </span>
+<span class="sd">    **Theory**</span>
+
+<span class="sd">    For segmented wings, the total parasite drag is area-weighted:</span>
+
+<span class="sd">    :math:`C_{D,parasite} = \\frac{\\sum_{i=1}^{n-1} C_{D,i} \\cdot S_{ref,i}}{S_{ref,total}}`</span>
+
+<span class="sd">    where each segment&#39;s drag coefficient is calculated using the compute_parasite_drag function.</span>
+
+<span class="sd">    For non-segmented wings, the drag is calculated directly:</span>
+
+<span class="sd">    :math:`C_{D,parasite} = \\frac{C_{f,upper} + C_{f,lower}}{2} \\cdot k_w \\cdot \\frac{S_{wet}}{S_{ref}}`</span>
+
+<span class="sd">    where:</span>
+<span class="sd">        - :math:`C_{f,upper}` and :math:`C_{f,lower}` are the skin friction coefficients</span>
+<span class="sd">        - :math:`k_w` is the form factor</span>
+<span class="sd">        - :math:`S_{wet}` and :math:`S_{ref}` are the wetted and reference areas</span>
+<span class="sd">    </span>
+<span class="sd">    **Definitions**</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Form Factor&#39;</span>
+<span class="sd">        Multiplier accounting for the increase in drag due to airfoil shape compared to a flat plate.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Stanford AA241 Course Notes. http://aerodesign.stanford.edu/aircraftdesign/aircraftdesign.html</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compute_parasite_drag</span>
+<span class="sd">    RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compressible_mixed_flat_plate</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="c1"># unpack inputs</span>
-    <span class="n">C</span>                             <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">wing_parasite_drag_form_factor</span> 
-    <span class="n">recalculate_total_wetted_area</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">recalculate_total_wetted_area</span>
-    <span class="n">freestream</span>                    <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span>
-    
-    <span class="c1"># conditions</span>
-    <span class="n">Mc</span>  <span class="o">=</span> <span class="n">freestream</span><span class="o">.</span><span class="n">mach_number</span>
-    <span class="n">Tc</span>  <span class="o">=</span> <span class="n">freestream</span><span class="o">.</span><span class="n">temperature</span>    
-    <span class="n">re</span>  <span class="o">=</span> <span class="n">freestream</span><span class="o">.</span><span class="n">reynolds_number</span>     
-    
-    <span class="n">wing</span> <span class="o">=</span> <span class="n">geometry</span>
-    <span class="n">wing_parasite_drag</span> <span class="o">=</span> <span class="mf">0.0</span>
-    
-    <span class="c1"># Unpack wing</span>
-    <span class="n">exposed_root_chord_offset</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">exposed_root_chord_offset</span>
-    <span class="n">t_c_w</span>                     <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">thickness_to_chord</span>
-    <span class="n">Sref</span>                      <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span>
-    <span class="n">num_segments</span>              <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>     
-    
-    <span class="c1"># if wing has segments, compute and sum parasite drag of each segment</span>
+    <span class="n">C</span>             <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">wing_parasite_drag_form_factor</span>  
+    <span class="n">freestream</span>    <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span> 
+    <span class="n">Mc</span>            <span class="o">=</span> <span class="n">freestream</span><span class="o">.</span><span class="n">mach_number</span>
+    <span class="n">Tc</span>            <span class="o">=</span> <span class="n">freestream</span><span class="o">.</span><span class="n">temperature</span>    
+    <span class="n">re</span>            <span class="o">=</span> <span class="n">freestream</span><span class="o">.</span><span class="n">reynolds_number</span> 
+    <span class="n">wing</span>          <span class="o">=</span> <span class="n">geometry</span> 
+    <span class="n">Sref</span>          <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span>   
+    <span class="n">num_segments</span>  <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
+    <span class="n">wing_parasite_drag</span> <span class="o">=</span> <span class="mf">0.0</span>     
+    
+    <span class="c1"># if wing has segments, compute and sum parasite drag of each segment </span>
     <span class="n">xtu</span>       <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">transition_x_upper</span>
     <span class="n">xtl</span>       <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">transition_x_lower</span>     
+     
+    <span class="n">seg_tags</span>                     <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">total_segment_parasite_drag</span>  <span class="o">=</span> <span class="mi">0</span> 
+    <span class="n">total_segment_k_w</span>            <span class="o">=</span> <span class="mi">0</span> 
+    <span class="n">total_segment_cf_w_u</span>         <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">total_segment_cf_w_l</span>         <span class="o">=</span> <span class="mi">0</span> 
+    <span class="n">total_segment_k_comp_u</span>       <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">total_segment_k_comp_l</span>       <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">total_k_reyn_u</span>               <span class="o">=</span> <span class="mi">0</span>          
+    <span class="n">total_k_reyn_l</span>               <span class="o">=</span> <span class="mi">0</span>
     
-    <span class="k">if</span> <span class="n">num_segments</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>        
-        <span class="n">total_segment_parasite_drag</span>  <span class="o">=</span> <span class="mi">0</span> 
-        <span class="n">total_segment_k_w</span>            <span class="o">=</span> <span class="mi">0</span> 
-        <span class="n">total_segment_cf_w_u</span>         <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">total_segment_cf_w_l</span>         <span class="o">=</span> <span class="mi">0</span> 
-        <span class="n">total_segment_k_comp_u</span>       <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">total_segment_k_comp_l</span>       <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">total_k_reyn_u</span>               <span class="o">=</span> <span class="mi">0</span>          
-        <span class="n">total_k_reyn_l</span>               <span class="o">=</span> <span class="mi">0</span>
-        
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">segment</span> <span class="ow">in</span> <span class="nb">enumerate</span> <span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">):</span> 
-            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">num_segments</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-                <span class="k">continue</span>  
-            <span class="n">mac_seg</span>       <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_aerodynamic</span>
-            <span class="n">Sref_seg</span>      <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span>
-            <span class="n">t_c_s</span>         <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">thickness_to_chord</span>
-            <span class="n">Swet_seg</span>      <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span>
-            <span class="n">sweep_seg</span>     <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span>
-    
-            <span class="c1"># compute parasite drag coef., form factor, skin friction coef., compressibility factor and reynolds number for segments</span>
-            <span class="n">segment_parasite_drag</span> <span class="p">,</span> <span class="n">segment_k_w</span><span class="p">,</span> <span class="n">segment_cf_w_u</span><span class="p">,</span> <span class="n">segment_cf_w_l</span><span class="p">,</span> <span class="n">segment_k_comp_u</span><span class="p">,</span> <span class="n">segment_k_comp_l</span><span class="p">,</span> <span class="n">k_reyn_u</span> <span class="p">,</span><span class="n">k_reyn_l</span> <span class="o">=</span> <span class="n">compute_parasite_drag</span><span class="p">(</span><span class="n">re</span><span class="p">,</span><span class="n">mac_seg</span><span class="p">,</span><span class="n">Mc</span><span class="p">,</span><span class="n">Tc</span><span class="p">,</span><span class="n">xtu</span><span class="p">,</span><span class="n">xtl</span><span class="p">,</span><span class="n">sweep_seg</span><span class="p">,</span><span class="n">t_c_s</span><span class="p">,</span><span class="n">Sref_seg</span><span class="p">,</span><span class="n">Swet_seg</span><span class="p">,</span><span class="n">C</span><span class="p">)</span>
-            
-            <span class="n">total_segment_parasite_drag</span>  <span class="o">+=</span> <span class="n">segment_parasite_drag</span><span class="o">*</span><span class="n">Sref_seg</span>   
-            <span class="n">total_segment_k_w</span>            <span class="o">+=</span> <span class="n">segment_k_w</span><span class="o">*</span><span class="n">Sref_seg</span> 
-            <span class="n">total_segment_cf_w_u</span>         <span class="o">+=</span> <span class="n">segment_cf_w_u</span><span class="o">*</span><span class="n">Sref_seg</span> 
-            <span class="n">total_segment_cf_w_l</span>         <span class="o">+=</span> <span class="n">segment_cf_w_l</span><span class="o">*</span><span class="n">Sref_seg</span> 
-            <span class="n">total_segment_k_comp_u</span>       <span class="o">+=</span> <span class="n">segment_k_comp_u</span><span class="o">*</span><span class="n">Sref_seg</span> 
-            <span class="n">total_segment_k_comp_l</span>       <span class="o">+=</span> <span class="n">segment_k_comp_l</span><span class="o">*</span><span class="n">Sref_seg</span> 
-            <span class="n">total_k_reyn_u</span>               <span class="o">+=</span> <span class="n">k_reyn_u</span><span class="o">*</span><span class="n">Sref_seg</span>                 
-            <span class="n">total_k_reyn_l</span>               <span class="o">+=</span> <span class="n">k_reyn_l</span><span class="o">*</span><span class="n">Sref_seg</span>  
-                
-        <span class="n">wing_parasite_drag</span> <span class="o">=</span> <span class="n">total_segment_parasite_drag</span>  <span class="o">/</span> <span class="n">Sref</span>
-        <span class="n">k_w</span>                <span class="o">=</span> <span class="n">total_segment_k_w</span> <span class="o">/</span> <span class="n">Sref</span>
-        <span class="n">cf_w_u</span>             <span class="o">=</span> <span class="n">total_segment_cf_w_u</span>  <span class="o">/</span> <span class="n">Sref</span>
-        <span class="n">cf_w_l</span>             <span class="o">=</span> <span class="n">total_segment_cf_w_l</span> <span class="o">/</span> <span class="n">Sref</span>
-        <span class="n">k_comp_u</span>           <span class="o">=</span> <span class="n">total_segment_k_comp_u</span>  <span class="o">/</span> <span class="n">Sref</span>
-        <span class="n">k_comp_l</span>           <span class="o">=</span> <span class="n">total_segment_k_comp_l</span>  <span class="o">/</span> <span class="n">Sref</span>
-        <span class="n">k_reyn_u</span>           <span class="o">=</span> <span class="n">total_k_reyn_u</span>  <span class="o">/</span> <span class="n">Sref</span>
-        <span class="n">k_reyn_l</span>           <span class="o">=</span> <span class="n">total_k_reyn_l</span>  <span class="o">/</span> <span class="n">Sref</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">segment</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">):</span> 
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">num_segments</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>               
+            <span class="k">continue</span> 
+        <span class="n">avg_t_c_s</span>     <span class="o">=</span> <span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_tags</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">thickness_to_chord</span> <span class="o">+</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_tags</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">thickness_to_chord</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>              
+        <span class="n">mac_seg</span>       <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_aerodynamic</span>
+        <span class="n">Sref_seg</span>      <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span>
+        <span class="n">Swet_seg</span>      <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span>
+        <span class="n">sweep_seg</span>     <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">leading_edge</span>  
 
-    <span class="c1"># if wing has no segments      </span>
-    <span class="k">else</span><span class="p">:</span>              
-        <span class="c1"># wing</span>
-        <span class="n">mac_w</span>        <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_aerodynamic</span>
-        <span class="n">sweep_w</span>      <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span> 
-        <span class="n">span_w</span>       <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span>
-        <span class="n">Sref</span>         <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span>
+        <span class="c1"># compute parasite drag coef., form factor, skin friction coef., compressibility factor and reynolds number for segments</span>
+        <span class="n">segment_parasite_drag</span> <span class="p">,</span> <span class="n">segment_k_w</span><span class="p">,</span> <span class="n">segment_cf_w_u</span><span class="p">,</span> <span class="n">segment_cf_w_l</span><span class="p">,</span> <span class="n">segment_k_comp_u</span><span class="p">,</span> <span class="n">segment_k_comp_l</span><span class="p">,</span> <span class="n">k_reyn_u</span> <span class="p">,</span><span class="n">k_reyn_l</span> <span class="o">=</span> <span class="n">compute_parasite_drag</span><span class="p">(</span><span class="n">re</span><span class="p">,</span><span class="n">mac_seg</span><span class="p">,</span><span class="n">Mc</span><span class="p">,</span><span class="n">Tc</span><span class="p">,</span><span class="n">xtu</span><span class="p">,</span><span class="n">xtl</span><span class="p">,</span><span class="n">sweep_seg</span><span class="p">,</span><span class="n">avg_t_c_s</span><span class="p">,</span><span class="n">Sref_seg</span><span class="p">,</span><span class="n">Swet_seg</span><span class="p">,</span><span class="n">C</span><span class="p">)</span>
         
-        <span class="n">chord_root</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span>
-        <span class="n">chord_tip</span>  <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">tip</span>
-        <span class="n">wing_root</span>     <span class="o">=</span> <span class="n">chord_root</span> <span class="o">+</span> <span class="n">exposed_root_chord_offset</span><span class="o">*</span><span class="p">((</span><span class="n">chord_tip</span> <span class="o">-</span> <span class="n">chord_root</span><span class="p">)</span><span class="o">/</span><span class="n">span_w</span><span class="p">)</span>
-        
-        <span class="k">if</span> <span class="n">recalculate_total_wetted_area</span> <span class="ow">or</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span><span class="o">==</span><span class="mf">0.</span><span class="p">:</span>  
+        <span class="n">total_segment_parasite_drag</span>  <span class="o">+=</span> <span class="n">segment_parasite_drag</span><span class="o">*</span><span class="n">Sref_seg</span>   
+        <span class="n">total_segment_k_w</span>            <span class="o">+=</span> <span class="n">segment_k_w</span><span class="o">*</span><span class="n">Sref_seg</span> 
+        <span class="n">total_segment_cf_w_u</span>         <span class="o">+=</span> <span class="n">segment_cf_w_u</span><span class="o">*</span><span class="n">Sref_seg</span> 
+        <span class="n">total_segment_cf_w_l</span>         <span class="o">+=</span> <span class="n">segment_cf_w_l</span><span class="o">*</span><span class="n">Sref_seg</span> 
+        <span class="n">total_segment_k_comp_u</span>       <span class="o">+=</span> <span class="n">segment_k_comp_u</span><span class="o">*</span><span class="n">Sref_seg</span> 
+        <span class="n">total_segment_k_comp_l</span>       <span class="o">+=</span> <span class="n">segment_k_comp_l</span><span class="o">*</span><span class="n">Sref_seg</span> 
+        <span class="n">total_k_reyn_u</span>               <span class="o">+=</span> <span class="n">k_reyn_u</span><span class="o">*</span><span class="n">Sref_seg</span>                 
+        <span class="n">total_k_reyn_l</span>               <span class="o">+=</span> <span class="n">k_reyn_l</span><span class="o">*</span><span class="n">Sref_seg</span>  
             
-            <span class="c1"># calculate exposed area</span>
-            <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">symmetric</span><span class="p">:</span>
-                <span class="n">S_exposed_w</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span> <span class="o">-</span> <span class="p">(</span><span class="n">chord_root</span> <span class="o">+</span> <span class="n">wing_root</span><span class="p">)</span><span class="o">*</span><span class="n">exposed_root_chord_offset</span>         
-            <span class="k">else</span><span class="p">:</span> 
-                <span class="n">S_exposed_w</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span> <span class="o">-</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">chord_root</span> <span class="o">+</span> <span class="n">wing_root</span><span class="p">)</span><span class="o">*</span><span class="n">exposed_root_chord_offset</span>
-                
-            <span class="k">if</span> <span class="n">t_c_w</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">:</span>
-                <span class="n">Swet</span> <span class="o">=</span> <span class="mf">2.003</span><span class="o">*</span> <span class="n">S_exposed_w</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">Swet</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.977</span> <span class="o">+</span> <span class="mf">0.52</span><span class="o">*</span><span class="n">t_c_w</span><span class="p">)</span> <span class="o">*</span> <span class="n">S_exposed_w</span>   
-                
-            <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span> <span class="o">=</span> <span class="n">Swet</span> 
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">Swet</span>              <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span>                         
-
-        <span class="c1"># compute parasite drag coef., form factor, skin friction coef., compressibility factor and reynolds number for wing</span>
-        <span class="n">wing_parasite_drag</span> <span class="p">,</span> <span class="n">k_w</span><span class="p">,</span> <span class="n">cf_w_u</span><span class="p">,</span> <span class="n">cf_w_l</span><span class="p">,</span> <span class="n">k_comp_u</span><span class="p">,</span> <span class="n">k_comp_l</span><span class="p">,</span> <span class="n">k_reyn_u</span><span class="p">,</span> <span class="n">k_reyn_l</span> <span class="o">=</span> <span class="n">compute_parasite_drag</span><span class="p">(</span><span class="n">re</span><span class="p">,</span><span class="n">mac_w</span><span class="p">,</span><span class="n">Mc</span><span class="p">,</span><span class="n">Tc</span><span class="p">,</span><span class="n">xtu</span><span class="p">,</span><span class="n">xtl</span><span class="p">,</span><span class="n">sweep_w</span><span class="p">,</span><span class="n">t_c_w</span><span class="p">,</span><span class="n">Sref</span><span class="p">,</span><span class="n">Swet</span><span class="p">,</span><span class="n">C</span><span class="p">)</span>             
+    <span class="n">wing_parasite_drag</span> <span class="o">=</span> <span class="n">total_segment_parasite_drag</span>  <span class="o">/</span> <span class="n">Sref</span>
+    <span class="n">k_w</span>                <span class="o">=</span> <span class="n">total_segment_k_w</span> <span class="o">/</span> <span class="n">Sref</span>
+    <span class="n">cf_w_u</span>             <span class="o">=</span> <span class="n">total_segment_cf_w_u</span>  <span class="o">/</span> <span class="n">Sref</span>
+    <span class="n">cf_w_l</span>             <span class="o">=</span> <span class="n">total_segment_cf_w_l</span> <span class="o">/</span> <span class="n">Sref</span>
+    <span class="n">k_comp_u</span>           <span class="o">=</span> <span class="n">total_segment_k_comp_u</span>  <span class="o">/</span> <span class="n">Sref</span>
+    <span class="n">k_comp_l</span>           <span class="o">=</span> <span class="n">total_segment_k_comp_l</span>  <span class="o">/</span> <span class="n">Sref</span>
+    <span class="n">k_reyn_u</span>           <span class="o">=</span> <span class="n">total_k_reyn_u</span>  <span class="o">/</span> <span class="n">Sref</span>
+    <span class="n">k_reyn_l</span>           <span class="o">=</span> <span class="n">total_k_reyn_l</span>  <span class="o">/</span> <span class="n">Sref</span>
+        
 
     <span class="c1"># dump data to conditions</span>
     <span class="n">wing_result</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span>
@@ -544,38 +592,114 @@
 <div class="viewcode-block" id="compute_parasite_drag">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Aerodynamics.Common.Drag.parasite_drag_wing.html#RCAIDE.Library.Methods.Aerodynamics.Common.Drag.parasite_drag_wing.compute_parasite_drag">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_parasite_drag</span><span class="p">(</span><span class="n">re</span><span class="p">,</span><span class="n">mac_w</span><span class="p">,</span><span class="n">Mc</span><span class="p">,</span><span class="n">Tc</span><span class="p">,</span><span class="n">xtu</span><span class="p">,</span><span class="n">xtl</span><span class="p">,</span><span class="n">sweep_w</span><span class="p">,</span><span class="n">t_c_w</span><span class="p">,</span><span class="n">Sref</span><span class="p">,</span><span class="n">Swet</span><span class="p">,</span><span class="n">C</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the parasite drag due to wings</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the parasite drag coefficient for a wing section using compressible mixed flat plate theory.</span>
 
-<span class="sd">    Assumptions:</span>
-<span class="sd">    Basic fit</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    re : float</span>
+<span class="sd">        Freestream Reynolds number per unit length [unitless/m]</span>
+<span class="sd">    mac_w : float</span>
+<span class="sd">        Mean aerodynamic chord of wing section [m]</span>
+<span class="sd">    Mc : float</span>
+<span class="sd">        Freestream Mach number [unitless]</span>
+<span class="sd">    Tc : float</span>
+<span class="sd">        Freestream static temperature [K]</span>
+<span class="sd">    xtu : float</span>
+<span class="sd">        Upper surface transition point as fraction of chord [unitless]</span>
+<span class="sd">    xtl : float</span>
+<span class="sd">        Lower surface transition point as fraction of chord [unitless]</span>
+<span class="sd">    sweep_w : float</span>
+<span class="sd">        Leading edge sweep angle [radians]</span>
+<span class="sd">    t_c_w : float</span>
+<span class="sd">        Thickness-to-chord ratio [unitless]</span>
+<span class="sd">    Sref : float</span>
+<span class="sd">        Reference area of wing section [m²]</span>
+<span class="sd">    Swet : float</span>
+<span class="sd">        Wetted area of wing section [m²]</span>
+<span class="sd">    C : float</span>
+<span class="sd">        Form factor coefficient [unitless]</span>
 
-<span class="sd">    Source:</span>
-<span class="sd">    adg.stanford.edu (Stanford AA241 A/B Course Notes)</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    wing_parasite_drag : float</span>
+<span class="sd">        Parasite drag coefficient [unitless]</span>
+<span class="sd">    k_w : float</span>
+<span class="sd">        Form factor [unitless]</span>
+<span class="sd">    cf_w_u : float</span>
+<span class="sd">        Upper surface skin friction coefficient [unitless]</span>
+<span class="sd">    cf_w_l : float</span>
+<span class="sd">        Lower surface skin friction coefficient [unitless]</span>
+<span class="sd">    k_comp_u : float</span>
+<span class="sd">        Upper surface compressibility factor [unitless]</span>
+<span class="sd">    k_comp_l : float</span>
+<span class="sd">        Lower surface compressibility factor [unitless]</span>
+<span class="sd">    k_reyn_u : float</span>
+<span class="sd">        Upper surface Reynolds number factor [unitless]</span>
+<span class="sd">    k_reyn_l : float</span>
+<span class="sd">        Lower surface Reynolds number factor [unitless]</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    re (Reynolds Number)    [Unitless]</span>
-<span class="sd">    mac_w (Wing MAC)        [m]</span>
-<span class="sd">    Mc (Mach Number)        [Unitless]</span>
-<span class="sd">    Tc (Temperature)        [K]</span>
-<span class="sd">    xtu (Upper Transition)  [Unitless] (percent of chord)</span>
-<span class="sd">    xtl (Lower Transition)  [Unitless] (percent of chord)</span>
-<span class="sd">    sweep_w (Wing Sweep)    [rad]</span>
-<span class="sd">    t_c_w (Wing t/c)        [Unitless]</span>
-<span class="sd">    Sref (Wing Ref Area)    [m^2]</span>
-<span class="sd">    Swet (Wing Wetted Area) [m^2]</span>
-<span class="sd">    C (Form Factor)         [Unitless]</span>
-<span class="sd">      </span>
-<span class="sd">    Returns:</span>
-<span class="sd">    (u is upper, l is lower)</span>
-<span class="sd">    wing_parasite_drag                 [Unitless]</span>
-<span class="sd">    k_w    (Form Factor)               [Unitless]</span>
-<span class="sd">    cf_w_u (Skin Friction Coefficient) [Unitless]</span>
-<span class="sd">    cf_w_l                             [Unitless]</span>
-<span class="sd">    k_comp_u (Compressibility Factor)  [Unitless]</span>
-<span class="sd">    k_comp_l                           [Unitless]</span>
-<span class="sd">    k_reyn_u (Reynolds Factor)         [Unitless]</span>
-<span class="sd">    k_reyn_l                           [Unitless] </span>
-<span class="sd">    &quot;&quot;&quot;</span>    
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function calculates the parasite drag coefficient for a wing section using</span>
+<span class="sd">    compressible mixed flat plate theory with separate analysis of upper and lower</span>
+<span class="sd">    surfaces. The form factor accounts for airfoil thickness and sweep effects.</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Mixed laminar-turbulent boundary layer with different transition points</span>
+<span class="sd">        * Compressible flat plate skin friction correlation</span>
+<span class="sd">        * Form factor accounts for airfoil thickness and sweep effects</span>
+<span class="sd">        * Cubic spline blending for transonic regime</span>
+<span class="sd">        * Upper and lower surfaces are analyzed separately</span>
+<span class="sd">    </span>
+<span class="sd">    **Theory**</span>
+
+<span class="sd">    The wing Reynolds number is:</span>
+
+<span class="sd">    :math:`Re_w = Re \\cdot MAC`</span>
+
+<span class="sd">    where :math:`Re` is the freestream Reynolds number per unit length and :math:`MAC` is the mean aerodynamic chord.</span>
+
+<span class="sd">    The skin friction coefficients are calculated separately for upper and lower surfaces:</span>
+
+<span class="sd">    :math:`C_{f,upper} = f(Re_w, M, T, x_{tu})`</span>
+
+<span class="sd">    :math:`C_{f,lower} = f(Re_w, M, T, x_{tl})`</span>
+
+<span class="sd">    The form factor for subsonic flow (M ≤ 1.0) is:</span>
+
+<span class="sd">    :math:`k_w = 1 + \\frac{2C(t/c)\\cos^2(\\Lambda)}{\\beta} + \\frac{C^2\\cos^2(\\Lambda)(t/c)^2(1+5\\cos^2(\\Lambda))}{2\\beta^2}`</span>
+
+<span class="sd">    where:</span>
+<span class="sd">        - :math:`\\beta = \\sqrt{1-(M\\cos(\\Lambda))^2}` is the Prandtl-Glauert factor</span>
+<span class="sd">        - :math:`\\Lambda` is the leading edge sweep angle</span>
+<span class="sd">        - :math:`t/c` is the thickness-to-chord ratio</span>
+
+<span class="sd">    For transonic flow, the form factor is blended using a cubic spline:</span>
+
+<span class="sd">    :math:`k_w = k_w \\cdot h_{00}(M) + 1 \\cdot (1-h_{00}(M))`</span>
+
+<span class="sd">    The parasite drag coefficient is:</span>
+
+<span class="sd">    :math:`C_{D,parasite} = \\frac{C_{f,upper} + C_{f,lower}}{2} \\cdot k_w \\cdot \\frac{S_{wet}}{S_{ref}}`</span>
+<span class="sd">    </span>
+<span class="sd">    **Definitions**</span>
+
+<span class="sd">    &#39;Form Factor&#39;</span>
+<span class="sd">        Multiplier accounting for the increase in drag due to airfoil shape compared to a flat plate.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Mixed Boundary Layer&#39;</span>
+<span class="sd">        Boundary layer that transitions from laminar to turbulent flow at specified points.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Stanford AA241 Course Notes. adg.stanford.edu</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compressible_mixed_flat_plate</span>
+<span class="sd">    RCAIDE.Library.Methods.Utilities.Cubic_Spline_Blender</span>
+<span class="sd">    &quot;&quot;&quot;</span>
    
     <span class="c1"># reynolds number</span>
     <span class="n">Re_w</span> <span class="o">=</span> <span class="n">re</span><span class="o">*</span><span class="n">mac_w</span>  
@@ -593,17 +717,17 @@
     <span class="n">ind</span> <span class="o">=</span> <span class="n">Mc</span> <span class="o">&lt;=</span> <span class="mf">1.</span>
     
     <span class="n">k_w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">Mc</span><span class="p">)</span>
-    <span class="n">k_w</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">+</span> <span class="p">(</span> <span class="mf">2.</span><span class="o">*</span> <span class="n">C</span> <span class="o">*</span> <span class="p">(</span><span class="n">t_c_w</span> <span class="o">*</span> <span class="n">cos2</span><span class="p">)</span> <span class="p">)</span> <span class="o">/</span> <span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span> <span class="n">Mc</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">*</span><span class="n">Mc</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">*</span> <span class="n">cos2</span><span class="p">)</span> <span class="p">)</span>  \
-            <span class="o">+</span> <span class="p">(</span> <span class="n">C</span><span class="o">*</span><span class="n">C</span> <span class="o">*</span> <span class="n">cos2</span> <span class="o">*</span> <span class="n">t_c_w</span><span class="o">*</span><span class="n">t_c_w</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="mf">5.</span><span class="o">*</span><span class="p">(</span><span class="n">cos2</span><span class="p">))</span> <span class="p">)</span> \
-            <span class="o">/</span> <span class="p">(</span><span class="mf">2.</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="p">(</span><span class="n">Mc</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">*</span><span class="n">cos_sweep</span><span class="p">)</span><span class="o">**</span><span class="mf">2.</span><span class="p">))</span>             
+    <span class="n">beta</span>   <span class="o">=</span>  <span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="p">(</span><span class="n">Mc</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">*</span><span class="n">cos_sweep</span><span class="p">)</span><span class="o">**</span><span class="mf">2.</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">k_w</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">+</span> <span class="p">(</span> <span class="mf">2.</span><span class="o">*</span> <span class="n">C</span> <span class="o">*</span> <span class="p">(</span><span class="n">t_c_w</span> <span class="o">*</span> <span class="n">cos2</span><span class="p">)</span> <span class="p">)</span> <span class="o">/</span><span class="n">beta</span> \
+                  <span class="o">+</span> <span class="p">((</span> <span class="n">C</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">cos2</span> <span class="o">*</span> <span class="p">(</span><span class="n">t_c_w</span><span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="mf">5.</span><span class="o">*</span><span class="p">(</span><span class="n">cos2</span><span class="p">))</span> <span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.</span><span class="o">*</span> <span class="n">beta</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>             
     
     <span class="n">spline</span> <span class="o">=</span> <span class="n">Cubic_Spline_Blender</span><span class="p">(</span><span class="mf">.95</span><span class="p">,</span><span class="mf">1.0</span><span class="p">)</span>
     <span class="n">h00</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">M</span><span class="p">:</span><span class="n">spline</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
     
     <span class="n">k_w</span> <span class="o">=</span> <span class="n">k_w</span><span class="o">*</span><span class="p">(</span><span class="n">h00</span><span class="p">(</span><span class="n">Mc</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">h00</span><span class="p">(</span><span class="n">Mc</span><span class="p">))</span>   
 
-    <span class="c1"># find the final result</span>
-    <span class="n">wing_parasite_drag</span> <span class="o">=</span> <span class="n">k_w</span> <span class="o">*</span> <span class="n">cf_w_u</span> <span class="o">*</span> <span class="n">Swet</span> <span class="o">/</span> <span class="n">Sref</span> <span class="o">/</span><span class="mf">2.</span> <span class="o">+</span> <span class="n">k_w</span> <span class="o">*</span> <span class="n">cf_w_l</span> <span class="o">*</span> <span class="n">Swet</span> <span class="o">/</span> <span class="n">Sref</span> <span class="o">/</span><span class="mf">2.</span>
+    <span class="c1"># find the final result </span>
+    <span class="n">wing_parasite_drag</span> <span class="o">=</span> <span class="p">(</span> <span class="n">cf_w_u</span> <span class="o">+</span> <span class="n">cf_w_l</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>  <span class="o">*</span> <span class="n">k_w</span>  <span class="o">*</span> <span class="p">(</span><span class="n">Swet</span> <span class="o">/</span> <span class="n">Sref</span><span class="p">)</span>
 
 
     <span class="k">return</span> <span class="n">wing_parasite_drag</span> <span class="p">,</span> <span class="n">k_w</span><span class="p">,</span> <span class="n">cf_w_u</span><span class="p">,</span> <span class="n">cf_w_l</span><span class="p">,</span> <span class="n">k_comp_u</span><span class="p">,</span> <span class="n">k_comp_l</span><span class="p">,</span> <span class="n">k_reyn_u</span><span class="p">,</span> <span class="n">k_reyn_l</span></div>
@@ -637,8 +761,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -658,7 +782,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -672,7 +796,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

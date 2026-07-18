@@ -31,5 +31,8 @@ Common
    :recursive:
 
    Nexus
+   generate_carpet_plot
+   generate_line_plot
    helper_functions
+   print_optimization_results
 

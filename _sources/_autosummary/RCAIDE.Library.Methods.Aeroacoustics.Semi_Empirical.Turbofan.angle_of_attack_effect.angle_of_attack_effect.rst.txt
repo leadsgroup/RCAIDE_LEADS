@@ -1,0 +1,6 @@
+RCAIDE.Library.Methods.Aeroacoustics.Semi\_Empirical.Turbofan.angle\_of\_attack\_effect.angle\_of\_attack\_effect
+=================================================================================================================
+
+.. currentmodule:: RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Turbofan.angle_of_attack_effect
+
+.. autofunction:: angle_of_attack_effect

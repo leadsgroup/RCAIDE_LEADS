@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Plots/Geometry/plot_3d_vehicle';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Plots/Geometry/plot_3d_vehicle.html" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script src="../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -384,97 +403,115 @@
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  IMPORT</span>
-<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots.Geometry.plot_3d_fuselage</span><span class="w">             </span><span class="kn">import</span> <span class="n">plot_3d_fuselage</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots.Geometry.plot_3d_wing</span><span class="w">                 </span><span class="kn">import</span> <span class="n">plot_3d_wing</span> 
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots.Geometry.plot_3d_nacelle</span><span class="w">              </span><span class="kn">import</span> <span class="n">plot_3d_nacelle</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots.Geometry.plot_3d_rotor</span><span class="w">                </span><span class="kn">import</span> <span class="n">plot_3d_rotor</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Components</span><span class="w">   </span><span class="kn">import</span> <span class="n">Component</span>    
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots.Geometry.generate_3d_wing_points</span><span class="w">      </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots.Geometry.generate_3d_fuselage_points</span><span class="w">  </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots.Geometry.generate_3d_fuel_tank_points</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots.Geometry.plot_3d_rotor</span><span class="w">                </span><span class="kn">import</span> <span class="n">generate_3d_blade_points</span><span class="p">,</span> <span class="n">generate_vtk_object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots.Geometry.generate_3d_nacelle_points</span><span class="w">   </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots.Geometry.generate_3d_lopa_points</span><span class="w">      </span><span class="kn">import</span> <span class="n">generate_3d_lopa_points</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots.Geometry.generate_3d_torus_points</span><span class="w">     </span><span class="kn">import</span> <span class="n">generate_3d_torus_points</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots.Geometry.generate_3d_cuboid_points</span><span class="w">    </span><span class="kn">import</span> <span class="n">generate_3d_cuboid_points</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots.Geometry.generate_3d_propulsor_points</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_3d_propulsor_points</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots.Geometry.generate_3d_cargo_bay_points</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_3d_cargo_bay_points</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots.Geometry.generate_3d_cabin_points</span><span class="w">     </span><span class="kn">import</span> <span class="n">generate_3d_cabin_points</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Geometry.Planform</span><span class="w">                   </span><span class="kn">import</span> <span class="n">fuselage_planform</span><span class="p">,</span> <span class="n">wing_planform</span> <span class="p">,</span> <span class="n">compute_fuel_volume</span>  
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Geometry.LOPA</span><span class="w">                       </span><span class="kn">import</span> <span class="n">compute_layout_of_passenger_accommodations</span>  
 
 <span class="c1"># python imports </span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span> 
-<span class="kn">import</span><span class="w"> </span><span class="nn">plotly.graph_objects</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">go</span>  
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyvista</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pv</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.colors</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mcolors</span>
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  PLOTS</span>
-<span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
+<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
 <div class="viewcode-block" id="plot_3d_vehicle">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Plots.Geometry.plot_3d_vehicle.html#RCAIDE.Library.Plots.Geometry.plot_3d_vehicle.plot_3d_vehicle">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">plot_3d_vehicle</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span>
-                    <span class="n">show_axis</span>                   <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_3d_vehicle</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span> 
                     <span class="n">save_figure</span>                 <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                    <span class="n">save_filename</span>               <span class="o">=</span> <span class="s2">&quot;Vehicle_Geometry&quot;</span><span class="p">,</span>
-                    <span class="n">alpha</span>                       <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>  
-                    <span class="n">min_x_axis_limit</span>            <span class="o">=</span>  <span class="o">-</span><span class="mi">5</span><span class="p">,</span>
-                    <span class="n">max_x_axis_limit</span>            <span class="o">=</span>  <span class="mi">40</span><span class="p">,</span>
-                    <span class="n">min_y_axis_limit</span>            <span class="o">=</span>  <span class="o">-</span><span class="mi">20</span><span class="p">,</span>
-                    <span class="n">max_y_axis_limit</span>            <span class="o">=</span>  <span class="mi">20</span><span class="p">,</span>
-                    <span class="n">min_z_axis_limit</span>            <span class="o">=</span>  <span class="o">-</span><span class="mi">20</span><span class="p">,</span>
-                    <span class="n">max_z_axis_limit</span>            <span class="o">=</span>  <span class="mi">20</span><span class="p">,</span> 
-                    <span class="n">camera_eye_x</span>                <span class="o">=</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">,</span>
-                    <span class="n">camera_eye_y</span>                <span class="o">=</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">,</span>
-                    <span class="n">camera_eye_z</span>                <span class="o">=</span> <span class="mf">.8</span><span class="p">,</span>
-                    <span class="n">camera_center_x</span>             <span class="o">=</span> <span class="mf">0.</span><span class="p">,</span>
-                    <span class="n">camera_center_y</span>             <span class="o">=</span> <span class="mf">0.</span><span class="p">,</span>
-                    <span class="n">camera_center_z</span>             <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span>
+                    <span class="n">save_filename</span>               <span class="o">=</span> <span class="s2">&quot;geometry&quot;</span><span class="p">,</span> 
+                    <span class="n">top_view</span>                    <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+                    <span class="n">side_view</span>                   <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+                    <span class="n">front_view</span>                  <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>   
+                    <span class="n">plot_centerline</span>             <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                    <span class="n">wing_color</span>                  <span class="o">=</span> <span class="s1">&#39;grey&#39;</span><span class="p">,</span> 
+                    <span class="n">fuselage_color</span>              <span class="o">=</span> <span class="s1">&#39;grey&#39;</span><span class="p">,</span> 
+                    <span class="n">boom_color</span>                  <span class="o">=</span> <span class="s1">&#39;grey&#39;</span><span class="p">,</span> 
+                    <span class="n">nacelle_color</span>               <span class="o">=</span> <span class="s1">&#39;grey&#39;</span><span class="p">,</span> 
+                    <span class="n">fuel_tank_color</span>             <span class="o">=</span> <span class="s1">&#39;orange&#39;</span><span class="p">,</span> 
+                    <span class="n">rotor_color</span>                 <span class="o">=</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span> 
+                    <span class="n">cargo_bay_color</span>             <span class="o">=</span> <span class="s1">&#39;blue&#39;</span><span class="p">,</span>
+                    <span class="n">battery_color</span>               <span class="o">=</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span>
+                    <span class="n">systems_color</span>               <span class="o">=</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span>
+                    <span class="n">propulsor_color</span>             <span class="o">=</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span>
+                    <span class="n">cabin_color</span>                 <span class="o">=</span> <span class="s1">&#39;grey&#39;</span><span class="p">,</span>
+                    <span class="n">landing_gear_color</span>          <span class="o">=</span> <span class="s1">&#39;grey&#39;</span><span class="p">,</span>
+                    <span class="n">plot_actuator_disc</span>          <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                    <span class="n">show_LOPA</span>                   <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> 
+                    <span class="n">show_Cabin</span>                  <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="n">wing_opacity</span>                <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> 
+                    <span class="n">fuselage_opacity</span>            <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+                    <span class="n">boom_opacity</span>                <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+                    <span class="n">nacelle_opacity</span>             <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+                    <span class="n">fuel_tank_opacity</span>           <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+                    <span class="n">lopa_opacity</span>                <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+                    <span class="n">rotor_opacity</span>               <span class="o">=</span> <span class="mf">0.6</span><span class="p">,</span> 
+                    <span class="n">cargo_bay_opacity</span>           <span class="o">=</span> <span class="mf">0.6</span><span class="p">,</span> 
+                    <span class="n">battery_opacity</span>             <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> 
+                    <span class="n">propulsor_opacity</span>           <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+                    <span class="n">cabin_opacity</span>               <span class="o">=</span> <span class="mf">0.75</span><span class="p">,</span>
+                    <span class="n">systems_opacity</span>             <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span>
+                    <span class="n">landing_gear_opacity</span>        <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+                    <span class="n">number_of_airfoil_points</span>    <span class="o">=</span> <span class="mi">101</span><span class="p">,</span>
+                    <span class="n">tessellation</span>                <span class="o">=</span> <span class="mi">96</span><span class="p">,</span>
+                    <span class="n">camera_eye_x</span>                <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="n">camera_eye_y</span>                <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="n">camera_eye_z</span>                <span class="o">=</span> <span class="mf">0.75</span><span class="p">,</span>
+                    <span class="n">overwrite_geometry</span>          <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="n">export_gltf</span>                 <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
                     <span class="n">show_figure</span>                 <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a complete 3D visualization of an aircraft including all major components.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    vehicle : Vehicle</span>
-<span class="sd">        RCAIDE vehicle data structure containing all component geometries</span>
-<span class="sd">        </span>
+<span class="sd">    geometry : geometry</span>
+<span class="sd">        RCAIDE geometry data structure containing all component geometries</span>
+
 <span class="sd">    show_axis : bool, optional</span>
 <span class="sd">        Flag to display coordinate axes (default: False)</span>
-<span class="sd">        </span>
+
 <span class="sd">    save_figure : bool, optional</span>
 <span class="sd">        Flag for saving the figure (default: False)</span>
-<span class="sd">        </span>
+
 <span class="sd">    save_filename : str, optional</span>
 <span class="sd">        Name of file for saved figure (default: &quot;Vehicle_Geometry&quot;)</span>
-<span class="sd">        </span>
+
 <span class="sd">    alpha : float, optional</span>
 <span class="sd">        Transparency value between 0 and 1 (default: 1.0)</span>
-<span class="sd">        </span>
-<span class="sd">    min_x_axis_limit : float, optional</span>
-<span class="sd">        Minimum x-axis plot limit (default: -5)</span>
-<span class="sd">        </span>
-<span class="sd">    max_x_axis_limit : float, optional</span>
-<span class="sd">        Maximum x-axis plot limit (default: 40)</span>
-<span class="sd">        </span>
-<span class="sd">    min_y_axis_limit : float, optional</span>
-<span class="sd">        Minimum y-axis plot limit (default: -20)</span>
-<span class="sd">        </span>
-<span class="sd">    max_y_axis_limit : float, optional</span>
-<span class="sd">        Maximum y-axis plot limit (default: 20)</span>
-<span class="sd">        </span>
-<span class="sd">    min_z_axis_limit : float, optional</span>
-<span class="sd">        Minimum z-axis plot limit (default: -20)</span>
-<span class="sd">        </span>
-<span class="sd">    max_z_axis_limit : float, optional</span>
-<span class="sd">        Maximum z-axis plot limit (default: 20)</span>
-<span class="sd">        </span>
+
 <span class="sd">    camera_eye_x : float, optional</span>
 <span class="sd">        Camera eye x-position (default: -1.5)</span>
-<span class="sd">        </span>
+
 <span class="sd">    camera_eye_y : float, optional</span>
 <span class="sd">        Camera eye y-position (default: -1.5)</span>
-<span class="sd">        </span>
+
 <span class="sd">    camera_eye_z : float, optional</span>
 <span class="sd">        Camera eye z-position (default: 0.8)</span>
-<span class="sd">        </span>
+
 <span class="sd">    camera_center_x : float, optional</span>
 <span class="sd">        Camera target x-position (default: 0.0)</span>
-<span class="sd">        </span>
+
 <span class="sd">    camera_center_y : float, optional</span>
 <span class="sd">        Camera target y-position (default: 0.0)</span>
-<span class="sd">        </span>
+
 <span class="sd">    camera_center_z : float, optional</span>
 <span class="sd">        Camera target z-position (default: -0.5)</span>
-<span class="sd">        </span>
+
 <span class="sd">    show_figure : bool, optional</span>
 <span class="sd">        Flag to display the figure (default: True)</span>
 
@@ -483,225 +520,369 @@
 <span class="sd">    None</span>
 
 <span class="sd">    Notes</span>
-<span class="sd">    -----</span>
+<span class="sd">    ----- </span>
+<span class="sd">                        </span>
 <span class="sd">    Creates an interactive 3D visualization showing:</span>
 <span class="sd">        - Wings and control surfaces</span>
 <span class="sd">        - Fuselage sections</span>
 <span class="sd">        - Propulsion systems</span>
 <span class="sd">        - Customizable view and camera angles</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+ 
+    <span class="c1"># -------------------------------------------------------------------------  </span>
+    <span class="c1"># Initalize Renderer</span>
+    <span class="c1"># ------------------------------------------------------------------------- </span>
+    <span class="k">if</span> <span class="n">save_figure</span><span class="p">:</span> 
+        <span class="n">plotter</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">Plotter</span><span class="p">(</span><span class="n">off_screen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plotter</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">Plotter</span><span class="p">()</span>     
+    
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Object RGB Colors  </span>
+    <span class="c1"># -------------------------------------------------------------------------    </span>
+    <span class="n">fuel_tank_rgb_color</span>  <span class="o">=</span> <span class="n">mcolors</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">fuel_tank_color</span><span class="p">)</span>     
+    <span class="n">wing_rgb_color</span>       <span class="o">=</span> <span class="n">mcolors</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">wing_color</span><span class="p">)</span>
+    <span class="n">fuselage_rgb_color</span>   <span class="o">=</span> <span class="n">mcolors</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">fuselage_color</span><span class="p">)</span> 
+    <span class="n">nacelle_rgb_color</span>    <span class="o">=</span> <span class="n">mcolors</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">nacelle_color</span><span class="p">)</span> 
+    <span class="n">rotor_rgb_color</span>      <span class="o">=</span> <span class="n">mcolors</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">rotor_color</span><span class="p">)</span>
+    <span class="n">boom_rgb_color</span>       <span class="o">=</span> <span class="n">mcolors</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">boom_color</span><span class="p">)</span>
+    <span class="n">cargo_bay_rgb_color</span>  <span class="o">=</span> <span class="n">mcolors</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">cargo_bay_color</span><span class="p">)</span>
+    <span class="n">battery_rgb_color</span>    <span class="o">=</span> <span class="n">mcolors</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">battery_color</span><span class="p">)</span>
+    <span class="n">system_rgb_color</span>     <span class="o">=</span> <span class="n">mcolors</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">systems_color</span><span class="p">)</span>
+    <span class="n">propulsor_rgb_color</span>  <span class="o">=</span> <span class="n">mcolors</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">propulsor_color</span><span class="p">)</span>
+    <span class="n">cabin_rgb_color</span>      <span class="o">=</span> <span class="n">mcolors</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">cabin_color</span><span class="p">)</span>
+    <span class="n">landing_gear_rgb_color</span> <span class="o">=</span> <span class="n">mcolors</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">landing_gear_color</span><span class="p">)</span>
+     
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Run Geometry Analysis</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">geometry</span> <span class="o">=</span>  <span class="n">deepcopy</span><span class="p">(</span><span class="n">vehicle</span><span class="p">)</span>  
+    <span class="k">for</span> <span class="n">wing</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">wings</span><span class="p">:</span>  
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wing</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Blended_Wing_Body</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">overwrite_geometry</span><span class="p">:</span> 
+                <span class="n">wing_planform</span><span class="p">(</span><span class="n">wing</span><span class="p">)</span> 
+                <span class="n">compute_layout_of_passenger_accommodations</span><span class="p">(</span><span class="n">wing</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">overwrite_geometry</span><span class="p">:</span>
+                <span class="n">wing_planform</span><span class="p">(</span><span class="n">wing</span><span class="p">)</span>
+                
+        <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span><span class="p">)</span>
+                     
+    <span class="n">compute_fuel_volume</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">compute_fuel_volume</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> 
+    
+    <span class="k">for</span> <span class="n">fuselage</span> <span class="ow">in</span>  <span class="n">geometry</span><span class="o">.</span><span class="n">fuselages</span><span class="p">:</span>    
+        <span class="n">compute_layout_of_passenger_accommodations</span><span class="p">(</span><span class="n">fuselage</span><span class="p">)</span>
+        <span class="n">fuselage_planform</span><span class="p">(</span><span class="n">fuselage</span><span class="p">)</span> 
+        <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">total</span><span class="p">)</span>
+     
+    <span class="c1"># -------------------------------------------------------------------------  </span>
+    <span class="c1"># Plot landing gear </span>
+    <span class="c1"># ------------------------------------------------------------------------- </span>
+    <span class="k">for</span> <span class="n">landing_gear</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">landing_gears</span><span class="p">:</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Plotting vehicle&quot;</span><span class="p">)</span> 
-    <span class="n">camera</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-        <span class="n">eye</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">camera_eye_x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">camera_eye_y</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">camera_eye_z</span><span class="p">),</span> 
-        <span class="n">center</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">camera_center_x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">camera_center_y</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">camera_center_z</span><span class="p">)</span>
-    <span class="p">)</span>   
-    
-    <span class="n">plot_data</span>     <span class="o">=</span> <span class="p">[]</span>
-    
-    <span class="n">plot_data</span><span class="p">,</span><span class="n">x_min</span><span class="p">,</span><span class="n">x_max</span><span class="p">,</span><span class="n">y_min</span><span class="p">,</span><span class="n">y_max</span><span class="p">,</span><span class="n">z_min</span><span class="p">,</span><span class="n">z_max</span>  <span class="o">=</span> <span class="n">generate_3d_vehicle_geometry_data</span><span class="p">(</span><span class="n">plot_data</span><span class="p">,</span>
-                                                                                       <span class="n">vehicle</span><span class="p">,</span>
-                                                                                       <span class="n">alpha</span><span class="p">,</span>  
-                                                                                       <span class="n">min_x_axis_limit</span><span class="p">,</span>
-                                                                                       <span class="n">max_x_axis_limit</span><span class="p">,</span>
-                                                                                       <span class="n">min_y_axis_limit</span><span class="p">,</span>
-                                                                                       <span class="n">max_y_axis_limit</span><span class="p">,</span>
-                                                                                       <span class="n">min_z_axis_limit</span><span class="p">,</span>
-                                                                                       <span class="n">max_z_axis_limit</span><span class="p">)</span>
-    
+        <span class="n">N_t</span> <span class="o">=</span> <span class="n">landing_gear</span><span class="o">.</span><span class="n">number_of_gear_types_in_tandem</span>
+        <span class="n">N_w</span> <span class="o">=</span> <span class="n">landing_gear</span><span class="o">.</span><span class="n">number_of_wheels_in_gear_type</span>
 
-    <span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">plot_data</span><span class="p">)</span>
-    
-    <span class="c1"># Use update_layout instead of update_scenes</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span>
-        <span class="n">width</span><span class="o">=</span><span class="mi">1500</span><span class="p">,</span>
-        <span class="n">height</span><span class="o">=</span><span class="mi">1500</span><span class="p">,</span>
-        <span class="n">scene</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">aspectmode</span><span class="o">=</span><span class="s1">&#39;cube&#39;</span><span class="p">,</span>
-            <span class="n">xaxis</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">backgroundcolor</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">gridcolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">showbackground</span><span class="o">=</span><span class="n">show_axis</span><span class="p">,</span>
-                       <span class="n">zerolinecolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">[</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">],</span> <span class="n">visible</span><span class="o">=</span><span class="n">show_axis</span><span class="p">),</span>
-            <span class="n">yaxis</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">backgroundcolor</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">gridcolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">showbackground</span><span class="o">=</span><span class="n">show_axis</span><span class="p">,</span> 
-                       <span class="n">zerolinecolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">[</span><span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">],</span> <span class="n">visible</span><span class="o">=</span><span class="n">show_axis</span><span class="p">),</span>
-            <span class="n">zaxis</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">backgroundcolor</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">gridcolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">showbackground</span><span class="o">=</span><span class="n">show_axis</span><span class="p">,</span>
-                       <span class="n">zerolinecolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">[</span><span class="n">z_min</span><span class="p">,</span> <span class="n">z_max</span><span class="p">],</span> <span class="n">visible</span><span class="o">=</span><span class="n">show_axis</span><span class="p">)</span>
-        <span class="p">),</span>
-        <span class="n">scene_camera</span><span class="o">=</span><span class="n">camera</span>
-    <span class="p">)</span>
-    
-    <span class="n">fig</span><span class="o">.</span><span class="n">update_coloraxes</span><span class="p">(</span><span class="n">showscale</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>   
-    <span class="n">fig</span><span class="o">.</span><span class="n">update_traces</span><span class="p">(</span><span class="n">opacity</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+        <span class="n">D</span>            <span class="o">=</span> <span class="n">landing_gear</span><span class="o">.</span><span class="n">tire_diameter</span>
+        <span class="n">d</span>            <span class="o">=</span> <span class="n">landing_gear</span><span class="o">.</span><span class="n">rim_diameter</span>
+        <span class="n">w</span>            <span class="o">=</span> <span class="n">landing_gear</span><span class="o">.</span><span class="n">tire_width</span>
+        <span class="n">strut_length</span> <span class="o">=</span> <span class="n">landing_gear</span><span class="o">.</span><span class="n">strut_length</span>
+        <span class="n">gear_origin</span>  <span class="o">=</span> <span class="n">landing_gear</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>   <span class="c1"># [x, y, z] attachment point on aircraft</span>
 
-    <span class="c1"># Use the first path from sys.path</span>
-    <span class="n">save_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">save_filename</span><span class="p">)</span>
+        <span class="c1"># longitudinal spacing between wheels in the same gear type</span>
+        <span class="n">longitudinal_spacing</span> <span class="o">=</span> <span class="n">landing_gear</span><span class="o">.</span><span class="n">longitudinal_wheel_spacing</span> <span class="o">*</span> <span class="p">(</span><span class="n">N_t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">N_t</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">total_wheel_x_span</span>   <span class="o">=</span> <span class="n">D</span> <span class="o">*</span> <span class="p">(</span><span class="n">N_t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">longitudinal_spacing</span>
+        <span class="n">wheel_x_offsets</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">total_wheel_x_span</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">total_wheel_x_span</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">N_t</span><span class="p">)</span> <span class="k">if</span> <span class="n">N_t</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+
+        <span class="c1"># lateral spacing between gear types in tandem</span>
+        <span class="n">total_wheel_y_span</span>   <span class="o">=</span> <span class="n">w</span> <span class="o">*</span> <span class="p">(</span><span class="n">N_w</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">landing_gear</span><span class="o">.</span><span class="n">lateral_wheel_spacing</span> <span class="o">*</span> <span class="p">(</span><span class="n">N_w</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">N_w</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">wheel_y_offsets</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">total_wheel_y_span</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">total_wheel_y_span</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">N_w</span><span class="p">)</span> <span class="k">if</span> <span class="n">N_w</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_t</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_w</span><span class="p">):</span>
+                <span class="n">wheel_origin</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">gear_origin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">wheel_x_offsets</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                    <span class="n">gear_origin</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">wheel_y_offsets</span><span class="p">[</span><span class="n">j</span><span class="p">],</span>
+                    <span class="n">gear_origin</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">strut_length</span><span class="p">,</span>
+                <span class="p">]</span>
+                <span class="n">pts</span> <span class="o">=</span> <span class="n">generate_3d_torus_points</span><span class="p">(</span><span class="n">wheel_origin</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">tessellation</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
+                <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">pts</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">landing_gear_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">landing_gear_opacity</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">landing_gear</span><span class="o">.</span><span class="n">xz_plane_symmetric</span><span class="p">:</span>
+                    <span class="n">wheel_origin</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">wheel_origin</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">pts</span> <span class="o">=</span> <span class="n">generate_3d_torus_points</span><span class="p">(</span><span class="n">wheel_origin</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">tessellation</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
+                    <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">pts</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">landing_gear_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">landing_gear_opacity</span><span class="p">)</span>
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Plot wings</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="k">for</span> <span class="n">wing</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">wings</span><span class="p">:</span> 
+        <span class="n">GEOM</span>       <span class="o">=</span> <span class="n">generate_3d_wing_points</span><span class="p">(</span><span class="n">wing</span><span class="p">,</span> <span class="n">number_of_airfoil_points</span><span class="p">,</span> <span class="n">plot_centerline</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">wing_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">wing_opacity</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">yz_plane_symmetric</span><span class="p">:</span>
+            <span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">wing_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">wing_opacity</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">xz_plane_symmetric</span><span class="p">:</span>
+            <span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">wing_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">wing_opacity</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">xy_plane_symmetric</span><span class="p">:</span>
+            <span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">]</span>
+            <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">wing_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">wing_opacity</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wing</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Blended_Wing_Body</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">show_LOPA</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">cabins</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">cabins</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">segments_bounding_cabin</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">lopa_geom</span> <span class="o">=</span> <span class="n">generate_3d_lopa_points</span><span class="p">(</span><span class="n">wing</span><span class="p">)</span>
+                    <span class="n">add_lopa_seats</span><span class="p">(</span><span class="n">plotter</span><span class="p">,</span> <span class="n">lopa_geom</span><span class="p">,</span> <span class="n">lopa_opacity</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">show_Cabin</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">cabins</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">GEOM</span> <span class="o">=</span> <span class="n">generate_3d_cabin_points</span><span class="p">(</span><span class="n">wing</span><span class="p">,</span> <span class="n">number_of_airfoil_points</span><span class="p">,</span> <span class="n">plot_centerline</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">cabin_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">cabin_opacity</span><span class="p">)</span>
+                <span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">cabin_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">cabin_opacity</span><span class="p">)</span>
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Plot fuselage</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="k">for</span> <span class="n">fuselage</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">fuselages</span><span class="p">:</span>
+        <span class="n">GEOM</span> <span class="o">=</span> <span class="n">generate_3d_fuselage_points</span><span class="p">(</span><span class="n">fuselage</span><span class="p">,</span> <span class="n">tessellation</span><span class="p">)</span>
+        <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">fuselage_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">fuselage_opacity</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">show_Cabin</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fuselage</span><span class="o">.</span><span class="n">cabins</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">fuselage</span><span class="o">.</span><span class="n">cabins</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">segments_bounding_cabin</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">GEOM</span> <span class="o">=</span> <span class="n">generate_3d_cabin_points</span><span class="p">(</span><span class="n">fuselage</span><span class="p">,</span> <span class="n">number_of_airfoil_points</span><span class="p">,</span> <span class="n">plot_centerline</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">cabin_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">cabin_opacity</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">show_LOPA</span><span class="p">:</span>
+            <span class="n">lopa_geom</span> <span class="o">=</span> <span class="n">generate_3d_lopa_points</span><span class="p">(</span><span class="n">fuselage</span><span class="p">)</span>
+            <span class="n">add_lopa_seats</span><span class="p">(</span><span class="n">plotter</span><span class="p">,</span> <span class="n">lopa_geom</span><span class="p">,</span> <span class="n">lopa_opacity</span><span class="p">)</span>
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Plot systems</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="k">for</span> <span class="n">system</span> <span class="ow">in</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">systems</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">Component</span><span class="p">):</span>
+            <span class="n">GEOM</span> <span class="o">=</span> <span class="n">generate_3d_cuboid_points</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
+            <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">system_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">systems_opacity</span><span class="p">)</span>
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Plot cargo bay</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="k">for</span> <span class="n">cargo_bay</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">cargo_bays</span><span class="p">:</span>
+        <span class="n">GEOM</span> <span class="o">=</span> <span class="n">generate_3d_cargo_bay_points</span><span class="p">(</span><span class="n">cargo_bay</span><span class="p">)</span>
+        <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">cargo_bay_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">cargo_bay_opacity</span><span class="p">)</span>
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Plot boom</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="k">for</span> <span class="n">boom</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">booms</span><span class="p">:</span>
+        <span class="n">GEOM</span> <span class="o">=</span> <span class="n">generate_3d_fuselage_points</span><span class="p">(</span><span class="n">boom</span><span class="p">,</span> <span class="n">tessellation</span><span class="p">)</span>
+        <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">boom_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">boom_opacity</span><span class="p">)</span>
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Plot Nacelle, Rotors and Fuel Tanks</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">propulsor</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turbofan</span><span class="p">,</span>
+                                   <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turbojet</span><span class="p">,</span>
+                                   <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turboprop</span><span class="p">):</span>
+
+                <span class="n">GEOM</span> <span class="o">=</span> <span class="n">generate_3d_propulsor_points</span><span class="p">(</span><span class="n">propulsor</span><span class="p">,</span> <span class="n">tessellation</span><span class="p">)</span>
+                <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">propulsor_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">propulsor_opacity</span><span class="p">)</span>
+                
+            <span class="c1"># if nacelle geometry is defined, plot nacelle</span>
+            <span class="k">if</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Nacelles</span><span class="o">.</span><span class="n">Stack_Nacelle</span><span class="p">:</span>
+                    <span class="n">GEOM</span> <span class="o">=</span> <span class="n">generate_3d_stack_nacelle_points</span><span class="p">(</span><span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span><span class="p">,</span> <span class="n">tessellation</span><span class="o">=</span><span class="n">tessellation</span><span class="p">,</span> <span class="n">number_of_airfoil_points</span><span class="o">=</span><span class="n">number_of_airfoil_points</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Nacelles</span><span class="o">.</span><span class="n">Body_of_Revolution_Nacelle</span><span class="p">:</span>
+                    <span class="n">GEOM</span> <span class="o">=</span> <span class="n">generate_3d_BOR_nacelle_points</span><span class="p">(</span><span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span><span class="p">,</span> <span class="n">tessellation</span><span class="o">=</span><span class="n">tessellation</span><span class="p">,</span> <span class="n">number_of_airfoil_points</span><span class="o">=</span><span class="n">number_of_airfoil_points</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">GEOM</span> <span class="o">=</span> <span class="n">generate_3d_basic_nacelle_points</span><span class="p">(</span><span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span><span class="p">,</span> <span class="n">tessellation</span><span class="o">=</span><span class="n">tessellation</span><span class="p">,</span> <span class="n">number_of_airfoil_points</span><span class="o">=</span><span class="n">number_of_airfoil_points</span><span class="p">)</span>
+                <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">nacelle_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">nacelle_opacity</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="s1">&#39;rotor&#39;</span> <span class="ow">in</span> <span class="n">propulsor</span><span class="p">:</span>
+                <span class="n">rot</span>   <span class="o">=</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">rotor</span>
+                <span class="n">rot_x</span> <span class="o">=</span> <span class="n">rot</span><span class="o">.</span><span class="n">orientation_euler_angles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">rot_y</span> <span class="o">=</span> <span class="n">rot</span><span class="o">.</span><span class="n">orientation_euler_angles</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">rot_z</span> <span class="o">=</span> <span class="n">rot</span><span class="o">.</span><span class="n">orientation_euler_angles</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">num_B</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">rot</span><span class="o">.</span><span class="n">number_of_blades</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">rot</span><span class="o">.</span><span class="n">radius_distribution</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span><span class="n">plot_actuator_disc</span> <span class="o">==</span> <span class="kc">True</span><span class="p">):</span>
+                    <span class="n">make_actuator_disc</span><span class="p">(</span><span class="n">plotter</span><span class="p">,</span> <span class="n">rot</span><span class="o">.</span><span class="n">hub_radius</span><span class="p">,</span> <span class="n">rot</span><span class="o">.</span><span class="n">tip_radius</span><span class="p">,</span> <span class="n">rot</span><span class="o">.</span><span class="n">origin</span><span class="p">,</span> <span class="n">rot_x</span><span class="p">,</span> <span class="n">rot_y</span><span class="p">,</span> <span class="n">rot_z</span><span class="p">,</span> <span class="n">rotor_rgb_color</span><span class="p">,</span> <span class="n">rotor_opacity</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">rot_y</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span>
+                    <span class="n">dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rot</span><span class="o">.</span><span class="n">radius_distribution</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_B</span><span class="p">):</span>
+                        <span class="n">GEOM</span> <span class="o">=</span> <span class="n">generate_3d_blade_points</span><span class="p">(</span><span class="n">rot</span><span class="p">,</span> <span class="n">number_of_airfoil_points</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                        <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">rotor_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">rotor_opacity</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="s1">&#39;propeller&#39;</span> <span class="ow">in</span> <span class="n">propulsor</span><span class="p">:</span>
+                <span class="n">prop</span>  <span class="o">=</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">propeller</span>
+                <span class="n">rot_x</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">orientation_euler_angles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">rot_y</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">orientation_euler_angles</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">rot_z</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">orientation_euler_angles</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">num_B</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">prop</span><span class="o">.</span><span class="n">number_of_blades</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">prop</span><span class="o">.</span><span class="n">radius_distribution</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">plot_actuator_disc</span> <span class="o">==</span> <span class="kc">True</span><span class="p">):</span>
+                    <span class="n">make_actuator_disc</span><span class="p">(</span><span class="n">plotter</span><span class="p">,</span> <span class="n">prop</span><span class="o">.</span><span class="n">hub_radius</span><span class="p">,</span> <span class="n">prop</span><span class="o">.</span><span class="n">tip_radius</span><span class="p">,</span> <span class="n">prop</span><span class="o">.</span><span class="n">origin</span><span class="p">,</span> <span class="n">rot_x</span><span class="p">,</span> <span class="n">rot_y</span><span class="p">,</span> <span class="n">rot_z</span><span class="p">,</span> <span class="n">rotor_rgb_color</span><span class="p">,</span> <span class="n">rotor_opacity</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">prop</span><span class="o">.</span><span class="n">radius_distribution</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_B</span><span class="p">):</span>
+                        <span class="n">GEOM</span> <span class="o">=</span> <span class="n">generate_3d_blade_points</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">number_of_airfoil_points</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                        <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">rotor_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">rotor_opacity</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">fuel_line</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">fuel_lines</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">fuel_tank</span> <span class="ow">in</span> <span class="n">fuel_line</span><span class="o">.</span><span class="n">fuel_tanks</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">wing_tag</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">wing</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">wings</span><span class="p">[</span><span class="n">fuel_tank</span><span class="o">.</span><span class="n">wing_tag</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">fuel_tank</span><span class="p">),</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">Fuel_Tanks</span><span class="o">.</span><span class="n">Non_Integral_Tank</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">fuel_tank</span><span class="p">),</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">Fuel_Tanks</span><span class="o">.</span><span class="n">Cryogenic_Tank</span><span class="p">)</span> <span class="ow">and</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">geometry_type</span> <span class="o">==</span> <span class="s1">&#39;conformal&#39;</span> <span class="ow">and</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">transverse_tank</span><span class="p">:</span>
+                            <span class="n">seg_bounds</span> <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">transverse_tank_chord_bounds</span>
+                            <span class="n">GEOM</span>       <span class="o">=</span> <span class="n">generate_aft_integral_wing_tank_points</span><span class="p">(</span><span class="n">wing</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">seg_bounds</span><span class="p">,</span> <span class="n">fuel_tank</span><span class="p">)</span>
+                            <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">fuel_tank_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">fuel_tank_opacity</span><span class="p">)</span>
+                        <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">fuel_tank</span><span class="p">),</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">Fuel_Tanks</span><span class="o">.</span><span class="n">Cryogenic_Tank</span><span class="p">)</span> <span class="ow">and</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">geometry_type</span> <span class="o">==</span> <span class="s1">&#39;conformal&#39;</span><span class="p">:</span>
+                            <span class="n">seg_bounds</span> <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">segments_bounding_tank</span>
+                            <span class="n">GEOM</span>       <span class="o">=</span> <span class="n">generate_integral_wing_tank_points</span><span class="p">(</span><span class="n">wing</span><span class="p">,</span> <span class="n">number_of_airfoil_points</span><span class="p">,</span> <span class="n">seg_bounds</span><span class="p">,</span> <span class="n">fuel_tank</span><span class="p">)</span>
+                            <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">fuel_tank_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">fuel_tank_opacity</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">xz_plane_symmetric</span><span class="p">:</span>
+                                <span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span>
+                                <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">fuel_tank_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">fuel_tank_opacity</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">GEOM</span> <span class="o">=</span> <span class="n">generate_non_integral_fuel_tank_points</span><span class="p">(</span><span class="n">fuel_tank</span><span class="p">,</span> <span class="n">tessellation</span><span class="p">)</span>
+                            <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">fuel_tank_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">fuel_tank_opacity</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">xz_plane_symmetric</span><span class="p">:</span>
+                                <span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span>
+                                <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">fuel_tank_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">fuel_tank_opacity</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">fuel_tank</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">Fuel_Tanks</span><span class="o">.</span><span class="n">Integral_Tank</span><span class="p">:</span>
+                        <span class="n">seg_bounds</span> <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">segments_bounding_tank</span>
+                        <span class="n">GEOM</span>       <span class="o">=</span> <span class="n">generate_integral_wing_tank_points</span><span class="p">(</span><span class="n">wing</span><span class="p">,</span> <span class="n">number_of_airfoil_points</span><span class="p">,</span> <span class="n">seg_bounds</span><span class="p">,</span> <span class="n">fuel_tank</span><span class="p">,</span> <span class="n">plot_centerline</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                        <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">fuel_tank_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">fuel_tank_opacity</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">xz_plane_symmetric</span><span class="p">:</span>
+                            <span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span>
+                            <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">fuel_tank_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">fuel_tank_opacity</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuselage_tag</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">fuselage</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">fuselages</span><span class="p">[</span><span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuselage_tag</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">fuel_tank</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">Fuel_Tanks</span><span class="o">.</span><span class="n">Integral_Tank</span><span class="p">:</span>
+                        <span class="n">seg_bounds</span> <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">segments_bounding_tank</span>
+                        <span class="n">GEOM</span> <span class="o">=</span> <span class="n">generate_integral_fuel_tank_points</span><span class="p">(</span><span class="n">fuselage</span><span class="p">,</span> <span class="n">fuel_tank</span><span class="p">,</span> <span class="n">seg_bounds</span><span class="p">,</span> <span class="n">tessellation</span><span class="p">)</span>
+                        <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">fuel_tank_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">fuel_tank_opacity</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">fuel_tank</span><span class="p">),</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Sources</span><span class="o">.</span><span class="n">Fuel_Tanks</span><span class="o">.</span><span class="n">Non_Integral_Tank</span><span class="p">):</span>
+                    <span class="n">GEOM</span> <span class="o">=</span> <span class="n">generate_non_integral_fuel_tank_points</span><span class="p">(</span><span class="n">fuel_tank</span><span class="p">,</span> <span class="n">tessellation</span><span class="p">)</span>
+                    <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">fuel_tank_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">fuel_tank_opacity</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">xz_plane_symmetric</span><span class="p">:</span>
+                        <span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span>
+                        <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">fuel_tank_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">fuel_tank_opacity</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">bus</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">busses</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">battery</span> <span class="ow">in</span> <span class="n">bus</span><span class="o">.</span><span class="n">battery_modules</span><span class="p">:</span>
+                <span class="n">GEOM</span> <span class="o">=</span> <span class="n">generate_3d_cuboid_points</span><span class="p">(</span><span class="n">battery</span><span class="p">)</span>
+                <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">generate_vtk_object</span><span class="p">(</span><span class="n">GEOM</span><span class="o">.</span><span class="n">PTS</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">battery_rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">battery_opacity</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">front_view</span><span class="p">:</span>
+        <span class="n">plotter</span><span class="o">.</span><span class="n">camera_position</span> <span class="o">=</span> <span class="p">[(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">L</span> <span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span> 
+    <span class="k">elif</span> <span class="n">side_view</span><span class="p">:</span>
+        <span class="n">plotter</span><span class="o">.</span><span class="n">camera_position</span> <span class="o">=</span> <span class="p">[(</span><span class="n">L</span> <span class="o">/</span><span class="mi">2</span> <span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">L</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">L</span> <span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>  
+    <span class="k">elif</span> <span class="n">top_view</span><span class="p">:</span>
+        <span class="n">plotter</span><span class="o">.</span><span class="n">camera_position</span> <span class="o">=</span> <span class="p">[(</span><span class="n">L</span><span class="p">,</span> <span class="mi">0</span> <span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">L</span> <span class="p">),</span> <span class="p">(</span><span class="n">L</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>       
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plotter</span><span class="o">.</span><span class="n">camera_position</span> <span class="o">=</span> <span class="p">[(</span><span class="n">L</span> <span class="o">*</span> <span class="n">camera_eye_x</span><span class="p">,</span> <span class="n">L</span> <span class="o">*</span> <span class="n">camera_eye_y</span><span class="p">,</span> <span class="n">L</span> <span class="o">*</span> <span class="n">camera_eye_z</span><span class="p">),</span> <span class="p">(</span><span class="n">L</span> <span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+    
+    <span class="n">plotter</span><span class="o">.</span><span class="n">window_size</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">1500</span><span class="p">]</span>
+    <span class="n">plotter</span><span class="o">.</span><span class="n">set_background</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">export_gltf</span><span class="p">:</span>
+        <span class="n">plotter</span><span class="o">.</span><span class="n">export_gltf</span><span class="p">(</span><span class="n">save_filename</span> <span class="o">+</span> <span class="s2">&quot;.gltf&quot;</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">save_figure</span><span class="p">:</span>
-        <span class="n">fig</span><span class="o">.</span><span class="n">write_image</span><span class="p">(</span><span class="n">save_filename</span> <span class="o">+</span> <span class="s2">&quot;.png&quot;</span><span class="p">)</span>
-        
-    <span class="k">if</span> <span class="n">show_figure</span><span class="p">:</span>
-        <span class="n">fig</span><span class="o">.</span><span class="n">write_html</span><span class="p">(</span> <span class="n">save_filename</span> <span class="o">+</span> <span class="s1">&#39;.html&#39;</span><span class="p">,</span> <span class="n">auto_open</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> 
+        <span class="n">plotter</span><span class="o">.</span><span class="n">screenshot</span><span class="p">(</span><span class="n">save_filename</span> <span class="o">+</span> <span class="s2">&quot;.png&quot;</span><span class="p">,</span> <span class="n">transparent_background</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">show_figure</span><span class="p">:</span>
+            <span class="n">plotter</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">plotter</span></div>
+
+
+<div class="viewcode-block" id="add_lopa_seats">
+<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Plots.Geometry.plot_3d_vehicle.html#RCAIDE.Library.Plots.Geometry.plot_3d_vehicle.add_lopa_seats">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_lopa_seats</span><span class="p">(</span><span class="n">plotter</span><span class="p">,</span> <span class="n">lopa_geometry</span><span class="p">,</span> <span class="n">opacity</span><span class="p">):</span>
+    <span class="n">color_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;first&quot;</span><span class="p">:</span>      <span class="n">mcolors</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="s2">&quot;indianred&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;business&quot;</span><span class="p">:</span>   <span class="n">mcolors</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="s2">&quot;seagreen&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;economy&quot;</span><span class="p">:</span>    <span class="n">mcolors</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="s2">&quot;steelblue&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;galley_lav&quot;</span><span class="p">:</span> <span class="n">mcolors</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="s2">&quot;sandybrown&quot;</span><span class="p">),</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Fast path: batched merged meshes (one add_mesh call per class/emergency group).</span>
+    <span class="n">batches</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">lopa_geometry</span><span class="p">,</span> <span class="s2">&quot;_lopa_batches&quot;</span><span class="p">,</span> <span class="p">{})</span>
+    <span class="k">if</span> <span class="n">batches</span><span class="p">:</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">seat_class</span><span class="p">,</span> <span class="n">is_em</span><span class="p">),</span> <span class="n">merged_mesh</span> <span class="ow">in</span> <span class="n">batches</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">rgb</span> <span class="o">=</span> <span class="n">color_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">seat_class</span><span class="p">,</span> <span class="n">mcolors</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="s2">&quot;gray&quot;</span><span class="p">))</span>
+            <span class="n">actor</span> <span class="o">=</span> <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">merged_mesh</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">rgb</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">opacity</span><span class="p">),</span>
+                                     <span class="n">show_scalar_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_em</span><span class="p">:</span>
+                <span class="n">actor</span><span class="o">.</span><span class="n">GetProperty</span><span class="p">()</span><span class="o">.</span><span class="n">EdgeVisibilityOn</span><span class="p">()</span>
+                <span class="n">actor</span><span class="o">.</span><span class="n">GetProperty</span><span class="p">()</span><span class="o">.</span><span class="n">SetEdgeColor</span><span class="p">(</span><span class="o">*</span><span class="n">rgb</span><span class="p">)</span>
+                <span class="n">actor</span><span class="o">.</span><span class="n">GetProperty</span><span class="p">()</span><span class="o">.</span><span class="n">SetLineWidth</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="c1"># Legacy path: individual seat dicts produced by older generate_3d_lopa_points.</span>
+    <span class="n">seats</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">lopa_geometry</span><span class="p">,</span> <span class="s2">&quot;_lopa_seats&quot;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="k">for</span> <span class="n">seat</span> <span class="ow">in</span> <span class="n">seats</span><span class="p">:</span>
+        <span class="n">poly</span> <span class="o">=</span> <span class="n">seat</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;polydata&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">poly</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">seat_class</span> <span class="o">=</span> <span class="n">seat</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="s2">&quot;economy&quot;</span><span class="p">)</span>
+        <span class="n">rgb</span> <span class="o">=</span> <span class="n">color_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">seat_class</span><span class="p">,</span> <span class="n">mcolors</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="s2">&quot;gray&quot;</span><span class="p">))</span>
+        <span class="n">mesh</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">poly</span><span class="p">)</span>
+        <span class="n">actor</span> <span class="o">=</span> <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">rgb</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">opacity</span><span class="p">),</span> <span class="n">show_scalar_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">seat</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;emergency_row&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="n">actor</span><span class="o">.</span><span class="n">GetProperty</span><span class="p">()</span><span class="o">.</span><span class="n">EdgeVisibilityOn</span><span class="p">()</span>
+            <span class="n">actor</span><span class="o">.</span><span class="n">GetProperty</span><span class="p">()</span><span class="o">.</span><span class="n">SetEdgeColor</span><span class="p">(</span><span class="o">*</span><span class="n">rgb</span><span class="p">)</span>
+            <span class="n">actor</span><span class="o">.</span><span class="n">GetProperty</span><span class="p">()</span><span class="o">.</span><span class="n">SetLineWidth</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="make_actuator_disc">
+<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Plots.Geometry.plot_3d_vehicle.html#RCAIDE.Library.Plots.Geometry.plot_3d_vehicle.make_actuator_disc">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_actuator_disc</span><span class="p">(</span><span class="n">plotter</span><span class="p">,</span> <span class="n">inner_radius</span><span class="p">,</span> <span class="n">outer_radius</span><span class="p">,</span> <span class="n">origin</span><span class="p">,</span> <span class="n">rot_x</span><span class="p">,</span><span class="n">rot_y</span><span class="p">,</span><span class="n">rot_z</span><span class="p">,</span> <span class="n">rgb_color</span><span class="p">,</span> <span class="n">opacity</span><span class="p">):</span>
     
-    <span class="k">return</span>     </div>
+    <span class="n">disc_points</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">],</span>
+                            <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                            <span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+    <span class="n">x_rotation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">x_rotation</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">x_rotation</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rot_x</span><span class="p">)</span>
+    <span class="n">x_rotation</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rot_x</span><span class="p">)</span>
+    <span class="n">x_rotation</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rot_x</span><span class="p">)</span>
+    <span class="n">x_rotation</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rot_x</span><span class="p">)</span>
 
+    <span class="n">y_rotation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">y_rotation</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rot_y</span><span class="p">)</span>
+    <span class="n">y_rotation</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rot_y</span><span class="p">)</span>
+    <span class="n">y_rotation</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">y_rotation</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rot_y</span><span class="p">)</span>
+    <span class="n">y_rotation</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rot_y</span><span class="p">)</span> 
 
-<div class="viewcode-block" id="generate_3d_vehicle_geometry_data">
-<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Plots.Geometry.plot_3d_vehicle.html#RCAIDE.Library.Plots.Geometry.plot_3d_vehicle.generate_3d_vehicle_geometry_data">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">generate_3d_vehicle_geometry_data</span><span class="p">(</span><span class="n">plot_data</span><span class="p">,</span>
-                                      <span class="n">vehicle</span><span class="p">,</span> 
-                                      <span class="n">alpha</span>                       <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>  
-                                      <span class="n">min_x_axis_limit</span>            <span class="o">=</span>  <span class="o">-</span><span class="mi">5</span><span class="p">,</span>
-                                      <span class="n">max_x_axis_limit</span>            <span class="o">=</span>  <span class="mi">40</span><span class="p">,</span>
-                                      <span class="n">min_y_axis_limit</span>            <span class="o">=</span>  <span class="o">-</span><span class="mi">20</span><span class="p">,</span>
-                                      <span class="n">max_y_axis_limit</span>            <span class="o">=</span>  <span class="mi">20</span><span class="p">,</span>
-                                      <span class="n">min_z_axis_limit</span>            <span class="o">=</span>  <span class="o">-</span><span class="mi">20</span><span class="p">,</span>
-                                      <span class="n">max_z_axis_limit</span>            <span class="o">=</span>  <span class="mi">20</span><span class="p">,</span> <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generates plot data for all vehicle components.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    plot_data : list</span>
-<span class="sd">        Collection of plot vertices to be rendered</span>
-<span class="sd">        </span>
-<span class="sd">    vehicle : Vehicle</span>
-<span class="sd">        RCAIDE vehicle data structure containing all component geometries</span>
-<span class="sd">        </span>
-<span class="sd">    alpha : float, optional</span>
-<span class="sd">        Transparency value between 0 and 1 (default: 1.0)</span>
-<span class="sd">        </span>
-<span class="sd">    min_x_axis_limit : float, optional</span>
-<span class="sd">        Minimum x-axis plot limit (default: -5)</span>
-<span class="sd">        </span>
-<span class="sd">    max_x_axis_limit : float, optional</span>
-<span class="sd">        Maximum x-axis plot limit (default: 40)</span>
-<span class="sd">        </span>
-<span class="sd">    min_y_axis_limit : float, optional</span>
-<span class="sd">        Minimum y-axis plot limit (default: -20)</span>
-<span class="sd">        </span>
-<span class="sd">    max_y_axis_limit : float, optional</span>
-<span class="sd">        Maximum y-axis plot limit (default: 20)</span>
-<span class="sd">        </span>
-<span class="sd">    min_z_axis_limit : float, optional</span>
-<span class="sd">        Minimum z-axis plot limit (default: -20)</span>
-<span class="sd">        </span>
-<span class="sd">    max_z_axis_limit : float, optional</span>
-<span class="sd">        Maximum z-axis plot limit (default: 20)</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    plot_data : list</span>
-<span class="sd">        Updated collection of plot vertices</span>
-<span class="sd">        </span>
-<span class="sd">    min_x_axis_limit : float</span>
-<span class="sd">        Updated minimum x-axis limit</span>
-<span class="sd">        </span>
-<span class="sd">    max_x_axis_limit : float</span>
-<span class="sd">        Updated maximum x-axis limit</span>
-<span class="sd">        </span>
-<span class="sd">    min_y_axis_limit : float</span>
-<span class="sd">        Updated minimum y-axis limit</span>
-<span class="sd">        </span>
-<span class="sd">    max_y_axis_limit : float</span>
-<span class="sd">        Updated maximum y-axis limit</span>
-<span class="sd">        </span>
-<span class="sd">    min_z_axis_limit : float</span>
-<span class="sd">        Updated minimum z-axis limit</span>
-<span class="sd">        </span>
-<span class="sd">    max_z_axis_limit : float</span>
-<span class="sd">        Updated maximum z-axis limit</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    Processes geometry for:</span>
-
-<span class="sd">        - Wings (using plot_3d_wing)</span>
-<span class="sd">        - Fuselages (using plot_3d_fuselage)</span>
-<span class="sd">        - Booms (using plot_3d_fuselage)</span>
-<span class="sd">        - Energy networks (using plot_3d_energy_network)</span>
-<span class="sd">    &quot;&quot;&quot;</span> 
+    <span class="n">z_rotation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">z_rotation</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rot_z</span><span class="p">)</span>
+    <span class="n">z_rotation</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rot_z</span><span class="p">)</span>
+    <span class="n">z_rotation</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rot_z</span><span class="p">)</span>
+    <span class="n">z_rotation</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rot_z</span><span class="p">)</span>
+    <span class="n">z_rotation</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
     
-    <span class="c1"># -------------------------------------------------------------------------</span>
-    <span class="c1"># PLOT WING</span>
-    <span class="c1"># ------------------------------------------------------------------------- </span>
-    <span class="n">number_of_airfoil_points</span> <span class="o">=</span> <span class="mi">21</span>
-    <span class="k">for</span> <span class="n">wing</span> <span class="ow">in</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">wings</span><span class="p">:</span>
-        <span class="n">plot_data</span>       <span class="o">=</span> <span class="n">plot_3d_wing</span><span class="p">(</span><span class="n">plot_data</span><span class="p">,</span><span class="n">wing</span><span class="p">,</span><span class="n">number_of_airfoil_points</span> <span class="p">,</span> <span class="n">color_map</span><span class="o">=</span><span class="s1">&#39;greys&#39;</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> 
-        
-    <span class="c1"># -------------------------------------------------------------------------</span>
-    <span class="c1"># PLOT FUSELAGE</span>
-    <span class="c1"># ------------------------------------------------------------------------- </span>
-    <span class="k">for</span> <span class="n">fus</span> <span class="ow">in</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">fuselages</span><span class="p">:</span>
-        <span class="n">plot_data</span> <span class="o">=</span> <span class="n">plot_3d_fuselage</span><span class="p">(</span><span class="n">plot_data</span><span class="p">,</span><span class="n">fus</span><span class="p">,</span><span class="n">color_map</span> <span class="o">=</span> <span class="s1">&#39;teal&#39;</span><span class="p">)</span>
-
-    
-    <span class="c1"># -------------------------------------------------------------------------</span>
-    <span class="c1"># PLOT BOOMS</span>
-    <span class="c1"># ------------------------------------------------------------------------- </span>
-    <span class="k">for</span> <span class="n">boom</span> <span class="ow">in</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">booms</span><span class="p">:</span>
-        <span class="n">plot_data</span> <span class="o">=</span> <span class="n">plot_3d_fuselage</span><span class="p">(</span><span class="n">plot_data</span><span class="p">,</span><span class="n">boom</span><span class="p">,</span><span class="n">color_map</span> <span class="o">=</span> <span class="s1">&#39;gray&#39;</span><span class="p">)</span> 
-        
-    <span class="c1"># -------------------------------------------------------------------------</span>
-    <span class="c1"># PLOT ROTORS</span>
-    <span class="c1"># ------------------------------------------------------------------------- </span>
-    <span class="n">number_of_airfoil_points</span> <span class="o">=</span> <span class="mi">11</span>
-    <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span>
-        <span class="n">plot_data</span> <span class="o">=</span> <span class="n">plot_3d_energy_network</span><span class="p">(</span><span class="n">plot_data</span><span class="p">,</span><span class="n">network</span><span class="p">,</span><span class="n">number_of_airfoil_points</span><span class="p">,</span><span class="n">color_map</span> <span class="o">=</span> <span class="s1">&#39;turbid&#39;</span> <span class="p">)</span>
+    <span class="n">R_total</span> <span class="o">=</span> <span class="n">z_rotation</span> <span class="o">@</span> <span class="n">y_rotation</span> <span class="o">@</span> <span class="n">x_rotation</span>
+    <span class="n">disc_points_rotated</span> <span class="o">=</span><span class="n">disc_points</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">R_total</span><span class="o">.</span><span class="n">T</span>  
+     
+    <span class="n">pyvista_mesh</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">Disc</span><span class="p">(</span><span class="n">c_res</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+                           <span class="n">inner</span><span class="o">=</span><span class="n">inner_radius</span><span class="p">,</span>
+                           <span class="n">outer</span><span class="o">=</span><span class="n">outer_radius</span><span class="p">,</span>
+                           <span class="n">normal</span><span class="o">=</span><span class="p">(</span><span class="n">disc_points_rotated</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">disc_points_rotated</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">disc_points_rotated</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]),</span>
+                           <span class="n">center</span><span class="o">=</span> <span class="p">(</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]),</span>
+                           <span class="p">)</span>  
+    <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">pyvista_mesh</span><span class="p">,</span><span class="n">color</span><span class="o">=</span> <span class="n">rgb_color</span><span class="p">,</span><span class="n">opacity</span><span class="o">=</span> <span class="n">opacity</span><span class="p">)</span>  
  
-    <span class="k">return</span> <span class="n">plot_data</span><span class="p">,</span><span class="n">min_x_axis_limit</span><span class="p">,</span><span class="n">max_x_axis_limit</span><span class="p">,</span><span class="n">min_y_axis_limit</span><span class="p">,</span><span class="n">max_y_axis_limit</span><span class="p">,</span><span class="n">min_z_axis_limit</span><span class="p">,</span><span class="n">max_z_axis_limit</span></div>
+    <span class="k">return</span></div>
 
-
-<div class="viewcode-block" id="plot_3d_energy_network">
-<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Plots.Geometry.plot_3d_vehicle.html#RCAIDE.Library.Plots.Geometry.plot_3d_vehicle.plot_3d_energy_network">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">plot_3d_energy_network</span><span class="p">(</span><span class="n">plot_data</span><span class="p">,</span><span class="n">network</span><span class="p">,</span><span class="n">number_of_airfoil_points</span><span class="p">,</span><span class="n">color_map</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generates plot data for vehicle energy network components.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    plot_data : list</span>
-<span class="sd">        Collection of plot vertices to be rendered</span>
-<span class="sd">        </span>
-<span class="sd">    network : Network</span>
-<span class="sd">        RCAIDE network data structure containing propulsion components</span>
-<span class="sd">        </span>
-<span class="sd">    number_of_airfoil_points : int</span>
-<span class="sd">        Number of points used to discretize airfoil sections</span>
-<span class="sd">        </span>
-<span class="sd">    color_map : str</span>
-<span class="sd">        Color specification for network components</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    plot_data : list</span>
-<span class="sd">        Updated collection of plot vertices</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    Processes geometry for:</span>
-<span class="sd">        - Nacelles (using plot_3d_nacelle)</span>
-<span class="sd">        - Rotors (using plot_3d_rotor)</span>
-<span class="sd">        - Propellers (using plot_3d_rotor)</span>
-<span class="sd">    &quot;&quot;&quot;</span> 
-    <span class="n">show_axis</span>     <span class="o">=</span> <span class="kc">False</span> 
-    <span class="n">save_figure</span>   <span class="o">=</span> <span class="kc">False</span> 
-    <span class="n">show_figure</span>   <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">save_filename</span> <span class="o">=</span> <span class="s1">&#39;propulsor&#39;</span>
-
-    <span class="k">for</span> <span class="n">propulsor</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">:</span>   
-        <span class="n">number_of_airfoil_points</span> <span class="o">=</span> <span class="mi">21</span>
-        <span class="n">tessellation</span>             <span class="o">=</span> <span class="mi">24</span>
-        <span class="k">if</span> <span class="s1">&#39;nacelle&#39;</span> <span class="ow">in</span> <span class="n">propulsor</span><span class="p">:</span> 
-            <span class="k">if</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span> <span class="o">!=</span>  <span class="kc">None</span><span class="p">:</span> 
-                <span class="n">plot_data</span> <span class="o">=</span> <span class="n">plot_3d_nacelle</span><span class="p">(</span><span class="n">plot_data</span><span class="p">,</span><span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span><span class="p">,</span><span class="n">tessellation</span><span class="p">,</span><span class="n">number_of_airfoil_points</span><span class="p">,</span><span class="n">color_map</span> <span class="o">=</span> <span class="s1">&#39;darkmint&#39;</span><span class="p">)</span> 
-        <span class="k">if</span> <span class="s1">&#39;rotor&#39;</span> <span class="ow">in</span> <span class="n">propulsor</span><span class="p">:</span> 
-            <span class="n">plot_data</span> <span class="o">=</span> <span class="n">plot_3d_rotor</span><span class="p">(</span><span class="n">propulsor</span><span class="o">.</span><span class="n">rotor</span><span class="p">,</span><span class="n">save_filename</span><span class="p">,</span><span class="n">save_figure</span><span class="p">,</span><span class="n">plot_data</span><span class="p">,</span><span class="n">show_figure</span><span class="p">,</span><span class="n">show_axis</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">number_of_airfoil_points</span><span class="p">,</span><span class="n">color_map</span><span class="p">)</span> 
-        <span class="k">if</span> <span class="s1">&#39;propeller&#39;</span> <span class="ow">in</span> <span class="n">propulsor</span><span class="p">:</span>
-            <span class="n">plot_data</span> <span class="o">=</span> <span class="n">plot_3d_rotor</span><span class="p">(</span><span class="n">propulsor</span><span class="o">.</span><span class="n">propeller</span><span class="p">,</span><span class="n">save_filename</span><span class="p">,</span><span class="n">save_figure</span><span class="p">,</span><span class="n">plot_data</span><span class="p">,</span><span class="n">show_figure</span><span class="p">,</span><span class="n">show_axis</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">number_of_airfoil_points</span><span class="p">,</span><span class="n">color_map</span><span class="p">)</span>  
-        <span class="k">if</span> <span class="s1">&#39;rotor&#39;</span> <span class="ow">in</span> <span class="n">propulsor</span><span class="p">:</span> 
-            <span class="n">plot_data</span> <span class="o">=</span> <span class="n">plot_3d_rotor</span><span class="p">(</span><span class="n">propulsor</span><span class="o">.</span><span class="n">rotor</span><span class="p">,</span><span class="n">save_filename</span><span class="p">,</span><span class="n">save_figure</span><span class="p">,</span><span class="n">plot_data</span><span class="p">,</span><span class="n">show_figure</span><span class="p">,</span><span class="n">show_axis</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">number_of_airfoil_points</span><span class="p">,</span><span class="n">color_map</span><span class="p">)</span> 
-        <span class="k">if</span> <span class="s1">&#39;propeller&#39;</span> <span class="ow">in</span> <span class="n">propulsor</span><span class="p">:</span>
-            <span class="n">plot_data</span> <span class="o">=</span> <span class="n">plot_3d_rotor</span><span class="p">(</span><span class="n">propulsor</span><span class="o">.</span><span class="n">propeller</span><span class="p">,</span><span class="n">save_filename</span><span class="p">,</span><span class="n">save_figure</span><span class="p">,</span><span class="n">plot_data</span><span class="p">,</span><span class="n">show_figure</span><span class="p">,</span><span class="n">show_axis</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">number_of_airfoil_points</span><span class="p">,</span><span class="n">color_map</span><span class="p">)</span> 
+    
  
-    <span class="k">return</span> <span class="n">plot_data</span></div>
-
 </pre></div>
 
                 </article>
@@ -731,8 +912,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -752,7 +933,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -766,7 +947,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

@@ -27,26 +27,27 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/Performance/Tutorial_21_payload_range_diagram';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/tutorials/Performance/Tutorial_21_payload_range_diagram.html" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -55,20 +56,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -94,7 +101,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -191,11 +198,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -208,8 +222,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -303,11 +316,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -320,8 +340,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -330,12 +349,20 @@
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
         <div class="sidebar-primary-item">
+
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../missions.html">Mission Simulations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../missions.html">Missions</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../Missions/Tutorial_01_turbofan_aircraft.html">Tutorial 1 - Turbofan Aircraft Simulation</a></li>
 
 
@@ -415,7 +442,40 @@
 
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../optimization.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../optimize.html">Optimize</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../Optimize/Tutorial_10_Analyses.html">Tutorial 10 - Analyses</a></li>
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../Optimize/Tutorial_11_Missions.html">Tutorial 11 - Missions</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../Optimize/Tutorial_12_Optimize.html">Tutorial 12 - Optimize</a></li>
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../Optimize/Tutorial_13_Plot_Mission.html">Tutorial 13 - Plot Mission</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="../Optimize/Tutorial_14_Procedure.html">Tutorial 14 - Procedure</a></li>
+
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../Optimize/Tutorial_15_Vehicle.html">Tutorial 15 - Vehicle</a></li>
+
+
+
+
+
+
+
+
+
+
+
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../performance.html">Performance</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
@@ -444,6 +504,23 @@
 
 </ul>
 </details></li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis.html">Analysis</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../simulation.html">Simulation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../Simulation_Turbofan_Transonic_Aircraft_5000nmi_Mission/Boeing_737_800_Tutorial.html">Tutorial 1 - Turbofan Aircraft Simulation</a></li>
+
+
+
+
+
+
+
+
+
+
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../legacy_optimization.html">Legacy Python Optimization Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../airfoils_and_polars.html">Airfoils and Polars Downloads</a></li>
 </ul>
 </div>
 </nav></div>
@@ -552,7 +629,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Units</span> <span class="p">,</span> <span class="n">Container</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Performance.compute_payload_range_diagram</span><span class="w">        </span><span class="kn">import</span> <span class="n">compute_payload_range_diagram</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan</span><span class="w">   </span><span class="kn">import</span> <span class="n">design_turbofan</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Geometry.Planform</span><span class="w">               </span><span class="kn">import</span> <span class="n">wing_planform</span><span class="p">,</span> <span class="n">segment_properties</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots</span><span class="w">                 </span><span class="kn">import</span> <span class="o">*</span>
 </pre></div>
 </div>
@@ -600,7 +676,7 @@
 
     <span class="c1"># basic parameters</span>
     <span class="n">vehicle</span><span class="o">.</span><span class="n">reference_area</span>                            <span class="o">=</span> <span class="mf">92.</span>
-    <span class="n">vehicle</span><span class="o">.</span><span class="n">passengers</span>                                <span class="o">=</span> <span class="mi">106</span>
+    <span class="n">vehicle</span><span class="o">.</span><span class="n">number_of_passengers</span>                      <span class="o">=</span> <span class="mi">104</span>
     <span class="n">vehicle</span><span class="o">.</span><span class="n">systems</span><span class="o">.</span><span class="n">control</span>                           <span class="o">=</span> <span class="s2">&quot;fully powered&quot;</span>
     <span class="n">vehicle</span><span class="o">.</span><span class="n">systems</span><span class="o">.</span><span class="n">accessories</span>                       <span class="o">=</span> <span class="s2">&quot;medium range&quot;</span>
 
@@ -644,7 +720,7 @@
     <span class="n">segment</span><span class="o">.</span><span class="n">dihedral_outboard</span>     <span class="o">=</span> <span class="mf">5.</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>
     <span class="n">segment</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span>  <span class="o">=</span> <span class="mf">20.6</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>
     <span class="n">root_airfoil</span>                  <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">Airfoil</span><span class="p">()</span>
-    <span class="n">root_airfoil</span><span class="o">.</span><span class="n">coordinate_file</span>  <span class="o">=</span> <span class="n">rel_path</span>  <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;B737a.txt&#39;</span>
+    <span class="n">root_airfoil</span><span class="o">.</span><span class="n">coordinate_file</span>  <span class="o">=</span> <span class="n">rel_path</span>  <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;transonic_wing_root_section_airfoil.txt&#39;</span>
     <span class="n">segment</span><span class="o">.</span><span class="n">append_airfoil</span><span class="p">(</span><span class="n">root_airfoil</span><span class="p">)</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
 
@@ -656,7 +732,7 @@
     <span class="n">segment</span><span class="o">.</span><span class="n">dihedral_outboard</span>     <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>
     <span class="n">segment</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span>  <span class="o">=</span> <span class="mf">24.1</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>
     <span class="n">yehudi_airfoil</span>                <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">Airfoil</span><span class="p">()</span>
-    <span class="n">yehudi_airfoil</span><span class="o">.</span><span class="n">coordinate_file</span><span class="o">=</span> <span class="n">rel_path</span><span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;B737b.txt&#39;</span>
+    <span class="n">yehudi_airfoil</span><span class="o">.</span><span class="n">coordinate_file</span><span class="o">=</span> <span class="n">rel_path</span><span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;transonic_wing_inboard_section_airfoil.txt&#39;</span>
     <span class="n">segment</span><span class="o">.</span><span class="n">append_airfoil</span><span class="p">(</span><span class="n">yehudi_airfoil</span><span class="p">)</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
 
@@ -668,7 +744,7 @@
     <span class="n">segment</span><span class="o">.</span><span class="n">dihedral_outboard</span>     <span class="o">=</span> <span class="mf">70.</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>
     <span class="n">segment</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span>  <span class="o">=</span> <span class="mf">40.</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>
     <span class="n">mid_airfoil</span>                   <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">Airfoil</span><span class="p">()</span>
-    <span class="n">mid_airfoil</span><span class="o">.</span><span class="n">coordinate_file</span>   <span class="o">=</span> <span class="n">rel_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;B737c.txt&#39;</span>
+    <span class="n">mid_airfoil</span><span class="o">.</span><span class="n">coordinate_file</span>   <span class="o">=</span> <span class="n">rel_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;transonic_wing_outboard_section_airfoil.txt&#39;</span>
     <span class="n">segment</span><span class="o">.</span><span class="n">append_airfoil</span><span class="p">(</span><span class="n">mid_airfoil</span><span class="p">)</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
 
@@ -680,12 +756,9 @@
     <span class="n">segment</span><span class="o">.</span><span class="n">dihedral_outboard</span>     <span class="o">=</span> <span class="mf">0.</span>
     <span class="n">segment</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span>  <span class="o">=</span> <span class="mf">0.</span>
     <span class="n">tip_airfoil</span>                   <span class="o">=</span>  <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">Airfoil</span><span class="p">()</span>
-    <span class="n">tip_airfoil</span><span class="o">.</span><span class="n">coordinate_file</span>   <span class="o">=</span> <span class="n">rel_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;B737d.txt&#39;</span>
+    <span class="n">tip_airfoil</span><span class="o">.</span><span class="n">coordinate_file</span>   <span class="o">=</span> <span class="n">rel_path</span> <span class="o">+</span> <span class="s1">&#39;Airfoils&#39;</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="s1">&#39;transonic_wing_tip_section_airfoil.txt&#39;</span>
     <span class="n">segment</span><span class="o">.</span><span class="n">append_airfoil</span><span class="p">(</span><span class="n">tip_airfoil</span><span class="p">)</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
-
-    <span class="c1"># Fill out more segment properties automatically</span>
-    <span class="n">wing</span> <span class="o">=</span> <span class="n">segment_properties</span><span class="p">(</span><span class="n">wing</span><span class="p">)</span>
 
     <span class="c1"># control surfaces -------------------------------------------</span>
     <span class="n">flap</span>                       <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Control_Surfaces</span><span class="o">.</span><span class="n">Flap</span><span class="p">()</span>
@@ -704,8 +777,6 @@
     <span class="n">slat</span><span class="o">.</span><span class="n">deflection</span>            <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">deg</span>
     <span class="n">slat</span><span class="o">.</span><span class="n">chord_fraction</span>        <span class="o">=</span> <span class="mf">0.1</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">append_control_surface</span><span class="p">(</span><span class="n">slat</span><span class="p">)</span>
-
-    <span class="n">wing</span>                         <span class="o">=</span> <span class="n">wing_planform</span><span class="p">(</span><span class="n">wing</span><span class="p">)</span>
 
     <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">exposed</span>           <span class="o">=</span> <span class="mf">0.80</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">twists</span><span class="o">.</span><span class="n">root</span>             <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>
@@ -731,7 +802,6 @@
     <span class="n">wing</span><span class="o">.</span><span class="n">vertical</span>                <span class="o">=</span> <span class="kc">False</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">symmetric</span>               <span class="o">=</span> <span class="kc">True</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">high_lift</span>               <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">wing</span>                         <span class="o">=</span> <span class="n">wing_planform</span><span class="p">(</span><span class="n">wing</span><span class="p">)</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">exposed</span>           <span class="o">=</span> <span class="mf">0.9</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">twists</span><span class="o">.</span><span class="n">root</span>             <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">twists</span><span class="o">.</span><span class="n">tip</span>              <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>
@@ -756,7 +826,6 @@
     <span class="n">wing</span><span class="o">.</span><span class="n">vertical</span>                <span class="o">=</span> <span class="kc">True</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">symmetric</span>               <span class="o">=</span> <span class="kc">False</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">high_lift</span>               <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">wing</span>                         <span class="o">=</span> <span class="n">wing_planform</span><span class="p">(</span><span class="n">wing</span><span class="p">)</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">exposed</span>           <span class="o">=</span> <span class="mf">0.9</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">twists</span><span class="o">.</span><span class="n">root</span>             <span class="o">=</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">twists</span><span class="o">.</span><span class="n">tip</span>              <span class="o">=</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span>
@@ -769,14 +838,14 @@
     <span class="c1">#  Fuselage</span>
     <span class="c1"># ------------------------------------------------------------------</span>
 
-    <span class="n">fuselage</span>                       <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Fuselages</span><span class="o">.</span><span class="n">Tube_Fuselage</span><span class="p">()</span>
+    <span class="n">fuselage</span>                       <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Fuselages</span><span class="o">.</span><span class="n">Fuselage</span><span class="p">()</span>
     <span class="n">fuselage</span><span class="o">.</span><span class="n">origin</span>                <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]</span>
 
 
     <span class="n">cabin</span>         <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Fuselages</span><span class="o">.</span><span class="n">Cabins</span><span class="o">.</span><span class="n">Cabin</span><span class="p">()</span>
     <span class="n">economy_class</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Fuselages</span><span class="o">.</span><span class="n">Cabins</span><span class="o">.</span><span class="n">Classes</span><span class="o">.</span><span class="n">Economy</span><span class="p">()</span>
     <span class="n">economy_class</span><span class="o">.</span><span class="n">number_of_seats_abrest</span>              <span class="o">=</span> <span class="mi">4</span>
-    <span class="n">economy_class</span><span class="o">.</span><span class="n">number_of_rows</span>                      <span class="o">=</span> <span class="mi">23</span>
+    <span class="n">economy_class</span><span class="o">.</span><span class="n">number_of_rows</span>                      <span class="o">=</span> <span class="mi">26</span>
     <span class="n">economy_class</span><span class="o">.</span><span class="n">galley_lavatory_percent_x_locations</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
     <span class="n">economy_class</span><span class="o">.</span><span class="n">emergency_exit_percent_x_locations</span>  <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
     <span class="n">economy_class</span><span class="o">.</span><span class="n">type_A_exit_percent_x_locations</span>     <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
@@ -981,7 +1050,6 @@
     <span class="n">fuel_tank</span><span class="o">.</span><span class="n">origin</span>                            <span class="o">=</span> <span class="p">[[</span><span class="mf">13.0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mf">1.</span><span class="p">]]</span>
     <span class="c1"># append correct fuel</span>
     <span class="n">fuel</span>                                        <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Attributes</span><span class="o">.</span><span class="n">Propellants</span><span class="o">.</span><span class="n">Jet_A</span><span class="p">()</span>
-    <span class="n">fuel</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>                   <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span><span class="o">-</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_fuel</span>
     <span class="n">fuel</span><span class="o">.</span><span class="n">origin</span>                                 <span class="o">=</span> <span class="p">[[</span><span class="mf">13.0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mf">1.</span><span class="p">]]</span>
     <span class="n">fuel</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span>      <span class="o">=</span> <span class="p">[[</span><span class="mf">13.0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mf">1.</span><span class="p">]]</span>
     <span class="n">fuel</span><span class="o">.</span><span class="n">internal_volume</span>                        <span class="o">=</span> <span class="n">fuel</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span><span class="o">/</span><span class="n">fuel</span><span class="o">.</span><span class="n">density</span>
@@ -1146,30 +1214,30 @@
     <span class="c1">#   Initialize the Analyses</span>
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="n">analyses</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Vehicle</span><span class="p">()</span>
+    <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span> <span class="o">=</span> <span class="n">vehicle</span>
+
+    <span class="c1">#  Geometry</span>
+    <span class="n">geometry</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Geometry</span><span class="o">.</span><span class="n">Geometry</span><span class="p">()</span>
+    <span class="n">geometry</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update_wing_properties</span>     <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">analyses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Weights</span>
-    <span class="n">weights</span>         <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Weights</span><span class="o">.</span><span class="n">Conventional</span><span class="p">()</span>
+    <span class="n">weights</span>         <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Weights</span><span class="o">.</span><span class="n">Conventional_Transport</span><span class="p">()</span>
     <span class="n">weights</span><span class="o">.</span><span class="n">aircraft_type</span> <span class="o">=</span>  <span class="s2">&quot;Transport&quot;</span>
-    <span class="n">weights</span><span class="o">.</span><span class="n">vehicle</span> <span class="o">=</span> <span class="n">vehicle</span>
-    <span class="n">weights</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update_mass_properties</span>         <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">weights</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update_center_of_gravity</span>       <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">weights</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update_moment_of_inertia</span>       <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">weights</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">overwrite_center_of_gravity</span>       <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">weights</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">overwrite_moments_of_inertia</span>      <span class="o">=</span> <span class="kc">False</span>
     <span class="n">weights</span><span class="o">.</span><span class="n">print_weight_analysis_report</span>  <span class="o">=</span> <span class="kc">False</span>
     <span class="n">analyses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Aerodynamics Analysis</span>
     <span class="n">aerodynamics</span>          <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Aerodynamics</span><span class="o">.</span><span class="n">Vortex_Lattice_Method</span><span class="p">()</span>
-    <span class="n">aerodynamics</span><span class="o">.</span><span class="n">vehicle</span>  <span class="o">=</span> <span class="n">vehicle</span>
-    <span class="n">aerodynamics</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">number_of_spanwise_vortices</span>   <span class="o">=</span> <span class="mi">5</span>
-    <span class="n">aerodynamics</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">number_of_chordwise_vortices</span>  <span class="o">=</span> <span class="mi">2</span>
     <span class="n">analyses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">aerodynamics</span><span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Energy</span>
     <span class="n">energy</span>          <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Energy</span><span class="o">.</span><span class="n">Energy</span><span class="p">()</span>
-    <span class="n">energy</span><span class="o">.</span><span class="n">vehicle</span>  <span class="o">=</span> <span class="n">vehicle</span>
     <span class="n">analyses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">energy</span><span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
@@ -1180,7 +1248,6 @@
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Atmosphere Analysis</span>
     <span class="n">atmosphere</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Atmospheric</span><span class="o">.</span><span class="n">US_Standard_1976</span><span class="p">()</span>
-    <span class="n">atmosphere</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">planet</span> <span class="o">=</span> <span class="n">planet</span><span class="o">.</span><span class="n">features</span>
     <span class="n">analyses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atmosphere</span><span class="p">)</span>
 
     <span class="c1"># done!</span>
@@ -1223,7 +1290,7 @@
     <span class="c1"># define flight controls</span>
     <span class="n">segment</span><span class="o">.</span><span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">throttle</span><span class="o">.</span><span class="n">active</span>               <span class="o">=</span> <span class="kc">True</span>
     <span class="n">segment</span><span class="o">.</span><span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">throttle</span><span class="o">.</span><span class="n">assigned_propulsors</span>  <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;starboard_propulsor&#39;</span><span class="p">,</span><span class="s1">&#39;port_propulsor&#39;</span><span class="p">]]</span>
-    <span class="n">segment</span><span class="o">.</span><span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">body_angle</span><span class="o">.</span><span class="n">active</span>             <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">segment</span><span class="o">.</span><span class="n">assigned_control_variables</span><span class="o">.</span><span class="n">pitch_angle</span><span class="o">.</span><span class="n">active</span>             <span class="o">=</span> <span class="kc">True</span>
 
     <span class="n">mission</span><span class="o">.</span><span class="n">append_segment</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
 
@@ -1297,7 +1364,94 @@
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 
- Mission Solver Initiated
+Performing Weights Analysis
+--------------------------------------------------------
+Propulsion Architecture: Conventional
+Aircraft Type          : Transport
+Method                 : FLOPS
+
+=== WEIGHT BREAKDOWN REPORT ===
+
+Structural Components:
+Component                    Weight (kg)
+----------------------------------------
+Wings                            3001.36
+Empennage                         791.44
+Fuselage                         5581.99
+Landing Gear                     2218.85
+Nacelle                           569.00
+Booms                               0.00
+Paint                               0.00
+----------------------------------------
+Total                           12162.63
+
+Propulsion Components:
+Component                    Weight (kg)
+----------------------------------------
+Engines                          5309.56
+Thrust Reversers                  992.89
+Miscellaneous                     236.83
+Fuel System                       232.25
+Fuel Tanks                          0.00
+Electrical Cabling                  0.00
+Thermal Management                  0.00
+Battery                             0.00
+Motors                              0.00
+----------------------------------------
+Total                            6771.53
+
+Systems:
+Component                    Weight (kg)
+----------------------------------------
+Control Systems                   606.67
+Apu                               364.26
+Electrical                        780.35
+Avionics                          520.15
+Hydraulics                        367.69
+Furnishings                      4531.54
+Air Conditioner                   597.34
+Instruments                       183.72
+----------------------------------------
+Total                            7951.73
+
+Payload Breakdown:
+Component                    Weight (kg)
+----------------------------------------
+Passengers                       9198.85
+Baggage                          1415.21
+Cargo                               0.00
+----------------------------------------
+Total                           10614.06
+
+Operational Items Breakdown:
+Component                    Weight (kg)
+----------------------------------------
+Misc                              197.37
+Flight Crew                       204.12
+Flight Attendants                 210.92
+Passenger Service                 697.68
+----------------------------------------
+Total                            1310.09
+
+Overall Summary:
+Metric                       Weight (kg)
+----------------------------------------
+Operating Empty Weight          28195.98
+Payload Weight                  10614.06
+Fuel Weight                        -0.00
+Takeoff Weight                  38810.04
+Zero Fuel Weight                38810.04
+Max Takeoff Weight              51800.00
+
+===============================
+
+
+ Creating aerodynamic surrogate ...
+
+          +----------------------------------------------------+
+          |              MISSION SOLVER INITIATED              |
+          +----------------------------------------------------+
+
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1305,7 +1459,8 @@
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-  0%|          | 0/100 [00:00&lt;?, ?it/s]
+Solving cruise:  |<span class="ansi-green-fg">██████████</span>| 1/1 segs [00:00&lt;00:00,  1.99seg/s]
+Solving cruise:  |<span class="ansi-green-fg">          </span>| 0/1 segs [00:00&lt;?, ?seg/s]
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1314,7 +1469,12 @@
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 
- Solving cruise segment.
+ Aerodynamic training data loaded. Delete the file and rerun to regenerate.
+
+          +----------------------------------------------------+
+          |              MISSION SOLVER INITIATED              |
+          +----------------------------------------------------+
+
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1322,8 +1482,8 @@
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-100%|██████████| 100/100 [00:01&lt;00:00, 58.52it/s]
-  0%|          | 0/100 [00:00&lt;?, ?it/s]
+Solving cruise:  |<span class="ansi-green-fg">██████████</span>| 1/1 segs [00:00&lt;00:00,  2.05seg/s]
+Solving cruise:  |<span class="ansi-green-fg">          </span>| 0/1 segs [00:00&lt;?, ?seg/s]
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1332,9 +1492,12 @@
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 
+ Aerodynamic training data loaded. Delete the file and rerun to regenerate.
 
+          +----------------------------------------------------+
+          |              MISSION SOLVER INITIATED              |
+          +----------------------------------------------------+
 
- Mission Solver Initiated
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1342,8 +1505,8 @@
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-100%|██████████| 100/100 [00:01&lt;00:00, 59.69it/s]
-  0%|          | 0/100 [00:00&lt;?, ?it/s]
+Solving cruise:  |<span class="ansi-green-fg">██████████</span>| 1/1 segs [00:00&lt;00:00,  2.04seg/s]
+Solving cruise:  |<span class="ansi-green-fg">          </span>| 0/1 segs [00:00&lt;?, ?seg/s]
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1352,11 +1515,12 @@
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 
- Solving cruise segment.
+ Aerodynamic training data loaded. Delete the file and rerun to regenerate.
 
+          +----------------------------------------------------+
+          |              MISSION SOLVER INITIATED              |
+          +----------------------------------------------------+
 
-
- Mission Solver Initiated
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1364,8 +1528,8 @@
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-100%|██████████| 100/100 [00:01&lt;00:00, 59.29it/s]
-  0%|          | 0/100 [00:00&lt;?, ?it/s]
+Solving cruise:  |<span class="ansi-green-fg">██████████</span>| 1/1 segs [00:00&lt;00:00,  2.07seg/s]
+Solving cruise:  |<span class="ansi-green-fg">          </span>| 0/1 segs [00:00&lt;?, ?seg/s]
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1374,11 +1538,12 @@
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 
- Solving cruise segment.
+ Aerodynamic training data loaded. Delete the file and rerun to regenerate.
 
+          +----------------------------------------------------+
+          |              MISSION SOLVER INITIATED              |
+          +----------------------------------------------------+
 
-
- Mission Solver Initiated
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1386,8 +1551,8 @@
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-100%|██████████| 100/100 [00:01&lt;00:00, 59.47it/s]
-  0%|          | 0/100 [00:00&lt;?, ?it/s]
+Solving cruise:  |<span class="ansi-green-fg">██████████</span>| 1/1 segs [00:00&lt;00:00,  2.03seg/s]
+Solving cruise:  |<span class="ansi-green-fg">          </span>| 0/1 segs [00:00&lt;?, ?seg/s]
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1396,11 +1561,12 @@
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 
- Solving cruise segment.
+ Aerodynamic training data loaded. Delete the file and rerun to regenerate.
 
+          +----------------------------------------------------+
+          |              MISSION SOLVER INITIATED              |
+          +----------------------------------------------------+
 
-
- Mission Solver Initiated
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1408,8 +1574,8 @@
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-100%|██████████| 100/100 [00:01&lt;00:00, 58.91it/s]
-  0%|          | 0/100 [00:00&lt;?, ?it/s]
+Solving cruise:  |<span class="ansi-green-fg">██████████</span>| 1/1 segs [00:00&lt;00:00,  2.00seg/s]
+Solving cruise:  |<span class="ansi-green-fg">          </span>| 0/1 segs [00:00&lt;?, ?seg/s]
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1418,11 +1584,12 @@
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 
- Solving cruise segment.
+ Aerodynamic training data loaded. Delete the file and rerun to regenerate.
 
+          +----------------------------------------------------+
+          |              MISSION SOLVER INITIATED              |
+          +----------------------------------------------------+
 
-
- Mission Solver Initiated
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1430,8 +1597,8 @@
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-100%|██████████| 100/100 [00:01&lt;00:00, 59.36it/s]
-  0%|          | 0/100 [00:00&lt;?, ?it/s]
+Solving cruise:  |<span class="ansi-green-fg">██████████</span>| 1/1 segs [00:00&lt;00:00,  2.07seg/s]
+Solving cruise:  |<span class="ansi-green-fg">          </span>| 0/1 segs [00:00&lt;?, ?seg/s]
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1440,11 +1607,12 @@
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 
- Solving cruise segment.
+ Aerodynamic training data loaded. Delete the file and rerun to regenerate.
 
+          +----------------------------------------------------+
+          |              MISSION SOLVER INITIATED              |
+          +----------------------------------------------------+
 
-
- Mission Solver Initiated
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1452,8 +1620,8 @@
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-100%|██████████| 100/100 [00:01&lt;00:00, 59.52it/s]
-  0%|          | 0/100 [00:00&lt;?, ?it/s]
+Solving cruise:  |<span class="ansi-green-fg">██████████</span>| 1/1 segs [00:00&lt;00:00,  2.05seg/s]
+Solving cruise:  |<span class="ansi-green-fg">          </span>| 0/1 segs [00:00&lt;?, ?seg/s]
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1462,11 +1630,12 @@
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 
- Solving cruise segment.
+ Aerodynamic training data loaded. Delete the file and rerun to regenerate.
 
+          +----------------------------------------------------+
+          |              MISSION SOLVER INITIATED              |
+          +----------------------------------------------------+
 
-
- Mission Solver Initiated
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1474,8 +1643,8 @@
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-100%|██████████| 100/100 [00:01&lt;00:00, 59.20it/s]
-  0%|          | 0/100 [00:00&lt;?, ?it/s]
+Solving cruise:  |<span class="ansi-green-fg">██████████</span>| 1/1 segs [00:00&lt;00:00,  2.07seg/s]
+Solving cruise:  |<span class="ansi-green-fg">          </span>| 0/1 segs [00:00&lt;?, ?seg/s]
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1484,11 +1653,12 @@
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 
- Solving cruise segment.
+ Aerodynamic training data loaded. Delete the file and rerun to regenerate.
 
+          +----------------------------------------------------+
+          |              MISSION SOLVER INITIATED              |
+          +----------------------------------------------------+
 
-
- Mission Solver Initiated
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1496,8 +1666,8 @@
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-100%|██████████| 100/100 [00:01&lt;00:00, 59.40it/s]
-  0%|          | 0/100 [00:00&lt;?, ?it/s]
+Solving cruise:  |<span class="ansi-green-fg">██████████</span>| 1/1 segs [00:00&lt;00:00,  2.08seg/s]
+Solving cruise:  |<span class="ansi-green-fg">          </span>| 0/1 segs [00:00&lt;?, ?seg/s]
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1506,11 +1676,12 @@
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 
- Solving cruise segment.
+ Aerodynamic training data loaded. Delete the file and rerun to regenerate.
 
+          +----------------------------------------------------+
+          |              MISSION SOLVER INITIATED              |
+          +----------------------------------------------------+
 
-
- Mission Solver Initiated
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1518,8 +1689,8 @@
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-100%|██████████| 100/100 [00:02&lt;00:00, 44.78it/s]
-  0%|          | 0/100 [00:00&lt;?, ?it/s]
+Solving cruise:  |<span class="ansi-green-fg">██████████</span>| 1/1 segs [00:00&lt;00:00,  1.68seg/s]
+Solving cruise:  |<span class="ansi-green-fg">          </span>| 0/1 segs [00:00&lt;?, ?seg/s]
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1528,11 +1699,12 @@
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 
- Solving cruise segment.
+ Aerodynamic training data loaded. Delete the file and rerun to regenerate.
 
+          +----------------------------------------------------+
+          |              MISSION SOLVER INITIATED              |
+          +----------------------------------------------------+
 
-
- Mission Solver Initiated
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1540,8 +1712,8 @@
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-100%|██████████| 100/100 [00:02&lt;00:00, 45.20it/s]
-  0%|          | 0/100 [00:00&lt;?, ?it/s]
+Solving cruise:  |<span class="ansi-green-fg">██████████</span>| 1/1 segs [00:00&lt;00:00,  1.68seg/s]
+Solving cruise:  |<span class="ansi-green-fg">          </span>| 0/1 segs [00:00&lt;?, ?seg/s]
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1550,11 +1722,12 @@
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 
- Solving cruise segment.
+ Aerodynamic training data loaded. Delete the file and rerun to regenerate.
 
+          +----------------------------------------------------+
+          |              MISSION SOLVER INITIATED              |
+          +----------------------------------------------------+
 
-
- Mission Solver Initiated
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1562,15 +1735,31 @@
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-100%|██████████| 100/100 [00:02&lt;00:00, 44.91it/s]
+Solving cruise:  |<span class="ansi-green-fg">██████████</span>| 1/1 segs [00:00&lt;00:00,  1.66seg/s]
+Solving cruise:  |<span class="ansi-green-fg">          </span>| 0/1 segs [00:00&lt;?, ?seg/s]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+ Aerodynamic training data loaded. Delete the file and rerun to regenerate.
+
+          +----------------------------------------------------+
+          |              MISSION SOLVER INITIATED              |
+          +----------------------------------------------------+
+
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area docutils container">
-<img alt="../../_images/tutorials_Performance_Tutorial_21_payload_range_diagram_14_26.png" src="../../_images/tutorials_Performance_Tutorial_21_payload_range_diagram_14_26.png" />
-</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Solving cruise:  |<span class="ansi-green-fg">██████████</span>| 1/1 segs [00:00&lt;00:00,  1.67seg/s]
+</pre></div></div>
 </div>
 </section>
 </section>
@@ -1620,16 +1809,16 @@
     class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Tutorial 21 - Payload Range Diagram</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#1.-Header-and-Imports">1. Header and Imports</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#2.-RCAIDE-Imports">2. RCAIDE Imports</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#2.-RCAIDE-Imports">2. RCAIDE Imports</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Key-Imports:">Key Imports:</a></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#3.-Vehicle-Setup">3. Vehicle Setup</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#4.-Payload-Range-Diagram">4. Payload Range Diagram</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#4.-Payload-Range-Diagram">4. Payload Range Diagram</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Define-Analysis">Define Analysis</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Run-Payload-Range-Method">Run Payload Range Method</a></li>
 </ul>
@@ -1639,13 +1828,13 @@
   </nav></div>
 
   <div class="sidebar-secondary-item">
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../../_sources/tutorials/Performance/Tutorial_21_payload_range_diagram.ipynb.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div></div>
+
+  <div class="tocsection sourcelink">
+    <a href="../../_sources/tutorials/Performance/Tutorial_21_payload_range_diagram.ipynb.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
 
 </div></div>
               
@@ -1660,8 +1849,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1681,7 +1870,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -1695,7 +1884,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

@@ -1,0 +1,25 @@
+RCAIDE.Library.Plots.Geometry.generate_3d_cuboid_points
+
+generate\_3d\_cuboid\_points
+============================
+
+.. automodule:: RCAIDE.Library.Plots.Geometry.generate_3d_cuboid_points
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

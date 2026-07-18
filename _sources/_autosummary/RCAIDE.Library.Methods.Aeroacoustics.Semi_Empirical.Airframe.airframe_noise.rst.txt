@@ -1,0 +1,25 @@
+RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Airframe.airframe_noise
+
+airframe\_noise
+===============
+
+.. automodule:: RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Airframe.airframe_noise
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

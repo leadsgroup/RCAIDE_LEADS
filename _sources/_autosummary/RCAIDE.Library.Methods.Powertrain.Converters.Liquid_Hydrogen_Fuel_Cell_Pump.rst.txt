@@ -1,0 +1,35 @@
+RCAIDE.Library.Methods.Powertrain.Converters.Liquid_Hydrogen_Fuel_Cell_Pump
+
+Liquid\_Hydrogen\_Fuel\_Cell\_Pump
+==================================
+
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Converters.Liquid_Hydrogen_Fuel_Cell_Pump
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   append_pump_conditions
+   compute_pump_performance
+

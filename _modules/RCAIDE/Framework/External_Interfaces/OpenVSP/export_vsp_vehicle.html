@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Framework/External_Interfaces/OpenVSP/export_vsp_vehicle';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Framework/External_Interfaces/OpenVSP/export_vsp_vehicle.html" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script src="../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -379,29 +398,19 @@
   <h1>Source code for RCAIDE.Framework.External_Interfaces.OpenVSP.export_vsp_vehicle</h1><div class="highlight"><pre>
 <span></span><span class="c1"># RCAIDE/Framework/External_Interfaces/OpenVSP/export_vsp_vehicle.py</span>
 <span class="c1"># </span>
-<span class="c1"># Created:  Jul 2016, T. MacDonald</span>
-<span class="c1"># Modified: Jun 2017, T. MacDonald</span>
-<span class="c1">#           Jul 2017, T. MacDonald</span>
-<span class="c1">#           Oct 2018, T. MacDonald</span>
-<span class="c1">#           Nov 2018, T. MacDonald</span>
-<span class="c1">#           Jan 2019, T. MacDonald</span>
-<span class="c1">#           Jan 2020, T. MacDonald </span>
-<span class="c1">#           Mar 2020, M. Clarke</span>
-<span class="c1">#           May 2020, E. Botero</span>
-<span class="c1">#           Jul 2020, E. Botero </span>
-<span class="c1">#           Feb 2021, T. MacDonald</span>
-<span class="c1">#           May 2021, E. Botero </span>
+<span class="c1"># Created:  Jul 2025, M. Clarke </span>
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  IMPORT</span>
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
 <span class="c1"># RCAIDE imports </span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Units</span><span class="p">,</span> <span class="n">Data</span> 
+<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Geometry.Planform</span><span class="w">                   </span><span class="kn">import</span>  <span class="n">fuselage_planform</span><span class="p">,</span> <span class="n">wing_planform</span> 
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.External_Interfaces.OpenVSP.vsp_rotor</span><span class="w">     </span><span class="kn">import</span> <span class="n">write_vsp_rotor_bem</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.External_Interfaces.OpenVSP.vsp_fuselage</span><span class="w">  </span><span class="kn">import</span> <span class="n">write_vsp_fuselage</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.External_Interfaces.OpenVSP.vsp_wing</span><span class="w">      </span><span class="kn">import</span> <span class="n">write_vsp_wing</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.External_Interfaces.OpenVSP.vsp_nacelle</span><span class="w">   </span><span class="kn">import</span> <span class="n">write_vsp_nacelle</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.External_Interfaces.OpenVSP.vsp_nacelle</span><span class="w">   </span><span class="kn">import</span> <span class="n">write_vsp_nacelle</span>
+
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">vsp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">vsp</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
@@ -412,6 +421,7 @@
         <span class="k">pass</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
 <span class="c1"># export_vsp_vehicle</span>
@@ -484,10 +494,24 @@
 
 <span class="sd">    Properties Used:</span>
 <span class="sd">    N/A</span>
-<span class="sd">    &quot;&quot;&quot;</span>    
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">geometry</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">vehicle</span><span class="p">)</span>
+    <span class="c1"># -------------------------------------------------------------------------     </span>
+    <span class="c1"># Preprocess geometry </span>
+    <span class="c1"># ------------------------------------------------------------------------- </span>
+    <span class="c1"># update fuselage properties </span>
+    <span class="k">for</span> <span class="n">fuselage</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">fuselages</span><span class="p">:</span> 
+        <span class="n">fuselage_planform</span><span class="p">(</span><span class="n">fuselage</span><span class="p">)</span> 
+    
+    <span class="c1"># update wing properties </span>
+    <span class="k">for</span> <span class="n">wing</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">wings</span><span class="p">:</span>  
+        <span class="n">wing_planform</span><span class="p">(</span><span class="n">wing</span><span class="p">)</span>
+        <span class="n">geometry</span><span class="o">.</span><span class="n">reference_area</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span> 
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wing</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Main_Wing</span><span class="p">):</span>
+            <span class="n">geometry</span><span class="o">.</span><span class="n">reference_area</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span> 
 
     <span class="c1"># -------------------------------------------------------------------------     </span>
-    <span class="c1"># Reset OpenVSP to avoid including a previous vehicle</span>
+    <span class="c1"># Reset OpenVSP to avoid including a previous geometry</span>
     <span class="c1"># ------------------------------------------------------------------------- </span>
     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Reseting OpenVSP Model in Memory&#39;</span><span class="p">)</span>
@@ -506,22 +530,23 @@
     <span class="n">vsp</span><span class="o">.</span><span class="n">SetSetName</span><span class="p">(</span><span class="n">fuel_tank_set_ind</span><span class="p">,</span> <span class="s1">&#39;fuel_tanks&#39;</span><span class="p">)</span>
     <span class="n">vsp</span><span class="o">.</span><span class="n">SetSetName</span><span class="p">(</span><span class="n">OML_set_ind</span><span class="p">,</span> <span class="s1">&#39;OML&#39;</span><span class="p">)</span>
     
-    <span class="k">for</span> <span class="n">wing</span> <span class="ow">in</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">wings</span><span class="p">:</span>       
+    <span class="k">for</span> <span class="n">wing</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">wings</span><span class="p">:</span>       
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Writing &#39;</span><span class="o">+</span><span class="n">wing</span><span class="o">.</span><span class="n">tag</span><span class="o">+</span><span class="s1">&#39; to OpenVSP Model&#39;</span><span class="p">)</span>
-            <span class="n">area_tags</span><span class="p">,</span> <span class="n">wing_id</span> <span class="o">=</span> <span class="n">write_vsp_wing</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span><span class="n">wing</span><span class="p">,</span><span class="n">area_tags</span><span class="p">,</span> <span class="n">fuel_tank_set_ind</span><span class="p">,</span> <span class="n">OML_set_ind</span><span class="p">)</span> 
+            <span class="n">area_tags</span><span class="p">,</span> <span class="n">wing_id</span> <span class="o">=</span> <span class="n">write_vsp_wing</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span><span class="n">wing</span><span class="p">,</span><span class="n">area_tags</span><span class="p">,</span> <span class="n">fuel_tank_set_ind</span><span class="p">,</span> <span class="n">OML_set_ind</span><span class="p">)</span> 
     
     <span class="c1"># ------------------------------------------------------------------------- </span>
     <span class="c1"># Engines</span>
     <span class="c1"># -------------------------------------------------------------------------  </span>
-    <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span> 
+    <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span> 
         <span class="k">for</span> <span class="n">propulsor</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">:</span> 
             <span class="k">for</span>  <span class="n">tag</span> <span class="p">,</span>  <span class="n">item</span> <span class="ow">in</span>  <span class="n">propulsor</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Rotor</span><span class="p">):</span>
-                    <span class="n">vsp_bem_filename</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">tag</span> <span class="o">+</span> <span class="s1">&#39;.bem&#39;</span> 
-                    <span class="n">write_vsp_rotor_bem</span><span class="p">(</span><span class="n">vsp_bem_filename</span><span class="p">,</span><span class="n">item</span><span class="p">)</span> 
-   
-            <span class="k">if</span> <span class="s1">&#39;nacelle&#39;</span> <span class="ow">in</span> <span class="n">propulsor</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">radius_distribution</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">airfoil_polar_stations</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span> 
+                        <span class="n">vsp_bem_filename</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">tag</span> <span class="o">+</span> <span class="s1">&#39;.bem&#39;</span> 
+                        <span class="n">write_vsp_rotor_bem</span><span class="p">(</span><span class="n">vsp_bem_filename</span><span class="p">,</span><span class="n">item</span><span class="p">)</span>
+                    
+            <span class="k">if</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span> <span class="o">!=</span>  <span class="kc">None</span><span class="p">:</span>                
                 <span class="n">nacelle</span> <span class="o">=</span>  <span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span>
                 <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Writing &#39;</span><span class="o">+</span> <span class="n">nacelle</span><span class="o">.</span><span class="n">tag</span> <span class="o">+</span><span class="s1">&#39; to OpenVSP Model&#39;</span><span class="p">)</span>
@@ -530,36 +555,31 @@
     <span class="c1"># ------------------------------------------------------------------------- </span>
     <span class="c1"># Fuselage</span>
     <span class="c1"># ------------------------------------------------------------------------- </span>
-    <span class="k">for</span> <span class="n">fuselage</span> <span class="ow">in</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">fuselages</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">fuselage</span><span class="p">)</span> <span class="o">!=</span>  <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Fuselages</span><span class="o">.</span><span class="n">Blended_Wing_Body_Fuselage</span><span class="p">:</span> 
-            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Writing &#39;</span><span class="o">+</span><span class="n">fuselage</span><span class="o">.</span><span class="n">tag</span><span class="o">+</span><span class="s1">&#39; to OpenVSP Model&#39;</span><span class="p">)</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">area_tags</span> <span class="o">=</span> <span class="n">write_vsp_fuselage</span><span class="p">(</span><span class="n">fuselage</span><span class="p">,</span> <span class="n">area_tags</span><span class="p">,</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">wings</span><span class="o">.</span><span class="n">main_wing</span><span class="p">,</span> 
-                                               <span class="n">fuel_tank_set_ind</span><span class="p">,</span> <span class="n">OML_set_ind</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                <span class="n">area_tags</span> <span class="o">=</span> <span class="n">write_vsp_fuselage</span><span class="p">(</span><span class="n">fuselage</span><span class="p">,</span> <span class="n">area_tags</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">fuel_tank_set_ind</span><span class="p">,</span>
-                                               <span class="n">OML_set_ind</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Blended Wing Body Fuselage defined&#39;</span><span class="p">)</span>
-    
-    <span class="n">vsp</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
-    
-
+    <span class="k">for</span> <span class="n">fuselage</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">fuselages</span><span class="p">:</span> 
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Writing &#39;</span><span class="o">+</span><span class="n">fuselage</span><span class="o">.</span><span class="n">tag</span><span class="o">+</span><span class="s1">&#39; to OpenVSP Model&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">area_tags</span> <span class="o">=</span> <span class="n">write_vsp_fuselage</span><span class="p">(</span><span class="n">fuselage</span><span class="p">,</span> <span class="n">area_tags</span><span class="p">,</span> <span class="n">geometry</span><span class="o">.</span><span class="n">wings</span><span class="o">.</span><span class="n">main_wing</span><span class="p">,</span> 
+                                           <span class="n">fuel_tank_set_ind</span><span class="p">,</span> <span class="n">OML_set_ind</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">area_tags</span> <span class="o">=</span> <span class="n">write_vsp_fuselage</span><span class="p">(</span><span class="n">fuselage</span><span class="p">,</span> <span class="n">area_tags</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">fuel_tank_set_ind</span><span class="p">,</span>
+                                           <span class="n">OML_set_ind</span><span class="p">)</span>
+            
     <span class="c1"># ------------------------------------------------------------------------- </span>
-    <span class="c1"># Fuselage</span>
+    <span class="c1"># Boom</span>
     <span class="c1"># ------------------------------------------------------------------------- </span>
-    <span class="k">for</span> <span class="n">boom</span> <span class="ow">in</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">booms</span><span class="p">:</span> 
+    <span class="k">for</span> <span class="n">boom</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">booms</span><span class="p">:</span> 
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Writing &#39;</span><span class="o">+</span><span class="n">boom</span><span class="o">.</span><span class="n">tag</span><span class="o">+</span><span class="s1">&#39; to OpenVSP Model&#39;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">area_tags</span> <span class="o">=</span> <span class="n">write_vsp_fuselage</span><span class="p">(</span><span class="n">boom</span><span class="p">,</span> <span class="n">area_tags</span><span class="p">,</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">wings</span><span class="o">.</span><span class="n">main_wing</span><span class="p">,</span> 
+            <span class="n">area_tags</span> <span class="o">=</span> <span class="n">write_vsp_fuselage</span><span class="p">(</span><span class="n">boom</span><span class="p">,</span> <span class="n">area_tags</span><span class="p">,</span> <span class="n">geometry</span><span class="o">.</span><span class="n">wings</span><span class="o">.</span><span class="n">main_wing</span><span class="p">,</span> 
                                            <span class="n">fuel_tank_set_ind</span><span class="p">,</span> <span class="n">OML_set_ind</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="n">area_tags</span> <span class="o">=</span> <span class="n">write_vsp_fuselage</span><span class="p">(</span><span class="n">boom</span><span class="p">,</span> <span class="n">area_tags</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">fuel_tank_set_ind</span><span class="p">,</span>
-                                               <span class="n">OML_set_ind</span><span class="p">)</span> 
+                                               <span class="n">OML_set_ind</span><span class="p">)</span>
+            
     <span class="c1"># -------------------------------------------------------------------------     </span>
-    <span class="c1"># Write the vehicle to the file    </span>
+    <span class="c1"># Write the geometry to the file    </span>
     <span class="c1"># ------------------------------------------------------------------------- </span>
     <span class="k">if</span> <span class="n">write_file</span> <span class="o">==</span><span class="kc">True</span><span class="p">:</span>
         <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
@@ -573,8 +593,8 @@
     <span class="k">if</span> <span class="n">write_igs</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Exporting IGS File&#39;</span><span class="p">)</span>        
-        <span class="n">vehicle_id</span> <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">FindContainersWithName</span><span class="p">(</span><span class="s1">&#39;Vehicle&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">parm_id</span> <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">FindParm</span><span class="p">(</span><span class="n">vehicle_id</span><span class="p">,</span><span class="s1">&#39;LabelID&#39;</span><span class="p">,</span><span class="s1">&#39;IGESSettings&#39;</span><span class="p">)</span>
+        <span class="n">geometry_id</span> <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">FindContainersWithName</span><span class="p">(</span><span class="s1">&#39;Vehicle&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">parm_id</span> <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">FindParm</span><span class="p">(</span><span class="n">geometry_id</span><span class="p">,</span><span class="s1">&#39;LabelID&#39;</span><span class="p">,</span><span class="s1">&#39;IGESSettings&#39;</span><span class="p">)</span>
         <span class="n">vsp</span><span class="o">.</span><span class="n">SetParmVal</span><span class="p">(</span><span class="n">parm_id</span><span class="p">,</span> <span class="mf">0.</span><span class="p">)</span>
         <span class="n">vsp</span><span class="o">.</span><span class="n">ExportFile</span><span class="p">(</span><span class="n">vehicle_tag</span> <span class="o">+</span> <span class="s2">&quot;.igs&quot;</span><span class="p">,</span> <span class="n">OML_set_ind</span><span class="p">,</span> <span class="n">vsp</span><span class="o">.</span><span class="n">EXPORT_IGES</span><span class="p">)</span>
     
@@ -609,8 +629,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -630,7 +650,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -644,7 +664,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

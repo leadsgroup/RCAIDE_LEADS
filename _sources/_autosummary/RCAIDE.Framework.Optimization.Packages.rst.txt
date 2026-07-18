@@ -30,9 +30,7 @@ Packages
    :template: custom-module-template.rst
    :recursive:
 
-   additive
    particle_swarm
    pyopt
    scipy
-   trmm
 

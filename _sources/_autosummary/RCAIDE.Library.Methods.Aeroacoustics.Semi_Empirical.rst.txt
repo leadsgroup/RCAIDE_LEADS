@@ -1,0 +1,35 @@
+RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical
+
+Semi\_Empirical
+===============
+
+.. automodule:: RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   Airframe
+   Turbofan
+

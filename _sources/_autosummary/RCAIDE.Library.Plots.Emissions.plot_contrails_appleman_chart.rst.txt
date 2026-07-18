@@ -1,0 +1,25 @@
+RCAIDE.Library.Plots.Emissions.plot_contrails_appleman_chart
+
+plot\_contrails\_appleman\_chart
+================================
+
+.. automodule:: RCAIDE.Library.Plots.Emissions.plot_contrails_appleman_chart
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

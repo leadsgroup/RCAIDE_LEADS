@@ -1,0 +1,25 @@
+RCAIDE.Library.Methods.Aeroacoustics.Physics_Based_Frequency_Domain.Rotor.compute_rotor_noise
+
+compute\_rotor\_noise
+=====================
+
+.. automodule:: RCAIDE.Library.Methods.Aeroacoustics.Physics_Based_Frequency_Domain.Rotor.compute_rotor_noise
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

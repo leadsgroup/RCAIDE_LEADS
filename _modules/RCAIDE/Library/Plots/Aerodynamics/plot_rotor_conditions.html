@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Plots/Aerodynamics/plot_rotor_conditions';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Plots/Aerodynamics/plot_rotor_conditions.html" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script src="../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -387,9 +406,8 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Units</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots.Common</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_axes</span><span class="p">,</span> <span class="n">plot_style</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots.Common</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_axes</span><span class="p">,</span> <span class="n">plot_style</span><span class="p">,</span> <span class="n">segment_colors</span> 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.cm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cm</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span> 
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
@@ -410,7 +428,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    results : Data</span>
 <span class="sd">        Mission results data structure containing:</span>
-<span class="sd">            - results.segments[0].analyses.energy.vehicle.networks</span>
+<span class="sd">            - results.segments[0].analyses.vehicle.networks</span>
 
 <span class="sd">    save_figure : bool, optional</span>
 <span class="sd">        Save figure to file if True, default False</span>
@@ -458,7 +476,10 @@
 <span class="sd">    RCAIDE.Library.Plots.Common.set_axes : Standardized axis formatting</span>
 <span class="sd">    RCAIDE.Library.Plots.Common.plot_style : RCAIDE plot styling</span>
 <span class="sd">    RCAIDE.Library.Analysis.Performance.propulsion : Analysis modules</span>
-<span class="sd">    &quot;&quot;&quot;</span>	   
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">save_filename_1</span> <span class="o">=</span>  <span class="n">save_filename</span> <span class="o">+</span> <span class="s1">&#39;_1&#39;</span>
+    <span class="n">save_filename_2</span> <span class="o">=</span>  <span class="n">save_filename</span> <span class="o">+</span> <span class="s1">&#39;_2&#39;</span>
+    
     <span class="c1"># get plotting style </span>
     <span class="n">ps</span>      <span class="o">=</span> <span class="n">plot_style</span><span class="p">()</span>  
 
@@ -469,42 +490,54 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span> 
     
     <span class="c1"># get line colors for plots </span>
-    <span class="n">line_colors</span>   <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">inferno</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.9</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">)))</span>   
+    <span class="n">line_colors</span>   <span class="o">=</span> <span class="n">segment_colors</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">))</span>   
 
-    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">save_filename</span><span class="p">)</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="n">width</span><span class="p">,</span><span class="n">height</span><span class="p">)</span>  
-    <span class="n">axis_1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">axis_2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">axis_3</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> 
-    <span class="n">axis_4</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span> 
-    <span class="n">axis_5</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span> 
-    <span class="n">axis_6</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span>     
+    <span class="n">fig_1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">save_filename_1</span><span class="p">)</span>
+    <span class="n">fig_1</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="n">width</span><span class="p">,</span><span class="n">height</span><span class="p">)</span>  
+    <span class="n">axis_1_1</span> <span class="o">=</span> <span class="n">fig_1</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">axis_1_2</span> <span class="o">=</span> <span class="n">fig_1</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">axis_1_3</span> <span class="o">=</span> <span class="n">fig_1</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> 
+    <span class="n">axis_1_4</span> <span class="o">=</span> <span class="n">fig_1</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+    
+
+    <span class="n">fig_2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">save_filename_2</span><span class="p">)</span>
+    <span class="n">fig_2</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="n">width</span><span class="p">,</span><span class="n">height</span><span class="p">)</span>  
+    <span class="n">axis_2_1</span> <span class="o">=</span> <span class="n">fig_2</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">axis_2_2</span> <span class="o">=</span> <span class="n">fig_2</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">axis_2_3</span> <span class="o">=</span> <span class="n">fig_2</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> 
+    <span class="n">axis_2_4</span> <span class="o">=</span> <span class="n">fig_2</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>      
  
-    <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span> 
+    <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span> 
         <span class="k">for</span> <span class="n">p_i</span><span class="p">,</span> <span class="n">propulsor</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">):</span> 
             <span class="k">if</span> <span class="p">(</span><span class="n">p_i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">identical_propulsors</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>            
-                <span class="n">plot_propulsor_data</span><span class="p">(</span><span class="n">results</span><span class="p">,</span><span class="n">propulsor</span><span class="p">,</span><span class="n">axis_1</span><span class="p">,</span><span class="n">axis_2</span><span class="p">,</span><span class="n">axis_3</span><span class="p">,</span><span class="n">axis_4</span><span class="p">,</span> <span class="n">axis_5</span><span class="p">,</span> <span class="n">axis_6</span><span class="p">,</span><span class="n">line_colors</span><span class="p">,</span><span class="n">ps</span><span class="p">,</span><span class="n">p_i</span><span class="p">)</span>                  
+                <span class="n">plot_propulsor_data</span><span class="p">(</span><span class="n">results</span><span class="p">,</span><span class="n">propulsor</span><span class="p">,</span> <span class="n">axis_1_1</span><span class="p">,</span> <span class="n">axis_1_2</span><span class="p">,</span> <span class="n">axis_1_3</span><span class="p">,</span> <span class="n">axis_1_4</span><span class="p">,</span> <span class="n">axis_2_1</span><span class="p">,</span> <span class="n">axis_2_2</span><span class="p">,</span> <span class="n">axis_2_3</span><span class="p">,</span> <span class="n">axis_2_4</span><span class="p">,</span><span class="n">line_colors</span><span class="p">,</span><span class="n">ps</span><span class="p">,</span><span class="n">p_i</span><span class="p">)</span>                  
               
     <span class="k">if</span> <span class="n">show_legend</span><span class="p">:</span>                
-        <span class="n">leg</span> <span class="o">=</span>  <span class="n">fig</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper center&#39;</span><span class="p">,</span> <span class="n">ncol</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span> 
+        <span class="n">leg</span> <span class="o">=</span>  <span class="n">fig_1</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper center&#39;</span><span class="p">,</span> <span class="n">ncol</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span> 
         <span class="n">leg</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Flight Segment&#39;</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="n">ps</span><span class="o">.</span><span class="n">legend_font_size</span><span class="p">,</span> <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="s1">&#39;heavy&#39;</span><span class="p">})</span>    
+        <span class="n">leg</span> <span class="o">=</span>  <span class="n">fig_2</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper center&#39;</span><span class="p">,</span> <span class="n">ncol</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span> 
+        <span class="n">leg</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Flight Segment&#39;</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="n">ps</span><span class="o">.</span><span class="n">legend_font_size</span><span class="p">,</span> <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="s1">&#39;heavy&#39;</span><span class="p">})</span>   
     
     <span class="c1"># Adjusting the sub-plots for legend</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span> 
-    <span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span> 
+    <span class="n">fig_1</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span> 
+    <span class="n">fig_1</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span> 
+    <span class="n">fig_2</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span> 
+    <span class="n">fig_2</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span> 
     
     <span class="c1"># set title of plot </span>
     <span class="n">title_text</span>  <span class="o">=</span>  <span class="s1">&#39;Rotor Performance&#39;</span> 
-    <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">title_text</span><span class="p">)</span>
+    <span class="n">fig_1</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">title_text</span><span class="p">)</span>
+    <span class="n">fig_2</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">title_text</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">save_figure</span><span class="p">:</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_filename</span> <span class="o">+</span> <span class="n">file_type</span><span class="p">)</span> 
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_filename_1</span> <span class="o">+</span> <span class="n">file_type</span><span class="p">)</span> 
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_filename_2</span> <span class="o">+</span> <span class="n">file_type</span><span class="p">)</span> 
                  
-    <span class="k">return</span> <span class="n">fig</span> </div>
+    <span class="k">return</span> <span class="p">(</span><span class="n">fig_1</span><span class="p">,</span> <span class="n">fig_2</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="plot_propulsor_data">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Plots.Aerodynamics.plot_rotor_conditions.html#RCAIDE.Library.Plots.Aerodynamics.plot_rotor_conditions.plot_propulsor_data">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">plot_propulsor_data</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">propulsor</span><span class="p">,</span> <span class="n">axis_1</span><span class="p">,</span> <span class="n">axis_2</span><span class="p">,</span> <span class="n">axis_3</span><span class="p">,</span> <span class="n">axis_4</span><span class="p">,</span> <span class="n">axis_5</span><span class="p">,</span> <span class="n">axis_6</span><span class="p">,</span> <span class="n">line_colors</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="n">p_i</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_propulsor_data</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">propulsor</span><span class="p">,</span> <span class="n">axis_1_1</span><span class="p">,</span> <span class="n">axis_1_2</span><span class="p">,</span> <span class="n">axis_1_3</span><span class="p">,</span> <span class="n">axis_1_4</span><span class="p">,</span> <span class="n">axis_2_1</span><span class="p">,</span> <span class="n">axis_2_2</span><span class="p">,</span> <span class="n">axis_2_3</span><span class="p">,</span> <span class="n">axis_2_4</span><span class="p">,</span> <span class="n">line_colors</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="n">p_i</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot operating conditions data for a single propulsor across mission segments.</span>
 
@@ -581,38 +614,50 @@
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">)):</span>  
         <span class="n">time</span>         <span class="o">=</span>  <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">inertial</span><span class="o">.</span><span class="n">time</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">min</span>   
         <span class="n">rpm</span>          <span class="o">=</span>  <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">thrustor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">rpm</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">thrust</span>       <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">thrustor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">thrust</span> <span class="p">,</span> <span class="n">axis</span> <span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">torque</span>       <span class="o">=</span>  <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">thrustor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">torque</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">eta</span>          <span class="o">=</span>  <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">thrustor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">efficiency</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">angle</span>        <span class="o">=</span>  <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">thrustor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">commanded_thrust_vector_angle</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">beta</span>         <span class="o">=</span>  <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">thrustor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">blade_pitch_command</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
-  
-        <span class="k">if</span>  <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">:</span>
-            <span class="n">axis_1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span><span class="n">rpm</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">line_colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marker</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="n">p_i</span><span class="p">]</span>  <span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">line_width</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="n">thrustor</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
+        <span class="n">beta</span>         <span class="o">=</span>  <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">thrustor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">blade_pitch_command</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="n">DL</span>           <span class="o">=</span>  <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">thrustor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">disc_loading</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">PL</span>           <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">thrustor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">power_loading</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>  
+        <span class="n">thrust</span>       <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">thrustor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">thrust</span> <span class="p">,</span> <span class="n">axis</span> <span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">torque</span>       <span class="o">=</span>  <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">thrustor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">torque</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="k">if</span> <span class="n">p_i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">==</span><span class="mi">0</span><span class="p">:</span> 
+            <span class="n">axis_1_1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span><span class="n">DL</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">line_colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marker</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="n">p_i</span><span class="p">],</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">line_width</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="n">thrustor</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span> 
+            <span class="n">axis_2_1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span><span class="n">rpm</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">line_colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marker</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="n">p_i</span><span class="p">]</span>  <span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">line_width</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="n">thrustor</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">axis_1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span><span class="n">rpm</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">line_colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marker</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="n">p_i</span><span class="p">]</span>  <span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">line_width</span><span class="p">)</span>
-        <span class="n">axis_1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;RPM&#39;</span><span class="p">)</span>
-        <span class="n">set_axes</span><span class="p">(</span><span class="n">axis_1</span><span class="p">)</span>    
-         
-        <span class="n">axis_2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">angle</span><span class="o">/</span><span class="n">Units</span><span class="o">.</span><span class="n">degrees</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">line_colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marker</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="n">p_i</span><span class="p">]</span>  <span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">line_width</span><span class="p">)</span> 
-        <span class="n">axis_2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Rotor Angle&#39;</span><span class="p">)</span>
-        <span class="n">set_axes</span><span class="p">(</span><span class="n">axis_2</span><span class="p">)</span> 
+            <span class="n">axis_1_1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span><span class="n">DL</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">line_colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marker</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="n">p_i</span><span class="p">],</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">line_width</span><span class="p">)</span> 
+            <span class="n">axis_2_1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span><span class="n">rpm</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">line_colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marker</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="n">p_i</span><span class="p">]</span>  <span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">line_width</span><span class="p">)</span>
+    
+        <span class="n">axis_1_1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Disc Loading (N/m^2)&#39;</span><span class="p">)</span>
+        <span class="n">set_axes</span><span class="p">(</span><span class="n">axis_1_1</span><span class="p">)</span>    
+        <span class="n">axis_2_1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;RPM&#39;</span><span class="p">)</span>
+        <span class="n">set_axes</span><span class="p">(</span><span class="n">axis_2_1</span><span class="p">)</span>    
+        
+        <span class="n">axis_1_2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span><span class="n">PL</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">line_colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marker</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="n">p_i</span><span class="p">],</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">line_width</span><span class="p">)</span>
+        <span class="n">axis_1_2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time (mins)&#39;</span><span class="p">)</span>
+        <span class="n">axis_1_2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Power Loading (N/W)&#39;</span><span class="p">)</span>
+        <span class="n">set_axes</span><span class="p">(</span><span class="n">axis_1_2</span><span class="p">)</span> 
  
-        <span class="n">axis_3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span><span class="n">thrust</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">line_colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marker</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="n">p_i</span><span class="p">]</span> <span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">line_width</span><span class="p">)</span>
-        <span class="n">axis_3</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Thrust (N)&#39;</span><span class="p">)</span>
-        <span class="n">set_axes</span><span class="p">(</span><span class="n">axis_3</span><span class="p">)</span> 
+        <span class="n">axis_1_3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span><span class="n">thrust</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">line_colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marker</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="n">p_i</span><span class="p">]</span> <span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">line_width</span><span class="p">)</span>
+        <span class="n">axis_1_3</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Thrust (N)&#39;</span><span class="p">)</span>
+        <span class="n">set_axes</span><span class="p">(</span><span class="n">axis_1_3</span><span class="p">)</span> 
          
-        <span class="n">axis_4</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span><span class="n">torque</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">line_colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marker</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="n">p_i</span><span class="p">]</span> <span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">line_width</span><span class="p">)</span>
-        <span class="n">axis_4</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Torque (N-m)&#39;</span><span class="p">)</span>
-        <span class="n">set_axes</span><span class="p">(</span><span class="n">axis_4</span><span class="p">)</span> 
+        <span class="n">axis_1_4</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span><span class="n">torque</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">line_colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marker</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="n">p_i</span><span class="p">]</span> <span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">line_width</span><span class="p">)</span>
+        <span class="n">axis_1_4</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Torque (N-m)&#39;</span><span class="p">)</span>
+        <span class="n">set_axes</span><span class="p">(</span><span class="n">axis_1_4</span><span class="p">)</span>
+ 
+        <span class="n">axis_2_2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">angle</span><span class="o">/</span><span class="n">Units</span><span class="o">.</span><span class="n">degrees</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">line_colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marker</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="n">p_i</span><span class="p">]</span>  <span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">line_width</span><span class="p">)</span> 
+        <span class="n">axis_2_2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Thrust Vector (deg)&#39;</span><span class="p">)</span>
+        <span class="n">set_axes</span><span class="p">(</span><span class="n">axis_2_2</span><span class="p">)</span> 
 
-        <span class="n">axis_5</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span><span class="n">beta</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">line_colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marker</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="n">p_i</span><span class="p">]</span> <span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">line_width</span><span class="p">)</span>
-        <span class="n">axis_5</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Pitch Command&#39;</span><span class="p">)</span>
-        <span class="n">set_axes</span><span class="p">(</span><span class="n">axis_5</span><span class="p">)</span>
+        <span class="n">axis_2_3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span><span class="n">beta</span><span class="o">/</span><span class="n">Units</span><span class="o">.</span><span class="n">degrees</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">line_colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marker</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="n">p_i</span><span class="p">]</span> <span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">line_width</span><span class="p">)</span>
+        <span class="n">axis_2_3</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Pitch Command  (deg)&#39;</span><span class="p">)</span>
+        <span class="n">set_axes</span><span class="p">(</span><span class="n">axis_2_3</span><span class="p">)</span>
 
-        <span class="n">axis_6</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span><span class="n">eta</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">line_colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marker</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="n">p_i</span><span class="p">]</span> <span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">line_width</span><span class="p">)</span>
-        <span class="n">axis_6</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Efficiency&#39;</span><span class="p">)</span>
-        <span class="n">set_axes</span><span class="p">(</span><span class="n">axis_6</span><span class="p">)</span>             
+        <span class="n">axis_2_4</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span><span class="n">eta</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">line_colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marker</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="n">p_i</span><span class="p">]</span> <span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">line_width</span><span class="p">)</span>
+        <span class="n">axis_2_4</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Efficiency&#39;</span><span class="p">)</span>
+        <span class="n">set_axes</span><span class="p">(</span><span class="n">axis_2_4</span><span class="p">)</span>
+                
     <span class="k">return</span> </div>
 
 </pre></div>
@@ -644,8 +689,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -665,7 +710,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -679,7 +724,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

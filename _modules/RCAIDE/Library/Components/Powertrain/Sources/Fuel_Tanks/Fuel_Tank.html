@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Components/Powertrain/Sources/Fuel_Tanks/Fuel_Tank';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Components/Powertrain/Sources/Fuel_Tanks/Fuel_Tank.html" />
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../../../_static/language_data.js"></script>
+    <script src="../../../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -377,18 +396,24 @@
                 <article class="bd-article">
                   
   <h1>Source code for RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank</h1><div class="highlight"><pre>
-<span></span><span class="c1"># RCAIDE/Library/Compoments/Powertrain/Sources/Fuel_Tanks/Fuel_Tank.py</span>
+<span></span><span class="c1"># RCAIDE/Library/Components/Powertrain/Sources/Fuel_Tanks/Fuel_Tank.py</span>
 <span class="c1"># </span>
 <span class="c1"># </span>
 <span class="c1"># Created:  Mar 2024, M. Clarke </span>
+<span class="c1"># Modified: Aug 2025, S. Shekar</span>
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  IMPORT</span>
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 
 <span class="c1"># RCAIDE imports </span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Components</span><span class="w">          </span><span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks</span><span class="w">  </span><span class="kn">import</span> <span class="o">*</span> 
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions</span><span class="w"> </span><span class="kn">import</span> <span class="n">append_fuel_tank_conditions</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_prismatic_tank_volume</span><span class="w">   </span><span class="kn">import</span> <span class="n">compute_prismatic_tank_volume</span>     
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia</span><span class="w">  </span><span class="kn">import</span> <span class="n">compute_cuboid_moment_of_inertia</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity</span><span class="w">  </span><span class="kn">import</span> <span class="n">compute_cuboid_center_of_gravity</span>
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  Fuel Tank</span>
@@ -404,7 +429,7 @@
 <span class="sd">    tag : str</span>
 <span class="sd">        Identifier for the fuel tank (default: &#39;fuel_tank&#39;)</span>
 <span class="sd">        </span>
-<span class="sd">    fuel_selector_ratio : float</span>
+<span class="sd">    fuel_flow_split_ratio : float</span>
 <span class="sd">        Ratio of fuel flow allocation (default: 1.0)</span>
 <span class="sd">        </span>
 <span class="sd">    mass_properties.empty_mass : float</span>
@@ -434,13 +459,66 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets default values for fuel tank attributes</span>
 <span class="sd">        &quot;&quot;&quot;</span>          
-        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                         <span class="o">=</span> <span class="s1">&#39;fuel_tank&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_selector_ratio</span>         <span class="o">=</span> <span class="mf">1.0</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">empty_mass</span>  <span class="o">=</span> <span class="mf">0.0</span>   
-        <span class="bp">self</span><span class="o">.</span><span class="n">secondary_fuel_flow</span>         <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fuel</span>                        <span class="o">=</span> <span class="kc">None</span>
-         
+        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                            <span class="o">=</span> <span class="s1">&#39;fuel_tank&#39;</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">fuel</span>                           <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">secondary_mass_flow_rate</span>       <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wall_clearance</span>                 <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wall_thickness</span>                 <span class="o">=</span> <span class="mf">1E-3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_flow_split_ratio</span>          <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xz_plane_symmetric</span>             <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wing_tag</span>                       <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fuselage_tag</span>                   <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transverse_tank</span>                <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gravimetric_efficiency</span>         <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lengths</span>                        <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">external</span>               <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">internal</span>               <span class="o">=</span> <span class="mf">0.0</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">widths</span>                         <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">widths</span><span class="o">.</span><span class="n">external</span>                <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">widths</span><span class="o">.</span><span class="n">internal</span>                <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heights</span>                        <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heights</span><span class="o">.</span><span class="n">external</span>               <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heights</span><span class="o">.</span><span class="n">internal</span>               <span class="o">=</span> <span class="mf">0.0</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">diameters</span>                      <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">diameters</span><span class="o">.</span><span class="n">external</span>             <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">diameters</span><span class="o">.</span><span class="n">internal</span>             <span class="o">=</span> <span class="mf">0.0</span>  
 
+        <span class="c1"># Insulation sub-component</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insulation</span>                     <span class="o">=</span> <span class="n">Component</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insulation</span><span class="o">.</span><span class="n">lengths</span>             <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insulation</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">external</span>    <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insulation</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">internal</span>    <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insulation</span><span class="o">.</span><span class="n">widths</span>              <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insulation</span><span class="o">.</span><span class="n">widths</span><span class="o">.</span><span class="n">external</span>     <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insulation</span><span class="o">.</span><span class="n">widths</span><span class="o">.</span><span class="n">internal</span>     <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insulation</span><span class="o">.</span><span class="n">heights</span>             <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insulation</span><span class="o">.</span><span class="n">heights</span><span class="o">.</span><span class="n">external</span>    <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insulation</span><span class="o">.</span><span class="n">heights</span><span class="o">.</span><span class="n">internal</span>    <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insulation</span><span class="o">.</span><span class="n">diameters</span>           <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insulation</span><span class="o">.</span><span class="n">diameters</span><span class="o">.</span><span class="n">external</span>  <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insulation</span><span class="o">.</span><span class="n">diameters</span><span class="o">.</span><span class="n">internal</span>  <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># Inner structure (pressure vessel) sub-component</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inner_structure</span>                     <span class="o">=</span> <span class="n">Component</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">lengths</span>             <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">external</span>    <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">internal</span>    <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">widths</span>              <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">widths</span><span class="o">.</span><span class="n">external</span>     <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">widths</span><span class="o">.</span><span class="n">internal</span>     <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">heights</span>             <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">heights</span><span class="o">.</span><span class="n">external</span>    <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">heights</span><span class="o">.</span><span class="n">internal</span>    <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">diameters</span>           <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">diameters</span><span class="o">.</span><span class="n">external</span>  <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">diameters</span><span class="o">.</span><span class="n">internal</span>  <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tank_accesories_weight_factor</span>  <span class="o">=</span> <span class="mf">1.0</span>             
+        <span class="bp">self</span><span class="o">.</span><span class="n">segments_bounding_tank</span>         <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">segments_percent_chord_start</span>   <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">segments_percent_chord_end</span>     <span class="o">=</span> <span class="p">[</span><span class="mf">0.7</span><span class="p">,</span><span class="mf">0.7</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">percent_span_location</span>          <span class="o">=</span> <span class="mf">0.0</span>
+ 
 <div class="viewcode-block" id="Fuel_Tank.append_operating_conditions">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank.html#RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank.Fuel_Tank.append_operating_conditions">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">append_operating_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">fuel_line</span><span class="p">):</span>  
@@ -455,7 +533,106 @@
 <span class="sd">            Connected fuel line component</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">append_fuel_tank_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span> <span class="n">fuel_line</span><span class="p">)</span>  
-        <span class="k">return</span>                                          </div>
+        <span class="k">return</span></div>
+
+    
+<div class="viewcode-block" id="Fuel_Tank.compute_tank_properties">
+<a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank.html#RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank.Fuel_Tank.compute_tank_properties">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_tank_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">fuel_line</span><span class="p">):</span>
+        <span class="n">compute_fuel_tank_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">fuel_line</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+    
+<div class="viewcode-block" id="Fuel_Tank.compute_volume">
+<a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank.html#RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank.Fuel_Tank.compute_volume">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wings</span><span class="p">,</span> <span class="n">fuselages</span><span class="p">,</span><span class="n">fuel_tanks</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the volume of the non-integral fuel tank based on its attachment location.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        wings : dict</span>
+<span class="sd">            Dictionary containing wing components indexed by their tags</span>
+<span class="sd">        fuselages : dict</span>
+<span class="sd">            Dictionary containing fuselage components indexed by their tags</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        volume : float</span>
+<span class="sd">            Computed volume of the fuel tank [m³]</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The volume computation method depends on where the tank is attached:</span>
+<span class="sd">            - If attached to a wing, uses wing geometry and tank dimensions</span>
+<span class="sd">            - If attached to a fuselage, uses fuselage geometry and tank dimensions  </span>
+<span class="sd">            - If configured as a BWB aft tank, uses special BWB-specific computation</span>
+
+<span class="sd">        **Major Assumptions**</span>
+<span class="sd">            * Tank dimensions (length, width, height) are properly defined</span>
+<span class="sd">            * Wing or fuselage components exist in the provided dictionaries</span>
+<span class="sd">            * For BWB aft tanks, the wing_root_tag is properly set</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_non_integral_tank_volume</span>
+<span class="sd">        &quot;&quot;&quot;</span> 
+        <span class="n">compute_prismatic_tank_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+    
+   
+<div class="viewcode-block" id="Fuel_Tank.compute_moments_of_inertia">
+<a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank.html#RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank.Fuel_Tank.compute_moments_of_inertia">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_moments_of_inertia</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">vehicle</span><span class="p">,</span><span class="n">center_of_gravity</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]):</span> 
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the moment of inertia tensor for a fuel tank.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        center_of_gravity : list, optional</span>
+<span class="sd">            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        I : ndarray</span>
+<span class="sd">            3x3 moment of inertia tensor in kg*m^2</span>
+<span class="sd"> </span>
+<span class="sd">        &quot;&quot;&quot;</span> 
+        <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">compute_cuboid_moment_of_inertia</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                                <span class="n">outer_length</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">external</span><span class="p">,</span>
+                                                <span class="n">outer_width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">widths</span><span class="o">.</span><span class="n">external</span><span class="p">,</span>
+                                                <span class="n">outer_height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">heights</span><span class="o">.</span><span class="n">external</span><span class="p">,</span>\
+                                                <span class="n">inner_length</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">external</span><span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">wall_thickness</span><span class="p">,</span>
+                                                <span class="n">inner_width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">widths</span><span class="o">.</span><span class="n">external</span><span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">wall_thickness</span><span class="p">,</span>
+                                                <span class="n">inner_height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">heights</span><span class="o">.</span><span class="n">external</span><span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">wall_thickness</span><span class="p">,</span>
+                                                <span class="n">center_of_gravity</span><span class="o">=</span><span class="n">center_of_gravity</span><span class="p">,</span>
+                                                <span class="n">fuel_tank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> 
+                
+        <span class="k">return</span></div>
+
+    
+
+<div class="viewcode-block" id="Fuel_Tank.compute_center_of_gravity">
+<a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank.html#RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank.Fuel_Tank.compute_center_of_gravity">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_center_of_gravity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">vehicle</span><span class="p">):</span> 
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the center of gravity for a fuel tank.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        center_of_gravity : list, optional</span>
+<span class="sd">            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]]</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        I : ndarray</span>
+<span class="sd">            3x3 moment of inertia tensor in kg*m^2 </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">_</span>  <span class="o">=</span> <span class="n">compute_cuboid_center_of_gravity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">external</span><span class="p">)</span>
+            
+        <span class="k">return</span></div>
 </div>
 
 </pre></div>
@@ -487,8 +664,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -508,7 +685,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -522,7 +699,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

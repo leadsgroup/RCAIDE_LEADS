@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Methods/Mass_Properties/Moment_of_Inertia/compute_cuboid_moment_of_inertia';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Methods/Mass_Properties/Moment_of_Inertia/compute_cuboid_moment_of_inertia.html" />
     <link rel="index" title="Index" href="../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../../_static/language_data.js"></script>
+    <script src="../../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -377,22 +396,27 @@
                 <article class="bd-article">
                   
   <h1>Source code for RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_cuboid_moment_of_inertia</h1><div class="highlight"><pre>
-<span></span><span class="c1"># RCAIDE/Library/Methods/Stability/Moment_of_Inertia/compute_cuboid_moment_of_inertia.py </span>
+<span></span><span class="c1"># RCAIDE/Library/Methods/Mass_Properties/Moment_of_Inertia/compute_cuboid_moment_of_inertia.py </span>
 <span class="c1"># </span>
 <span class="c1"># Created:  September 2024, A. Molloy  </span>
  
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  IMPORT</span>
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
-<span class="c1"># package imports </span>
+<span class="c1"># RCAIDE imports </span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
+
+<span class="c1"># # package imports </span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span> 
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
-<span class="c1">#  Compute Cuboid Moment of Intertia</span>
+<span class="c1">#  Compute Cuboid Moment of Inertia</span>
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------   </span>
 <div class="viewcode-block" id="compute_cuboid_moment_of_inertia">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_cuboid_moment_of_inertia.html#RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_cuboid_moment_of_inertia.compute_cuboid_moment_of_inertia">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">compute_cuboid_moment_of_inertia</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">length_outer</span><span class="p">,</span> <span class="n">width_outer</span><span class="p">,</span> <span class="n">height_outer</span><span class="p">,</span> <span class="n">length_inner</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">width_inner</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">height_inner</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">center_of_gravity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]])):</span>  
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_cuboid_moment_of_inertia</span><span class="p">(</span><span class="n">component</span><span class="p">,</span><span class="n">outer_length</span><span class="p">,</span> <span class="n">outer_width</span><span class="p">,</span> <span class="n">outer_height</span><span class="p">,</span>
+                                     <span class="n">inner_length</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">inner_width</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">inner_height</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                                     <span class="n">center_of_gravity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]),</span><span class="n">fuel_tank</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>  
 <span class="w">    </span><span class="sd">&#39;&#39;&#39; computes the moment of inertia tensor for a hollow cuboid</span>
 
 <span class="sd">    Assumptions:</span>
@@ -415,35 +439,46 @@
 <span class="sd">    Properties Used:</span>
 <span class="sd">    N/A</span>
 <span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># unpack </span>
+    <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
+    <span class="n">mass</span>   <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span>
+    
     <span class="c1"># ----------------------------------------------------------------------------------------------------------------------    </span>
     <span class="c1"># Setup</span>
     <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
     <span class="n">I</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span> 
     
     <span class="c1"># calcualte volumes</span>
-    <span class="n">V2</span> <span class="o">=</span> <span class="n">length_outer</span> <span class="o">*</span> <span class="n">width_outer</span> <span class="o">*</span> <span class="n">height_outer</span> <span class="c1"># Outer volume</span>
-    <span class="n">V1</span> <span class="o">=</span> <span class="n">length_inner</span> <span class="o">*</span> <span class="n">width_inner</span> <span class="o">*</span> <span class="n">height_inner</span> <span class="c1"># Inner volume</span>
+    <span class="n">V2</span> <span class="o">=</span> <span class="n">outer_length</span> <span class="o">*</span> <span class="n">outer_width</span> <span class="o">*</span> <span class="n">outer_height</span> <span class="c1"># Outer volume</span>
+    <span class="n">V1</span> <span class="o">=</span> <span class="n">inner_length</span> <span class="o">*</span> <span class="n">inner_width</span> <span class="o">*</span> <span class="n">inner_height</span> <span class="c1"># Inner volume</span>
     
-    <span class="k">if</span>  <span class="n">V2</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">V1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span>  <span class="n">V2</span> <span class="o">==</span> <span class="n">V1</span><span class="p">:</span>
         <span class="n">temp</span> <span class="o">=</span> <span class="mf">0.000001</span> <span class="c1"># Assigns an arbitrary value to avoid a divide by zero error. This will not affect results as V2 and V1 will be 0</span>
         <span class="c1"># Treats object as a point mass</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">temp</span> <span class="o">=</span> <span class="p">(</span><span class="n">V2</span> <span class="o">-</span> <span class="n">V1</span><span class="p">)</span>
     
     <span class="c1"># ----------------------------------------------------------------------------------------------------------------------    </span>
-    <span class="c1"># Calculate inertia tensor. Equations from Moulton adn Hunsaker [1]</span>
+    <span class="c1"># Calculate inertia tensor. Equations from Moulton and Hunsaker [1]</span>
     <span class="c1"># ----------------------------------------------------------------------------------------------------------------------    </span>
-    <span class="n">I</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">mass</span> <span class="o">/</span> <span class="mi">12</span> <span class="o">*</span> <span class="p">(</span><span class="n">V2</span> <span class="o">*</span> <span class="p">(</span><span class="n">width_outer</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">height_outer</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">V1</span> <span class="o">*</span> <span class="p">(</span><span class="n">width_inner</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">height_inner</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="n">temp</span>
-    <span class="n">I</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">mass</span> <span class="o">/</span> <span class="mi">12</span> <span class="o">*</span> <span class="p">(</span><span class="n">V2</span> <span class="o">*</span> <span class="p">(</span><span class="n">length_outer</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">height_outer</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">V1</span> <span class="o">*</span> <span class="p">(</span><span class="n">length_inner</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">height_inner</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="n">temp</span>
-    <span class="n">I</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">mass</span> <span class="o">/</span> <span class="mi">12</span> <span class="o">*</span> <span class="p">(</span><span class="n">V2</span> <span class="o">*</span> <span class="p">(</span><span class="n">length_outer</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">width_outer</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">V1</span> <span class="o">*</span> <span class="p">(</span><span class="n">length_inner</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">width_inner</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="n">temp</span>
+    <span class="n">I</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">mass</span> <span class="o">/</span> <span class="mi">12</span> <span class="o">*</span> <span class="p">(</span><span class="n">V2</span> <span class="o">*</span> <span class="p">(</span><span class="n">outer_width</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">outer_height</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">V1</span> <span class="o">*</span> <span class="p">(</span><span class="n">inner_width</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">inner_height</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="n">temp</span>
+    <span class="n">I</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">mass</span> <span class="o">/</span> <span class="mi">12</span> <span class="o">*</span> <span class="p">(</span><span class="n">V2</span> <span class="o">*</span> <span class="p">(</span><span class="n">outer_length</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">outer_height</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">V1</span> <span class="o">*</span> <span class="p">(</span><span class="n">inner_length</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">inner_height</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="n">temp</span>
+    <span class="n">I</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">mass</span> <span class="o">/</span> <span class="mi">12</span> <span class="o">*</span> <span class="p">(</span><span class="n">V2</span> <span class="o">*</span> <span class="p">(</span><span class="n">outer_length</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">outer_width</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">V1</span> <span class="o">*</span> <span class="p">(</span><span class="n">inner_length</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">inner_width</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="n">temp</span>
     
-    <span class="c1"># ----------------------------------------------------------------------------------------------------------------------    </span>
-    <span class="c1"># transform moment of inertia to the global system</span>
-    <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
-    <span class="n">s</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">center_of_gravity</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">origin</span><span class="p">)</span> <span class="c1"># Vector between component and the CG</span>
-    <span class="n">I_global</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">I</span><span class="p">)</span> <span class="o">+</span> <span class="n">mass</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span> <span class="o">-</span> <span class="n">s</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+    <span class="c1"># Store moment of inertia tensor on component </span>
+    <span class="n">component</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">moments_of_inertia</span><span class="o">.</span><span class="n">tensor</span>                 <span class="o">=</span> <span class="n">I</span> 
+    <span class="n">component</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">moments_of_inertia</span><span class="o">.</span><span class="n">non_dimensional_tensor</span> <span class="o">=</span> <span class="n">I</span> <span class="o">/</span> <span class="n">mass</span>
     
-    <span class="k">return</span> <span class="n">I_global</span><span class="p">,</span>  <span class="n">mass</span></div>
+    <span class="k">if</span> <span class="n">fuel_tank</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># unpack fuel </span>
+        <span class="n">fuel</span>      <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">fuel</span>
+        
+        <span class="c1"># compute MOI of fuel assume inner walls of tank is boundary of fuel</span>
+        <span class="n">_</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">compute_cuboid_moment_of_inertia</span><span class="p">(</span><span class="n">fuel</span><span class="p">,</span><span class="n">inner_length</span><span class="p">,</span> <span class="n">inner_width</span><span class="p">,</span> <span class="n">inner_height</span><span class="p">,</span><span class="n">center_of_gravity</span><span class="o">=</span><span class="n">center_of_gravity</span><span class="p">,</span><span class="n">fuel_tank</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>        
+        
+       
+    <span class="k">return</span> <span class="n">I</span> <span class="p">,</span>  <span class="n">mass</span></div>
 
 </pre></div>
 
@@ -474,8 +509,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -495,7 +530,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -509,7 +544,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

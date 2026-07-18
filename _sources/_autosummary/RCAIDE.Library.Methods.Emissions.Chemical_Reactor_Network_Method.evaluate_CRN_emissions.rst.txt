@@ -1,0 +1,33 @@
+RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_CRN_emissions
+
+evaluate\_CRN\_emissions
+========================
+
+.. automodule:: RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_CRN_emissions
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      evaluate_CRN_emissions_no_surrogate
+      evaluate_CRN_emissions_surrogate
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

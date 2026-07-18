@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Methods/Aerodynamics/Common/Drag/cooling_drag';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Methods/Aerodynamics/Common/Drag/cooling_drag.html" />
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../../../_static/language_data.js"></script>
+    <script src="../../../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -397,35 +416,111 @@
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Aerodynamics.Common.Drag.cooling_drag.html#RCAIDE.Library.Methods.Aerodynamics.Common.Drag.cooling_drag.cooling_drag">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">cooling_drag</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">settings</span><span class="p">,</span><span class="n">geometry</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Computes the cooling drag based on the results of the Heat Exchanger operation</span>
+<span class="sd">    Computes cooling drag coefficient based on heat exchanger operation and air flow through cooling ducts.</span>
 
-<span class="sd">            Inputs:</span>
-<span class="sd">                state.</span>
-<span class="sd">                    conditions.freestream.</span>
-<span class="sd">                                        density                            [kg/m^3]</span>
-<span class="sd">                                        velocity                           [Knots]        </span>
-<span class="sd">                                        pressure                           [Pascal]</span>
-<span class="sd">                    energy.coolant_line.heat_exchanger.</span>
-<span class="sd">                                                    pressure_differential  [Pascal] </span>
-<span class="sd">                                                    mass_flow_hex          [kg/s]</span>
-<span class="sd">                    analyses.aerodynamics.vehicle.reference_area           [m^2]</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    state : Data</span>
+<span class="sd">        Flight conditions and energy state containing:</span>
+<span class="sd">            - conditions.freestream.density : float</span>
+<span class="sd">                Freestream air density [kg/m³]</span>
+<span class="sd">            - conditions.freestream.velocity : float</span>
+<span class="sd">                Freestream velocity [m/s]</span>
+<span class="sd">            - conditions.freestream.pressure : float</span>
+<span class="sd">                Freestream static pressure [Pa]</span>
+<span class="sd">            - conditions.energy.coolant_lines : dict</span>
+<span class="sd">                Dictionary of coolant line results indexed by coolant line tag</span>
+<span class="sd">                    - coolant_line_tag : dict</span>
+<span class="sd">                        Dictionary of heat exchanger results indexed by heat exchanger tag</span>
+<span class="sd">                            - heat_exchanger_tag : Data</span>
+<span class="sd">                                Heat exchanger operation results containing:</span>
+<span class="sd">                                    - air_mass_flow_rate : float</span>
+<span class="sd">                                        Mass flow rate of air through heat exchanger [kg/s]</span>
+<span class="sd">                                    - pressure_diff_air : float</span>
+<span class="sd">                                        Pressure differential across heat exchanger [Pa]</span>
+<span class="sd">    settings : dict</span>
+<span class="sd">        Analysis settings and parameters</span>
+<span class="sd">    geometry : Data</span>
+<span class="sd">        Vehicle geometry containing:</span>
+<span class="sd">            - reference_area : float</span>
+<span class="sd">                Reference area for drag coefficient calculation [m²]</span>
+<span class="sd">            - networks : list</span>
+<span class="sd">                List of propulsion networks containing coolant lines</span>
+<span class="sd">                    - coolant_lines : list</span>
+<span class="sd">                        List of coolant line objects with heat exchangers</span>
+<span class="sd">                            - tag : str</span>
+<span class="sd">                                Unique identifier for the coolant line</span>
+<span class="sd">                            - heat_exchangers : list</span>
+<span class="sd">                                List of heat exchanger objects containing:</span>
+<span class="sd">                                    - tag : str</span>
+<span class="sd">                                        Unique identifier for the heat exchanger</span>
+<span class="sd">                                    - atmospheric_air_inlet_to_outlet_area_ratio : float</span>
+<span class="sd">                                        Ratio of inlet to outlet area for atmospheric air [unitless]</span>
+<span class="sd">                                    - duct_losses : float</span>
+<span class="sd">                                        Duct efficiency factor accounting for losses [unitless]</span>
+<span class="sd">                                    - minimum_air_speed : float</span>
+<span class="sd">                                        Minimum air speed required for heat exchanger operation [m/s]</span>
 
-<span class="sd">            </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Results are stored in state.conditions.aerodynamics.coefficients.drag.cooling.total</span>
 
-<span class="sd">            Outputs:</span>
-<span class="sd">                cooling_drag                                               [Unitless]</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function calculates the drag penalty associated with cooling system operation, including</span>
+<span class="sd">    the momentum deficit caused by air flow through heat exchangers and the pressure forces</span>
+<span class="sd">    on duct surfaces. The calculation accounts for variable inlet areas based on required</span>
+<span class="sd">    cooling flow rates.</span>
 <span class="sd">    </span>
-<span class="sd">            Assumptions:</span>
-<span class="sd">            The density across the duct is equal to the freestream density of air. </span>
-<span class="sd">            Inlet area is varied based of required inflow required</span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Density across the duct is equal to freestream density</span>
+<span class="sd">        * Inlet area varies based on required cooling flow rate</span>
+<span class="sd">        * Duct losses are characterized by a single efficiency factor</span>
+<span class="sd">        * Heat exchanger operation ceases below minimum air speed</span>
+<span class="sd">    </span>
+<span class="sd">    **Theory**</span>
 
-<span class="sd">            Source:</span>
-<span class="sd">            Brelje, Benjamin &amp; Jasa, John &amp; Martins, Joaquim &amp; Gray, Justin. (2019).</span>
-<span class="sd">            Development of a conceptual-level thermal management system design capability in OpenConcept. </span>
+<span class="sd">    The cooling drag is calculated from momentum and pressure forces:</span>
 
-<span class="sd">            Properties Used:</span>
-<span class="sd">            None</span>
+<span class="sd">    :math:`F_{cooling} = \\dot{m}_{air}(V_{exit} \\eta_{duct} - V_{\\infty}) + A_{outlet} \\eta_{duct}(P_{exit} - P_{\\infty})`</span>
 
+<span class="sd">    where:</span>
+<span class="sd">        - :math:`\\dot{m}_{air}` is the air mass flow rate through the heat exchanger [kg/s]</span>
+<span class="sd">        - :math:`V_{exit}` is the exit velocity [m/s]</span>
+<span class="sd">        - :math:`V_{\\infty}` is the freestream velocity [m/s]</span>
+<span class="sd">        - :math:`\\eta_{duct}` is the duct efficiency factor</span>
+<span class="sd">        - :math:`A_{outlet}` is the outlet area [m²]</span>
+<span class="sd">        - :math:`P_{exit}` is the exit pressure [Pa]</span>
+<span class="sd">        - :math:`P_{\\infty}` is the freestream pressure [Pa]</span>
+
+<span class="sd">    The inlet area is determined from mass flow requirements:</span>
+
+<span class="sd">    :math:`A_{inlet} = \\frac{\\dot{m}_{air}}{\\rho_{\\infty} V_{\\infty}}`</span>
+
+<span class="sd">    The exit velocity and pressure are calculated as:</span>
+
+<span class="sd">    :math:`V_{exit} = \\frac{\\dot{m}_{air}}{\\rho_{\\infty} A_{outlet}}`</span>
+
+<span class="sd">    :math:`P_{exit} = \\frac{1}{2}\\rho_{\\infty}[(1+\\eta_e)V_{exit}^2 - V_{\\infty}^2] + P_{\\infty} - \\Delta P_{HEX}`</span>
+
+<span class="sd">    where :math:`\\eta_e = 0.5(1 - A_{outlet}/A_{inlet})` is the expansion efficiency.</span>
+
+<span class="sd">    The cooling drag coefficient is:</span>
+
+<span class="sd">    :math:`C_{D,cooling} = \\frac{F_{cooling}}{\\frac{1}{2}\\rho_{\\infty} V_{\\infty}^2 S_{ref}}`</span>
+<span class="sd">    </span>
+<span class="sd">    **Definitions**</span>
+
+<span class="sd">    &#39;Cooling Drag&#39;</span>
+<span class="sd">        Additional drag caused by the momentum deficit and pressure forces associated with air flow through cooling systems.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Duct Losses&#39;</span>
+<span class="sd">        Efficiency factor accounting for frictional and form losses in the cooling air ductwork.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Brelje, B., Jasa, J., Martins, J., &amp; Gray, J. (2019). &quot;Development of a conceptual-level thermal management system design capability in OpenConcept.&quot;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="c1"># Unpack Inputs </span>
@@ -444,7 +539,7 @@
                 <span class="k">if</span> <span class="n">tag</span> <span class="o">==</span> <span class="s1">&#39;heat_exchangers&#39;</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">heat_exchanger</span> <span class="ow">in</span>  <span class="n">item</span><span class="p">:</span>
                         <span class="c1"># unpack</span>
-                        <span class="n">HEX_results</span>                <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">coolant_line</span><span class="o">.</span><span class="n">tag</span><span class="p">][</span><span class="n">heat_exchanger</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
+                        <span class="n">HEX_results</span>                <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">coolant_lines</span><span class="p">[</span><span class="n">coolant_line</span><span class="o">.</span><span class="n">tag</span><span class="p">][</span><span class="n">heat_exchanger</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
                         <span class="n">mass_flow_hex</span>              <span class="o">=</span> <span class="n">HEX_results</span><span class="o">.</span><span class="n">air_mass_flow_rate</span> 
                         <span class="n">hex_pressure_diff</span>          <span class="o">=</span> <span class="n">HEX_results</span><span class="o">.</span><span class="n">pressure_diff_air</span>
                         
@@ -498,8 +593,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -519,7 +614,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -533,7 +628,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

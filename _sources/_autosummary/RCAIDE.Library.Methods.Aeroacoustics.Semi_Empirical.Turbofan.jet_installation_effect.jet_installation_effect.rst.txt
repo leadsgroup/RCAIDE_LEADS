@@ -1,0 +1,6 @@
+RCAIDE.Library.Methods.Aeroacoustics.Semi\_Empirical.Turbofan.jet\_installation\_effect.jet\_installation\_effect
+=================================================================================================================
+
+.. currentmodule:: RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Turbofan.jet_installation_effect
+
+.. autofunction:: jet_installation_effect

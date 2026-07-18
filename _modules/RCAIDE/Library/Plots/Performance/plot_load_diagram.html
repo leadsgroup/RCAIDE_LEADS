@@ -1,0 +1,693 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RCAIDE.Library.Plots.Performance.plot_load_diagram &#8212; RCAIDE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=d103512f" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Plots/Performance/plot_load_diagram';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Plots/Performance/plot_load_diagram.html" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script src="../../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../_static/leads_logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../../_static/leads_logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">RCAIDE</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">RCAIDE.Library.Plots.Performance.plot_load_diagram</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for RCAIDE.Library.Plots.Performance.plot_load_diagram</h1><div class="highlight"><pre>
+<span></span><span class="c1"># RCAIDE/Library/Plots/Mass_Properties/plot_load_diagram.py</span>
+<span class="c1"># </span>
+<span class="c1"># </span>
+<span class="c1"># Created:  Aug 2025, M. Clarke</span>
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  IMPORT</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Units</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots.Common</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_axes</span><span class="p">,</span> <span class="n">plot_style</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.spatial</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConvexHull</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">shapely.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.cm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">griddata</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.tri</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tri</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span> 
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  PLOTS</span>
+<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
+<div class="viewcode-block" id="plot_load_diagram">
+<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Plots.Performance.plot_load_diagram.html#RCAIDE.Library.Plots.Performance.plot_load_diagram.plot_load_diagram">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_load_diagram</span><span class="p">(</span><span class="n">results</span><span class="p">,</span>
+                      <span class="n">save_figure</span>               <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                      <span class="n">show_legend</span>               <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                      <span class="n">save_filename</span>             <span class="o">=</span> <span class="s2">&quot;Aircraft_Loading_Trim_Dragram&quot;</span><span class="p">,</span>
+                      <span class="n">file_type</span>                 <span class="o">=</span> <span class="s2">&quot;.png&quot;</span><span class="p">,</span>
+                      <span class="n">static_margin_lower_limit</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">,</span>
+                      <span class="n">static_margin_upper_limit</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+                      <span class="n">static_margin_resolution</span>  <span class="o">=</span> <span class="mi">12</span><span class="p">,</span>
+                      <span class="n">x_axis_lower_limit</span>        <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                      <span class="n">x_axis_upper_limit</span>        <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                      <span class="n">y_axis_lower_limit</span>        <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                      <span class="n">y_axis_upper_limit</span>        <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                      <span class="n">show_component_vectors</span>    <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+                      <span class="n">width</span>                     <span class="o">=</span> <span class="mi">11</span><span class="p">,</span>
+                      <span class="n">height</span>                    <span class="o">=</span> <span class="mi">7</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a comprehensive aircraft loading diagram showing mass and center of gravity relationships.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    results : RCAIDE.Framework.Core.Data</span>
+<span class="sd">        Results from load and trim diagram analysis containing:</span>
+<span class="sd">            - loading_mass : numpy.ndarray</span>
+<span class="sd">                Aircraft mass for loading diagram [kg]</span>
+<span class="sd">            - loading_LEMAC_location : numpy.ndarray</span>
+<span class="sd">                LEMAC location as percentage of reference chord [%]</span>
+<span class="sd">            - trim_results.LEMAC_location : numpy.ndarray</span>
+<span class="sd">                LEMAC location for trim diagram [%]</span>
+<span class="sd">            - trim_results.mass : numpy.ndarray</span>
+<span class="sd">                Aircraft mass for trim diagram [kg]</span>
+<span class="sd">            - trim_results.static_margin : numpy.ndarray</span>
+<span class="sd">                Static margin values [unitless]</span>
+<span class="sd">            - MTOW : float</span>
+<span class="sd">                Maximum takeoff weight [kg]</span>
+<span class="sd">            - MLW : float</span>
+<span class="sd">                Maximum landing weight [kg]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Creates and displays a matplotlib figure with the loading diagram</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function generates a comprehensive aircraft loading diagram that visualizes</span>
+<span class="sd">    the relationship between aircraft mass, loading, and center of gravity position. The diagram</span>
+<span class="sd">    includes fuel loading curves, payload loading curves, weight limits, and stability</span>
+<span class="sd">    contours to provide a complete view of the aircraft&#39;s loading envelope.</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Convex hull calculation is valid for the data points</span>
+<span class="sd">    </span>
+<span class="sd">    **Definitions**</span>
+
+<span class="sd">    &#39;Loading Diagram&#39;</span>
+<span class="sd">        Plot showing aircraft mass versus center of gravity position for different loading conditions.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Convex Hull&#39;</span>
+<span class="sd">        Smallest convex polygon that contains all the data points.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Static Margin&#39;</span>
+<span class="sd">        Distance between center of gravity and neutral point as percentage of reference chord.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;LEMAC&#39;</span>
+<span class="sd">        Leading Edge Mean Aerodynamic Chord reference point for center of gravity calculations.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    matplotlib.pyplot</span>
+<span class="sd">    scipy.spatial.ConvexHull</span>
+<span class="sd">    shapely.geometry.Polygon</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># get plotting style </span>
+    <span class="n">ps</span>      <span class="o">=</span> <span class="n">plot_style</span><span class="p">()</span>  
+
+    <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;axes.labelsize&#39;</span><span class="p">:</span> <span class="n">ps</span><span class="o">.</span><span class="n">axis_font_size</span><span class="p">,</span>
+                  <span class="s1">&#39;xtick.labelsize&#39;</span><span class="p">:</span> <span class="n">ps</span><span class="o">.</span><span class="n">axis_font_size</span><span class="p">,</span>
+                  <span class="s1">&#39;ytick.labelsize&#39;</span><span class="p">:</span> <span class="n">ps</span><span class="o">.</span><span class="n">axis_font_size</span><span class="p">,</span>
+                  <span class="s1">&#39;axes.titlesize&#39;</span><span class="p">:</span> <span class="n">ps</span><span class="o">.</span><span class="n">title_font_size</span><span class="p">}</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+ 
+    <span class="n">fig</span>   <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">save_filename</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="n">width</span><span class="p">,</span><span class="n">height</span><span class="p">)</span>
+    <span class="n">axis</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------------</span>
+    <span class="c1"># Stability Contours</span>
+    <span class="c1"># ------------------------------------------------------------------------</span>
+    <span class="n">CG_LEMAC</span>       <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">trim_results</span><span class="o">.</span><span class="n">CG_percent_of_LEMAC_location</span><span class="o">*</span><span class="mi">100</span>
+    <span class="n">SM</span>             <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">trim_results</span><span class="o">.</span><span class="n">static_margin</span><span class="o">*</span><span class="mi">100</span>
+    <span class="n">SM_levels</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">static_margin_lower_limit</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">static_margin_upper_limit</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">static_margin_resolution</span><span class="p">)</span>
+
+    <span class="c1"># extend contour grid vertically so it covers the full hull range</span>
+    <span class="n">mass_grid</span>      <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">trim_results</span><span class="o">.</span><span class="n">mass</span>
+    <span class="n">mass_min</span>       <span class="o">=</span> <span class="n">mass_grid</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="n">mass_max</span>       <span class="o">=</span> <span class="n">mass_grid</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">pad_lo</span>         <span class="o">=</span> <span class="n">mass_min</span> <span class="o">-</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="p">(</span><span class="n">mass_max</span> <span class="o">-</span> <span class="n">mass_min</span><span class="p">)</span>
+    <span class="n">pad_hi</span>         <span class="o">=</span> <span class="n">mass_max</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="p">(</span><span class="n">mass_max</span> <span class="o">-</span> <span class="n">mass_min</span><span class="p">)</span>
+    <span class="n">CG_LEMAC</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">CG_LEMAC</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="p">:],</span> <span class="n">CG_LEMAC</span><span class="p">,</span> <span class="n">CG_LEMAC</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:]])</span>
+    <span class="n">SM</span>             <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">SM</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="p">:],</span>        <span class="n">SM</span><span class="p">,</span>        <span class="n">SM</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:]])</span>
+    <span class="n">mass_grid</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">mass_grid</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="p">:],</span> <span class="n">pad_lo</span><span class="p">),</span> <span class="n">mass_grid</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">mass_grid</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:],</span> <span class="n">pad_hi</span><span class="p">)])</span>
+
+    <span class="n">CS</span>             <span class="o">=</span> <span class="n">axis</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">CG_LEMAC</span><span class="p">,</span> <span class="n">mass_grid</span><span class="p">,</span> <span class="n">SM</span><span class="p">,</span> <span class="n">levels</span> <span class="o">=</span> <span class="n">SM_levels</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;coolwarm_r&#39;</span><span class="p">,</span> <span class="n">extend</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">CS2</span>            <span class="o">=</span> <span class="n">axis</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">CG_LEMAC</span><span class="p">,</span> <span class="n">mass_grid</span><span class="p">,</span> <span class="n">SM</span><span class="p">,</span> <span class="n">levels</span> <span class="o">=</span> <span class="n">SM_levels</span><span class="p">,</span>  <span class="n">colors</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">extend</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">)</span>
+    <span class="n">cbar</span>           <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">CS</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">clabel</span><span class="p">(</span><span class="n">CS2</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">cbar</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Static Margin&#39;</span><span class="p">,</span> <span class="n">rotation</span> <span class="o">=</span>  <span class="mi">90</span><span class="p">)</span>        
+    
+    <span class="c1"># ------------------------------------------------------------------------    </span>
+    <span class="c1"># load diamonds </span>
+    <span class="c1"># ------------------------------------------------------------------------</span>
+    <span class="c1"># cumulative load vector diamond </span>
+    <span class="n">points</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span>  <span class="mi">100</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">loading_results</span><span class="o">.</span><span class="n">CG_percent_of_LEMAC_location</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>  <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">loading_results</span><span class="o">.</span><span class="n">mass</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span><span class="o">.</span><span class="n">T</span> <span class="p">))</span>  
+    <span class="n">hull</span> <span class="o">=</span> <span class="n">ConvexHull</span><span class="p">(</span><span class="n">points</span><span class="p">)</span> 
+    <span class="n">hull_points</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="n">hull</span><span class="o">.</span><span class="n">vertices</span><span class="p">]</span> 
+    <span class="n">polygon</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">hull_points</span><span class="p">)</span>  
+    <span class="n">x_hull</span><span class="p">,</span> <span class="n">y_hull</span> <span class="o">=</span> <span class="n">polygon</span><span class="o">.</span><span class="n">exterior</span><span class="o">.</span><span class="n">xy</span>
+    
+    <span class="c1"># fuel vector diamond </span>
+    <span class="n">points</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span>  <span class="mi">100</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">loading_results</span><span class="o">.</span><span class="n">CG_percent_of_LEMAC_location</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>  <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">loading_results</span><span class="o">.</span><span class="n">mass</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span><span class="o">.</span><span class="n">T</span> <span class="p">))</span>  
+    <span class="n">hull</span> <span class="o">=</span> <span class="n">ConvexHull</span><span class="p">(</span><span class="n">points</span><span class="p">)</span> 
+    <span class="n">hull_points</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="n">hull</span><span class="o">.</span><span class="n">vertices</span><span class="p">]</span> 
+    <span class="n">polygon</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">hull_points</span><span class="p">)</span>  
+    <span class="n">x_hull_f</span><span class="p">,</span> <span class="n">y_hull_f</span> <span class="o">=</span> <span class="n">polygon</span><span class="o">.</span><span class="n">exterior</span><span class="o">.</span><span class="n">xy</span>
+     
+    <span class="c1"># passenger vector diamond      </span>
+    <span class="n">points</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span>  <span class="mi">100</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">loading_results</span><span class="o">.</span><span class="n">CG_percent_of_LEMAC_location</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>  <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">loading_results</span><span class="o">.</span><span class="n">mass</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span><span class="o">.</span><span class="n">T</span> <span class="p">))</span>  
+    <span class="n">hull</span> <span class="o">=</span> <span class="n">ConvexHull</span><span class="p">(</span><span class="n">points</span><span class="p">)</span> 
+    <span class="n">hull_points</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="n">hull</span><span class="o">.</span><span class="n">vertices</span><span class="p">]</span> 
+    <span class="n">polygon</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">hull_points</span><span class="p">)</span>  
+    <span class="n">x_hull_p</span><span class="p">,</span> <span class="n">y_hull_p</span> <span class="o">=</span> <span class="n">polygon</span><span class="o">.</span><span class="n">exterior</span><span class="o">.</span><span class="n">xy</span>
+
+    <span class="c1"># cargo vector diamond      </span>
+    <span class="n">points</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span>  <span class="mi">100</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">loading_results</span><span class="o">.</span><span class="n">CG_percent_of_LEMAC_location</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>  <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">loading_results</span><span class="o">.</span><span class="n">mass</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span><span class="o">.</span><span class="n">T</span> <span class="p">))</span>  
+    <span class="n">hull</span> <span class="o">=</span> <span class="n">ConvexHull</span><span class="p">(</span><span class="n">points</span><span class="p">)</span> 
+    <span class="n">hull_points</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="n">hull</span><span class="o">.</span><span class="n">vertices</span><span class="p">]</span> 
+    <span class="n">polygon</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">hull_points</span><span class="p">)</span>  
+    <span class="n">x_hull_c</span><span class="p">,</span> <span class="n">y_hull_c</span> <span class="o">=</span> <span class="n">polygon</span><span class="o">.</span><span class="n">exterior</span><span class="o">.</span><span class="n">xy</span>    
+
+    <span class="c1"># ------------------------------------------------------------------------    </span>
+    <span class="c1"># PLot Bounds </span>
+    <span class="c1"># ------------------------------------------------------------------------</span>
+    <span class="n">x_bound</span>     <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">x_hull</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">x_hull</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x_axis_lower_limit</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span> 
+        <span class="n">x_axis_lower_limit</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">x_hull</span><span class="p">)</span> <span class="o">-</span> <span class="n">x_bound</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="k">if</span> <span class="n">x_axis_upper_limit</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span> 
+        <span class="n">x_axis_upper_limit</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">x_hull</span><span class="p">)</span> <span class="o">+</span> <span class="n">x_bound</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="k">if</span> <span class="n">y_axis_lower_limit</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">y_axis_lower_limit</span> <span class="o">=</span>  <span class="nb">min</span><span class="p">(</span><span class="n">y_hull</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">y_axis_upper_limit</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">y_axis_upper_limit</span> <span class="o">=</span>  <span class="nb">max</span><span class="p">(</span><span class="n">y_hull</span><span class="p">)</span>
+    
+    <span class="c1"># ------------------------------------------------------------------------    </span>
+    <span class="c1"># Maximum Takeoff Weight line</span>
+    <span class="c1"># ------------------------------------------------------------------------</span>
+    <span class="n">x_pts_MTOW</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">x_axis_lower_limit</span><span class="p">,</span> <span class="n">x_axis_upper_limit</span><span class="p">)</span>
+    <span class="n">y_pts_MTOW</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">x_pts_MTOW</span><span class="p">)</span>  <span class="o">*</span> <span class="n">results</span><span class="o">.</span><span class="n">MTOW</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_pts_MTOW</span><span class="p">,</span> <span class="n">y_pts_MTOW</span><span class="p">,</span> <span class="s1">&#39;g-&#39;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;MTOW&#39;</span><span class="p">)</span> 
+    
+
+    <span class="c1"># ------------------------------------------------------------------------    </span>
+    <span class="c1"># Maximum Landing Weight line</span>
+    <span class="c1"># ------------------------------------------------------------------------</span>
+    <span class="n">x_pts_MLW</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">x_axis_lower_limit</span><span class="p">,</span> <span class="n">x_axis_upper_limit</span><span class="p">)</span>
+    <span class="n">y_pts_MLW</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">x_pts_MLW</span><span class="p">)</span>  <span class="o">*</span> <span class="n">results</span><span class="o">.</span><span class="n">MLW</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_pts_MLW</span><span class="p">,</span> <span class="n">y_pts_MLW</span><span class="p">,</span> <span class="s1">&#39;g-x&#39;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;MLW&#39;</span><span class="p">)</span>  
+    
+    <span class="c1"># ------------------------------------------------------------------------    </span>
+    <span class="c1"># Loading -Trim Bounds  </span>
+    <span class="c1"># ------------------------------------------------------------------------    </span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">x_hull</span><span class="p">,</span> <span class="n">y_hull</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_hull</span><span class="p">,</span> <span class="n">y_hull</span><span class="p">,</span> <span class="s1">&#39;k-&#39;</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">show_component_vectors</span><span class="p">:</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">x_hull_f</span><span class="p">,</span> <span class="n">y_hull_f</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;goldenrod&#39;</span>     <span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span>      <span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;goldenrod&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_hull_f</span><span class="p">,</span> <span class="n">y_hull_f</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;goldenrod&#39;</span>     <span class="p">,</span> <span class="n">linestyle</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;Fuel Loading&quot;</span><span class="p">)</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">x_hull_p</span><span class="p">,</span> <span class="n">y_hull_p</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;darkred&#39;</span>       <span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span>      <span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;darkred&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_hull_p</span><span class="p">,</span> <span class="n">y_hull_p</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;darkred&#39;</span>       <span class="p">,</span> <span class="n">linestyle</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;Pax. Loading&quot;</span><span class="p">)</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">x_hull_c</span><span class="p">,</span> <span class="n">y_hull_c</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;darksalmon&#39;</span>    <span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span>      <span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;darksalmon&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_hull_c</span><span class="p">,</span> <span class="n">y_hull_c</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;darksalmon&#39;</span>    <span class="p">,</span> <span class="n">linestyle</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;Cargo Loading&quot;</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------------    </span>
+    <span class="c1"># Axis Items</span>
+    <span class="c1"># ------------------------------------------------------------------------     </span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">x_axis_lower_limit</span><span class="p">,</span> <span class="n">x_axis_upper_limit</span><span class="p">)</span> 
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">y_axis_lower_limit</span><span class="p">,</span> <span class="n">y_axis_upper_limit</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$X_</span><span class="si">{CG}</span><span class="s1">$/LEMAC (%)&#39;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Mass (kg)&#39;</span><span class="p">)</span> 
+    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span> 
+    <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+     
+    <span class="k">if</span> <span class="n">save_figure</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_filename</span> <span class="o">+</span> <span class="n">file_type</span><span class="p">)</span>       
+                                  
+    <span class="k">return</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Laboratory for Electric Aircraft Design and Sustainability.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

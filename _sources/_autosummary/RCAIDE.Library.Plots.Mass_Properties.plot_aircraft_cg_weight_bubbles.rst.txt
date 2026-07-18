@@ -1,0 +1,25 @@
+RCAIDE.Library.Plots.Mass_Properties.plot_aircraft_cg_weight_bubbles
+
+plot\_aircraft\_cg\_weight\_bubbles
+===================================
+
+.. automodule:: RCAIDE.Library.Plots.Mass_Properties.plot_aircraft_cg_weight_bubbles
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

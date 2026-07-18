@@ -11,6 +11,13 @@ extract\_wing\_collocation\_points
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      extract_wing_collocation_points
+   
    
 
    

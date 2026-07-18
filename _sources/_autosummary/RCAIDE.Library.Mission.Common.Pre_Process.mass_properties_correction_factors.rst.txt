@@ -1,0 +1,33 @@
+RCAIDE.Library.Mission.Common.Pre_Process.mass_properties_correction_factors
+
+mass\_properties\_correction\_factors
+=====================================
+
+.. automodule:: RCAIDE.Library.Mission.Common.Pre_Process.mass_properties_correction_factors
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      apply_component_weights
+      apply_correction_factors
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

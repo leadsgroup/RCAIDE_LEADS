@@ -1,0 +1,37 @@
+RCAIDE.Library.Plots.Aeroacoustics
+
+Aeroacoustics
+=============
+
+.. automodule:: RCAIDE.Library.Plots.Aeroacoustics
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   plot_2D_noise_contour
+   plot_3D_noise_contour
+   plot_noise_certification_contour
+   plot_noise_level
+

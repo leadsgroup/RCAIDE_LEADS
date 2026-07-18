@@ -31,7 +31,7 @@ Weight\_Buildups
    :recursive:
 
    Conventional
+   Cryogenic
    Electric
    Hybrid
-   Hydrogen
 

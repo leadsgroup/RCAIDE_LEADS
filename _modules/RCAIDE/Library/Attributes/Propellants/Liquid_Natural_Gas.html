@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Attributes/Propellants/Liquid_Natural_Gas';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Attributes/Propellants/Liquid_Natural_Gas.html" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script src="../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -380,22 +399,25 @@
 <span></span><span class="c1"># RCAIDE/Library/Attributes/Propellants/Liquid_Natural_Gas.py</span>
 <span class="c1"># </span>
 <span class="c1">#</span>
-<span class="c1"># Created:  Mar 2024, M. Clarke</span>
+<span class="c1"># Created:  April 2026, S. Shekar, S. Sharma</span>
 
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
 <span class="c1">#  Imports</span>
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
-
+<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.Propellant</span><span class="w"> </span><span class="kn">import</span> <span class="n">Propellant</span>   
 
-<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
-<span class="c1">#  Gaseous_Hydrogen Class</span>
-<span class="c1"># ----------------------------------------------------------------------------------------------------------------------   </span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w">  </span><span class="kn">import</span> <span class="n">interp1d</span> 
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  Liquid_Natural_Gas Class</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <div class="viewcode-block" id="Liquid_Natural_Gas">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas.html#RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas.Liquid_Natural_Gas">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Liquid_Natural_Gas</span><span class="p">(</span><span class="n">Propellant</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A class representing Liquid Natural Gas (LNG) fuel properties and composition </span>
+<span class="sd">    A class representing Liquid Natural Gas (LNG) fuel properties and composition</span>
 <span class="sd">    for propulsion applications.</span>
 
 <span class="sd">    Attributes</span>
@@ -407,35 +429,47 @@
 <span class="sd">    density : float</span>
 <span class="sd">        Fuel density in kg/m³ (414.2)</span>
 <span class="sd">    specific_energy : float</span>
-<span class="sd">        Specific energy content in J/kg (53.6e6)</span>
+<span class="sd">        Lower heating value (LHV) specific energy content in J/kg (48.632e6)</span>
 <span class="sd">    energy_density : float</span>
 <span class="sd">        Energy density in J/m³ (22200.0e6)</span>
-<span class="sd">    use_high_fidelity_kinetics_model : bool</span>
-<span class="sd">        Flag for using detailed chemical kinetics (False)</span>
-<span class="sd">    fuel_surrogate_chemical_properties : dict</span>
-<span class="sd">        Simplified chemical composition for surrogate model</span>
-<span class="sd">            - CH4 : float</span>
-<span class="sd">                Methane fraction (0.85)</span>
-<span class="sd">            - C2H6 : float</span>
-<span class="sd">                Ethane fraction (0.1)</span>
-<span class="sd">            - C3H8 : float</span>
-<span class="sd">                Propane fraction (0.05)</span>
-<span class="sd">    fuel_chemical_properties : dict</span>
-<span class="sd">        Detailed chemical composition</span>
-<span class="sd">            - CH4 : float</span>
-<span class="sd">                Methane fraction (0.83)</span>
-<span class="sd">            - C2H6 : float</span>
-<span class="sd">                Ethane fraction (0.1)</span>
-<span class="sd">            - C3H8 : float</span>
-<span class="sd">                Propane fraction (0.05)</span>
-<span class="sd">            - C4H10 : float</span>
-<span class="sd">                Butane fraction (0.02)</span>
+<span class="sd">    stoichiometric_fuel_air_ratio : float</span>
+<span class="sd">        Stoichiometric fuel-to-air ratio [-] (0, placeholder)</span>
+<span class="sd">    heat_of_vaporization : float</span>
+<span class="sd">        Heat of vaporization at standard conditions in J/kg (0, placeholder)</span>
+<span class="sd">    temperature : float</span>
+<span class="sd">        Temperature of fuel in K (0, placeholder)</span>
+<span class="sd">    pressure : float</span>
+<span class="sd">        Pressure of fuel in Pa (0, placeholder)</span>
+<span class="sd">    fuel_surrogate_S1 : dict</span>
+<span class="sd">        Mole fractions of fuel surrogate species [-]</span>
+<span class="sd">    kinetic_mechanism : str</span>
+<span class="sd">        Kinetic mechanism name for fuel surrogate combustion</span>
+<span class="sd">    oxidizer : str</span>
+<span class="sd">        Oxidizer species name</span>
+<span class="sd">    emission_indices : Data</span>
+<span class="sd">        Emission indices in kg/kg fuel</span>
+<span class="sd">            - Production : float</span>
+<span class="sd">                Upstream extraction and liquefaction CO2 (0.35)</span>
+<span class="sd">            - CO2 : float</span>
+<span class="sd">                Carbon dioxide (2.75)</span>
+<span class="sd">            - CO : float</span>
+<span class="sd">                Carbon monoxide (0.00100)</span>
+<span class="sd">            - H2O : float</span>
+<span class="sd">                Water vapor (2.20)</span>
+<span class="sd">            - SO2 : float</span>
+<span class="sd">                Sulfur dioxide (0.0)</span>
+<span class="sd">            - NOx : float</span>
+<span class="sd">                Nitrogen oxides (0.0126)</span>
+<span class="sd">            - Soot : float</span>
+<span class="sd">                Particulate matter (0.0)</span>
 <span class="sd">    global_warming_potential_100 : Data</span>
-<span class="sd">        100-year global warming potentials</span>
+<span class="sd">        100-year global warming potentials (CO2-equivalent per kg of species)</span>
 <span class="sd">            - CO2 : float</span>
 <span class="sd">                Carbon dioxide (1)</span>
 <span class="sd">            - H2O : float</span>
 <span class="sd">                Water vapor (0.06)</span>
+<span class="sd">            - CO : float</span>
+<span class="sd">                Carbon monoxide (1)</span>
 <span class="sd">            - SO2 : float</span>
 <span class="sd">                Sulfur dioxide (-226)</span>
 <span class="sd">            - NOx : float</span>
@@ -443,59 +477,179 @@
 <span class="sd">            - Soot : float</span>
 <span class="sd">                Particulate matter (1166)</span>
 <span class="sd">            - Contrails : float</span>
-<span class="sd">                Contrail formation (11)</span>
+<span class="sd">                Contrail formation factor in kg CO2e/km (11)</span>
+<span class="sd">    materials_properties : dict</span>
+<span class="sd">        Interpolated thermophysical property data loaded from ``LNG_properties.res``</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    LNG is a cryogenic fuel consisting primarily of methane with small amounts of </span>
-<span class="sd">    heavier hydrocarbons. It requires storage at approximately -162°C but offers </span>
-<span class="sd">    reduced carbon emissions compared to conventional fuels.</span>
+<span class="sd">    LNG is a cryogenic fuel consisting primarily of methane with small amounts of</span>
+<span class="sd">    heavier hydrocarbons. It requires storage at approximately -162°C (-111 K) but</span>
+<span class="sd">    offers reduced carbon emissions compared to conventional jet fuels.</span>
+
+<span class="sd">    The ``specific_energy`` value uses the lower heating value (LHV) of LNG, which</span>
+<span class="sd">    excludes the latent heat of water condensation in combustion products.</span>
 
 <span class="sd">    **Definitions**</span>
-<span class="sd">    </span>
-<span class="sd">    &#39;Surrogate Model&#39;</span>
-<span class="sd">        Simplified three-component representation for faster calculations</span>
-<span class="sd">    </span>
-<span class="sd">    &#39;Global Warming Potential&#39;</span>
-<span class="sd">        Relative measure of heat trapped in atmosphere compared to CO2</span>
-<span class="sd">    </span>
+
+<span class="sd">    &#39;Global Warming Potential (GWP-100)&#39;</span>
+<span class="sd">        Relative measure of heat trapped in the atmosphere over 100 years compared</span>
+<span class="sd">        to an equivalent mass of CO2</span>
+
 <span class="sd">    &#39;Energy Density&#39;</span>
-<span class="sd">        Energy content per unit volume, affected by cryogenic storage conditions</span>
+<span class="sd">        Energy content per unit volume, dependent on cryogenic storage conditions</span>
 
 <span class="sd">    **Major Assumptions**</span>
 <span class="sd">        * Properties are for saturated liquid at atmospheric pressure</span>
-<span class="sd">        * Composition represents typical LNG mixture</span>
+<span class="sd">        * Composition represents a typical LNG mixture</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Lower and Higher Heating Values of Gas, Liquid, and Solid Fuels.</span>
+<span class="sd">        NPRE 470 course resource, University of Illinois Urbana-Champaign, 2018.</span>
+<span class="sd">        https://courses.grainger.illinois.edu/npre470/sp2018/web/Lower_and_Higher_Heating_Values_of_Gas_Liquid_and_Solid_Fuels.pdf</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__defaults__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;This sets the default values. </span>
-<span class="sd">    </span>
-<span class="sd">    Assumptions:</span>
-<span class="sd">        None</span>
-<span class="sd">    </span>
-<span class="sd">    Source:</span>
-<span class="sd">        None</span>
-<span class="sd">        &quot;&quot;&quot;</span>    
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set default values for Liquid Natural Gas propellant properties.</span>
+
+<span class="sd">        Assumptions</span>
+<span class="sd">        -----------</span>
+<span class="sd">        * Density and energy properties correspond to saturated liquid LNG</span>
+<span class="sd">          at atmospheric pressure.</span>
+<span class="sd">        * Specific energy is based on the lower heating value (LHV) of LNG.</span>
+<span class="sd">        * GWP-100 values follow standard aviation emission indices.</span>
+<span class="sd">        * Placeholder values of 0 are assigned to fields that must be set</span>
+<span class="sd">          by the user or a higher-fidelity model before use.</span>
+
+<span class="sd">        Source</span>
+<span class="sd">        ------</span>
+<span class="sd">        Lower Heating Value:</span>
+<span class="sd">            NPRE 470, University of Illinois Urbana-Champaign (2018).</span>
+<span class="sd">            https://courses.grainger.illinois.edu/npre470/sp2018/web/</span>
+<span class="sd">            Lower_and_Higher_Heating_Values_of_Gas_Liquid_and_Solid_Fuels.pdf</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>             <span class="o">=</span> <span class="s1">&#39;Liquid_Natural_Gas&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reactant</span>        <span class="o">=</span> <span class="s1">&#39;O2&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">density</span>         <span class="o">=</span> <span class="mf">414.2</span>                            <span class="c1"># kg/m^3 </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">specific_energy</span> <span class="o">=</span> <span class="mf">53.6e6</span>                           <span class="c1"># J/kg</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">energy_density</span>  <span class="o">=</span> <span class="mf">22200.0e6</span>                        <span class="c1"># J/m^3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">density</span>         <span class="o">=</span> <span class="mf">414.2</span>       <span class="c1"># [kg/m^3]  saturated liquid at ~111 K</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">specific_energy</span> <span class="o">=</span> <span class="mf">48.632e6</span>    <span class="c1"># [J/kg]    lower heating value (LHV) </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">energy_density</span>  <span class="o">=</span> <span class="mf">22200.0e6</span>   <span class="c1"># [J/m^3]</span>
         
-        <span class="bp">self</span><span class="o">.</span><span class="n">stoichiometric_fuel_air_ratio</span> <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [-] Stoichiometric Fuel to Air ratio</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">heat_of_vaporization</span>          <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [J/kg] Heat of vaporization at standard conditions</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span>                   <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [K] Temperature of fuel</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pressure</span>                      <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [Pa] Pressure of fuel</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_surrogate_S1</span>             <span class="o">=</span> <span class="p">{}</span> <span class="c1"># [-] Mole fractions of fuel surrogate species</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">kinetic_mechanism</span>             <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="c1"># [-] Kinetic mechanism for fuel surrogate species</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">oxidizer</span>                      <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stoichiometric_fuel_air_ratio</span> <span class="o">=</span> <span class="mi">0</span>   <span class="c1"># [-]    stoichiometric fuel-to-air ratio (placeholder)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heat_of_vaporization</span>          <span class="o">=</span> <span class="mi">0</span>   <span class="c1"># [J/kg] heat of vaporization at standard conditions (placeholder)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span>                   <span class="o">=</span> <span class="mi">0</span>   <span class="c1"># [K]    fuel temperature (placeholder)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pressure</span>                      <span class="o">=</span> <span class="mi">0</span>   <span class="c1"># [Pa]   fuel pressure (placeholder)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_surrogate_S1</span>             <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># [-]    mole fractions of fuel surrogate species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kinetic_mechanism</span>             <span class="o">=</span> <span class="s1">&#39;&#39;</span>  <span class="c1">#        kinetic mechanism name for combustion model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oxidizer</span>                      <span class="o">=</span> <span class="s1">&#39;&#39;</span>  <span class="c1">#        oxidizer species name</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">Production</span>  <span class="o">=</span> <span class="mf">0.35</span>     <span class="c1"># kg/kg  upstream extraction + liquefaction (GREET)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">CO2</span>         <span class="o">=</span> <span class="mf">2.75</span>     <span class="c1"># kg/kg  stoichiometric floor for CH4 (44/16); LNG blend ≈ 2.75–2.78</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">CO</span>          <span class="o">=</span> <span class="mf">0.00100</span>  <span class="c1"># kg/kg  ~1.0 g/kg, typical gas turbine at cruise</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">H2O</span>         <span class="o">=</span> <span class="mf">2.20</span>     <span class="c1"># kg/kg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">SO2</span>         <span class="o">=</span> <span class="mf">0.0</span>      <span class="c1"># kg/kg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">NOx</span>         <span class="o">=</span> <span class="mf">0.0126</span>   <span class="c1"># kg/kg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">Soot</span>        <span class="o">=</span> <span class="mf">0.0</span>      <span class="c1"># kg/kg</span>
         
-        <span class="bp">self</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">CO2</span>       <span class="o">=</span> <span class="mi">1</span>     <span class="c1"># CO2e/kg  </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">H2O</span>       <span class="o">=</span> <span class="mf">0.06</span>  <span class="c1"># CO2e/kg  </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">SO2</span>       <span class="o">=</span> <span class="o">-</span><span class="mi">226</span>  <span class="c1"># CO2e/kg  </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">NOx</span>       <span class="o">=</span> <span class="mi">52</span>    <span class="c1"># CO2e/kg  </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">Soot</span>      <span class="o">=</span> <span class="mi">1166</span>  <span class="c1"># CO2e/kg    </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">Contrails</span> <span class="o">=</span> <span class="mi">11</span>    <span class="c1"># kg/CO2e/km          </span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">CO2</span>       <span class="o">=</span> <span class="mi">1</span>     <span class="c1"># [CO2e/kg]    carbon dioxide</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">H2O</span>       <span class="o">=</span> <span class="mf">0.06</span>  <span class="c1"># [CO2e/kg]    water vapor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">CO</span>        <span class="o">=</span> <span class="mi">1</span>     <span class="c1"># [CO2e/kg]    carbon monoxide</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">SO2</span>       <span class="o">=</span> <span class="o">-</span><span class="mi">226</span>  <span class="c1"># [CO2e/kg]    sulfur dioxide (cooling effect)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">NOx</span>       <span class="o">=</span> <span class="mi">52</span>    <span class="c1"># [CO2e/kg]    nitrogen oxides</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">Soot</span>      <span class="o">=</span> <span class="mi">1166</span>  <span class="c1"># [CO2e/kg]    soot / black carbon</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">Contrails</span> <span class="o">=</span> <span class="mi">11</span>    <span class="c1"># [CO2e/km]    contrail radiative forcing</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">materials_properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cryogen_properties</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Liquid_Natural_Gas.cryogen_properties">
+<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas.html#RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas.Liquid_Natural_Gas.cryogen_properties">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cryogen_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">prop_name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return an interpolated LNG thermophysical property value at a given temperature.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        T : float or ndarray</span>
+<span class="sd">            Temperature(s) in Kelvin at which the property is requested.</span>
+<span class="sd">        prop_name : str</span>
+<span class="sd">            Name of the property column to retrieve from the LNG data file.</span>
+<span class="sd">            Valid keys include:</span>
+
+<span class="sd">                - ``&quot;Temperature (K)&quot;``</span>
+<span class="sd">                - ``&quot;Pressure (MPa)&quot;``</span>
+<span class="sd">                - ``&quot;Density (kg/m3)&quot;``</span>
+<span class="sd">                - ``&quot;Volume (m3/kg)&quot;``</span>
+<span class="sd">                - ``&quot;Internal Energy (kJ/kg)&quot;``</span>
+<span class="sd">                - ``&quot;Enthalpy (kJ/kg)&quot;``</span>
+<span class="sd">                - ``&quot;Entropy (J/g*K)&quot;``</span>
+<span class="sd">                - ``&quot;Cv (J/g*K)&quot;``</span>
+<span class="sd">                - ``&quot;Cp (J/g*K)&quot;``</span>
+<span class="sd">                - ``&quot;Sound Spd. (m/s)&quot;``</span>
+<span class="sd">                - ``&quot;Joule-Thomson (K/MPa)&quot;``</span>
+<span class="sd">                - ``&quot;Viscosity (Pa*s)&quot;``</span>
+<span class="sd">                - ``&quot;Therm. Cond. (W/m*K)&quot;``</span>
+<span class="sd">                - ``&quot;Phase&quot;``</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        prop_value : float or ndarray</span>
+<span class="sd">            Interpolated property value(s) corresponding to the input temperature(s).</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        * Property data is loaded from ``LNG_properties.res`` via</span>
+<span class="sd">          :func:`load_lng_properties`.</span>
+<span class="sd">        * Linear interpolation is applied between tabulated data points.</span>
+<span class="sd">        * Extrapolation outside the tabulated temperature range is not supported</span>
+<span class="sd">          (``fill_value=None``).</span>
+<span class="sd">        * The ``&quot;Phase&quot;`` column is categorical and is not suitable for</span>
+<span class="sd">          numerical interpolation.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        load_lng_properties</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">load_lng_properties</span><span class="p">()</span>
+        <span class="n">temps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Temperature (K)&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">props</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">prop_name</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">interp</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">temps</span><span class="p">,</span> <span class="n">props</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">interp</span><span class="p">(</span><span class="n">T</span><span class="p">)</span></div>
+</div>
+
+
+<div class="viewcode-block" id="load_lng_properties">
+<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas.html#RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas.load_lng_properties">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_lng_properties</span><span class="p">():</span> 
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load liquid natural gas property data from the RES file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    lng_data : dict</span>
+<span class="sd">        Raw liquid natural gas property data loaded from ``LNG_properties.res``.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Assumes liquid natural gas is pure Methane and behaves as an ideal fluid for the stored properties.  </span>
+
+<span class="sd">    Source</span>
+<span class="sd">    ------</span>
+<span class="sd">    Internal RCAIDE resource file: ``LNG_properties.res``</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.load : Function used to load RES files</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ospath</span>    <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+    <span class="n">separator</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span>
+    <span class="n">rel_path</span>  <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">ospath</span><span class="p">)</span> <span class="o">+</span> <span class="n">separator</span>     
+
+    <span class="k">return</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">rel_path</span><span class="o">+</span> <span class="s1">&#39;LNG_properties.res&#39;</span><span class="p">)</span></div>
 
 </pre></div>
 
@@ -526,8 +680,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -547,7 +701,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -561,7 +715,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

@@ -1,0 +1,25 @@
+RCAIDE.Framework.Analyses.Aeroacoustics.Semi_Empirical
+
+Semi\_Empirical
+===============
+
+.. automodule:: RCAIDE.Framework.Analyses.Aeroacoustics.Semi_Empirical
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

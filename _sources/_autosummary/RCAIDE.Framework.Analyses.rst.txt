@@ -30,6 +30,7 @@ Analyses
    :template: custom-module-template.rst
    :recursive:
 
+   Aeroacoustics
    Aerodynamics
    Analysis
    Atmospheric
@@ -37,7 +38,7 @@ Analyses
    Emissions
    Energy
    Geodesics
-   Noise
+   Geometry
    Planets
    Process
    Propulsion

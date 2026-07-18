@@ -30,13 +30,13 @@ Methods
    :template: custom-module-template.rst
    :recursive:
 
+   Aeroacoustics
    Aerodynamics
    Emissions
    Gas_Dynamics
    Geodesics
    Geometry
    Mass_Properties
-   Noise
    Performance
    Powertrain
    Stability

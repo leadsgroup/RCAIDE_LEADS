@@ -1,0 +1,746 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Airfoils and Polars Downloads &#8212; RCAIDE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=d103512f" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/airfoils_and_polars';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/tutorials/airfoils_and_polars.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Contributing Guide" href="../contributing.html" />
+    <link rel="prev" title="Legacy Python Optimization Workflow" href="legacy_optimization.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/leads_logo.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/leads_logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">RCAIDE</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="missions.html">Missions</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="Missions/Tutorial_01_turbofan_aircraft.html">Tutorial 1 - Turbofan Aircraft Simulation</a></li>
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="Missions/Tutorial_02_turbojet_aircraft.html">Tutorial 2 - Turbojet Aircraft Simulation</a></li>
+
+
+
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="Missions/Tutorial_03_turboprop_aircraft.html">Tutorial 3 - Turboprop Aircraft Simulation</a></li>
+
+
+
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="Missions/Tutorial_04_general_aviation_aircraft.html">Tutorial 4 - General Aircraft Simulation</a></li>
+
+
+
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="Missions/Tutorial_05_electric_aircraft.html">Tutorial 5 - Electric Aircraft Simulation</a></li>
+
+
+
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="Missions/Tutorial_06_tiltrotor_evtol_aircraft.html">Tutorial 6 - Tiltrotor eVTOL Aircraft Simulation</a></li>
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="Missions/Tutorial_07_lift_cruise_evtol_aircraft.html">Tutorial 7 - Lift + Cruise eVTOL Aircraft Simulation</a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="optimize.html">Optimize</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="Optimize/Tutorial_10_Analyses.html">Tutorial 10 - Analyses</a></li>
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="Optimize/Tutorial_11_Missions.html">Tutorial 11 - Missions</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="Optimize/Tutorial_12_Optimize.html">Tutorial 12 - Optimize</a></li>
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="Optimize/Tutorial_13_Plot_Mission.html">Tutorial 13 - Plot Mission</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="Optimize/Tutorial_14_Procedure.html">Tutorial 14 - Procedure</a></li>
+
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="Optimize/Tutorial_15_Vehicle.html">Tutorial 15 - Vehicle</a></li>
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="performance.html">Performance</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="Performance/Tutorial_21_payload_range_diagram.html">Tutorial 21 - Payload Range Diagram</a></li>
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="Performance/Tutorial_22_propeller_simulation.html">Tutorial 22 - Propeller Simulation</a></li>
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="Performance/Tutorial_23_aircraft_aerodynamic_analysis.html">Tutorial 23 - Aircraft Aerodynamic Analysis</a></li>
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="Performance/Tutorial_24_airfoil_polar_simulation.html">Tutorial 24 - Airfoil Polar Simulation</a></li>
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="Performance/Tutorial_25_V_n_diagram.html">Tutorial 25 - V-n Diagram</a></li>
+
+
+
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">Analysis</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="simulation.html">Simulation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="Simulation_Turbofan_Transonic_Aircraft_5000nmi_Mission/Boeing_737_800_Tutorial.html">Tutorial 1 - Turbofan Aircraft Simulation</a></li>
+
+
+
+
+
+
+
+
+
+
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="legacy_optimization.html">Legacy Python Optimization Workflow</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Airfoils and Polars Downloads</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="tutorials.html" class="nav-link">Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Airfoils and Polars Downloads</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="airfoils-and-polars-downloads">
+<h1>Airfoils and Polars Downloads<a class="headerlink" href="#airfoils-and-polars-downloads" title="Link to this heading">#</a></h1>
+<p>Download airfoil coordinate files and polar data files from <code class="docutils literal notranslate"><span class="pre">Tutorials/Airfoils_and_Polars</span></code>.</p>
+<section id="airfoil-files">
+<h2>Airfoil Files<a class="headerlink" href="#airfoil-files" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference download internal" download="" href="../_downloads/2368d5ad41b9d4d91f4918049f363308/Clark_y.txt"><code class="xref download docutils literal notranslate"><span class="pre">Clark_y.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/996d49d79688f703c29790a750636183/NACA65_203.txt"><code class="xref download docutils literal notranslate"><span class="pre">NACA65_203.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/57a418fe849dfbfd1c18cef01f051850/NACA_23012.txt"><code class="xref download docutils literal notranslate"><span class="pre">NACA_23012.txt</span></code></a></p></li>
+<li><p><code class="xref download docutils literal notranslate"><span class="pre">NACA_4412</span> <span class="pre">2.txt</span></code></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/6902be57dfce10b996b8bb1c7ee715be/NACA_4412.txt"><code class="xref download docutils literal notranslate"><span class="pre">NACA_4412.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/ef48e14a6b8783348c6bda0db6583119/NACA_4415.txt"><code class="xref download docutils literal notranslate"><span class="pre">NACA_4415.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/a3dd1b1ec88ed0953ee078d3524e8719/NACA_63_412.txt"><code class="xref download docutils literal notranslate"><span class="pre">NACA_63_412.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/5aa54abedc4fe0f417fc1576ddaeb23c/NACA_6410.txt"><code class="xref download docutils literal notranslate"><span class="pre">NACA_6410.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/be0e3a41ac259e09662042415fbca015/s1014.txt"><code class="xref download docutils literal notranslate"><span class="pre">s1014.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/e77f58ba479701f56470da9eecb07d15/supersonic_tail.txt"><code class="xref download docutils literal notranslate"><span class="pre">supersonic_tail.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/35eff1098cac9d30987cf07437c68a15/transonic_wing_inboard_section_airfoil.txt"><code class="xref download docutils literal notranslate"><span class="pre">transonic_wing_inboard_section_airfoil.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/9c28f4f7b4bee3782e4a33daaf683ada/transonic_wing_outboard_section_airfoil.txt"><code class="xref download docutils literal notranslate"><span class="pre">transonic_wing_outboard_section_airfoil.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/229f3d9a8e9f7af1da87b4c78c89370b/transonic_wing_root_section_airfoil.txt"><code class="xref download docutils literal notranslate"><span class="pre">transonic_wing_root_section_airfoil.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/7b741a175efbc5aff80bfdd440ef08d2/transonic_wing_tip_section_airfoil.txt"><code class="xref download docutils literal notranslate"><span class="pre">transonic_wing_tip_section_airfoil.txt</span></code></a></p></li>
+</ul>
+</section>
+<section id="polar-files">
+<h2>Polar Files<a class="headerlink" href="#polar-files" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference download internal" download="" href="../_downloads/4e0c9c506afea426d01fa698c346bfe3/NACA_23012_polar_Re_100000.txt"><code class="xref download docutils literal notranslate"><span class="pre">NACA_23012_polar_Re_100000.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/1026f9658451087acf674672586475c8/NACA_23012_polar_Re_1000000.txt"><code class="xref download docutils literal notranslate"><span class="pre">NACA_23012_polar_Re_1000000.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/83f2f9b2e1c0c33c8e5c466caebc862e/NACA_23012_polar_Re_200000.txt"><code class="xref download docutils literal notranslate"><span class="pre">NACA_23012_polar_Re_200000.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/9f8cfd9b61c9a827ed61d7bfd8ba33d9/NACA_23012_polar_Re_50000.txt"><code class="xref download docutils literal notranslate"><span class="pre">NACA_23012_polar_Re_50000.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/0b39f922d3758653c306dcb54f94966c/NACA_23012_polar_Re_500000.txt"><code class="xref download docutils literal notranslate"><span class="pre">NACA_23012_polar_Re_500000.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/71350fec15f00ce00fb45b63b01f5a0e/NACA_4412_polar_Re_100000.txt"><code class="xref download docutils literal notranslate"><span class="pre">NACA_4412_polar_Re_100000.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/b1f80626868c1b32f6a5059e191f3a5b/NACA_4412_polar_Re_1000000.txt"><code class="xref download docutils literal notranslate"><span class="pre">NACA_4412_polar_Re_1000000.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/2a1134339a35dbc2c2d7dddb4cbc0c0e/NACA_4412_polar_Re_200000.txt"><code class="xref download docutils literal notranslate"><span class="pre">NACA_4412_polar_Re_200000.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/d0982b4105551e1835e7e494156ed50c/NACA_4412_polar_Re_3500000.txt"><code class="xref download docutils literal notranslate"><span class="pre">NACA_4412_polar_Re_3500000.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/902b4f47ed5c8cb351a9f30971f27296/NACA_4412_polar_Re_50000.txt"><code class="xref download docutils literal notranslate"><span class="pre">NACA_4412_polar_Re_50000.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/fa74e3a5e45bb06b9a1b451e31095317/NACA_4412_polar_Re_500000.txt"><code class="xref download docutils literal notranslate"><span class="pre">NACA_4412_polar_Re_500000.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/d15d9921f736cbe58a8dbdf4cda7c63c/NACA_4412_polar_Re_5000000.txt"><code class="xref download docutils literal notranslate"><span class="pre">NACA_4412_polar_Re_5000000.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/d150b43a96021ded8d499882f497b286/NACA_4412_polar_Re_7500000.txt"><code class="xref download docutils literal notranslate"><span class="pre">NACA_4412_polar_Re_7500000.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/9697a880580975c11e682794e4a68af9/NACA_63_412_polar_Re_100000.txt"><code class="xref download docutils literal notranslate"><span class="pre">NACA_63_412_polar_Re_100000.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/7a0c637c64f0361d6c73435a4d5476cf/NACA_63_412_polar_Re_1000000.txt"><code class="xref download docutils literal notranslate"><span class="pre">NACA_63_412_polar_Re_1000000.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/f12b280975d075310404f3cd58c430a1/NACA_63_412_polar_Re_200000.txt"><code class="xref download docutils literal notranslate"><span class="pre">NACA_63_412_polar_Re_200000.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/679994f635e5202cbdd22eee370c27f5/NACA_63_412_polar_Re_50000.txt"><code class="xref download docutils literal notranslate"><span class="pre">NACA_63_412_polar_Re_50000.txt</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/8b4ca02e59fdaba04b007a36675763f9/NACA_63_412_polar_Re_500000.txt"><code class="xref download docutils literal notranslate"><span class="pre">NACA_63_412_polar_Re_500000.txt</span></code></a></p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="legacy_optimization.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Legacy Python Optimization Workflow</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../contributing.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Contributing Guide</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#airfoil-files">Airfoil Files</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#polar-files">Polar Files</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/tutorials/airfoils_and_polars.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Laboratory for Electric Aircraft Design and Sustainability.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -30,6 +30,16 @@ Systems
    :template: custom-module-template.rst
    :recursive:
 
+   Auxiliary_Power_Unit
    Avionics
-   System
+   Cabin_Loads
+   Electrical
+   Environmental_Controls
+   Flight_Controls
+   Furnishings
+   Hydraulics
+   Ice_Protection
+   Instruments
+   Systems
+   Water_Tank
 

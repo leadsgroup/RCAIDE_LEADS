@@ -31,6 +31,7 @@ Update
    :recursive:
 
    acceleration
+   aeroacoustics
    aerodynamics
    altitude
    angular_acceleration
@@ -46,7 +47,6 @@ Update
    kinematics
    linear_inertial_horizontal_position
    moments
-   noise
    orientations
    planet_position
    stability

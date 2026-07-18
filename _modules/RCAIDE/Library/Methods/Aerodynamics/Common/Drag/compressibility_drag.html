@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Methods/Aerodynamics/Common/Drag/compressibility_drag';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Methods/Aerodynamics/Common/Drag/compressibility_drag.html" />
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../../../_static/language_data.js"></script>
+    <script src="../../../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -377,191 +396,606 @@
                 <article class="bd-article">
                   
   <h1>Source code for RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compressibility_drag</h1><div class="highlight"><pre>
-<span></span><span class="c1"># RCAIDE/Library/Methods/Aerodynamics/Common/Drag/compressibility_drag_total.py</span>
-<span class="c1"># (c) Copyright 2023 Aerospace Research Community LLC</span>
+<span></span><span class="c1"># RCAIDE/Library/Methods/Aerodynamics/Common/Drag/compressibility_drag.py</span>
 <span class="c1"># </span>
 <span class="c1"># Created:  Jul 2024, RCAIDE Team </span>
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  IMPORT</span>
-<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
-   
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Components.Wings</span><span class="w">          </span><span class="kn">import</span> <span class="n">Main_Wing</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Utilities</span><span class="w">         </span><span class="kn">import</span> <span class="n">Cubic_Spline_Blender</span>  
-<span class="kn">from</span><span class="w"> </span><span class="nn">.wave_drag</span><span class="w">                               </span><span class="kn">import</span> <span class="n">wave_drag</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.drag_divergence</span><span class="w">                         </span><span class="kn">import</span> <span class="n">drag_divergence</span> 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.supersonic_wave_drag_volume_raymer</span><span class="w">      </span><span class="kn">import</span> <span class="n">supersonic_wave_drag_volume_raymer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.supersonic_wave_drag_volume_sears_haack</span><span class="w"> </span><span class="kn">import</span> <span class="n">supersonic_wave_drag_volume_sears_haack</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Components.Wings</span><span class="w">          </span><span class="kn">import</span> <span class="n">Main_Wing</span> 
 
 <span class="c1"># package imports</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">RegularGridInterpolator</span>
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
 <span class="c1">#  Compressibility Drag Total</span>
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
 <div class="viewcode-block" id="compressibility_drag">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compressibility_drag.html#RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compressibility_drag.compressibility_drag">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">compressibility_drag</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">settings</span><span class="p">,</span><span class="n">geometry</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes compressibility drag for full aircraft including volume drag</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes compressibility drag coefficient for full aircraft including volume drag effects.</span>
 
-<span class="sd">    Assumptions:</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    state : Data</span>
+<span class="sd">        Flight conditions and aerodynamic state containing:</span>
+<span class="sd">            - conditions.freestream.mach_number : float</span>
+<span class="sd">                Freestream Mach number [unitless]</span>
+<span class="sd">            - conditions.aerodynamics.coefficients.lift.total : float</span>
+<span class="sd">                Total lift coefficient [unitless]</span>
+<span class="sd">    settings : dict</span>
+<span class="sd">        Aerodynamic analysis settings containing:</span>
+<span class="sd">            - supersonic.begin_drag_rise_mach_number : float</span>
+<span class="sd">                Mach number at which drag rise begins [unitless]</span>
+<span class="sd">            - supersonic.end_drag_rise_mach_number : float</span>
+<span class="sd">                Mach number at which drag rise ends [unitless]</span>
+<span class="sd">    geometry : Data</span>
+<span class="sd">        Aircraft geometry containing:</span>
+<span class="sd">            - reference_area : float</span>
+<span class="sd">                Reference area for drag coefficient calculation [m²]</span>
+<span class="sd">            - wings : list</span>
+<span class="sd">                List of wing objects containing:</span>
+<span class="sd">                  - sweeps.leading_edge : float</span>
+<span class="sd">                      Leading edge sweep angle [radians]</span>
+<span class="sd">                  - thickness_to_chord : float</span>
+<span class="sd">                      Thickness-to-chord ratio [unitless]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
 <span class="sd">    None</span>
+<span class="sd">        Results are stored in state.conditions.aerodynamics.coefficients.drag.compressible.total</span>
 
-<span class="sd">    Source:</span>
-<span class="sd">    None</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function calculates the compressibility drag coefficient using empirical correlations</span>
+<span class="sd">    based on wing geometry and flight conditions. The calculation accounts for the critical</span>
+<span class="sd">    Mach number and the drag rise characteristics of swept wings.</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Compressibility effects are primarily due to wing geometry</span>
+<span class="sd">        * Critical Mach number correlation is valid for typical transport aircraft</span>
+<span class="sd">        * Cubic spline blending smooths transition between subsonic and supersonic regimes</span>
+<span class="sd">    </span>
+<span class="sd">    **Theory**</span>
 
-<span class="sd">    Args:   </span>
-<span class="sd">    settings.</span>
-<span class="sd">      begin_drag_rise_mach_number                                    [Unitless]</span>
-<span class="sd">      end_drag_rise_mach_number                                      [Unitless]</span>
-<span class="sd">      peak_mach_number                                               [Unitless]</span>
-<span class="sd">      transonic_drag_multiplier                                      [Unitless]</span>
-<span class="sd">      volume_wave_drag_scaling                                       [Unitless]</span>
-<span class="sd">    state.conditions.aerodynamics.lift_breakdown.compressible_wings  [Unitless]</span>
-<span class="sd">    state.conditions.freestream.mach_number                          [Unitless]</span>
-<span class="sd">    geometry.maximum_cross_sectional_area                            [m^2] (used in subfunctions)</span>
-<span class="sd">    geometry.total_length                                            [m]   (used in subfunctions)</span>
-<span class="sd">    geometry.reference_area                                          [m^2]</span>
-<span class="sd">    geometry.wings                             </span>
+<span class="sd">    The critical Mach number is calculated using a regression fit from AA241:</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">    total_compressibility_drag                                       [Unitless]</span>
+<span class="sd">    :math:`M_{cc} \\cos(\\Lambda) = 0.922 - 1.154(t/c) - 0.305 C_L + 0.333(t/c)^2 + 0.467(t/c)C_L + 0.087 C_L^2`</span>
 
-<span class="sd">    Properties Used:</span>
-<span class="sd">    None</span>
-<span class="sd">    &quot;&quot;&quot;</span>     
+<span class="sd">    where:</span>
+<span class="sd">      - :math:`M_{cc}` is the critical Mach number</span>
+<span class="sd">      - :math:`\\Lambda` is the leading edge sweep angle [radians]</span>
+<span class="sd">      - :math:`t/c` is the thickness-to-chord ratio corrected for sweep</span>
+<span class="sd">      - :math:`C_L` is the lift coefficient corrected for sweep</span>
+
+<span class="sd">    The corrected thickness-to-chord ratio is:</span>
+
+<span class="sd">    :math:`(t/c)_{eff} = \\frac{t/c}{\\cos(\\Lambda)}`</span>
+
+<span class="sd">    The corrected lift coefficient is:</span>
+
+<span class="sd">    :math:`C_{L,eff} = \\frac{C_L}{\\cos^2(\\Lambda)}`</span>
+
+<span class="sd">    The divergence ratio is:</span>
+
+<span class="sd">    :math:`M/M_{cc} = \\frac{M}{M_{cc}}`</span>
+
+<span class="sd">    The compressibility drag coefficient follows Shevell&#39;s correlation:</span>
+
+<span class="sd">    :math:`\\Delta C_{D,comp} = 0.0019 \\left(\\frac{M}{M_{cc}}\\right)^{14.641} \\cos^3(\\Lambda)`</span>
+<span class="sd">    </span>
+<span class="sd">    **Definitions**</span>
+
+<span class="sd">    &#39;Compressibility Drag&#39;</span>
+<span class="sd">        Additional drag caused by compressibility effects as the aircraft approaches and exceeds the critical Mach number.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Critical Mach Number&#39;</span>
+<span class="sd">        The freestream Mach number at which the local flow over some part of the aircraft first reaches sonic velocity.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Drag Rise&#39;</span>
+<span class="sd">        Rapid increase in drag coefficient as the aircraft approaches and exceeds the critical Mach number.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Stanford AA241 Lecture Notes</span>
+<span class="sd">    [2] Shevell, R. S. (1989). &quot;Fundamentals of Flight.&quot; Prentice Hall.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Components.Wings.Main_Wing</span>
+<span class="sd">    RCAIDE.Library.Components.Wings.Blended_Wing_Body</span>
+<span class="sd">    RCAIDE.Library.Methods.Utilities.Cubic_Spline_Blender</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Unpack</span>
-    <span class="n">conditions</span>  <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span>
-    <span class="n">Mach</span>        <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">mach_number</span> 
-    <span class="n">Cl</span>          <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">lift</span><span class="o">.</span><span class="n">total</span>  
-      
-    <span class="c1"># supersonic </span>
-    <span class="n">low_mach_cutoff</span>  <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">supersonic</span><span class="o">.</span><span class="n">begin_drag_rise_mach_number</span>
-    <span class="n">high_mach_cutoff</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">supersonic</span><span class="o">.</span><span class="n">end_drag_rise_mach_number</span>
-    <span class="n">peak_mach</span>        <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">supersonic</span><span class="o">.</span><span class="n">peak_mach_number</span>
-    <span class="n">peak_factor</span>      <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">supersonic</span><span class="o">.</span><span class="n">transonic_drag_multiplier</span>
-    <span class="n">scaling_factor</span>   <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">supersonic</span><span class="o">.</span><span class="n">volume_wave_drag_scaling</span>
+    <span class="n">conditions</span>           <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span>
+    <span class="n">Mach</span>                 <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">mach_number</span>  
+    <span class="n">sup_low_mach_cutoff</span>  <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">supersonic</span><span class="o">.</span><span class="n">begin_drag_rise_mach_number</span> 
+    <span class="n">sup_high_mach_cutoff</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">supersonic</span><span class="o">.</span><span class="n">end_drag_rise_mach_number</span>
+    <span class="n">sub_low_mach_cutoff</span>  <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">subsonic</span><span class="o">.</span><span class="n">begin_transonic_rise_mach_number</span>      
+    <span class="n">sub_high_mach_cutoff</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">subsonic</span><span class="o">.</span><span class="n">end_transonic_rise_rise_mach_number</span>    
     
-    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">supersonic</span><span class="o">.</span><span class="n">wave_drag_type</span> <span class="o">==</span> <span class="s1">&#39;Raymer&#39;</span><span class="p">:</span>
-        <span class="n">wave_drag_volume</span> <span class="o">=</span> <span class="n">supersonic_wave_drag_volume_raymer</span>
-    <span class="k">elif</span> <span class="n">settings</span><span class="o">.</span><span class="n">supersonic</span><span class="o">.</span><span class="n">wave_drag_type</span> <span class="o">==</span> <span class="s1">&#39;Sears-Haack&#39;</span><span class="p">:</span>
-        <span class="n">wave_drag_volume</span> <span class="o">=</span> <span class="n">supersonic_wave_drag_volume_sears_haack</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span>    
-    
-    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">supersonic</span><span class="o">.</span><span class="n">cross_sectional_area_calculation_type</span> <span class="o">!=</span> <span class="s1">&#39;Fixed&#39;</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+    <span class="c1"># functions smoothing </span>
+    <span class="n">sup_spline</span> <span class="o">=</span> <span class="n">Cubic_Spline_Blender</span><span class="p">(</span><span class="n">sup_low_mach_cutoff</span><span class="p">,</span><span class="n">sup_high_mach_cutoff</span><span class="p">)</span> 
+    <span class="n">sup_h00</span>    <span class="o">=</span> <span class="k">lambda</span> <span class="n">M</span><span class="p">:</span><span class="n">sup_spline</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>  
+    <span class="n">sub_spline</span> <span class="o">=</span> <span class="n">Cubic_Spline_Blender</span><span class="p">(</span><span class="n">sub_low_mach_cutoff</span><span class="p">,</span> <span class="n">sub_high_mach_cutoff</span><span class="p">)</span>  
+    <span class="n">sub_h00</span>    <span class="o">=</span> <span class="k">lambda</span> <span class="n">M</span><span class="p">:</span><span class="n">sub_spline</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>   
 
-    <span class="n">low_cutoff_volume_total</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">Mach</span><span class="p">)</span>
-    <span class="n">high_cutoff_volume_total</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">Mach</span><span class="p">)</span>     
-    <span class="n">low_cutoff_volume_total</span>  <span class="o">=</span> <span class="n">drag_divergence</span><span class="p">(</span><span class="n">low_mach_cutoff</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">Mach</span><span class="p">),</span> <span class="n">geometry</span><span class="p">,</span><span class="n">Cl</span><span class="p">)</span> 
-    <span class="n">high_cutoff_volume_total</span> <span class="o">=</span> <span class="n">wave_drag_volume</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span><span class="n">low_mach_cutoff</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">Mach</span><span class="p">),</span><span class="n">scaling_factor</span><span class="p">)</span>
+    <span class="n">subsonic_CDc</span>          <span class="o">=</span> <span class="n">subsonic_compressibility_drag</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">settings</span><span class="p">,</span><span class="n">geometry</span><span class="p">)</span> 
+    <span class="n">transonic_CDw_lift</span>    <span class="o">=</span> <span class="n">transonic_lift_wave_drag</span><span class="p">(</span><span class="n">conditions</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">geometry</span><span class="p">)</span> 
+    <span class="n">supersonic_CDw_volume</span> <span class="o">=</span> <span class="n">supersonic_volume_wave_drag</span><span class="p">(</span><span class="n">conditions</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">geometry</span><span class="p">)</span> 
+    <span class="n">supersonic_CDw_lift</span>   <span class="o">=</span> <span class="n">supersonic_lift_wave_drag</span><span class="p">(</span><span class="n">conditions</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">geometry</span><span class="p">)</span>
     
-    <span class="n">peak_volume_total</span> <span class="o">=</span> <span class="n">high_cutoff_volume_total</span><span class="o">*</span><span class="n">peak_factor</span>
-     
-    <span class="c1"># subsonic side smoothing function</span>
-    <span class="n">a1</span> <span class="o">=</span> <span class="p">(</span><span class="n">low_cutoff_volume_total</span><span class="o">-</span><span class="n">peak_volume_total</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">low_mach_cutoff</span><span class="o">-</span><span class="n">peak_mach</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">low_mach_cutoff</span><span class="o">-</span><span class="n">peak_mach</span><span class="p">)</span>
+    <span class="c1"># Apply smoothing functions</span>
+    <span class="n">sub_CDc</span>          <span class="o">=</span> <span class="n">subsonic_CDc</span> <span class="o">*</span><span class="p">(</span><span class="n">sub_h00</span><span class="p">(</span><span class="n">Mach</span><span class="p">))</span> 
+    <span class="n">trans_CDw_lift</span>   <span class="o">=</span> <span class="n">transonic_CDw_lift</span>  <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">sub_h00</span><span class="p">(</span><span class="n">Mach</span><span class="p">))</span>  
+    <span class="n">sup_CDw_lift</span>     <span class="o">=</span> <span class="n">supersonic_CDw_lift</span>  <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">sup_h00</span><span class="p">(</span><span class="n">Mach</span><span class="p">))</span>
+    <span class="n">sup_CDw_volume</span>   <span class="o">=</span> <span class="n">supersonic_CDw_volume</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">sup_h00</span><span class="p">(</span><span class="n">Mach</span><span class="p">))</span> 
     
-    <span class="c1"># supersonic side smoothing function</span>
-    <span class="n">a2</span> <span class="o">=</span> <span class="p">(</span><span class="n">high_cutoff_volume_total</span><span class="o">-</span><span class="n">peak_volume_total</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">high_mach_cutoff</span><span class="o">-</span><span class="n">peak_mach</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">high_mach_cutoff</span><span class="o">-</span><span class="n">peak_mach</span><span class="p">)</span> 
+    <span class="c1"># compute totals </span>
+    <span class="n">total_CDc</span>        <span class="o">=</span> <span class="n">sup_CDw_lift</span> <span class="o">+</span>  <span class="n">trans_CDw_lift</span>  <span class="o">+</span>  <span class="n">sup_CDw_volume</span>  <span class="o">+</span>  <span class="n">sub_CDc</span>
+    <span class="n">total_CDw</span>        <span class="o">=</span> <span class="n">sup_CDw_lift</span>  <span class="o">+</span> <span class="n">sup_CDw_volume</span>  <span class="o">+</span> <span class="n">trans_CDw_lift</span>   
+    <span class="n">total_CDw_lift</span>   <span class="o">=</span> <span class="n">sup_CDw_lift</span>  <span class="o">+</span> <span class="n">trans_CDw_lift</span>
     
-    <span class="c1"># Shorten cubic Hermite spline</span>
-    <span class="n">sub_spline</span> <span class="o">=</span> <span class="n">Cubic_Spline_Blender</span><span class="p">(</span><span class="n">low_mach_cutoff</span><span class="p">,</span> <span class="n">peak_mach</span><span class="o">-</span><span class="p">(</span><span class="n">peak_mach</span><span class="o">-</span><span class="n">low_mach_cutoff</span><span class="p">)</span><span class="o">*</span><span class="mi">3</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span>
-    <span class="n">sup_spline</span> <span class="o">=</span> <span class="n">Cubic_Spline_Blender</span><span class="p">(</span><span class="n">peak_mach</span><span class="p">,</span><span class="n">high_mach_cutoff</span><span class="p">)</span>
-    <span class="n">sub_h00</span>    <span class="o">=</span> <span class="k">lambda</span> <span class="n">M</span><span class="p">:</span><span class="n">sub_spline</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
-    <span class="n">sup_h00</span>    <span class="o">=</span> <span class="k">lambda</span> <span class="n">M</span><span class="p">:</span><span class="n">sup_spline</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">M</span><span class="p">)</span> 
-    
-    <span class="n">low_inds</span> <span class="o">=</span> <span class="n">Mach</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;</span><span class="n">peak_mach</span>
-    <span class="n">hi_inds</span>  <span class="o">=</span> <span class="n">Mach</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">peak_mach</span>
+    <span class="c1"># store results  </span>
+    <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">compressible</span><span class="o">.</span><span class="n">total</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>           <span class="o">=</span> <span class="n">total_CDc</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>   
+    <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">compressible</span><span class="o">.</span><span class="n">wave</span><span class="o">.</span><span class="n">total</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>      <span class="o">=</span> <span class="n">total_CDw</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>             
+    <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">compressible</span><span class="o">.</span><span class="n">wave</span><span class="o">.</span><span class="n">volume</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>     <span class="o">=</span> <span class="n">sup_CDw_volume</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>                
+    <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">compressible</span><span class="o">.</span><span class="n">wave</span><span class="o">.</span><span class="n">lift</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>       <span class="o">=</span> <span class="n">total_CDw_lift</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>              
 
-    <span class="n">cd_c_v_base</span>                  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">Mach</span><span class="p">)</span> 
-    <span class="n">cd_c_v_base</span><span class="p">[</span><span class="n">low_inds</span><span class="p">]</span>        <span class="o">=</span> <span class="n">drag_divergence</span><span class="p">(</span><span class="n">Mach</span><span class="p">[</span><span class="n">low_inds</span><span class="p">],</span> <span class="n">geometry</span><span class="p">,</span><span class="n">Cl</span><span class="p">[</span><span class="n">low_inds</span><span class="p">])</span> 
-    <span class="n">cd_c_l_base</span>                  <span class="o">=</span> <span class="n">lift_wave_drag</span><span class="p">(</span><span class="n">conditions</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">geometry</span><span class="p">)</span>
-    <span class="n">cd_c_v_base</span><span class="p">[</span><span class="n">Mach</span><span class="o">&gt;=</span><span class="n">peak_mach</span><span class="p">]</span> <span class="o">=</span> <span class="n">wave_drag_volume</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">Mach</span><span class="p">[</span><span class="n">Mach</span><span class="o">&gt;=</span><span class="n">peak_mach</span><span class="p">],</span> <span class="n">scaling_factor</span><span class="p">)</span> 
-    
-    <span class="n">cd_c_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">Mach</span><span class="p">)</span>
-    <span class="n">cd_c_v</span><span class="p">[</span><span class="n">low_inds</span><span class="p">]</span> <span class="o">=</span> <span class="n">cd_c_v_base</span><span class="p">[</span><span class="n">low_inds</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">sub_h00</span><span class="p">(</span><span class="n">Mach</span><span class="p">[</span><span class="n">low_inds</span><span class="p">]))</span> <span class="o">+</span> <span class="n">transonic_drag_function</span><span class="p">(</span><span class="n">Mach</span><span class="p">[</span><span class="n">low_inds</span><span class="p">],</span><span class="n">a1</span><span class="p">[</span><span class="n">low_inds</span><span class="p">],</span> <span class="n">peak_mach</span><span class="p">,</span> <span class="n">peak_volume_total</span><span class="p">[</span><span class="n">low_inds</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">sub_h00</span><span class="p">(</span><span class="n">Mach</span><span class="p">[</span><span class="n">low_inds</span><span class="p">]))</span>
-    <span class="n">cd_c_v</span><span class="p">[</span><span class="n">hi_inds</span><span class="p">]</span>  <span class="o">=</span> <span class="n">transonic_drag_function</span><span class="p">(</span><span class="n">Mach</span><span class="p">[</span><span class="n">hi_inds</span><span class="p">],</span><span class="n">a2</span><span class="p">[</span><span class="n">hi_inds</span><span class="p">],</span> <span class="n">peak_mach</span><span class="p">,</span> <span class="n">peak_volume_total</span><span class="p">[</span><span class="n">hi_inds</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">sup_h00</span><span class="p">(</span><span class="n">Mach</span><span class="p">[</span><span class="n">hi_inds</span><span class="p">]))</span> <span class="o">+</span> <span class="n">cd_c_v_base</span><span class="p">[</span><span class="n">hi_inds</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">sup_h00</span><span class="p">(</span><span class="n">Mach</span><span class="p">[</span><span class="n">hi_inds</span><span class="p">]))</span>
-
-    <span class="k">if</span> <span class="n">peak_mach</span><span class="o">&lt;</span><span class="mf">1.01</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Warning: a peak Mach number of less than 1.01 will cause a small discontinuity in lift wave drag&#39;</span><span class="p">)</span>
-    <span class="n">cd_c_l</span> <span class="o">=</span> <span class="n">cd_c_l_base</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">sup_h00</span><span class="p">(</span><span class="n">Mach</span><span class="p">))</span>
-    
-    <span class="n">cd_c</span> <span class="o">=</span> <span class="n">cd_c_v</span> <span class="o">+</span> <span class="n">cd_c_l</span> 
-    
-    <span class="c1"># Save drag breakdown </span>
-    <span class="n">drag</span> <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">compressible</span><span class="o">.</span><span class="n">total</span>   <span class="o">=</span> <span class="n">cd_c</span>
-        
     <span class="k">return</span>  </div>
 
 
-<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
-<span class="c1">#  transonic_drag_function</span>
-<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
-<div class="viewcode-block" id="transonic_drag_function">
-<a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compressibility_drag.html#RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compressibility_drag.transonic_drag_function">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">transonic_drag_function</span><span class="p">(</span><span class="n">Mach</span><span class="p">,</span><span class="n">a_vertex</span><span class="p">,</span> <span class="n">peak_mach</span><span class="p">,</span> <span class="n">peak_volume_total</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;  parabolic approximation of drag rise in the transonic region</span>
+<div class="viewcode-block" id="subsonic_compressibility_drag">
+<a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compressibility_drag.html#RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compressibility_drag.subsonic_compressibility_drag">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">subsonic_compressibility_drag</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">settings</span><span class="p">,</span><span class="n">geometry</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes compressibility drag coefficient for full aircraft including volume drag effects.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    state : Data</span>
+<span class="sd">        Flight conditions and aerodynamic state containing:</span>
+<span class="sd">            - conditions.freestream.mach_number : float</span>
+<span class="sd">                Freestream Mach number [unitless]</span>
+<span class="sd">            - conditions.aerodynamics.coefficients.lift.total : float</span>
+<span class="sd">                Total lift coefficient [unitless]</span>
+<span class="sd">    settings : dict</span>
+<span class="sd">        Aerodynamic analysis settings containing:</span>
+<span class="sd">            - supersonic.begin_drag_rise_mach_number : float</span>
+<span class="sd">                Mach number at which drag rise begins [unitless]</span>
+<span class="sd">            - supersonic.end_drag_rise_mach_number : float</span>
+<span class="sd">                Mach number at which drag rise ends [unitless]</span>
+<span class="sd">    geometry : Data</span>
+<span class="sd">        Aircraft geometry containing:</span>
+<span class="sd">            - reference_area : float</span>
+<span class="sd">                Reference area for drag coefficient calculation [m²]</span>
+<span class="sd">            - wings : list</span>
+<span class="sd">                List of wing objects containing:</span>
+<span class="sd">                  - sweeps.leading_edge : float</span>
+<span class="sd">                      Leading edge sweep angle [radians]</span>
+<span class="sd">                  - thickness_to_chord : float</span>
+<span class="sd">                      Thickness-to-chord ratio [unitless]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Results are stored in state.conditions.aerodynamics.coefficients.drag.compressible.total</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function calculates the compressibility drag coefficient using empirical correlations</span>
+<span class="sd">    based on wing geometry and flight conditions. The calculation accounts for the critical</span>
+<span class="sd">    Mach number and the drag rise characteristics of swept wings.</span>
 <span class="sd">    </span>
-<span class="sd">    Assumptions:</span>
-<span class="sd">    Basic fit</span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Compressibility effects are primarily due to wing geometry</span>
+<span class="sd">        * Critical Mach number correlation is valid for typical transport aircraft</span>
+<span class="sd">        * Cubic spline blending smooths transition between subsonic and supersonic regimes</span>
+<span class="sd">    </span>
+<span class="sd">    **Theory**</span>
 
-<span class="sd">    Source:</span>
-<span class="sd">    None </span>
+<span class="sd">    The critical Mach number is calculated using a regression fit from AA241:</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    Mach</span>
-<span class="sd">    a_vertex</span>
-<span class="sd">    peak_mach</span>
-<span class="sd">    peak_volume_total</span>
+<span class="sd">    :math:`M_{cc} \\cos(\\Lambda) = 0.922 - 1.154(t/c) - 0.305 C_L + 0.333(t/c)^2 + 0.467(t/c)C_L + 0.087 C_L^2`</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">    transonic_drag</span>
-<span class="sd">    &quot;&quot;&quot;</span> 
-    <span class="n">transonic_drag</span> <span class="o">=</span> <span class="n">a_vertex</span><span class="o">*</span><span class="p">(</span><span class="n">Mach</span><span class="o">-</span><span class="n">peak_mach</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">Mach</span><span class="o">-</span><span class="n">peak_mach</span><span class="p">)</span><span class="o">+</span><span class="n">peak_volume_total</span>
-    <span class="n">transonic_drag</span> <span class="o">=</span> <span class="n">transonic_drag</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">Mach</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">transonic_drag</span></div>
+<span class="sd">    where:</span>
+<span class="sd">      - :math:`M_{cc}` is the critical Mach number</span>
+<span class="sd">      - :math:`\\Lambda` is the leading edge sweep angle [radians]</span>
+<span class="sd">      - :math:`t/c` is the thickness-to-chord ratio corrected for sweep</span>
+<span class="sd">      - :math:`C_L` is the lift coefficient corrected for sweep</span>
 
+<span class="sd">    The corrected thickness-to-chord ratio is:</span>
 
-<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
-<span class="c1"># lift_wave_drag</span>
-<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
-<div class="viewcode-block" id="lift_wave_drag">
-<a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compressibility_drag.html#RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compressibility_drag.lift_wave_drag">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">lift_wave_drag</span><span class="p">(</span><span class="n">conditions</span><span class="p">,</span><span class="n">configuration</span><span class="p">,</span><span class="n">geometry</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determine lift wave drag for supersonic speeds</span>
+<span class="sd">    :math:`(t/c)_{eff} = \\frac{t/c}{\\cos(\\Lambda)}`</span>
 
-<span class="sd">    Assumptions:</span>
-<span class="sd">    Basic fit</span>
+<span class="sd">    The corrected lift coefficient is:</span>
 
-<span class="sd">    Source:</span>
-<span class="sd">    http://aerodesign.stanford.edu/aircraftdesign/aircraftdesign.html (Stanford AA241 A/B Course Notes)</span>
+<span class="sd">    :math:`C_{L,eff} = \\frac{C_L}{\\cos^2(\\Lambda)}`</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    conditions.freestream.mach_number [-]</span>
-<span class="sd">    configuration                     (passed to another function)</span>
-<span class="sd">    wing.areas.reference              [m^2]</span>
-<span class="sd">    Sref_main                         [m^2] Main reference area</span>
+<span class="sd">    The divergence ratio is:</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">    cd_c_l                            [-] Wave drag CD due to lift </span>
-<span class="sd">    &quot;&quot;&quot;</span> 
+<span class="sd">    :math:`M/M_{cc} = \\frac{M}{M_{cc}}`</span>
+
+<span class="sd">    The compressibility drag coefficient follows Shevell&#39;s correlation:</span>
+
+<span class="sd">    :math:`\\Delta C_{D,comp} = 0.0019 \\left(\\frac{M}{M_{cc}}\\right)^{14.641} \\cos^3(\\Lambda)`</span>
+<span class="sd">    </span>
+<span class="sd">    **Definitions**</span>
+
+<span class="sd">    &#39;Compressibility Drag&#39;</span>
+<span class="sd">        Additional drag caused by compressibility effects as the aircraft approaches and exceeds the critical Mach number.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Critical Mach Number&#39;</span>
+<span class="sd">        The freestream Mach number at which the local flow over some part of the aircraft first reaches sonic velocity.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Drag Rise&#39;</span>
+<span class="sd">        Rapid increase in drag coefficient as the aircraft approaches and exceeds the critical Mach number.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Stanford AA241 Lecture Notes</span>
+<span class="sd">    [2] Shevell, R. S. (1989). &quot;Fundamentals of Flight.&quot; Prentice Hall.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Components.Wings.Main_Wing</span>
+<span class="sd">    RCAIDE.Library.Components.Wings.Blended_Wing_Body</span>
+<span class="sd">    RCAIDE.Library.Methods.Utilities.Cubic_Spline_Blender</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Unpack</span>
+    <span class="n">conditions</span>          <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span>
+    <span class="n">Mach</span>                <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">mach_number</span>    
+    <span class="n">cd_compressibility</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">Mach</span><span class="p">)</span>
+    <span class="n">cl</span>                  <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">lift</span><span class="o">.</span><span class="n">total</span>
     <span class="k">for</span> <span class="n">wing</span> <span class="ow">in</span>  <span class="n">geometry</span><span class="o">.</span><span class="n">wings</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wing</span><span class="p">,</span> <span class="n">Main_Wing</span><span class="p">):</span>  
-            <span class="c1"># Unpack Mach number</span>
-            <span class="n">Mach</span>       <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">mach_number</span>
-        
-            <span class="c1"># Initalize cd arrays</span>
-            <span class="n">cd_c_l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">Mach</span><span class="p">)</span> 
-        
-            <span class="c1"># Calculate wing values at all Mach numbers</span>
-            <span class="n">cd_lift_wave</span> <span class="o">=</span> <span class="n">wave_drag</span><span class="p">(</span><span class="n">conditions</span><span class="p">,</span><span class="n">wing</span><span class="p">)</span>
-        
-            <span class="c1"># Pack supersonic results into correct elements</span>
-            <span class="n">cd_c_l</span><span class="p">[</span><span class="n">Mach</span> <span class="o">&gt;=</span> <span class="mf">1.01</span><span class="p">]</span> <span class="o">=</span> <span class="n">cd_lift_wave</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">Mach</span><span class="p">[</span><span class="n">Mach</span> <span class="o">&gt;=</span> <span class="mf">1.01</span><span class="p">]),</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wing</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Main_Wing</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wing</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Blended_Wing_Body</span><span class="p">):</span>
+            <span class="n">sweep_w</span>   <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">leading_edge</span> 
+    
+            <span class="c1"># Get effective CLift_wings and sweep</span>
+            <span class="n">tc</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">thickness_to_chord</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">sweep_w</span><span class="p">)</span>
+            <span class="n">cl</span> <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">lift</span><span class="o">.</span><span class="n">total</span><span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">sweep_w</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    
+            <span class="c1"># Compressibility drag based on regressed fits from AA241 </span>
+            <span class="n">mcc_cos_ws</span> <span class="o">=</span> <span class="mf">0.922321524499352</span>  <span class="o">-</span> <span class="mf">1.153885166170620</span><span class="o">*</span><span class="n">tc</span>  <span class="o">-</span> <span class="mf">0.304541067183461</span><span class="o">*</span><span class="n">cl</span>    \
+                           <span class="o">+</span> <span class="mf">0.332881324404729</span><span class="o">*</span><span class="n">tc</span><span class="o">*</span><span class="n">tc</span>  <span class="o">+</span> <span class="mf">0.467317361111105</span><span class="o">*</span><span class="n">tc</span><span class="o">*</span><span class="n">cl</span>   <span class="o">+</span> <span class="mf">0.087490431201549</span><span class="o">*</span><span class="n">cl</span><span class="o">*</span><span class="n">cl</span>
+    
+            <span class="c1"># Crest-critical Mach number, corrected for wing sweep</span>
+            <span class="n">Mcc</span> <span class="o">=</span> <span class="n">mcc_cos_ws</span><span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">sweep_w</span><span class="p">)</span>      
+    
+            <span class="c1"># Divergence ratio</span>
+            <span class="n">mo_Mach</span> <span class="o">=</span> <span class="n">Mach</span><span class="o">/</span><span class="n">Mcc</span>
+    
+            <span class="c1"># Compressibility correlation, Shevell</span>
+            <span class="n">dcdc_cos3g</span> <span class="o">=</span> <span class="mf">0.0019</span><span class="o">*</span><span class="n">mo_Mach</span><span class="o">**</span><span class="mf">14.641</span>
+    
+            <span class="c1"># Compressibility drag  </span>
+            <span class="n">cd_compressibility</span> <span class="o">=</span> <span class="n">dcdc_cos3g</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">sweep_w</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>  
+ 
+    <span class="n">cd_comp</span>  <span class="o">=</span> <span class="n">cd_compressibility</span> 
 
-    <span class="k">return</span> <span class="n">cd_c_l</span></div>
+    <span class="k">return</span>  <span class="n">cd_comp</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
+<span class="c1">#  transonic_wave_drag</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="transonic_lift_wave_drag">
+<a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compressibility_drag.html#RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compressibility_drag.transonic_lift_wave_drag">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">transonic_lift_wave_drag</span><span class="p">(</span><span class="n">conditions</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">geometry</span><span class="p">):</span> 
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes transonic lift wave drag coefficient using empirical correlations.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    conditions : Data</span>
+<span class="sd">        Flight conditions containing:</span>
+<span class="sd">            - freestream.mach_number : float</span>
+<span class="sd">                Freestream Mach number [unitless]</span>
+<span class="sd">            - aerodynamics.coefficients.lift.total : float</span>
+<span class="sd">                Total lift coefficient [unitless]</span>
+<span class="sd">            - aerodynamics.coefficients.lift.spanwise : float, optional</span>
+<span class="sd">                Spanwise lift distribution [unitless]</span>
+<span class="sd">    settings : dict</span>
+<span class="sd">        Analysis settings containing:</span>
+<span class="sd">            - use_surrogate : bool</span>
+<span class="sd">                Flag to use surrogate model</span>
+<span class="sd">            - vortex_distribution : Data, optional</span>
+<span class="sd">                Vortex distribution data containing:</span>
+<span class="sd">                - chord_lengths : array</span>
+<span class="sd">                    Chord lengths at spanwise stations [m]</span>
+<span class="sd">                - leading_edge_sweeps : array</span>
+<span class="sd">                    Leading edge sweep angles [radians]</span>
+<span class="sd">                - chord_widths : array</span>
+<span class="sd">                    Chord widths at spanwise stations [m]</span>
+<span class="sd">    geometry : Data</span>
+<span class="sd">        Aircraft geometry containing:</span>
+<span class="sd">            - reference_area : float</span>
+<span class="sd">                Reference area [m²]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    CD_wave_transonic : float</span>
+<span class="sd">        Transonic lift wave drag coefficient [unitless]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function calculates the transonic lift wave drag using either a surrogate</span>
+<span class="sd">    model or detailed spanwise analysis based on shock wave formation from Lock (1986). A generic</span>
+<span class="sd">    airfoil (RAE 5225) is assumed for the Cp data.</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Surrogate model is valid for Mach 0.7-0.95 range</span>
+<span class="sd">        * Shock wave formation depends on local pressure coefficient</span>
+<span class="sd">        * Normalized curvature factor is constant (0.23)</span>
+<span class="sd">        * Spanwise analysis accounts for sweep effects</span>
+<span class="sd">    </span>
+<span class="sd">    **Theory**</span>
+
+<span class="sd">    For surrogate model:</span>
+<span class="sd">    :math:`C_{D,wave} = f(C_L) \\cdot (12.5M - 8.75)`</span>
+
+<span class="sd">    For detailed analysis:</span>
+<span class="sd">    :math:`C_{D,wave} = \\sum_{i=1}^{n} C_{D,wave,i} \\cdot \\frac{S_i}{S_{ref}}`</span>
+
+<span class="sd">    where each segment&#39;s wave drag is:</span>
+<span class="sd">    :math:`C_{D,wave,i} = \\frac{\\cos^4(\\Lambda)}{\\kappa} \\cdot 0.243 \\cdot \\left(\\frac{1+0.2M\\cos(\\Lambda)}{M\\cos(\\Lambda)}\\right)^3 \\cdot (M_1^* - 1)^4 \\cdot \\frac{2-M_1^*}{M_1^*(1+0.2M_1^{*2})} \\cdot 0.5`</span>
+
+<span class="sd">    The local Mach number before shock is:</span>
+<span class="sd">    :math:`M_1^* = \\sqrt{\\frac{5+M^2\\cos^2(\\Lambda)}{(1+0.7M^2C_p)^{2/7}} - 5}`</span>
+<span class="sd">    </span>
+<span class="sd">    **Definitions**</span>
+
+<span class="sd">    &#39;Transonic Wave Drag&#39;</span>
+<span class="sd">        Wave drag occurring in the transonic regime (M ≈ 0.7-0.95).</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Shock Wave&#39;</span>
+<span class="sd">        Discontinuity in flow properties caused by compressibility effects.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Pressure Coefficient&#39;</span>
+<span class="sd">        Dimensionless pressure difference normalized by dynamic pressure.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Lock, R. C. (1986). &quot;The Prediction of the Drag of Aerofoils and Wings at High Subsonic Speeds.&quot; Aeronautical Journal.</span>
+<span class="sd">    [2] Harris, C. D. (1990). &quot;NASA Supercritical Airfoils.&quot; NASA TP 2969.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Mach</span>              <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">mach_number</span>  
+    <span class="n">S_ref</span>             <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">reference_area</span> 
+    <span class="n">CD_wave_transonic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">Mach</span><span class="p">)</span> 
+    <span class="n">CL_y</span>              <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">lift</span><span class="o">.</span><span class="n">spanwise</span> <span class="o">*</span><span class="n">geometry</span><span class="o">.</span><span class="n">wings</span><span class="o">.</span><span class="n">main_wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">projected</span><span class="o">/</span><span class="n">S_ref</span>
+
+    <span class="n">chords</span>   <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">vortex_distribution</span><span class="o">.</span><span class="n">chord_lengths</span>
+    <span class="n">delta</span>    <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">vortex_distribution</span><span class="o">.</span><span class="n">leading_edge_sweeps</span> 
+    <span class="n">dy</span>       <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">vortex_distribution</span><span class="o">.</span><span class="n">chord_widths</span>
+    
+    <span class="n">CD_wave_transonic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">Mach</span><span class="p">)</span>
+    <span class="n">c_kappa</span>           <span class="o">=</span> <span class="mf">0.23</span> <span class="c1"># normalized curvature of the airfoil. This can eventually be calcualted using airfoil shape data. </span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Cp Data (as function of CL) from &quot;The Prediciton of the Drag of Aerofoils and Wings at High Subsonic Speeds&quot; by R.C. Lock, 1986, Aeronautical journal and NASA TP 2969, NASA Supercritical Airfoils by Charles D. Harris</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+                
+    <span class="n">Cp_shock</span> <span class="o">=</span>  <span class="mf">0.9825</span> <span class="o">*</span><span class="p">(</span><span class="n">CL_y</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>  <span class="o">-</span> <span class="mf">2.5132</span> <span class="o">*</span><span class="p">(</span><span class="n">CL_y</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.0279</span> <span class="c1"># Cp vlaue right before the shock wave </span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Wave Drag Calculation</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="c1"># Calculate the local mach number right before the shock wave</span>
+    <span class="n">M1_0_star</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="mi">5</span><span class="o">+</span><span class="n">Mach</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">delta</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="mf">0.7</span><span class="o">*</span><span class="n">Mach</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">Cp_shock</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mi">7</span><span class="p">)</span> <span class="o">-</span> <span class="mi">5</span><span class="p">)</span>
+    
+    <span class="c1"># Calculate the wave drag coefficient</span>
+    <span class="n">constant</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">delta</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span><span class="o">/</span><span class="n">c_kappa</span> <span class="o">*</span> <span class="mf">0.243</span><span class="o">*</span><span class="p">((</span><span class="mi">1</span><span class="o">+</span><span class="mf">0.2</span><span class="o">*</span><span class="n">Mach</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">delta</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span><span class="o">/</span><span class="p">(</span><span class="n">Mach</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">delta</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span><span class="o">**</span><span class="mi">3</span> <span class="c1"># note, delta is assumed to remain constant across all conditions. </span>
+    <span class="n">CD_wave_segment</span> <span class="o">=</span> <span class="n">constant</span><span class="o">*</span><span class="p">(</span><span class="n">M1_0_star</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="mi">2</span><span class="o">-</span><span class="n">M1_0_star</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">M1_0_star</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="mf">0.2</span><span class="o">*</span><span class="n">M1_0_star</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="mf">0.5</span>
+    
+    <span class="c1"># Set the wave drag coefficient to 0 if there is no shock wave</span>
+    <span class="n">CD_wave_segment</span><span class="p">[</span><span class="n">Cp_shock</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mf">0.6</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="c1"># If the Cp &gt; -0.6 then there is likely no shock wave</span>
+
+    <span class="n">S_segment</span>        <span class="o">=</span> <span class="n">chords</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">dy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">CD_wave_transonic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">CD_wave_segment</span><span class="o">*</span><span class="n">S_segment</span><span class="o">/</span><span class="n">S_ref</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> 
+        
+    <span class="n">CD_wave_transonic</span><span class="p">[</span><span class="n">Mach</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">return</span> <span class="n">CD_wave_transonic</span> </div>
+
+ 
+<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
+<span class="c1"># supersonic_lift_wave_drag</span>
+<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
+<div class="viewcode-block" id="supersonic_lift_wave_drag">
+<a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compressibility_drag.html#RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compressibility_drag.supersonic_lift_wave_drag">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">supersonic_lift_wave_drag</span><span class="p">(</span><span class="n">conditions</span><span class="p">,</span><span class="n">configuration</span><span class="p">,</span><span class="n">geometry</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes supersonic lift wave drag coefficient using JAXA methodology.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    conditions : Data</span>
+<span class="sd">        Flight conditions containing:</span>
+<span class="sd">            - freestream.mach_number : float</span>
+<span class="sd">                Freestream Mach number [unitless]</span>
+<span class="sd">            - aerodynamics.coefficients.lift.total : float</span>
+<span class="sd">                Total lift coefficient [unitless]</span>
+<span class="sd">    configuration : dict</span>
+<span class="sd">        Aircraft configuration settings</span>
+<span class="sd">    geometry : Data</span>
+<span class="sd">        Aircraft geometry containing:</span>
+<span class="sd">            - wings : list</span>
+<span class="sd">                List of wing objects containing:</span>
+<span class="sd">                    - chords.root : float</span>
+<span class="sd">                        Root chord length [m]</span>
+<span class="sd">                    - spans.projected : float</span>
+<span class="sd">                        Projected span [m]</span>
+<span class="sd">                    - aspect_ratio : float</span>
+<span class="sd">                        Aspect ratio [unitless]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    cd_lift_wave : float</span>
+<span class="sd">        Supersonic lift wave drag coefficient [unitless]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function calculates the supersonic lift wave drag using the JAXA methodology</span>
+<span class="sd">    based on wing geometry and lift coefficient.</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * JAXA methodology is valid for supersonic speeds</span>
+<span class="sd">        * Only main wing contributes to lift wave drag</span>
+<span class="sd">        * Wing geometry parameters are sufficient for calculation</span>
+<span class="sd">        * Empirical correlation is valid for typical supersonic aircraft</span>
+<span class="sd">    </span>
+<span class="sd">    **Theory**</span>
+
+<span class="sd">    The supersonic lift wave drag coefficient is:</span>
+
+<span class="sd">    :math:`C_{D,wave,lift} = C_L^2 \\cdot \\frac{\\beta^2}{\\pi} \\cdot p \\cdot \\frac{s}{l} \\cdot K_w`</span>
+
+<span class="sd">    where:</span>
+<span class="sd">        - :math:`\\beta = \\sqrt{M^2-1}` is the Prandtl-Glauert factor</span>
+<span class="sd">        - :math:`p = \\frac{2}{AR} \\cdot \\frac{s}{l}` is the wing parameter</span>
+<span class="sd">        - :math:`x = \\beta \\cdot \\frac{s}{l}` is the normalized span parameter</span>
+<span class="sd">        - :math:`K_w` is the wave drag factor calculated from empirical correlation</span>
+<span class="sd">    </span>
+<span class="sd">    **Definitions**</span>
+
+<span class="sd">    &#39;Supersonic Wave Drag&#39;</span>
+<span class="sd">        Wave drag occurring at supersonic speeds (M &gt; 1.0).</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;JAXA Methodology&#39;</span>
+<span class="sd">        Empirical method for calculating supersonic wave drag developed by JAXA.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Prandtl-Glauert Factor&#39;</span>
+<span class="sd">        Compressibility correction factor for supersonic flow.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Yoshida, K. &quot;Supersonic drag reduction technology in the scaled supersonic experimental airplane project by JAXA.&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Initalize cd arrays </span>
+    <span class="n">Mach</span>         <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">mach_number</span>
+    <span class="n">cd_lift_wave</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">Mach</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">wing</span> <span class="ow">in</span>  <span class="n">geometry</span><span class="o">.</span><span class="n">wings</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wing</span><span class="p">,</span> <span class="n">Main_Wing</span><span class="p">):</span>   
+            <span class="c1"># Lift coefficient  </span>
+            <span class="n">CL</span> <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">lift</span><span class="o">.</span><span class="n">total</span> 
+            <span class="n">l</span>  <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span>  
+        
+            <span class="c1"># JAXA method</span>
+            <span class="n">s</span>    <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">AR</span>   <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">aspect_ratio</span>
+            <span class="n">p</span>    <span class="o">=</span> <span class="mi">2</span><span class="o">/</span><span class="n">AR</span><span class="o">*</span><span class="n">s</span><span class="o">/</span><span class="n">l</span>
+            <span class="n">beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">Mach</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> 
+            <span class="n">x</span>    <span class="o">=</span>  <span class="n">beta</span><span class="o">*</span><span class="n">s</span><span class="o">/</span><span class="n">l</span>
+        
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> 
+            <span class="n">ret</span><span class="p">[</span><span class="n">x</span> <span class="o">&gt;</span> <span class="mf">0.178</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.4935</span> <span class="o">-</span> <span class="mf">0.2382</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="n">x</span> <span class="o">&gt;</span> <span class="mf">0.178</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1.6306</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="n">x</span> <span class="o">&gt;</span> <span class="mf">0.178</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mf">0.86</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="n">x</span> <span class="o">&gt;</span> <span class="mf">0.178</span><span class="p">]</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="mf">0.2232</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="n">x</span> <span class="o">&gt;</span> <span class="mf">0.178</span><span class="p">]</span><span class="o">**</span><span class="mi">4</span> <span class="o">-</span> <span class="mf">0.0365</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="n">x</span> <span class="o">&gt;</span> <span class="mf">0.178</span><span class="p">]</span><span class="o">**</span><span class="mi">5</span> <span class="o">-</span> <span class="mf">0.5</span>            
+            
+            <span class="n">Kw</span>           <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="mi">1</span><span class="o">/</span><span class="n">p</span><span class="p">)</span><span class="o">*</span><span class="n">ret</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">beta</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">s</span><span class="o">/</span><span class="n">l</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> 
+            <span class="n">cd_lift_wave</span> <span class="o">=</span> <span class="n">CL</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">beta</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">p</span><span class="o">*</span><span class="p">(</span><span class="n">s</span><span class="o">/</span><span class="n">l</span><span class="p">)</span><span class="o">*</span><span class="n">Kw</span><span class="p">)</span> 
+    
+    <span class="n">cd_lift_wave</span><span class="p">[</span><span class="n">cd_lift_wave</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
+    <span class="n">cd_lift_wave</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">cd_lift_wave</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">0.</span>  
+    <span class="k">return</span> <span class="n">cd_lift_wave</span></div>
+
+
+<div class="viewcode-block" id="supersonic_volume_wave_drag">
+<a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compressibility_drag.html#RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compressibility_drag.supersonic_volume_wave_drag">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">supersonic_volume_wave_drag</span><span class="p">(</span><span class="n">conditions</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes supersonic volume wave drag coefficient based on aircraft geometry.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    conditions : Data</span>
+<span class="sd">        Flight conditions (not used in calculation)</span>
+<span class="sd">    settings : dict</span>
+<span class="sd">        Analysis settings (not used in calculation)</span>
+<span class="sd">    vehicle : Data</span>
+<span class="sd">        Aircraft geometry containing:</span>
+<span class="sd">            - reference_area : float</span>
+<span class="sd">                Reference area for drag coefficient [m²]</span>
+<span class="sd">            - length : float</span>
+<span class="sd">                Total aircraft length [m]</span>
+<span class="sd">            - maximum_cross_sectional_area : float</span>
+<span class="sd">                Maximum cross-sectional area [m²]</span>
+<span class="sd">            - fuselages : list</span>
+<span class="sd">                List of fuselage objects containing:</span>
+<span class="sd">                    - width : float</span>
+<span class="sd">                        Width of the fuselage [m]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    CD_wave_vol : float</span>
+<span class="sd">        Supersonic volume wave drag coefficient [unitless]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function calculates the supersonic volume wave drag based on aircraft</span>
+<span class="sd">    geometry using empirical correlations from Wright Laboratory procedures.</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Volume wave drag is independent of Mach number</span>
+<span class="sd">        * Aircraft volume can be approximated by cylindrical geometry</span>
+<span class="sd">        * Maximum fuselage width represents the characteristic dimension</span>
+<span class="sd">        * Empirical correlation is valid for typical supersonic aircraft</span>
+<span class="sd">    </span>
+<span class="sd">    **Theory**</span>
+
+<span class="sd">    The volume wave drag coefficient is:</span>
+
+<span class="sd">    :math:`C_{D,wave,volume} = C_{D,wave,volume,frontal} \\cdot \\frac{A_{max}}{S_{ref}}`</span>
+
+<span class="sd">    where the frontal area wave drag is:</span>
+<span class="sd">    :math:`C_{D,wave,volume,frontal} = 24 \\cdot \\frac{V}{L^3}`</span>
+
+<span class="sd">    The aircraft volume is approximated as:</span>
+<span class="sd">    :math:`V = \\frac{3}{16} \\pi^2 R_{max}^2 L`</span>
+
+<span class="sd">    where:</span>
+<span class="sd">        - :math:`R_{max}` is the maximum fuselage radius</span>
+<span class="sd">        - :math:`L` is the total aircraft length</span>
+<span class="sd">        - :math:`A_{max}` is the maximum cross-sectional area</span>
+<span class="sd">        - :math:`S_{ref}` is the reference area</span>
+<span class="sd">    </span>
+<span class="sd">    **Definitions**</span>
+
+<span class="sd">    &#39;Volume Wave Drag&#39;</span>
+<span class="sd">        Wave drag caused by aircraft volume in supersonic flow.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Frontal Area Wave Drag&#39;</span>
+<span class="sd">        Volume wave drag normalized by frontal area.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Characteristic Length&#39;</span>
+<span class="sd">        Representative length scale for volume wave drag calculation.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Sieron, T. R., et al. (1993). &quot;Procedures and design data for the formulation of aircraft configurations.&quot; WRIGHT LAB WRIGHT-PATTERSON AFB OH.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+   
+    <span class="n">S_ref</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">reference_area</span>
+    <span class="n">L</span>     <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">length</span>
+    <span class="n">Amax</span>  <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">maximum_cross_sectional_area</span>
+     
+    <span class="c1"># compute volume drag referenced to frontal area</span>
+    <span class="n">Rmax</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">fuselage</span> <span class="ow">in</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">fuselages</span><span class="p">:</span>
+        <span class="n">Rmax</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">Rmax</span><span class="p">,</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">width</span><span class="p">)</span>
+    <span class="n">volume</span>      <span class="o">=</span>  <span class="p">(</span><span class="mi">3</span> <span class="o">/</span> <span class="mi">16</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">Rmax</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>  <span class="o">*</span>  <span class="n">L</span> 
+    <span class="n">CD_wave_vol_frontal</span> <span class="o">=</span> <span class="mi">24</span> <span class="o">*</span><span class="n">volume</span> <span class="o">/</span><span class="p">(</span><span class="n">L</span> <span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+    
+    <span class="n">CD_wave_vol</span> <span class="o">=</span>  <span class="n">CD_wave_vol_frontal</span> <span class="o">*</span> <span class="p">(</span> <span class="n">Amax</span> <span class="o">/</span> <span class="n">S_ref</span><span class="p">)</span> <span class="o">*</span>  <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">mach_number</span><span class="p">)</span> 
+    <span class="k">return</span> <span class="n">CD_wave_vol</span></div>
+
+ 
 
 
 </pre></div>
@@ -593,8 +1027,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -614,7 +1048,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -628,7 +1062,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

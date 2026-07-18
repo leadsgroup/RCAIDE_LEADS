@@ -39,7 +39,9 @@ Converters
    Fan
    Fuel_Cells
    Generator
+   Liquid_Hydrogen_Fuel_Cell_Pump
    Motor
+   Pump
    Ram
    Reformer
    Rotor

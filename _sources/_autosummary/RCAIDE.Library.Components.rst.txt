@@ -32,15 +32,15 @@ Components
 
    Airfoils
    Booms
+   Cargo_Bays
    Component
    Configs
    Fuselages
    Landing_Gear
    Mass_Properties
    Nacelles
-   Network
-   Payloads
    Powertrain
    Thermal_Management
+   Volume_Properties
    Wings
 

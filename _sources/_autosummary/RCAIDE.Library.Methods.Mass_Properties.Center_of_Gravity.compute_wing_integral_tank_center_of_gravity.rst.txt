@@ -1,0 +1,32 @@
+RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_wing_integral_tank_center_of_gravity
+
+compute\_wing\_integral\_tank\_center\_of\_gravity
+==================================================
+
+.. automodule:: RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_wing_integral_tank_center_of_gravity
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      compute_wing_integral_tank_center_of_gravity
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

@@ -1,0 +1,6 @@
+RCAIDE.Library.Methods.Aeroacoustics.Semi\_Empirical.Turbofan.mixed\_noise\_component.mixed\_noise\_component
+=============================================================================================================
+
+.. currentmodule:: RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Turbofan.mixed_noise_component
+
+.. autofunction:: mixed_noise_component

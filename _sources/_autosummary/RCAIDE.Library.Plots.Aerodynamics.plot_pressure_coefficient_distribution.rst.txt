@@ -1,0 +1,25 @@
+RCAIDE.Library.Plots.Aerodynamics.plot_pressure_coefficient_distribution
+
+plot\_pressure\_coefficient\_distribution
+=========================================
+
+.. automodule:: RCAIDE.Library.Plots.Aerodynamics.plot_pressure_coefficient_distribution
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

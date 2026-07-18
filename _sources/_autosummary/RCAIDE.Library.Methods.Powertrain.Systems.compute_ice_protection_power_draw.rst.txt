@@ -1,0 +1,25 @@
+RCAIDE.Library.Methods.Powertrain.Systems.compute_ice_protection_power_draw
+
+compute\_ice\_protection\_power\_draw
+=====================================
+
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Systems.compute_ice_protection_power_draw
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

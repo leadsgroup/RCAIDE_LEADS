@@ -34,11 +34,11 @@ Vortex\_Lattice\_Method
    build_VLM_surrogates
    compute_RHS_matrix
    compute_wing_induced_velocity
-   deflect_control_surface
    evaluate_VLM
    extract_wing_collocation_points
-   generate_VD_helpers
+   generate_fuseform_vortex_distribution
    generate_vortex_distribution
-   make_VLM_wings
+   generate_wing_vortex_distribution
+   postprocess_vortex_distribution
    train_VLM_surrogates
 

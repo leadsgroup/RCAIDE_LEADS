@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Plots/Geometry/plot_layout_of_passenger_accommodations';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Plots/Geometry/plot_layout_of_passenger_accommodations.html" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script src="../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -378,238 +397,163 @@
                   
   <h1>Source code for RCAIDE.Library.Plots.Geometry.plot_layout_of_passenger_accommodations</h1><div class="highlight"><pre>
 <span></span><span class="c1"># RCAIDE/Library/Plots/Geometry/plot_Layout_of_Passenger_Accommodations.py</span>
-<span class="c1">#  </span>
-<span class="c1"># Created:  Mar 2025, M. Clarke </span>
+<span class="c1">#</span>
+<span class="c1"># Created:  Mar 2025, M. Clarke</span>
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  IMPORT</span>
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
-<span class="c1"># RCAIDE imports </span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Geometry.LOPA.compute_layout_of_passenger_accommodations</span><span class="w"> </span><span class="kn">import</span>  <span class="n">compute_layout_of_passenger_accommodations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Geometry.LOPA.compute_layout_of_passenger_accommodations</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_layout_of_passenger_accommodations</span>
 
-<span class="c1"># python imports </span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">plotly.graph_objects</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">go</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w">  </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  plot_Layout_of_Passenger_Accommodations</span>
-<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <div class="viewcode-block" id="plot_layout_of_passenger_accommodations">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Plots.Geometry.plot_layout_of_passenger_accommodations.html#RCAIDE.Library.Plots.Geometry.plot_layout_of_passenger_accommodations.plot_layout_of_passenger_accommodations">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">plot_layout_of_passenger_accommodations</span><span class="p">(</span><span class="n">fuselage</span><span class="p">,</span> 
-                                            <span class="n">save_figure</span>    <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                                            <span class="n">save_filename</span>  <span class="o">=</span> <span class="s2">&quot;Vehicle_Geometry&quot;</span><span class="p">,</span> 
-                                            <span class="n">show_figure</span>    <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Plot aircraft layout of passenger accommodations</span>
-<span class="sd">    &#39;&#39;&#39;</span>  
-    <span class="k">if</span>  <span class="nb">type</span><span class="p">(</span><span class="n">fuselage</span><span class="o">.</span><span class="n">layout_of_passenger_accommodations</span><span class="p">)</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span> 
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_layout_of_passenger_accommodations</span><span class="p">(</span><span class="n">fuselage</span><span class="p">,</span>
+                                            <span class="n">save_figure</span>   <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                                            <span class="n">show_axes</span>     <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                                            <span class="n">fontsize</span>      <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+                                            <span class="n">save_filename</span> <span class="o">=</span> <span class="s2">&quot;Aircraft_LOPA&quot;</span><span class="p">,</span>
+                                            <span class="n">show_figure</span>   <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Plot aircraft layout of passenger accommodations.&#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">fuselage</span><span class="o">.</span><span class="n">layout_of_passenger_accommodations</span><span class="p">)</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="n">compute_layout_of_passenger_accommodations</span><span class="p">(</span><span class="n">fuselage</span><span class="p">)</span>
-        
-    <span class="n">LOPA</span> <span class="o">=</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">layout_of_passenger_accommodations</span>
-    
-    <span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">()</span> 
-    <span class="c1"># Set axes properties</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">update_xaxes</span><span class="p">(</span><span class="nb">range</span><span class="o">=</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[:,</span><span class="mi">2</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[:,</span><span class="mi">2</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">showgrid</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span><span class="nb">range</span><span class="o">=</span><span class="p">[</span> <span class="nb">min</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[:,</span><span class="mi">3</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[:,</span><span class="mi">3</span><span class="p">])</span>  <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">showgrid</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  
-    <span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span>
-        <span class="n">scaleanchor</span> <span class="o">=</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span>
-        <span class="n">scaleratio</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,)</span>    
-        
-    <span class="c1"># Step 1: plot cabin bounds  </span>
-    <span class="c1"># get points at x min </span>
-    <span class="n">x_min_locs</span>   <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span> <span class="n">LOPA</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="nb">min</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]))[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">x_min</span>        <span class="o">=</span>  <span class="n">LOPA</span><span class="p">[</span><span class="n">x_min_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span>  <span class="n">LOPA</span><span class="p">[</span><span class="n">x_min_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">5</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
-    <span class="n">x_min_y_max</span>  <span class="o">=</span>  <span class="nb">max</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">x_min_locs</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">x_min_locs</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span> <span class="p">)</span>
-    <span class="n">x_min_y_min</span>  <span class="o">=</span>  <span class="nb">min</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">x_min_locs</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">x_min_locs</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span> <span class="p">)</span> 
-    <span class="n">x_border_pts</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_min</span><span class="p">]</span> 
-    <span class="n">y_border_pts</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_min_y_min</span><span class="p">,</span> <span class="n">x_min_y_max</span><span class="p">]</span> 
 
-    <span class="c1"># get points at y max </span>
-    <span class="n">y_max_locs</span>   <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span> <span class="n">LOPA</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="nb">max</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]))[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">y_max</span>        <span class="o">=</span>  <span class="n">LOPA</span><span class="p">[</span><span class="n">y_max_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">y_max_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">6</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span> 
-    <span class="n">y_max_x_max</span>  <span class="o">=</span>  <span class="nb">max</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">y_max_locs</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">y_max_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">5</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">y_max_x_min</span>  <span class="o">=</span>  <span class="nb">min</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">y_max_locs</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">y_max_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">5</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> 
-    <span class="n">x_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_max_x_min</span><span class="p">)</span>
-    <span class="n">x_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_max_x_max</span><span class="p">)</span>
-    <span class="n">y_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_max</span><span class="p">)</span>
-    <span class="n">y_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_max</span><span class="p">)</span> 
+    <span class="n">LOPA</span> <span class="o">=</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">layout_of_passenger_accommodations</span><span class="o">.</span><span class="n">object_coordinates</span>
 
-    <span class="c1"># get points at x max </span>
-    <span class="n">x_max_locs</span>   <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span> <span class="n">LOPA</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="nb">max</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]))[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">x_max</span>        <span class="o">=</span>  <span class="n">LOPA</span><span class="p">[</span><span class="n">x_max_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">x_max_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">5</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
-    <span class="n">x_max_y_max</span>  <span class="o">=</span>  <span class="nb">max</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">x_max_locs</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">x_max_locs</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">x_max_y_min</span>  <span class="o">=</span>  <span class="nb">min</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">x_max_locs</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">x_max_locs</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>  
-    <span class="n">x_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x_max</span><span class="p">)</span>
-    <span class="n">x_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x_max</span><span class="p">)</span>
-    <span class="n">y_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x_max_y_max</span><span class="p">)</span>
-    <span class="n">y_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x_max_y_min</span><span class="p">)</span>
-    
-    <span class="c1"># get points at y min  </span>
-    <span class="n">y_min_locs</span>   <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span> <span class="n">LOPA</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="nb">min</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]))[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">y_min</span>        <span class="o">=</span>  <span class="n">LOPA</span><span class="p">[</span><span class="n">y_min_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">y_min_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">6</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span> 
-    <span class="n">y_min_x_max</span>  <span class="o">=</span>  <span class="nb">max</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">y_min_locs</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">y_min_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">5</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">y_min_x_min</span>  <span class="o">=</span>  <span class="nb">min</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">y_min_locs</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">y_min_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">5</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">x_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_min_x_max</span><span class="p">)</span>  
-    <span class="n">x_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_min_x_min</span><span class="p">)</span>
-    <span class="n">y_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_min</span><span class="p">)</span>
-    <span class="n">y_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_min</span><span class="p">)</span>    
-    
-    <span class="c1"># loop through points and determine if there are duplicates</span>
-    <span class="n">y_border_pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_border_pts</span><span class="p">)</span>
-    <span class="n">x_border_pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_border_pts</span><span class="p">)</span>
-    <span class="c1"># cut where y is negative</span>
-    <span class="n">port_idxs</span>  <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">y_border_pts</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">starboard_x_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">x_border_pts</span><span class="p">,</span> <span class="n">port_idxs</span><span class="p">)</span> 
-    <span class="n">starboard_y_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">y_border_pts</span><span class="p">,</span> <span class="n">port_idxs</span><span class="p">)</span>
-     
-    <span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span><span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
-        <span class="n">x</span><span class="o">=</span><span class="n">starboard_x_points</span><span class="p">,</span> 
-        <span class="n">y</span><span class="o">=</span><span class="n">starboard_y_points</span><span class="p">,</span> 
-        <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;lines&#39;</span><span class="p">,</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Line 1&#39;</span><span class="p">,</span>
-        <span class="n">line_color</span><span class="o">=</span><span class="s2">&quot;darkblue&quot;</span><span class="p">,</span> 
-        <span class="n">fill</span><span class="o">=</span><span class="kc">None</span> 
-    <span class="p">))</span>
-    
-    <span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span><span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
-        <span class="n">x</span><span class="o">=</span><span class="n">starboard_x_points</span><span class="p">,</span> 
-        <span class="n">y</span><span class="o">=-</span><span class="n">starboard_y_points</span><span class="p">,</span> 
-        <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;lines&#39;</span><span class="p">,</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Line 2&#39;</span><span class="p">,</span>
-        <span class="n">line_color</span><span class="o">=</span><span class="s2">&quot;darkblue&quot;</span><span class="p">,</span> 
-        <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;tonexty&#39;</span>
-    <span class="p">))</span>
-    
-     
-    <span class="c1"># Step 2: plot seats</span>
-    <span class="n">economoy_seat_colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;steelblue&quot;</span><span class="p">,</span> <span class="s2">&quot;deepskyblue&quot;</span><span class="p">,</span> <span class="s2">&quot;skyblue&quot;</span> <span class="p">]</span>
-    <span class="n">business_seat_colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;seagreen&quot;</span><span class="p">,</span> <span class="s2">&quot;mediumseagreen&quot;</span><span class="p">,</span> <span class="s2">&quot;lightseagreen&quot;</span> <span class="p">]</span>
-    <span class="n">first_seat_colors</span>    <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;indianred&quot;</span><span class="p">,</span> <span class="s2">&quot;lightcoral&quot;</span><span class="p">,</span> <span class="s2">&quot;lightpink&quot;</span> <span class="p">]</span>
-    <span class="n">lavatory_color</span>       <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sandybrown&quot;</span><span class="p">]</span>
-   
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">LOPA</span><span class="p">)):</span>
-        <span class="n">x_center</span>     <span class="o">=</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
-        <span class="n">y_center</span>     <span class="o">=</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> 
-        <span class="n">s_l</span>          <span class="o">=</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span>
-        <span class="n">s_w</span>          <span class="o">=</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span> 
-        <span class="n">F_c</span>          <span class="o">=</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">7</span><span class="p">]</span>       
-        <span class="n">B_c</span>          <span class="o">=</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">8</span><span class="p">]</span> 
-        <span class="n">E_c</span>          <span class="o">=</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">9</span><span class="p">]</span>
-        <span class="n">seat</span>         <span class="o">=</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">10</span><span class="p">]</span> 
-        <span class="n">Em_row</span>       <span class="o">=</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">11</span><span class="p">]</span>
-        <span class="n">Gal_Lav</span>      <span class="o">=</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">12</span><span class="p">]</span>
-        
-        <span class="k">if</span> <span class="n">E_c</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span> 
-            <span class="k">if</span> <span class="n">seat</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span> 
-                <span class="n">x0_pt</span> <span class="o">=</span> <span class="n">x_center</span> <span class="o">-</span> <span class="n">s_l</span> <span class="o">/</span> <span class="mi">2</span>
-                <span class="n">x1_pt</span> <span class="o">=</span> <span class="n">x_center</span> <span class="o">+</span> <span class="n">s_l</span> <span class="o">/</span> <span class="mi">2</span>
-                <span class="n">y0_pt</span> <span class="o">=</span> <span class="n">y_center</span> <span class="o">-</span> <span class="n">s_w</span> <span class="o">/</span> <span class="mi">2</span>
-                <span class="n">y1_pt</span> <span class="o">=</span> <span class="n">y_center</span> <span class="o">+</span> <span class="n">s_w</span> <span class="o">/</span> <span class="mi">2</span>
-                
-                <span class="k">if</span> <span class="n">Em_row</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span>
-                    
-                    <span class="n">fig</span><span class="o">.</span><span class="n">add_shape</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;rect&quot;</span><span class="p">,</span>
-                        <span class="n">x0</span><span class="o">=</span><span class="n">x0_pt</span><span class="p">,</span> <span class="n">y0</span><span class="o">=</span><span class="n">y0_pt</span><span class="p">,</span> <span class="n">x1</span><span class="o">=</span><span class="n">x1_pt</span><span class="p">,</span> <span class="n">y1</span><span class="o">=</span><span class="n">y1_pt</span><span class="p">,</span>
-                        <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                            <span class="n">color</span><span class="o">=</span><span class="n">economoy_seat_colors</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                            <span class="n">width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-                        <span class="p">),</span>
-                        <span class="n">fillcolor</span><span class="o">=</span> <span class="n">economoy_seat_colors</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                    <span class="p">)</span>
-                    
-                <span class="k">else</span><span class="p">:</span> 
-                    <span class="n">fig</span><span class="o">.</span><span class="n">add_shape</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;rect&quot;</span><span class="p">,</span>
-                        <span class="n">x0</span><span class="o">=</span><span class="n">x0_pt</span><span class="p">,</span> <span class="n">y0</span><span class="o">=</span><span class="n">y0_pt</span><span class="p">,</span> <span class="n">x1</span><span class="o">=</span><span class="n">x1_pt</span><span class="p">,</span> <span class="n">y1</span><span class="o">=</span><span class="n">y1_pt</span><span class="p">,</span>
-                        <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                            <span class="n">color</span><span class="o">=</span><span class="n">economoy_seat_colors</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                            <span class="n">width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-                        <span class="p">),</span>
-                        <span class="n">fillcolor</span><span class="o">=</span><span class="n">economoy_seat_colors</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-                    <span class="p">)</span>
-        <span class="k">if</span> <span class="n">B_c</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> 
-            <span class="k">if</span> <span class="n">seat</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> 
-                <span class="n">x0_pt</span> <span class="o">=</span> <span class="n">x_center</span> <span class="o">-</span> <span class="n">s_l</span> <span class="o">/</span> <span class="mi">2</span>
-                <span class="n">x1_pt</span> <span class="o">=</span> <span class="n">x_center</span> <span class="o">+</span> <span class="n">s_l</span> <span class="o">/</span> <span class="mi">2</span>
-                <span class="n">y0_pt</span> <span class="o">=</span> <span class="n">y_center</span> <span class="o">-</span> <span class="n">s_w</span> <span class="o">/</span> <span class="mi">2</span>
-                <span class="n">y1_pt</span> <span class="o">=</span> <span class="n">y_center</span> <span class="o">+</span> <span class="n">s_w</span> <span class="o">/</span> <span class="mi">2</span>
-                
-                <span class="k">if</span> <span class="n">Em_row</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                    
-                    <span class="n">fig</span><span class="o">.</span><span class="n">add_shape</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;rect&quot;</span><span class="p">,</span>
-                        <span class="n">x0</span><span class="o">=</span><span class="n">x0_pt</span><span class="p">,</span> <span class="n">y0</span><span class="o">=</span><span class="n">y0_pt</span><span class="p">,</span> <span class="n">x1</span><span class="o">=</span><span class="n">x1_pt</span><span class="p">,</span> <span class="n">y1</span><span class="o">=</span><span class="n">y1_pt</span><span class="p">,</span>
-                        <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                            <span class="n">color</span><span class="o">=</span><span class="n">business_seat_colors</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                            <span class="n">width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-                        <span class="p">),</span>
-                        <span class="n">fillcolor</span><span class="o">=</span><span class="n">business_seat_colors</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                    <span class="p">)</span>
-                    
-                <span class="k">else</span><span class="p">:</span>
-                    
-                    <span class="n">fig</span><span class="o">.</span><span class="n">add_shape</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;rect&quot;</span><span class="p">,</span>
-                        <span class="n">x0</span><span class="o">=</span><span class="n">x0_pt</span><span class="p">,</span> <span class="n">y0</span><span class="o">=</span><span class="n">y0_pt</span><span class="p">,</span> <span class="n">x1</span><span class="o">=</span><span class="n">x1_pt</span><span class="p">,</span> <span class="n">y1</span><span class="o">=</span><span class="n">y1_pt</span><span class="p">,</span>
-                        <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                            <span class="n">color</span><span class="o">=</span><span class="n">business_seat_colors</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                            <span class="n">width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-                        <span class="p">),</span>
-                        <span class="n">fillcolor</span><span class="o">=</span><span class="n">business_seat_colors</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-                    <span class="p">)</span>                    
-    
-        <span class="k">if</span> <span class="n">F_c</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> 
-            <span class="k">if</span> <span class="n">seat</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> 
-                <span class="n">x0_pt</span> <span class="o">=</span> <span class="n">x_center</span> <span class="o">-</span> <span class="n">s_l</span> <span class="o">/</span> <span class="mi">2</span>
-                <span class="n">x1_pt</span> <span class="o">=</span> <span class="n">x_center</span> <span class="o">+</span> <span class="n">s_l</span> <span class="o">/</span> <span class="mi">2</span>
-                <span class="n">y0_pt</span> <span class="o">=</span> <span class="n">y_center</span> <span class="o">-</span> <span class="n">s_w</span> <span class="o">/</span> <span class="mi">2</span>
-                <span class="n">y1_pt</span> <span class="o">=</span> <span class="n">y_center</span> <span class="o">+</span> <span class="n">s_w</span> <span class="o">/</span> <span class="mi">2</span>
-                
-                <span class="k">if</span> <span class="n">Em_row</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                    
-                    <span class="n">fig</span><span class="o">.</span><span class="n">add_shape</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;rect&quot;</span><span class="p">,</span>
-                        <span class="n">x0</span><span class="o">=</span><span class="n">x0_pt</span><span class="p">,</span> <span class="n">y0</span><span class="o">=</span><span class="n">y0_pt</span><span class="p">,</span> <span class="n">x1</span><span class="o">=</span><span class="n">x1_pt</span><span class="p">,</span> <span class="n">y1</span><span class="o">=</span><span class="n">y1_pt</span><span class="p">,</span>
-                        <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                            <span class="n">color</span><span class="o">=</span><span class="n">first_seat_colors</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                            <span class="n">width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-                        <span class="p">),</span>
-                        <span class="n">fillcolor</span><span class="o">=</span><span class="n">first_seat_colors</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                    <span class="p">)</span>
-                    
-                <span class="k">else</span><span class="p">:</span>
-                    
-                    <span class="n">fig</span><span class="o">.</span><span class="n">add_shape</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;rect&quot;</span><span class="p">,</span>
-                        <span class="n">x0</span><span class="o">=</span><span class="n">x0_pt</span><span class="p">,</span> <span class="n">y0</span><span class="o">=</span><span class="n">y0_pt</span><span class="p">,</span> <span class="n">x1</span><span class="o">=</span><span class="n">x1_pt</span><span class="p">,</span> <span class="n">y1</span><span class="o">=</span><span class="n">y1_pt</span><span class="p">,</span>
-                        <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                            <span class="n">color</span><span class="o">=</span><span class="n">first_seat_colors</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                            <span class="n">width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-                        <span class="p">),</span>
-                        <span class="n">fillcolor</span><span class="o">=</span><span class="n">first_seat_colors</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-                    <span class="p">)</span>    
-     
-        <span class="k">if</span> <span class="n">Gal_Lav</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">x0_pt</span> <span class="o">=</span> <span class="n">x_center</span> <span class="o">-</span> <span class="n">s_l</span> <span class="o">/</span> <span class="mi">2</span>
-            <span class="n">x1_pt</span> <span class="o">=</span> <span class="n">x_center</span> <span class="o">+</span> <span class="n">s_l</span> <span class="o">/</span> <span class="mi">2</span>
-            <span class="n">y0_pt</span> <span class="o">=</span> <span class="n">y_center</span> <span class="o">-</span> <span class="n">s_w</span> <span class="o">/</span> <span class="mi">2</span>
-            <span class="n">y1_pt</span> <span class="o">=</span> <span class="n">y_center</span> <span class="o">+</span> <span class="n">s_w</span> <span class="o">/</span> <span class="mi">2</span>
-             
-            <span class="n">fig</span><span class="o">.</span><span class="n">add_shape</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;rect&quot;</span><span class="p">,</span>
-                <span class="n">x0</span><span class="o">=</span><span class="n">x0_pt</span><span class="p">,</span> <span class="n">y0</span><span class="o">=</span><span class="n">y0_pt</span><span class="p">,</span> <span class="n">x1</span><span class="o">=</span><span class="n">x1_pt</span><span class="p">,</span> <span class="n">y1</span><span class="o">=</span><span class="n">y1_pt</span><span class="p">,</span>
-                <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                    <span class="n">color</span><span class="o">=</span><span class="n">lavatory_color</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                    <span class="n">width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-                <span class="p">),</span>
-                <span class="n">fillcolor</span><span class="o">=</span><span class="n">lavatory_color</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-            <span class="p">)</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">()</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">update_xaxes</span><span class="p">(</span><span class="nb">range</span><span class="o">=</span><span class="p">[</span><span class="n">LOPA</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">LOPA</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">showgrid</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span><span class="nb">range</span><span class="o">=</span><span class="p">[</span><span class="n">LOPA</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">LOPA</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span>
+                     <span class="n">showgrid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">scaleanchor</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">scaleratio</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-    <span class="c1"># Use the first path from sys.path</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Cabin boundary</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">x_min_locs</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="n">LOPA</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">x_min</span>       <span class="o">=</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">x_min_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">x_min_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">5</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">x_min_y_max</span> <span class="o">=</span> <span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">x_min_locs</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">x_min_locs</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">x_min_y_min</span> <span class="o">=</span> <span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">x_min_locs</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">x_min_locs</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+
+    <span class="n">y_max_locs</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="n">LOPA</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">y_max</span>       <span class="o">=</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">y_max_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">y_max_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">6</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">y_max_x_max</span> <span class="o">=</span> <span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">y_max_locs</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">y_max_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">5</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">y_max_x_min</span> <span class="o">=</span> <span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">y_max_locs</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">y_max_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">5</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+
+    <span class="n">x_max_locs</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="n">LOPA</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">x_max</span>       <span class="o">=</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">x_max_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">x_max_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">5</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">x_max_y_max</span> <span class="o">=</span> <span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">x_max_locs</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">x_max_locs</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">x_max_y_min</span> <span class="o">=</span> <span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">x_max_locs</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">x_max_locs</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+
+    <span class="n">y_min_locs</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="n">LOPA</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">y_min</span>       <span class="o">=</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">y_min_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">y_min_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">6</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">y_min_x_max</span> <span class="o">=</span> <span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">y_min_locs</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">y_min_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">5</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">y_min_x_min</span> <span class="o">=</span> <span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">y_min_locs</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">y_min_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">5</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+
+    <span class="n">x_border</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">y_max_x_min</span><span class="p">,</span> <span class="n">y_max_x_max</span><span class="p">,</span>
+                          <span class="n">x_max</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">y_min_x_max</span><span class="p">,</span> <span class="n">y_min_x_min</span><span class="p">])</span>
+    <span class="n">y_border</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x_min_y_min</span><span class="p">,</span> <span class="n">x_min_y_max</span><span class="p">,</span> <span class="n">y_max</span><span class="p">,</span> <span class="n">y_max</span><span class="p">,</span>
+                          <span class="n">x_max_y_max</span><span class="p">,</span> <span class="n">x_max_y_min</span><span class="p">,</span> <span class="n">y_min</span><span class="p">,</span> <span class="n">y_min</span><span class="p">])</span>
+
+    <span class="n">starboard</span> <span class="o">=</span> <span class="n">y_border</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span><span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x_border</span><span class="p">[</span><span class="n">starboard</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span> <span class="n">y_border</span><span class="p">[</span><span class="n">starboard</span><span class="p">],</span>
+                             <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;lines&#39;</span><span class="p">,</span> <span class="n">line_color</span><span class="o">=</span><span class="s1">&#39;darkblue&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">showlegend</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span><span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x_border</span><span class="p">[</span><span class="n">starboard</span><span class="p">],</span> <span class="n">y</span><span class="o">=-</span><span class="n">y_border</span><span class="p">[</span><span class="n">starboard</span><span class="p">],</span>
+                             <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;lines&#39;</span><span class="p">,</span> <span class="n">line_color</span><span class="o">=</span><span class="s1">&#39;darkblue&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;tonexty&#39;</span><span class="p">,</span> <span class="n">showlegend</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Seat / galley rectangles — batched by visual category to minimise</span>
+    <span class="c1"># the number of Plotly objects (7 traces instead of one per seat).</span>
+    <span class="c1">#</span>
+    <span class="c1"># Each batch accumulates closed-polygon points with None separators</span>
+    <span class="c1"># so a single go.Scatter trace renders every rect of that category.</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">economy_seat_colors</span>  <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;steelblue&quot;</span><span class="p">,</span>  <span class="s2">&quot;deepskyblue&quot;</span><span class="p">,</span> <span class="s2">&quot;skyblue&quot;</span><span class="p">]</span>
+    <span class="n">business_seat_colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;seagreen&quot;</span><span class="p">,</span>   <span class="s2">&quot;mediumseagreen&quot;</span><span class="p">,</span> <span class="s2">&quot;lightseagreen&quot;</span><span class="p">]</span>
+    <span class="n">first_seat_colors</span>    <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;indianred&quot;</span><span class="p">,</span>  <span class="s2">&quot;lightcoral&quot;</span><span class="p">,</span>  <span class="s2">&quot;lightpink&quot;</span><span class="p">]</span>
+    <span class="n">lavatory_color</span>       <span class="o">=</span> <span class="s2">&quot;sandybrown&quot;</span>
+
+    <span class="c1"># key → [x_pts, y_pts, line_color, fill_color]</span>
+    <span class="n">batches</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="p">(</span><span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>  <span class="p">([],</span> <span class="p">[],</span> <span class="n">economy_seat_colors</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>  <span class="n">economy_seat_colors</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+        <span class="p">(</span><span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span> <span class="p">([],</span> <span class="p">[],</span> <span class="n">economy_seat_colors</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>  <span class="n">economy_seat_colors</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+        <span class="p">(</span><span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>  <span class="p">([],</span> <span class="p">[],</span> <span class="n">business_seat_colors</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">business_seat_colors</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+        <span class="p">(</span><span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span> <span class="p">([],</span> <span class="p">[],</span> <span class="n">business_seat_colors</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">business_seat_colors</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+        <span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>  <span class="p">([],</span> <span class="p">[],</span> <span class="n">first_seat_colors</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>    <span class="n">first_seat_colors</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+        <span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span> <span class="p">([],</span> <span class="p">[],</span> <span class="n">first_seat_colors</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>    <span class="n">first_seat_colors</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+        <span class="s1">&#39;Lav&#39;</span><span class="p">:</span>        <span class="p">([],</span> <span class="p">[],</span> <span class="n">lavatory_color</span><span class="p">,</span>           <span class="n">lavatory_color</span><span class="p">),</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">LOPA</span><span class="p">:</span>
+        <span class="n">xc</span><span class="p">,</span> <span class="n">yc</span>      <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">sl</span><span class="p">,</span> <span class="n">sw</span>      <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>
+        <span class="n">F_c</span><span class="p">,</span> <span class="n">B_c</span>    <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span>
+        <span class="n">E_c</span><span class="p">,</span> <span class="n">seat</span>   <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">9</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span>
+        <span class="n">em_row</span>      <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span>
+        <span class="n">gal_lav</span>     <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">12</span><span class="p">]</span>
+
+        <span class="c1"># Closed-polygon corners + None separator</span>
+        <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">xc</span> <span class="o">-</span> <span class="n">sl</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">xc</span> <span class="o">+</span> <span class="n">sl</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">yc</span> <span class="o">-</span> <span class="n">sw</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">yc</span> <span class="o">+</span> <span class="n">sw</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">xs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">ys</span> <span class="o">=</span> <span class="p">[</span><span class="n">y0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+
+        <span class="k">if</span>   <span class="n">E_c</span> <span class="o">==</span> <span class="mf">1.0</span> <span class="ow">and</span> <span class="n">seat</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="n">em_row</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">B_c</span> <span class="o">==</span> <span class="mi">1</span>   <span class="ow">and</span> <span class="n">seat</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="n">em_row</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">F_c</span> <span class="o">==</span> <span class="mi">1</span>   <span class="ow">and</span> <span class="n">seat</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="n">em_row</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">gal_lav</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="s1">&#39;Lav&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">batches</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span>
+        <span class="n">batches</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">ys</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">line_color</span><span class="p">,</span> <span class="n">fill_color</span> <span class="ow">in</span> <span class="n">batches</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">xs</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span><span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">xs</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">ys</span><span class="p">,</span>
+            <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;lines&#39;</span><span class="p">,</span>
+            <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">line_color</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+            <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;toself&#39;</span><span class="p">,</span>
+            <span class="n">fillcolor</span><span class="o">=</span><span class="n">fill_color</span><span class="p">,</span>
+            <span class="n">showlegend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">))</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Layout</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">common</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">showlegend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">family</span><span class="o">=</span><span class="s2">&quot;Times New Roman&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">fontsize</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">show_axes</span><span class="p">:</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="o">**</span><span class="n">common</span><span class="p">,</span>
+            <span class="n">xaxis_title</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">yaxis_title</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span>
+            <span class="n">xaxis</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">showline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">linecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span>
+                       <span class="n">showticklabels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="s2">&quot;outside&quot;</span><span class="p">,</span> <span class="n">tickcolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">),</span>
+            <span class="n">yaxis</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">showline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">linecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span>
+                       <span class="n">showticklabels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="s2">&quot;outside&quot;</span><span class="p">,</span> <span class="n">tickcolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="o">**</span><span class="n">common</span><span class="p">,</span>
+            <span class="n">plot_bgcolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">paper_bgcolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span>
+            <span class="n">xaxis</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">showline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">linecolor</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">showticklabels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">tickcolor</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">),</span>
+            <span class="n">yaxis</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">showline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">linecolor</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">showticklabels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">tickcolor</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">))</span>
+
     <span class="n">save_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">save_filename</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">save_figure</span><span class="p">:</span>
         <span class="n">fig</span><span class="o">.</span><span class="n">write_image</span><span class="p">(</span><span class="n">save_filename</span> <span class="o">+</span> <span class="s2">&quot;.png&quot;</span><span class="p">)</span>
-        
     <span class="k">if</span> <span class="n">show_figure</span><span class="p">:</span>
-        <span class="n">fig</span><span class="o">.</span><span class="n">write_html</span><span class="p">(</span> <span class="n">save_filename</span> <span class="o">+</span> <span class="s1">&#39;.html&#39;</span><span class="p">,</span> <span class="n">auto_open</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> 
-     
-    <span class="k">return</span> </div>
+        <span class="n">fig</span><span class="o">.</span><span class="n">write_html</span><span class="p">(</span><span class="n">save_filename</span> <span class="o">+</span> <span class="s1">&#39;.html&#39;</span><span class="p">,</span> <span class="n">auto_open</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">del</span> <span class="n">fig</span></div>
 
 </pre></div>
 
@@ -640,8 +584,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -661,7 +605,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -675,7 +619,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

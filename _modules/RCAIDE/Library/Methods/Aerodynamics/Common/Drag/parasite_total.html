@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Methods/Aerodynamics/Common/Drag/parasite_total';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Methods/Aerodynamics/Common/Drag/parasite_total.html" />
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../../../_static/language_data.js"></script>
+    <script src="../../../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -385,7 +404,6 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  IMPORT</span>
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------   </span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span> 
  
 <span class="c1"># package imports</span>
@@ -397,66 +415,152 @@
 <div class="viewcode-block" id="parasite_total">
 <a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Aerodynamics.Common.Drag.parasite_total.html#RCAIDE.Library.Methods.Aerodynamics.Common.Drag.parasite_total.parasite_total">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">parasite_total</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">settings</span><span class="p">,</span><span class="n">geometry</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sums up the parasite drags from all compoments </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the total parasite drag coefficient by summing contributions from all aircraft components.</span>
 
-<span class="sd">    Assumptions:</span>
-<span class="sd">        None</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    state : Data</span>
+<span class="sd">        Flight conditions and aerodynamic state containing:</span>
+<span class="sd">            - conditions.aerodynamics.coefficients.drag.parasite : dict</span>
+<span class="sd">                Dictionary of parasite drag coefficients indexed by component tag containing:</span>
+<span class="sd">                    - total : float</span>
+<span class="sd">                        Parasite drag coefficient for each component [unitless]</span>
+<span class="sd">    settings : dict</span>
+<span class="sd">        Aerodynamic analysis settings containing:</span>
+<span class="sd">            - drag_reduction_factors.parasite_drag : float</span>
+<span class="sd">                Parasite drag reduction factor [unitless]</span>
+<span class="sd">    geometry : Data</span>
+<span class="sd">        Aircraft geometry containing:</span>
+<span class="sd">            - reference_area : float</span>
+<span class="sd">                Vehicle reference area for drag coefficient normalization [m²]</span>
+<span class="sd">            - wings : list</span>
+<span class="sd">                List of wing objects containing:</span>
+<span class="sd">                    - tag : str</span>
+<span class="sd">                        Unique identifier for the wing</span>
+<span class="sd">                    - areas.reference : float</span>
+<span class="sd">                        Reference area of the wing [m²]</span>
+<span class="sd">            - fuselages : list</span>
+<span class="sd">                List of fuselage objects containing:</span>
+<span class="sd">                    - tag : str</span>
+<span class="sd">                        Unique identifier for the fuselage</span>
+<span class="sd">                    - areas.front_projected : float</span>
+<span class="sd">                        Front projected area of the fuselage [m²]</span>
+<span class="sd">            - booms : list</span>
+<span class="sd">                List of boom objects containing:</span>
+<span class="sd">                    - tag : str</span>
+<span class="sd">                        Unique identifier for the boom</span>
+<span class="sd">                    - areas.front_projected : float</span>
+<span class="sd">                        Front projected area of the boom [m²]</span>
+<span class="sd">            - networks : list</span>
+<span class="sd">                List of propulsion networks containing propulsors</span>
+<span class="sd">                    - propulsors : list</span>
+<span class="sd">                        List of propulsor objects with nacelle attributes</span>
+<span class="sd">                            - nacelle : Nacelle, optional</span>
+<span class="sd">                                Nacelle object containing:</span>
+<span class="sd">                                    - tag : str</span>
+<span class="sd">                                        Unique identifier for the nacelle</span>
+<span class="sd">                                    - diameter : float</span>
+<span class="sd">                                        Diameter of the nacelle [m]</span>
 
-<span class="sd">    Source:</span>
-<span class="sd">        None</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Results are stored in state.conditions.aerodynamics.coefficients.drag.parasite.total</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        state                                                (dict): flight conditions       [-]</span>
-<span class="sd">        settings                                             (dict): analyses settings       [-]</span>
-<span class="sd">        geometry                                             (dict): aircraft data stucture  [-]</span>
-<span class="sd">        conditions.aerodynamics.coefficients.drag.</span>
-<span class="sd">          parasite[wing.tag(s)].parasite_drag       (numpy.ndarray): wing parasite drags     [Unitless]</span>
-<span class="sd">          parasite[fuselage.tag(s)].parasite_drag   (numpy.ndarray): fuselage parasite drags [Unitless]</span>
-<span class="sd">          parasite[boom.tag(s)].parasite_drag       (numpy.ndarray): boom parasite drags     [Unitless]</span>
-<span class="sd">          parasite[nacelle.tag(s)].parasite_drag    (numpy.ndarray): nacelle parasite drags  [Unitless]</span>
-<span class="sd">          parasite[pylon.tag(s)].parasite_drag      (numpy.ndarray): pylon parasite drags    [Unitless]</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function aggregates parasite drag contributions from all aircraft components</span>
+<span class="sd">    (wings, fuselages, booms, nacelles, and pylons) and normalizes them to the vehicle</span>
+<span class="sd">    reference area. The total is then adjusted by a drag reduction factor to account</span>
+<span class="sd">    for interference effects and other corrections.</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Component drag coefficients are normalized to their respective reference areas</span>
+<span class="sd">        * Vehicle reference area is used for final normalization</span>
+<span class="sd">        * Drag reduction factor accounts for interference effects</span>
+<span class="sd">        * Nacelle front area is calculated as circular cross-section</span>
+<span class="sd">        * Component contributions are additive</span>
+<span class="sd">    </span>
+<span class="sd">    **Theory**</span>
 
+<span class="sd">    The total parasite drag coefficient is calculated as the sum of all component contributions:</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        None </span>
-<span class="sd">    &quot;&quot;&quot;</span> 
+<span class="sd">    :math:`C_{D,parasite,total} = \\sum_{i=1}^{n} C_{D,parasite,i} \\cdot \\frac{S_{ref,i}}{S_{ref,vehicle}}`</span>
+
+<span class="sd">    where:</span>
+<span class="sd">        - :math:`C_{D,parasite,i}` is the parasite drag coefficient of component :math:`i`</span>
+<span class="sd">        - :math:`S_{ref,i}` is the reference area of component :math:`i`</span>
+<span class="sd">        - :math:`S_{ref,vehicle}` is the vehicle reference area</span>
+
+<span class="sd">    For wings:</span>
+<span class="sd">    :math:`S_{ref,wing} = S_{wing}` (wing reference area)</span>
+
+<span class="sd">    For fuselages and booms:</span>
+<span class="sd">    :math:`S_{ref,fuselage} = S_{front,projected}` (front projected area)</span>
+
+<span class="sd">    For nacelles:</span>
+<span class="sd">    :math:`S_{ref,nacelle} = \\frac{\\pi d_{nacelle}^2}{4}` (circular cross-section area)</span>
+
+<span class="sd">    The final total parasite drag coefficient includes a reduction factor (user defined):</span>
+
+<span class="sd">    :math:`C_{D,parasite,final} = C_{D,parasite,total} \\cdot (1 - f_{reduction})`</span>
+
+<span class="sd">    where :math:`f_{reduction}` is the parasite drag reduction factor.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Aerodynamics.Common.Drag.parasite_drag_wing</span>
+<span class="sd">    RCAIDE.Library.Methods.Aerodynamics.Common.Drag.parasite_drag_fuselage</span>
+<span class="sd">    RCAIDE.Library.Methods.Aerodynamics.Common.Drag.parasite_drag_nacelle</span>
+<span class="sd">    RCAIDE.Library.Methods.Aerodynamics.Common.Drag.parasite_drag_pylon</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># unpack</span>
     <span class="n">conditions</span>             <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span> 
     <span class="n">vehicle_reference_area</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">reference_area</span>
     
     <span class="c1">#compute parasite drag total</span>
+    <span class="n">total_parasite_drag</span>          <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">total_wing_parasite_drag</span>     <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">total_boom_parasite_drag</span>     <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">total_fuselage_parasite_drag</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">total_nacelle_parasite_drag</span>  <span class="o">=</span> <span class="mf">0.0</span>
     <span class="n">total_parasite_drag</span> <span class="o">=</span> <span class="mf">0.0</span>
     
     <span class="c1"># renormalize parasite drag from wings using reference area of aircraft </span>
     <span class="k">for</span> <span class="n">wing</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">wings</span><span class="p">:</span>
         <span class="n">wing_parasite_drag</span> <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="p">[</span><span class="n">wing</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">total</span> 
         <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="p">[</span><span class="n">wing</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">total</span>  <span class="o">=</span> <span class="n">wing_parasite_drag</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span><span class="o">/</span><span class="n">vehicle_reference_area</span>
-        <span class="n">total_parasite_drag</span> <span class="o">+=</span> <span class="n">wing_parasite_drag</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span><span class="o">/</span><span class="n">vehicle_reference_area</span>
+        <span class="n">total_wing_parasite_drag</span> <span class="o">+=</span> <span class="n">wing_parasite_drag</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span><span class="o">/</span><span class="n">vehicle_reference_area</span>
  
     <span class="c1"># renormalize parasite drag from fuselages using reference area of aircraft </span>
     <span class="k">for</span> <span class="n">fuselage</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">fuselages</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">fuselage</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Fuselages</span><span class="o">.</span><span class="n">Blended_Wing_Body_Fuselage</span><span class="p">:</span>
-            <span class="k">continue</span>
         <span class="n">fuselage_parasite_drag</span> <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="p">[</span><span class="n">fuselage</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">total</span> 
         <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="p">[</span><span class="n">fuselage</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">total</span> <span class="o">=</span> <span class="n">fuselage_parasite_drag</span> <span class="o">*</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">front_projected</span><span class="o">/</span><span class="n">vehicle_reference_area</span>
-        <span class="n">total_parasite_drag</span> <span class="o">+=</span> <span class="n">fuselage_parasite_drag</span> <span class="o">*</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">front_projected</span><span class="o">/</span><span class="n">vehicle_reference_area</span>
+        <span class="n">total_fuselage_parasite_drag</span> <span class="o">+=</span> <span class="n">fuselage_parasite_drag</span> <span class="o">*</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">front_projected</span><span class="o">/</span><span class="n">vehicle_reference_area</span>
+    
+    <span class="c1"># renormalize parasite drag from booms using reference area of aircraft         </span>
+    <span class="k">for</span> <span class="n">boom</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">booms</span><span class="p">:</span>
+        <span class="n">boom_parasite_drag</span> <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="p">[</span><span class="n">boom</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">total</span> 
+        <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="p">[</span><span class="n">boom</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">total</span> <span class="o">=</span> <span class="n">boom_parasite_drag</span> <span class="o">*</span> <span class="n">boom</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">front_projected</span><span class="o">/</span><span class="n">vehicle_reference_area</span>
+        <span class="n">total_boom_parasite_drag</span> <span class="o">+=</span> <span class="n">boom_parasite_drag</span> <span class="o">*</span> <span class="n">boom</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">front_projected</span><span class="o">/</span><span class="n">vehicle_reference_area</span>
     
     <span class="c1"># renormalize parasite drag from nacelles and pylons using reference area of aircraft  </span>
     <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span>  <span class="n">geometry</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span> 
-        <span class="k">for</span> <span class="n">propulsor</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">:</span>  
-            <span class="k">if</span> <span class="s1">&#39;nacelle&#39;</span> <span class="ow">in</span> <span class="n">propulsor</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">propulsor</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">:</span>   
+            <span class="k">if</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span> <span class="o">!=</span>  <span class="kc">None</span><span class="p">:</span>                
                 <span class="n">nacelle</span>       <span class="o">=</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">nacelle</span>
-                <span class="n">ref_area</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">nacelle</span><span class="o">.</span><span class="n">diameter</span> <span class="o">*</span> <span class="n">nacelle</span><span class="o">.</span><span class="n">length</span> 
-                <span class="n">nacelle_parasite_drag</span> <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="p">[</span><span class="n">nacelle</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">total</span>
-                <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="p">[</span><span class="n">nacelle</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">total</span>  <span class="o">=</span> <span class="n">nacelle_parasite_drag</span> <span class="o">*</span> <span class="n">nacelle_parasite_drag</span><span class="o">/</span><span class="n">vehicle_reference_area</span>
-                <span class="n">total_parasite_drag</span> <span class="o">+=</span> <span class="n">nacelle_parasite_drag</span> <span class="o">*</span> <span class="n">ref_area</span><span class="o">/</span><span class="n">vehicle_reference_area</span>
-
-                <span class="k">if</span> <span class="n">nacelle</span><span class="o">.</span><span class="n">has_pylon</span><span class="p">:</span>
-                    <span class="n">parasite_drag</span> <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="p">[</span><span class="n">nacelle</span><span class="o">.</span><span class="n">tag</span> <span class="o">+</span> <span class="s1">&#39;_pylon&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">total</span>
-                    <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="p">[</span><span class="n">nacelle</span><span class="o">.</span><span class="n">tag</span> <span class="o">+</span> <span class="s1">&#39;_pylon&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">total</span> <span class="o">=</span> <span class="n">parasite_drag</span> <span class="o">*</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">front_projected</span><span class="o">/</span><span class="n">vehicle_reference_area</span>
-                    <span class="n">total_parasite_drag</span> <span class="o">+=</span> <span class="n">parasite_drag</span> <span class="o">*</span> <span class="n">ref_area</span><span class="o">/</span><span class="n">vehicle_reference_area</span>
-
-    <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="o">.</span><span class="n">total</span> <span class="o">=</span> <span class="n">total_parasite_drag</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span>  <span class="n">settings</span><span class="o">.</span><span class="n">drag_reduction_factors</span><span class="o">.</span><span class="n">parasite_drag</span><span class="p">)</span>
+                <span class="n">front_area</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">nacelle</span><span class="o">.</span><span class="n">diameter</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span><span class="mi">4</span>  
+                <span class="n">nacelle_parasite_drag</span> <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="p">[</span><span class="n">nacelle</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">total</span>  
+                <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="p">[</span><span class="n">nacelle</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">total</span>  <span class="o">=</span> <span class="n">nacelle_parasite_drag</span> <span class="o">*</span> <span class="n">front_area</span><span class="o">/</span><span class="n">vehicle_reference_area</span>
+                <span class="n">total_nacelle_parasite_drag</span> <span class="o">+=</span> <span class="n">nacelle_parasite_drag</span> <span class="o">*</span> <span class="n">front_area</span><span class="o">/</span><span class="n">vehicle_reference_area</span>
+    
+    <span class="n">total_parasite_drag</span> <span class="o">=</span> <span class="n">total_nacelle_parasite_drag</span> <span class="o">+</span> <span class="n">total_fuselage_parasite_drag</span> <span class="o">+</span> <span class="n">total_wing_parasite_drag</span> <span class="o">+</span> <span class="n">total_boom_parasite_drag</span> 
+    <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="o">.</span><span class="n">total</span>     <span class="o">=</span> <span class="n">total_parasite_drag</span> <span class="o">*</span>  <span class="p">(</span><span class="mi">1</span> <span class="o">-</span>  <span class="n">settings</span><span class="o">.</span><span class="n">drag_reduction_factors</span><span class="o">.</span><span class="n">parasite_drag</span><span class="p">)</span>
+    <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="o">.</span><span class="n">nacelles</span>  <span class="o">=</span> <span class="n">total_nacelle_parasite_drag</span> <span class="o">*</span>  <span class="p">(</span><span class="mi">1</span> <span class="o">-</span>  <span class="n">settings</span><span class="o">.</span><span class="n">drag_reduction_factors</span><span class="o">.</span><span class="n">parasite_drag</span><span class="p">)</span>
+    <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="o">.</span><span class="n">fuselages</span> <span class="o">=</span> <span class="n">total_fuselage_parasite_drag</span> <span class="o">*</span>  <span class="p">(</span><span class="mi">1</span> <span class="o">-</span>  <span class="n">settings</span><span class="o">.</span><span class="n">drag_reduction_factors</span><span class="o">.</span><span class="n">parasite_drag</span><span class="p">)</span>
+    <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="o">.</span><span class="n">wings</span>     <span class="o">=</span> <span class="n">total_wing_parasite_drag</span> <span class="o">*</span>  <span class="p">(</span><span class="mi">1</span> <span class="o">-</span>  <span class="n">settings</span><span class="o">.</span><span class="n">drag_reduction_factors</span><span class="o">.</span><span class="n">parasite_drag</span><span class="p">)</span>
+    <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="o">.</span><span class="n">booms</span>     <span class="o">=</span> <span class="n">total_boom_parasite_drag</span> <span class="o">*</span>  <span class="p">(</span><span class="mi">1</span> <span class="o">-</span>  <span class="n">settings</span><span class="o">.</span><span class="n">drag_reduction_factors</span><span class="o">.</span><span class="n">parasite_drag</span><span class="p">)</span> 
 
     <span class="k">return</span> </div>
 
@@ -489,8 +593,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -510,7 +614,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -524,7 +628,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

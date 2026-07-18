@@ -1,0 +1,36 @@
+RCAIDE.Library.Plots.Performance
+
+Performance
+===========
+
+.. automodule:: RCAIDE.Library.Plots.Performance
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   plot_V_n_diagram
+   plot_load_diagram
+   plot_payload_range_diagram
+

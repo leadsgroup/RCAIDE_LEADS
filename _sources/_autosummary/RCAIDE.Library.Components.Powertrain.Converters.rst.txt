@@ -42,12 +42,13 @@ Converters
    Fan
    Generic_Fuel_Cell_Stack
    Lift_Rotor
-   Offtake_Shaft
+   Liquid_Hydrogen_Fuel_Cell_Pump
    PMSM_Generator
    PMSM_Motor
    Prop_Rotor
    Propeller
    Proton_Exchange_Membrane_Fuel_Cell
+   Pump
    Ram
    Reformer
    Rotor

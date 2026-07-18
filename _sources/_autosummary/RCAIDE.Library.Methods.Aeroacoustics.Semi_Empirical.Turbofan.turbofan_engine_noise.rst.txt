@@ -1,0 +1,25 @@
+RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Turbofan.turbofan_engine_noise
+
+turbofan\_engine\_noise
+=======================
+
+.. automodule:: RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Turbofan.turbofan_engine_noise
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

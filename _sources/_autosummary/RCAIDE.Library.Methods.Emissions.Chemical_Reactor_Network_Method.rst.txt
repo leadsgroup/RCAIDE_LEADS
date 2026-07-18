@@ -31,7 +31,7 @@ Chemical\_Reactor\_Network\_Method
    :recursive:
 
    build_CRN_EI_surrogates
-   evaluate_CRN_emission_indices
+   evaluate_CRN_emissions
    evaluate_cantera
    train_CRN_EI_surrogates
 

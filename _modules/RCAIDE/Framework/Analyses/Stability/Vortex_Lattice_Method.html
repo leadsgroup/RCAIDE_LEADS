@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Framework/Analyses/Stability/Vortex_Lattice_Method';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Framework/Analyses/Stability/Vortex_Lattice_Method.html" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script src="../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -386,17 +405,13 @@
 <span class="c1">#  IMPORT</span>
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 
-<span class="c1"># RCAIDE imports  </span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
+<span class="c1"># RCAIDE imports   </span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w">                                     </span><span class="kn">import</span> <span class="n">Data</span><span class="p">,</span> <span class="n">Units</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Analyses</span><span class="w">                                 </span><span class="kn">import</span> <span class="n">Process</span> 
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Aerodynamics</span><span class="w">                       </span><span class="kn">import</span> <span class="n">Common</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.Stability</span><span class="w">                                                </span><span class="kn">import</span> <span class="n">Stability</span>  
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Analyses.Common.Process_Geometry</span><span class="w">         </span><span class="kn">import</span> <span class="n">Process_Geometry</span> 
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>   
-
-<span class="c1"># package imports </span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Stability</span><span class="w">                          </span><span class="kn">import</span> <span class="n">Common</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.Stability</span><span class="w">                                                </span><span class="kn">import</span> <span class="n">Stability</span>     
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Stability.Vortex_Lattice_Method</span><span class="w">    </span><span class="kn">import</span> <span class="o">*</span>  
+<span class="kn">import</span><span class="w">  </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  Vortex_Lattice_Method</span>
@@ -440,106 +455,33 @@
 <span class="sd">        Properties Used:</span>
 <span class="sd">        N/A</span>
 <span class="sd">        &quot;&quot;&quot;</span>          
-        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                                                        <span class="o">=</span> <span class="s1">&#39;Vortex_Lattice_Method&#39;</span>  
-        <span class="bp">self</span><span class="o">.</span><span class="n">vehicle</span>                                                    <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>  
-        <span class="bp">self</span><span class="o">.</span><span class="n">process</span>                                                    <span class="o">=</span> <span class="n">Process</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">initialize</span>                                         <span class="o">=</span> <span class="n">Process</span><span class="p">()</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                                                    <span class="o">=</span> <span class="s1">&#39;Vortex_Lattice_Method&#39;</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">vehicle</span>                                                <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">process</span>                                                <span class="o">=</span> <span class="n">Process</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">initialize</span>                                     <span class="o">=</span> <span class="n">Process</span><span class="p">()</span>  
                    
-        <span class="c1"># correction factors </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">fuselage_lift_correction</span>                           <span class="o">=</span> <span class="mf">1.14</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">trim_drag_correction_factor</span>                        <span class="o">=</span> <span class="mf">1.1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">wing_parasite_drag_form_factor</span>                     <span class="o">=</span> <span class="mf">1.2</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">fuselage_parasite_drag_form_factor</span>                 <span class="o">=</span> <span class="mf">2.4</span>  
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">drag_reduction_factors</span>                             <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">drag_reduction_factors</span><span class="o">.</span><span class="n">parasite_drag</span>               <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># Reduction factors are proportional (.1 is a 10% weight reduction)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">drag_reduction_factors</span><span class="o">.</span><span class="n">induced_drag</span>                <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># Reduction factors are proportional (.1 is a 10% weight reduction)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">drag_reduction_factors</span><span class="o">.</span><span class="n">compressibility_drag</span>        <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># Reduction factors are proportional (.1 is a 10% weight reduction) </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">maximum_lift_coefficient_factor</span>                    <span class="o">=</span> <span class="mf">1.0</span>        
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">lift_to_drag_adjustment</span>                            <span class="o">=</span> <span class="mf">0.0</span>  
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">oswald_efficiency_factor</span>                           <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">span_efficiency</span>                                    <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">viscous_lift_dependent_drag_factor</span>                 <span class="o">=</span> <span class="mf">0.38</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">drag_coefficient_increment</span>                         <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">spoiler_drag_increment</span>                             <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">maximum_lift_coefficient</span>                           <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">use_surrogate</span>                                      <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">recalculate_total_wetted_area</span>                      <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">propeller_wake_model</span>                               <span class="o">=</span> <span class="kc">False</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">discretize_control_surfaces</span>                        <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">model_fuselage</span>                                     <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">trim_aircraft</span>                                      <span class="o">=</span> <span class="kc">True</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">aileron_flag</span>                                       <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">rudder_flag</span>                                        <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">flap_flag</span>                                          <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">elevator_flag</span>                                      <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">slat_flag</span>                                          <span class="o">=</span> <span class="kc">False</span>             
-
-        <span class="c1"># correction factors</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">supersonic</span>                                         <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">supersonic</span><span class="o">.</span><span class="n">peak_mach_number</span>                        <span class="o">=</span> <span class="mf">1.04</span>  
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">supersonic</span><span class="o">.</span><span class="n">begin_drag_rise_mach_number</span>             <span class="o">=</span> <span class="mf">0.95</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">supersonic</span><span class="o">.</span><span class="n">end_drag_rise_mach_number</span>               <span class="o">=</span> <span class="mf">1.2</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">supersonic</span><span class="o">.</span><span class="n">transonic_drag_multiplier</span>               <span class="o">=</span> <span class="mf">1.25</span>  
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">supersonic</span><span class="o">.</span><span class="n">volume_wave_drag_scaling</span>                <span class="o">=</span> <span class="mf">3.2</span>  
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">supersonic</span><span class="o">.</span><span class="n">fuselage_parasite_drag_begin_blend_mach</span> <span class="o">=</span> <span class="mf">0.91</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">supersonic</span><span class="o">.</span><span class="n">fuselage_parasite_drag_end_blend_mach</span>   <span class="o">=</span> <span class="mf">0.99</span>    
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">supersonic</span><span class="o">.</span><span class="n">cross_sectional_area_calculation_type</span>   <span class="o">=</span> <span class="s1">&#39;Fixed&#39;</span>     
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">supersonic</span><span class="o">.</span><span class="n">wave_drag_type</span>                          <span class="o">=</span> <span class="s1">&#39;Raymer&#39;</span>    
-    
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">number_of_spanwise_vortices</span>                        <span class="o">=</span> <span class="mi">15</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">number_of_chordwise_vortices</span>                       <span class="o">=</span> <span class="mi">5</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">wing_spanwise_vortices</span>                             <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">wing_chordwise_vortices</span>                            <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">fuselage_spanwise_vortices</span>                         <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">fuselage_chordwise_vortices</span>                        <span class="o">=</span> <span class="kc">None</span>  
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">spanwise_cosine_spacing</span>                            <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">vortex_distribution</span>                                <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>  
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">leading_edge_suction_multiplier</span>                    <span class="o">=</span> <span class="mf">1.0</span>  
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">use_VORLAX_matrix_calculation</span>                      <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">floating_point_precision</span>                           <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span>     
-    
+        <span class="c1"># correction factors  </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">use_surrogate</span>                                 <span class="o">=</span> <span class="kc">True</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">propeller_wake_model</span>                          <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">number_of_spanwise_vortices</span>                   <span class="o">=</span> <span class="mi">30</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">number_of_chordwise_vortices</span>                  <span class="o">=</span> <span class="mi">15</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">number_of_fuselage_spanwise_vortices</span>          <span class="o">=</span> <span class="mi">4</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">number_of_fuselage_chordwise_vortices</span>         <span class="o">=</span> <span class="mi">10</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">model_fuselage</span>                                <span class="o">=</span> <span class="kc">True</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">spanwise_cosine_spacing</span>                       <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">vortex_distribution</span>                           <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">leading_edge_suction_multiplier</span>               <span class="o">=</span> <span class="mf">1.0</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">use_VORLAX_matrix_calculation</span>                 <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">floating_point_precision</span>                      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span> 
+        
         <span class="c1"># conditions table, used for surrogate model training</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">training</span>                                               <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">training</span>                                               <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>  
         <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">angle_of_attack</span>                               <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">5.</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.</span> <span class="p">,</span> <span class="mf">1E-20</span> <span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">12.</span><span class="p">,</span> <span class="mf">45.</span><span class="p">,</span> <span class="mf">75.</span><span class="p">])</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">deg</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">Mach</span>                                          <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span>  <span class="p">,</span><span class="mf">0.3</span><span class="p">,</span>  <span class="mf">0.5</span><span class="p">,</span>  <span class="mf">0.65</span> <span class="p">,</span> <span class="mf">0.85</span> <span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">,</span> <span class="mf">1.35</span> <span class="p">,</span> <span class="mf">1.5</span> <span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.25</span> <span class="p">,</span> <span class="mf">2.5</span>  <span class="p">,</span> <span class="mf">3.5</span><span class="p">])</span>             
+        <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">Mach</span>                                          <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span>  <span class="p">,</span><span class="mf">0.3</span><span class="p">,</span>  <span class="mf">0.5</span><span class="p">,</span>  <span class="mf">0.65</span> <span class="p">,</span> <span class="mf">0.85</span> <span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">,</span> <span class="mf">1.35</span> <span class="p">,</span> <span class="mf">1.5</span> <span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.25</span> <span class="p">,</span> <span class="mf">2.5</span>  <span class="p">,</span> <span class="mf">3.5</span><span class="p">])</span>      
                       
         <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">subsonic</span>                                      <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">supersonic</span>                                    <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">transonic</span>                                     <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">altitude</span>                                      <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">speed_of_sound</span>                                <span class="o">=</span> <span class="mi">343</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">angle_purtubation</span>                             <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">deg</span>          
-        <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">speed_purtubation</span>                             <span class="o">=</span> <span class="mi">5</span>  
-        <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">rate_purtubation</span>                              <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">deg</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">sec</span>   
-        <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">control_surface_purtubation</span>                   <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">deg</span>   
-        <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">sideslip_angle</span>                                <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span>  <span class="p">,</span> <span class="mf">5.0</span> <span class="p">])</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">deg</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">aileron_deflection</span>                            <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span>  <span class="p">,</span> <span class="mf">5.0</span> <span class="p">])</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">deg</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">elevator_deflection</span>                           <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span>  <span class="p">,</span> <span class="mf">5.0</span> <span class="p">])</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">deg</span>   
-        <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">rudder_deflection</span>                             <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span>  <span class="p">,</span> <span class="mf">1E-3</span> <span class="p">])</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">deg</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">flap_deflection</span>                               <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span>  <span class="p">,</span> <span class="mf">1E-3</span> <span class="p">])</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">deg</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">slat_deflection</span>                               <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span>  <span class="p">,</span> <span class="mf">1E-3</span> <span class="p">])</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">deg</span>                      
-        <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">u</span>                                             <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span> <span class="p">,</span> <span class="mi">5</span> <span class="p">])</span>  
-        <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">v</span>                                             <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span> <span class="p">,</span> <span class="mi">5</span> <span class="p">])</span>  
-        <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">w</span>                                             <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span> <span class="p">,</span> <span class="mi">5</span> <span class="p">])</span>    
-        <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">pitch_rate</span>                                    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span> <span class="p">,</span><span class="mf">1.5</span> <span class="p">])</span>  <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">deg</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">sec</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">roll_rate</span>                                     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span> <span class="p">,</span><span class="mf">1.5</span> <span class="p">])</span>  <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">deg</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">sec</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">yaw_rate</span>                                      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span> <span class="p">,</span><span class="mf">1.5</span> <span class="p">])</span>  <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">deg</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">sec</span>
-    
-        <span class="bp">self</span><span class="o">.</span><span class="n">reference_values</span>                                       <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reference_values</span><span class="o">.</span><span class="n">S_ref</span>                                 <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reference_values</span><span class="o">.</span><span class="n">c_ref</span>                                 <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reference_values</span><span class="o">.</span><span class="n">b_ref</span>                                 <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reference_values</span><span class="o">.</span><span class="n">X_ref</span>                                 <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reference_values</span><span class="o">.</span><span class="n">Y_ref</span>                                 <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reference_values</span><span class="o">.</span><span class="n">Z_ref</span>                                 <span class="o">=</span> <span class="mi">0</span>
-        
-        <span class="c1"># control surface flags                  </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">aileron_flag</span>                                           <span class="o">=</span> <span class="kc">False</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">flap_flag</span>                                              <span class="o">=</span> <span class="kc">False</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">rudder_flag</span>                                            <span class="o">=</span> <span class="kc">False</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">elevator_flag</span>                                          <span class="o">=</span> <span class="kc">False</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">slat_flag</span>                                              <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">transonic</span>                                     <span class="o">=</span> <span class="kc">None</span>  
                          
         <span class="c1"># blending function                  </span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hsub_min</span>                                               <span class="o">=</span> <span class="mf">0.85</span>
@@ -548,62 +490,31 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">hsup_max</span>                                               <span class="o">=</span> <span class="mf">1.15</span> 
                      
         <span class="c1"># surrogoate models                 </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">surrogates</span>                                             <span class="o">=</span> <span class="n">Data</span><span class="p">()</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">surrogates</span>                                             <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>  
 
         <span class="c1"># build the evaluation process</span>
-        <span class="n">compute</span>                                    <span class="o">=</span> <span class="n">Process</span><span class="p">()</span> 
-        <span class="n">compute</span><span class="o">.</span><span class="n">lift</span>                               <span class="o">=</span> <span class="n">Process</span><span class="p">()</span> 
-        <span class="n">compute</span><span class="o">.</span><span class="n">lift</span><span class="o">.</span><span class="n">inviscid_wings</span>                <span class="o">=</span> <span class="kc">None</span> 
-        <span class="n">compute</span><span class="o">.</span><span class="n">lift</span><span class="o">.</span><span class="n">fuselage</span>                      <span class="o">=</span> <span class="n">Common</span><span class="o">.</span><span class="n">Lift</span><span class="o">.</span><span class="n">fuselage_correction</span> 
-        <span class="n">compute</span><span class="o">.</span><span class="n">drag</span>                               <span class="o">=</span> <span class="n">Process</span><span class="p">()</span>
-        <span class="n">compute</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span>                      <span class="o">=</span> <span class="n">Process</span><span class="p">()</span>
-        <span class="n">compute</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="o">.</span><span class="n">wings</span>                <span class="o">=</span> <span class="n">Process_Geometry</span><span class="p">(</span><span class="s1">&#39;wings&#39;</span><span class="p">)</span>
-        <span class="n">compute</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="o">.</span><span class="n">wings</span><span class="o">.</span><span class="n">wing</span>           <span class="o">=</span> <span class="n">Common</span><span class="o">.</span><span class="n">Drag</span><span class="o">.</span><span class="n">parasite_drag_wing</span> 
-        <span class="n">compute</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="o">.</span><span class="n">fuselages</span>            <span class="o">=</span> <span class="n">Process_Geometry</span><span class="p">(</span><span class="s1">&#39;fuselages&#39;</span><span class="p">)</span>
-        <span class="n">compute</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="o">.</span><span class="n">fuselages</span><span class="o">.</span><span class="n">fuselage</span>   <span class="o">=</span> <span class="n">Common</span><span class="o">.</span><span class="n">Drag</span><span class="o">.</span><span class="n">parasite_drag_fuselage</span>
-        <span class="n">compute</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="o">.</span><span class="n">booms</span>                <span class="o">=</span> <span class="n">Process_Geometry</span><span class="p">(</span><span class="s1">&#39;booms&#39;</span><span class="p">)</span>
-        <span class="n">compute</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="o">.</span><span class="n">booms</span><span class="o">.</span><span class="n">boom</span>           <span class="o">=</span> <span class="n">Common</span><span class="o">.</span><span class="n">Drag</span><span class="o">.</span><span class="n">parasite_drag_fuselage</span> 
-        <span class="n">compute</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="o">.</span><span class="n">nacelles</span>             <span class="o">=</span> <span class="n">Common</span><span class="o">.</span><span class="n">Drag</span><span class="o">.</span><span class="n">parasite_drag_nacelle</span>
-        <span class="n">compute</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="o">.</span><span class="n">pylons</span>               <span class="o">=</span> <span class="n">Common</span><span class="o">.</span><span class="n">Drag</span><span class="o">.</span><span class="n">parasite_drag_pylon</span>
-        <span class="n">compute</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">parasite</span><span class="o">.</span><span class="n">total</span>                <span class="o">=</span> <span class="n">Common</span><span class="o">.</span><span class="n">Drag</span><span class="o">.</span><span class="n">parasite_total</span>
-        <span class="n">compute</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">induced</span>                       <span class="o">=</span> <span class="n">Common</span><span class="o">.</span><span class="n">Drag</span><span class="o">.</span><span class="n">induced_drag</span>
-        <span class="n">compute</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">cooling</span>                       <span class="o">=</span> <span class="n">Process</span><span class="p">()</span>
-        <span class="n">compute</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">cooling</span><span class="o">.</span><span class="n">total</span>                 <span class="o">=</span> <span class="n">Common</span><span class="o">.</span><span class="n">Drag</span><span class="o">.</span><span class="n">cooling_drag</span>        
-        <span class="n">compute</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">compressibility</span>               <span class="o">=</span> <span class="n">Process</span><span class="p">()</span> 
-        <span class="n">compute</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">compressibility</span><span class="o">.</span><span class="n">total</span>         <span class="o">=</span> <span class="n">Common</span><span class="o">.</span><span class="n">Drag</span><span class="o">.</span><span class="n">compressibility_drag</span>
-        <span class="n">compute</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">miscellaneous</span>                 <span class="o">=</span> <span class="n">Common</span><span class="o">.</span><span class="n">Drag</span><span class="o">.</span><span class="n">miscellaneous_drag</span> 
-        <span class="n">compute</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">spoiler</span>                       <span class="o">=</span> <span class="n">Common</span><span class="o">.</span><span class="n">Drag</span><span class="o">.</span><span class="n">spoiler_drag</span>
-        <span class="n">compute</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">total</span>                         <span class="o">=</span> <span class="n">Common</span><span class="o">.</span><span class="n">Drag</span><span class="o">.</span><span class="n">total_drag</span>
-        <span class="n">compute</span><span class="o">.</span><span class="n">stability</span>                          <span class="o">=</span> <span class="n">Process</span><span class="p">()</span>
-        <span class="n">compute</span><span class="o">.</span><span class="n">stability</span><span class="o">.</span><span class="n">dynamic_modes</span>            <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Methods</span><span class="o">.</span><span class="n">Stability</span><span class="o">.</span><span class="n">compute_dynamic_flight_modes</span>  
-        <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">compute</span>                       <span class="o">=</span> <span class="n">compute</span> 
+        <span class="n">compute</span>                                                     <span class="o">=</span> <span class="n">Process</span><span class="p">()</span> 
+        <span class="n">compute</span><span class="o">.</span><span class="n">static_stability</span>                                    <span class="o">=</span> <span class="n">evaluate</span>
+        <span class="n">compute</span><span class="o">.</span><span class="n">dynamic_stability</span>                                   <span class="o">=</span> <span class="n">Common</span><span class="o">.</span><span class="n">compute_dynamic_flight_modes</span>    
+        <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">compute</span>                                        <span class="o">=</span> <span class="n">compute</span> 
 
 <div class="viewcode-block" id="Vortex_Lattice_Method.initialize">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method.html#RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method.Vortex_Lattice_Method.initialize">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  
-        <span class="n">use_surrogate</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">use_surrogate</span>  
-
-        <span class="c1"># If we are using the surrogate</span>
-        <span class="k">if</span> <span class="n">use_surrogate</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span> 
-            <span class="c1"># sample training data</span>
-            <span class="n">train_VLM_surrogates</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-
-            <span class="c1"># build surrogate</span>
-            <span class="n">build_VLM_surrogates</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>  
-    
-        <span class="c1"># build the evaluation process</span>
-        <span class="n">compute</span>   <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">compute</span>                  
-        <span class="k">if</span> <span class="n">use_surrogate</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span> 
-            <span class="n">compute</span><span class="o">.</span><span class="n">lift</span><span class="o">.</span><span class="n">inviscid_wings</span>  <span class="o">=</span> <span class="n">evaluate_surrogate</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">compute</span><span class="o">.</span><span class="n">lift</span><span class="o">.</span><span class="n">inviscid_wings</span>  <span class="o">=</span> <span class="n">evaluate_no_surrogate</span>  
+    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">):</span> 
+        
+        <span class="c1"># compute neutral point </span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">compute_neutral_point</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> Computing neutral point ...&quot;</span><span class="p">)</span>
+            <span class="n">compute_neutral_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">)</span>  
+        <span class="k">elif</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">neutral_point</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Neutral point not defined.&#39;</span><span class="p">)</span>
         <span class="k">return</span> </div>
 
     
          
 <div class="viewcode-block" id="Vortex_Lattice_Method.evaluate">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method.html#RCAIDE.Framework.Analyses.Stability.Vortex_Lattice_Method.Vortex_Lattice_Method.evaluate">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The default evaluate function.</span>
 
 <span class="sd">        Assumptions:</span>
@@ -622,8 +533,7 @@
 <span class="sd">        self.settings</span>
 <span class="sd">        self.vehicle</span>
 <span class="sd">        &quot;&quot;&quot;</span>          
-        <span class="n">settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span>
-        <span class="n">vehicle</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicle</span> 
+        <span class="n">settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> 
         <span class="n">results</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">settings</span><span class="p">,</span><span class="n">vehicle</span><span class="p">)</span>
         
         <span class="k">return</span> <span class="n">results</span></div>
@@ -661,8 +571,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -682,7 +592,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -696,7 +606,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Plots/Emissions/plot_CO2e_emissions';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Plots/Emissions/plot_CO2e_emissions.html" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script src="../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -377,99 +396,65 @@
                 <article class="bd-article">
                   
   <h1>Source code for RCAIDE.Library.Plots.Emissions.plot_CO2e_emissions</h1><div class="highlight"><pre>
-<span></span><span class="c1"># RCAIDE/Library/Plots/Emissions/plot_CO2e_emissions</span>
-<span class="c1"># </span>
-<span class="c1"># </span>
+<span></span><span class="c1"># RCAIDE/Library/Plots/Emissions/plot_gCO2e_emissions</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
 <span class="c1"># Created:  Jul 2024, M. Clarke</span>
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  IMPORT</span>
-<span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Units</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots.Common</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_axes</span><span class="p">,</span> <span class="n">plot_style</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots.Common</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_axes</span><span class="p">,</span> <span class="n">plot_style</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.cm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cm</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span> 
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  PLOTS</span>
-<span class="c1"># ----------------------------------------------------------------------------------------------------------------------   </span>
-<span class="c1">## @ingroup Library-Plots-Performance-Emissions </span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <div class="viewcode-block" id="plot_CO2e_emissions">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Plots.Emissions.plot_CO2e_emissions.html#RCAIDE.Library.Plots.Emissions.plot_CO2e_emissions.plot_CO2e_emissions">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_CO2e_emissions</span><span class="p">(</span><span class="n">results</span><span class="p">,</span>
-                             <span class="n">save_figure</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                             <span class="n">show_legend</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                             <span class="n">save_filename</span> <span class="o">=</span> <span class="s2">&quot;CO2e_Emissions&quot;</span> <span class="p">,</span>
-                             <span class="n">file_type</span> <span class="o">=</span> <span class="s2">&quot;.png&quot;</span><span class="p">,</span>
-                             <span class="n">width</span> <span class="o">=</span> <span class="mi">11</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="mi">7</span><span class="p">):</span>
+                    <span class="n">save_figure</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                    <span class="n">save_filename</span> <span class="o">=</span> <span class="s2">&quot;CO2e_Emissions&quot;</span> <span class="p">,</span>
+                    <span class="n">show_legend</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="n">file_type</span> <span class="o">=</span> <span class="s2">&quot;.png&quot;</span><span class="p">,</span>
+                    <span class="n">width</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="mi">5</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generate plots showing CO2-equivalent emissions over mission segments.</span>
+<span class="sd">    Generate a plot showing cumulative gCO2e emissions over the mission.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    results : Data</span>
 <span class="sd">        Mission results data structure containing:</span>
-<span class="sd">        results.segments[i].conditions.emissions.total with fields:</span>
-<span class="sd">            - CO2 : array</span>
-<span class="sd">                Carbon dioxide emissions [kg]</span>
-<span class="sd">            - NOx : array</span>
-<span class="sd">                Nitrogen oxide emissions [kg]</span>
-<span class="sd">            - H2O : array</span>
-<span class="sd">                Water vapor emissions [kg]</span>
-<span class="sd">            - Contrails : array</span>
-<span class="sd">                Contrail formation impact [kg CO2e]</span>
-<span class="sd">            - Soot : array</span>
-<span class="sd">                Particulate emissions [kg]</span>
-<span class="sd">            - SO2 : array</span>
-<span class="sd">                Sulfur dioxide emissions [kg]</span>
+<span class="sd">        results.segments[i].conditions.emissions with fields:</span>
+<span class="sd">            - cumulative_gCO2e : array</span>
+<span class="sd">                Cumulative GWP-weighted CO2 equivalent emissions [g CO2e]</span>
 
 <span class="sd">    save_figure : bool, optional</span>
 <span class="sd">        Save figure to file if True, default False</span>
 
-<span class="sd">    show_legend : bool, optional</span>
-<span class="sd">        Display segment legend if True, default True</span>
-
 <span class="sd">    save_filename : str, optional</span>
 <span class="sd">        Name for saved figure file, default &quot;CO2e_Emissions&quot;</span>
+
+<span class="sd">    show_legend : bool, optional</span>
+<span class="sd">        Show legend on the plot if True, default True   </span>
 
 <span class="sd">    file_type : str, optional</span>
 <span class="sd">        File extension for saved figure, default &quot;.png&quot;</span>
 
 <span class="sd">    width : float, optional</span>
-<span class="sd">        Figure width in inches, default 11</span>
+<span class="sd">        Figure width in inches, default 8</span>
 
 <span class="sd">    height : float, optional</span>
-<span class="sd">        Figure height in inches, default 7</span>
+<span class="sd">        Figure height in inches, default 5</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    fig : matplotlib.figure.Figure</span>
-<span class="sd">        Figure showing stacked emissions contributions</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    Creates a stacked area plot showing:</span>
-<span class="sd">        - Individual contributions from each emission type</span>
-<span class="sd">        - Cumulative total CO2-equivalent impact</span>
-<span class="sd">        - Breakdown by mission segment</span>
-<span class="sd">        - Time history of emissions</span>
-
-<span class="sd">    Different emission types are distinguished by fill colors</span>
-<span class="sd">    and segments use different shades from the inferno colormap.</span>
-
-<span class="sd">    **Definitions**</span>
-
-<span class="sd">    &#39;CO2-equivalent (CO2e)&#39;</span>
-<span class="sd">        Combined climate impact normalized to CO2</span>
-<span class="sd">    </span>
-<span class="sd">    &#39;Global Warming Potential (GWP)&#39;</span>
-<span class="sd">        Relative impact factor for different emissions</span>
-<span class="sd">    </span>
-<span class="sd">    &#39;Contrail Impact&#39;</span>
-<span class="sd">        Climate forcing from aviation-induced cloudiness</span>
-<span class="sd">    &quot;&quot;&quot;</span>
- 
+<span class="sd">        Figure showing cumulative gCO2e over the full mission timeline</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
     <span class="c1"># get plotting style </span>
     <span class="n">ps</span>      <span class="o">=</span> <span class="n">plot_style</span><span class="p">()</span>  
 
@@ -478,51 +463,40 @@
                   <span class="s1">&#39;ytick.labelsize&#39;</span><span class="p">:</span> <span class="n">ps</span><span class="o">.</span><span class="n">axis_font_size</span><span class="p">,</span>
                   <span class="s1">&#39;axes.titlesize&#39;</span><span class="p">:</span> <span class="n">ps</span><span class="o">.</span><span class="n">title_font_size</span><span class="p">}</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
-      
+     
+    <span class="c1"># get line colors for plots </span>
+    <span class="n">line_colors</span>   <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">inferno</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.9</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">)))</span>     
+     
     <span class="n">fig</span>   <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">save_filename</span><span class="p">)</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="n">width</span><span class="p">,</span><span class="n">height</span><span class="p">)</span> 
-    <span class="n">axis_1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="n">line_colors</span>   <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">inferno</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.9</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">)))</span>
-    
-    <span class="n">cum_y0</span>  <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">cum_y1</span>  <span class="o">=</span> <span class="mi">0</span> 
-    <span class="n">cum_y1_0</span> <span class="o">=</span> <span class="mi">0</span>  
-    
+    <span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="n">width</span><span class="p">,</span><span class="n">height</span><span class="p">)</span>
+     
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">)):</span> 
-        <span class="n">time</span>                <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">inertial</span><span class="o">.</span><span class="n">time</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">min</span> 
-        <span class="n">emissions_CO2</span>       <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">emissions</span><span class="o">.</span><span class="n">total</span><span class="o">.</span><span class="n">CO2</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>  
-        <span class="n">emissions_NOx</span>       <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">emissions</span><span class="o">.</span><span class="n">total</span><span class="o">.</span><span class="n">NOx</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> 
-        <span class="n">emissions_H2O</span>       <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">emissions</span><span class="o">.</span><span class="n">total</span><span class="o">.</span><span class="n">H2O</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> 
-        <span class="n">emissions_Contrails</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">emissions</span><span class="o">.</span><span class="n">total</span><span class="o">.</span><span class="n">Contrails</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
-        <span class="n">emissions_Soot</span>      <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">emissions</span><span class="o">.</span><span class="n">total</span><span class="o">.</span><span class="n">Soot</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
-        <span class="n">emissions_SO2</span>       <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">emissions</span><span class="o">.</span><span class="n">total</span><span class="o">.</span><span class="n">SO2</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>  
-
-        <span class="n">cum_y0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">emissions_CO2</span><span class="p">)</span>  
-        <span class="n">cum_y1</span> <span class="o">=</span> <span class="n">cum_y1_0</span> <span class="o">+</span> <span class="n">emissions_CO2</span> <span class="o">+</span>  <span class="n">emissions_NOx</span>  <span class="o">+</span> <span class="n">emissions_H2O</span>  <span class="o">+</span> <span class="n">emissions_Contrails</span> <span class="o">+</span>  <span class="n">emissions_Soot</span> <span class="o">+</span>  <span class="n">emissions_SO2</span>    
-
+        <span class="n">time</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">inertial</span><span class="o">.</span><span class="n">time</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">min</span>
+        <span class="n">gCO2e</span>   <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">emissions</span><span class="o">.</span><span class="n">cumulative_gCO2e</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mf">1E6</span>  
+                       
         <span class="n">segment_tag</span>  <span class="o">=</span>  <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">tag</span>
-        <span class="n">segment_name</span> <span class="o">=</span> <span class="n">segment_tag</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>    
-        <span class="n">axis_1</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">cum_y0</span><span class="p">,</span> <span class="n">cum_y1</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="p">(</span><span class="n">cum_y0</span> <span class="o">&lt;</span> <span class="n">cum_y1</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span> <span class="n">line_colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>  <span class="n">interpolate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="n">segment_name</span><span class="p">)</span>   
-        <span class="n">cum_y1_0</span> <span class="o">=</span> <span class="n">cum_y1</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> 
-                
-        <span class="n">axis_1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;CO2e Emissions (kg)&#39;</span><span class="p">)</span> 
-        <span class="n">set_axes</span><span class="p">(</span><span class="n">axis_1</span><span class="p">)</span>
-        
+        <span class="n">segment_name</span> <span class="o">=</span> <span class="n">segment_tag</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>
+        <span class="n">axis_1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> 
+        <span class="n">axis_1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">gCO2e</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">line_colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marker</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">markersize</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">marker_size</span><span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">line_width</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="n">segment_name</span><span class="p">)</span>            
+        <span class="n">axis_1</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">gCO2e</span><span class="p">)</span><span class="o">*</span><span class="mf">1.1</span><span class="p">])</span>
+        <span class="n">axis_1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$CO_2e$ (Metric Tons)&#39;</span><span class="p">)</span>    
+        <span class="n">axis_1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time (mins)&#39;</span><span class="p">)</span> 
+        <span class="n">set_axes</span><span class="p">(</span><span class="n">axis_1</span><span class="p">)</span>   
+
     <span class="k">if</span> <span class="n">show_legend</span><span class="p">:</span>
-        <span class="n">leg</span> <span class="o">=</span>  <span class="n">fig</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper center&#39;</span><span class="p">,</span> <span class="n">ncol</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span> 
-        <span class="n">leg</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Flight Segment&#39;</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="n">ps</span><span class="o">.</span><span class="n">legend_font_size</span><span class="p">,</span> <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="s1">&#39;heavy&#39;</span><span class="p">})</span>    
+        <span class="n">leg</span> <span class="o">=</span>  <span class="n">fig</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper center&#39;</span><span class="p">,</span> <span class="n">ncol</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span>  
     
-    <span class="c1"># Adjusting the sub-plots for legend </span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+    <span class="c1"># Adjusting the sub-plots for legend</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span> 
+    <span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span> 
     
     <span class="c1"># set title of plot </span>
-    <span class="n">title_text</span>    <span class="o">=</span> <span class="s1">&#39;CO2e Emissions&#39;</span>      
-    <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">title_text</span><span class="p">)</span>
+    <span class="n">title_text</span>    <span class="o">=</span> <span class="s1">&#39;Cumulative CO2e Emissions&#39;</span>      
+    <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">title_text</span><span class="p">)</span>    
     
     <span class="k">if</span> <span class="n">save_figure</span><span class="p">:</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_filename</span> <span class="o">+</span> <span class="n">file_type</span><span class="p">)</span>   
-    <span class="k">return</span> <span class="n">fig</span> </div>
+        <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_filename</span>   <span class="o">+</span> <span class="n">file_type</span><span class="p">)</span> 
+    <span class="k">return</span> <span class="n">fig</span></div>
 
 </pre></div>
 
@@ -553,8 +527,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -574,7 +548,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -588,7 +562,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

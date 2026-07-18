@@ -1,0 +1,25 @@
+RCAIDE.Library.Methods.Aeroacoustics.Metrics.EPNL_noise_metric
+
+EPNL\_noise\_metric
+===================
+
+.. automodule:: RCAIDE.Library.Methods.Aeroacoustics.Metrics.EPNL_noise_metric
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

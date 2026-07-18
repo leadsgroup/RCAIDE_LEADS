@@ -1,0 +1,25 @@
+RCAIDE.Library.Methods.Aeroacoustics.Physics_Based_Frequency_Domain.Rotor.TIP_broadband_noise
+
+TIP\_broadband\_noise
+=====================
+
+.. automodule:: RCAIDE.Library.Methods.Aeroacoustics.Physics_Based_Frequency_Domain.Rotor.TIP_broadband_noise
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

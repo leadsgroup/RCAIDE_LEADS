@@ -1,0 +1,34 @@
+RCAIDE.Library.Methods.Aeroacoustics.Physics_Based_Frequency_Domain
+
+Physics\_Based\_Frequency\_Domain
+=================================
+
+.. automodule:: RCAIDE.Library.Methods.Aeroacoustics.Physics_Based_Frequency_Domain
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   Rotor
+

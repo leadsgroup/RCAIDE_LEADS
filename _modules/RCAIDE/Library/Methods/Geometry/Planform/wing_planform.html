@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Methods/Geometry/Planform/wing_planform';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Methods/Geometry/Planform/wing_planform.html" />
     <link rel="index" title="Index" href="../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../../_static/language_data.js"></script>
+    <script src="../../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -377,136 +396,531 @@
                 <article class="bd-article">
                   
   <h1>Source code for RCAIDE.Library.Methods.Geometry.Planform.wing_planform</h1><div class="highlight"><pre>
-<span></span>
+<span></span><span class="c1"># RCAIDE/Library/Methods/Geometry/Planform/wing_planform.py</span>
+<span class="c1"># </span>
+<span class="c1"># </span>
+<span class="c1"># Created:  Jul 2024, M. Clarke </span>
 
-<span class="c1"># ----------------------------------------------------------------------</span>
-<span class="c1">#  Imports</span>
-<span class="c1"># ----------------------------------------------------------------------</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  IMPORT</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Geometry.Planform.convert_sweep</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_sweep_segments</span><span class="p">,</span> <span class="n">convert_sweep</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Geometry.Airfoil</span><span class="w">                </span><span class="kn">import</span>  <span class="n">compute_naca_4series</span><span class="p">,</span> <span class="n">import_airfoil_geometry</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Geometry.Planform.compute_segment_centroid</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_segment_centroid</span>
 
+<span class="c1"># package imports </span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="c1"># ----------------------------------------------------------------------</span>
-<span class="c1">#  Methods</span>
-<span class="c1"># ----------------------------------------------------------------------</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  Wing Segmented Planform</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------    </span>
 <div class="viewcode-block" id="wing_planform">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Methods.Geometry.Planform.wing_planform.html#RCAIDE.Library.Methods.Geometry.Planform.wing_planform.wing_planform">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">wing_planform</span><span class="p">(</span><span class="n">wing</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes standard wing planform values.</span>
-
+<span class="sd">    </span>
 <span class="sd">    Assumptions:</span>
-<span class="sd">    Trapezoidal wing with no leading/trailing edge extensions</span>
-
+<span class="sd">    Multisegmented wing. There is no unexposed wetted area, ie wing area that </span>
+<span class="sd">    intersects inside a fuselage. Aerodynamic center is at 25% mean aerodynamic chord.</span>
+<span class="sd">    </span>
 <span class="sd">    Source:</span>
 <span class="sd">    None</span>
+<span class="sd">    </span>
+<span class="sd">    Inputs: </span>
+<span class="sd">    wing.</span>
+<span class="sd">      chords.root              [m]</span>
+<span class="sd">      spans.projected          [m]</span>
+<span class="sd">      symmetric                &lt;boolean&gt; Determines if wing is symmetric</span>
+<span class="sd">    </span>
+<span class="sd">    Outputs:</span>
+<span class="sd">    wing.</span>
+<span class="sd">      spans.total                [m]</span>
+<span class="sd">      chords.tip                 [m]</span>
+<span class="sd">      chords.mean_aerodynamics   [m]</span>
+<span class="sd">      wing.chords.mean_geometric [m]</span>
+<span class="sd">      areas.reference            [m^2]</span>
+<span class="sd">      taper                      [-]</span>
+<span class="sd">      sweeps.quarter_chord       [radians]</span>
+<span class="sd">      aspect_ratio               [-]</span>
+<span class="sd">      thickness_to_chord         [-]</span>
+<span class="sd">      dihedral                   [radians]</span>
+<span class="sd">      </span>
+<span class="sd">      aerodynamic_center         [m]      x, y, and z location</span>
+
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    Properties Used:</span>
+<span class="sd">    N/A</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+    <span class="n">sym</span>  <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">xz_plane_symmetric</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span> 
+        <span class="c1"># Unpack</span>
+        <span class="n">RC</span>       <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span>
+        <span class="n">vertical</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">vertical</span>
+        <span class="n">span</span>     <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span>
+        
+        <span class="c1"># Pull all the segment data into array format</span>
+        <span class="n">span_locs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">twists</span>    <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">sweeps</span>    <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">dihedrals</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">chords</span>    <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">t_cs</span>      <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">seg_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>  
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">)):</span> 
+            <span class="n">seg</span>       <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_keys</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+            <span class="n">span_locs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">percent_span_location</span><span class="p">)</span>
+            <span class="n">twists</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">twist</span><span class="p">)</span>
+            <span class="n">chords</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">root_chord_percent</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span>  <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">sweeps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sweeps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">seg</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span> <span class="o">=</span> <span class="n">sweeps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">seg</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">leading_edge</span>  <span class="o">=</span> <span class="n">sweeps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">seg</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span> <span class="o">!=</span>  <span class="kc">None</span><span class="p">:</span> 
+                    <span class="n">sweeps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span><span class="p">)</span>                
+                
+                <span class="k">elif</span> <span class="n">seg</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">and</span>  <span class="n">seg</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">leading_edge</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># covert leading edge to quarter chord</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">sweeps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                        <span class="n">seg</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="k">else</span><span class="p">:</span> 
+                        <span class="n">next_seg</span>  <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_keys</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span>                
+                        <span class="n">quarter_chord_sweep</span> <span class="o">=</span>  <span class="n">convert_sweep_segments</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">leading_edge</span><span class="p">,</span> <span class="n">seg</span><span class="p">,</span> <span class="n">next_seg</span><span class="p">,</span> <span class="n">wing</span><span class="p">,</span> <span class="n">old_ref_chord_fraction</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">new_ref_chord_fraction</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+                        <span class="n">sweeps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">quarter_chord_sweep</span><span class="p">)</span>
+                        <span class="n">seg</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span> <span class="o">=</span> <span class="n">quarter_chord_sweep</span> 
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;Quarter chord or leading edge sweep must be defined&quot;</span><span class="p">)</span> 
+             
+            <span class="k">if</span> <span class="n">seg</span><span class="o">.</span><span class="n">airfoil</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span> 
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">airfoil</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">NACA_4_Series_Airfoil</span><span class="p">:</span> <span class="c1"># check if naca 4 series of airfoil from datafile</span>
+                    <span class="n">seg</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">geometry</span> <span class="o">=</span> <span class="n">compute_naca_4series</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">NACA_4_Series_code</span><span class="p">)</span> 
+                    <span class="n">seg</span><span class="o">.</span><span class="n">thickness_to_chord</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">thickness_to_chord</span> 
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">seg</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">geometry</span> <span class="o">=</span> <span class="n">import_airfoil_geometry</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">coordinate_file</span><span class="p">)</span> 
+                    <span class="n">seg</span><span class="o">.</span><span class="n">thickness_to_chord</span> <span class="o">=</span>  <span class="n">seg</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">thickness_to_chord</span>                 
+            
+                <span class="n">t_cs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">thickness_to_chord</span><span class="p">)</span> 
+            <span class="k">else</span><span class="p">:</span> 
+                <span class="n">t_cs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">thickness_to_chord</span><span class="p">)</span>
+            <span class="n">dihedrals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">dihedral_outboard</span><span class="p">)</span>
+            
+        <span class="c1"># Convert to arrays</span>
+        <span class="n">chords</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chords</span><span class="p">)</span>
+        <span class="n">span_locs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">span_locs</span><span class="p">)</span>
+        <span class="n">sweeps</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sweeps</span><span class="p">)</span>
+        <span class="n">t_cs</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t_cs</span><span class="p">)</span>
+        
+        <span class="c1"># Basic calcs:</span>
+        <span class="n">semispan</span>     <span class="o">=</span> <span class="n">span</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">sym</span><span class="p">)</span>
+        <span class="n">lengths_ndim</span> <span class="o">=</span> <span class="n">span_locs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">-</span><span class="n">span_locs</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">lengths_dim</span>  <span class="o">=</span> <span class="n">lengths_ndim</span><span class="o">*</span><span class="n">semispan</span>
+        <span class="n">chords_dim</span>   <span class="o">=</span> <span class="n">RC</span><span class="o">*</span><span class="n">chords</span>
+        <span class="n">tapers</span>       <span class="o">=</span> <span class="n">chords</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">/</span><span class="n">chords</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        
+        <span class="c1"># Calculate the areas of each segment</span>
+        <span class="n">As</span> <span class="o">=</span> <span class="p">(</span><span class="n">lengths_dim</span><span class="o">*</span><span class="n">chords_dim</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="p">(</span><span class="n">chords_dim</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">chords_dim</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span><span class="o">*</span><span class="p">(</span><span class="n">lengths_dim</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span> 
+        <span class="n">Af</span> <span class="o">=</span> <span class="n">lengths_dim</span><span class="o">*</span><span class="p">((</span><span class="n">chords_dim</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">t_cs</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">chords_dim</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">*</span><span class="n">t_cs</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># Calculate the wing area</span>
+        <span class="n">ref_area</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">As</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">sym</span><span class="p">)</span>
+        <span class="n">frontal_area</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Af</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">sym</span><span class="p">)</span>
+        
+        <span class="c1"># Calculate the Aspect Ratio</span>
+        <span class="n">AR</span> <span class="o">=</span> <span class="p">(</span><span class="n">span</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">ref_area</span>
+        
+        <span class="c1"># Calculate the total span</span>
+        <span class="n">lens</span> <span class="o">=</span> <span class="n">lengths_dim</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">dihedrals</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">total_len</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lens</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">sym</span><span class="p">)</span>
+        
+        <span class="c1"># Calculate the mean geometric chord</span>
+        <span class="n">mgc</span> <span class="o">=</span> <span class="n">ref_area</span><span class="o">/</span><span class="n">span</span>
+        
+        <span class="c1"># Calculate the mean aerodynamic chord</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">chords_dim</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span><span class="o">-</span><span class="n">chords_dim</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="n">lengths_ndim</span><span class="p">)</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="n">span_locs</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">integral</span> <span class="o">=</span> <span class="p">((</span><span class="n">A</span><span class="o">+</span><span class="n">B</span><span class="o">*</span><span class="p">(</span><span class="n">span_locs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">-</span><span class="n">C</span><span class="p">))</span><span class="o">**</span><span class="mi">3</span><span class="o">-</span><span class="p">(</span><span class="n">A</span><span class="o">+</span><span class="n">B</span><span class="o">*</span><span class="p">(</span><span class="n">span_locs</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">C</span><span class="p">))</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">B</span><span class="p">)</span>
+        <span class="c1"># For the cases when the wing doesn&#39;t taper in a spot</span>
+        <span class="n">integral</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">integral</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">integral</span><span class="p">)]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="p">((</span><span class="n">lengths_ndim</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">integral</span><span class="p">)])</span>
+        <span class="n">MAC</span> <span class="o">=</span> <span class="p">(</span><span class="n">semispan</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">sym</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">ref_area</span><span class="p">))</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">integral</span><span class="p">)</span>
+        
+        <span class="c1"># Calculate the taper ratio</span>
+        <span class="n">lamda</span> <span class="o">=</span> <span class="n">chords</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">chords</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        
+        <span class="c1"># the tip chord</span>
+        <span class="n">ct</span> <span class="o">=</span> <span class="n">chords_dim</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        
+        <span class="c1"># Calculate an average t/c weighted by area</span>
+        <span class="n">t_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">As</span><span class="o">*</span><span class="n">t_cs</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">ref_area</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        
+        <span class="c1"># Calculate the segment leading edge sweeps</span>
+        <span class="n">r_offsets</span> <span class="o">=</span> <span class="n">chords_dim</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">4</span>
+        <span class="n">t_offsets</span> <span class="o">=</span> <span class="n">chords_dim</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">/</span><span class="mi">4</span>
+        <span class="n">le_sweeps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">((</span><span class="n">r_offsets</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">sweeps</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">lengths_dim</span><span class="p">)</span><span class="o">-</span><span class="n">t_offsets</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">lengths_dim</span><span class="p">))</span> 
+        <span class="n">le_sweeps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">le_sweeps</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        
+        <span class="c1"># Calculate the effective sweeps</span>
+        <span class="n">c_4_sweep</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lengths_ndim</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">sweeps</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])))</span>
+        <span class="n">le_sweep_total</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lengths_ndim</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">le_sweeps</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])))</span>
+    
+        <span class="c1"># Calculate the aerodynamic center, but first the centroid</span>
+        <span class="n">dxs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]),</span><span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">le_sweeps</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="n">lengths_dim</span><span class="p">]))</span>
+        <span class="n">dys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]),</span><span class="n">lengths_dim</span><span class="p">]))</span>
+        <span class="n">dzs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]),</span><span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">dihedrals</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="n">lengths_dim</span><span class="p">]))</span>
+        
+        <span class="n">Cxys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lengths_dim</span><span class="p">)):</span>
+            <span class="n">Cxys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">compute_segment_centroid</span><span class="p">(</span><span class="n">le_sweeps</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">lengths_dim</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">dxs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">dys</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">dzs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">tapers</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> 
+                                         <span class="n">dihedrals</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">chords_dim</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">chords_dim</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]))</span>
+    
+        <span class="n">aerodynamic_center</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">Cxys</span><span class="p">),</span><span class="n">As</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">ref_area</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">sym</span><span class="p">)))</span>
+        
+        
+        <span class="n">single_side_aerodynamic_center</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">aerodynamic_center</span><span class="p">)</span><span class="o">*</span><span class="mf">1.</span><span class="p">)</span>
+        <span class="n">single_side_aerodynamic_center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">single_side_aerodynamic_center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">MAC</span><span class="o">*</span><span class="mf">.25</span>    
+        <span class="k">if</span> <span class="n">sym</span><span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">aerodynamic_center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span> 
+            
+        <span class="n">aerodynamic_center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">single_side_aerodynamic_center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        
+        <span class="c1"># Total length for supersonics</span>
+        <span class="n">total_length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">le_sweep_total</span><span class="p">)</span><span class="o">*</span><span class="n">semispan</span> <span class="o">+</span> <span class="n">chords</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">RC</span>
+        
+        <span class="k">if</span> <span class="n">vertical</span><span class="p">:</span> 
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">)):</span>
+                <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_keys</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">leading_edge</span> <span class="o">=</span> <span class="n">le_sweeps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_keys</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">origin</span> <span class="o">=</span> <span class="p">[[</span><span class="n">dxs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">dzs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">dys</span><span class="p">[</span><span class="n">i</span><span class="p">]]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">)):</span>
+                <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_keys</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">leading_edge</span> <span class="o">=</span> <span class="n">le_sweeps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_keys</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">origin</span> <span class="o">=</span> <span class="p">[[</span><span class="n">dxs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">dys</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">dzs</span><span class="p">[</span><span class="n">i</span><span class="p">]]]</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">total</span>                     <span class="o">=</span> <span class="n">total_len</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_geometric</span>           <span class="o">=</span> <span class="n">mgc</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_aerodynamic</span>         <span class="o">=</span> <span class="n">MAC</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">tip</span>                      <span class="o">=</span> <span class="n">ct</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">taper</span>                           <span class="o">=</span> <span class="n">lamda</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">projected</span>                 <span class="o">=</span> <span class="n">ref_area</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span>                 <span class="o">=</span> <span class="n">ref_area</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">front_projected</span>           <span class="o">=</span> <span class="n">frontal_area</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span>            <span class="o">=</span> <span class="n">c_4_sweep</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">leading_edge</span>             <span class="o">=</span> <span class="n">le_sweep_total</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">thickness_to_chord</span>              <span class="o">=</span> <span class="n">t_c</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">aerodynamic_center</span>              <span class="o">=</span> <span class="n">aerodynamic_center</span> 
+        <span class="n">wing</span><span class="o">.</span><span class="n">total_length</span>                    <span class="o">=</span> <span class="n">total_length</span>  
+        <span class="n">wing</span><span class="o">.</span><span class="n">aspect_ratio</span>                    <span class="o">=</span> <span class="n">AR</span>
+            
+        <span class="c1"># update remainder segment properties</span>
+        <span class="n">segment_properties</span><span class="p">(</span><span class="n">wing</span><span class="p">)</span> 
+        
+        <span class="c1"># compute trap area </span>
+        <span class="n">seg_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>  
+        <span class="k">for</span> <span class="n">tag</span><span class="p">,</span> <span class="n">segment</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">):</span> 
+            <span class="k">if</span> <span class="n">segment</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">reference_area_root</span><span class="p">:</span>                      
+                <span class="n">segment_root_chord</span>       <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_keys</span><span class="p">[</span><span class="n">tag</span><span class="p">]]</span><span class="o">.</span><span class="n">root_chord_percent</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span> 
+                <span class="n">segment_tip_chord</span>        <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_keys</span><span class="p">[</span><span class="n">tag</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">root_chord_percent</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span> 
+                <span class="n">segnent_start_span</span>       <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_keys</span><span class="p">[</span><span class="n">tag</span><span class="p">]]</span><span class="o">.</span><span class="n">percent_span_location</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span>
+                <span class="n">reference_wing_span</span>      <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_keys</span><span class="p">[</span><span class="n">tag</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">percent_span_location</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span>
+    
+                <span class="n">next_seg</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_keys</span><span class="p">[</span><span class="n">tag</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="n">trailing_edge_sweep</span> <span class="o">=</span> <span class="n">convert_sweep_segments</span><span class="p">(</span><span class="n">segment</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span><span class="p">,</span> <span class="n">segment</span><span class="p">,</span> <span class="n">next_seg</span><span class="p">,</span> <span class="n">wing</span><span class="p">,</span> <span class="n">old_ref_chord_fraction</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">new_ref_chord_fraction</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span> 
+                <span class="n">leading_edge_sweep</span>  <span class="o">=</span> <span class="n">convert_sweep_segments</span><span class="p">(</span><span class="n">segment</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span><span class="p">,</span> <span class="n">segment</span><span class="p">,</span> <span class="n">next_seg</span><span class="p">,</span> <span class="n">wing</span><span class="p">,</span> <span class="n">old_ref_chord_fraction</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">new_ref_chord_fraction</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span> 
+    
+                <span class="n">projected_root_chord</span> <span class="o">=</span> <span class="n">segment_root_chord</span> <span class="o">+</span> <span class="n">segnent_start_span</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">leading_edge_sweep</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">trailing_edge_sweep</span><span class="p">))</span>
+                <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span> <span class="o">=</span> <span class="p">(</span><span class="n">projected_root_chord</span> <span class="o">+</span> <span class="n">segment_tip_chord</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span> <span class="o">*</span> <span class="n">reference_wing_span</span>        
+        
+    <span class="k">else</span><span class="p">:</span> 
+        <span class="c1"># unpack</span>
+        <span class="n">sref</span>        <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span>
+        <span class="n">taper</span>       <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">taper</span>
+        <span class="n">sweep</span>       <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span>
+        <span class="n">ar</span>          <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">aspect_ratio</span>
+        <span class="n">dihedral</span>    <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">dihedral</span> 
+        <span class="n">vertical</span>    <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">vertical</span>
+        <span class="n">symmetric</span>   <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">xz_plane_symmetric</span>  
+        <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">airfoil</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span> 
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">airfoil</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">NACA_4_Series_Airfoil</span><span class="p">:</span> <span class="c1"># check if naca 4 series of airfoil from datafile</span>
+                <span class="n">wing</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">geometry</span> <span class="o">=</span> <span class="n">compute_naca_4series</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">NACA_4_Series_code</span><span class="p">)</span> 
+                <span class="n">wing</span><span class="o">.</span><span class="n">thickness_to_chord</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">thickness_to_chord</span> 
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">wing</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">geometry</span>   <span class="o">=</span> <span class="n">import_airfoil_geometry</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">coordinate_file</span><span class="p">)</span> 
+                <span class="n">wing</span><span class="o">.</span><span class="n">thickness_to_chord</span> <span class="o">=</span>  <span class="n">wing</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">thickness_to_chord</span> 
+                
+        <span class="n">t_c_w</span>  <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">thickness_to_chord</span>   
+        
+        <span class="c1"># calculate</span>
+        <span class="n">span</span>       <span class="o">=</span> <span class="p">(</span><span class="n">ar</span><span class="o">*</span><span class="n">sref</span><span class="p">)</span><span class="o">**</span><span class="mf">.5</span>
+        <span class="n">semispan</span>   <span class="o">=</span> <span class="n">span</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">sym</span><span class="p">)</span>
+        <span class="n">span_total</span> <span class="o">=</span> <span class="n">span</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">dihedral</span><span class="p">)</span>
+        <span class="n">chord_root</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">sref</span><span class="o">/</span><span class="n">span</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">taper</span><span class="p">)</span>
+        <span class="n">chord_tip</span>  <span class="o">=</span> <span class="n">taper</span> <span class="o">*</span> <span class="n">chord_root</span>
+        <span class="n">mgc</span>        <span class="o">=</span> <span class="p">(</span><span class="n">chord_root</span><span class="o">+</span><span class="n">chord_tip</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span> 
+        <span class="n">swet</span>       <span class="o">=</span> <span class="mf">2.</span><span class="o">*</span><span class="n">span</span><span class="o">/</span><span class="mf">2.</span><span class="o">*</span><span class="p">(</span><span class="n">chord_root</span><span class="o">+</span><span class="n">chord_tip</span><span class="p">)</span> <span class="o">*</span>  <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="mf">0.2</span><span class="o">*</span><span class="n">t_c_w</span><span class="p">)</span> 
+        <span class="n">mac</span>        <span class="o">=</span> <span class="mf">2.</span><span class="o">/</span><span class="mf">3.</span><span class="o">*</span><span class="p">(</span> <span class="n">chord_root</span><span class="o">+</span><span class="n">chord_tip</span> <span class="o">-</span> <span class="n">chord_root</span><span class="o">*</span><span class="n">chord_tip</span><span class="o">/</span><span class="p">(</span><span class="n">chord_root</span><span class="o">+</span><span class="n">chord_tip</span><span class="p">)</span> <span class="p">)</span>
+        
+        <span class="c1"># calculate leading edge sweep</span>
+        <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">leading_edge</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">le_sweep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">sweep</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="mf">4.</span><span class="o">/</span><span class="n">ar</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">0.</span><span class="o">-</span><span class="mf">0.25</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">taper</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span><span class="o">+</span><span class="n">taper</span><span class="p">)</span> <span class="p">)</span>
+            <span class="n">wing</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">leading_edge</span> <span class="o">=</span> <span class="n">le_sweep</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">le_sweep</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">leading_edge</span>
+            <span class="n">wing</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span> <span class="o">=</span> <span class="n">convert_sweep</span><span class="p">(</span><span class="n">wing</span><span class="p">,</span><span class="n">old_ref_chord_fraction</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span><span class="n">new_ref_chord_fraction</span> <span class="o">=</span> <span class="mf">0.25</span><span class="p">)</span>
+        
+        <span class="c1"># estimating aerodynamic center coordinates</span>
+        <span class="n">y_coord</span> <span class="o">=</span> <span class="n">span</span> <span class="o">/</span> <span class="mf">6.</span> <span class="o">*</span> <span class="p">((</span> <span class="mf">1.</span> <span class="o">+</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">taper</span> <span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">taper</span><span class="p">))</span>
+        <span class="n">x_coord</span> <span class="o">=</span> <span class="n">mac</span> <span class="o">*</span> <span class="mf">0.25</span> <span class="o">+</span> <span class="n">y_coord</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">le_sweep</span><span class="p">)</span>
+        <span class="n">z_coord</span> <span class="o">=</span> <span class="n">y_coord</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">dihedral</span><span class="p">)</span>
+            
+        <span class="k">if</span> <span class="n">vertical</span><span class="p">:</span>
+            <span class="n">temp</span>    <span class="o">=</span> <span class="n">y_coord</span> <span class="o">*</span> <span class="mf">1.</span>
+            <span class="n">y_coord</span> <span class="o">=</span> <span class="n">z_coord</span> <span class="o">*</span> <span class="mf">1.</span>
+            <span class="n">z_coord</span> <span class="o">=</span> <span class="n">temp</span>
+    
+        <span class="k">if</span> <span class="n">symmetric</span><span class="p">:</span>
+            <span class="n">y_coord</span> <span class="o">=</span> <span class="mi">0</span>    
+        
+        <span class="c1"># Total length calculation</span>
+        <span class="n">total_length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">le_sweep</span><span class="p">)</span><span class="o">*</span><span class="n">span</span><span class="o">/</span><span class="mf">2.</span> <span class="o">+</span> <span class="n">chord_tip</span>
+            
+        <span class="c1"># update</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span>                <span class="o">=</span> <span class="n">chord_root</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">tip</span>                 <span class="o">=</span> <span class="n">chord_tip</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_aerodynamic</span>    <span class="o">=</span> <span class="n">mac</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_geometric</span>      <span class="o">=</span> <span class="n">mgc</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">leading_edge</span>        <span class="o">=</span> <span class="n">le_sweep</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span>               <span class="o">=</span> <span class="n">swet</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">projected</span>            <span class="o">=</span> <span class="n">sref</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">front_projected</span>      <span class="o">=</span> <span class="n">span</span><span class="o">*</span><span class="n">mgc</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span>            <span class="o">=</span> <span class="n">span</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">total</span>                <span class="o">=</span> <span class="n">span_total</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">aerodynamic_center</span>         <span class="o">=</span> <span class="p">[</span><span class="n">x_coord</span> <span class="p">,</span> <span class="n">y_coord</span><span class="p">,</span> <span class="n">z_coord</span><span class="p">]</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">total_length</span>               <span class="o">=</span> <span class="n">total_length</span> 
+
+        <span class="c1"># estimate LEMAC</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">LEMAC</span> <span class="o">=</span>  <span class="n">wing</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">leading_edge</span><span class="p">)</span> <span class="o">*</span> <span class="n">y_coord</span>  
+
+        <span class="n">segment</span>                               <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Segment</span><span class="p">()</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">tag</span>                           <span class="o">=</span> <span class="s1">&#39;root&#39;</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">percent_span_location</span>         <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">root_chord_percent</span>            <span class="o">=</span> <span class="mf">1.0</span> 
+        <span class="n">segment</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">leading_edge</span>           <span class="o">=</span> <span class="n">le_sweep</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span>          <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">dihedral_outboard</span>             <span class="o">=</span> <span class="n">dihedral</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">thickness_to_chord</span>            <span class="o">=</span> <span class="n">t_c_w</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">append_segment</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>  
+
+        <span class="n">segment</span>                               <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Segment</span><span class="p">()</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">tag</span>                           <span class="o">=</span> <span class="s1">&#39;tip&#39;</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">percent_span_location</span>         <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">root_chord_percent</span>            <span class="o">=</span> <span class="n">taper</span>  
+        <span class="n">segment</span><span class="o">.</span><span class="n">thickness_to_chord</span>            <span class="o">=</span> <span class="n">t_c_w</span>
+        
+        <span class="k">if</span> <span class="n">vertical</span><span class="p">:</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">le_sweep</span><span class="p">)</span> <span class="o">*</span> <span class="n">semispan</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">dihedral</span><span class="p">)</span> <span class="o">*</span> <span class="n">semispan</span>
+            <span class="n">dz</span> <span class="o">=</span> <span class="n">semispan</span>
+            <span class="n">segment</span><span class="o">.</span><span class="n">origin</span>   <span class="o">=</span> <span class="p">[[</span><span class="n">dx</span><span class="p">,</span>  <span class="n">dy</span> <span class="p">,</span> <span class="n">semispan</span> <span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">le_sweep</span><span class="p">)</span> <span class="o">*</span> <span class="n">semispan</span> 
+            <span class="n">dz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">dihedral</span><span class="p">)</span> <span class="o">*</span> <span class="n">semispan</span>
+            <span class="n">segment</span><span class="o">.</span><span class="n">origin</span>   <span class="o">=</span> <span class="p">[[</span><span class="n">dx</span><span class="p">,</span> <span class="n">semispan</span>  <span class="p">,</span> <span class="n">dz</span> <span class="p">]]</span> 
+        <span class="n">wing</span><span class="o">.</span><span class="n">append_segment</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>     
+
+        <span class="n">segment_properties</span><span class="p">(</span><span class="n">wing</span><span class="p">)</span> 
+      
+    <span class="c1"># control surface  </span>
+    <span class="n">taper</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">taper</span> 
+    <span class="n">Sw</span>    <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span>                
+    <span class="n">bw</span>    <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span>               
+    <span class="k">for</span> <span class="n">cs</span> <span class="ow">in</span>  <span class="n">wing</span><span class="o">.</span><span class="n">control_surfaces</span><span class="p">:</span>    
+        <span class="n">cs_span</span>                 <span class="o">=</span> <span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">span_fraction_end</span> <span class="o">-</span> <span class="n">cs</span><span class="o">.</span><span class="n">span_fraction_start</span><span class="p">)</span> <span class="o">*</span> <span class="n">bw</span>
+        <span class="n">chord_root</span>              <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">Sw</span><span class="o">/</span><span class="n">bw</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">taper</span><span class="p">)</span> 
+        <span class="n">chord_tip</span>               <span class="o">=</span> <span class="n">taper</span> <span class="o">*</span> <span class="n">chord_root</span>
+        <span class="n">delta_chord</span>             <span class="o">=</span> <span class="n">chord_tip</span> <span class="o">-</span> <span class="n">chord_root</span> 
+        <span class="n">wing_chord_cs_start</span>     <span class="o">=</span> <span class="n">chord_root</span> <span class="o">+</span> <span class="n">delta_chord</span> <span class="o">*</span> <span class="n">cs</span><span class="o">.</span><span class="n">span_fraction_start</span> 
+        <span class="n">wing_chord_cs_end</span>       <span class="o">=</span> <span class="n">chord_root</span> <span class="o">+</span> <span class="n">delta_chord</span> <span class="o">*</span> <span class="n">cs</span><span class="o">.</span><span class="n">span_fraction_end</span>
+        <span class="n">cs_chord_start</span>          <span class="o">=</span> <span class="n">wing_chord_cs_start</span><span class="o">*</span> <span class="n">cs</span><span class="o">.</span><span class="n">chord_fraction</span> 
+        <span class="n">cs_chord_end</span>            <span class="o">=</span> <span class="n">wing_chord_cs_end</span><span class="o">*</span> <span class="n">cs</span><span class="o">.</span><span class="n">chord_fraction</span>   
+        <span class="n">cf</span>                      <span class="o">=</span> <span class="p">(</span><span class="n">cs_chord_start</span> <span class="o">+</span><span class="n">cs_chord_end</span><span class="p">)</span> <span class="o">/</span><span class="mi">2</span>  
+        <span class="n">Sf</span>                      <span class="o">=</span> <span class="n">cs_span</span> <span class="o">*</span> <span class="n">cf</span>
+        <span class="n">cs</span><span class="o">.</span><span class="n">area</span>                 <span class="o">=</span> <span class="n">Sf</span> 
+        <span class="n">cs</span><span class="o">.</span><span class="n">span</span>                 <span class="o">=</span> <span class="n">cs_span</span>
+        <span class="n">cs</span><span class="o">.</span><span class="n">root_chord</span>           <span class="o">=</span> <span class="n">cs_chord_start</span>
+        <span class="n">cs</span><span class="o">.</span><span class="n">tip_chord</span>            <span class="o">=</span> <span class="n">cs_chord_end</span> 
+
+    <span class="n">seg_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>  
+    <span class="k">for</span> <span class="n">tag</span><span class="p">,</span> <span class="n">segment</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">):</span> 
+        <span class="k">if</span> <span class="n">segment</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">reference_area_root</span><span class="p">:</span>                      
+            <span class="n">segment_root_chord</span>       <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_keys</span><span class="p">[</span><span class="n">tag</span><span class="p">]]</span><span class="o">.</span><span class="n">root_chord_percent</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span> 
+            <span class="n">segment_tip_chord</span>        <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_keys</span><span class="p">[</span><span class="n">tag</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">root_chord_percent</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span> 
+            <span class="n">segnent_start_span</span>       <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_keys</span><span class="p">[</span><span class="n">tag</span><span class="p">]]</span><span class="o">.</span><span class="n">percent_span_location</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span>
+            <span class="n">reference_wing_span</span>      <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_keys</span><span class="p">[</span><span class="n">tag</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">percent_span_location</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span>
+
+            <span class="n">next_seg</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_keys</span><span class="p">[</span><span class="n">tag</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="n">trailing_edge_sweep</span> <span class="o">=</span> <span class="n">convert_sweep_segments</span><span class="p">(</span><span class="n">segment</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span><span class="p">,</span> <span class="n">segment</span><span class="p">,</span> <span class="n">next_seg</span><span class="p">,</span> <span class="n">wing</span><span class="p">,</span> <span class="n">old_ref_chord_fraction</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">new_ref_chord_fraction</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span> 
+            <span class="n">leading_edge_sweep</span>  <span class="o">=</span> <span class="n">convert_sweep_segments</span><span class="p">(</span><span class="n">segment</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span><span class="p">,</span> <span class="n">segment</span><span class="p">,</span> <span class="n">next_seg</span><span class="p">,</span> <span class="n">wing</span><span class="p">,</span> <span class="n">old_ref_chord_fraction</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">new_ref_chord_fraction</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span> 
+
+            <span class="n">projected_root_chord</span> <span class="o">=</span> <span class="n">segment_root_chord</span> <span class="o">+</span> <span class="n">segnent_start_span</span><span class="o">/</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">leading_edge_sweep</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">trailing_edge_sweep</span><span class="p">))</span>
+            <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span> <span class="o">=</span> <span class="p">(</span><span class="n">projected_root_chord</span> <span class="o">+</span> <span class="n">segment_tip_chord</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span> <span class="o">*</span> <span class="n">reference_wing_span</span>
+            <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_aerodynamic</span> <span class="o">=</span>   <span class="mf">2.</span><span class="o">/</span><span class="mf">3.</span><span class="o">*</span><span class="p">(</span> <span class="n">projected_root_chord</span><span class="o">+</span><span class="n">segment_tip_chord</span> <span class="o">-</span> <span class="n">projected_root_chord</span><span class="o">*</span><span class="n">segment_tip_chord</span><span class="o">/</span><span class="p">(</span><span class="n">projected_root_chord</span><span class="o">+</span><span class="n">segment_tip_chord</span><span class="p">)</span> <span class="p">)</span>
+            
+            <span class="c1"># estimating aerodynamic center coordinates</span>
+            <span class="n">outboard_segment_origin</span> <span class="o">=</span>  <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_keys</span><span class="p">[</span><span class="n">tag</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">origin</span>
+            <span class="n">span</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span>
+            <span class="n">taper</span> <span class="o">=</span> <span class="n">segment_tip_chord</span><span class="o">/</span><span class="n">projected_root_chord</span>
+            <span class="n">y_coord</span> <span class="o">=</span> <span class="n">span</span> <span class="o">/</span> <span class="mf">6.</span> <span class="o">*</span> <span class="p">((</span> <span class="mf">1.</span> <span class="o">+</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">taper</span> <span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">taper</span><span class="p">))</span>
+            <span class="n">x_coord</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_aerodynamic</span> <span class="o">*</span> <span class="mf">0.25</span> <span class="o">+</span> <span class="n">y_coord</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">leading_edge_sweep</span><span class="p">)</span> 
+            <span class="n">LEMAC</span> <span class="o">=</span> <span class="n">outboard_segment_origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">leading_edge_sweep</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">y_coord</span> <span class="o">-</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_keys</span><span class="p">[</span><span class="n">tag</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">percent_span_location</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+            <span class="c1"># estimate LEMAC</span>
+            <span class="n">wing</span><span class="o">.</span><span class="n">LEMAC</span> <span class="o">=</span>  <span class="n">LEMAC</span>
+
+    <span class="k">return</span> <span class="n">wing</span></div>
+
+
+<div class="viewcode-block" id="segment_properties">
+<a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Methods.Geometry.Planform.wing_planform.html#RCAIDE.Library.Methods.Geometry.Planform.wing_planform.segment_properties">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">segment_properties</span><span class="p">(</span><span class="n">wing</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes detailed segment properties. These are currently used for parasite drag calculations.</span>
+
+<span class="sd">    Assumptions:</span>
+<span class="sd">    Segments are trapezoids</span>
+
+<span class="sd">    Source:</span>
+<span class="sd">    http://aerodesign.stanford.edu/aircraftdesign/aircraftdesign.html (Stanford AA241 A/B Course Notes)</span>
 
 <span class="sd">    Inputs:</span>
 <span class="sd">    wing.</span>
-<span class="sd">      areas.reference          [m^2]</span>
-<span class="sd">      taper                    [-]</span>
-<span class="sd">      sweeps.quarter_chord     [radians]</span>
-<span class="sd">      aspect_ratio             [-]</span>
-<span class="sd">      thickness_to_chord       [-]</span>
-<span class="sd">      dihedral                 [radians]</span>
-<span class="sd">      vertical                 &lt;boolean&gt; Determines if wing is vertical</span>
-<span class="sd">      symmetric                &lt;boolean&gt; Determines if wing is symmetric</span>
-<span class="sd">      origin                   [m]       x, y, and z position</span>
-<span class="sd">      high_lift                &lt;boolean&gt; Determines if wing is in a high lift configuration</span>
-<span class="sd">      flaps.                             Flap values are only used if high lift is True</span>
-<span class="sd">        span_start             [-]       Span start position (.1 is 10% span)</span>
-<span class="sd">        span_end               [-]       Span end position (.1 is 10% span)</span>
-<span class="sd">        chord                  [-]       Portion of wing chord used (.1 is 10% chord)</span>
+<span class="sd">      percent_span_unexposed [m]</span>
+<span class="sd">      symmetric                 [-]</span>
+<span class="sd">      spans.projected           [m]</span>
+<span class="sd">      thickness_to_chord        [-]</span>
+<span class="sd">      areas.wetted              [m^2]</span>
+<span class="sd">      chords.root               [m]</span>
+<span class="sd">      Segments.</span>
+<span class="sd">        percent_span_location   [-]</span>
+<span class="sd">        root_chord_percent      [-]</span>
 
 <span class="sd">    Outputs:</span>
-<span class="sd">    wing.</span>
-<span class="sd">      chords.root              [m]</span>
-<span class="sd">      chords.tip               [m]</span>
-<span class="sd">      chords.mean_aerodynamics [m]</span>
-<span class="sd">      chords.mean_geometric    [m]</span>
-<span class="sd">      areas.wetted             [m^2]</span>
-<span class="sd">      areas.affected           [m^2]</span>
-<span class="sd">      spans.projected          [m]</span>
-<span class="sd">      aerodynamic_center       [m]      x, y, and z location</span>
-<span class="sd">      flaps.chord_dimensional  [m]</span>
-<span class="sd">      flaps.area               [m^2]</span>
+<span class="sd">    wing.areas.wetted           [m^2]</span>
+<span class="sd">    wing.areas.reference        [m^2]</span>
+<span class="sd">    wing.segments.</span>
+<span class="sd">      taper                     [-]</span>
+<span class="sd">      chords.mean_aerodynamic   [m]</span>
+<span class="sd">      areas.</span>
+<span class="sd">        reference               [m^2]</span>
+<span class="sd">        exposed                 [m^2]</span>
+<span class="sd">        wetted                  [m^2]</span>
 <span class="sd">        </span>
 
 <span class="sd">    Properties Used:</span>
 <span class="sd">    N/A</span>
-<span class="sd">    &quot;&quot;&quot;</span>      
+<span class="sd">    &quot;&quot;&quot;</span>  
+        
+    <span class="c1"># Unpack wing</span>
+    <span class="n">percent_span_unexposed</span>    <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">percent_span_unexposed</span>
+    <span class="n">symm</span>                      <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">xz_plane_symmetric</span>
+    <span class="n">semispan</span>                  <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span><span class="o">*</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">-</span> <span class="n">symm</span><span class="p">)</span>
+    <span class="n">segments</span>                  <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span>
+    <span class="n">wing_root_chord</span>           <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span>  
+    <span class="n">segment_names</span>             <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">segments</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">num_segments</span>              <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">segment_names</span><span class="p">)</span>
     
-    <span class="c1"># unpack</span>
-    <span class="n">sref</span>        <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span>
-    <span class="n">taper</span>       <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">taper</span>
-    <span class="n">sweep</span>       <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span>
-    <span class="n">ar</span>          <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">aspect_ratio</span>
-    <span class="n">t_c_w</span>       <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">thickness_to_chord</span>
-    <span class="n">dihedral</span>    <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">dihedral</span> 
-    <span class="n">vertical</span>    <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">vertical</span>
-    <span class="n">symmetric</span>   <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">symmetric</span>
-    <span class="n">origin</span>      <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">origin</span>
+    <span class="c1"># initialize areas to 0</span>
+    <span class="n">total_wetted_area</span>         <span class="o">=</span> <span class="mf">0.0</span> 
+    <span class="n">center_body_area</span>          <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">total_reference_area</span>      <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">aft_center_body_area</span>      <span class="o">=</span> <span class="mf">0.0</span>    
     
-    <span class="c1"># calculate</span>
-    <span class="n">span</span>       <span class="o">=</span> <span class="p">(</span><span class="n">ar</span><span class="o">*</span><span class="n">sref</span><span class="p">)</span><span class="o">**</span><span class="mf">.5</span>
-    <span class="n">span_total</span> <span class="o">=</span> <span class="n">span</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">dihedral</span><span class="p">)</span>
-    <span class="n">chord_root</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">sref</span><span class="o">/</span><span class="n">span</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">taper</span><span class="p">)</span>
-    <span class="n">chord_tip</span>  <span class="o">=</span> <span class="n">taper</span> <span class="o">*</span> <span class="n">chord_root</span>
-    <span class="n">mgc</span>        <span class="o">=</span> <span class="p">(</span><span class="n">chord_root</span><span class="o">+</span><span class="n">chord_tip</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
-    
-    <span class="n">swet</span> <span class="o">=</span> <span class="mf">2.</span><span class="o">*</span><span class="n">span</span><span class="o">/</span><span class="mf">2.</span><span class="o">*</span><span class="p">(</span><span class="n">chord_root</span><span class="o">+</span><span class="n">chord_tip</span><span class="p">)</span> <span class="o">*</span>  <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="mf">0.2</span><span class="o">*</span><span class="n">t_c_w</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">seg_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_segments</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">seg_idx</span> <span class="o">==</span> <span class="n">num_segments</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">continue</span> 
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># unpack segment </span>
+            <span class="n">inboard_segment</span>   <span class="o">=</span> <span class="n">segments</span><span class="p">[</span><span class="n">segment_names</span><span class="p">[</span><span class="n">seg_idx</span><span class="p">]]</span>
+            <span class="n">outboard_segment</span>  <span class="o">=</span> <span class="n">segments</span><span class="p">[</span><span class="n">segment_names</span><span class="p">[</span><span class="n">seg_idx</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span>
+            
+            <span class="c1"># segment thickness to chord ratio </span>
+            <span class="n">t_c_w</span>     <span class="o">=</span> <span class="n">inboard_segment</span><span class="o">.</span><span class="n">thickness_to_chord</span>
+            
+            <span class="c1"># segment span</span>
+            <span class="n">span_seg</span>  <span class="o">=</span> <span class="n">semispan</span><span class="o">*</span><span class="p">(</span><span class="n">outboard_segment</span><span class="o">.</span><span class="n">percent_span_location</span> <span class="o">-</span> <span class="n">inboard_segment</span><span class="o">.</span><span class="n">percent_span_location</span> <span class="p">)</span> 
+            
+            <span class="c1"># compute the exposed wing segment area </span>
+            <span class="n">chord_root</span>    <span class="o">=</span> <span class="n">wing_root_chord</span><span class="o">*</span><span class="n">inboard_segment</span><span class="o">.</span><span class="n">root_chord_percent</span>
+            <span class="n">chord_tip</span>     <span class="o">=</span> <span class="n">wing_root_chord</span><span class="o">*</span><span class="n">outboard_segment</span><span class="o">.</span><span class="n">root_chord_percent</span> 
+            <span class="n">taper</span>         <span class="o">=</span> <span class="n">chord_tip</span><span class="o">/</span><span class="n">chord_root</span>              
+            <span class="n">mac_seg</span>       <span class="o">=</span> <span class="n">chord_root</span> <span class="o">*</span> <span class="mi">2</span><span class="o">/</span><span class="mi">3</span> <span class="o">*</span> <span class="p">((</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">taper</span>  <span class="o">+</span> <span class="n">taper</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span><span class="o">/</span><span class="p">(</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">taper</span><span class="p">))</span>
+            <span class="n">Sref_seg</span>      <span class="o">=</span> <span class="n">span_seg</span><span class="o">*</span><span class="p">(</span><span class="n">chord_root</span><span class="o">+</span><span class="n">chord_tip</span><span class="p">)</span><span class="o">*</span><span class="mf">0.5</span>
+            <span class="k">if</span> <span class="n">seg_idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  
+                <span class="n">wing_root</span>     <span class="o">=</span> <span class="n">chord_root</span> <span class="o">+</span> <span class="n">percent_span_unexposed</span><span class="o">*</span><span class="p">((</span><span class="n">chord_tip</span> <span class="o">-</span> <span class="n">chord_root</span><span class="p">)</span><span class="o">/</span><span class="n">span_seg</span><span class="p">)</span>   
+                <span class="n">S_exposed_seg</span> <span class="o">=</span> <span class="p">(</span><span class="n">span_seg</span><span class="o">-</span><span class="n">percent_span_unexposed</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">wing_root</span><span class="o">+</span><span class="n">chord_tip</span><span class="p">)</span><span class="o">*</span><span class="mf">0.5</span>      
+            <span class="k">else</span><span class="p">:</span>   
+                <span class="n">S_exposed_seg</span> <span class="o">=</span> <span class="n">Sref_seg</span>
+            
+            <span class="c1"># multiply if wing is symmetric  </span>
+            <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">xz_plane_symmetric</span><span class="p">:</span>
+                <span class="n">Sref_seg</span>      <span class="o">=</span> <span class="n">Sref_seg</span><span class="o">*</span><span class="mi">2</span>
+                <span class="n">S_exposed_seg</span> <span class="o">=</span> <span class="n">S_exposed_seg</span><span class="o">*</span><span class="mi">2</span>
+            
+            <span class="c1"># compute wetted area of segment</span>
+            <span class="k">if</span> <span class="n">t_c_w</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">:</span>
+                <span class="n">Swet_seg</span> <span class="o">=</span> <span class="mf">2.003</span><span class="o">*</span> <span class="n">S_exposed_seg</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">Swet_seg</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.977</span> <span class="o">+</span> <span class="mf">0.52</span><span class="o">*</span><span class="n">t_c_w</span><span class="p">)</span> <span class="o">*</span> <span class="n">S_exposed_seg</span>
+             
+            <span class="c1"># store segment properties   </span>
+            <span class="n">inboard_segment</span><span class="o">.</span><span class="n">taper</span>                          <span class="o">=</span> <span class="n">taper</span> 
+            <span class="n">inboard_segment</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_aerodynamic</span>        <span class="o">=</span> <span class="n">mac_seg</span> 
+            <span class="n">inboard_segment</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span>                <span class="o">=</span> <span class="n">Sref_seg</span>
+            <span class="n">inboard_segment</span><span class="o">.</span><span class="n">aspect_ratio</span>                   <span class="o">=</span> <span class="p">(</span><span class="n">span_seg</span> <span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">Sref_seg</span>
+            <span class="n">inboard_segment</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">exposed</span>                  <span class="o">=</span> <span class="n">S_exposed_seg</span>
+            <span class="n">inboard_segment</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span>                   <span class="o">=</span> <span class="n">Swet_seg</span>
+            <span class="n">total_wetted_area</span>                              <span class="o">+=</span> <span class="n">Swet_seg</span>  
+           
+            <span class="c1"># compute wing mean aerodynamic chord  </span>
+            <span class="n">MAC</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_aerodynamic</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">MAC</span> <span class="o">&lt;</span> <span class="n">chord_root</span><span class="p">)</span> <span class="ow">and</span>   <span class="p">(</span><span class="n">MAC</span> <span class="o">&gt;</span> <span class="n">chord_tip</span><span class="p">):</span>
+                <span class="n">x_0</span>        <span class="o">=</span> <span class="n">segments</span><span class="p">[</span><span class="n">segment_names</span><span class="p">[</span><span class="n">seg_idx</span><span class="p">]]</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>  <span class="o">+</span>  <span class="n">wing</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">dy</span>         <span class="o">=</span> <span class="p">(</span> <span class="n">MAC</span> <span class="o">-</span>  <span class="n">chord_root</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span> <span class="p">(</span><span class="n">chord_tip</span> <span class="o">-</span> <span class="n">chord_root</span><span class="p">)</span> <span class="o">/</span> <span class="n">span_seg</span><span class="p">)</span>
+                <span class="n">LEMAC</span>      <span class="o">=</span>  <span class="n">x_0</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_names</span><span class="p">[</span><span class="n">seg_idx</span><span class="p">]]</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">leading_edge</span><span class="p">)</span> <span class="o">*</span><span class="n">dy</span>
+                <span class="n">wing</span><span class="o">.</span><span class="n">LEMAC</span> <span class="o">=</span> <span class="n">LEMAC</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="n">MAC</span> <span class="o">==</span> <span class="n">chord_root</span><span class="p">)</span> <span class="ow">and</span>   <span class="p">(</span><span class="n">MAC</span> <span class="o">==</span> <span class="n">chord_tip</span><span class="p">):</span>
+                <span class="n">x_0</span>        <span class="o">=</span> <span class="n">segments</span><span class="p">[</span><span class="n">segment_names</span><span class="p">[</span><span class="n">seg_idx</span><span class="p">]]</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>  <span class="o">+</span>  <span class="n">wing</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">wing</span><span class="o">.</span><span class="n">LEMAC</span> <span class="o">=</span> <span class="n">x_0</span>
+                
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">outboard_segment</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Blended_Wing_Body_Fuselage_Segment</span><span class="p">):</span>
+                
+                <span class="c1"># center body </span>
+                <span class="n">center_body_chord_root</span>    <span class="o">=</span> <span class="n">wing_root_chord</span><span class="o">*</span><span class="n">inboard_segment</span><span class="o">.</span><span class="n">root_chord_percent</span>  <span class="o">-</span>  <span class="n">wing</span><span class="o">.</span><span class="n">aft_center_body</span><span class="o">.</span><span class="n">length</span> 
+                <span class="n">center_body_chord_tip</span>     <span class="o">=</span> <span class="n">wing_root_chord</span><span class="o">*</span><span class="n">outboard_segment</span><span class="o">.</span><span class="n">root_chord_percent</span> <span class="o">-</span>  <span class="n">wing</span><span class="o">.</span><span class="n">aft_center_body</span><span class="o">.</span><span class="n">length</span>  
+                <span class="n">center_body_Sref_seg</span>      <span class="o">=</span> <span class="n">span_seg</span><span class="o">*</span><span class="p">(</span><span class="n">center_body_chord_root</span><span class="o">+</span><span class="n">center_body_chord_tip</span><span class="p">)</span><span class="o">*</span><span class="mf">0.5</span> 
+                
+                <span class="c1"># aft center body </span>
+                <span class="n">aft_center_body_chord_root</span>    <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">aft_center_body</span><span class="o">.</span><span class="n">length</span>
+                <span class="n">aft_center_body_chord_tip</span>     <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">aft_center_body</span><span class="o">.</span><span class="n">length</span>
+                <span class="n">aft_center_body_Sref_seg</span>      <span class="o">=</span> <span class="n">span_seg</span><span class="o">*</span><span class="p">(</span><span class="n">aft_center_body_chord_root</span><span class="o">+</span><span class="n">aft_center_body_chord_tip</span><span class="p">)</span><span class="o">*</span><span class="mf">0.5</span> 
+               
+                <span class="c1"># double area if symmetric </span>
+                <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">xz_plane_symmetric</span><span class="p">:</span>
+                    <span class="n">center_body_Sref_seg</span> <span class="o">=</span> <span class="n">center_body_Sref_seg</span><span class="o">*</span><span class="mi">2</span> 
+                    <span class="n">aft_center_body_Sref_seg</span> <span class="o">=</span> <span class="n">aft_center_body_Sref_seg</span><span class="o">*</span><span class="mi">2</span>  
+                
+                <span class="n">center_body_area</span> <span class="o">+=</span> <span class="n">center_body_Sref_seg</span>
+                <span class="n">aft_center_body_area</span> <span class="o">+=</span>  <span class="n">aft_center_body_Sref_seg</span> 
+            <span class="n">total_reference_area</span> <span class="o">+=</span> <span class="n">Sref_seg</span>   
 
-    <span class="n">mac</span> <span class="o">=</span> <span class="mf">2.</span><span class="o">/</span><span class="mf">3.</span><span class="o">*</span><span class="p">(</span> <span class="n">chord_root</span><span class="o">+</span><span class="n">chord_tip</span> <span class="o">-</span> <span class="n">chord_root</span><span class="o">*</span><span class="n">chord_tip</span><span class="o">/</span><span class="p">(</span><span class="n">chord_root</span><span class="o">+</span><span class="n">chord_tip</span><span class="p">)</span> <span class="p">)</span>
-    
-    <span class="c1"># calculate leading edge sweep</span>
-    <span class="n">le_sweep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">sweep</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="mf">4.</span><span class="o">/</span><span class="n">ar</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">0.</span><span class="o">-</span><span class="mf">0.25</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">taper</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span><span class="o">+</span><span class="n">taper</span><span class="p">)</span> <span class="p">)</span>
-    
-    <span class="c1"># estimating aerodynamic center coordinates</span>
-    <span class="n">y_coord</span> <span class="o">=</span> <span class="n">span</span> <span class="o">/</span> <span class="mf">6.</span> <span class="o">*</span> <span class="p">((</span> <span class="mf">1.</span> <span class="o">+</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">taper</span> <span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">taper</span><span class="p">))</span>
-    <span class="n">x_coord</span> <span class="o">=</span> <span class="n">mac</span> <span class="o">*</span> <span class="mf">0.25</span> <span class="o">+</span> <span class="n">y_coord</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">le_sweep</span><span class="p">)</span>
-    <span class="n">z_coord</span> <span class="o">=</span> <span class="n">y_coord</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">dihedral</span><span class="p">)</span>
-        
-    <span class="k">if</span> <span class="n">vertical</span><span class="p">:</span>
-        <span class="n">temp</span>    <span class="o">=</span> <span class="n">y_coord</span> <span class="o">*</span> <span class="mf">1.</span>
-        <span class="n">y_coord</span> <span class="o">=</span> <span class="n">z_coord</span> <span class="o">*</span> <span class="mf">1.</span>
-        <span class="n">z_coord</span> <span class="o">=</span> <span class="n">temp</span>
+    <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span>   <span class="o">=</span> <span class="n">total_reference_area</span>
+    <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">projected</span>   <span class="o">=</span> <span class="n">total_reference_area</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wing</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Blended_Wing_Body</span><span class="p">):</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">center_body</span><span class="o">.</span><span class="n">area</span>     <span class="o">=</span> <span class="n">center_body_area</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">aft_center_body</span><span class="o">.</span><span class="n">area</span> <span class="o">=</span> <span class="n">aft_center_body_area</span> 
 
-    <span class="k">if</span> <span class="n">symmetric</span><span class="p">:</span>
-        <span class="n">y_coord</span> <span class="o">=</span> <span class="mi">0</span>    
-    
-    <span class="c1"># Total length calculation</span>
-    <span class="n">total_length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">le_sweep</span><span class="p">)</span><span class="o">*</span><span class="n">span</span><span class="o">/</span><span class="mf">2.</span> <span class="o">+</span> <span class="n">chord_tip</span>
+    <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span>    <span class="o">=</span> <span class="n">total_wetted_area</span>
         
-    <span class="c1"># Computing flap geometry</span>
-    <span class="n">affected_area</span> <span class="o">=</span> <span class="mf">0.</span>
-    <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">high_lift</span><span class="p">:</span>
-        <span class="n">flap</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">control_surfaces</span><span class="o">.</span><span class="n">flap</span>
-        <span class="c1">#compute wing chords at flap start and end</span>
-        <span class="n">delta_chord</span> <span class="o">=</span> <span class="n">chord_tip</span> <span class="o">-</span> <span class="n">chord_root</span>
-        
-        <span class="n">wing_chord_flap_start</span> <span class="o">=</span> <span class="n">chord_root</span> <span class="o">+</span> <span class="n">delta_chord</span> <span class="o">*</span> <span class="n">flap</span><span class="o">.</span><span class="n">span_fraction_start</span> 
-        <span class="n">wing_chord_flap_end</span>   <span class="o">=</span> <span class="n">chord_root</span> <span class="o">+</span> <span class="n">delta_chord</span> <span class="o">*</span> <span class="n">flap</span><span class="o">.</span><span class="n">span_fraction_end</span>
-        <span class="n">wing_mac_flap</span> <span class="o">=</span> <span class="mf">2.</span><span class="o">/</span><span class="mf">3.</span><span class="o">*</span><span class="p">(</span> <span class="n">wing_chord_flap_start</span><span class="o">+</span><span class="n">wing_chord_flap_end</span> <span class="o">-</span> \
-                                <span class="n">wing_chord_flap_start</span><span class="o">*</span><span class="n">wing_chord_flap_end</span><span class="o">/</span>  \
-                                <span class="p">(</span><span class="n">wing_chord_flap_start</span><span class="o">+</span><span class="n">wing_chord_flap_end</span><span class="p">)</span> <span class="p">)</span>
-        
-        <span class="n">flap</span><span class="o">.</span><span class="n">chord_dimensional</span> <span class="o">=</span> <span class="n">wing_mac_flap</span> <span class="o">*</span> <span class="n">flap</span><span class="o">.</span><span class="n">chord_fraction</span>
-        <span class="n">flap_chord_start</span>        <span class="o">=</span> <span class="n">wing_chord_flap_start</span> <span class="o">*</span> <span class="n">flap</span><span class="o">.</span><span class="n">chord_fraction</span>
-        <span class="n">flap_chord_end</span>          <span class="o">=</span> <span class="n">wing_chord_flap_end</span> <span class="o">*</span> <span class="n">flap</span><span class="o">.</span><span class="n">chord_fraction</span>
-        <span class="n">flap</span><span class="o">.</span><span class="n">area</span>               <span class="o">=</span> <span class="p">(</span><span class="n">flap_chord_start</span> <span class="o">+</span> <span class="n">flap_chord_end</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">flap</span><span class="o">.</span><span class="n">span_fraction_end</span><span class="o">-</span> <span class="n">flap</span><span class="o">.</span><span class="n">span_fraction_start</span><span class="p">)</span><span class="o">*</span><span class="n">span</span> <span class="o">/</span> <span class="mf">2.</span>    
-        <span class="n">affected_area</span>           <span class="o">=</span> <span class="p">(</span><span class="n">wing_chord_flap_start</span> <span class="o">+</span> <span class="n">wing_chord_flap_end</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">flap</span><span class="o">.</span><span class="n">span_fraction_end</span><span class="o">-</span> <span class="n">flap</span><span class="o">.</span><span class="n">span_fraction_start</span><span class="p">)</span><span class="o">*</span><span class="n">span</span> <span class="o">/</span> <span class="mf">2.</span>          
-         
-    <span class="c1"># update</span>
-    <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span>                <span class="o">=</span> <span class="n">chord_root</span>
-    <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">tip</span>                 <span class="o">=</span> <span class="n">chord_tip</span>
-    <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_aerodynamic</span>    <span class="o">=</span> <span class="n">mac</span>
-    <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_geometric</span>      <span class="o">=</span> <span class="n">mgc</span>
-    <span class="n">wing</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">leading_edge</span>        <span class="o">=</span> <span class="n">le_sweep</span>
-    <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span>               <span class="o">=</span> <span class="n">swet</span>
-    <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">affected</span>             <span class="o">=</span> <span class="n">affected_area</span>
-    <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span>            <span class="o">=</span> <span class="n">span</span>
-    <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">total</span>                <span class="o">=</span> <span class="n">span_total</span>
-    <span class="n">wing</span><span class="o">.</span><span class="n">aerodynamic_center</span>         <span class="o">=</span> <span class="p">[</span><span class="n">x_coord</span> <span class="p">,</span> <span class="n">y_coord</span><span class="p">,</span> <span class="n">z_coord</span><span class="p">]</span>
-    <span class="n">wing</span><span class="o">.</span><span class="n">total_length</span>               <span class="o">=</span> <span class="n">total_length</span>
-    
     <span class="k">return</span> <span class="n">wing</span></div>
 
 </pre></div>
@@ -538,8 +952,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -559,7 +973,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -573,7 +987,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

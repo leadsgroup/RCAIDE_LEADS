@@ -1,0 +1,25 @@
+RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Airframe.clean_wing_noise
+
+clean\_wing\_noise
+==================
+
+.. automodule:: RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Airframe.clean_wing_noise
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

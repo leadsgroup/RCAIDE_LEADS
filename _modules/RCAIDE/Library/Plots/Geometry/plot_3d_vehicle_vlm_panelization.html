@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Plots/Geometry/plot_3d_vehicle_vlm_panelization';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Plots/Geometry/plot_3d_vehicle_vlm_panelization.html" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script src="../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -378,108 +397,81 @@
                   
   <h1>Source code for RCAIDE.Library.Plots.Geometry.plot_3d_vehicle_vlm_panelization</h1><div class="highlight"><pre>
 <span></span><span class="c1"># RCAIDE/Library/Plots/Geometry/plot_3d_vehicle_vlm_panelization.py</span>
-<span class="c1"># </span>
-<span class="c1"># </span>
+<span class="c1">#</span>
+<span class="c1">#</span>
 <span class="c1"># Created:  Jul 2023, M. Clarke</span>
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  IMPORT</span>
-<span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method</span><span class="w">  </span><span class="kn">import</span> <span class="n">generate_vortex_distribution</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots.Geometry.Common.contour_surface_slice</span><span class="w"> </span><span class="kn">import</span> <span class="n">contour_surface_slice</span>
-
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>  
-<span class="kn">import</span><span class="w"> </span><span class="nn">plotly.graph_objects</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">go</span> 
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyvista</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pv</span>
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  PLOTS</span>
-<span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <div class="viewcode-block" id="plot_3d_vehicle_vlm_panelization">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Plots.Geometry.plot_3d_vehicle_vlm_panelization.html#RCAIDE.Library.Plots.Geometry.plot_3d_vehicle_vlm_panelization.plot_3d_vehicle_vlm_panelization">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">plot_3d_vehicle_vlm_panelization</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_3d_vehicle_vlm_panelization</span><span class="p">(</span><span class="n">vortex_distribution</span><span class="p">,</span>
                                      <span class="n">alpha</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
                                      <span class="n">plot_axis</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                                      <span class="n">save_figure</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                                      <span class="n">show_wing_control_points</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
                                      <span class="n">save_filename</span> <span class="o">=</span> <span class="s2">&quot;VLM_Panelization&quot;</span><span class="p">,</span>
-                                     <span class="n">min_x_axis_limit</span>            <span class="o">=</span>  <span class="o">-</span><span class="mi">5</span><span class="p">,</span>
-                                     <span class="n">max_x_axis_limit</span>            <span class="o">=</span>  <span class="mi">40</span><span class="p">,</span>
-                                     <span class="n">min_y_axis_limit</span>            <span class="o">=</span>  <span class="o">-</span><span class="mi">20</span><span class="p">,</span>
-                                     <span class="n">max_y_axis_limit</span>            <span class="o">=</span>  <span class="mi">20</span><span class="p">,</span>
-                                     <span class="n">min_z_axis_limit</span>            <span class="o">=</span>  <span class="o">-</span><span class="mi">20</span><span class="p">,</span>
-                                     <span class="n">max_z_axis_limit</span>            <span class="o">=</span>  <span class="mi">20</span><span class="p">,</span> 
+                                     <span class="n">axis_limit</span>   <span class="o">=</span>  <span class="mi">100</span><span class="p">,</span>
+                                     <span class="n">panel_color</span>  <span class="o">=</span> <span class="s1">&#39;grey&#39;</span><span class="p">,</span>
                                      <span class="n">show_figure</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a 3D visualization of vehicle vortex lattice method (VLM) panelization.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    vehicle : Vehicle</span>
-<span class="sd">        RCAIDE vehicle data structure containing geometry information</span>
-<span class="sd">        </span>
+<span class="sd">    vortex_distribution : Data</span>
+<span class="sd">        RCAIDE vortex distribution data structure containing panel corner coordinates</span>
+
 <span class="sd">    alpha : float, optional</span>
 <span class="sd">        Transparency value between 0 and 1 (default: 1.0)</span>
-<span class="sd">        </span>
+
 <span class="sd">    plot_axis : bool, optional</span>
 <span class="sd">        Flag to show coordinate axes (default: False)</span>
-<span class="sd">        </span>
+
 <span class="sd">    save_figure : bool, optional</span>
 <span class="sd">        Flag for saving the figure (default: False)</span>
-<span class="sd">        </span>
+
 <span class="sd">    show_wing_control_points : bool, optional</span>
 <span class="sd">        Flag to display VLM control points (default: True)</span>
-<span class="sd">        </span>
+
 <span class="sd">    save_filename : str, optional</span>
 <span class="sd">        Name of file for saved figure (default: &quot;VLM_Panelization&quot;)</span>
-<span class="sd">        </span>
-<span class="sd">    min_x_axis_limit : float, optional</span>
-<span class="sd">        Minimum x-axis plot limit (default: -5)</span>
-<span class="sd">        </span>
-<span class="sd">    max_x_axis_limit : float, optional</span>
-<span class="sd">        Maximum x-axis plot limit (default: 40)</span>
-<span class="sd">        </span>
-<span class="sd">    min_y_axis_limit : float, optional</span>
-<span class="sd">        Minimum y-axis plot limit (default: -20)</span>
-<span class="sd">        </span>
-<span class="sd">    max_y_axis_limit : float, optional</span>
-<span class="sd">        Maximum y-axis plot limit (default: 20)</span>
-<span class="sd">        </span>
-<span class="sd">    min_z_axis_limit : float, optional</span>
-<span class="sd">        Minimum z-axis plot limit (default: -20)</span>
-<span class="sd">        </span>
-<span class="sd">    max_z_axis_limit : float, optional</span>
-<span class="sd">        Maximum z-axis plot limit (default: 20)</span>
-<span class="sd">        </span>
+
+<span class="sd">    axis_limit : float, optional</span>
+<span class="sd">        Axis plot limit (default: 100)</span>
+
+<span class="sd">    panel_color : str, optional</span>
+<span class="sd">        Color of VLM panels (default: &#39;grey&#39;)</span>
+
 <span class="sd">    show_figure : bool, optional</span>
 <span class="sd">        Flag to display the figure (default: True)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    fig : plotly.graph_objects.Figure</span>
-<span class="sd">        Figure handle containing the generated plot</span>
+<span class="sd">    plotter : pyvista.Plotter</span>
+<span class="sd">        Plotter handle containing the generated plot</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    Creates an interactive 3D visualization showing:</span>
 <span class="sd">        - VLM panels on lifting surfaces</span>
 <span class="sd">        - Control points (optional)</span>
-<span class="sd">        - Customizable view and axis limits</span>
-<span class="sd">    </span>
-<span class="sd">    If vehicle&#39;s vortex distribution is not available, generates a new one with:</span>
-<span class="sd">        - 25 spanwise vortices</span>
-<span class="sd">        - 5 chordwise vortices</span>
-<span class="sd">        - Linear spanwise spacing</span>
-<span class="sd">        - No fuselage or nacelle modeling</span>
-<span class="sd">    </span>
+
 <span class="sd">    **Major Assumptions**</span>
-<span class="sd">    </span>
+
 <span class="sd">    * Lifting surfaces are represented by flat panels</span>
 <span class="sd">    * Control points are at 3/4 chord of each panel</span>
 <span class="sd">    * Vortex lines are at 1/4 chord of each panel</span>
-<span class="sd">    </span>
+
 <span class="sd">    **Definitions**</span>
-<span class="sd">    </span>
+
 <span class="sd">    &#39;Control Point&#39;</span>
 <span class="sd">        Location where boundary condition is enforced</span>
 <span class="sd">    &#39;Vortex Line&#39;</span>
@@ -488,70 +480,64 @@
 <span class="sd">        Discrete element of lifting surface</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># unpack vortex distribution</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">VD</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">vortex_distribution</span>
-    <span class="k">except</span><span class="p">:</span>
-        <span class="n">VL</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Aerodynamics</span><span class="o">.</span><span class="n">Vortex_Lattice_Method</span><span class="p">()</span>  
-        <span class="n">VL</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">number_of_spanwise_vortices</span>  <span class="o">=</span> <span class="mi">25</span>
-        <span class="n">VL</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">number_of_chordwise_vortices</span> <span class="o">=</span> <span class="mi">5</span>
-        <span class="n">VL</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">spanwise_cosine_spacing</span>      <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">VL</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">model_fuselage</span>               <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">VL</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">model_nacelle</span>                <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">VD</span> <span class="o">=</span> <span class="n">generate_vortex_distribution</span><span class="p">(</span><span class="n">vehicle</span><span class="p">,</span><span class="n">VL</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span> 
-
-    <span class="n">camera</span>        <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">up</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">center</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=-</span><span class="mf">.75</span><span class="p">),</span> <span class="n">eye</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">x</span><span class="o">=-</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">y</span><span class="o">=-</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mf">.8</span><span class="p">))</span>
-    <span class="n">plot_data</span>     <span class="o">=</span> <span class="p">[]</span>      
+    <span class="n">VD</span> <span class="o">=</span> <span class="n">vortex_distribution</span>
+    <span class="n">n_cp</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">VD</span><span class="o">.</span><span class="n">XA1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
     <span class="c1"># -------------------------------------------------------------------------</span>
-    <span class="c1"># PLOT VORTEX LATTICE</span>
-    <span class="c1"># -------------------------------------------------------------------------        </span>
-    <span class="n">n_cp</span>      <span class="o">=</span> <span class="n">VD</span><span class="o">.</span><span class="n">n_cp</span> 
-    <span class="n">color_map</span> <span class="o">=</span> <span class="s1">&#39;greys&#39;</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_cp</span><span class="p">):</span>  
-        <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">VD</span><span class="o">.</span><span class="n">XA1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">VD</span><span class="o">.</span><span class="n">XA2</span><span class="p">[</span><span class="n">i</span><span class="p">]],[</span><span class="n">VD</span><span class="o">.</span><span class="n">XB1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">VD</span><span class="o">.</span><span class="n">XB2</span><span class="p">[</span><span class="n">i</span><span class="p">]]])</span>
-        <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">VD</span><span class="o">.</span><span class="n">YA1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">VD</span><span class="o">.</span><span class="n">YA2</span><span class="p">[</span><span class="n">i</span><span class="p">]],[</span><span class="n">VD</span><span class="o">.</span><span class="n">YB1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">VD</span><span class="o">.</span><span class="n">YB2</span><span class="p">[</span><span class="n">i</span><span class="p">]]])</span>
-        <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">VD</span><span class="o">.</span><span class="n">ZA1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">VD</span><span class="o">.</span><span class="n">ZA2</span><span class="p">[</span><span class="n">i</span><span class="p">]],[</span><span class="n">VD</span><span class="o">.</span><span class="n">ZB1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">VD</span><span class="o">.</span><span class="n">ZB2</span><span class="p">[</span><span class="n">i</span><span class="p">]]])</span>           
-        
-        <span class="n">values</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> 
-        <span class="n">verts</span>       <span class="o">=</span> <span class="n">contour_surface_slice</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span> <span class="p">,</span><span class="n">values</span><span class="p">,</span><span class="n">color_map</span><span class="p">)</span>
-        <span class="n">plot_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">verts</span><span class="p">)</span>                 
-  
-  
-    <span class="k">if</span>  <span class="n">show_wing_control_points</span><span class="p">:</span> 
-        <span class="n">ctrl_pts</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Scatter3d</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">VD</span><span class="o">.</span><span class="n">XC</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">VD</span><span class="o">.</span><span class="n">YC</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">VD</span><span class="o">.</span><span class="n">ZC</span><span class="p">,</span>
-                                    <span class="n">mode</span>  <span class="o">=</span> <span class="s1">&#39;markers&#39;</span><span class="p">,</span>
-                                    <span class="n">marker</span><span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span><span class="n">opacity</span><span class="o">=</span><span class="mf">0.8</span><span class="p">),</span>
-                                    <span class="n">line</span>  <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span><span class="n">width</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
-        <span class="n">plot_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ctrl_pts</span><span class="p">)</span>         
- 
- 
- 
-    <span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">plot_data</span><span class="p">)</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">update_scenes</span><span class="p">(</span><span class="n">aspectmode</span>   <span class="o">=</span> <span class="s1">&#39;auto&#39;</span><span class="p">,</span>
-                      <span class="n">xaxis_visible</span><span class="o">=</span><span class="n">plot_axis</span><span class="p">,</span>
-                      <span class="n">yaxis_visible</span><span class="o">=</span><span class="n">plot_axis</span><span class="p">,</span>
-                      <span class="n">zaxis_visible</span><span class="o">=</span><span class="n">plot_axis</span>
-                      <span class="p">)</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span> 
-             <span class="n">width</span>     <span class="o">=</span> <span class="mi">1500</span><span class="p">,</span>
-             <span class="n">height</span>    <span class="o">=</span> <span class="mi">1500</span><span class="p">,</span> 
-             <span class="n">scene</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-                        <span class="n">xaxis</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">backgroundcolor</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">gridcolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">showbackground</span><span class="o">=</span><span class="n">plot_axis</span><span class="p">,</span>
-                                     <span class="n">zerolinecolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">[</span><span class="n">min_x_axis_limit</span><span class="p">,</span><span class="n">max_x_axis_limit</span><span class="p">]),</span>
-                        <span class="n">yaxis</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">backgroundcolor</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">gridcolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">showbackground</span><span class="o">=</span><span class="n">plot_axis</span><span class="p">,</span> 
-                                     <span class="n">zerolinecolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">[</span><span class="n">min_y_axis_limit</span><span class="p">,</span><span class="n">max_y_axis_limit</span><span class="p">]),</span>
-                        <span class="n">zaxis</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">backgroundcolor</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span><span class="n">gridcolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span><span class="n">showbackground</span><span class="o">=</span><span class="n">plot_axis</span><span class="p">,</span>
-                                     <span class="n">zerolinecolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">[</span><span class="n">min_z_axis_limit</span><span class="p">,</span><span class="n">max_z_axis_limit</span><span class="p">])),</span>             
-             <span class="n">scene_camera</span><span class="o">=</span><span class="n">camera</span><span class="p">)</span> 
-    <span class="n">fig</span><span class="o">.</span><span class="n">update_coloraxes</span><span class="p">(</span><span class="n">showscale</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">update_traces</span><span class="p">(</span><span class="n">opacity</span> <span class="o">=</span> <span class="n">alpha</span><span class="p">)</span>
+    <span class="c1"># Build quad mesh for VLM panels</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Each panel has 4 corners ordered: A1, A2, B2, B1  (counter-clockwise quad)</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">faces</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>  <span class="c1"># [4, i0, i1, i2, i3]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_cp</span><span class="p">):</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">4</span>
+        <span class="n">points</span><span class="p">[</span><span class="n">base</span> <span class="o">+</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">VD</span><span class="o">.</span><span class="n">XA1</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">VD</span><span class="o">.</span><span class="n">YA1</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">VD</span><span class="o">.</span><span class="n">ZA1</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]]</span>
+        <span class="n">points</span><span class="p">[</span><span class="n">base</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">VD</span><span class="o">.</span><span class="n">XA2</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">VD</span><span class="o">.</span><span class="n">YA2</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">VD</span><span class="o">.</span><span class="n">ZA2</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]]</span>
+        <span class="n">points</span><span class="p">[</span><span class="n">base</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">VD</span><span class="o">.</span><span class="n">XB2</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">VD</span><span class="o">.</span><span class="n">YB2</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">VD</span><span class="o">.</span><span class="n">ZB2</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]]</span>
+        <span class="n">points</span><span class="p">[</span><span class="n">base</span> <span class="o">+</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">VD</span><span class="o">.</span><span class="n">XB1</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">VD</span><span class="o">.</span><span class="n">YB1</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">VD</span><span class="o">.</span><span class="n">ZB1</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]]</span>
+        <span class="n">faces</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">base</span> <span class="o">+</span> <span class="mi">3</span><span class="p">]</span>
+
+    <span class="n">panel_mesh</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">PolyData</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">faces</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Initialize plotter</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="k">if</span> <span class="n">save_figure</span><span class="p">:</span>
-        <span class="n">fig</span><span class="o">.</span><span class="n">write_image</span><span class="p">(</span><span class="n">save_filename</span> <span class="o">+</span> <span class="s2">&quot;.png&quot;</span><span class="p">)</span>
-        
-    <span class="k">if</span> <span class="n">show_figure</span><span class="p">:</span>
-        <span class="n">fig</span><span class="o">.</span><span class="n">write_html</span><span class="p">(</span> <span class="n">save_filename</span> <span class="o">+</span> <span class="s1">&#39;.html&#39;</span><span class="p">,</span> <span class="n">auto_open</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">fig</span></div>
+        <span class="n">plotter</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">Plotter</span><span class="p">(</span><span class="n">off_screen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plotter</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">Plotter</span><span class="p">()</span>
+
+    <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">panel_mesh</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">panel_color</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span>
+                     <span class="n">show_edges</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">edge_color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">line_width</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Control points</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="k">if</span> <span class="n">show_wing_control_points</span><span class="p">:</span>
+        <span class="n">ctrl_pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">VD</span><span class="o">.</span><span class="n">XC</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">VD</span><span class="o">.</span><span class="n">YC</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">VD</span><span class="o">.</span><span class="n">ZC</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="n">ctrl_cloud</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">PolyData</span><span class="p">(</span><span class="n">ctrl_pts</span><span class="p">)</span>
+        <span class="n">plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="n">ctrl_cloud</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">point_size</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+                         <span class="n">render_points_as_spheres</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Camera and display settings</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="n">plotter</span><span class="o">.</span><span class="n">camera_position</span> <span class="o">=</span> <span class="p">[(</span><span class="o">-</span><span class="mf">1.5</span> <span class="o">*</span> <span class="n">axis_limit</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span> <span class="o">*</span> <span class="n">axis_limit</span><span class="p">,</span> <span class="mf">0.8</span> <span class="o">*</span> <span class="n">axis_limit</span><span class="p">),</span>
+                                <span class="p">(</span><span class="n">axis_limit</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                                <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+    <span class="n">plotter</span><span class="o">.</span><span class="n">window_size</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">1500</span><span class="p">]</span>
+    <span class="n">plotter</span><span class="o">.</span><span class="n">set_background</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">plot_axis</span><span class="p">:</span>
+        <span class="n">plotter</span><span class="o">.</span><span class="n">hide_axes</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">save_figure</span><span class="p">:</span>
+        <span class="n">plotter</span><span class="o">.</span><span class="n">screenshot</span><span class="p">(</span><span class="n">save_filename</span> <span class="o">+</span> <span class="s2">&quot;.png&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">show_figure</span><span class="p">:</span>
+        <span class="n">plotter</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">plotter</span></div>
 
 </pre></div>
 
@@ -582,8 +568,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -603,7 +589,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -617,7 +603,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

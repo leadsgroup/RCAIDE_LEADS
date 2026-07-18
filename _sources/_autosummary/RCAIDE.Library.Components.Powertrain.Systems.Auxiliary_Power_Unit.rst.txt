@@ -1,0 +1,25 @@
+RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit
+
+Auxiliary\_Power\_Unit
+======================
+
+.. automodule:: RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

@@ -1,0 +1,25 @@
+RCAIDE.Library.Methods.Geometry.Planform.compute_segment_meshes
+
+compute\_segment\_meshes
+========================
+
+.. automodule:: RCAIDE.Library.Methods.Geometry.Planform.compute_segment_meshes
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

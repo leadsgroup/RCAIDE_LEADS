@@ -1,0 +1,25 @@
+RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Airframe.trailing_edge_flap_noise
+
+trailing\_edge\_flap\_noise
+===========================
+
+.. automodule:: RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Airframe.trailing_edge_flap_noise
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

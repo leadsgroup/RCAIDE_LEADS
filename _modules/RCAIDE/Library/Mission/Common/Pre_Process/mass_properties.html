@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Mission/Common/Pre_Process/mass_properties';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Mission/Common/Pre_Process/mass_properties.html" />
     <link rel="index" title="Index" href="../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../../_static/language_data.js"></script>
+    <script src="../../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -381,58 +400,356 @@
 <span class="c1"># </span>
 <span class="c1"># </span>
 <span class="c1"># Created: Mar 2025, M. Clarke</span>
+<span class="c1"># Modified: Aug 2025 S. Shekar, Jan 2026 A. Molloy</span>
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  RCAIDE</span>
-<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia</span><span class="w">                             </span><span class="kn">import</span> <span class="n">compute_aircraft_moment_of_inertia</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity</span><span class="w">                             </span><span class="kn">import</span> <span class="n">compute_vehicle_center_of_gravity</span>
+<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia</span><span class="w">  </span><span class="kn">import</span> <span class="n">compute_vehicle_moment_of_inertia</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity</span><span class="w">  </span><span class="kn">import</span> <span class="n">compute_vehicle_center_of_gravity</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.compute_fuel_mass</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_fuel_mass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Mission.Common.Pre_Process.mass_properties_correction_factors</span><span class="w">   </span><span class="kn">import</span> <span class="n">apply_correction_factors</span><span class="p">,</span> <span class="n">apply_component_weights</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Mission.Common.Pre_Process.mass_properties_report</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_mass_report</span><span class="p">,</span> <span class="n">write_mass_report</span>   
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">brentq</span><span class="p">,</span> <span class="n">minimize_scalar</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span> 
+
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  mass_properties</span>
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
 <div class="viewcode-block" id="mass_properties">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Mission.Common.Pre_Process.mass_properties.html#RCAIDE.Library.Mission.Common.Pre_Process.mass_properties.mass_properties">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">mass_properties</span><span class="p">(</span><span class="n">mission</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Performances mass property analysis       </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate and update mass properties for all mission segments.</span>
+<span class="sd">    </span>
+<span class="sd">    Performs weight analysis, center of gravity computation, and moment of inertia </span>
+<span class="sd">    calculations for each mission segment. Handles multiple analysis scenarios including</span>
+<span class="sd">    user-defined weights, MTOW-based calculations, and iterative weight convergence.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mission : RCAIDE.Framework.Mission</span>
+<span class="sd">        Mission object containing segments with weight analysis requirements.</span>
+<span class="sd">        </span>
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    AttributeError</span>
+<span class="sd">        If max_takeoff weight is not defined.</span>
+<span class="sd">    AssertionError</span>
+<span class="sd">        If payload exceeds max_payload or fuel exceeds max_fuel.</span>
+<span class="sd">        </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The function operates in three main modes:</span>
+<span class="sd">    </span>
+<span class="sd">    1. **Pre-defined weights**: Uses existing takeoff weight if provided</span>
+<span class="sd">    2. **Simple MTOW**: Falls back to MTOW if aircraft_type undefined</span>
+<span class="sd">    3. **Full analysis**: Performs complete weight buildup with iterations, if the </span>
+<span class="sd">          setting update_takeoff_weight is True then it updates the aircraft takeoff weight </span>
+<span class="sd">          with the new one based on the buildup. otherwise the takeoff weight is not adjusted</span>
+<span class="sd">    </span>
+<span class="sd">    To complete a weight breakdown the methods require an aircraft to have the following</span>
+<span class="sd">    defined: MTOW, payload and/or fuel weight, aircraft method type (included in the weights </span>
+<span class="sd">    analysis type most times), max fuel and max zero fuel weights or neither. If</span>
+<span class="sd">    the user desires to have the takeoff weight calculated by the weight breakdown</span>
+<span class="sd">    used for further analyses then specify under the weight analysis settings </span>
+<span class="sd">    &quot;update_takeoff_weight == True&quot;.</span>
+
+<span class="sd">    Algorithm Flow</span>
+<span class="sd">    ~~~~~~~~~~~~~~</span>
+<span class="sd">    </span>
+<span class="sd">    .. code-block:: text</span>
+<span class="sd">    </span>
+<span class="sd">        For each segment:</span>
+<span class="sd">        ├── Check if weights analysis exists</span>
+<span class="sd">        ├── Validate MTOW defined (required)</span>
+<span class="sd">        ├── If aircraft_type undefined → Use MTOW for takeoff weight</span>
+<span class="sd">        ├── Else if no payload/fuel → Use MTOW  </span>
+<span class="sd">        ├── Else → Perform weight analysis:</span>
+<span class="sd">        │   ├── Check payload/fuel limits</span>
+<span class="sd">        │   ├── If max_fuel/max_zero_fuel undefined:</span>
+<span class="sd">        │   │   └── Iterate to convergence (max 100 iterations)</span>
+<span class="sd">        │   │       ├── Initial guess from regression</span>
+<span class="sd">        │   │       ├── Evaluate weights</span>
+<span class="sd">        │   │       ├── Apply corrections</span>
+<span class="sd">        │   │       └── Check convergence (&lt;10 kg residual)</span>
+<span class="sd">        │   ├── Single evaluation</span>
+<span class="sd">        |   └── Apply correction factors if specified</span>
+<span class="sd">        ├── Update takeoff weight if requested</span>
+<span class="sd">        ├── Update CG if requested</span>
+<span class="sd">        ├── Update MOI if requested</span>
+<span class="sd">        └── Copy vehicle to aerodynamics</span>
+<span class="sd">    </span>
+<span class="sd">    Weight Equations</span>
+<span class="sd">    ~~~~~~~~~~~~~~~~</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">    </span>
+<span class="sd">        W_{takeoff} = W_{OEW} + W_{payload} + W_{fuel}</span>
+<span class="sd">        </span>
+<span class="sd">        W_{OEW} = W_{empty} + W_{operational}</span>
+<span class="sd">        </span>
+<span class="sd">        W_{max\\_zero\\_fuel} = W_{OEW} + W_{max\\_payload}</span>
+<span class="sd">        </span>
+<span class="sd">        W_{max\\_fuel} = W_{MTOW} - W_{OEW} - W_{min\\_payload}</span>
+<span class="sd">    </span>
+<span class="sd">    Initial Regression Estimates</span>
+<span class="sd">    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+<span class="sd">    </span>
+<span class="sd">    When max_fuel or max_zero_fuel undefined:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+<span class="sd">    </span>
+<span class="sd">        W_{max\\_fuel}^{(0)} = 0.477 \\cdot W_{MTOW} - 13455</span>
+<span class="sd">        </span>
+<span class="sd">        W_{max\\_zero\\_fuel}^{(0)} = 0.6269 \\cdot W_{MTOW} + 20505</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+ 
+    <span class="k">for</span> <span class="n">i</span> <span class="p">,</span>  <span class="n">segment</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mission</span><span class="o">.</span><span class="n">segments</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">weights</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s1">&#39;Define weights analysis method&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">unique_geometry</span><span class="p">:</span>
+                <span class="n">mass_properties_preprocess_routine</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> 
+            <span class="k">else</span><span class="p">:</span> 
+                <span class="n">analyses</span>         <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span>
+                <span class="n">weights_analysis</span> <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">weights</span> 
+                <span class="n">vehicle_1</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">mission</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="p">)</span>
+                <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span> <span class="o">=</span> <span class="n">vehicle_1</span><span class="o">.</span><span class="n">mass_properties</span>
+                <span class="n">weights_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">iterate_mtow</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">mass_properties_preprocess_routine</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> 
+                
+    <span class="k">return</span> </div>
+
+
+<div class="viewcode-block" id="mass_properties_preprocess_routine">
+<a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Mission.Common.Pre_Process.mass_properties.html#RCAIDE.Library.Mission.Common.Pre_Process.mass_properties.mass_properties_preprocess_routine">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">mass_properties_preprocess_routine</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+    <span class="n">analyses</span>         <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span>
+    <span class="n">weights_analysis</span> <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">weights</span> 
+    
+    <span class="c1"># ---------------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># STEP 1: Compute fuel mass and max fuel mass for the vehicle based on the fuel tanks defined in the vehicle</span>
+    <span class="c1"># ---------------------------------------------------------------------------------------------------------------------------    </span>
+    <span class="n">update_max_fuel_mass</span> <span class="o">=</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update_max_fuel_mass</span>                       
+    <span class="n">update_fuel_mass</span>     <span class="o">=</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update_fuel_mass</span>   
+    <span class="n">compute_fuel_mass</span><span class="p">(</span><span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="p">,</span> <span class="n">update_fuel_mass</span><span class="p">,</span> <span class="n">update_max_fuel_mass</span><span class="p">)</span>    
+    
+    <span class="c1"># ---------------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># STEP 2:  Pre-checks for weights analysis </span>
+    <span class="c1"># ---------------------------------------------------------------------------------------------------------------------------      </span>
+    <span class="k">if</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># For all weights analysis a maximum take off weight needs to be defined by the user</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Max Takeoff Weight for aircraft not defined&quot;</span><span class="p">)</span>
+    <span class="c1"># orig_takeoff_weight = analyses.vehicle.mass_properties.takeoff</span>
+    
+    <span class="k">if</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">aircraft_type</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># If an aircraft type is not defined analysis cannot be performed, and the maximum take off weight will be assumed to be the takeoff weight </span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> Warning: Weight Analysis type not defined&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">takeoff</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> Using Maximum Takeoff Weight&#39;</span><span class="p">)</span>
+            <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">takeoff</span> <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span>  
+    
+    <span class="k">elif</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">takeoff</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">payload</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">fuel</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Without either fuel on board or payload on board, takeoff weight cannot be computed thus the takeoff weight is assumed to be max takeoff </span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Warning: Payload or fuel weight not defined; assuming takeoff weight is MTOW&#39;</span><span class="p">)</span>
+        <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">takeoff</span> <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span>
+    <span class="k">elif</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">run_weights_analysis</span><span class="p">:</span>
+    
+        <span class="c1"># ---------------------------------------------------------------------------------------------------------------------------</span>
+        <span class="c1"># STEP 3: Run weights analysis </span>
+        <span class="c1"># ---------------------------------------------------------------------------------------------------------------------------         </span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">payload</span> <span class="o">&gt;</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_payload</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Warning: Prescribed payload weight is greater than maximum payload weight&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">iterate_mtow</span><span class="p">:</span>
+            <span class="n">solve_for_mtow</span><span class="p">(</span><span class="n">analyses</span><span class="p">,</span> <span class="n">weights_analysis</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_zero_fuel</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># Before proceeding to the weight buildups, the buildups need either the max fuel capacity or the max zero fuel to compute OEW </span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> Warning: Max Fuel or Max Zero Fuel not defined. Iterating to find these values.&#39;</span><span class="p">)</span>
+                    <span class="n">iterate_max_fuel_and_max_zero_fuel</span><span class="p">(</span><span class="n">analyses</span><span class="p">)</span>  
+            
+            <span class="n">_</span> <span class="o">=</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="p">)</span> 
+
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">payload</span> <span class="o">&gt;</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_payload</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Warning: Computed payload weight is greater than maximum payload weight&#39;</span><span class="p">)</span>        
+            
+            <span class="c1"># Compute OEW</span>
+            <span class="k">if</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">overwrite_operating_empty_weight</span><span class="p">:</span>
+                <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">operating_empty</span> <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">weight_breakdown</span><span class="o">.</span><span class="n">empty</span><span class="o">.</span><span class="n">total</span>
+                            
+            <span class="c1"># Apply correction factors  if any</span>
+            <span class="n">apply_correction_factors</span><span class="p">(</span><span class="n">analyses</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">apply_component_weights</span><span class="p">(</span><span class="n">analyses</span><span class="p">)</span>
+ 
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">fuel</span>  <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">fuel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">propulsion_architecture</span> <span class="o">!=</span> <span class="s1">&#39;Electric&#39;</span><span class="p">:</span>
+            <span class="p">(</span><span class="s1">&#39;Fuel Weight for the mission is not defned. Filling up the airplace till max takeoff weight&#39;</span><span class="p">)</span>     
+            <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">fuel</span>     <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span><span class="o">-</span> <span class="p">(</span><span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">operating_empty</span> <span class="o">+</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">payload</span><span class="p">)</span> 
+
+        <span class="c1"># Compute takeoff weight and max zero fuel weight </span>
+        <span class="k">if</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">takeoff</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">takeoff</span> <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">operating_empty</span>  <span class="o">+</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">payload</span><span class="o">+</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">fuel</span>    
+       
+        <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_zero_fuel</span> <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">operating_empty</span>\
+                                                                    <span class="o">+</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_payload</span> 
+        
+        <span class="c1"># ---------------------------------------------------------------------------------------------------------------------------</span>
+        <span class="c1"># STEP 4: Print weight statements and apply weight factors  </span>
+        <span class="c1"># --------------------------------------------------------------------------------------------------------------------------- </span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> 
+            <span class="k">if</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">print_weight_analysis_report</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">weights_analysis</span><span class="p">)</span> <span class="o">!=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Weights</span><span class="o">.</span><span class="n">Weights</span><span class="p">:</span>  
+                <span class="n">print_mass_report</span><span class="p">(</span><span class="n">analyses</span><span class="p">)</span>  
+            <span class="k">if</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">write_mass_properties</span><span class="p">:</span>
+                <span class="n">excel_filename</span> <span class="o">=</span> <span class="n">write_mass_report</span><span class="p">(</span><span class="n">analyses</span><span class="p">)</span>     
+    
+    <span class="c1"># ---------------------------------------------------------------------------------------------------------------------------     </span>
+    <span class="c1">#  STEP 5: Compute Center of Gravity   </span>
+    <span class="c1"># --------------------------------------------------------------------------------------------------------------------------- </span>
+    <span class="k">if</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">run_center_of_gravity_analysis</span><span class="p">:</span> 
+        <span class="n">centre_of_gravity_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Component&quot;</span><span class="p">,</span> <span class="s2">&quot;Mass (kg)&quot;</span><span class="p">,</span> <span class="s2">&quot;CG x (m)&quot;</span><span class="p">,</span> <span class="s2">&quot;CG y (m)&quot;</span><span class="p">,</span> <span class="s2">&quot;CG z (m)&quot;</span> <span class="p">])</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">verbose_flag</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">verbose_flag</span> <span class="o">=</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">print_weight_analysis_report</span>
+        <span class="n">_</span> <span class="p">,</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">centre_of_gravity_df</span> <span class="o">=</span> <span class="n">compute_vehicle_center_of_gravity</span><span class="p">(</span><span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="p">,</span><span class="n">centre_of_gravity_df</span><span class="p">,</span>
+                                                <span class="n">overwrite_center_of_gravity</span> <span class="o">=</span>  <span class="n">weights_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">run_center_of_gravity_analysis</span> <span class="p">,</span>
+                                                <span class="n">segment</span><span class="o">=</span><span class="n">segment</span><span class="p">,</span>
+                                                <span class="n">verbose</span><span class="o">=</span><span class="n">verbose_flag</span><span class="p">)</span>  
+
+        <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">write_mass_properties</span><span class="p">:</span>
+            <span class="c1"># Centre of Gravity sheet</span>
+            <span class="k">with</span> <span class="n">pd</span><span class="o">.</span><span class="n">ExcelWriter</span><span class="p">(</span><span class="n">excel_filename</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">&quot;openpyxl&quot;</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="n">if_sheet_exists</span><span class="o">=</span><span class="s2">&quot;replace&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">writer</span><span class="p">:</span>
+                <span class="n">centre_of_gravity_df</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span><span class="n">sheet_name</span><span class="o">=</span><span class="s2">&quot;Centre of Gravity&quot;</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CG breakdown written to Excel:</span><span class="se">\n</span><span class="s2">  </span><span class="si">{</span><span class="n">excel_filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity_breakdown</span> <span class="o">=</span> <span class="n">centre_of_gravity_df</span>  
+
+    <span class="c1"># ---------------------------------------------------------------------------------------------------------------------------         </span>
+    <span class="c1"># STEP 6: Compute Moment of Inertia </span>
+    <span class="c1"># --------------------------------------------------------------------------------------------------------------------------- </span>
+    <span class="k">if</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">run_moments_of_inertia_analysis</span><span class="p">:</span>
+        <span class="n">moment_of_inertia_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Component&quot;</span><span class="p">,</span> <span class="s2">&quot;Mass (kg)&quot;</span><span class="p">,</span><span class="s2">&quot;Ixx (kg·m²)&quot;</span><span class="p">,</span><span class="s2">&quot;Iyy (kg·m²)&quot;</span><span class="p">,</span><span class="s2">&quot;Izz (kg·m²)&quot;</span><span class="p">,</span><span class="s2">&quot;Ixy (kg·m²)&quot;</span><span class="p">,</span><span class="s2">&quot;Ixz (kg·m²)&quot;</span><span class="p">,</span><span class="s2">&quot;Iyz (kg·m²)&quot;</span><span class="p">,</span> <span class="p">])</span>
+        <span class="n">overwrite_MOI</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">tensor</span> <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">moments_of_inertia</span><span class="o">.</span><span class="n">tensor</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">tensor</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">overwrite_MOI</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">verbose_flag</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">verbose_flag</span> <span class="o">=</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">print_weight_analysis_report</span>
+        <span class="n">_</span> <span class="p">,</span><span class="n">moment_of_inertia_df</span> <span class="o">=</span> <span class="n">compute_vehicle_moment_of_inertia</span><span class="p">(</span><span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="p">,</span><span class="n">moment_of_inertia_df</span><span class="p">,</span>
+                                            <span class="n">overwrite_moment_of_intertia</span> <span class="o">=</span> <span class="n">overwrite_MOI</span><span class="p">,</span>
+                                            <span class="n">segment</span><span class="o">=</span><span class="n">segment</span><span class="p">,</span>
+                                            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose_flag</span><span class="p">)</span> 
+        <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">write_mass_properties</span><span class="p">:</span>
+            <span class="c1"># Moment of Inertia sheet</span>
+            <span class="k">with</span> <span class="n">pd</span><span class="o">.</span><span class="n">ExcelWriter</span><span class="p">(</span><span class="n">excel_filename</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">&quot;openpyxl&quot;</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="n">if_sheet_exists</span><span class="o">=</span><span class="s2">&quot;replace&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">writer</span><span class="p">:</span>
+                <span class="n">moment_of_inertia_df</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span><span class="n">sheet_name</span><span class="o">=</span><span class="s2">&quot;Moment of Inertia&quot;</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MOI breakdown written to Excel:</span><span class="se">\n</span><span class="s2">  </span><span class="si">{</span><span class="n">excel_filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> </div>
+
+ 
+
+<div class="viewcode-block" id="iterate_max_fuel_and_max_zero_fuel">
+<a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Mission.Common.Pre_Process.mass_properties.html#RCAIDE.Library.Mission.Common.Pre_Process.mass_properties.iterate_max_fuel_and_max_zero_fuel">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">iterate_max_fuel_and_max_zero_fuel</span><span class="p">(</span><span class="n">analyses</span><span class="p">,</span> <span class="n">max_iterations</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="c1"># Inital guess for max fuel and max zero fuel based on regressional analysis which use max takeoff weight of the aircraft</span>
+    <span class="n">compute_max_fuel</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_fuel</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_fuel</span> <span class="o">=</span>  <span class="mf">0.477</span><span class="o">*</span><span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span> <span class="o">-</span><span class="mi">13455</span>
+        <span class="n">compute_max_fuel</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_zero_fuel</span> <span class="o">=</span> <span class="mf">0.6269</span><span class="o">*</span><span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span> <span class="o">+</span> <span class="mi">20505</span>
+    
+    <span class="n">iteration</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># Convergence loop</span>
+    <span class="k">while</span> <span class="n">iteration</span> <span class="o">&lt;</span> <span class="n">max_iterations</span><span class="p">:</span>                               
+        <span class="c1"># Run weights analysis ! </span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="p">)</span>
+        
+        <span class="c1"># Compute OEW</span>
+        <span class="k">if</span> <span class="n">analyses</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">overwrite_operating_empty_weight</span><span class="p">:</span>
+            <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">operating_empty</span> <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">weight_breakdown</span><span class="o">.</span><span class="n">empty</span><span class="o">.</span><span class="n">total</span>
+                        
+        <span class="c1"># Apply Correction Factors if any</span>
+        <span class="n">apply_correction_factors</span><span class="p">(</span><span class="n">analyses</span><span class="p">)</span>
+        <span class="n">apply_component_weights</span><span class="p">(</span><span class="n">analyses</span><span class="p">)</span>
+
+        <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">takeoff</span>         <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">operating_empty</span> <span class="o">+</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">payload</span> <span class="o">+</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">fuel</span>                    
+        <span class="n">mew_max_zero_fuel</span>                                <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">operating_empty</span> <span class="o">+</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_payload</span>
+        <span class="n">residual_max_zero_fuel</span>                           <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">mew_max_zero_fuel</span> <span class="o">-</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_zero_fuel</span><span class="p">)</span>
+        <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_zero_fuel</span>   <span class="o">=</span> <span class="n">mew_max_zero_fuel</span>
+        
+        <span class="n">residual_max_fuel</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">compute_max_fuel</span><span class="p">:</span>
+            <span class="n">new_max_fuel</span>       <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span> <span class="o">-</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">operating_empty</span> <span class="o">-</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">min_payload</span>
+            <span class="n">fuel_density</span>       <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">ft</span><span class="o">.</span><span class="n">fuel</span><span class="o">.</span><span class="n">density</span> <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span> <span class="k">for</span> <span class="n">fl</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">fuel_lines</span> <span class="k">for</span> <span class="n">ft</span> <span class="ow">in</span> <span class="n">fl</span><span class="o">.</span><span class="n">fuel_tanks</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fuel_density</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">max_fuel_by_volume</span> <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">volume_properties</span><span class="o">.</span><span class="n">max_fuel</span> <span class="o">*</span> <span class="n">fuel_density</span>
+                <span class="n">new_max_fuel</span>       <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">new_max_fuel</span><span class="p">,</span> <span class="n">max_fuel_by_volume</span><span class="p">)</span>
+            <span class="n">residual_max_fuel</span>  <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">new_max_fuel</span> <span class="o">-</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_fuel</span><span class="p">)</span>
+            <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_fuel</span> <span class="o">=</span> <span class="n">new_max_fuel</span>
+        
+        <span class="n">iteration</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">residual_max_fuel</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">residual_max_zero_fuel</span> <span class="o">&lt;</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_zero_fuel</span> <span class="o">+=</span> <span class="n">residual_max_zero_fuel</span> <span class="o">*</span> <span class="mf">0.1</span>
+            <span class="k">if</span> <span class="n">compute_max_fuel</span><span class="p">:</span>
+                <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_fuel</span>      <span class="o">+=</span> <span class="n">residual_max_fuel</span> <span class="o">*</span> <span class="mf">0.1</span>
+
+    <span class="k">return</span></div>
+
+
+
+<div class="viewcode-block" id="solve_for_mtow">
+<a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Mission.Common.Pre_Process.mass_properties.html#RCAIDE.Library.Mission.Common.Pre_Process.mass_properties.solve_for_mtow">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">solve_for_mtow</span><span class="p">(</span><span class="n">analyses</span><span class="p">,</span> <span class="n">weights_analysis</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Solves for MTOW that satisfies the target capacity fraction.</span>
+
+<span class="sd">    The MTOW capacity fraction is MTOW / (OEW + Max Fuel + Max Payload).</span>
+<span class="sd">    Uses brentq for superlinear convergence instead of fixed-point iteration.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">last_tag</span> <span class="o">=</span> <span class="kc">None</span>    
-    <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="n">mission</span><span class="o">.</span><span class="n">segments</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">weights</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">last_tag</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="c1"># run weights analysis </span>
-                <span class="n">weights_analysis</span> <span class="o">=</span>  <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">weights</span>
-                
-                <span class="n">_</span> <span class="o">=</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span> 
-             
-                <span class="c1"># CG Location  </span>
-                <span class="n">CG_location</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">compute_vehicle_center_of_gravity</span><span class="p">(</span><span class="n">weights_analysis</span><span class="o">.</span><span class="n">vehicle</span><span class="p">,</span> <span class="n">update_CG</span><span class="o">=</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update_center_of_gravity</span><span class="p">)</span>  
-                 
-                <span class="c1"># Operating Aircraft MOI    </span>
-                <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">compute_aircraft_moment_of_inertia</span><span class="p">(</span><span class="n">weights_analysis</span><span class="o">.</span><span class="n">vehicle</span><span class="p">,</span> <span class="n">CG_location</span><span class="p">,</span> <span class="n">update_MOI</span><span class="o">=</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update_moment_of_inertia</span><span class="p">)</span>        
-                
-                <span class="c1"># assign mass properties to aerodynamics analyses </span>
-                <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">operating_empty</span>             <span class="o">=</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">operating_empty</span>
-                <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span>           <span class="o">=</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span> 
-                <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">moments_of_inertia</span><span class="o">.</span><span class="n">tensor</span>   <span class="o">=</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">moments_of_inertia</span><span class="o">.</span><span class="n">tensor</span>
-                <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">operating_empty</span>                   <span class="o">=</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">operating_empty</span>
-                <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span>                 <span class="o">=</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span> 
-                <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">moments_of_inertia</span><span class="o">.</span><span class="n">tensor</span>         <span class="o">=</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">moments_of_inertia</span><span class="o">.</span><span class="n">tensor</span>
-                
-                <span class="n">last_tag</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-            
-            <span class="k">else</span><span class="p">:</span>  
-                <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">operating_empty</span>             <span class="o">=</span> <span class="n">mission</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">last_tag</span><span class="p">]</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">operating_empty</span>
-                <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span>           <span class="o">=</span> <span class="n">mission</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">last_tag</span><span class="p">]</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span> 
-                <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">moments_of_inertia</span><span class="o">.</span><span class="n">tensor</span>   <span class="o">=</span> <span class="n">mission</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">last_tag</span><span class="p">]</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">moments_of_inertia</span><span class="o">.</span><span class="n">tensor</span>
-                <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">operating_empty</span>                  <span class="o">=</span> <span class="n">mission</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">last_tag</span><span class="p">]</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">operating_empty</span>
-                <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span>                <span class="o">=</span> <span class="n">mission</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">last_tag</span><span class="p">]</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span> 
-                <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">moments_of_inertia</span><span class="o">.</span><span class="n">tensor</span>        <span class="o">=</span> <span class="n">mission</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">last_tag</span><span class="p">]</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">moments_of_inertia</span><span class="o">.</span><span class="n">tensor</span>
-                <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">operating_empty</span>                   <span class="o">=</span> <span class="n">mission</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">last_tag</span><span class="p">]</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">operating_empty</span>
-                <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span>                 <span class="o">=</span> <span class="n">mission</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">last_tag</span><span class="p">]</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span> 
-                <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">moments_of_inertia</span><span class="o">.</span><span class="n">tensor</span>         <span class="o">=</span> <span class="n">mission</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">last_tag</span><span class="p">]</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">moments_of_inertia</span><span class="o">.</span><span class="n">tensor</span> 
-    <span class="k">return</span> </div>
+    <span class="n">target_fraction</span>    <span class="o">=</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">mtow_capacity_fraction</span>
+    <span class="n">max_zero_fuel_flag</span> <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_zero_fuel</span> <span class="ow">is</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">max_zero_fuel_flag</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> Warning: Max Fuel or Max Zero Fuel not defined. Iterating to find these values.&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_mtow_residual</span><span class="p">(</span><span class="n">mtow</span><span class="p">):</span>
+        <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span> <span class="o">=</span> <span class="n">mtow</span>
+        <span class="k">if</span> <span class="n">max_zero_fuel_flag</span><span class="p">:</span>
+            <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_zero_fuel</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">iterate_max_fuel_and_max_zero_fuel</span><span class="p">(</span><span class="n">analyses</span><span class="p">)</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">weights_analysis</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="p">)</span>
+        <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">operating_empty</span> <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">weight_breakdown</span><span class="o">.</span><span class="n">empty</span><span class="o">.</span><span class="n">total</span>
+        <span class="n">apply_correction_factors</span><span class="p">(</span><span class="n">analyses</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">apply_component_weights</span><span class="p">(</span><span class="n">analyses</span><span class="p">)</span>
+        <span class="n">oew</span>         <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">operating_empty</span>
+        <span class="n">max_fuel</span>    <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_fuel</span>
+        <span class="n">max_payload</span> <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_payload</span>
+        <span class="k">return</span> <span class="n">target_fraction</span> <span class="o">-</span> <span class="n">mtow</span> <span class="o">/</span> <span class="p">(</span><span class="n">oew</span> <span class="o">+</span> <span class="n">max_fuel</span> <span class="o">+</span> <span class="n">max_payload</span><span class="p">)</span>
+
+    <span class="n">mtow_0</span> <span class="o">=</span> <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">mtow_converged</span> <span class="o">=</span> <span class="n">brentq</span><span class="p">(</span><span class="n">_mtow_residual</span><span class="p">,</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">mtow_0</span><span class="p">,</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">mtow_0</span><span class="p">,</span> <span class="n">xtol</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">minimize_scalar</span><span class="p">(</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">_mtow_residual</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span>
+                              <span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">mtow_0</span><span class="p">,</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">mtow_0</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;bounded&#39;</span><span class="p">)</span>
+        <span class="n">mtow_converged</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># Final evaluation to leave vehicle in correct state</span>
+    <span class="n">_mtow_residual</span><span class="p">(</span><span class="n">mtow_converged</span><span class="p">)</span>
+    <span class="n">analyses</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">max_takeoff</span> <span class="o">=</span> <span class="n">mtow_converged</span>
+
+    <span class="k">return</span></div>
 
 </pre></div>
 
@@ -463,8 +780,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -484,7 +801,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -498,7 +815,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

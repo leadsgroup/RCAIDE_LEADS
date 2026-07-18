@@ -1,0 +1,25 @@
+RCAIDE.Library.Methods.Aeroacoustics.Physics_Based_Frequency_Domain.Rotor.harmonic_noise_line
+
+harmonic\_noise\_line
+=====================
+
+.. automodule:: RCAIDE.Library.Methods.Aeroacoustics.Physics_Based_Frequency_Domain.Rotor.harmonic_noise_line
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

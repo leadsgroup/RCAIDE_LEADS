@@ -1,0 +1,25 @@
+RCAIDE.Library.Methods.Aeroacoustics.Physics_Based_Frequency_Domain.Rotor.noise_directivities
+
+noise\_directivities
+====================
+
+.. automodule:: RCAIDE.Library.Methods.Aeroacoustics.Physics_Based_Frequency_Domain.Rotor.noise_directivities
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

@@ -1,0 +1,731 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RCAIDE.Library.Plots.Emissions.plot_contrails_appleman_chart &#8212; RCAIDE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=d103512f" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Plots/Emissions/plot_contrails_appleman_chart';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Plots/Emissions/plot_contrails_appleman_chart.html" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script src="../../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../_static/leads_logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../../_static/leads_logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">RCAIDE</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">RCAIDE.Library.Plots.Emissions.plot_contrails_appleman_chart</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for RCAIDE.Library.Plots.Emissions.plot_contrails_appleman_chart</h1><div class="highlight"><pre>
+<span></span><span class="c1"># RCAIDE/Library/Plots/Emissions/plot_contrails_appleman_chart</span>
+<span class="c1"># </span>
+<span class="c1"># </span>
+<span class="c1"># Created:  Jul 2024, M. Clarke</span>
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  IMPORT</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Units</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Plots.Common</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_axes</span><span class="p">,</span> <span class="n">plot_style</span> 
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.cm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span> 
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  PLOTS</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------   </span>
+<span class="c1">## @ingroup Library-Plots-Performance-Emissions </span>
+<div class="viewcode-block" id="plot_contrails_appleman_chart">
+<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Plots.Emissions.plot_contrails_appleman_chart.html#RCAIDE.Library.Plots.Emissions.plot_contrails_appleman_chart.plot_contrails_appleman_chart">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_contrails_appleman_chart</span><span class="p">(</span><span class="n">results</span><span class="p">,</span>
+                    <span class="n">save_figure</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                    <span class="n">show_legend</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="n">save_filename</span> <span class="o">=</span> <span class="s2">&quot;Appleman_Chart&quot;</span> <span class="p">,</span>
+                    <span class="n">file_type</span> <span class="o">=</span> <span class="s2">&quot;.png&quot;</span><span class="p">,</span>
+                    <span class="n">width</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="mi">6</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate plots showing CO2-equivalent emissions and emission indexes for various fuel species over mission segments.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    results : Data</span>
+<span class="sd">        Mission results data structure containing:</span>
+<span class="sd">        results.segments[i].conditions.emissions.total with fields:</span>
+<span class="sd">            - CO2 : array</span>
+<span class="sd">                Carbon dioxide emissions [kg]</span>
+<span class="sd">            - NOx : array</span>
+<span class="sd">                Nitrogen oxide emissions [kg]</span>
+<span class="sd">            - H2O : array</span>
+<span class="sd">                Water vapor emissions [kg]</span>
+<span class="sd">            - Contrails : array</span>
+<span class="sd">                Contrail formation impact [kg CO2e]</span>
+<span class="sd">            - Soot : array</span>
+<span class="sd">                Particulate emissions [kg]</span>
+<span class="sd">            - SO2 : array</span>
+<span class="sd">                Sulfur dioxide emissions [kg]</span>
+
+<span class="sd">    save_figure : bool, optional</span>
+<span class="sd">        Save figure to file if True, default False</span>
+
+<span class="sd">    show_legend : bool, optional</span>
+<span class="sd">        Display segment legend if True, default True</span>
+
+<span class="sd">    save_filename : str, optional</span>
+<span class="sd">        Name for saved figure file, default &quot;CO2e_Emissions&quot;</span>
+
+<span class="sd">    file_type : str, optional</span>
+<span class="sd">        File extension for saved figure, default &quot;.png&quot;</span>
+
+<span class="sd">    width : float, optional</span>
+<span class="sd">        Figure width in inches, default 11</span>
+
+<span class="sd">    height : float, optional</span>
+<span class="sd">        Figure height in inches, default 7</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    fig : matplotlib.figure.Figure</span>
+<span class="sd">        Figure showing stacked emissions contributions</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Creates a stacked area plot showing:</span>
+<span class="sd">        - Individual contributions from each emission type</span>
+<span class="sd">        - Cumulative total CO2-equivalent impact</span>
+<span class="sd">        - Breakdown by mission segment</span>
+<span class="sd">        - Time history of emissions</span>
+
+<span class="sd">    Different emission types are distinguished by fill colors</span>
+<span class="sd">    and segments use different shades from the inferno colormap.</span>
+
+<span class="sd">    **Definitions**</span>
+
+<span class="sd">    &#39;CO2-equivalent (CO2e)&#39;</span>
+<span class="sd">        Combined climate impact normalized to CO2</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Global Warming Potential (GWP)&#39;</span>
+<span class="sd">        Relative impact factor for different emissions</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Contrail Impact&#39;</span>
+<span class="sd">        Climate forcing from aviation-induced cloudiness</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+ 
+    <span class="c1"># get plotting style </span>
+    <span class="n">ps</span>      <span class="o">=</span> <span class="n">plot_style</span><span class="p">()</span>  
+
+    <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;axes.labelsize&#39;</span><span class="p">:</span> <span class="n">ps</span><span class="o">.</span><span class="n">axis_font_size</span><span class="p">,</span>
+                  <span class="s1">&#39;xtick.labelsize&#39;</span><span class="p">:</span> <span class="n">ps</span><span class="o">.</span><span class="n">axis_font_size</span><span class="p">,</span>
+                  <span class="s1">&#39;ytick.labelsize&#39;</span><span class="p">:</span> <span class="n">ps</span><span class="o">.</span><span class="n">axis_font_size</span><span class="p">,</span>
+                  <span class="s1">&#39;axes.titlesize&#39;</span><span class="p">:</span> <span class="n">ps</span><span class="o">.</span><span class="n">title_font_size</span><span class="p">}</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+      
+    <span class="n">fig</span>   <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">save_filename</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="n">width</span><span class="p">,</span><span class="n">height</span><span class="p">)</span>  
+
+    <span class="n">line_colors</span>   <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">inferno</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.9</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">)))</span>
+    
+  
+    <span class="c1"># always contrains left of line</span>
+    <span class="n">always_contrails_line</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mf">59.43367168358419</span><span class="p">,</span> <span class="mf">101.16672500291688</span><span class="p">],</span>
+                                    <span class="p">[</span><span class="o">-</span><span class="mf">55.971298564928254</span><span class="p">,</span> <span class="mf">149.10512192276286</span><span class="p">],</span>
+                                    <span class="p">[</span><span class="o">-</span><span class="mf">53.23976198809942</span><span class="p">,</span> <span class="mf">202.20977715552448</span><span class="p">],</span>
+                                    <span class="p">[</span><span class="o">-</span><span class="mf">51.07478707268698</span><span class="p">,</span> <span class="mf">254.72173608680438</span><span class="p">],</span>
+                                    <span class="p">[</span><span class="o">-</span><span class="mf">48.994516392486304</span><span class="p">,</span> <span class="mf">316.4531559911329</span><span class="p">],</span>
+                                    <span class="p">[</span><span class="o">-</span><span class="mf">46.60133006650334</span><span class="p">,</span> <span class="mf">405.2829308132073</span><span class="p">],</span>
+                                    <span class="p">[</span><span class="o">-</span><span class="mf">44.84984249212462</span><span class="p">,</span> <span class="mf">479.10862209777156</span><span class="p">],</span>
+                                    <span class="p">[</span><span class="o">-</span><span class="mf">44.453622681134064</span><span class="p">,</span> <span class="mf">500.4456889511142</span><span class="p">]])</span>
+
+    <span class="n">maximum_T_for_persistence_line</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mf">56.842608797106536</span><span class="p">,</span> <span class="mf">101.24139540310355</span><span class="p">],</span>
+                                                <span class="p">[</span><span class="o">-</span><span class="mf">54.4251545910629</span><span class="p">,</span> <span class="mf">130.12950647532384</span><span class="p">],</span>
+                                                <span class="p">[</span><span class="o">-</span><span class="mf">52.33321666083305</span><span class="p">,</span> <span class="mf">163.0428188076071</span><span class="p">],</span>
+                                                <span class="p">[</span><span class="o">-</span><span class="mf">50.644965581612425</span><span class="p">,</span> <span class="mf">193.0626531326567</span><span class="p">],</span>
+                                                <span class="p">[</span><span class="o">-</span><span class="mf">49.120289347800735</span><span class="p">,</span> <span class="mf">227.11235561778093</span><span class="p">],</span>
+                                                <span class="p">[</span><span class="o">-</span><span class="mf">47.59607980399021</span><span class="p">,</span> <span class="mf">262.314782405787</span><span class="p">],</span>
+                                                <span class="p">[</span><span class="o">-</span><span class="mf">45.83479173958699</span><span class="p">,</span> <span class="mf">311.93326332983315</span><span class="p">],</span>
+                                                <span class="p">[</span><span class="o">-</span><span class="mf">44.31361568078405</span><span class="p">,</span> <span class="mf">354.628398086571</span><span class="p">],</span>
+                                                <span class="p">[</span><span class="o">-</span><span class="mf">43.59584645898963</span><span class="p">,</span> <span class="mf">381.73842025434607</span><span class="p">],</span>
+                                                <span class="p">[</span><span class="o">-</span><span class="mf">41.52140940380353</span><span class="p">,</span> <span class="mf">457.87889394469727</span><span class="p">],</span>
+                                                <span class="p">[</span><span class="o">-</span><span class="mf">40.9651149224128</span><span class="p">,</span> <span class="mf">483.83152490957883</span><span class="p">],</span>
+                                                <span class="p">[</span><span class="o">-</span><span class="mf">40.64753237661884</span><span class="p">,</span> <span class="mf">499.40263679850665</span><span class="p">]])</span> 
+    <span class="c1"># no contrails right of line</span>
+    <span class="n">no_contrails_line</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mf">50.76957181192394</span><span class="p">,</span> <span class="mf">100.84004200210016</span><span class="p">],</span>
+                                <span class="p">[</span><span class="o">-</span><span class="mf">48.83514175708787</span><span class="p">,</span> <span class="mf">122.79780655699457</span><span class="p">],</span>
+                                <span class="p">[</span><span class="o">-</span><span class="mf">45.85649282464124</span><span class="p">,</span> <span class="mf">165.53494341383742</span><span class="p">],</span>
+                                <span class="p">[</span><span class="o">-</span><span class="mf">43.44603896861511</span><span class="p">,</span> <span class="mf">211.71391902928485</span><span class="p">],</span>
+                                <span class="p">[</span><span class="o">-</span><span class="mf">41.35970131839927</span><span class="p">,</span> <span class="mf">258.4599229961499</span><span class="p">],</span>
+                                <span class="p">[</span><span class="o">-</span><span class="mf">40.39878660599698</span><span class="p">,</span> <span class="mf">285.0005833625015</span><span class="p">],</span>
+                                <span class="p">[</span><span class="o">-</span><span class="mf">38.638431921596094</span><span class="p">,</span> <span class="mf">336.9245128923113</span><span class="p">],</span>
+                                <span class="p">[</span><span class="o">-</span><span class="mf">36.80200676700503</span><span class="p">,</span> <span class="mf">400.95438105238594</span><span class="p">],</span>
+                                <span class="p">[</span><span class="o">-</span><span class="mf">35.366468323416186</span><span class="p">,</span> <span class="mf">455.17442538793614</span><span class="p">],</span>
+                                <span class="p">[</span><span class="o">-</span><span class="mf">34.2513125656283</span><span class="p">,</span> <span class="mf">500.73970365184925</span><span class="p">]])</span> 
+    
+
+    <span class="c1">#  An Appleman chart can be used to identify more and less favorable conditions. Using the vehicle&#39;s mission, estimate the</span>
+    <span class="c1"># time the vehicle will spend at a lower temperature and/or higher pressure than the 0% relative humidity on the Appleman chart.</span>
+    <span class="c1"># Also use the vehicle&#39;s mission, estimate the time the vehicle will spend at temperatures and pressures </span>
+    <span class="c1"># between the 0% relative humidity and maximum temperature for persistence on the Appleman chart. </span>
+
+    <span class="c1"># plot bounds of Appleman chart   </span>
+    <span class="n">axis</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">always_contrails_line</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">always_contrails_line</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;Always Contrails&quot;</span><span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span>  <span class="n">ps</span><span class="o">.</span><span class="n">line_width</span><span class="p">,</span> <span class="n">linestyle</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">maximum_T_for_persistence_line</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">maximum_T_for_persistence_line</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;Maximum T for Persistence&quot;</span><span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span>  <span class="n">ps</span><span class="o">.</span><span class="n">line_width</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span> <span class="o">=</span> <span class="s1">&#39;--&#39;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">no_contrails_line</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">no_contrails_line</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;No Contrails&quot;</span><span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span>  <span class="n">ps</span><span class="o">.</span><span class="n">line_width</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Temperature (°C)&#39;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Pressure (hPa)&#39;</span><span class="p">)</span> 
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">500</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="mi">60</span><span class="p">,</span><span class="o">-</span><span class="mi">30</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">invert_yaxis</span><span class="p">()</span>
+    
+    <span class="c1"># start with 0 time in each region</span>
+    <span class="n">always_contrails_time_sec</span>  <span class="o">=</span><span class="mi">0</span>
+    <span class="n">persistence_time_sec</span> <span class="o">=</span> <span class="mi">0</span> 
+    <span class="c1"># get line colors for plots </span>
+    <span class="n">line_colors</span>   <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">inferno</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.9</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">)))</span>     
+
+    <span class="c1"># loop through mission segments and plot conditions on Appleman chart</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">)):</span> 
+
+        <span class="n">always_contrails_time_stamps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">persistence_time_stamps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">no_contrails_time_stamps</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">T</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">temperature</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mf">273.15</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">pressure</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">100</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">inertial</span><span class="o">.</span><span class="n">time</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> 
+         
+        <span class="c1"># rediscretize temperature pressure and time to ensure points are captured within appleman chart</span>
+        <span class="n">time</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">200</span><span class="p">)</span> 
+        <span class="n">temperature</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+        <span class="n">pressure</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
+
+        <span class="n">segment_tag</span>  <span class="o">=</span>  <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">tag</span>
+        <span class="n">segment_name</span> <span class="o">=</span> <span class="n">segment_tag</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span> 
+        
+        <span class="c1"># if any of the pressure values are above 500 hPa, print a warning that the conditions are outside the bounds of the Appleman chart</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">pressure</span> <span class="o">&lt;</span> <span class="mi">500</span><span class="p">):</span> 
+            <span class="n">axis</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">temperature</span><span class="p">,</span> <span class="n">pressure</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span><span class="n">segment_name</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="n">line_colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">s</span> <span class="o">=</span> <span class="mi">50</span><span class="p">)</span>
+            
+            <span class="c1"># compute time spent in each region based in temperature and pressure conditions</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">temperature</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">temperature</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">pressure</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">always_contrails_line</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">always_contrails_line</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]):</span>
+                    <span class="n">always_contrails_time_stamps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+                    
+                <span class="k">if</span> <span class="n">temperature</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">pressure</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">no_contrails_line</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">no_contrails_line</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]):</span>
+                    <span class="n">no_contrails_time_stamps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+
+                <span class="c1"># compute time spent between 0% relative humidity (always contrails) and maximum temperature for persistence on the Appleman chart</span>
+                <span class="k">if</span> <span class="n">temperature</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">pressure</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">always_contrails_line</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">always_contrails_line</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span> <span class="ow">and</span> <span class="n">temperature</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">pressure</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">maximum_T_for_persistence_line</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">maximum_T_for_persistence_line</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]):</span>
+                    <span class="n">persistence_time_stamps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+ 
+            <span class="c1"># convert time stamps into numpy arrays and compute total time spent in each region</span>
+            <span class="n">always_contrails_time_stamps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">always_contrails_time_stamps</span><span class="p">)</span>
+            <span class="n">persistence_time_stamps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">persistence_time_stamps</span><span class="p">)</span>
+            <span class="n">no_contrails_time_stamps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">no_contrails_time_stamps</span><span class="p">)</span> 
+
+            <span class="c1"># use differences between time stamps to compute total time spent in each region</span>
+            <span class="n">always_contrails_time_sec</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">always_contrails_time_stamps</span><span class="p">))</span>
+            <span class="n">persistence_time_sec</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">persistence_time_stamps</span><span class="p">))</span> 
+
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">segment_name</span> <span class="o">+</span> <span class="s2">&quot;Segment has pressure values outside the bounds of the Appleman chart. Time spent in each region may be inaccurate.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># add annotations for each region of the Appleman chart</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="o">-</span><span class="mi">58</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="s1">&#39;Always Contrails&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">12</span>
+                <span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="o">-</span><span class="mi">50</span><span class="p">,</span> <span class="mi">220</span><span class="p">,</span> <span class="s1">&#39;Maybe Contrails&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">12</span>
+                <span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="o">-</span><span class="mi">38</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="s1">&#39;No Contrails&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">12</span>
+                <span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;black&#39;</span><span class="p">)</span>
+
+    
+    <span class="n">t_fin</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">inertial</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>    
+
+    <span class="n">no_contrails_time_sec</span> <span class="o">=</span> <span class="n">t_fin</span> <span class="o">-</span> <span class="n">always_contrails_time_sec</span> <span class="o">-</span> <span class="n">persistence_time_sec</span>        
+    <span class="c1"># percent of flight in each regine </span>
+    <span class="n">always_contrails_time_percent</span> <span class="o">=</span> <span class="p">(</span><span class="n">always_contrails_time_sec</span><span class="o">/</span><span class="n">t_fin</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span>
+    <span class="n">persistence_time_percent</span> <span class="o">=</span> <span class="p">(</span><span class="n">persistence_time_sec</span><span class="o">/</span><span class="n">t_fin</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span>
+    <span class="n">no_contrails_time_percent</span> <span class="o">=</span> <span class="p">(</span><span class="n">no_contrails_time_sec</span><span class="o">/</span><span class="n">t_fin</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span> 
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Percent of flight in Always Contrails region: </span><span class="si">{</span><span class="n">always_contrails_time_percent</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Percent of flight in Persistence region: </span><span class="si">{</span><span class="n">persistence_time_percent</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Percent of flight in No Contrails region: </span><span class="si">{</span><span class="n">no_contrails_time_percent</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+    
+    <span class="n">always_contrails_time_hr</span> <span class="o">=</span> <span class="n">always_contrails_time_sec</span><span class="o">/</span><span class="mi">3600</span>
+    <span class="n">persistence_time_hr</span> <span class="o">=</span> <span class="n">persistence_time_sec</span><span class="o">/</span><span class="mi">3600</span>
+    <span class="n">no_contrails_time_hr</span> <span class="o">=</span> <span class="n">no_contrails_time_sec</span><span class="o">/</span><span class="mi">3600</span>
+
+    <span class="c1"># time spend in each region </span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time spent in Always Contrails region: </span><span class="si">{</span><span class="n">always_contrails_time_hr</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> hours&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time spent in Persistence region: </span><span class="si">{</span><span class="n">persistence_time_hr</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> hours&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time spent in No Contrails region: </span><span class="si">{</span><span class="n">no_contrails_time_hr</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> hours&quot;</span><span class="p">)</span> 
+                
+    <span class="k">if</span> <span class="n">show_legend</span><span class="p">:</span>
+        <span class="n">leg</span> <span class="o">=</span>  <span class="n">fig</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper center&#39;</span><span class="p">,</span> <span class="n">ncol</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span> 
+        <span class="n">leg</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Flight Segment&#39;</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="n">ps</span><span class="o">.</span><span class="n">legend_font_size</span><span class="p">,</span> <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="s1">&#39;heavy&#39;</span><span class="p">})</span>    
+    
+    <span class="c1"># Adjusting the sub-plots for legend </span>
+    
+    <span class="c1"># set title of plot </span>
+    <span class="n">title_text</span>    <span class="o">=</span> <span class="s1">&#39;Appleman Chart&#39;</span>     
+    <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span> 
+    <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">title_text</span><span class="p">)</span>
+    
+    <span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">save_figure</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_filename</span> <span class="o">+</span> <span class="n">file_type</span><span class="p">)</span>   
+    <span class="k">return</span> <span class="n">fig</span> </div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Laboratory for Electric Aircraft Design and Sustainability.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,826 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../../../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_cylindrical_tank_volume &#8212; RCAIDE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../_static/custom.css?v=d103512f" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../../../../../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Methods/Powertrain/Sources/Fuel_Tanks/Cryogenic_Tank/compute_cryogenic_cylindrical_tank_volume';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Methods/Powertrain/Sources/Fuel_Tanks/Cryogenic_Tank/compute_cryogenic_cylindrical_tank_volume.html" />
+    <link rel="index" title="Index" href="../../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../../../../_static/language_data.js"></script>
+    <script src="../../../../../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../../../../_static/leads_logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../../../../../_static/leads_logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">RCAIDE</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_cylindrical_tank_volume</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_cylindrical_tank_volume</h1><div class="highlight"><pre>
+<span></span><span class="c1"># RCAIDE/Library/Methods/Powertrain/Sources/Fuel_Tanks/Cryogenic_Tank/compute_cryogenic_cylindrical_tank_volume.py</span>
+<span class="c1">#</span>
+<span class="c1"># Created: Dec 2025, S. Shekar</span>
+<span class="c1"># Modified: Jun 2026, M. Clarke</span>
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  IMPORTS</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Units</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize_scalar</span><span class="p">,</span> <span class="n">brentq</span>
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  Cryogenic Cylindrical Tank Volume</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="compute_cryogenic_cylindrical_tank_volume">
+<a class="viewcode-back" href="../../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_cylindrical_tank_volume.html#RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_cylindrical_tank_volume.compute_cryogenic_cylindrical_tank_volume">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_cryogenic_cylindrical_tank_volume</span><span class="p">(</span><span class="n">fuel_tank</span><span class="p">,</span> <span class="n">fuel_tanks</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sizes a cryogenic rounded-end cylindrical tank (cylinder + hemispherical caps)</span>
+<span class="sd">    to fit within the outer mold line set by the upstream non-integral tank function.</span>
+
+<span class="sd">    The upstream function (e.g. compute_wing_non_integral_tank_volume) determines the</span>
+<span class="sd">    external dimensions (diameters.external, lengths.external) from the wing geometry.</span>
+<span class="sd">    This function works inward: it iterates on the usable fuel volume until the</span>
+<span class="sd">    pressure vessel wall + insulation thickness exactly fills the available envelope.</span>
+
+<span class="sd">    Sizing involves three nested solves:</span>
+<span class="sd">        1. Outer loop   – adjusts fuel volume (V_guess) until the total outer radius</span>
+<span class="sd">                          (structural wall + insulation) matches the external envelope.</span>
+<span class="sd">        2. Middle solve – finds the insulation thickness that satisfies the allowable</span>
+<span class="sd">                          heat leak constraint for a given inner geometry.</span>
+<span class="sd">        3. Inner solve  – finds the equilibrium temperature at the insulation outer</span>
+<span class="sd">                          surface by balancing external convection/radiation with</span>
+<span class="sd">                          conduction through the wall and insulation.</span>
+
+<span class="sd">    The wall thickness ratio (ro/ri) is solved once before the outer loop because it</span>
+<span class="sd">    depends only on internal/external pressures and material yield strength (von Mises),</span>
+<span class="sd">    which do not change during iteration.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fuel_tank : Fuel_Tank</span>
+<span class="sd">        Fuel tank object. Must have external dimensions already set by the upstream</span>
+<span class="sd">        non-integral tank function.</span>
+<span class="sd">    fuel_tanks : Container</span>
+<span class="sd">        Parent container (tank is removed if sizing produces invalid results).</span>
+
+<span class="sd">    Updates (in-place)</span>
+<span class="sd">    ------------------</span>
+<span class="sd">    fuel_tank.volume_properties.net_volume   : usable fuel volume [m³]</span>
+<span class="sd">    fuel_tank.volume_properties.gross_volume : total internal volume incl. ullage [m³]</span>
+<span class="sd">    fuel_tank.inner_structure.*              : pressure vessel geometry</span>
+<span class="sd">    fuel_tank.insulation_thickness           : required insulation thickness [m]</span>
+<span class="sd">    fuel_tank.structural.mass_properties.mass: structural shell mass [kg]</span>
+<span class="sd">    fuel_tank.insulation.mass_properties.mass: insulation mass [kg]</span>
+<span class="sd">    fuel_tank.mass_properties.mass           : total tank mass (structure + insulation) [kg]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">wall_thickness</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1">#  Unpack constants that do not change during iteration</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">safety_factor</span> <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">safety_factor</span>
+    <span class="n">aspect_ratio</span>  <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">external</span> <span class="o">/</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">diameters</span><span class="o">.</span><span class="n">external</span>      
+    <span class="n">ullage_frac</span>   <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">ullage_volume_fraction</span>  <span class="c1"># fraction of internal volume reserved for ullage</span>
+    <span class="n">T_inlet</span>       <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">design_inlet_temperature</span>
+    <span class="n">Qo</span>            <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">design_heat_flux</span>    <span class="c1"># max allowable heat leak [W/m²]</span>
+    <span class="n">k_mat</span>         <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">thermal_conductivity</span>
+    <span class="n">k_ins_mat</span>     <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">insulation</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">thermal_conductivity</span>
+    <span class="n">sigma_allow</span>   <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">yield_tensile_strength</span> <span class="o">/</span> <span class="n">safety_factor</span>
+    <span class="n">PI_Q</span>          <span class="o">=</span> <span class="mf">1.5</span>  <span class="c1"># heat-flow multiplier for thermal sizing margin</span>
+
+    <span class="c1"># Internal and external design pressures</span>
+    <span class="n">P_sat</span>      <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel</span><span class="o">.</span><span class="n">cryogen_properties</span><span class="p">(</span><span class="n">T_inlet</span><span class="p">,</span> <span class="s2">&quot;Pressure (MPa)&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">MPa</span>
+    <span class="n">P_internal</span> <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">pressure_factor</span> <span class="o">*</span> <span class="n">P_sat</span>
+    <span class="n">P_external</span> <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">design_external_pressure</span>
+
+    <span class="c1"># Atmospheric conditions at design altitude (computed once, passed to inner solvers)</span>
+    <span class="n">atmosphere</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Atmospheric</span><span class="o">.</span><span class="n">US_Standard_1976</span><span class="p">()</span>
+    <span class="n">atmo_data</span>  <span class="o">=</span> <span class="n">atmosphere</span><span class="o">.</span><span class="n">compute_values</span><span class="p">(</span><span class="n">fuel_tank</span><span class="o">.</span><span class="n">design_altitude</span><span class="p">,</span>
+                                           <span class="n">fuel_tank</span><span class="o">.</span><span class="n">design_isa_deviation</span><span class="p">)</span>
+    <span class="n">Ta</span>     <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">atmo_data</span><span class="o">.</span><span class="n">temperature</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">rho</span>    <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">atmo_data</span><span class="o">.</span><span class="n">density</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">mu</span>     <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">atmo_data</span><span class="o">.</span><span class="n">dynamic_viscosity</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">k_air</span>  <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">atmo_data</span><span class="o">.</span><span class="n">thermal_conductivity</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">Cp_air</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">atmosphere</span><span class="o">.</span><span class="n">fluid_properties</span><span class="o">.</span><span class="n">compute_cp</span><span class="p">(</span><span class="n">Ta</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># Derived air properties</span>
+    <span class="n">nu</span>       <span class="o">=</span> <span class="n">mu</span> <span class="o">/</span> <span class="n">rho</span>                    <span class="c1"># kinematic viscosity [m²/s]</span>
+    <span class="n">alpha_th</span> <span class="o">=</span> <span class="n">k_air</span> <span class="o">/</span> <span class="p">(</span><span class="n">rho</span> <span class="o">*</span> <span class="n">Cp_air</span><span class="p">)</span>      <span class="c1"># thermal diffusivity [m²/s]</span>
+    <span class="n">Pr</span>       <span class="o">=</span> <span class="n">nu</span> <span class="o">/</span> <span class="n">alpha_th</span>               <span class="c1"># Prandtl number</span>
+    <span class="n">Te_lo</span>    <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">T_inlet</span><span class="p">,</span> <span class="n">Ta</span><span class="p">)</span>            <span class="c1"># lower bound for surface temperature solve</span>
+    <span class="n">Te_hi</span>    <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">T_inlet</span><span class="p">,</span> <span class="n">Ta</span><span class="p">)</span>            <span class="c1"># upper bound for surface temperature solve</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1">#  Step 1: Solve wall thickness ratio ro/ri (loop-invariant)</span>
+    <span class="c1">#</span>
+    <span class="c1">#  Uses thick-walled cylinder theory (Lamé) with von Mises failure</span>
+    <span class="c1">#  criterion. The ratio ro/ri determines the structural wall thickness</span>
+    <span class="c1">#  for any inner radius: t_wall = r_inner * (ro_ri - 1).</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">ro_ri</span> <span class="o">=</span> <span class="n">_find_root</span><span class="p">(</span><span class="n">_tank_stress</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="mf">1e-5</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">P_internal</span><span class="p">,</span> <span class="n">P_external</span><span class="p">,</span> <span class="n">sigma_allow</span><span class="p">),</span> <span class="n">xtol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+
+    <span class="c1"># Outer envelope volume from external dimensions (set by upstream function)</span>
+    <span class="n">R_true</span> <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">diameters</span><span class="o">.</span><span class="n">external</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">L_true</span> <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">external</span>
+    <span class="n">V_outer_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">R_true</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">L_true</span> <span class="o">+</span> <span class="p">(</span><span class="mi">4</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">R_true</span><span class="o">**</span><span class="mi">3</span>
+
+    <span class="c1"># Pack thermal constants into a tuple for the inner solvers</span>
+    <span class="n">therm</span> <span class="o">=</span> <span class="p">(</span><span class="n">Ta</span><span class="p">,</span> <span class="n">T_inlet</span><span class="p">,</span> <span class="n">Qo</span><span class="p">,</span> <span class="n">PI_Q</span><span class="p">,</span> <span class="n">k_mat</span><span class="p">,</span> <span class="n">k_ins_mat</span><span class="p">,</span> <span class="n">k_air</span><span class="p">,</span> <span class="n">nu</span><span class="p">,</span> <span class="n">alpha_th</span><span class="p">,</span> <span class="n">Pr</span><span class="p">,</span> <span class="n">Te_lo</span><span class="p">,</span> <span class="n">Te_hi</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1">#  Step 2: Solve for fuel volume</span>
+    <span class="c1">#</span>
+    <span class="c1">#  Find V_guess such that the resulting tank (structure + insulation)</span>
+    <span class="c1">#  exactly fills the outer envelope:</span>
+    <span class="c1">#    V_guess → V_total (add ullage) → r_inner, L_inner (from aspect ratio)</span>
+    <span class="c1">#    → r_outer (wall thickness) → t_ins (insulation) → outer volume</span>
+    <span class="c1">#  Root is where outer volume = V_outer_true.</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">outer_args</span> <span class="o">=</span> <span class="p">(</span><span class="n">ullage_frac</span><span class="p">,</span> <span class="n">aspect_ratio</span><span class="p">,</span> <span class="n">ro_ri</span><span class="p">,</span> <span class="n">L_true</span><span class="p">,</span> <span class="n">V_outer_true</span><span class="p">,</span> <span class="n">therm</span><span class="p">,</span> <span class="n">fuel_tank</span><span class="p">)</span>
+    <span class="n">V_lo</span>       <span class="o">=</span> <span class="mf">1e-3</span>
+    <span class="n">V_hi</span>       <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">volume_properties</span><span class="o">.</span><span class="n">gross_volume</span>
+    <span class="n">V_guess</span>    <span class="o">=</span> <span class="n">_find_root</span><span class="p">(</span><span class="n">_volume_residual</span><span class="p">,</span> <span class="n">V_lo</span><span class="p">,</span> <span class="n">V_hi</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">outer_args</span><span class="p">,</span> <span class="n">xtol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
+
+    <span class="c1"># Recompute converged geometry (one final evaluation)</span>
+    <span class="n">V_total</span> <span class="o">=</span> <span class="n">V_guess</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">ullage_frac</span><span class="p">)</span>
+    <span class="n">r_inner</span> <span class="o">=</span> <span class="p">(</span><span class="n">V_total</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">aspect_ratio</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)))</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">L_inner</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">r_inner</span> <span class="o">*</span> <span class="p">(</span><span class="n">aspect_ratio</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">r_outer</span> <span class="o">=</span> <span class="n">ro_ri</span> <span class="o">*</span> <span class="n">r_inner</span>
+    <span class="n">t_ins</span>   <span class="o">=</span> <span class="n">_solve_insulation</span><span class="p">(</span><span class="n">therm</span><span class="p">,</span> <span class="n">fuel_tank</span><span class="p">,</span> <span class="n">r_outer</span><span class="p">,</span> <span class="n">r_inner</span><span class="p">,</span> <span class="n">L_inner</span><span class="p">)</span>
+
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">volume_properties</span><span class="o">.</span><span class="n">net_volume</span>   <span class="o">=</span> <span class="n">V_guess</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">volume_properties</span><span class="o">.</span><span class="n">gross_volume</span> <span class="o">=</span> <span class="n">V_total</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1">#  Store converged structural geometry</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">thickness</span>           <span class="o">=</span> <span class="n">r_outer</span> <span class="o">-</span> <span class="n">r_inner</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">diameters</span><span class="o">.</span><span class="n">external</span>  <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">r_outer</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">diameters</span><span class="o">.</span><span class="n">internal</span>  <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">r_inner</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">internal</span>    <span class="o">=</span> <span class="n">L_inner</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">external</span>    <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">r_outer</span> <span class="o">*</span> <span class="p">(</span><span class="n">aspect_ratio</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">insulation</span><span class="o">.</span><span class="n">thickness</span>                <span class="o">=</span> <span class="n">t_ins</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1">#  Compute insulation mass</span>
+    <span class="c1">#  v_ins = volume between outer envelope and structural shell</span>
+    <span class="c1">#  a_ins = outer surface area (for surface-density-based insulation)</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">R_ext</span>   <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">diameters</span><span class="o">.</span><span class="n">external</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">L_cyl_e</span> <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">external</span> <span class="o">-</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">diameters</span><span class="o">.</span><span class="n">external</span>      <span class="c1"># cylinder-only (tip-to-tip minus caps)</span>
+    <span class="n">R_so</span>    <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">diameters</span><span class="o">.</span><span class="n">external</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">L_so</span>    <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">external</span>
+
+    <span class="n">a_ins</span>    <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">R_ext</span> <span class="o">*</span> <span class="n">L_cyl_e</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">R_ext</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">v_ins</span>    <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">R_ext</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">L_cyl_e</span> <span class="o">+</span> <span class="p">(</span><span class="mi">4</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">R_ext</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">-</span> \
+               <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">R_so</span><span class="o">**</span><span class="mi">2</span>  <span class="o">*</span> <span class="n">L_so</span>    <span class="o">+</span> <span class="p">(</span><span class="mi">4</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">R_so</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">mass_ins</span> <span class="o">=</span> <span class="n">v_ins</span> <span class="o">*</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">insulation</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">density</span> <span class="o">+</span> \
+               <span class="n">a_ins</span> <span class="o">*</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">insulation</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">specific_density</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1">#  Compute structural shell mass</span>
+    <span class="c1">#  V_material = volume of pressure vessel wall (outer shell - inner shell)</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">L_outer</span>    <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">external</span>
+    <span class="n">V_shell_o</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">r_outer</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">L_outer</span> <span class="o">+</span> <span class="p">(</span><span class="mi">4</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">r_outer</span><span class="o">**</span><span class="mi">3</span>
+    <span class="n">V_shell_i</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">r_inner</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">L_inner</span> <span class="o">+</span> <span class="p">(</span><span class="mi">4</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">r_inner</span><span class="o">**</span><span class="mi">3</span>
+    <span class="n">V_material</span> <span class="o">=</span> <span class="n">V_shell_o</span> <span class="o">-</span> <span class="n">V_shell_i</span>
+
+    <span class="c1"># Double volumes and masses for symmetric tanks (left + right wing)</span>
+    <span class="k">if</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">xz_plane_symmetric</span><span class="p">:</span>
+        <span class="n">fuel_tank</span><span class="o">.</span><span class="n">volume_properties</span><span class="o">.</span><span class="n">gross_volume</span> <span class="o">*=</span> <span class="mi">2</span>
+        <span class="n">fuel_tank</span><span class="o">.</span><span class="n">volume_properties</span><span class="o">.</span><span class="n">net_volume</span>   <span class="o">*=</span> <span class="mi">2</span>
+        <span class="n">V_material</span> <span class="o">*=</span> <span class="mi">2</span>
+        <span class="n">mass_ins</span>   <span class="o">*=</span> <span class="mi">2</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">mass_ins</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[WARNING] Tank &#39;</span><span class="si">{</span><span class="n">fuel_tank</span><span class="o">.</span><span class="n">tag</span><span class="si">}</span><span class="s2">&#39; is too small. Removing from list.&quot;</span><span class="p">)</span>
+        <span class="n">fuel_tanks</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">fuel_tank</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
+
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">insulation</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="n">mass_ins</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="n">V_material</span> <span class="o">*</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">density</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">tank_accesories_weight_factor</span> <span class="o">*</span> <span class="p">(</span>
+        <span class="n">fuel_tank</span><span class="o">.</span><span class="n">insulation</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span> <span class="o">+</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">inner_structure</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">mass</span><span class="p">)</span>
+
+    <span class="k">return</span></div>
+
+
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  Wall thickness: von Mises stress residual for a thick-walled cylinder</span>
+<span class="c1">#</span>
+<span class="c1">#  Uses Lamé&#39;s equations for radial, hoop, and axial stresses at the inner wall.</span>
+<span class="c1">#  Returns (von Mises stress) - (allowable stress); root is at the correct ro/ri.</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_tank_stress</span><span class="p">(</span><span class="n">ro_ri</span><span class="p">,</span> <span class="n">P_internal</span><span class="p">,</span> <span class="n">P_external</span><span class="p">,</span> <span class="n">sigma_allow</span><span class="p">):</span>
+    <span class="c1"># Lamé constants</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="p">(</span><span class="n">P_internal</span> <span class="o">-</span> <span class="n">P_external</span> <span class="o">*</span> <span class="n">ro_ri</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">ro_ri</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="p">(</span><span class="n">P_internal</span> <span class="o">-</span> <span class="n">P_external</span><span class="p">)</span> <span class="o">*</span> <span class="n">ro_ri</span><span class="o">**</span><span class="mi">2</span>  <span class="o">/</span> <span class="p">(</span><span class="n">ro_ri</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Principal stresses at the inner wall (worst case)</span>
+    <span class="n">sigma_theta</span> <span class="o">=</span> <span class="n">A</span> <span class="o">+</span> <span class="n">B</span>    <span class="c1"># hoop (circumferential)</span>
+    <span class="n">sigma_r</span>     <span class="o">=</span> <span class="n">A</span> <span class="o">-</span> <span class="n">B</span>    <span class="c1"># radial</span>
+    <span class="n">sigma_z</span>     <span class="o">=</span> <span class="n">A</span>        <span class="c1"># axial (closed-end cylinder)</span>
+
+    <span class="c1"># Von Mises equivalent stress</span>
+    <span class="n">sigma_vm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(((</span><span class="n">sigma_theta</span> <span class="o">-</span> <span class="n">sigma_r</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span>
+                        <span class="p">(</span><span class="n">sigma_r</span>     <span class="o">-</span> <span class="n">sigma_z</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span>
+                        <span class="p">(</span><span class="n">sigma_z</span>     <span class="o">-</span> <span class="n">sigma_theta</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sigma_vm</span> <span class="o">-</span> <span class="n">sigma_allow</span>
+
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  Insulation thickness solver</span>
+<span class="c1">#</span>
+<span class="c1">#  Brackets the root first (geometric expansion), then solves with _find_root.</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_solve_insulation</span><span class="p">(</span><span class="n">therm</span><span class="p">,</span> <span class="n">fuel_tank</span><span class="p">,</span> <span class="n">r_o</span><span class="p">,</span> <span class="n">r_i</span><span class="p">,</span> <span class="n">l_i</span><span class="p">):</span>
+    <span class="n">ins_args</span> <span class="o">=</span> <span class="p">(</span><span class="n">therm</span><span class="p">,</span> <span class="n">fuel_tank</span><span class="p">,</span> <span class="n">r_o</span><span class="p">,</span> <span class="n">r_i</span><span class="p">,</span> <span class="n">l_i</span><span class="p">)</span>
+    <span class="n">bracket</span>  <span class="o">=</span> <span class="n">_bracket_root</span><span class="p">(</span><span class="n">_insulation_residual</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mf">1e2</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">ins_args</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">bracket</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_find_root</span><span class="p">(</span><span class="n">_insulation_residual</span><span class="p">,</span> <span class="n">bracket</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bracket</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">args</span><span class="o">=</span><span class="n">ins_args</span><span class="p">,</span> <span class="n">xtol</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_find_root</span><span class="p">(</span><span class="n">_insulation_residual</span><span class="p">,</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="mf">1e2</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">ins_args</span><span class="p">,</span> <span class="n">xtol</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">)</span>
+
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  Outer volume residual: V_outer_true - V_outer(V_guess)</span>
+<span class="c1">#</span>
+<span class="c1">#  Maps a fuel volume guess through the full sizing chain (ullage → geometry →</span>
+<span class="c1">#  structural wall → insulation) and returns the difference between the resulting</span>
+<span class="c1">#  outer envelope volume and the target. Root is the correct fuel volume.</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_volume_residual</span><span class="p">(</span><span class="n">V_guess</span><span class="p">,</span> <span class="n">ullage_frac</span><span class="p">,</span> <span class="n">aspect_ratio</span><span class="p">,</span> <span class="n">ro_ri</span><span class="p">,</span> <span class="n">L_true</span><span class="p">,</span> <span class="n">V_outer_true</span><span class="p">,</span> <span class="n">therm</span><span class="p">,</span> <span class="n">fuel_tank</span><span class="p">):</span>
+    <span class="n">V_total</span> <span class="o">=</span> <span class="n">V_guess</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">ullage_frac</span><span class="p">)</span>
+    <span class="n">r_inner</span> <span class="o">=</span> <span class="p">(</span><span class="n">V_total</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">aspect_ratio</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)))</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">L_inner</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">r_inner</span> <span class="o">*</span> <span class="p">(</span><span class="n">aspect_ratio</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">r_outer</span> <span class="o">=</span> <span class="n">ro_ri</span> <span class="o">*</span> <span class="n">r_inner</span>
+    <span class="n">t_ins</span>   <span class="o">=</span> <span class="n">_solve_insulation</span><span class="p">(</span><span class="n">therm</span><span class="p">,</span> <span class="n">fuel_tank</span><span class="p">,</span> <span class="n">r_outer</span><span class="p">,</span> <span class="n">r_inner</span><span class="p">,</span> <span class="n">L_inner</span><span class="p">)</span>
+    <span class="n">R_calc</span>  <span class="o">=</span> <span class="n">r_outer</span> <span class="o">+</span> <span class="n">t_ins</span>
+    <span class="n">V_outer_calc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">R_calc</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">L_true</span> <span class="o">+</span> <span class="p">(</span><span class="mi">4</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">R_calc</span><span class="o">**</span><span class="mi">3</span>
+    <span class="k">return</span> <span class="n">V_outer_true</span> <span class="o">-</span> <span class="n">V_outer_calc</span>
+
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  Insulation residual: (heat flux through insulation) - (allowable heat leak)</span>
+<span class="c1">#</span>
+<span class="c1">#  For a given insulation thickness, solves for the equilibrium surface temperature</span>
+<span class="c1">#  (inner solve via _heat_balance), then compares the resulting conductive heat flux</span>
+<span class="c1">#  through the wall to the maximum allowable heat leak Qo.</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_insulation_residual</span><span class="p">(</span><span class="n">t_ins</span><span class="p">,</span> <span class="n">therm</span><span class="p">,</span> <span class="n">fuel_tank</span><span class="p">,</span> <span class="n">r_o</span><span class="p">,</span> <span class="n">r_i</span><span class="p">,</span> <span class="n">l_i</span><span class="p">):</span>
+    <span class="n">Ta</span><span class="p">,</span> <span class="n">Ti</span><span class="p">,</span> <span class="n">Qo</span><span class="p">,</span> <span class="n">PI_Q</span><span class="p">,</span> <span class="n">k_mat</span><span class="p">,</span> <span class="n">k_ins_mat</span><span class="p">,</span> <span class="n">k_air</span><span class="p">,</span> <span class="n">nu</span><span class="p">,</span> <span class="n">alpha_th</span><span class="p">,</span> <span class="n">Pr</span><span class="p">,</span> <span class="n">Te_lo</span><span class="p">,</span> <span class="n">Te_hi</span> <span class="o">=</span> <span class="n">therm</span>
+    <span class="n">ht_args</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_ins</span><span class="p">,</span> <span class="n">Ta</span><span class="p">,</span> <span class="n">Ti</span><span class="p">,</span> <span class="n">k_mat</span><span class="p">,</span> <span class="n">k_ins_mat</span><span class="p">,</span> <span class="n">k_air</span><span class="p">,</span> <span class="n">nu</span><span class="p">,</span> <span class="n">alpha_th</span><span class="p">,</span> <span class="n">Pr</span><span class="p">,</span> <span class="n">fuel_tank</span><span class="p">,</span> <span class="n">r_o</span><span class="p">,</span> <span class="n">r_i</span><span class="p">,</span> <span class="n">l_i</span><span class="p">)</span>
+
+    <span class="c1"># Solve for equilibrium outer surface temperature Te</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">Te_hi</span> <span class="o">-</span> <span class="n">Te_lo</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-9</span><span class="p">:</span>
+        <span class="n">_heat_balance</span><span class="p">(</span><span class="n">Te_lo</span><span class="p">,</span> <span class="o">*</span><span class="n">ht_args</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_find_root</span><span class="p">(</span><span class="n">_heat_balance</span><span class="p">,</span> <span class="n">Te_lo</span><span class="p">,</span> <span class="n">Te_hi</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">ht_args</span><span class="p">,</span> <span class="n">xtol</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">)</span>
+
+    <span class="c1"># Compare conductive heat flux (per unit inner surface area) to allowable</span>
+    <span class="n">Qc</span>      <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">insulation_wall_conductive_heat_transfer</span>
+    <span class="n">A_inner</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">r_i</span> <span class="o">*</span> <span class="n">l_i</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">r_i</span><span class="o">**</span><span class="mi">2</span>
+    <span class="k">return</span> <span class="n">PI_Q</span> <span class="o">*</span> <span class="n">Qc</span> <span class="o">/</span> <span class="n">A_inner</span> <span class="o">-</span> <span class="n">Qo</span>
+
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  Heat balance at the insulation outer surface</span>
+<span class="c1">#</span>
+<span class="c1">#  At steady state the heat arriving at the outer surface (convection + radiation</span>
+<span class="c1">#  from the warm ambient) must equal the heat conducted inward through the wall</span>
+<span class="c1">#  and insulation layers to the cold cryogen:</span>
+<span class="c1">#</span>
+<span class="c1">#      Q_convection + Q_radiation - Q_conduction = 0</span>
+<span class="c1">#</span>
+<span class="c1">#  The root of this equation gives the equilibrium surface temperature Te.</span>
+<span class="c1">#</span>
+<span class="c1">#  Convection correlations:</span>
+<span class="c1">#    - Cylinder: Churchill &amp; Chu (1975) for natural convection on a horizontal cylinder</span>
+<span class="c1">#    - Sphere:   Churchill (1983) for natural convection on a sphere</span>
+<span class="c1">#</span>
+<span class="c1">#  Conduction uses concentric-cylinder and concentric-sphere resistance networks</span>
+<span class="c1">#  through two layers: structural wall (k_mat) and insulation (k_ins_mat).</span>
+<span class="c1">#</span>
+<span class="c1">#  The total conductive heat Qc is stored on fuel_tank as a side-channel for</span>
+<span class="c1">#  _insulation_residual to read, since brentq only accepts a single return value.</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_heat_balance</span><span class="p">(</span><span class="n">Te</span><span class="p">,</span> <span class="n">t_ins</span><span class="p">,</span> <span class="n">Ta</span><span class="p">,</span> <span class="n">Ti</span><span class="p">,</span> <span class="n">k_mat</span><span class="p">,</span> <span class="n">k_ins_mat</span><span class="p">,</span> <span class="n">k_air</span><span class="p">,</span> <span class="n">nu</span><span class="p">,</span> <span class="n">alpha_th</span><span class="p">,</span> <span class="n">Pr</span><span class="p">,</span> <span class="n">fuel_tank</span><span class="p">,</span> <span class="n">ro</span><span class="p">,</span> <span class="n">ri</span><span class="p">,</span> <span class="n">li</span><span class="p">):</span>
+    <span class="n">g</span>     <span class="o">=</span> <span class="mf">9.81</span>
+    <span class="n">D_out</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">ro</span> <span class="o">+</span> <span class="n">t_ins</span><span class="p">)</span>                                          <span class="c1"># outer diameter including insulation</span>
+    <span class="n">Ra</span>    <span class="o">=</span> <span class="p">(</span><span class="n">g</span> <span class="o">/</span> <span class="n">Ta</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">Ta</span> <span class="o">-</span> <span class="n">Te</span><span class="p">)</span> <span class="o">*</span> <span class="n">D_out</span><span class="o">**</span><span class="mi">3</span> <span class="o">/</span> <span class="p">(</span><span class="n">alpha_th</span> <span class="o">*</span> <span class="n">nu</span><span class="p">)</span>         <span class="c1"># Rayleigh number</span>
+
+    <span class="c1"># ---- Cylindrical section ----</span>
+    <span class="n">Nu_cyl</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.60</span> <span class="o">+</span> <span class="mf">0.387</span> <span class="o">*</span> <span class="n">Ra</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">6</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.559</span> <span class="o">/</span> <span class="n">Pr</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">9</span> <span class="o">/</span> <span class="mi">16</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="mi">8</span> <span class="o">/</span> <span class="mi">27</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">h_cyl</span>  <span class="o">=</span> <span class="n">Nu_cyl</span> <span class="o">*</span> <span class="n">k_air</span> <span class="o">/</span> <span class="n">D_out</span>
+    <span class="n">A_cyl</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">D_out</span> <span class="o">*</span> <span class="n">li</span>                                       <span class="c1"># lateral surface area</span>
+    <span class="n">Qv_cyl</span> <span class="o">=</span> <span class="n">h_cyl</span> <span class="o">*</span> <span class="n">A_cyl</span> <span class="o">*</span> <span class="p">(</span><span class="n">Ta</span> <span class="o">-</span> <span class="n">Te</span><span class="p">)</span>                                <span class="c1"># convective heat gain</span>
+    <span class="n">Qr_cyl</span> <span class="o">=</span> <span class="mf">5.67e-8</span> <span class="o">*</span> <span class="mf">0.03</span> <span class="o">*</span> <span class="n">A_cyl</span> <span class="o">*</span> <span class="p">(</span><span class="n">Ta</span><span class="o">**</span><span class="mi">4</span> <span class="o">-</span> <span class="n">Te</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span>                <span class="c1"># radiative heat gain (emissivity = 0.03)</span>
+    <span class="n">Qc_cyl</span> <span class="o">=</span> <span class="p">(</span><span class="n">Te</span> <span class="o">-</span> <span class="n">Ti</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">ro</span> <span class="o">/</span> <span class="n">ri</span><span class="p">)</span>         <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">li</span> <span class="o">*</span> <span class="n">k_mat</span><span class="p">)</span> <span class="o">+</span>       <span class="c1"># conduction: structural wall</span>
+                           <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="n">ro</span> <span class="o">+</span> <span class="n">t_ins</span><span class="p">)</span> <span class="o">/</span> <span class="n">ro</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">li</span> <span class="o">*</span> <span class="n">k_ins_mat</span><span class="p">))</span>  <span class="c1"># conduction: insulation layer</span>
+
+    <span class="c1"># ---- Spherical end caps (two hemispheres = one sphere) ----</span>
+    <span class="n">Nu_sph</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">+</span> <span class="mf">0.589</span> <span class="o">*</span> <span class="n">Ra</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.469</span> <span class="o">/</span> <span class="n">Pr</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">9</span> <span class="o">/</span> <span class="mi">16</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="mi">4</span> <span class="o">/</span> <span class="mi">9</span><span class="p">)</span>
+    <span class="n">h_sph</span>  <span class="o">=</span> <span class="n">Nu_sph</span> <span class="o">*</span> <span class="n">k_air</span> <span class="o">/</span> <span class="n">D_out</span>
+    <span class="n">A_sph</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">D_out</span><span class="o">**</span><span class="mi">2</span>                                         <span class="c1"># surface area of full sphere</span>
+    <span class="n">Qv_sph</span> <span class="o">=</span> <span class="n">h_sph</span> <span class="o">*</span> <span class="n">A_sph</span> <span class="o">*</span> <span class="p">(</span><span class="n">Ta</span> <span class="o">-</span> <span class="n">Te</span><span class="p">)</span>
+    <span class="n">Qr_sph</span> <span class="o">=</span> <span class="mf">5.67e-8</span> <span class="o">*</span> <span class="mf">0.03</span> <span class="o">*</span> <span class="n">A_sph</span> <span class="o">*</span> <span class="p">(</span><span class="n">Ta</span><span class="o">**</span><span class="mi">4</span> <span class="o">-</span> <span class="n">Te</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">Qc_sph</span> <span class="o">=</span> <span class="p">(</span><span class="n">Te</span> <span class="o">-</span> <span class="n">Ti</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="n">ro</span> <span class="o">-</span> <span class="n">ri</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">k_mat</span> <span class="o">*</span> <span class="n">ri</span> <span class="o">*</span> <span class="n">ro</span><span class="p">)</span> <span class="o">+</span>                <span class="c1"># conduction: structural wall</span>
+                           <span class="n">t_ins</span>     <span class="o">/</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">k_ins_mat</span> <span class="o">*</span> <span class="n">ro</span> <span class="o">*</span> <span class="p">(</span><span class="n">ro</span> <span class="o">+</span> <span class="n">t_ins</span><span class="p">)))</span>    <span class="c1"># conduction: insulation layer</span>
+
+    <span class="c1"># Store total conduction for _insulation_residual to read</span>
+    <span class="n">Qc</span> <span class="o">=</span> <span class="n">Qc_cyl</span> <span class="o">+</span> <span class="n">Qc_sph</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">insulation_wall_conductive_heat_transfer</span> <span class="o">=</span> <span class="n">Qc</span>
+
+    <span class="c1"># Residual: external heat in minus internal conduction out</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">Qv_cyl</span> <span class="o">+</span> <span class="n">Qv_sph</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">Qr_cyl</span> <span class="o">+</span> <span class="n">Qr_sph</span><span class="p">)</span> <span class="o">-</span> <span class="n">Qc</span>
+
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  Bounded 1D root finder</span>
+<span class="c1">#</span>
+<span class="c1">#  Tries brentq first (fast, guaranteed convergence when a sign change exists).</span>
+<span class="c1">#  Falls back to minimizing f(x)² with minimize_scalar when brentq fails</span>
+<span class="c1">#  (no sign change in the bracket, e.g. the root is a tangent zero).</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_find_root</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">xtol</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">brentq</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">xtol</span><span class="o">=</span><span class="n">xtol</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">minimize_scalar</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span>
+                              <span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;bounded&quot;</span><span class="p">,</span>
+                              <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;xatol&quot;</span><span class="p">:</span> <span class="n">xtol</span><span class="p">})</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  Bracket a root by geometric expansion of the search interval</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_bracket_root</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mf">1e2</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">()):</span>
+    <span class="n">a</span>  <span class="o">=</span> <span class="n">start</span>
+    <span class="n">fa</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">b</span>  <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="n">factor</span>
+    <span class="n">fb</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">fa</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">fb</span><span class="p">)</span> <span class="ow">and</span> <span class="n">b</span> <span class="o">&lt;</span> <span class="n">limit</span><span class="p">:</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">fa</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span> <span class="n">fb</span>
+        <span class="n">b</span>    <span class="o">*=</span> <span class="n">factor</span>
+        <span class="n">fb</span>    <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">fa</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">fb</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Laboratory for Electric Aircraft Design and Sustainability.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

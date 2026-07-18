@@ -1,0 +1,25 @@
+RCAIDE.Library.Methods.Powertrain.Systems.compute_cabin_loads_power_draw
+
+compute\_cabin\_loads\_power\_draw
+==================================
+
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Systems.compute_cabin_loads_power_draw
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

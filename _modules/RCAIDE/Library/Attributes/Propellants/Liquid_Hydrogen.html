@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Attributes/Propellants/Liquid_Hydrogen';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Attributes/Propellants/Liquid_Hydrogen.html" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script src="../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -386,7 +405,12 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  IMPORT</span>
 <span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.Propellant</span><span class="w"> </span><span class="kn">import</span> <span class="n">Propellant</span> 
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w">  </span><span class="kn">import</span> <span class="n">interp1d</span> 
 
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  Liquid Hydrogen</span>
@@ -452,20 +476,126 @@
 <span class="sd">            http://arc.uta.edu/publications/td_files/Kristen%20Roberts%20MS.pdf </span>
 <span class="sd">        &quot;&quot;&quot;</span> 
         
-        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                        <span class="o">=</span> <span class="s1">&#39;Liquid_H2&#39;</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">reactant</span>                   <span class="o">=</span> <span class="s1">&#39;O2&#39;</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">density</span>                    <span class="o">=</span> <span class="mf">70.85</span>                            <span class="c1"># [kg/m^3]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">specific_energy</span>            <span class="o">=</span> <span class="mf">141.86e6</span>                         <span class="c1"># [J/kg] </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">energy_density</span>             <span class="o">=</span> <span class="mf">8491.0e6</span>                         <span class="c1"># [J/m^3] </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">temperatures</span><span class="o">.</span><span class="n">autoignition</span>  <span class="o">=</span> <span class="mf">845.15</span>                           <span class="c1"># [K]</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                           <span class="o">=</span> <span class="s1">&#39;Liquid_H2&#39;</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">reactant</span>                      <span class="o">=</span> <span class="s1">&#39;O2&#39;</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">density</span>                       <span class="o">=</span> <span class="mf">70.85</span>                            <span class="c1"># [kg/m^3]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">specific_energy</span>               <span class="o">=</span> <span class="mf">120e6</span>  <span class="c1"># [J/kg] Considering the lower heating value https://ntrs.nasa.gov/api/citations/20020085127/downloads/20020085127.pdf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">energy_density</span>                <span class="o">=</span> <span class="mf">8491.0e6</span>                         <span class="c1"># [J/m^3]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stoichiometric_fuel_to_air</span>    <span class="o">=</span> <span class="mf">0.029411</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temperatures</span><span class="o">.</span><span class="n">autoignition</span>     <span class="o">=</span> <span class="mf">845.15</span>                           <span class="c1"># [K]  </span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stoichiometric_fuel_air_ratio</span> <span class="o">=</span> <span class="mf">0.029411</span>         <span class="c1"># [-] Stoichiometric Fuel to Air ratio</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">heat_of_vaporization</span>          <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [J/kg] Heat of vaporization at standard conditions</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span>                   <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [K] Temperature of fuel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span>                   <span class="o">=</span> <span class="mi">20</span>         <span class="c1"># [K] Temperature of fuel</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pressure</span>                      <span class="o">=</span> <span class="mi">0</span>         <span class="c1"># [Pa] Pressure of fuel</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fuel_surrogate_S1</span>             <span class="o">=</span> <span class="p">{}</span> <span class="c1"># [-] Mole fractions of fuel surrogate species</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kinetic_mechanism</span>             <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="c1"># [-] Kinetic mechanism for fuel surrogate species</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">oxidizer</span>                      <span class="o">=</span> <span class="s1">&#39;&#39;</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oxidizer</span>                      <span class="o">=</span> <span class="s1">&#39;&#39;</span>       
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">Production</span>  <span class="o">=</span> <span class="mf">0.0</span>      <span class="c1"># kg/kg </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">CO2</span>         <span class="o">=</span> <span class="mf">0.0</span>      <span class="c1"># kg/kg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">CO</span>          <span class="o">=</span> <span class="mf">0.0</span>      <span class="c1"># kg/kg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">H2O</span>         <span class="o">=</span> <span class="mf">8.21</span>     <span class="c1"># kg/kg  </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">SO2</span>         <span class="o">=</span> <span class="mf">0.0</span>      <span class="c1"># kg/kg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">NOx</span>         <span class="o">=</span> <span class="mf">0.0539</span>   <span class="c1"># kg/kg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">Soot</span>        <span class="o">=</span> <span class="mf">0.0</span>      <span class="c1"># kg/kg</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">CO2</span>       <span class="o">=</span> <span class="mi">1</span>     <span class="c1"># CO2e/kg  </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">H2O</span>       <span class="o">=</span> <span class="mf">0.06</span>  <span class="c1"># CO2e/kg  </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">CO</span>        <span class="o">=</span> <span class="mi">1</span>     <span class="c1"># CO2e/kg  </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">SO2</span>       <span class="o">=</span> <span class="o">-</span><span class="mi">226</span>  <span class="c1"># CO2e/kg  </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">NOx</span>       <span class="o">=</span> <span class="mi">52</span>    <span class="c1"># CO2e/kg  </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">CO</span>        <span class="o">=</span> <span class="mi">1</span>     <span class="c1"># CO2e/kg  </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">Soot</span>      <span class="o">=</span> <span class="mi">1166</span>  <span class="c1"># CO2e/kg    </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">Contrails</span> <span class="o">=</span> <span class="mi">11</span> <span class="c1">#  kg/CO2e/km</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">materials_properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cryogen_properties</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Liquid_Hydrogen.cryogen_properties">
+<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.html#RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.Liquid_Hydrogen.cryogen_properties">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cryogen_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">prop_name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return interpolated liquid hydrogen property value at a given temperature.</span>
+
+<span class="sd">            Parameters</span>
+<span class="sd">            ----------</span>
+<span class="sd">            T : float or ndarray</span>
+<span class="sd">                Temperature(s) in Kelvin at which the property is requested.  </span>
+<span class="sd">            prop_name : str</span>
+<span class="sd">                Name of the property to retrieve from the hydrogen data file.  </span>
+<span class="sd">                Valid keys include:</span>
+<span class="sd">                    - &quot;Temperature (K)&quot;</span>
+<span class="sd">                    - &quot;Pressure (MPa)&quot;</span>
+<span class="sd">                    - &quot;Density (kg/m3)&quot;</span>
+<span class="sd">                    - &quot;Volume (m3/kg)&quot;</span>
+<span class="sd">                    - &quot;Internal Energy (kJ/kg)&quot;</span>
+<span class="sd">                    - &quot;Enthalpy (kJ/kg)&quot;</span>
+<span class="sd">                    - &quot;Entropy (J/g*K)&quot;</span>
+<span class="sd">                    - &quot;Cv (J/g*K)&quot;</span>
+<span class="sd">                    - &quot;Cp (J/g*K)&quot;</span>
+<span class="sd">                    - &quot;Sound Spd. (m/s)&quot;</span>
+<span class="sd">                    - &quot;Joule-Thomson (K/MPa)&quot;</span>
+<span class="sd">                    - &quot;Viscosity (Pa*s)&quot;</span>
+<span class="sd">                    - &quot;Therm. Cond. (W/m*K)&quot;</span>
+<span class="sd">                    - &quot;Phase&quot;</span>
+
+<span class="sd">            Returns</span>
+<span class="sd">            -------</span>
+<span class="sd">            prop_value : float or ndarray</span>
+<span class="sd">                Interpolated property value(s) corresponding to the input temperature(s).  </span>
+
+<span class="sd">            Notes</span>
+<span class="sd">            -----</span>
+<span class="sd">            * Property data is loaded from ``H2_properties.res`` using </span>
+<span class="sd">            :func:`load_hydrogen_properties`.  </span>
+<span class="sd">            * Linear interpolation is applied between tabulated values.  </span>
+<span class="sd">            * Extrapolation outside the data range is not supported (``fill_value=None``).  </span>
+<span class="sd">            * Phase information is categorical and may not be suitable for interpolation.  </span>
+
+<span class="sd">            See Also</span>
+<span class="sd">            --------</span>
+<span class="sd">            RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.load_hydrogen_properties</span>
+<span class="sd">         &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">load_hydrogen_properties</span><span class="p">()</span>
+        <span class="n">temps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Temperature (K)&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">props</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">prop_name</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">interp</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">temps</span><span class="p">,</span> <span class="n">props</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">interp</span><span class="p">(</span><span class="n">T</span><span class="p">)</span></div>
+</div>
+
+
+<div class="viewcode-block" id="load_hydrogen_properties">
+<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.html#RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen.load_hydrogen_properties">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_hydrogen_properties</span><span class="p">():</span> 
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load hydrogen property data from the RES file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    hydrogen_data : dict</span>
+<span class="sd">        Raw hydrogen property data loaded from ``H2_properties.res``.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Assumes hydrogen behaves as an ideal gas for the stored properties.  </span>
+
+<span class="sd">    Source</span>
+<span class="sd">    ------</span>
+<span class="sd">    Internal RCAIDE resource file: ``H2_properties.res``</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.load : Function used to load RES files</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ospath</span>    <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+    <span class="n">separator</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span>
+    <span class="n">rel_path</span>  <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">ospath</span><span class="p">)</span> <span class="o">+</span> <span class="n">separator</span>     
+
+    <span class="k">return</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">rel_path</span><span class="o">+</span> <span class="s1">&#39;H2_properties.res&#39;</span><span class="p">)</span></div>
 
 </pre></div>
 
@@ -496,8 +626,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -517,7 +647,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -531,7 +661,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

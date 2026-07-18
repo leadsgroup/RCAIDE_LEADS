@@ -1,0 +1,25 @@
+RCAIDE.Library.Methods.Emissions.Emission_Index_Empirical_Method.evaluate_correlation_emissions
+
+evaluate\_correlation\_emissions
+================================
+
+.. automodule:: RCAIDE.Library.Methods.Emissions.Emission_Index_Empirical_Method.evaluate_correlation_emissions
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

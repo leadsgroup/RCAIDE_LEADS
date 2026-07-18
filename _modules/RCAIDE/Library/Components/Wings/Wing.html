@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Components/Wings/Wing';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Components/Wings/Wing.html" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script src="../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -377,7 +396,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for RCAIDE.Library.Components.Wings.Wing</h1><div class="highlight"><pre>
-<span></span><span class="c1"># RCAIDE/Library/Compoments/Wings/Wing.py</span>
+<span></span><span class="c1"># RCAIDE/Library/Components/Wings/Wing.py</span>
 <span class="c1"># </span>
 <span class="c1"># Created:  Mar 2024, M. Clarke </span>
 
@@ -387,8 +406,9 @@
 <span class="c1"># RCAIDE imports</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w">      </span><span class="kn">import</span> <span class="n">Data</span><span class="p">,</span><span class="n">Container</span> 
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Components</span><span class="w">  </span><span class="kn">import</span> <span class="n">Mass_Properties</span><span class="p">,</span> <span class="n">Component</span>   
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Components</span><span class="w">  </span><span class="kn">import</span> <span class="n">Component</span>   
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_wing_moment_of_inertia</span><span class="w"> </span><span class="kn">import</span>  <span class="n">compute_wing_moment_of_inertia</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_wing_center_of_gravity</span><span class="w"> </span><span class="kn">import</span>  <span class="n">compute_wing_center_of_gravity</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
@@ -411,10 +431,7 @@
 <span class="sd">        Mass and inertia properties, initialized empty</span>
 <span class="sd">        </span>
 <span class="sd">    origin : ndarray</span>
-<span class="sd">        3D coordinates [x, y, z] defining wing&#39;s reference point, defaults to [0.0, 0.0, 0.0]</span>
-<span class="sd">        </span>
-<span class="sd">    symmetric : bool</span>
-<span class="sd">        Flag indicating if wing is symmetric about x-z plane, defaults to True</span>
+<span class="sd">        3D coordinates [x, y, z] defining wing&#39;s reference point, defaults to [0.0, 0.0, 0.0] </span>
 <span class="sd">        </span>
 <span class="sd">    vertical : bool</span>
 <span class="sd">        Flag indicating if wing is vertically oriented, defaults to False</span>
@@ -437,7 +454,7 @@
 <span class="sd">    aerodynamic_center : list</span>
 <span class="sd">        Location of aerodynamic center [x, y, z], defaults to [0.0, 0.0, 0.0]</span>
 <span class="sd">        </span>
-<span class="sd">    exposed_root_chord_offset : float</span>
+<span class="sd">    percent_span_unexposed : float</span>
 <span class="sd">        Offset of exposed root from centerline, defaults to 0.0</span>
 <span class="sd">        </span>
 <span class="sd">    total_length : float</span>
@@ -481,9 +498,7 @@
 <span class="sd">        - quarter_chord : float</span>
 <span class="sd">            Quarter-chord sweep angle, defaults to 0.0</span>
 <span class="sd">        - leading_edge : float</span>
-<span class="sd">            Leading edge sweep angle, defaults to None</span>
-<span class="sd">        - half_chord : float</span>
-<span class="sd">            Half-chord sweep angle, defaults to 0.0</span>
+<span class="sd">            Leading edge sweep angle, defaults to None </span>
 <span class="sd">            </span>
 <span class="sd">    twists : Data</span>
 <span class="sd">        Collection of twist angles</span>
@@ -492,15 +507,9 @@
 <span class="sd">            Root section twist angle, defaults to 0.0</span>
 <span class="sd">        - tip : float</span>
 <span class="sd">            Tip section twist angle, defaults to 0.0</span>
-<span class="sd">            </span>
-<span class="sd">    high_lift : bool</span>
-<span class="sd">        Flag indicating presence of high-lift devices, defaults to False</span>
 <span class="sd">        </span>
 <span class="sd">    symbolic : bool</span>
-<span class="sd">        Flag for symbolic computation mode, defaults to False</span>
-<span class="sd">        </span>
-<span class="sd">    high_mach : bool</span>
-<span class="sd">        Flag for high Mach number flow, defaults to False</span>
+<span class="sd">        Flag for symbolic computation mode, defaults to False </span>
 <span class="sd">        </span>
 <span class="sd">    vortex_lift : bool</span>
 <span class="sd">        Flag for vortex lift modeling, defaults to False</span>
@@ -510,9 +519,6 @@
 <span class="sd">        </span>
 <span class="sd">    transition_x_lower : float</span>
 <span class="sd">        Lower surface transition location, defaults to 0.0</span>
-<span class="sd">        </span>
-<span class="sd">    dynamic_pressure_ratio : float</span>
-<span class="sd">        Local to freestream dynamic pressure ratio, defaults to 0.0</span>
 <span class="sd">        </span>
 <span class="sd">    Airfoil : Container</span>
 <span class="sd">        Collection of airfoil definitions, initialized empty</span>
@@ -551,61 +557,60 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets default values for the wing attributes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>         
-        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                               <span class="o">=</span> <span class="s1">&#39;wing&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mass_properties</span>                   <span class="o">=</span> <span class="n">Mass_Properties</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">origin</span>                            <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]])</span>
-                                               
-        <span class="bp">self</span><span class="o">.</span><span class="n">symmetric</span>                         <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">vertical</span>                          <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">t_tail</span>                            <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">taper</span>                             <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dihedral</span>                          <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">aspect_ratio</span>                      <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">thickness_to_chord</span>                <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">aerodynamic_center</span>                <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">exposed_root_chord_offset</span>         <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">total_length</span>                      <span class="o">=</span> <span class="mf">0.0</span>
-                                               
-        <span class="bp">self</span><span class="o">.</span><span class="n">spans</span>                             <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span>                   <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">total</span>                       <span class="o">=</span> <span class="mf">0.0</span>
-                                               
-        <span class="bp">self</span><span class="o">.</span><span class="n">areas</span>                             <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span>                   <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">exposed</span>                     <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">affected</span>                    <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span>                      <span class="o">=</span> <span class="mf">0.0</span>
-                                               
-        <span class="bp">self</span><span class="o">.</span><span class="n">chords</span>                            <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_aerodynamic</span>           <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_geometric</span>             <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span>                       <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">tip</span>                        <span class="o">=</span> <span class="mf">0.0</span>
-                                               
-        <span class="bp">self</span><span class="o">.</span><span class="n">sweeps</span>                            <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span>              <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">leading_edge</span>               <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">half_chord</span>                 <span class="o">=</span> <span class="mf">0.0</span>        
-                                               
-        <span class="bp">self</span><span class="o">.</span><span class="n">twists</span>                            <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">twists</span><span class="o">.</span><span class="n">root</span>                       <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">twists</span><span class="o">.</span><span class="n">tip</span>                        <span class="o">=</span> <span class="mf">0.0</span>
-                                               
-        <span class="bp">self</span><span class="o">.</span><span class="n">high_lift</span>                         <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">symbolic</span>                          <span class="o">=</span> <span class="kc">False</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">high_mach</span>                         <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">vortex_lift</span>                       <span class="o">=</span> <span class="kc">False</span>
-                                               
-        <span class="bp">self</span><span class="o">.</span><span class="n">transition_x_upper</span>                <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">transition_x_lower</span>                <span class="o">=</span> <span class="mf">0.0</span>
-                                               
-        <span class="bp">self</span><span class="o">.</span><span class="n">dynamic_pressure_ratio</span>            <span class="o">=</span> <span class="mf">0.0</span>
-                                               
-        <span class="bp">self</span><span class="o">.</span><span class="n">airfoil</span>                           <span class="o">=</span> <span class="kc">None</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>                                    <span class="o">=</span> <span class="s1">&#39;wing&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">origin</span>                                 <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]])</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">xz_plane_symmetric</span>                     <span class="o">=</span> <span class="kc">True</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">vertical</span>                               <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_tail</span>                                 <span class="o">=</span> <span class="kc">False</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">taper</span>                                  <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dihedral</span>                               <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aspect_ratio</span>                           <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thickness_to_chord</span>                     <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aerodynamic_center</span>                     <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">percent_span_unexposed</span>                 <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_length</span>                           <span class="o">=</span> <span class="mf">0.0</span> 
+             
+        <span class="bp">self</span><span class="o">.</span><span class="n">spans</span>                                  <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span>                        <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">total</span>                            <span class="o">=</span> <span class="mf">0.0</span>
+                                                    
+        <span class="bp">self</span><span class="o">.</span><span class="n">areas</span>                                  <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span>                        <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">exposed</span>                          <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">affected</span>                         <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">wetted</span>                           <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">planform</span>                         <span class="o">=</span> <span class="mf">0.0</span>
+                                                    
+        <span class="bp">self</span><span class="o">.</span><span class="n">chords</span>                                 <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_aerodynamic</span>                <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_geometric</span>                  <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span>                            <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">tip</span>                             <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outer_mold_line_cabin_offset_factor</span>    <span class="o">=</span> <span class="mf">0.95</span>
+                                                    
+        <span class="bp">self</span><span class="o">.</span><span class="n">sweeps</span>                                 <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span>                   <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">leading_edge</span>                    <span class="o">=</span> <span class="kc">None</span>         
+                                                    
+        <span class="bp">self</span><span class="o">.</span><span class="n">twists</span>                                 <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">twists</span><span class="o">.</span><span class="n">root</span>                            <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">twists</span><span class="o">.</span><span class="n">tip</span>                             <span class="o">=</span> <span class="mf">0.0</span>
+                                                     
+        <span class="bp">self</span><span class="o">.</span><span class="n">symbolic</span>                               <span class="o">=</span> <span class="kc">False</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">vortex_lift</span>                            <span class="o">=</span> <span class="kc">False</span>
+                                                    
+        <span class="bp">self</span><span class="o">.</span><span class="n">transition_x_upper</span>                     <span class="o">=</span> <span class="mf">0.45</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transition_x_lower</span>                     <span class="o">=</span> <span class="mf">0.45</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">airfoil</span>                                <span class="o">=</span> <span class="kc">None</span> 
         
-        <span class="bp">self</span><span class="o">.</span><span class="n">segments</span>                          <span class="o">=</span> <span class="n">Container</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">control_surfaces</span>                  <span class="o">=</span> <span class="n">Container</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_tanks</span>                        <span class="o">=</span> <span class="n">Container</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">segments</span>                               <span class="o">=</span> <span class="n">Container</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">control_surfaces</span>                       <span class="o">=</span> <span class="n">Container</span><span class="p">()</span>
+   
+        <span class="bp">self</span><span class="o">.</span><span class="n">structural</span>                             <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">structural</span><span class="o">.</span><span class="n">rib</span>                         <span class="o">=</span> <span class="kc">False</span>   
+        <span class="bp">self</span><span class="o">.</span><span class="n">structural</span><span class="o">.</span><span class="n">front_spar_percent_chord</span>    <span class="o">=</span> <span class="mf">0.1</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">structural</span><span class="o">.</span><span class="n">rear_spar_percent_chord</span>     <span class="o">=</span> <span class="mf">0.6</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">structural</span><span class="o">.</span><span class="n">stringer_percent_chords</span>     <span class="o">=</span> <span class="p">[]</span>         
 
 <div class="viewcode-block" id="Wing.append_segment">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Components.Wings.Wing.html#RCAIDE.Library.Components.Wings.Wing.Wing.append_segment">[docs]</a>
@@ -670,37 +675,14 @@
         <span class="k">return</span></div>
 
     
-<div class="viewcode-block" id="Wing.append_fuel_tank">
-<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Components.Wings.Wing.html#RCAIDE.Library.Components.Wings.Wing.Wing.append_fuel_tank">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">append_fuel_tank</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fuel_tank</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Adds a fuel tank to the wing.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        fuel_tank : Data</span>
-<span class="sd">            Fuel tank to be added</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Assert database type</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fuel_tank</span><span class="p">,</span><span class="n">Data</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;input component must be of type Data()&#39;</span><span class="p">)</span>
-
-        <span class="c1"># Store data</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fuel_tanks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fuel_tank</span><span class="p">)</span>
-
-        <span class="k">return</span></div>
-
- 
-<div class="viewcode-block" id="Wing.compute_moment_of_inertia">
-<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Components.Wings.Wing.html#RCAIDE.Library.Components.Wings.Wing.Wing.compute_moment_of_inertia">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">compute_moment_of_inertia</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">center_of_gravity</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span> <span class="n">fuel_flag</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span> 
+<div class="viewcode-block" id="Wing.compute_moments_of_inertia">
+<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Components.Wings.Wing.html#RCAIDE.Library.Components.Wings.Wing.Wing.compute_moments_of_inertia">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_moments_of_inertia</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">vehicle</span><span class="p">,</span><span class="n">center_of_gravity</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the moment of inertia tensor for the wing.</span>
 
 <span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        mass : float</span>
-<span class="sd">            Wing mass</span>
+<span class="sd">        ---------- </span>
 <span class="sd">        center_of_gravity : list, optional</span>
 <span class="sd">            Reference point coordinates, defaults to [[0, 0, 0]]</span>
 <span class="sd">        fuel_flag : bool, optional</span>
@@ -710,11 +692,28 @@
 <span class="sd">        -------</span>
 <span class="sd">        ndarray</span>
 <span class="sd">            3x3 moment of inertia tensor</span>
+<span class="sd">        &quot;&quot;&quot;</span> 
+        <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">compute_wing_moment_of_inertia</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">center_of_gravity</span><span class="p">)</span> 
+        <span class="k">return</span></div>
+
+    
+
+<div class="viewcode-block" id="Wing.compute_center_of_gravity">
+<a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Components.Wings.Wing.html#RCAIDE.Library.Components.Wings.Wing.Wing.compute_center_of_gravity">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_center_of_gravity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">vehicle</span><span class="p">):</span> 
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the center of gravity for the wing.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_fuselage_center_of_gravity</span>
+<span class="sd">            Implementation of the center of gravity calculation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">I</span> <span class="o">=</span> <span class="n">compute_wing_moment_of_inertia</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">center_of_gravity</span><span class="p">,</span> <span class="n">fuel_flag</span><span class="p">)</span> 
-        <span class="k">return</span> <span class="n">I</span>   </div>
+        <span class="n">compute_wing_center_of_gravity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">)</span>
+        <span class="k">return</span></div>
 </div>
 
+    
     
 <div class="viewcode-block" id="Container">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Library.Components.Wings.Wing.html#RCAIDE.Library.Components.Wings.Wing.Container">[docs]</a>
@@ -782,8 +781,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -803,7 +802,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -817,7 +816,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

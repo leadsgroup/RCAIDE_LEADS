@@ -1,0 +1,682 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../../../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Integral_Tank.compute_wing_integral_tank_volume &#8212; RCAIDE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../_static/custom.css?v=d103512f" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../../../../../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Methods/Powertrain/Sources/Fuel_Tanks/Integral_Tank/compute_wing_integral_tank_volume';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Methods/Powertrain/Sources/Fuel_Tanks/Integral_Tank/compute_wing_integral_tank_volume.html" />
+    <link rel="index" title="Index" href="../../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../../../../_static/language_data.js"></script>
+    <script src="../../../../../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../../../../_static/leads_logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../../../../../_static/leads_logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">RCAIDE</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Integral_Tank.compute_wing_integral_tank_volume</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Integral_Tank.compute_wing_integral_tank_volume</h1><div class="highlight"><pre>
+<span></span>
+<span class="c1"># RCAIDE/Methods/Powertrain/Sources/Fuel_Tanks/Integral_Tank/compute_wing_integral_tank_volume.py</span>
+<span class="c1"># </span>
+<span class="c1"># </span>
+<span class="c1"># Created:  Jul 2023, M. Clarke</span>
+<span class="c1"># Modified: Aug 2025, S. Shekar</span>
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  IMPORT</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1"># RCAIDE imports</span>
+<span class="kn">import</span><span class="w">  </span><span class="nn">RCAIDE</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Geometry.Airfoil</span><span class="w"> </span><span class="kn">import</span> <span class="n">import_airfoil_geometry</span><span class="p">,</span>  <span class="n">compute_naca_4series</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Geometry.Planform</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_segment_meshes</span>
+
+<span class="c1"># Python Imports </span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">interp1d</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">shapely</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shapely</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">trimesh</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  METHOD</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
+<div class="viewcode-block" id="compute_wing_integral_tank_volume">
+<a class="viewcode-back" href="../../../../../../../../_autosummary/RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Integral_Tank.compute_wing_integral_tank_volume.html#RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Integral_Tank.compute_wing_integral_tank_volume.compute_wing_integral_tank_volume">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_wing_integral_tank_volume</span><span class="p">(</span><span class="n">fuel_tank</span><span class="p">,</span><span class="n">wing</span><span class="p">,</span><span class="n">n_points</span> <span class="o">=</span> <span class="mi">101</span><span class="p">,</span><span class="n">scale_factor</span> <span class="o">=</span> <span class="mf">0.85</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the fuel volume for an integral fuel tank within a wing structure.</span>
+
+<span class="sd">    This function calculates the volume of fuel that can be stored in an integral tank</span>
+<span class="sd">    within the wing. It handles both single-segment and multi-segment wing configurations,</span>
+<span class="sd">    updating the fuel tank&#39;s mass properties and center of gravity accordingly.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fuel_tank : Fuel_Tank</span>
+<span class="sd">        The fuel tank object containing fuel properties and mass characteristics</span>
+<span class="sd">    wing : Wing</span>
+<span class="sd">        The wing object containing segment geometry, airfoil data, and fuel tank specifications</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    volume : float</span>
+<span class="sd">        The calculated fuel volume in cubic units</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The function determines the fuel tank origin from the wing origin and calculates</span>
+<span class="sd">    volume based on whether the wing has multiple segments or is a single segment.</span>
+<span class="sd">    For multi-segment wings, it iterates through adjacent segments to find fuel tank</span>
+<span class="sd">    locations and accumulates moments of inertia.</span>
+
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Fuel tank geometry follows the wing&#39;s airfoil profile</span>
+<span class="sd">        * Fuel density is uniform throughout the tank</span>
+<span class="sd">        * Wing segments are properly connected and oriented</span>
+
+<span class="sd">    **Theory**</span>
+
+<span class="sd">    For multi-segment wings, the volume is calculated segment by segment using</span>
+<span class="sd">    truncated prism geometry. The center of gravity is computed as a weighted</span>
+<span class="sd">    average of segment centers.</span>
+
+<span class="sd">    **Definitions**</span>
+
+<span class="sd">    &#39;Integral Wing Tank&#39;</span>
+<span class="sd">        A fuel tank built into the wing structure, typically within the wing box</span>
+
+<span class="sd">    &#39;Wing Box&#39;</span>
+<span class="sd">        The structural box formed by the front and rear spars of the wing</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    compute_wing_integral_tank_fuel_volume : Calculates volume for single-segment wings</span>
+<span class="sd">    compute_segmented_wing_integral_tank_fuel_volume : Calculates volume for wing segments</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+
+    <span class="c1"># get orgin of fuel tank     </span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">origin</span>                  <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">origin</span> 
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel</span><span class="o">.</span><span class="n">origin</span>             <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">origin</span>  
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel</span><span class="o">.</span><span class="n">xz_plane_symmetric</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">xz_plane_symmetric</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel</span><span class="o">.</span><span class="n">xy_plane_symmetric</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">xy_plane_symmetric</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel</span><span class="o">.</span><span class="n">yz_plane_symmetric</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">yz_plane_symmetric</span> 
+    
+    <span class="n">seg_bounds</span> <span class="o">=</span>  <span class="n">fuel_tank</span><span class="o">.</span><span class="n">segments_bounding_tank</span>  
+    <span class="c1"># Collect all segment tags between start and end (inclusive)</span>
+    <span class="n">collect</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">seg_keys</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">segment</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">seg_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">collect</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">collect</span><span class="p">:</span>
+            <span class="n">seg_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">segment</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">segment</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">seg_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">break</span>
+
+    <span class="n">segment_meshes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">symm</span>    <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">xz_plane_symmetric</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">seg_keys</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="c1"># compute volume and assume unit density to get mass</span>
+        <span class="n">inner_segment</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_keys</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+        <span class="n">outer_segment</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_keys</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span> 
+
+        <span class="c1"># Compute segment span length</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="p">(</span><span class="n">outer_segment</span><span class="o">.</span><span class="n">percent_span_location</span> <span class="o">-</span> <span class="n">inner_segment</span><span class="o">.</span><span class="n">percent_span_location</span><span class="p">)</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span><span class="o">/</span><span class="p">(</span><span class="n">symm</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">spanwise_shift</span> <span class="o">=</span> <span class="n">inner_segment</span><span class="o">.</span><span class="n">percent_span_location</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span><span class="o">/</span><span class="mi">2</span> 
+        
+        <span class="n">airfoil_in</span> <span class="o">=</span> <span class="n">inner_segment</span><span class="o">.</span><span class="n">airfoil</span> 
+        <span class="k">if</span>  <span class="n">airfoil_in</span> <span class="o">!=</span>  <span class="kc">None</span><span class="p">:</span>                 
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">airfoil_in</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">NACA_4_Series_Airfoil</span><span class="p">:</span>
+                <span class="n">geometry_in</span> <span class="o">=</span> <span class="n">compute_naca_4series</span><span class="p">(</span><span class="n">airfoil_in</span><span class="o">.</span><span class="n">NACA_4_Series_code</span><span class="p">,</span><span class="n">n_points</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">airfoil_in</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">Airfoil</span><span class="p">:</span> 
+                <span class="n">geometry_in</span>     <span class="o">=</span> <span class="n">import_airfoil_geometry</span><span class="p">(</span><span class="n">airfoil_in</span><span class="o">.</span><span class="n">coordinate_file</span><span class="p">,</span><span class="n">n_points</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">geometry_in</span> <span class="o">=</span> <span class="n">compute_naca_4series</span><span class="p">(</span><span class="s1">&#39;0012&#39;</span><span class="p">,</span><span class="n">n_points</span><span class="p">)</span>
+
+        <span class="n">airfoil_out</span> <span class="o">=</span> <span class="n">outer_segment</span><span class="o">.</span><span class="n">airfoil</span> 
+        <span class="k">if</span>  <span class="n">airfoil_out</span> <span class="o">!=</span>  <span class="kc">None</span><span class="p">:</span>                 
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">airfoil_out</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">NACA_4_Series_Airfoil</span><span class="p">:</span>
+                <span class="n">geometry_out</span> <span class="o">=</span> <span class="n">compute_naca_4series</span><span class="p">(</span><span class="n">airfoil_out</span><span class="o">.</span><span class="n">NACA_4_Series_code</span><span class="p">,</span><span class="n">n_points</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">airfoil_out</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">Airfoil</span><span class="p">:</span> 
+                <span class="n">geometry_out</span>     <span class="o">=</span> <span class="n">import_airfoil_geometry</span><span class="p">(</span><span class="n">airfoil_out</span><span class="o">.</span><span class="n">coordinate_file</span><span class="p">,</span><span class="n">n_points</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">geometry_out</span> <span class="o">=</span> <span class="n">compute_naca_4series</span><span class="p">(</span><span class="s1">&#39;0012&#39;</span><span class="p">,</span><span class="n">n_points</span><span class="p">)</span>
+        
+        
+        <span class="n">start_distance_in</span> <span class="o">=</span> <span class="n">inner_segment</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_keys</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">root_chord_percent</span><span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span> <span class="o">*</span> <span class="p">(</span><span class="n">fuel_tank</span><span class="o">.</span><span class="n">segments_percent_chord_start</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">end_distance_in</span>   <span class="o">=</span> <span class="n">inner_segment</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_keys</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">root_chord_percent</span><span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span> <span class="o">*</span> <span class="p">(</span><span class="n">fuel_tank</span><span class="o">.</span><span class="n">segments_percent_chord_end</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="n">start_distance_out</span> <span class="o">=</span> <span class="n">outer_segment</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_keys</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">root_chord_percent</span><span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span> <span class="o">*</span> <span class="p">(</span><span class="n">fuel_tank</span><span class="o">.</span><span class="n">segments_percent_chord_start</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">end_distance_out</span>   <span class="o">=</span> <span class="n">outer_segment</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">seg_keys</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">root_chord_percent</span><span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span> <span class="o">*</span> <span class="p">(</span><span class="n">fuel_tank</span><span class="o">.</span><span class="n">segments_percent_chord_end</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+                            
+        <span class="n">x_in</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geometry_in</span><span class="o">.</span><span class="n">x_coordinates</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span> <span class="o">*</span><span class="n">inner_segment</span><span class="o">.</span><span class="n">root_chord_percent</span> <span class="o">+</span> <span class="n">inner_segment</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">y_in</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geometry_in</span><span class="o">.</span><span class="n">y_coordinates</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span> <span class="o">*</span><span class="n">inner_segment</span><span class="o">.</span><span class="n">root_chord_percent</span> <span class="o">+</span> <span class="n">inner_segment</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">x_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geometry_out</span><span class="o">.</span><span class="n">x_coordinates</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span> <span class="o">*</span><span class="n">outer_segment</span><span class="o">.</span><span class="n">root_chord_percent</span> <span class="o">+</span> <span class="n">outer_segment</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">y_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">geometry_out</span><span class="o">.</span><span class="n">y_coordinates</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span> <span class="o">*</span><span class="n">outer_segment</span><span class="o">.</span><span class="n">root_chord_percent</span> <span class="o">+</span> <span class="n">outer_segment</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="c1"># ---------------- Inner segment ----------------</span>
+        <span class="n">mask_in</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_in</span> <span class="o">&gt;=</span> <span class="n">start_distance_in</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x_in</span> <span class="o">&lt;=</span> <span class="n">end_distance_in</span><span class="p">)</span>
+
+        <span class="n">x_in_capped</span> <span class="o">=</span> <span class="n">x_in</span><span class="p">[</span><span class="n">mask_in</span><span class="p">]</span>
+        <span class="n">y_in_capped</span> <span class="o">=</span> <span class="n">y_in</span><span class="p">[</span><span class="n">mask_in</span><span class="p">]</span>
+        
+        <span class="c1"># ---------------- Outer segment ----------------</span>
+        <span class="n">mask_out</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_out</span> <span class="o">&gt;=</span> <span class="n">start_distance_out</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x_out</span> <span class="o">&lt;=</span> <span class="n">end_distance_out</span><span class="p">)</span>
+
+        <span class="n">x_out_capped</span> <span class="o">=</span> <span class="n">x_out</span><span class="p">[</span><span class="n">mask_out</span><span class="p">]</span>
+        <span class="n">y_out_capped</span> <span class="o">=</span> <span class="n">y_out</span><span class="p">[</span><span class="n">mask_out</span><span class="p">]</span>
+
+        <span class="n">solid_segment</span> <span class="o">=</span>  <span class="n">compute_segment_meshes</span><span class="p">(</span><span class="n">x_in_capped</span><span class="p">,</span><span class="n">y_in_capped</span><span class="p">,</span> <span class="n">x_out_capped</span><span class="p">,</span> <span class="n">y_out_capped</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">spanwise_shift</span><span class="p">)</span> 
+        <span class="n">segment_meshes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">solid_segment</span><span class="p">)</span>
+    
+    <span class="n">combinde_mesh</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">segment_meshes</span><span class="p">)</span>
+
+    <span class="c1"># Equivalent rectangle dimensions from unscaled mesh bounding box</span>
+    <span class="n">bounds</span> <span class="o">=</span> <span class="n">combinde_mesh</span><span class="o">.</span><span class="n">bounds</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">widths</span><span class="o">.</span><span class="n">external</span>  <span class="o">=</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">external</span> <span class="o">=</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">heights</span><span class="o">.</span><span class="n">external</span> <span class="o">=</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">heights</span><span class="o">.</span><span class="n">external</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">fuel_tank</span><span class="o">.</span><span class="n">aspect_ratio</span> <span class="o">=</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">external</span> <span class="o">/</span> <span class="n">fuel_tank</span><span class="o">.</span><span class="n">heights</span><span class="o">.</span><span class="n">external</span>
+
+    <span class="c1"># Reflect across the YZ plane (mirror X)</span>
+    <span class="n">Ry</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>   <span class="c1"># reflection matrix</span>
+
+    <span class="c1"># Compute centroid</span>
+    <span class="n">centroid</span> <span class="o">=</span> <span class="n">combinde_mesh</span><span class="o">.</span><span class="n">centroid</span>
+
+    <span class="c1"># Create scaling transform about centroid</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">transformations</span><span class="o">.</span><span class="n">scale_matrix</span><span class="p">(</span>
+        <span class="n">scale_factor</span><span class="p">,</span>
+        <span class="n">origin</span><span class="o">=</span><span class="n">centroid</span>
+    <span class="p">)</span>
+    <span class="n">combinde_mesh</span><span class="o">.</span><span class="n">apply_transform</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">xz_plane_symmetric</span><span class="p">:</span>
+        <span class="c1"># 1. copy the mesh</span>
+        <span class="n">combined_mesh_sym</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">combinde_mesh</span><span class="p">)</span>
+
+        <span class="c1"># 2. apply the mirror transform</span>
+        <span class="n">combined_mesh_sym</span><span class="o">.</span><span class="n">vertices</span> <span class="o">=</span> <span class="p">(</span><span class="n">Ry</span> <span class="o">@</span> <span class="n">combined_mesh_sym</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+
+        <span class="c1"># 3. fix face orientation (reverse winding)</span>
+        <span class="n">combined_mesh_sym</span><span class="o">.</span><span class="n">faces</span> <span class="o">=</span> <span class="n">combined_mesh_sym</span><span class="o">.</span><span class="n">faces</span><span class="p">[:,</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># 4. concatenate original + mirrored</span>
+        <span class="n">combined_mesh_full</span>         <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">combinde_mesh</span><span class="p">,</span> <span class="n">combined_mesh_sym</span><span class="p">])</span> 
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">combined_mesh_full</span> <span class="o">=</span> <span class="n">combinde_mesh</span>
+    <span class="n">centroid</span> <span class="o">=</span> <span class="n">combined_mesh_full</span><span class="o">.</span><span class="n">centroid</span>
+    <span class="n">cg_x</span>     <span class="o">=</span> <span class="n">centroid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">cg_y</span>     <span class="o">=</span> <span class="n">centroid</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">cg_z</span>     <span class="o">=</span> <span class="n">centroid</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="c1"># Non-dimensional moment of inertia (I/mass) using unit density</span>
+    <span class="n">combined_mesh_full</span><span class="o">.</span><span class="n">density</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">I_fuel_nd</span> <span class="o">=</span> <span class="n">combined_mesh_full</span><span class="o">.</span><span class="n">moment_inertia</span> <span class="o">/</span> <span class="n">combined_mesh_full</span><span class="o">.</span><span class="n">mass</span>
+
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">center_of_gravity</span>                         <span class="o">=</span> <span class="p">[[</span><span class="n">cg_x</span><span class="p">,</span> <span class="n">cg_y</span><span class="p">,</span> <span class="n">cg_z</span><span class="p">]]</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">fuel</span><span class="o">.</span><span class="n">mass_properties</span><span class="o">.</span><span class="n">moments_of_inertia</span><span class="o">.</span><span class="n">non_dimensional_tensor</span> <span class="o">=</span> <span class="n">I_fuel_nd</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">volume_properties</span><span class="o">.</span><span class="n">gross_volume</span>                                 <span class="o">=</span> <span class="n">combined_mesh_full</span><span class="o">.</span><span class="n">volume</span>
+    <span class="n">fuel_tank</span><span class="o">.</span><span class="n">volume_properties</span><span class="o">.</span><span class="n">net_volume</span>                                   <span class="o">=</span> <span class="n">combined_mesh_full</span><span class="o">.</span><span class="n">volume</span>
+
+    <span class="k">return</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Laboratory for Electric Aircraft Design and Sustainability.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

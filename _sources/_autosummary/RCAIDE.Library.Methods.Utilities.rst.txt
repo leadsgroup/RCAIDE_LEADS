@@ -32,5 +32,4 @@ Utilities
 
    Chebyshev
    Cubic_Spline_Blender
-   latin_hypercube_sampling
 

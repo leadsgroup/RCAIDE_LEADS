@@ -1,0 +1,620 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RCAIDE.Library.Methods.Aerodynamics.Common.Drag.form_drag &#8212; RCAIDE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/custom.css?v=d103512f" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../../../../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Methods/Aerodynamics/Common/Drag/form_drag';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Methods/Aerodynamics/Common/Drag/form_drag.html" />
+    <link rel="index" title="Index" href="../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../../../_static/language_data.js"></script>
+    <script src="../../../../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../../../_static/leads_logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../../../../_static/leads_logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">RCAIDE</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">RCAIDE.Library.Methods.Aerodynamics.Common.Drag.form_drag</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for RCAIDE.Library.Methods.Aerodynamics.Common.Drag.form_drag</h1><div class="highlight"><pre>
+<span></span><span class="c1"># RCAIDE/Library/Methods/Aerodynamics/Common/Drag/form_drag.py </span>
+<span class="c1"># </span>
+<span class="c1"># Created:  Jul 2025, M. Clarke </span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  IMPORT</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Utilities</span><span class="w">         </span><span class="kn">import</span> <span class="n">Cubic_Spline_Blender</span>
+<span class="kn">import</span><span class="w">  </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w">  </span><span class="nn">np</span>
+
+<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
+<span class="c1">#  Form Drag </span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------   </span>
+<div class="viewcode-block" id="form_drag">
+<a class="viewcode-back" href="../../../../../../../_autosummary/RCAIDE.Library.Methods.Aerodynamics.Common.Drag.form_drag.html#RCAIDE.Library.Methods.Aerodynamics.Common.Drag.form_drag.form_drag">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">form_drag</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">settings</span><span class="p">,</span><span class="n">geometry</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the form drag coefficient associated with aircraft geometry and angle of attack.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    state : Data</span>
+<span class="sd">        Flight conditions and aerodynamic state containing:</span>
+<span class="sd">            - conditions.freestream.mach_number : float</span>
+<span class="sd">                Freestream Mach number [unitless]</span>
+<span class="sd">            - conditions.aerodynamics.angles.alpha : float</span>
+<span class="sd">                Angle of attack [radians]</span>
+<span class="sd">    settings : dict</span>
+<span class="sd">        Aerodynamic analysis settings containing:</span>
+<span class="sd">            - supersonic.begin_drag_rise_mach_number : float</span>
+<span class="sd">                Mach number at which drag rise begins [unitless]</span>
+<span class="sd">            - supersonic.end_drag_rise_mach_number : float</span>
+<span class="sd">                Mach number at which drag rise ends [unitless]</span>
+<span class="sd">    geometry : Data</span>
+<span class="sd">        Aircraft geometry containing:</span>
+<span class="sd">            - reference_area : float</span>
+<span class="sd">                Reference area for drag coefficient calculation [m²]</span>
+<span class="sd">            - wings : list</span>
+<span class="sd">                List of wing objects containing:</span>
+<span class="sd">                    - segments : dict</span>
+<span class="sd">                        Dictionary of wing segments with:</span>
+<span class="sd">                            - areas.reference : float</span>
+<span class="sd">                                Reference area of the segment [m²]</span>
+<span class="sd">                    - areas.reference : float</span>
+<span class="sd">                        Reference area of the wing [m²]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        Results are stored in state.conditions.aerodynamics.coefficients.drag.form.total</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function calculates the form drag coefficient based on angle of attack and Mach number</span>
+<span class="sd">    effects. The calculation accounts for separation drag on wing segments and applies Mach</span>
+<span class="sd">    number corrections for compressibility effects. The form drag is blended between subsonic</span>
+<span class="sd">    and supersonic regimes using a cubic spline.</span>
+<span class="sd">    </span>
+<span class="sd">    **Major Assumptions**</span>
+<span class="sd">        * Form drag is primarily due to wing geometry and angle of attack</span>
+<span class="sd">        * Separation drag follows polynomial correlation with angle of attack</span>
+<span class="sd">        * Mach number correction is valid for typical transport aircraft</span>
+<span class="sd">        * Vertical tail contributions are negligible</span>
+<span class="sd">        * Cubic spline blending smooths transition between flight regimes</span>
+<span class="sd">    </span>
+<span class="sd">    **Theory**</span>
+
+<span class="sd">    The Mach number correction factor is:</span>
+
+<span class="sd">    :math:`M_{correction} = 2.9788 M^3 - 6.4381 M^2 + 4.4967 M`</span>
+
+<span class="sd">    where :math:`M` is the freestream Mach number.</span>
+
+<span class="sd">    The separation drag coefficient follows a polynomial correlation:</span>
+
+<span class="sd">    :math:`C_{D,sep} = (111.41 \\alpha^4 - 16.569 \\alpha^3 + 1.8 \\alpha^2 - 0.0242 \\alpha + 0.0015) \\cdot M_{correction}`</span>
+
+<span class="sd">    where :math:`\\alpha` is the angle of attack in radians.</span>
+
+<span class="sd">    For wings with segments, the total form drag is:</span>
+
+<span class="sd">    :math:`C_{D,form,wing} = \\sum_{i=1}^{n-1} C_{D,sep,i} \\cdot S_{ref,i}`</span>
+
+<span class="sd">    where :math:`S_{ref,i}` is the reference area of segment :math:`i`.</span>
+
+<span class="sd">    For wings without segments:</span>
+
+<span class="sd">    :math:`C_{D,form,wing} = C_{D,sep} \\cdot S_{ref,wing}`</span>
+
+<span class="sd">    The total form drag coefficient is:</span>
+
+<span class="sd">    :math:`C_{D,form} = \\frac{\\sum C_{D,form,wing}}{S_{ref}} \\cdot h_{00}(M)`</span>
+
+<span class="sd">    where :math:`h_{00}(M)` is the cubic spline blending function.</span>
+<span class="sd">    </span>
+<span class="sd">    **Definitions**</span>
+
+<span class="sd">    &#39;Form Drag&#39;</span>
+<span class="sd">        Drag component caused by pressure differences due to flow separation and body shape.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Separation Drag&#39;</span>
+<span class="sd">        Additional drag caused by boundary layer separation from the surface.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Cubic Spline Blending&#39;</span>
+<span class="sd">        Smooth transition function between subsonic and supersonic aerodynamic regimes.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Empirical correlation for separation drag based on angle of attack comes from NASA CRM model</span>
+<span class="sd">    [2] Unknown</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Components.Wings.Vertical_Tail</span>
+<span class="sd">    RCAIDE.Library.Methods.Utilities.Cubic_Spline_Blender</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">conditions</span>       <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span>   
+    <span class="n">Mach</span>             <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">mach_number</span> 
+    <span class="n">alpha</span>            <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">angles</span><span class="o">.</span><span class="n">alpha</span>    
+    <span class="n">high_mach_cutoff</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">supersonic</span><span class="o">.</span><span class="n">end_drag_rise_mach_number</span> 
+    <span class="n">low_mach_cutoff</span>  <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">supersonic</span><span class="o">.</span><span class="n">begin_drag_rise_mach_number</span> 
+    <span class="n">CD_form</span>          <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="c1"># supersonic smoothing </span>
+    <span class="n">sup_spline</span> <span class="o">=</span> <span class="n">Cubic_Spline_Blender</span><span class="p">(</span><span class="n">low_mach_cutoff</span><span class="p">,</span><span class="n">high_mach_cutoff</span><span class="p">)</span> 
+    <span class="n">sup_h00</span>    <span class="o">=</span> <span class="k">lambda</span> <span class="n">M</span><span class="p">:</span><span class="n">sup_spline</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">wing</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">wings</span><span class="p">:</span>
+        <span class="n">AR</span>            <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">aspect_ratio</span>
+        <span class="n">AR_correction</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.0016</span><span class="o">*</span><span class="p">(</span><span class="n">AR</span> <span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.0503</span><span class="o">*</span><span class="p">(</span><span class="n">AR</span> <span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5201</span><span class="o">*</span><span class="p">(</span><span class="n">AR</span><span class="p">)</span> <span class="o">+</span> <span class="mf">2.7781</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">wing</span><span class="p">)</span> <span class="o">!=</span>  <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Vertical_Tail</span><span class="p">():</span>
+            <span class="n">CD_form_wing</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">CD_sep_AoA</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">0.04956595</span><span class="p">,</span><span class="o">-</span><span class="mf">0.02293939</span><span class="p">,</span><span class="o">-</span><span class="mf">0.00545218</span><span class="p">,</span><span class="mf">0.01166707</span><span class="p">,</span><span class="mf">0.02896147</span><span class="p">,</span><span class="mf">0.03815988</span><span class="p">,</span><span class="mf">0.04636345</span><span class="p">,</span>
+                                      <span class="mf">0.0552182</span><span class="p">,</span><span class="mf">0.06408814</span><span class="p">,</span><span class="mf">0.07361293</span><span class="p">,</span><span class="mf">0.08121052</span><span class="p">,</span><span class="mf">0.08995183</span><span class="p">,</span>
+                                      <span class="mf">0.10839088</span><span class="p">,</span><span class="mf">0.12462768</span><span class="p">,</span><span class="mf">0.14013284</span><span class="p">,</span><span class="mf">0.1587665</span><span class="p">,</span><span class="mf">0.1789329</span><span class="p">])</span>
+            <span class="n">CD_sep_data</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.009811806</span><span class="p">,</span><span class="mf">0.003233177</span><span class="p">,</span><span class="mf">0.001688234</span><span class="p">,</span><span class="mf">0.001438424</span><span class="p">,</span><span class="mf">0.0019848</span><span class="p">,</span>
+                                     <span class="mf">0.00238753</span><span class="p">,</span><span class="mf">0.002799653</span><span class="p">,</span><span class="mf">0.003118518</span><span class="p">,</span><span class="mf">0.003888178</span><span class="p">,</span><span class="mf">0.005521163</span><span class="p">,</span><span class="mf">0.00737758</span><span class="p">,</span><span class="mf">0.00912212</span><span class="p">,</span>
+                                     <span class="mf">0.014302608</span><span class="p">,</span><span class="mf">0.021245786</span><span class="p">,</span><span class="mf">0.030822828</span><span class="p">,</span><span class="mf">0.04750903</span><span class="p">,</span><span class="mf">0.074083351</span><span class="p">])</span>
+            <span class="n">CD_sep</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">CD_sep_AoA</span><span class="p">,</span> <span class="n">CD_sep_data</span><span class="p">)</span> <span class="o">*</span> <span class="n">AR_correction</span>
+            <span class="n">segs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">CD_form_wing</span> <span class="o">+=</span> <span class="n">CD_sep</span> <span class="o">*</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segs</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span>
+            <span class="n">CD_form</span> <span class="o">+=</span> <span class="n">CD_form_wing</span> <span class="o">*</span> <span class="n">sup_h00</span><span class="p">(</span><span class="n">Mach</span><span class="p">)</span> <span class="o">/</span> <span class="n">geometry</span><span class="o">.</span><span class="n">reference_area</span>
+        
+    <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">coefficients</span><span class="o">.</span><span class="n">drag</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">total</span> <span class="o">=</span> <span class="n">CD_form</span>
+    <span class="k">return</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Laboratory for Electric Aircraft Design and Sustainability.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+RCAIDE.Library.Methods.Aeroacoustics.Semi\_Empirical.Turbofan.external\_plug\_effect.external\_plug\_effect
+===========================================================================================================
+
+.. currentmodule:: RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Turbofan.external_plug_effect
+
+.. autofunction:: external_plug_effect

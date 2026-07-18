@@ -30,5 +30,5 @@ Emission\_Index\_Empirical\_Method
    :template: custom-module-template.rst
    :recursive:
 
-   evaluate_correlation_emissions_indices
+   evaluate_correlation_emissions
 

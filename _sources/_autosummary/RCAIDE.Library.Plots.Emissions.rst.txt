@@ -31,4 +31,7 @@ Emissions
    :recursive:
 
    plot_CO2e_emissions
+   plot_contrails_appleman_chart
+   plot_emission_indices
+   plot_emission_species_masses
 

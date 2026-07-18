@@ -1,0 +1,6 @@
+RCAIDE.Library.Methods.Mass\_Properties.Moment\_of\_Inertia.compute\_non\_dimensional\_moment\_of\_inertia.compute\_rounded\_end\_cylinder\_non\_dimensional\_moi
+=================================================================================================================================================================
+
+.. currentmodule:: RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_non_dimensional_moment_of_inertia
+
+.. autofunction:: compute_rounded_end_cylinder_non_dimensional_moi

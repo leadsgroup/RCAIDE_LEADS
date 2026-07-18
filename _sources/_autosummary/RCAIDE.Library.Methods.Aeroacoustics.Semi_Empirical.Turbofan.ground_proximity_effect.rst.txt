@@ -1,0 +1,32 @@
+RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Turbofan.ground_proximity_effect
+
+ground\_proximity\_effect
+=========================
+
+.. automodule:: RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Turbofan.ground_proximity_effect
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      ground_proximity_effect
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

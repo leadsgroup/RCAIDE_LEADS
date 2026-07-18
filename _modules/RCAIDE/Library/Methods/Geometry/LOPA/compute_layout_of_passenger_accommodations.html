@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Methods/Geometry/LOPA/compute_layout_of_passenger_accommodations';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Methods/Geometry/LOPA/compute_layout_of_passenger_accommodations.html" />
     <link rel="index" title="Index" href="../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../../_static/language_data.js"></script>
+    <script src="../../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -378,166 +397,191 @@
                   
   <h1>Source code for RCAIDE.Library.Methods.Geometry.LOPA.compute_layout_of_passenger_accommodations</h1><div class="highlight"><pre>
 <span></span><span class="c1"># RCAIDE/Library/Methods/Geometry/LOPA/LOPA_functions.py</span>
-<span class="c1"># </span>
-<span class="c1"># </span>
-<span class="c1"># Created: Mar 2025, M. Clarke </span>
-
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># Created: Mar 2025, M. Clarke</span>
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  IMPORT</span>
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
-<span class="c1"># RCAIDE imports </span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span> 
+<span class="c1"># RCAIDE imports</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.LOPA_functions</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
-
-<span class="c1"># python functions </span>
-<span class="kn">import</span><span class="w">  </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w">  </span><span class="nn">np</span> 
+<span class="c1"># python functions</span>
+<span class="kn">import</span><span class="w">  </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w">  </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span>  <span class="n">deepcopy</span>
-
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <span class="c1">#  compute_layout_of_passenger_accommodations</span>
-<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
 <div class="viewcode-block" id="compute_layout_of_passenger_accommodations">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Methods.Geometry.LOPA.compute_layout_of_passenger_accommodations.html#RCAIDE.Library.Methods.Geometry.LOPA.compute_layout_of_passenger_accommodations.compute_layout_of_passenger_accommodations">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_layout_of_passenger_accommodations</span><span class="p">(</span><span class="n">fuselage</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Creates the layout of passenger accommodations for a vehicle</span>
-<span class="sd">    &#39;&#39;&#39;</span>  
-    <span class="c1">#  [ x, y, z , length, width, first-cl flag, business-cl flag, economy-cl flag, seat, emergency-row flag, galley/lav flag, type-A exit flag]    </span>
-    <span class="n">LOPA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">14</span><span class="p">))</span> 
-    <span class="n">side_cabin_offset</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">cabin</span> <span class="ow">in</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">cabins</span><span class="p">:</span> 
-        <span class="n">cabin_class_origin</span>  <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">cabin_class</span> <span class="ow">in</span> <span class="n">cabin</span><span class="o">.</span><span class="n">classes</span><span class="p">:</span> 
-            <span class="n">seat_data</span> <span class="p">,</span><span class="n">cabin_class_origin</span>  <span class="o">=</span> <span class="n">create_class_seating_map_layout</span><span class="p">(</span><span class="n">cabin</span><span class="p">,</span> <span class="n">cabin_class</span><span class="p">,</span><span class="n">cabin_class_origin</span><span class="p">,</span> <span class="n">side_cabin_offset</span><span class="p">)</span>
-            <span class="n">side_cabin_offset</span> <span class="o">=</span>  <span class="n">cabin</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="mi">2</span>
-            <span class="n">LOPA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">LOPA</span><span class="p">,</span><span class="n">seat_data</span><span class="p">))</span>  
-            
-    <span class="k">for</span> <span class="n">cabin</span> <span class="ow">in</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">cabins</span><span class="p">:</span> 
-        <span class="k">for</span> <span class="n">cabin_class</span> <span class="ow">in</span> <span class="n">cabin</span><span class="o">.</span><span class="n">classes</span><span class="p">:</span> 
-            <span class="n">cabin_class</span><span class="o">.</span><span class="n">percentage</span> <span class="o">=</span> <span class="n">cabin_class</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="n">cabin</span><span class="o">.</span><span class="n">length</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="c1"># lopa of entire vehicle </span>
+    <span class="n">LOPA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">14</span><span class="p">))</span>
+    <span class="n">lopa_origin_x</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">lopa_origin_y</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">lopa_origin_z</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fuselage</span><span class="o">.</span><span class="n">cabins</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> 
+        <span class="c1"># instantiate dimension of LOPA container </span>
+        <span class="c1">#  [ x, y, z , length, width, first-cl flag, business-cl flag, economy-cl flag, seat, emergency-row flag, galley/lav flag, type-A exit flag]</span>
+        
+        <span class="n">side_cabin_offset</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">cabin</span> <span class="ow">in</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">cabins</span><span class="p">:</span>
 
-    <span class="n">fuselage</span><span class="o">.</span><span class="n">number_of_passengers</span>               <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[:,</span><span class="mi">10</span><span class="p">])</span>
-    <span class="n">fuselage</span><span class="o">.</span><span class="n">layout_of_passenger_accommodations</span> <span class="o">=</span> <span class="n">LOPA</span>
-    <span class="n">compute_fusselage_dimensions</span><span class="p">(</span><span class="n">fuselage</span><span class="p">)</span>
+            <span class="c1"># create empty data structures</span>
+            <span class="n">cabin_LOPA</span>            <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">14</span><span class="p">))</span>
+            <span class="n">cabin_number_of_seats</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">cabin_class_origin</span>    <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">total_cabin_length</span>    <span class="o">=</span> <span class="mi">0</span>
 
-    <span class="k">return</span>  </div>
+            <span class="c1"># loop through cabin classes</span>
+            <span class="k">for</span> <span class="n">cabin_class</span> <span class="ow">in</span> <span class="n">cabin</span><span class="o">.</span><span class="n">classes</span><span class="p">:</span>
+
+                <span class="c1"># compute LOPA</span>
+                <span class="n">seat_data</span> <span class="p">,</span><span class="n">cabin_class_origin</span><span class="p">,</span><span class="n">cabin_number_of_seats</span><span class="p">,</span><span class="n">total_cabin_length</span>  <span class="o">=</span> <span class="n">create_class_seating_map_layout</span><span class="p">(</span><span class="n">cabin</span><span class="p">,</span> <span class="n">cabin_class</span><span class="p">,</span><span class="n">cabin_class_origin</span><span class="p">,</span> <span class="n">side_cabin_offset</span><span class="p">,</span><span class="n">cabin_number_of_seats</span><span class="p">,</span><span class="n">total_cabin_length</span><span class="p">)</span>
+
+                <span class="c1"># determine offset if a side cabin (i.e. for a BWB) is defined</span>
+                <span class="n">side_cabin_offset</span> <span class="o">=</span> <span class="n">cabin</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="mi">2</span>
+
+                <span class="c1"># append to cabin LOPA data structure</span>
+                <span class="n">cabin_LOPA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">cabin_LOPA</span><span class="p">,</span><span class="n">seat_data</span><span class="p">))</span>
+
+            <span class="c1"># apply cabin origin offset to seat coordinates (x, y, z)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cabin_LOPA</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">cabin_LOPA</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">cabin</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">cabin_LOPA</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">+=</span> <span class="n">cabin</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">cabin_LOPA</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span> <span class="o">+=</span> <span class="n">cabin</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+
+            <span class="c1"># append to entire vehicle LOPA data structure</span>
+            <span class="n">LOPA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">LOPA</span><span class="p">,</span> <span class="n">cabin_LOPA</span><span class="p">))</span>
+
+            <span class="c1"># store cabin LOPA onto cabin data structure</span>
+            <span class="n">cabin</span><span class="o">.</span><span class="n">layout_of_passenger_accommodations</span>                     <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+            <span class="n">cabin</span><span class="o">.</span><span class="n">layout_of_passenger_accommodations</span><span class="o">.</span><span class="n">object_coordinates</span>  <span class="o">=</span> <span class="n">cabin_LOPA</span>
+
+            <span class="c1"># store cabin properties</span>
+            <span class="n">cabin</span><span class="o">.</span><span class="n">length</span>          <span class="o">=</span> <span class="n">total_cabin_length</span>
+            <span class="n">cabin</span><span class="o">.</span><span class="n">number_of_seats</span> <span class="o">=</span> <span class="n">cabin_number_of_seats</span>
+
+        <span class="c1"># determine offset of LOPA from reference point on aircraft (nose)</span>
+        <span class="k">for</span> <span class="n">cabin</span> <span class="ow">in</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">cabins</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">cabin_class</span> <span class="ow">in</span> <span class="n">cabin</span><span class="o">.</span><span class="n">classes</span><span class="p">:</span>
+                <span class="n">cabin_class</span><span class="o">.</span><span class="n">percentage</span> <span class="o">=</span> <span class="n">cabin_class</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="n">cabin</span><span class="o">.</span><span class="n">length</span>
+
+    <span class="k">if</span> <span class="n">LOPA</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">:</span>
+        <span class="n">fuselage</span><span class="o">.</span><span class="n">number_of_seats</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[:,</span><span class="mi">10</span><span class="p">])</span>
+        <span class="n">fuselage</span><span class="o">.</span><span class="n">layout_of_passenger_accommodations</span>                     <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+        <span class="n">fuselage</span><span class="o">.</span><span class="n">layout_of_passenger_accommodations</span><span class="o">.</span><span class="n">object_coordinates</span>  <span class="o">=</span> <span class="n">LOPA</span>
+        <span class="n">fuselage</span><span class="o">.</span><span class="n">layout_of_passenger_accommodations</span><span class="o">.</span><span class="n">origin</span>              <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+        <span class="n">compute_lopa_properties</span><span class="p">(</span><span class="n">fuselage</span><span class="p">,</span> <span class="n">LOPA</span><span class="p">)</span>    
+        
+    <span class="k">return</span> </div>
 
  
-<div class="viewcode-block" id="compute_fusselage_dimensions">
-<a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Methods.Geometry.LOPA.compute_layout_of_passenger_accommodations.html#RCAIDE.Library.Methods.Geometry.LOPA.compute_layout_of_passenger_accommodations.compute_fusselage_dimensions">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">compute_fusselage_dimensions</span><span class="p">(</span><span class="n">fuselage</span><span class="p">):</span>
-    <span class="n">LOPA</span> <span class="o">=</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">layout_of_passenger_accommodations</span> 
-    
-       <span class="c1"># Step 1: plot cabin bounds  </span>
-    <span class="c1"># get points at x min </span>
+<div class="viewcode-block" id="compute_lopa_properties">
+<a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Methods.Geometry.LOPA.compute_layout_of_passenger_accommodations.html#RCAIDE.Library.Methods.Geometry.LOPA.compute_layout_of_passenger_accommodations.compute_lopa_properties">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_lopa_properties</span><span class="p">(</span><span class="n">fuselage</span><span class="p">,</span> <span class="n">LOPA</span><span class="p">):</span> 
+    <span class="c1"># Step 1: plot cabin bounds</span>
+    <span class="c1"># get points at x min</span>
     <span class="n">x_min_locs</span>   <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span> <span class="n">LOPA</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="nb">min</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]))[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">x_min</span>        <span class="o">=</span>  <span class="n">LOPA</span><span class="p">[</span><span class="n">x_min_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span>  <span class="n">LOPA</span><span class="p">[</span><span class="n">x_min_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">5</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
     <span class="n">x_min_y_max</span>  <span class="o">=</span>  <span class="nb">max</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">x_min_locs</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">x_min_locs</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span> <span class="p">)</span>
-    <span class="n">x_min_y_min</span>  <span class="o">=</span>  <span class="nb">min</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">x_min_locs</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">x_min_locs</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span> <span class="p">)</span> 
-    <span class="n">x_border_pts</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_min</span><span class="p">]</span> 
-    <span class="n">y_border_pts</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_min_y_min</span><span class="p">,</span> <span class="n">x_min_y_max</span><span class="p">]</span> 
-
-    <span class="c1"># get points at y max </span>
+    <span class="n">x_min_y_min</span>  <span class="o">=</span>  <span class="nb">min</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">x_min_locs</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">x_min_locs</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span> <span class="p">)</span>
+    <span class="n">x_border_pts</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_min</span><span class="p">]</span>
+    <span class="n">y_border_pts</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_min_y_min</span><span class="p">,</span> <span class="n">x_min_y_max</span><span class="p">]</span>
+    
+    <span class="c1"># get points at y max</span>
     <span class="n">y_max_locs</span>   <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span> <span class="n">LOPA</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="nb">max</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]))[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">y_max</span>        <span class="o">=</span>  <span class="n">LOPA</span><span class="p">[</span><span class="n">y_max_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">y_max_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">6</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span> 
+    <span class="n">y_max</span>        <span class="o">=</span>  <span class="n">LOPA</span><span class="p">[</span><span class="n">y_max_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">y_max_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">6</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
     <span class="n">y_max_x_max</span>  <span class="o">=</span>  <span class="nb">max</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">y_max_locs</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">y_max_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">5</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">y_max_x_min</span>  <span class="o">=</span>  <span class="nb">min</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">y_max_locs</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">y_max_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">5</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> 
+    <span class="n">y_max_x_min</span>  <span class="o">=</span>  <span class="nb">min</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">y_max_locs</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">y_max_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">5</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">x_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_max_x_min</span><span class="p">)</span>
     <span class="n">x_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_max_x_max</span><span class="p">)</span>
     <span class="n">y_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_max</span><span class="p">)</span>
-    <span class="n">y_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_max</span><span class="p">)</span> 
-
-    <span class="c1"># get points at x max </span>
+    <span class="n">y_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_max</span><span class="p">)</span>
+    
+    <span class="c1"># get points at x max</span>
     <span class="n">x_max_locs</span>   <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span> <span class="n">LOPA</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="nb">max</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]))[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">x_max</span>        <span class="o">=</span>  <span class="n">LOPA</span><span class="p">[</span><span class="n">x_max_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">x_max_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">5</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
     <span class="n">x_max_y_max</span>  <span class="o">=</span>  <span class="nb">max</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">x_max_locs</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">x_max_locs</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">x_max_y_min</span>  <span class="o">=</span>  <span class="nb">min</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">x_max_locs</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">x_max_locs</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>  
+    <span class="n">x_max_y_min</span>  <span class="o">=</span>  <span class="nb">min</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">x_max_locs</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">x_max_locs</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">x_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x_max</span><span class="p">)</span>
     <span class="n">x_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x_max</span><span class="p">)</span>
     <span class="n">y_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x_max_y_max</span><span class="p">)</span>
     <span class="n">y_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x_max_y_min</span><span class="p">)</span>
     
-    <span class="c1"># get points at y min  </span>
+    <span class="c1"># get points at y min</span>
     <span class="n">y_min_locs</span>   <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span> <span class="n">LOPA</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="nb">min</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]))[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">y_min</span>        <span class="o">=</span>  <span class="n">LOPA</span><span class="p">[</span><span class="n">y_min_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">y_min_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">6</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span> 
+    <span class="n">y_min</span>        <span class="o">=</span>  <span class="n">LOPA</span><span class="p">[</span><span class="n">y_min_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">y_min_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">6</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
     <span class="n">y_min_x_max</span>  <span class="o">=</span>  <span class="nb">max</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">y_min_locs</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">y_min_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">5</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">y_min_x_min</span>  <span class="o">=</span>  <span class="nb">min</span><span class="p">(</span><span class="n">LOPA</span><span class="p">[</span><span class="n">y_min_locs</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">LOPA</span><span class="p">[</span><span class="n">y_min_locs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">5</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">x_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_min_x_max</span><span class="p">)</span>  
+    <span class="n">x_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_min_x_max</span><span class="p">)</span>
     <span class="n">x_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_min_x_min</span><span class="p">)</span>
     <span class="n">y_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_min</span><span class="p">)</span>
-    <span class="n">y_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_min</span><span class="p">)</span>    
+    <span class="n">y_border_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_min</span><span class="p">)</span>
     
     <span class="c1"># loop through points and determine if there are duplicates</span>
     <span class="n">y_border_pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_border_pts</span><span class="p">)</span>
     <span class="n">x_border_pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_border_pts</span><span class="p">)</span>
-
+    
     <span class="c1"># cut where y is negative</span>
     <span class="n">port_idxs</span>  <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">y_border_pts</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">starboard_x_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">x_border_pts</span><span class="p">,</span> <span class="n">port_idxs</span><span class="p">)</span> 
+    <span class="n">starboard_x_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">x_border_pts</span><span class="p">,</span> <span class="n">port_idxs</span><span class="p">)</span>
     <span class="n">starboard_y_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">y_border_pts</span><span class="p">,</span> <span class="n">port_idxs</span><span class="p">)</span>
     
-    <span class="n">cabin_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">starboard_x_points</span><span class="p">)</span>
-    <span class="n">cabin_wdith</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="nb">max</span><span class="p">(</span><span class="n">starboard_y_points</span><span class="p">)</span>
-
-    <span class="n">fuselage</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">nose</span> <span class="o">=</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">fineness</span><span class="o">.</span><span class="n">nose</span><span class="o">*</span><span class="n">cabin_wdith</span>
-    <span class="n">fuselage</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">tail</span> <span class="o">=</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">fineness</span><span class="o">.</span><span class="n">tail</span><span class="o">*</span><span class="n">cabin_wdith</span>  
-
-    <span class="n">fuselage</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">total</span> <span class="o">=</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">nose</span> <span class="o">+</span> <span class="n">fuselage</span><span class="o">.</span><span class="n">lengths</span><span class="o">.</span><span class="n">tail</span> <span class="o">+</span> <span class="n">cabin_length</span>
-    <span class="n">fuselage</span><span class="o">.</span><span class="n">width</span>  <span class="o">=</span> <span class="n">cabin_wdith</span></div>
+    <span class="n">fuselage</span><span class="o">.</span><span class="n">layout_of_passenger_accommodations</span><span class="o">.</span><span class="n">cabin_area_coordinates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">starboard_x_points</span><span class="p">[</span><span class="kc">None</span><span class="p">,:],</span><span class="n">starboard_y_points</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]))</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">fuselage</span><span class="o">.</span><span class="n">layout_of_passenger_accommodations</span><span class="o">.</span><span class="n">cabin_length</span>           <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">starboard_x_points</span><span class="p">)</span>
+    <span class="n">fuselage</span><span class="o">.</span><span class="n">layout_of_passenger_accommodations</span><span class="o">.</span><span class="n">cabin_width</span>            <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="nb">max</span><span class="p">(</span><span class="n">starboard_y_points</span><span class="p">)</span>
+    
+    <span class="k">return</span></div>
 
 
 <div class="viewcode-block" id="create_class_seating_map_layout">
 <a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Methods.Geometry.LOPA.compute_layout_of_passenger_accommodations.html#RCAIDE.Library.Methods.Geometry.LOPA.compute_layout_of_passenger_accommodations.create_class_seating_map_layout">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">create_class_seating_map_layout</span><span class="p">(</span><span class="n">cabin</span><span class="p">,</span><span class="n">cabin_class</span><span class="p">,</span><span class="n">cabin_class_origin</span><span class="p">,</span> <span class="n">side_cabin_offset</span><span class="p">):</span>  
-    
+<span class="k">def</span><span class="w"> </span><span class="nf">create_class_seating_map_layout</span><span class="p">(</span><span class="n">cabin</span><span class="p">,</span><span class="n">cabin_class</span><span class="p">,</span><span class="n">cabin_class_origin</span><span class="p">,</span> <span class="n">side_cabin_offset</span><span class="p">,</span><span class="n">cabin_number_of_seats</span><span class="p">,</span><span class="n">cabin_length</span><span class="p">):</span>
     <span class="n">s_y_coord</span><span class="p">,</span> <span class="n">cabin_class_origin</span> <span class="o">=</span> <span class="n">get_seat_y_coords</span><span class="p">(</span><span class="n">cabin</span><span class="p">,</span> <span class="n">cabin_class</span><span class="p">,</span><span class="n">cabin_class_origin</span><span class="p">)</span>
-    <span class="n">s_x_coord</span><span class="p">,</span><span class="n">object_type</span><span class="p">,</span> <span class="n">cabin_class_origin</span> <span class="o">=</span> <span class="n">get_seat_x_coords</span><span class="p">(</span><span class="n">cabin</span><span class="p">,</span> <span class="n">cabin_class</span><span class="p">,</span><span class="n">cabin_class_origin</span><span class="p">)</span> 
-         
-    <span class="c1"># concatenate arrays </span>
-    <span class="n">length</span>   <span class="o">=</span>  <span class="n">cabin_class</span><span class="o">.</span><span class="n">seat_length</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">s_x_coord</span><span class="p">)</span> 
+    <span class="n">s_x_coord</span><span class="p">,</span><span class="n">object_type</span><span class="p">,</span> <span class="n">cabin_class_origin</span><span class="p">,</span><span class="n">cabin_length</span> <span class="o">=</span> <span class="n">get_seat_x_coords</span><span class="p">(</span><span class="n">cabin</span><span class="p">,</span> <span class="n">cabin_class</span><span class="p">,</span><span class="n">cabin_class_origin</span><span class="p">,</span><span class="n">cabin_length</span><span class="p">)</span>
+    <span class="c1"># concatenate arrays</span>
+    <span class="n">length</span>   <span class="o">=</span>  <span class="n">cabin_class</span><span class="o">.</span><span class="n">seat_length</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">s_x_coord</span><span class="p">)</span>
     <span class="n">length</span><span class="p">[</span><span class="n">object_type</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">cabin</span><span class="o">.</span><span class="n">galley_lavatory_length</span>
     <span class="n">length</span><span class="p">[</span><span class="n">object_type</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">cabin</span><span class="o">.</span><span class="n">type_A_door_length</span>
-    
     <span class="n">X_coords</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">s_x_coord</span><span class="p">[:,</span><span class="kc">None</span><span class="p">],</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s_y_coord</span><span class="p">))))</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span><span class="o">.</span><span class="n">T</span>
     <span class="n">Y_coords</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">s_y_coord</span><span class="p">[</span><span class="kc">None</span><span class="p">,:],</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">s_x_coord</span><span class="p">),</span> <span class="mi">1</span><span class="p">)))</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span><span class="o">.</span><span class="n">T</span>
-    <span class="n">Z_coords</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">Y_coords</span><span class="p">))</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span><span class="o">.</span><span class="n">T</span> 
-    <span class="n">length</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">length</span><span class="p">[:,</span><span class="kc">None</span><span class="p">],</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s_y_coord</span><span class="p">))))</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span><span class="o">.</span><span class="n">T</span> 
-    <span class="n">width</span>      <span class="o">=</span> <span class="n">cabin_class</span><span class="o">.</span><span class="n">seat_width</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">Z_coords</span><span class="p">)</span> 
-    <span class="n">n_rows</span>     <span class="o">=</span> <span class="n">cabin_class</span><span class="o">.</span><span class="n">number_of_rows</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">Z_coords</span><span class="p">)</span> 
-    <span class="n">n_seats_y</span>  <span class="o">=</span> <span class="n">cabin_class</span><span class="o">.</span><span class="n">number_of_seats_abrest</span>  <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">Z_coords</span><span class="p">)</span> 
+    <span class="n">Z_coords</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">Y_coords</span><span class="p">))</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">length</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">length</span><span class="p">[:,</span><span class="kc">None</span><span class="p">],</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s_y_coord</span><span class="p">))))</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">width</span>      <span class="o">=</span> <span class="n">cabin_class</span><span class="o">.</span><span class="n">seat_width</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">Z_coords</span><span class="p">)</span>
+    <span class="n">n_rows</span>     <span class="o">=</span> <span class="n">cabin_class</span><span class="o">.</span><span class="n">number_of_rows</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">Z_coords</span><span class="p">)</span>
+    <span class="n">n_seats_y</span>  <span class="o">=</span> <span class="n">cabin_class</span><span class="o">.</span><span class="n">number_of_seats_abrest</span>  <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">Z_coords</span><span class="p">)</span>
     <span class="n">object_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">object_type</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s_y_coord</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-     
-    <span class="c1"># cabin class flags </span>
+    <span class="c1"># cabin class flags</span>
     <span class="n">F_c</span>  <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">Z_coords</span><span class="p">)</span>
     <span class="n">B_c</span>  <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">Z_coords</span><span class="p">)</span>
-    <span class="n">E_c</span>  <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">Z_coords</span><span class="p">)</span>     
-    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">cabin_class</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Fuselages</span><span class="o">.</span><span class="n">Cabins</span><span class="o">.</span><span class="n">Classes</span><span class="o">.</span><span class="n">First</span><span class="p">:</span> 
-        <span class="n">F_c</span>  <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">Z_coords</span><span class="p">)</span> 
-    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">cabin_class</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Fuselages</span><span class="o">.</span><span class="n">Cabins</span><span class="o">.</span><span class="n">Classes</span><span class="o">.</span><span class="n">Business</span><span class="p">:</span> 
-        <span class="n">B_c</span>  <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">Z_coords</span><span class="p">)</span> 
-    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">cabin_class</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Fuselages</span><span class="o">.</span><span class="n">Cabins</span><span class="o">.</span><span class="n">Classes</span><span class="o">.</span><span class="n">Economy</span><span class="p">:</span> 
-        <span class="n">E_c</span>  <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">Z_coords</span><span class="p">)</span>  
-    
-    <span class="c1"># [n_rows , n_seats_y, x, y, z , length, width, first-cl flag, business-cl flag, economy-cl flag, seat, emergency-row flag, galley/lav flag, type-A exit flag]    </span>
+    <span class="n">E_c</span>  <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">Z_coords</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">cabin_class</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Fuselages</span><span class="o">.</span><span class="n">Cabins</span><span class="o">.</span><span class="n">Classes</span><span class="o">.</span><span class="n">First</span><span class="p">:</span>
+        <span class="n">F_c</span>  <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">Z_coords</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">cabin_class</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Fuselages</span><span class="o">.</span><span class="n">Cabins</span><span class="o">.</span><span class="n">Classes</span><span class="o">.</span><span class="n">Business</span><span class="p">:</span>
+        <span class="n">B_c</span>  <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">Z_coords</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">cabin_class</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Fuselages</span><span class="o">.</span><span class="n">Cabins</span><span class="o">.</span><span class="n">Classes</span><span class="o">.</span><span class="n">Economy</span><span class="p">:</span>
+        <span class="n">E_c</span>  <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">Z_coords</span><span class="p">)</span>
+    <span class="c1"># [n_rows , n_seats_y, x, y, z , length, width, first-cl flag, business-cl flag, economy-cl flag, [seat, emergency-row flag, galley/lav flag, type-A exit flag]]</span>
     <span class="n">seat_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">n_rows</span> <span class="p">,</span> <span class="n">n_seats_y</span><span class="p">,</span> <span class="n">X_coords</span><span class="p">,</span><span class="n">Y_coords</span><span class="p">,</span> <span class="n">Z_coords</span><span class="p">,</span> <span class="n">length</span> <span class="p">,</span><span class="n">width</span><span class="p">,</span><span class="n">F_c</span><span class="p">,</span><span class="n">B_c</span><span class="p">,</span><span class="n">E_c</span><span class="p">,</span><span class="n">object_vec</span><span class="p">))</span>
-     
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">cabin</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Fuselages</span><span class="o">.</span><span class="n">Cabins</span><span class="o">.</span><span class="n">Side_Cabin</span><span class="p">:</span>
-        
         <span class="n">seat_data</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">+=</span> <span class="n">cabin</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="mi">2</span>
-        <span class="n">seat_data</span>  <span class="o">=</span> <span class="n">update_seat_map_layout_using_cabin_taper</span><span class="p">(</span><span class="n">seat_data</span><span class="p">,</span><span class="n">cabin</span><span class="p">)</span> 
-        <span class="n">seat_data</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">+=</span> <span class="n">side_cabin_offset</span>  
-        
+        <span class="n">seat_data</span>  <span class="o">=</span> <span class="n">update_seat_map_layout_using_cabin_taper</span><span class="p">(</span><span class="n">seat_data</span><span class="p">,</span><span class="n">cabin</span><span class="p">)</span>
+        <span class="n">seat_data</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">+=</span> <span class="n">side_cabin_offset</span>  <span class="o">+</span>  <span class="n">cabin_class</span><span class="o">.</span><span class="n">y_offset_distance</span>
         <span class="c1"># make copy about center</span>
         <span class="n">seat_data_</span>        <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">seat_data</span><span class="p">)</span>
-        <span class="n">seat_data_</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span> 
+        <span class="n">seat_data_</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
         <span class="n">seat_data</span>         <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">seat_data</span><span class="p">,</span><span class="n">seat_data_</span><span class="p">))</span>
-        
-    <span class="k">return</span> <span class="n">seat_data</span> <span class="p">,</span><span class="n">cabin_class_origin</span> </div>
+    <span class="n">cabin_class</span><span class="o">.</span><span class="n">number_of_seats</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">seat_data</span><span class="p">[:,</span><span class="mi">10</span><span class="p">]))</span>
+    <span class="n">cabin_number_of_seats</span>       <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">cabin_class</span><span class="o">.</span><span class="n">number_of_seats</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">seat_data</span> <span class="p">,</span><span class="n">cabin_class_origin</span><span class="p">,</span><span class="n">cabin_number_of_seats</span><span class="p">,</span><span class="n">cabin_length</span></div>
 
-
-
-    
-    
 </pre></div>
 
                 </article>
@@ -567,8 +611,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -588,7 +632,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -602,7 +646,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

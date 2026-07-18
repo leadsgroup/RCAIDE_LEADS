@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Methods/Powertrain/Converters/Rotor/Design/procedure_setup';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Methods/Powertrain/Converters/Rotor/Design/procedure_setup.html" />
     <link rel="index" title="Index" href="../../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../../../../_static/language_data.js"></script>
+    <script src="../../../../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -389,9 +408,8 @@
 <span class="c1"># RCAIDE Imports </span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span> 
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w">                                                        </span><span class="kn">import</span> <span class="n">Units</span>  
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Noise.Frequency_Domain_Buildup.Rotor</span><span class="w">                  </span><span class="kn">import</span> <span class="n">compute_rotor_noise</span> 
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Analyses.Process</span><span class="w">                                            </span><span class="kn">import</span> <span class="n">Process</span>   
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Mission.Common</span><span class="w">                                              </span><span class="kn">import</span> <span class="n">Conditions</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Aeroacoustics.Physics_Based_Frequency_Domain.Rotor</span><span class="w">                     </span><span class="kn">import</span> <span class="n">compute_rotor_noise</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Analyses.Process</span><span class="w">                                            </span><span class="kn">import</span> <span class="n">Process</span>    
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Powertrain.Converters.Rotor.compute_rotor_performance</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_rotor_performance</span> 
 
 <span class="c1"># Python package imports   </span>
@@ -629,7 +647,7 @@
     <span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">planet</span><span class="o">.</span><span class="n">true_course</span>                <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">]]])</span>  
     <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span>                            <span class="o">=</span> <span class="n">conditions</span>
      
-    <span class="n">rotor</span><span class="o">.</span><span class="n">append_operating_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">,</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">noise</span><span class="p">)</span>
+    <span class="n">rotor</span><span class="o">.</span><span class="n">append_operating_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">,</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">aeroacoustics</span><span class="p">)</span>
     
     <span class="n">rotor_conditions</span>                            <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">rotor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>     
     <span class="n">rotor_conditions</span><span class="o">.</span><span class="n">omega</span>                      <span class="o">=</span> <span class="p">(</span><span class="n">atmosphere_conditions</span><span class="o">.</span><span class="n">speed_of_sound</span><span class="o">*</span><span class="n">rotor</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_tip_mach</span><span class="p">)</span><span class="o">/</span><span class="n">rotor</span><span class="o">.</span><span class="n">tip_radius</span> 
@@ -653,24 +671,24 @@
     <span class="c1"># microphone locations             </span>
     <span class="n">ctrl_pts</span>                                         <span class="o">=</span> <span class="mi">1</span> 
     <span class="n">theta</span>                                            <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">optimization_parameters</span><span class="o">.</span><span class="n">noise_evaluation_angle</span> 
-    <span class="n">S_hover</span>                                          <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">altitude</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">20</span><span class="o">*</span><span class="n">Units</span><span class="o">.</span><span class="n">feet</span><span class="p">)</span>  
+    <span class="n">S_hover</span>                                          <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">altitude</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">rotor</span><span class="o">.</span><span class="n">optimization_parameters</span><span class="o">.</span><span class="n">noise_evaluation_distance</span><span class="p">)</span>  
     <span class="n">mic_positions_hover</span>                              <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span> <span class="p">,</span> <span class="n">S_hover</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>  <span class="p">,</span><span class="n">S_hover</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)]])</span>      
     
  
     <span class="c1"># Run noise model    </span>
-    <span class="n">conditions</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">relative_microphone_locations</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">mic_positions_hover</span><span class="p">[</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,:,:</span> <span class="p">],</span><span class="mi">1</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">angles</span><span class="o">.</span><span class="n">alpha</span>             <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">ctrl_pts</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span><span class="o">*</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span> 
-    <span class="n">segment</span>                                          <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Mission</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Segment</span><span class="p">()</span> 
-    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span>                         <span class="o">=</span> <span class="n">conditions</span>
-    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">expand_rows</span><span class="p">(</span><span class="n">ctrl_pts</span><span class="p">)</span>  
-    <span class="n">noise</span>                                            <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Noise</span><span class="o">.</span><span class="n">Frequency_Domain_Buildup</span><span class="p">()</span> 
-    <span class="n">settings</span>                                         <span class="o">=</span> <span class="n">noise</span><span class="o">.</span><span class="n">settings</span>   
-    <span class="n">num_mic</span>                                          <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">conditions</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">relative_microphone_locations</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  
-    <span class="n">conditions</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">number_of_microphones</span>           <span class="o">=</span> <span class="n">num_mic</span>   
+    <span class="n">conditions</span><span class="o">.</span><span class="n">aeroacoustics</span><span class="o">.</span><span class="n">relative_microphone_locations</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">mic_positions_hover</span><span class="p">[</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,:,:</span> <span class="p">],</span><span class="mi">1</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">angles</span><span class="o">.</span><span class="n">alpha</span>                     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">ctrl_pts</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span><span class="o">*</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span> 
+    <span class="n">segment</span>                                                  <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Mission</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Segment</span><span class="p">()</span> 
+    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span>                                 <span class="o">=</span> <span class="n">conditions</span>
+    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">expand_rows</span><span class="p">(</span><span class="n">ctrl_pts</span><span class="p">)</span>          
+    <span class="n">aeroacoustics</span>                                            <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Aeroacoustics</span><span class="o">.</span><span class="n">Physics_Based_Frequency_Domain</span><span class="p">()</span> 
+    <span class="n">settings</span>                                                 <span class="o">=</span> <span class="n">aeroacoustics</span><span class="o">.</span><span class="n">settings</span>   
+    <span class="n">num_mic</span>                                                  <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">conditions</span><span class="o">.</span><span class="n">aeroacoustics</span><span class="o">.</span><span class="n">relative_microphone_locations</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  
+    <span class="n">conditions</span><span class="o">.</span><span class="n">aeroacoustics</span><span class="o">.</span><span class="n">number_of_microphones</span>           <span class="o">=</span> <span class="n">num_mic</span>   
     
     <span class="k">if</span> <span class="n">alpha</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span> 
-        <span class="n">compute_rotor_noise</span><span class="p">(</span><span class="n">conditions</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">relative_microphone_locations</span><span class="p">,</span><span class="n">rotor</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">settings</span><span class="p">)</span>    
-        <span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">mean_SPL</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">conditions</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">rotor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">SPL_dBA</span><span class="p">)</span> 
+        <span class="n">compute_rotor_noise</span><span class="p">(</span><span class="n">conditions</span><span class="o">.</span><span class="n">aeroacoustics</span><span class="o">.</span><span class="n">relative_microphone_locations</span><span class="p">,</span><span class="n">rotor</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">settings</span><span class="p">)</span>    
+        <span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">mean_SPL</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">conditions</span><span class="o">.</span><span class="n">aeroacoustics</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">rotor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">SPL_dBA</span><span class="p">)</span> 
     <span class="k">else</span><span class="p">:</span> 
         <span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">mean_SPL</span>   <span class="o">=</span> <span class="mi">0</span>  
 
@@ -704,7 +722,7 @@
     <span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">planet</span><span class="o">.</span><span class="n">true_course</span>                <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">]]])</span> 
     <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span>                            <span class="o">=</span> <span class="n">conditions</span>
      
-    <span class="n">rotor</span><span class="o">.</span><span class="n">append_operating_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">,</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">noise</span><span class="p">)</span>
+    <span class="n">rotor</span><span class="o">.</span><span class="n">append_operating_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">,</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">aeroacoustics</span><span class="p">)</span>
                 
     <span class="n">rotor_conditions</span>                            <span class="o">=</span>  <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">rotor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>     
     <span class="n">rotor_conditions</span><span class="o">.</span><span class="n">omega</span>                      <span class="o">=</span> <span class="p">(</span><span class="n">atmosphere_conditions</span><span class="o">.</span><span class="n">speed_of_sound</span><span class="o">*</span><span class="n">rotor</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_tip_mach</span><span class="p">)</span><span class="o">/</span><span class="n">rotor</span><span class="o">.</span><span class="n">tip_radius</span> 
@@ -753,7 +771,7 @@
         <span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">planet</span><span class="o">.</span><span class="n">true_course</span>                <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">]]])</span> 
         <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span>                            <span class="o">=</span> <span class="n">conditions</span>
           
-        <span class="n">rotor</span><span class="o">.</span><span class="n">append_operating_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">,</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">noise</span><span class="p">)</span>
+        <span class="n">rotor</span><span class="o">.</span><span class="n">append_operating_conditions</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="p">,</span><span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">aeroacoustics</span><span class="p">)</span>
             
         <span class="n">rotor_conditions</span>                            <span class="o">=</span>  <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">rotor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>     
         <span class="n">rotor_conditions</span><span class="o">.</span><span class="n">omega</span>                      <span class="o">=</span> <span class="p">(</span><span class="n">atmosphere_conditions</span><span class="o">.</span><span class="n">speed_of_sound</span><span class="o">*</span><span class="n">rotor</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_tip_mach</span><span class="p">)</span><span class="o">/</span><span class="n">rotor</span><span class="o">.</span><span class="n">tip_radius</span> 
@@ -776,23 +794,23 @@
         <span class="c1"># microphone locations            </span>
         <span class="n">ctrl_pts</span>                                         <span class="o">=</span> <span class="mi">1</span> 
         <span class="n">theta</span>                                            <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">optimization_parameters</span><span class="o">.</span><span class="n">noise_evaluation_angle</span> 
-        <span class="n">S_cruise</span>                                         <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">altitude</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">20</span><span class="o">*</span><span class="n">Units</span><span class="o">.</span><span class="n">feet</span><span class="p">)</span>  
+        <span class="n">S_cruise</span>                                         <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">altitude</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">rotor</span><span class="o">.</span><span class="n">optimization_parameters</span><span class="o">.</span><span class="n">noise_evaluation_distance</span><span class="p">)</span>  
         <span class="n">mic_positions_cruise</span>                             <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span> <span class="p">,</span><span class="n">S_cruise</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>  <span class="p">,</span><span class="n">S_cruise</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)]])</span>      
         
         <span class="c1"># Run noise model  </span>
-        <span class="n">conditions</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">relative_microphone_locations</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">mic_positions_cruise</span><span class="p">[</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,:,:</span> <span class="p">],</span><span class="mi">1</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">angles</span><span class="o">.</span><span class="n">alpha</span>             <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">ctrl_pts</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span><span class="o">*</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span> 
-        <span class="n">segment</span>                                          <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Mission</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Segment</span><span class="p">()</span> 
-        <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span>                         <span class="o">=</span> <span class="n">conditions</span>
-        <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">expand_rows</span><span class="p">(</span><span class="n">ctrl_pts</span><span class="p">)</span>  
-        <span class="n">noise</span>                                            <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Noise</span><span class="o">.</span><span class="n">Frequency_Domain_Buildup</span><span class="p">()</span> 
-        <span class="n">settings</span>                                         <span class="o">=</span> <span class="n">noise</span><span class="o">.</span><span class="n">settings</span>   
-        <span class="n">num_mic</span>                                          <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">conditions</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">relative_microphone_locations</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  
-        <span class="n">conditions</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">number_of_microphones</span>           <span class="o">=</span> <span class="n">num_mic</span>    
+        <span class="n">conditions</span><span class="o">.</span><span class="n">aeroacoustics</span><span class="o">.</span><span class="n">relative_microphone_locations</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">mic_positions_cruise</span><span class="p">[</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,:,:</span> <span class="p">],</span><span class="mi">1</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">conditions</span><span class="o">.</span><span class="n">aerodynamics</span><span class="o">.</span><span class="n">angles</span><span class="o">.</span><span class="n">alpha</span>                     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">ctrl_pts</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span><span class="o">*</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">degrees</span> 
+        <span class="n">segment</span>                                                  <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Mission</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Segment</span><span class="p">()</span> 
+        <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span>                                 <span class="o">=</span> <span class="n">conditions</span>
+        <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">expand_rows</span><span class="p">(</span><span class="n">ctrl_pts</span><span class="p">)</span>          
+        <span class="n">aeroacoustics</span>                                            <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Framework</span><span class="o">.</span><span class="n">Analyses</span><span class="o">.</span><span class="n">Aeroacoustics</span><span class="o">.</span><span class="n">Physics_Based_Frequency_Domain</span><span class="p">()</span> 
+        <span class="n">settings</span>                                                 <span class="o">=</span> <span class="n">aeroacoustics</span><span class="o">.</span><span class="n">settings</span>   
+        <span class="n">num_mic</span>                                                  <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">conditions</span><span class="o">.</span><span class="n">aeroacoustics</span><span class="o">.</span><span class="n">relative_microphone_locations</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  
+        <span class="n">conditions</span><span class="o">.</span><span class="n">aeroacoustics</span><span class="o">.</span><span class="n">number_of_microphones</span>           <span class="o">=</span> <span class="n">num_mic</span>    
         
         <span class="k">if</span> <span class="n">alpha</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span> 
-            <span class="n">compute_rotor_noise</span><span class="p">(</span><span class="n">conditions</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">relative_microphone_locations</span><span class="p">,</span><span class="n">rotor</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">settings</span><span class="p">)</span>  
-            <span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">mean_SPL</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">conditions</span><span class="o">.</span><span class="n">noise</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">rotor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">SPL_dBA</span><span class="p">)</span>   
+            <span class="n">compute_rotor_noise</span><span class="p">(</span><span class="n">conditions</span><span class="o">.</span><span class="n">aeroacoustics</span><span class="o">.</span><span class="n">relative_microphone_locations</span><span class="p">,</span><span class="n">rotor</span><span class="p">,</span><span class="n">segment</span><span class="p">,</span><span class="n">settings</span><span class="p">)</span>  
+            <span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">mean_SPL</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">conditions</span><span class="o">.</span><span class="n">aeroacoustics</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">rotor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">SPL_dBA</span><span class="p">)</span>   
         <span class="k">else</span><span class="p">:</span>
             <span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">mean_SPL</span>   <span class="o">=</span> <span class="mi">0</span>  
             
@@ -827,11 +845,11 @@
     <span class="n">gamma</span>                           <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">optimization_parameters</span><span class="o">.</span><span class="n">multiobjective_acoustic_weight</span>
     <span class="n">ideal_SPL</span>                       <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">optimization_parameters</span><span class="o">.</span><span class="n">ideal_SPL_dBA</span>  
     <span class="n">ideal_efficiency</span>                <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">optimization_parameters</span><span class="o">.</span><span class="n">ideal_efficiency</span>      
-    <span class="n">ideal_FoM</span>                       <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">optimization_parameters</span><span class="o">.</span><span class="n">ideal_figure_of_merit</span>  
+    <span class="n">ideal_FoM</span>                       <span class="o">=</span> <span class="n">rotor</span><span class="o">.</span><span class="n">optimization_parameters</span><span class="o">.</span><span class="n">ideal_figure_of_merit</span>
     <span class="n">print_iter</span>                      <span class="o">=</span> <span class="n">nexus</span><span class="o">.</span><span class="n">print_iterations</span>  
     <span class="n">mean_CL_hover</span>                   <span class="o">=</span> <span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">mean_CL</span>
     <span class="n">omega_hover</span>                     <span class="o">=</span> <span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">omega</span>
-    <span class="n">FM_hover</span>                        <span class="o">=</span> <span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">figure_of_merit</span>  
+    <span class="n">FM_hover</span>                        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">figure_of_merit</span><span class="p">)</span>  
     
     <span class="c1"># q to p ratios </span>
     <span class="n">summary</span>                                 <span class="o">=</span> <span class="n">nexus</span><span class="o">.</span><span class="n">summary</span> 
@@ -889,35 +907,38 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Blade Taper                  : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">summary</span><span class="o">.</span><span class="n">blade_taper_constraint_1</span><span class="p">))</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hover RPM                    : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">omega_hover</span><span class="o">/</span><span class="n">Units</span><span class="o">.</span><span class="n">rpm</span><span class="p">))</span>     
         <span class="k">if</span> <span class="n">rotor</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_thrust</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span> 
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hover Power                  : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">power</span><span class="p">))</span>  
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hover Power Actual          : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">power</span><span class="p">))</span>  
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hover Power Design           : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span> <span class="n">rotor</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_power</span><span class="p">))</span>  
         <span class="k">if</span> <span class="n">rotor</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_power</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span> 
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hover Thrust                 : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">thrust</span><span class="p">))</span>  
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hover Thrust Actual          : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">thrust</span><span class="p">))</span>  
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hover Thrust Design          : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rotor</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_thrust</span><span class="p">))</span>  
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hover Average SPL            : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">mean_SPL</span><span class="p">))</span>    
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hover Tip Mach               : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rotor</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_tip_mach</span><span class="p">))</span> 
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hover Thrust/Power Residual  : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">summary</span><span class="o">.</span><span class="n">hover_thrust_power_residual</span><span class="p">))</span> 
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hover Tip Mach               : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rotor</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_tip_mach</span><span class="p">))</span>  
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hover Figure of Merit        : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">FM_hover</span><span class="p">))</span>  
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hover Max Sectional Cl       : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">summary</span><span class="o">.</span><span class="n">max_sectional_cl_hover</span><span class="p">))</span> 
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hover Blade CL               : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">mean_CL_hover</span><span class="p">))</span>    
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;OEI Thrust                   : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">thrust</span><span class="p">))</span> 
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;OEI Thrust/Power Residual    : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">summary</span><span class="o">.</span><span class="n">OEI_hover_thrust_power_residual</span><span class="p">))</span> 
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;OEI Thrust Actual            : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">thrust</span><span class="p">))</span>  
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;OEI Thrust Design            : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rotor</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_thrust</span><span class="p">))</span>  
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;OEI Tip Mach                 : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rotor_oei</span><span class="o">.</span><span class="n">oei</span><span class="o">.</span><span class="n">design_tip_mach</span><span class="p">))</span>  
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;OEI Collective (deg)         : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rotor_oei</span><span class="o">.</span><span class="n">design_blade_pitch_command</span><span class="o">/</span><span class="n">Units</span><span class="o">.</span><span class="n">degrees</span><span class="p">))</span> 
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;OEI Collective (deg)         : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rotor_oei</span><span class="o">.</span><span class="n">hover</span><span class="o">.</span><span class="n">design_blade_pitch_command</span><span class="o">/</span><span class="n">Units</span><span class="o">.</span><span class="n">degrees</span><span class="p">))</span> 
         <span class="k">if</span> <span class="n">nexus</span><span class="o">.</span><span class="n">prop_rotor_flag</span><span class="p">:</span>    
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cruise RPM                   : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">omega</span><span class="o">/</span><span class="n">Units</span><span class="o">.</span><span class="n">rpm</span><span class="p">))</span>    
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cruise Collective (deg)      : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rotor_cru</span><span class="o">.</span><span class="n">design_blade_pitch_command</span><span class="o">/</span><span class="n">Units</span><span class="o">.</span><span class="n">degrees</span><span class="p">))</span> 
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cruise Collective (deg)      : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rotor_cru</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_blade_pitch_command</span><span class="o">/</span><span class="n">Units</span><span class="o">.</span><span class="n">degrees</span><span class="p">))</span> 
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cruise Average SPL           : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">mean_SPL</span><span class="p">))</span>    
             <span class="k">if</span> <span class="n">rotor_cru</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_thrust</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>  
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cruise Power                 : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">power</span><span class="p">))</span> 
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cruise Power Actual          : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">power</span><span class="p">))</span> 
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cruise Power Design          : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rotor</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_power</span><span class="p">))</span> 
             <span class="k">if</span> <span class="n">rotor_cru</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_power</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>  
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cruise Thrust                : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">thrust</span><span class="p">))</span>   
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cruise Tip Mach              : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rotor_cru</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_tip_mach</span><span class="p">))</span>  
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cruise Thrust/Power Residual : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">summary</span><span class="o">.</span><span class="n">cruise_thrust_power_residual</span><span class="p">))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cruise Thrust Actual         : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">thrust</span><span class="p">))</span>   
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cruise Thrust Design         : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rotor</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_thrust</span><span class="p">))</span>  
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cruise Tip Mach              : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rotor_cru</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">design_tip_mach</span><span class="p">))</span>   
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cruise Efficiency            : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">efficiency</span><span class="p">))</span> 
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cruise Max Sectional Cl      : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">summary</span><span class="o">.</span><span class="n">max_sectional_cl_cruise</span><span class="p">))</span>  
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cruise Blade CL              : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nexus</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">cruise</span><span class="o">.</span><span class="n">mean_CL</span><span class="p">))</span>  
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span> 
 
    
-    <span class="k">return</span> <span class="n">nexus</span>    </div>
+    <span class="k">return</span> <span class="n">nexus</span>  </div>
 
 </pre></div>
 
@@ -948,8 +969,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -969,7 +990,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -983,7 +1004,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

@@ -26,43 +26,50 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../../../../../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Framework/External_Interfaces/OpenVSP/vsp_wing';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Framework/External_Interfaces/OpenVSP/vsp_wing.html" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script src="../../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -88,7 +95,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -185,11 +192,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -202,8 +216,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -295,11 +308,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -312,8 +332,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -393,7 +412,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">RCAIDE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Units</span> <span class="p">,</span> <span class="n">Data</span> 
 <span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Components.Airfoils.Airfoil</span><span class="w"> </span><span class="kn">import</span> <span class="n">Airfoil</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Geometry.Planform</span><span class="w"> </span><span class="kn">import</span> <span class="n">wing_planform</span><span class="p">,</span> <span class="n">wing_segmented_planform</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">RCAIDE.Library.Methods.Geometry.Planform</span><span class="w"> </span><span class="kn">import</span> <span class="n">wing_planform</span> 
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">string</span>
@@ -417,7 +436,7 @@
 <span class="c1"># ----------------------------------------------------------------------------------------------------------------------  </span>
 <div class="viewcode-block" id="read_vsp_wing">
 <a class="viewcode-back" href="../../../../../_autosummary/RCAIDE.Framework.External_Interfaces.OpenVSP.vsp_wing.read_vsp_wing.html#RCAIDE.Framework.External_Interfaces.OpenVSP.vsp_wing.read_vsp_wing">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">read_vsp_wing</span><span class="p">(</span><span class="n">wing_id</span><span class="p">,</span> <span class="n">main_wing_tag</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="n">units_type</span><span class="o">=</span><span class="s1">&#39;SI&#39;</span><span class="p">,</span> <span class="n">write_airfoil_file</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_scaling</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_vsp_wing</span><span class="p">(</span><span class="n">wing_id</span><span class="p">,</span> <span class="n">main_wing_tag</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span><span class="n">blended_wing_body</span> <span class="o">=</span> <span class="kc">False</span> <span class="p">,</span> <span class="n">last_blended_wing_body_center_body_section_index</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="n">units_type</span><span class="o">=</span><span class="s1">&#39;SI&#39;</span><span class="p">,</span> <span class="n">write_airfoil_file</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_scaling</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This reads an OpenVSP wing vehicle geometry and writes it into a RCAIDE wing format.</span>
 
 <span class="sd">    Assumptions:</span>
@@ -473,9 +492,12 @@
         <span class="n">wing</span><span class="o">.</span><span class="n">vertical</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">sign</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">x_rot</span><span class="p">))</span>
         <span class="n">x_rot</span> <span class="o">=</span> <span class="p">(</span><span class="n">sign</span><span class="o">*</span><span class="mi">90</span> <span class="o">-</span> <span class="n">sign</span><span class="o">*</span><span class="n">x_rot</span><span class="p">)</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">deg</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># Instantiate a wing</span>
-        <span class="n">wing</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Wing</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span> 
+        <span class="k">if</span> <span class="n">blended_wing_body</span><span class="p">:</span>
+            <span class="n">wing</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Blended_Wing_Body</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="n">wing</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Wing</span><span class="p">()</span>
+             
         <span class="n">x_rot</span> <span class="o">=</span>  <span class="n">x_rot</span>  <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">deg</span>
 
     <span class="n">y_rot</span> <span class="o">=</span>  <span class="n">y_rot</span>  <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">deg</span>
@@ -493,7 +515,10 @@
         <span class="n">tag</span> <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetGeomName</span><span class="p">(</span><span class="n">wing_id</span><span class="p">)</span>
         <span class="n">tag</span> <span class="o">=</span> <span class="n">tag</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">t_table</span><span class="p">)</span> 
         <span class="k">if</span> <span class="n">main_wing_tag</span> <span class="o">==</span> <span class="n">tag</span><span class="p">:</span>
-            <span class="n">wing</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Main_Wing</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">blended_wing_body</span><span class="p">:</span>
+                <span class="n">wing</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Blended_Wing_Body</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span> 
+                <span class="n">wing</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Main_Wing</span><span class="p">()</span>
         <span class="n">save_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tag</span> <span class="p">)</span>
         <span class="n">wing</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="n">tag</span>
 
@@ -518,9 +543,9 @@
 
     <span class="c1"># Check for symmetry</span>
     <span class="k">if</span> <span class="n">sym_planar</span> <span class="o">==</span> <span class="mf">2.</span> <span class="ow">and</span> <span class="n">sym_origin</span> <span class="o">==</span> <span class="mf">1.</span><span class="p">:</span> <span class="c1">#origin at wing, not vehicle</span>
-        <span class="n">wing</span><span class="o">.</span><span class="n">symmetric</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">xz_plane_symmetric</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">wing</span><span class="o">.</span><span class="n">symmetric</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">xz_plane_symmetric</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="c1">#More top level parameters</span>
     <span class="n">total_proj_span</span>      <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetParmVal</span><span class="p">(</span><span class="n">wing_id</span><span class="p">,</span> <span class="s1">&#39;TotalProjectedSpan&#39;</span><span class="p">,</span> <span class="s1">&#39;WingGeom&#39;</span><span class="p">)</span> <span class="o">*</span> <span class="n">units_factor</span>
@@ -561,8 +586,13 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">segment_num</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
             <span class="c1"># XSec airfoil</span>
             <span class="n">jj</span> <span class="o">=</span> <span class="n">i</span><span class="o">-</span><span class="mi">1</span>  <span class="c1"># Airfoil index i-1 because VSP airfoils and sections are one index off relative to RCAIDE.</span>
-
-            <span class="n">segment</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Segment</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wing</span><span class="p">,</span><span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Blended_Wing_Body</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">last_blended_wing_body_center_body_section_index</span><span class="p">:</span>
+                    <span class="n">segment</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Blended_Wing_Body_Fuselage_Segment</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">segment</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Segment</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">segment</span> <span class="o">=</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Wings</span><span class="o">.</span><span class="n">Segments</span><span class="o">.</span><span class="n">Segment</span><span class="p">()</span>
             <span class="n">segment</span><span class="o">.</span><span class="n">tag</span>                   <span class="o">=</span> <span class="s1">&#39;Section_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
             <span class="n">thick_cord</span>                    <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetParmVal</span><span class="p">(</span><span class="n">wing_id</span><span class="p">,</span> <span class="s1">&#39;ThickChord&#39;</span><span class="p">,</span> <span class="s1">&#39;XSecCurve_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">jj</span><span class="p">))</span>
             <span class="n">segment</span><span class="o">.</span><span class="n">thickness_to_chord</span>    <span class="o">=</span> <span class="n">thick_cord</span>	<span class="c1"># Thick_cord stored for use in airfoil, below.</span>
@@ -571,7 +601,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">segment_root_chord</span>    <span class="o">=</span> <span class="mf">0.0</span>
             <span class="n">segment</span><span class="o">.</span><span class="n">root_chord_percent</span>    <span class="o">=</span> <span class="n">segment_root_chord</span> <span class="o">/</span> <span class="n">root_chord</span>
-            <span class="n">segment</span><span class="o">.</span><span class="n">percent_span_location</span> <span class="o">=</span> <span class="n">proj_span_sum</span> <span class="o">/</span> <span class="p">(</span><span class="n">total_proj_span</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">wing</span><span class="o">.</span><span class="n">symmetric</span><span class="p">))</span>
+            <span class="n">segment</span><span class="o">.</span><span class="n">percent_span_location</span> <span class="o">=</span> <span class="n">proj_span_sum</span> <span class="o">/</span> <span class="p">(</span><span class="n">total_proj_span</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">wing</span><span class="o">.</span><span class="n">xz_plane_symmetric</span><span class="p">))</span>
             <span class="n">segment</span><span class="o">.</span><span class="n">twist</span>                 <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetParmVal</span><span class="p">(</span><span class="n">wing_id</span><span class="p">,</span> <span class="s1">&#39;Twist&#39;</span><span class="p">,</span> <span class="s1">&#39;XSec_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">jj</span><span class="p">))</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">deg</span> <span class="o">+</span>  <span class="n">y_rot</span>
 
             <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
@@ -657,10 +687,8 @@
         <span class="c1"># Chords</span>
         <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span>              <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetParmVal</span><span class="p">(</span><span class="n">wing_id</span><span class="p">,</span> <span class="s1">&#39;Tip_Chord&#39;</span><span class="p">,</span> <span class="s1">&#39;XSec_0&#39;</span><span class="p">)</span> <span class="o">*</span> <span class="n">units_factor</span>
         <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">tip</span>               <span class="o">=</span> <span class="n">tc</span>
-        <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_geometric</span>    <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span> <span class="o">/</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span>
-
-        <span class="c1"># Just double calculate and fix things:</span>
-        <span class="n">wing</span> <span class="o">=</span> <span class="n">wing_segmented_planform</span><span class="p">(</span><span class="n">wing</span><span class="p">)</span>
+        <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_geometric</span>    <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span> <span class="o">/</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span> 
+        <span class="n">wing_planform</span><span class="p">(</span><span class="n">wing</span><span class="p">)</span> 
 
 
     <span class="k">else</span><span class="p">:</span>
@@ -688,11 +716,8 @@
         <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">root</span>           <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetParmVal</span><span class="p">(</span><span class="n">x_sec_1_rc_parm</span><span class="p">)</span><span class="o">*</span> <span class="n">units_factor</span>
         <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">tip</span>            <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetParmVal</span><span class="p">(</span><span class="n">x_sec_1_tc_parm</span><span class="p">)</span> <span class="o">*</span> <span class="n">units_factor</span>
         <span class="n">wing</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">mean_geometric</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">areas</span><span class="o">.</span><span class="n">reference</span> <span class="o">/</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span>
-        <span class="n">wing</span><span class="o">.</span><span class="n">thickness_to_chord</span>    <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetParmVal</span><span class="p">(</span><span class="n">x_sec_1_t_parm</span><span class="p">)</span>
-
-        <span class="c1"># Just double calculate and fix things:</span>
-        <span class="n">wing</span> <span class="o">=</span> <span class="n">wing_planform</span><span class="p">(</span><span class="n">wing</span><span class="p">)</span>
- 
+        <span class="n">wing</span><span class="o">.</span><span class="n">thickness_to_chord</span>    <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetParmVal</span><span class="p">(</span><span class="n">x_sec_1_t_parm</span><span class="p">)</span> 
+        <span class="n">wing_planform</span><span class="p">(</span><span class="n">wing</span><span class="p">)</span> 
 
     <span class="c1"># Twists</span>
     <span class="n">wing</span><span class="o">.</span><span class="n">twists</span><span class="o">.</span><span class="n">root</span>      <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetParmVal</span><span class="p">(</span><span class="n">wing_id</span><span class="p">,</span> <span class="s1">&#39;Twist&#39;</span><span class="p">,</span> <span class="s1">&#39;XSec_0&#39;</span><span class="p">)</span> <span class="o">*</span> <span class="n">Units</span><span class="o">.</span><span class="n">deg</span> <span class="o">+</span>  <span class="n">y_rot</span>
@@ -838,7 +863,7 @@
     <span class="n">wing_x</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">wing_y</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">wing_z</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">symmetric</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">xz_plane_symmetric</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">span</span>   <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span><span class="o">/</span><span class="mf">2.</span> <span class="c1"># span of one side</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">span</span>   <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">spans</span><span class="o">.</span><span class="n">projected</span>
@@ -874,7 +899,7 @@
         <span class="n">x_sec_curves</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;XSecCurve_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i_segs</span><span class="p">))</span>
 
     <span class="c1"># Apply the basic characteristics of the wing to root and tip</span>
-    <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">symmetric</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">xz_plane_symmetric</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
         <span class="n">vsp</span><span class="o">.</span><span class="n">SetParmVal</span><span class="p">(</span> <span class="n">wing_id</span><span class="p">,</span><span class="s1">&#39;Sym_Planar_Flag&#39;</span><span class="p">,</span><span class="s1">&#39;Sym&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">vertical</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">vsp</span><span class="o">.</span><span class="n">SetParmVal</span><span class="p">(</span> <span class="n">wing_id</span><span class="p">,</span><span class="s1">&#39;X_Rel_Rotation&#39;</span><span class="p">,</span><span class="s1">&#39;XForm&#39;</span><span class="p">,</span><span class="mi">90</span><span class="p">)</span>
@@ -925,24 +950,27 @@
 
     <span class="c1"># Note this will fail silently if airfoil is not in correct format</span>
     <span class="c1"># check geometry output</span>
-
     <span class="n">airfoil_vsp_types</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">if</span> <span class="n">n_segments</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> 
+    <span class="k">if</span> <span class="n">n_segments</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_segments</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">airfoil</span> <span class="o">!=</span>  <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">airfoil</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">airfoil</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">Biconvex_Airfoil</span><span class="p">:</span>
                     <span class="n">airfoil_vsp_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vsp</span><span class="o">.</span><span class="n">XS_BICONVEX</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">airfoil</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">NACA_4_Series_Airfoil</span><span class="p">:</span>
+                    <span class="n">airfoil_vsp_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vsp</span><span class="o">.</span><span class="n">XS_FOUR_SERIES</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">airfoil_vsp_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vsp</span><span class="o">.</span><span class="n">XS_FILE_AIRFOIL</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">airfoil_vsp_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vsp</span><span class="o">.</span><span class="n">XS_FILE_AIRFOIL</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">wing</span><span class="o">.</span><span class="n">airfoil</span> <span class="o">!=</span>  <span class="kc">None</span><span class="p">:</span>
+                <span class="n">airfoil_vsp_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vsp</span><span class="o">.</span><span class="n">XS_FOUR_SERIES</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">wing</span><span class="o">.</span><span class="n">airfoil</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">airfoil</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">Biconvex_Airfoil</span><span class="p">:</span>
             <span class="n">airfoil_vsp_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vsp</span><span class="o">.</span><span class="n">XS_BICONVEX</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">airfoil</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">NACA_4_Series_Airfoil</span><span class="p">:</span>
+            <span class="n">airfoil_vsp_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vsp</span><span class="o">.</span><span class="n">XS_FOUR_SERIES</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">airfoil_vsp_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vsp</span><span class="o">.</span><span class="n">XS_FILE_AIRFOIL</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">airfoil_vsp_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">vsp</span><span class="o">.</span><span class="n">XS_FILE_AIRFOIL</span><span class="p">]</span>
+        <span class="n">airfoil_vsp_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">vsp</span><span class="o">.</span><span class="n">XS_FOUR_SERIES</span><span class="p">]</span> 
 
     <span class="k">if</span> <span class="n">n_segments</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">airfoil</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
@@ -950,19 +978,40 @@
             <span class="n">vsp</span><span class="o">.</span><span class="n">ChangeXSecShape</span><span class="p">(</span><span class="n">xsecsurf</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">airfoil_vsp_types</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
             <span class="n">vsp</span><span class="o">.</span><span class="n">ChangeXSecShape</span><span class="p">(</span><span class="n">xsecsurf</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">airfoil_vsp_types</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> 
             <span class="n">xsec1</span> <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetXSec</span><span class="p">(</span><span class="n">xsecsurf</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-            <span class="n">xsec2</span> <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetXSec</span><span class="p">(</span><span class="n">xsecsurf</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">vsp</span><span class="o">.</span><span class="n">ReadFileAirfoil</span><span class="p">(</span><span class="n">xsec1</span><span class="p">,</span><span class="n">wing</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">coordinate_file</span><span class="p">)</span>
-            <span class="n">vsp</span><span class="o">.</span><span class="n">ReadFileAirfoil</span><span class="p">(</span><span class="n">xsec2</span><span class="p">,</span><span class="n">wing</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">coordinate_file</span><span class="p">)</span>
+            <span class="n">xsec2</span> <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetXSec</span><span class="p">(</span><span class="n">xsecsurf</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> 
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">airfoil</span><span class="p">,</span>  <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">NACA_4_Series_Airfoil</span><span class="p">):</span>
+                <span class="n">code</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">NACA_4_Series_code</span>
+                <span class="n">camber</span>     <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">code</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mf">100.0</span>
+                <span class="n">camber_loc</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">code</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mf">10.0</span>
+                <span class="n">tc</span>         <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">code</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span> <span class="o">/</span> <span class="mf">100.0</span>
+                <span class="k">for</span> <span class="n">xsec</span> <span class="ow">in</span> <span class="p">[</span><span class="n">xsec1</span><span class="p">,</span> <span class="n">xsec2</span><span class="p">]:</span>
+                    <span class="n">vsp</span><span class="o">.</span><span class="n">SetParmVal</span><span class="p">(</span><span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecParm</span><span class="p">(</span><span class="n">xsec</span><span class="p">,</span> <span class="s1">&#39;ThickChord&#39;</span><span class="p">),</span> <span class="n">tc</span><span class="p">)</span>
+                    <span class="n">vsp</span><span class="o">.</span><span class="n">SetParmVal</span><span class="p">(</span><span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecParm</span><span class="p">(</span><span class="n">xsec</span><span class="p">,</span> <span class="s1">&#39;Camber&#39;</span><span class="p">),</span> <span class="n">camber</span><span class="p">)</span>
+                    <span class="n">vsp</span><span class="o">.</span><span class="n">SetParmVal</span><span class="p">(</span><span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecParm</span><span class="p">(</span><span class="n">xsec</span><span class="p">,</span> <span class="s1">&#39;CamberLoc&#39;</span><span class="p">),</span> <span class="n">camber_loc</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">vsp</span><span class="o">.</span><span class="n">ReadFileAirfoil</span><span class="p">(</span><span class="n">xsec1</span><span class="p">,</span><span class="n">wing</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">coordinate_file</span><span class="p">)</span>
+                <span class="n">vsp</span><span class="o">.</span><span class="n">ReadFileAirfoil</span><span class="p">(</span><span class="n">xsec2</span><span class="p">,</span><span class="n">wing</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">coordinate_file</span><span class="p">)</span>
             <span class="n">vsp</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">airfoil</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">xsecsurf</span> <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecSurf</span><span class="p">(</span><span class="n">wing_id</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
             <span class="n">vsp</span><span class="o">.</span><span class="n">ChangeXSecShape</span><span class="p">(</span><span class="n">xsecsurf</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">airfoil_vsp_types</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-            <span class="n">vsp</span><span class="o">.</span><span class="n">ChangeXSecShape</span><span class="p">(</span><span class="n">xsecsurf</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">airfoil_vsp_types</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> 
+            <span class="n">vsp</span><span class="o">.</span><span class="n">ChangeXSecShape</span><span class="p">(</span><span class="n">xsecsurf</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">airfoil_vsp_types</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
             <span class="n">xsec1</span> <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetXSec</span><span class="p">(</span><span class="n">xsecsurf</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
             <span class="n">xsec2</span> <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetXSec</span><span class="p">(</span><span class="n">xsecsurf</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">vsp</span><span class="o">.</span><span class="n">ReadFileAirfoil</span><span class="p">(</span><span class="n">xsec1</span><span class="p">,</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">coordinate_file</span><span class="p">)</span>
-            <span class="n">vsp</span><span class="o">.</span><span class="n">ReadFileAirfoil</span><span class="p">(</span><span class="n">xsec2</span><span class="p">,</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">coordinate_file</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">airfoil</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">NACA_4_Series_Airfoil</span><span class="p">):</span>
+                <span class="n">code</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">NACA_4_Series_code</span>
+                <span class="n">camber</span>     <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">code</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mf">100.0</span>
+                <span class="n">camber_loc</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">code</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mf">10.0</span>
+                <span class="n">tc</span>         <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">code</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span> <span class="o">/</span> <span class="mf">100.0</span>
+                <span class="k">for</span> <span class="n">xsec</span> <span class="ow">in</span> <span class="p">[</span><span class="n">xsec1</span><span class="p">,</span> <span class="n">xsec2</span><span class="p">]:</span>
+                    <span class="n">vsp</span><span class="o">.</span><span class="n">SetParmVal</span><span class="p">(</span><span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecParm</span><span class="p">(</span><span class="n">xsec</span><span class="p">,</span> <span class="s1">&#39;ThickChord&#39;</span><span class="p">),</span> <span class="n">tc</span><span class="p">)</span>
+                    <span class="n">vsp</span><span class="o">.</span><span class="n">SetParmVal</span><span class="p">(</span><span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecParm</span><span class="p">(</span><span class="n">xsec</span><span class="p">,</span> <span class="s1">&#39;Camber&#39;</span><span class="p">),</span> <span class="n">camber</span><span class="p">)</span>
+                    <span class="n">vsp</span><span class="o">.</span><span class="n">SetParmVal</span><span class="p">(</span><span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecParm</span><span class="p">(</span><span class="n">xsec</span><span class="p">,</span> <span class="s1">&#39;CamberLoc&#39;</span><span class="p">),</span> <span class="n">camber_loc</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">vsp</span><span class="o">.</span><span class="n">ReadFileAirfoil</span><span class="p">(</span><span class="n">xsec1</span><span class="p">,</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">coordinate_file</span><span class="p">)</span>
+                <span class="n">vsp</span><span class="o">.</span><span class="n">ReadFileAirfoil</span><span class="p">(</span><span class="n">xsec2</span><span class="p">,</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">coordinate_file</span><span class="p">)</span>
             <span class="n">vsp</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
 
     <span class="c1"># Thickness to chords</span>
@@ -992,9 +1041,14 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">adjust</span> <span class="o">=</span> <span class="mi">1</span>
 
-
+    <span class="k">if</span> <span class="n">n_segments</span> <span class="o">&gt;</span>  <span class="mi">0</span><span class="p">:</span>
+        <span class="n">x_sec_id</span>  <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetXSec</span><span class="p">(</span><span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecSurf</span><span class="p">(</span><span class="n">wing_id</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">tc_i</span>         <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">thickness_to_chord</span>
+        <span class="n">tc_parm</span>      <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecParm</span><span class="p">(</span><span class="n">x_sec_id</span><span class="p">,</span> <span class="s1">&#39;ThickChord&#39;</span><span class="p">)</span>     
+        <span class="n">vsp</span><span class="o">.</span><span class="n">SetParmVal</span><span class="p">(</span><span class="n">tc_parm</span><span class="p">,</span> <span class="n">tc_i</span><span class="p">)</span>    
+         
     <span class="c1"># Loop for the number of segments left over</span>
-    <span class="k">for</span> <span class="n">i_segs</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">n_segments</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i_segs</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">n_segments</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span> 
 
         <span class="k">if</span> <span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="n">i_segs</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">==</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span> <span class="ow">and</span> <span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">percent_span_location</span> <span class="o">==</span> <span class="mf">1.</span><span class="p">):</span>
             <span class="k">break</span>
@@ -1008,7 +1062,7 @@
         <span class="k">except</span><span class="p">:</span>
             <span class="n">no_twist_flag</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">sweep_i</span>    <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="n">i_segs</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">quarter_chord</span> <span class="o">/</span> <span class="n">Units</span><span class="o">.</span><span class="n">deg</span>
-        <span class="n">tc_i</span>       <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="n">i_segs</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">thickness_to_chord</span>
+        <span class="n">tc_i</span>       <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="n">i_segs</span><span class="p">]]</span><span class="o">.</span><span class="n">thickness_to_chord</span>
 
         <span class="c1"># Calculate the local span</span>
         <span class="k">if</span> <span class="n">i_segs</span> <span class="o">==</span> <span class="n">n_segments</span><span class="p">:</span>
@@ -1018,26 +1072,33 @@
 
         <span class="c1"># Insert the new wing section with specified airfoil if available</span>
         <span class="k">if</span>  <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="n">i_segs</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">airfoil</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">vsp</span><span class="o">.</span><span class="n">InsertXSec</span><span class="p">(</span><span class="n">wing_id</span><span class="p">,</span><span class="n">i_segs</span><span class="o">-</span><span class="mi">1</span><span class="o">+</span><span class="n">adjust</span><span class="p">,</span><span class="n">airfoil_vsp_types</span><span class="p">[</span><span class="n">i_segs</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> 
+            <span class="n">vsp</span><span class="o">.</span><span class="n">InsertXSec</span><span class="p">(</span><span class="n">wing_id</span><span class="p">,</span><span class="n">i_segs</span><span class="o">-</span><span class="mi">1</span><span class="o">+</span><span class="n">adjust</span><span class="p">,</span><span class="n">airfoil_vsp_types</span><span class="p">[</span><span class="n">i_segs</span><span class="p">])</span>
             <span class="n">xsecsurf</span> <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecSurf</span><span class="p">(</span><span class="n">wing_id</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
             <span class="n">xsec</span> <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetXSec</span><span class="p">(</span><span class="n">xsecsurf</span><span class="p">,</span><span class="n">i_segs</span><span class="o">+</span><span class="n">adjust</span><span class="p">)</span>
-            <span class="n">vsp</span><span class="o">.</span><span class="n">ReadFileAirfoil</span><span class="p">(</span><span class="n">xsec</span><span class="p">,</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="n">i_segs</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">coordinate_file</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="n">i_segs</span><span class="p">]]</span><span class="o">.</span><span class="n">airfoil</span><span class="p">,</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Airfoils</span><span class="o">.</span><span class="n">NACA_4_Series_Airfoil</span><span class="p">):</span>
+                <span class="n">code</span> <span class="o">=</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="n">i_segs</span><span class="p">]]</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">NACA_4_Series_code</span>
+                <span class="n">camber</span>     <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">code</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mf">100.0</span>
+                <span class="n">camber_loc</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">code</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mf">10.0</span>
+                <span class="n">tc</span>         <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">code</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span> <span class="o">/</span> <span class="mf">100.0</span>
+                <span class="n">vsp</span><span class="o">.</span><span class="n">SetParmVal</span><span class="p">(</span><span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecParm</span><span class="p">(</span><span class="n">xsec</span><span class="p">,</span> <span class="s1">&#39;ThickChord&#39;</span><span class="p">),</span> <span class="n">tc</span><span class="p">)</span>
+                <span class="n">vsp</span><span class="o">.</span><span class="n">SetParmVal</span><span class="p">(</span><span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecParm</span><span class="p">(</span><span class="n">xsec</span><span class="p">,</span> <span class="s1">&#39;Camber&#39;</span><span class="p">),</span> <span class="n">camber</span><span class="p">)</span>
+                <span class="n">vsp</span><span class="o">.</span><span class="n">SetParmVal</span><span class="p">(</span><span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecParm</span><span class="p">(</span><span class="n">xsec</span><span class="p">,</span> <span class="s1">&#39;CamberLoc&#39;</span><span class="p">),</span> <span class="n">camber_loc</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">vsp</span><span class="o">.</span><span class="n">ReadFileAirfoil</span><span class="p">(</span><span class="n">xsec</span><span class="p">,</span> <span class="n">wing</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_keys</span><span class="p">[</span><span class="n">i_segs</span><span class="p">]]</span><span class="o">.</span><span class="n">airfoil</span><span class="o">.</span><span class="n">coordinate_file</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">vsp</span><span class="o">.</span><span class="n">InsertXSec</span><span class="p">(</span><span class="n">wing_id</span><span class="p">,</span><span class="n">i_segs</span><span class="o">-</span><span class="mi">1</span><span class="o">+</span><span class="n">adjust</span><span class="p">,</span><span class="n">vsp</span><span class="o">.</span><span class="n">XS_FOUR_SERIES</span><span class="p">)</span>
-
-        <span class="c1"># Set the parms</span>
-
-
+ 
         <span class="c1"># Find the id</span>
         <span class="n">x_sec_id</span>  <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetXSec</span><span class="p">(</span><span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecSurf</span><span class="p">(</span><span class="n">wing_id</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span><span class="n">i_segs</span><span class="o">+</span><span class="n">adjust</span><span class="p">)</span>
 
         <span class="c1"># Find the parm strings</span>
-        <span class="n">span_parm</span>    <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecParm</span><span class="p">(</span><span class="n">x_sec_id</span><span class="p">,</span> <span class="s1">&#39;Span&#39;</span><span class="p">)</span>
-        <span class="n">dih_parm</span>     <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecParm</span><span class="p">(</span><span class="n">x_sec_id</span><span class="p">,</span> <span class="s1">&#39;Dihedral&#39;</span><span class="p">)</span>
-        <span class="n">sweep_parm</span>   <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecParm</span><span class="p">(</span><span class="n">x_sec_id</span><span class="p">,</span> <span class="s1">&#39;Sweep&#39;</span><span class="p">)</span>
-        <span class="n">swp_loc_parm</span> <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecParm</span><span class="p">(</span><span class="n">x_sec_id</span><span class="p">,</span> <span class="s1">&#39;Sweep_Location&#39;</span><span class="p">)</span>
-        <span class="n">rt_ch_parm</span>   <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecParm</span><span class="p">(</span><span class="n">x_sec_id</span><span class="p">,</span> <span class="s1">&#39;Root_Chord&#39;</span><span class="p">)</span>
-        <span class="n">tc_parm</span>      <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecParm</span><span class="p">(</span><span class="n">x_sec_id</span><span class="p">,</span> <span class="s1">&#39;ThickChord&#39;</span><span class="p">)</span>
+        <span class="n">span_parm</span>      <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecParm</span><span class="p">(</span><span class="n">x_sec_id</span><span class="p">,</span> <span class="s1">&#39;Span&#39;</span><span class="p">)</span>
+        <span class="n">dih_parm</span>       <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecParm</span><span class="p">(</span><span class="n">x_sec_id</span><span class="p">,</span> <span class="s1">&#39;Dihedral&#39;</span><span class="p">)</span>
+        <span class="n">sweep_parm</span>     <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecParm</span><span class="p">(</span><span class="n">x_sec_id</span><span class="p">,</span> <span class="s1">&#39;Sweep&#39;</span><span class="p">)</span>
+        <span class="n">swp_loc_parm</span>   <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecParm</span><span class="p">(</span><span class="n">x_sec_id</span><span class="p">,</span> <span class="s1">&#39;Sweep_Location&#39;</span><span class="p">)</span>
+        <span class="n">twist_loc_parm</span> <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecParm</span><span class="p">(</span><span class="n">x_sec_id</span><span class="p">,</span> <span class="s1">&#39;Twist_Location&#39;</span><span class="p">)</span>
+        <span class="n">rt_ch_parm</span>     <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecParm</span><span class="p">(</span><span class="n">x_sec_id</span><span class="p">,</span> <span class="s1">&#39;Root_Chord&#39;</span><span class="p">)</span>
+        <span class="n">tc_parm</span>        <span class="o">=</span> <span class="n">vsp</span><span class="o">.</span><span class="n">GetXSecParm</span><span class="p">(</span><span class="n">x_sec_id</span><span class="p">,</span> <span class="s1">&#39;ThickChord&#39;</span><span class="p">)</span>
 
         <span class="c1"># Set the parm values</span>
         <span class="n">vsp</span><span class="o">.</span><span class="n">SetParmVal</span><span class="p">(</span><span class="n">span_parm</span><span class="p">,</span> <span class="n">span_i</span><span class="p">)</span>
@@ -1045,6 +1106,7 @@
         <span class="n">vsp</span><span class="o">.</span><span class="n">SetParmVal</span><span class="p">(</span><span class="n">swp_loc_parm</span><span class="p">,</span> <span class="n">sweep_loc</span><span class="p">)</span>
         <span class="n">vsp</span><span class="o">.</span><span class="n">SetParmVal</span><span class="p">(</span><span class="n">rt_ch_parm</span><span class="p">,</span> <span class="n">chord_i</span><span class="p">)</span>
         <span class="n">vsp</span><span class="o">.</span><span class="n">SetParmVal</span><span class="p">(</span><span class="n">tc_parm</span><span class="p">,</span> <span class="n">tc_i</span><span class="p">)</span>
+        <span class="n">vsp</span><span class="o">.</span><span class="n">SetParmVal</span><span class="p">(</span><span class="n">twist_loc_parm</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
         
         <span class="c1"># OpenVSP&#39;s rotation on vertical segmented wings is opposite of RCAIDE&#39;s</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">wing</span><span class="o">.</span><span class="n">vertical</span><span class="p">:</span>
@@ -1405,8 +1467,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1426,7 +1488,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -1440,7 +1502,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

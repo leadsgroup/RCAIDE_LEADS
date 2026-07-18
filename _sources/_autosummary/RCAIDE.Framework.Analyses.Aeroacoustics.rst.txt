@@ -1,0 +1,36 @@
+RCAIDE.Framework.Analyses.Aeroacoustics
+
+Aeroacoustics
+=============
+
+.. automodule:: RCAIDE.Framework.Analyses.Aeroacoustics
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   Aeroacoustics
+   Physics_Based_Frequency_Domain
+   Semi_Empirical
+

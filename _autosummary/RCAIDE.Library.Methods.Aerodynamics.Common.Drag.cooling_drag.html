@@ -27,45 +27,54 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=d103512f" />
   
   <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="../_static/documentation_options.js?v=8d563738"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/RCAIDE.Library.Methods.Aerodynamics.Common.Drag.cooling_drag';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_autosummary/RCAIDE.Library.Methods.Aerodynamics.Common.Drag.cooling_drag.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="drag_divergence" href="RCAIDE.Library.Methods.Aerodynamics.Common.Drag.drag_divergence.html" />
+    <link rel="next" title="form_drag" href="RCAIDE.Library.Methods.Aerodynamics.Common.Drag.form_drag.html" />
     <link rel="prev" title="compressible_turbulent_flat_plate" href="RCAIDE.Library.Methods.Aerodynamics.Common.Drag.compressible_turbulent_flat_plate.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -91,7 +100,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -188,11 +197,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -205,8 +221,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -300,11 +315,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -317,8 +339,7 @@
           
           
           
-          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -327,13 +348,22 @@
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
         <div class="sidebar-primary-item">
+
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="RCAIDE.Framework.html">Framework</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Framework.Analyses.html">Analyses</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Aeroacoustics.html">Aeroacoustics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Aerodynamics.html">Aerodynamics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Analysis.html">Analysis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Atmospheric.html">Atmospheric</a></li>
@@ -341,7 +371,7 @@
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Emissions.html">Emissions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Energy.html">Energy</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Geodesics.html">Geodesics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Noise.html">Noise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Geometry.html">Geometry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Planets.html">Planets</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Process.html">Process</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Analyses.Propulsion.html">Propulsion</a></li>
@@ -379,6 +409,7 @@
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel.html">Fuel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Fuel_Cell.html">Fuel_Cell</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hybrid.html">Hybrid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Hydrogen.html">Hydrogen</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Framework.Networks.Network.html">Network</a></li>
 </ul>
 </details></li>
@@ -403,27 +434,27 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Library.Components.html">Components</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Airfoils.html">Airfoils</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Booms.html">Booms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Cargo_Bays.html">Cargo_Bays</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Component.html">Component</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Configs.html">Configs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Fuselages.html">Fuselages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Landing_Gear.html">Landing_Gear</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Mass_Properties.html">Mass_Properties</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Nacelles.html">Nacelles</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Network.html">Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Payloads.html">Payloads</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Powertrain.html">Powertrain</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Thermal_Management.html">Thermal_Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Volume_Properties.html">Volume_Properties</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Components.Wings.html">Wings</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="RCAIDE.Library.Methods.html">Methods</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Aeroacoustics.html">Aeroacoustics</a></li>
 <li class="toctree-l3 current active"><a class="reference internal" href="RCAIDE.Library.Methods.Aerodynamics.html">Aerodynamics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Emissions.html">Emissions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Gas_Dynamics.html">Gas_Dynamics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Geodesics.html">Geodesics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Geometry.html">Geometry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Mass_Properties.html">Mass_Properties</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Noise.html">Noise</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Performance.html">Performance</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Powertrain.html">Powertrain</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Methods.Stability.html">Stability</a></li>
@@ -439,17 +470,18 @@
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="RCAIDE.Library.Plots.html">Plots</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Aeroacoustics.html">Aeroacoustics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Aerodynamics.html">Aerodynamics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Common.html">Common</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Emissions.html">Emissions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Energy.html">Energy</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Geometry.html">Geometry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Mass_Properties.html">Mass_Properties</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Mission.html">Mission</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Noise.html">Noise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Performance.html">Performance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Powertrain.html">Powertrain</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Stability.html">Stability</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Thermal_Management.html">Thermal_Management</a></li>
 <li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Topography.html">Topography</a></li>
-<li class="toctree-l3"><a class="reference internal" href="RCAIDE.Library.Plots.Weights.html">Weights</a></li>
 </ul>
 </details></li>
 </ul>
@@ -538,35 +570,187 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="RCAIDE.Library.Methods.Aerodynamics.Common.Drag.cooling_drag.cooling_drag">
 <span class="sig-name descname"><span class="pre">cooling_drag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RCAIDE/Library/Methods/Aerodynamics/Common/Drag/cooling_drag.html#cooling_drag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RCAIDE.Library.Methods.Aerodynamics.Common.Drag.cooling_drag.cooling_drag" title="Link to this definition">#</a></dt>
-<dd><p>Computes the cooling drag based on the results of the Heat Exchanger operation</p>
-<blockquote>
-<div><dl>
-<dt>Inputs:</dt><dd><dl>
-<dt>state.</dt><dd><dl class="simple">
-<dt>conditions.freestream.</dt><dd><p>density                            [kg/m^3]
-velocity                           [Knots]
-pressure                           [Pascal]</p>
-</dd>
-<dt>energy.coolant_line.heat_exchanger.</dt><dd><p>pressure_differential  [Pascal]
-mass_flow_hex          [kg/s]</p>
+<dd><p>Computes cooling drag coefficient based on heat exchanger operation and air flow through cooling ducts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state</strong> (<a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data"><em>Data</em></a>) – <dl class="simple">
+<dt>Flight conditions and energy state containing:</dt><dd><ul>
+<li><dl class="simple">
+<dt>conditions.freestream.density<span class="classifier">float</span></dt><dd><p>Freestream air density [kg/m³]</p>
 </dd>
 </dl>
-<p>analyses.aerodynamics.vehicle.reference_area           [m^2]</p>
+</li>
+<li><dl class="simple">
+<dt>conditions.freestream.velocity<span class="classifier">float</span></dt><dd><p>Freestream velocity [m/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>conditions.freestream.pressure<span class="classifier">float</span></dt><dd><p>Freestream static pressure [Pa]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>conditions.energy.coolant_lines<span class="classifier">dict</span></dt><dd><dl class="simple">
+<dt>Dictionary of coolant line results indexed by coolant line tag</dt><dd><ul>
+<li><dl class="simple">
+<dt>coolant_line_tag<span class="classifier">dict</span></dt><dd><dl class="simple">
+<dt>Dictionary of heat exchanger results indexed by heat exchanger tag</dt><dd><ul>
+<li><dl class="simple">
+<dt>heat_exchanger_tag<span class="classifier">Data</span></dt><dd><dl class="simple">
+<dt>Heat exchanger operation results containing:</dt><dd><ul>
+<li><dl class="simple">
+<dt>air_mass_flow_rate<span class="classifier">float</span></dt><dd><p>Mass flow rate of air through heat exchanger [kg/s]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>pressure_diff_air<span class="classifier">float</span></dt><dd><p>Pressure differential across heat exchanger [Pa]</p>
+</dd>
+</dl>
+</li>
+</ul>
 </dd>
 </dl>
 </dd>
-<dt>Outputs:</dt><dd><p>cooling_drag                                               [Unitless]</p>
+</dl>
+</li>
+</ul>
 </dd>
 </dl>
-<p>Assumptions:
-The density across the duct is equal to the freestream density of air.
-Inlet area is varied based of required inflow required</p>
-<p>Source:
-Brelje, Benjamin &amp; Jasa, John &amp; Martins, Joaquim &amp; Gray, Justin. (2019).
-Development of a conceptual-level thermal management system design capability in OpenConcept.</p>
-<p>Properties Used:
-None</p>
-</div></blockquote>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>settings</strong> (<em>dict</em>) – Analysis settings and parameters</p></li>
+<li><p><strong>geometry</strong> (<a class="reference internal" href="RCAIDE.Framework.Core.Data.html#RCAIDE.Framework.Core.Data.Data" title="RCAIDE.Framework.Core.Data.Data"><em>Data</em></a>) – <dl class="simple">
+<dt>Vehicle geometry containing:</dt><dd><ul>
+<li><dl class="simple">
+<dt>reference_area<span class="classifier">float</span></dt><dd><p>Reference area for drag coefficient calculation [m²]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>networks<span class="classifier">list</span></dt><dd><dl class="simple">
+<dt>List of propulsion networks containing coolant lines</dt><dd><ul>
+<li><dl class="simple">
+<dt>coolant_lines<span class="classifier">list</span></dt><dd><dl class="simple">
+<dt>List of coolant line objects with heat exchangers</dt><dd><ul>
+<li><dl class="simple">
+<dt>tag<span class="classifier">str</span></dt><dd><p>Unique identifier for the coolant line</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>heat_exchangers<span class="classifier">list</span></dt><dd><dl class="simple">
+<dt>List of heat exchanger objects containing:</dt><dd><ul>
+<li><dl class="simple">
+<dt>tag<span class="classifier">str</span></dt><dd><p>Unique identifier for the heat exchanger</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>atmospheric_air_inlet_to_outlet_area_ratio<span class="classifier">float</span></dt><dd><p>Ratio of inlet to outlet area for atmospheric air [unitless]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>duct_losses<span class="classifier">float</span></dt><dd><p>Duct efficiency factor accounting for losses [unitless]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>minimum_air_speed<span class="classifier">float</span></dt><dd><p>Minimum air speed required for heat exchanger operation [m/s]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Results are stored in state.conditions.aerodynamics.coefficients.drag.cooling.total</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function calculates the drag penalty associated with cooling system operation, including
+the momentum deficit caused by air flow through heat exchangers and the pressure forces
+on duct surfaces. The calculation accounts for variable inlet areas based on required
+cooling flow rates.</p>
+<dl class="simple">
+<dt><strong>Major Assumptions</strong></dt><dd><ul class="simple">
+<li><p>Density across the duct is equal to freestream density</p></li>
+<li><p>Inlet area varies based on required cooling flow rate</p></li>
+<li><p>Duct losses are characterized by a single efficiency factor</p></li>
+<li><p>Heat exchanger operation ceases below minimum air speed</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Theory</strong></p>
+<p>The cooling drag is calculated from momentum and pressure forces:</p>
+<p><span class="math notranslate nohighlight">\(F_{cooling} = \dot{m}_{air}(V_{exit} \eta_{duct} - V_{\infty}) + A_{outlet} \eta_{duct}(P_{exit} - P_{\infty})\)</span></p>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\dot{m}_{air}\)</span> is the air mass flow rate through the heat exchanger [kg/s]</p></li>
+<li><p><span class="math notranslate nohighlight">\(V_{exit}\)</span> is the exit velocity [m/s]</p></li>
+<li><p><span class="math notranslate nohighlight">\(V_{\infty}\)</span> is the freestream velocity [m/s]</p></li>
+<li><p><span class="math notranslate nohighlight">\(\eta_{duct}\)</span> is the duct efficiency factor</p></li>
+<li><p><span class="math notranslate nohighlight">\(A_{outlet}\)</span> is the outlet area [m²]</p></li>
+<li><p><span class="math notranslate nohighlight">\(P_{exit}\)</span> is the exit pressure [Pa]</p></li>
+<li><p><span class="math notranslate nohighlight">\(P_{\infty}\)</span> is the freestream pressure [Pa]</p></li>
+</ul>
+</dd>
+</dl>
+<p>The inlet area is determined from mass flow requirements:</p>
+<p><span class="math notranslate nohighlight">\(A_{inlet} = \frac{\dot{m}_{air}}{\rho_{\infty} V_{\infty}}\)</span></p>
+<p>The exit velocity and pressure are calculated as:</p>
+<p><span class="math notranslate nohighlight">\(V_{exit} = \frac{\dot{m}_{air}}{\rho_{\infty} A_{outlet}}\)</span></p>
+<p><span class="math notranslate nohighlight">\(P_{exit} = \frac{1}{2}\rho_{\infty}[(1+\eta_e)V_{exit}^2 - V_{\infty}^2] + P_{\infty} - \Delta P_{HEX}\)</span></p>
+<p>where <span class="math notranslate nohighlight">\(\eta_e = 0.5(1 - A_{outlet}/A_{inlet})\)</span> is the expansion efficiency.</p>
+<p>The cooling drag coefficient is:</p>
+<p><span class="math notranslate nohighlight">\(C_{D,cooling} = \frac{F_{cooling}}{\frac{1}{2}\rho_{\infty} V_{\infty}^2 S_{ref}}\)</span></p>
+<p><strong>Definitions</strong></p>
+<dl class="simple">
+<dt>‘Cooling Drag’</dt><dd><p>Additional drag caused by the momentum deficit and pressure forces associated with air flow through cooling systems.</p>
+</dd>
+<dt>‘Duct Losses’</dt><dd><p>Efficiency factor accounting for frictional and form losses in the cooling air ductwork.</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] Brelje, B., Jasa, J., Martins, J., &amp; Gray, J. (2019). “Development of a conceptual-level thermal management system design capability in OpenConcept.”</p>
 </dd></dl>
 
 </section>
@@ -591,11 +775,11 @@ None</p>
       </div>
     </a>
     <a class="right-next"
-       href="RCAIDE.Library.Methods.Aerodynamics.Common.Drag.drag_divergence.html"
+       href="RCAIDE.Library.Methods.Aerodynamics.Common.Drag.form_drag.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">drag_divergence</p>
+        <p class="prev-next-title">form_drag</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -616,20 +800,20 @@ None</p>
     class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#RCAIDE.Library.Methods.Aerodynamics.Common.Drag.cooling_drag.cooling_drag"><code class="docutils literal notranslate"><span class="pre">cooling_drag()</span></code></a></li>
 </ul>
   </nav></div>
 
   <div class="sidebar-secondary-item">
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/_autosummary/RCAIDE.Library.Methods.Aerodynamics.Common.Drag.cooling_drag.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div></div>
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/_autosummary/RCAIDE.Library.Methods.Aerodynamics.Common.Drag.cooling_drag.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
 
 </div></div>
               
@@ -644,8 +828,8 @@ None</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -665,7 +849,7 @@ None</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
@@ -679,7 +863,7 @@ None</p>
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>

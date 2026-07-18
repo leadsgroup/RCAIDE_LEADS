@@ -1,0 +1,25 @@
+RCAIDE.Library.Methods.Powertrain.Systems.compute_flight_controls_power_draw
+
+compute\_flight\_controls\_power\_draw
+======================================
+
+.. automodule:: RCAIDE.Library.Methods.Powertrain.Systems.compute_flight_controls_power_draw
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

@@ -1,0 +1,1039 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_CRN_emissions &#8212; RCAIDE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/custom.css?v=d103512f" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../../../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/RCAIDE/Library/Methods/Emissions/Chemical_Reactor_Network_Method/evaluate_CRN_emissions';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://docs.rcaide.leadsresearchgroup.com/_modules/RCAIDE/Library/Methods/Emissions/Chemical_Reactor_Network_Method/evaluate_CRN_emissions.html" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../../../../_static/searchtools.js"></script>
+    <script src="../../../../../../_static/language_data.js"></script>
+    <script src="../../../../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../../_static/leads_logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../../../../_static/leads_logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">RCAIDE</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../quick_start.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../tutorials/tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../contributing.html">
+    Contributing Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/leadsgroup/RCAIDE_LEADS" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_CRN_emissions</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_CRN_emissions</h1><div class="highlight"><pre>
+<span></span><span class="c1"># RCAIDE/Library/Methods/Emissions/Chemical_Reactor_Network_Method/evaluate_CRN_emissions.py</span>
+<span class="c1">#  </span>
+<span class="c1"># Created: Jul 2024, M. Clarke, M. Guidotti</span>
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  IMPORT</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="kn">import</span><span class="w">  </span><span class="nn">RCAIDE</span>
+<span class="kn">from</span><span class="w">    </span><span class="nn">RCAIDE.Framework.Core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
+<span class="kn">from</span><span class="w">    </span><span class="nn">RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_cantera</span><span class="w"> </span><span class="kn">import</span> <span class="n">evaluate_cantera</span> 
+ 
+<span class="c1"># package imports</span>
+<span class="kn">import</span><span class="w">  </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1">#  evaluate_CRN_emission_no_surrogate</span>
+<span class="c1"># ---------------------------------------------------------------------------------------------------------------------- </span>
+<div class="viewcode-block" id="evaluate_CRN_emissions_no_surrogate">
+<a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_CRN_emissions.evaluate_CRN_emissions_no_surrogate.html#RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_CRN_emissions.evaluate_CRN_emissions_no_surrogate">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">evaluate_CRN_emissions_no_surrogate</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">settings</span><span class="p">,</span><span class="n">vehicle</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes emission indices directly using Chemical Reactor Network without surrogate models.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    segment : Data</span>
+<span class="sd">        Mission segment data container</span>
+<span class="sd">            - state : Data</span>
+<span class="sd">                Current state </span>
+<span class="sd">                    - numerics : Data</span>
+<span class="sd">                        Numerical integration parameters</span>
+<span class="sd">                            - time : Data</span>
+<span class="sd">                                Time integration settings</span>
+<span class="sd">                    - conditions : Data</span>
+<span class="sd">                        Flight conditions and component states</span>
+<span class="sd">                    - ones_row : function</span>
+<span class="sd">                        Creates array of ones with specified size</span>
+<span class="sd">                </span>
+<span class="sd">    settings : Data</span>
+<span class="sd">        Configuration settings for the simulation</span>
+<span class="sd">        </span>
+<span class="sd">    vehicle : Data</span>
+<span class="sd">        Vehicle configuration data</span>
+<span class="sd">            - networks : list</span>
+<span class="sd">                List of propulsion system networks</span>
+<span class="sd">                    - fuel_lines : list</span>
+<span class="sd">                        Fuel distribution systems</span>
+<span class="sd">                    - propulsors : list</span>
+<span class="sd">                        Propulsion units </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        Updates segment.state.conditions.emissions with:</span>
+<span class="sd">            total : Data</span>
+<span class="sd">                Total emissions over segment</span>
+<span class="sd">                    - CO2 : float</span>
+<span class="sd">                        Total CO2 emissions [kg]</span>
+<span class="sd">                    - H2O : float</span>
+<span class="sd">                        Total H2O emissions [kg]</span>
+<span class="sd">                    - NOx : float</span>
+<span class="sd">                        Total NOx emissions [kg]</span>
+<span class="sd">            index : Data</span>
+<span class="sd">                Emission indices</span>
+<span class="sd">                    - CO2 : ndarray</span>
+<span class="sd">                        CO2 emission index [kg_CO2/kg_fuel]</span>
+<span class="sd">                    - CO : ndarray</span>
+<span class="sd">                        CO emission index [kg_CO/kg_fuel]</span>
+<span class="sd">                    - H2O : ndarray</span>
+<span class="sd">                        H2O emission index [kg_H2O/kg_fuel]</span>
+<span class="sd">                    - NO : ndarray</span>
+<span class="sd">                        NO emission index [kg_NO/kg_fuel]</span>
+<span class="sd">                    - NO2 : ndarray</span>
+<span class="sd">                        NO2 emission index [kg_NO2/kg_fuel]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Computes emissions by directly evaluating the chemical kinetics at each time step</span>
+<span class="sd">    using Cantera. </span>
+
+<span class="sd">    **Extra modules required**</span>
+<span class="sd">        * numpy</span>
+<span class="sd">        * Cantera (through evaluate_cantera function)</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_cantera </span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Goodwin, D. G., Speth, R. L., Moffat, H. K., &amp; Weber, B. W. (2023). Cantera: An object-oriented software toolkit for chemical kinetics, thermodynamics, and transport processes (Version 3.0.0) [Computer software]. https://www.cantera.org</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+  
+    <span class="c1"># unpack</span>
+    <span class="n">state</span>     <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span>
+    <span class="n">I</span>         <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">numerics</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">integrate</span>
+
+    <span class="n">CO2_total</span>   <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">CO_total</span>    <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">H2O_total</span>   <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">NOx_total</span>   <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">SO2_total</span>   <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">Soot_total</span>  <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">total_gCO2e</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">initials</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">initial_cumulative_gCO2e</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">initials</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">emissions</span><span class="o">.</span><span class="n">cumulative_gCO2e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">initial_cumulative_gCO2e</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+
+    <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">p_i</span> <span class="p">,</span>  <span class="n">propulsor</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">active</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turbofan</span><span class="p">)</span> <span class="ow">or</span> \
+                    <span class="nb">type</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Turboshaft</span> <span class="ow">or</span> \
+                    <span class="nb">type</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turboprop</span> <span class="ow">or</span> \
+                    <span class="nb">type</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turbojet</span><span class="p">:</span>
+
+                    <span class="n">combustor</span> <span class="o">=</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">combustor</span>
+
+                    <span class="c1"># unpack component conditions</span>
+                    <span class="n">n_cp</span>                 <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">numerics</span><span class="o">.</span><span class="n">number_of_control_points</span>
+                    <span class="n">propulsor_conditions</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">propulsors</span><span class="p">[</span><span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
+                    <span class="n">combustor_conditions</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">combustor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
+
+                    <span class="n">T</span>    <span class="o">=</span> <span class="n">combustor_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">stagnation_temperature</span>
+                    <span class="n">P</span>    <span class="o">=</span> <span class="n">combustor_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">stagnation_pressure</span>
+                    <span class="n">mdot</span> <span class="o">=</span> <span class="n">propulsor_conditions</span><span class="o">.</span><span class="n">core_mass_flow_rate</span>
+                    <span class="n">FAR</span>  <span class="o">=</span> <span class="n">combustor_conditions</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">fuel_to_air_ratio</span>
+
+                    <span class="n">mdot_fuel</span> <span class="o">=</span> <span class="n">propulsor_conditions</span><span class="o">.</span><span class="n">fuel_mass_flow_rate</span>
+
+                    <span class="n">EI_CO2_comb</span>    <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">EI_CO_comb</span>     <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">EI_H2O_comb</span>    <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">EI_NOx_comb</span>    <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+                    <span class="n">separate_zones</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">combustor</span><span class="o">.</span><span class="n">joint_mixing_fraction</span> <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">N_SZ</span><span class="p">)</span>
+                    <span class="n">joint_zones</span>    <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">combustor</span><span class="o">.</span><span class="n">joint_mixing_fraction</span><span class="p">)</span> <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">N_SZ</span><span class="p">))</span>
+
+                    <span class="n">combustor_PZ_phi</span>           <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">combustor</span><span class="o">.</span><span class="n">N_PZ</span><span class="p">))</span>  <span class="c1"># [-]</span>
+                    <span class="n">combustor_PZ_T</span>             <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">combustor</span><span class="o">.</span><span class="n">N_PZ</span><span class="p">))</span> <span class="c1"># [K]</span>
+                    <span class="n">combustor_PZ_f_psr</span>         <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">combustor</span><span class="o">.</span><span class="n">N_PZ</span><span class="p">))</span> <span class="c1"># [-]</span>
+                    <span class="n">combustor_PZ_EI_CO2</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">combustor</span><span class="o">.</span><span class="n">N_PZ</span><span class="p">))</span> <span class="c1"># [kg/kg_fuel]</span>
+                    <span class="n">combustor_PZ_EI_CO</span>         <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">combustor</span><span class="o">.</span><span class="n">N_PZ</span><span class="p">))</span> <span class="c1"># [kg/kg_fuel]</span>
+                    <span class="n">combustor_PZ_EI_H2O</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">combustor</span><span class="o">.</span><span class="n">N_PZ</span><span class="p">))</span> <span class="c1"># [kg/kg_fuel]</span>
+                    <span class="n">combustor_PZ_EI_NOx</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">combustor</span><span class="o">.</span><span class="n">N_PZ</span><span class="p">))</span> <span class="c1"># [kg/kg_fuel]</span>
+                    <span class="n">combustor_SZ_sm_z</span>          <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">separate_zones</span><span class="p">))</span> <span class="c1"># [-]</span>
+                    <span class="n">combustor_SZ_sm_phi</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">separate_zones</span><span class="p">))</span> <span class="c1"># [-]</span>
+                    <span class="n">combustor_SZ_sm_T</span>          <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">separate_zones</span><span class="p">))</span> <span class="c1"># [K]</span>
+                    <span class="n">combustor_SZ_sm_EI_CO2</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">separate_zones</span><span class="p">))</span> <span class="c1"># [kg/kg_fuel]</span>
+                    <span class="n">combustor_SZ_sm_EI_CO</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">separate_zones</span><span class="p">))</span> <span class="c1"># [kg/kg_fuel]</span>
+                    <span class="n">combustor_SZ_sm_EI_H2O</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">separate_zones</span><span class="p">))</span> <span class="c1"># [kg/kg_fuel]</span>
+                    <span class="n">combustor_SZ_sm_EI_NOx</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">separate_zones</span><span class="p">))</span> <span class="c1"># [kg/kg_fuel]</span>
+                    <span class="n">combustor_SZ_fm_z</span>          <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">separate_zones</span><span class="p">))</span> <span class="c1"># [-]</span>
+                    <span class="n">combustor_SZ_fm_phi</span>        <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">separate_zones</span><span class="p">))</span> <span class="c1"># [-]</span>
+                    <span class="n">combustor_SZ_fm_T</span>          <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">separate_zones</span><span class="p">))</span> <span class="c1"># [K]</span>
+                    <span class="n">combustor_SZ_fm_EI_CO2</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">separate_zones</span><span class="p">))</span> <span class="c1"># [kg/kg_fuel]</span>
+                    <span class="n">combustor_SZ_fm_EI_CO</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">separate_zones</span><span class="p">))</span> <span class="c1"># [kg/kg_fuel]</span>
+                    <span class="n">combustor_SZ_fm_EI_H2O</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">separate_zones</span><span class="p">))</span> <span class="c1"># [kg/kg_fuel]</span>
+                    <span class="n">combustor_SZ_fm_EI_NOx</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">separate_zones</span><span class="p">))</span> <span class="c1"># [kg/kg_fuel]</span>
+                    <span class="n">combustor_SZ_joint_z</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">joint_zones</span><span class="p">))</span> <span class="c1"># [-]</span>
+                    <span class="n">combustor_SZ_joint_phi</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">joint_zones</span><span class="p">))</span> <span class="c1"># [-]</span>
+                    <span class="n">combustor_SZ_joint_T</span>       <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">joint_zones</span><span class="p">))</span> <span class="c1"># [K]</span>
+                    <span class="n">combustor_SZ_joint_EI_CO2</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">joint_zones</span><span class="p">))</span> <span class="c1"># [kg/kg_fuel]</span>
+                    <span class="n">combustor_SZ_joint_EI_CO</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">joint_zones</span><span class="p">))</span> <span class="c1"># [kg/kg_fuel]</span>
+                    <span class="n">combustor_SZ_joint_EI_H2O</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">joint_zones</span><span class="p">))</span> <span class="c1"># [kg/kg_fuel]</span>
+                    <span class="n">combustor_SZ_joint_EI_NOx</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_cp</span><span class="p">,</span><span class="n">joint_zones</span><span class="p">))</span> <span class="c1"># [kg/kg_fuel]</span>
+
+                    <span class="k">if</span> <span class="n">network</span><span class="o">.</span><span class="n">identical_propulsors</span> <span class="o">==</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">p_i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">EI_CO2_comb</span> <span class="o">=</span> <span class="n">EI_CO2_prev</span>
+                        <span class="n">EI_CO_comb</span>  <span class="o">=</span> <span class="n">EI_CO_prev</span>
+                        <span class="n">EI_H2O_comb</span> <span class="o">=</span> <span class="n">EI_H2O_prev</span>
+                        <span class="n">EI_NOx_comb</span>  <span class="o">=</span> <span class="n">EI_NOx_prev</span>
+
+                        <span class="n">combustor_PZ_phi</span>           <span class="o">=</span> <span class="n">combustor_PZ_phi_prev</span>
+                        <span class="n">combustor_PZ_T</span>             <span class="o">=</span> <span class="n">combustor_PZ_T_prev</span>
+                        <span class="n">combustor_PZ_f_psr</span>         <span class="o">=</span> <span class="n">combustor_PZ_f_psr_prev</span>
+                        <span class="n">combustor_PZ_EI_CO2</span>        <span class="o">=</span> <span class="n">combustor_PZ_EI_CO2_prev</span>
+                        <span class="n">combustor_PZ_EI_CO</span>         <span class="o">=</span> <span class="n">combustor_PZ_EI_CO_prev</span>
+                        <span class="n">combustor_PZ_EI_H2O</span>        <span class="o">=</span> <span class="n">combustor_PZ_EI_H2O_prev</span>
+                        <span class="n">combustor_PZ_EI_NOx</span>        <span class="o">=</span> <span class="n">combustor_PZ_EI_NOx_prev</span>
+                        <span class="n">combustor_SZ_sm_z</span>          <span class="o">=</span> <span class="n">combustor_SZ_sm_z_prev</span>
+                        <span class="n">combustor_SZ_sm_phi</span>        <span class="o">=</span> <span class="n">combustor_SZ_sm_phi_prev</span>
+                        <span class="n">combustor_SZ_sm_T</span>          <span class="o">=</span> <span class="n">combustor_SZ_sm_T_prev</span>
+                        <span class="n">combustor_SZ_sm_EI_CO2</span>     <span class="o">=</span> <span class="n">combustor_SZ_sm_EI_CO2_prev</span>
+                        <span class="n">combustor_SZ_sm_EI_CO</span>      <span class="o">=</span> <span class="n">combustor_SZ_sm_EI_CO_prev</span>
+                        <span class="n">combustor_SZ_sm_EI_H2O</span>     <span class="o">=</span> <span class="n">combustor_SZ_sm_EI_H2O_prev</span>
+                        <span class="n">combustor_SZ_sm_EI_NOx</span>     <span class="o">=</span> <span class="n">combustor_SZ_sm_EI_NOx_prev</span>
+                        <span class="n">combustor_SZ_fm_z</span>          <span class="o">=</span> <span class="n">combustor_SZ_fm_z_prev</span>
+                        <span class="n">combustor_SZ_fm_phi</span>        <span class="o">=</span> <span class="n">combustor_SZ_fm_phi_prev</span>
+                        <span class="n">combustor_SZ_fm_T</span>          <span class="o">=</span> <span class="n">combustor_SZ_fm_T_prev</span>
+                        <span class="n">combustor_SZ_fm_EI_CO2</span>     <span class="o">=</span> <span class="n">combustor_SZ_fm_EI_CO2_prev</span>
+                        <span class="n">combustor_SZ_fm_EI_CO</span>      <span class="o">=</span> <span class="n">combustor_SZ_fm_EI_CO_prev</span>
+                        <span class="n">combustor_SZ_fm_EI_H2O</span>     <span class="o">=</span> <span class="n">combustor_SZ_fm_EI_H2O_prev</span>
+                        <span class="n">combustor_SZ_fm_EI_NOx</span>     <span class="o">=</span> <span class="n">combustor_SZ_fm_EI_NOx_prev</span>
+                        <span class="n">combustor_SZ_joint_z</span>       <span class="o">=</span> <span class="n">combustor_SZ_joint_z_prev</span>
+                        <span class="n">combustor_SZ_joint_phi</span>     <span class="o">=</span> <span class="n">combustor_SZ_joint_phi_prev</span>
+                        <span class="n">combustor_SZ_joint_T</span>       <span class="o">=</span> <span class="n">combustor_SZ_joint_T_prev</span>
+                        <span class="n">combustor_SZ_joint_EI_CO2</span>  <span class="o">=</span> <span class="n">combustor_SZ_joint_EI_CO2_prev</span>
+                        <span class="n">combustor_SZ_joint_EI_CO</span>   <span class="o">=</span> <span class="n">combustor_SZ_joint_EI_CO_prev</span>
+                        <span class="n">combustor_SZ_joint_EI_H2O</span>  <span class="o">=</span> <span class="n">combustor_SZ_joint_EI_H2O_prev</span>
+                        <span class="n">combustor_SZ_joint_EI_NOx</span>  <span class="o">=</span> <span class="n">combustor_SZ_joint_EI_NOx_prev</span>
+
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">t_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_cp</span><span class="p">):</span>
+                            <span class="c1"># Call cantera</span>
+                            <span class="n">results</span> <span class="o">=</span> <span class="n">evaluate_cantera</span><span class="p">(</span><span class="n">combustor</span><span class="p">,</span><span class="n">T</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">P</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">mdot</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">FAR</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+
+                            <span class="n">EI_CO2_comb</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>                <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">final</span><span class="o">.</span><span class="n">EI</span><span class="o">.</span><span class="n">CO2</span>
+                            <span class="n">EI_CO_comb</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>                 <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">final</span><span class="o">.</span><span class="n">EI</span><span class="o">.</span><span class="n">CO</span>
+                            <span class="n">EI_H2O_comb</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>                <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">final</span><span class="o">.</span><span class="n">EI</span><span class="o">.</span><span class="n">H2O</span>
+                            <span class="n">EI_NOx_comb</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>                <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">final</span><span class="o">.</span><span class="n">EI</span><span class="o">.</span><span class="n">NOx</span>
+                            <span class="n">combustor_PZ_phi</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>           <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">PZ</span><span class="o">.</span><span class="n">phi</span>
+                            <span class="n">combustor_PZ_T</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>             <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">PZ</span><span class="o">.</span><span class="n">T</span>
+                            <span class="n">combustor_PZ_f_psr</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>         <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">PZ</span><span class="o">.</span><span class="n">f_psr</span>
+                            <span class="n">combustor_PZ_EI_CO2</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>        <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">PZ</span><span class="o">.</span><span class="n">EI</span><span class="o">.</span><span class="n">CO2</span>
+                            <span class="n">combustor_PZ_EI_CO</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>         <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">PZ</span><span class="o">.</span><span class="n">EI</span><span class="o">.</span><span class="n">CO</span>
+                            <span class="n">combustor_PZ_EI_H2O</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>        <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">PZ</span><span class="o">.</span><span class="n">EI</span><span class="o">.</span><span class="n">H2O</span>
+                            <span class="n">combustor_PZ_EI_NOx</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>        <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">PZ</span><span class="o">.</span><span class="n">EI</span><span class="o">.</span><span class="n">NOx</span>
+                            <span class="n">combustor_SZ_sm_z</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>          <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">z</span>
+                            <span class="n">combustor_SZ_sm_phi</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>        <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">phi</span>
+                            <span class="n">combustor_SZ_sm_T</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>          <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">T</span>
+                            <span class="n">combustor_SZ_sm_EI_CO2</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>     <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">EI</span><span class="o">.</span><span class="n">CO2</span>
+                            <span class="n">combustor_SZ_sm_EI_CO</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>      <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">EI</span><span class="o">.</span><span class="n">CO</span>
+                            <span class="n">combustor_SZ_sm_EI_H2O</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>     <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">EI</span><span class="o">.</span><span class="n">H2O</span>
+                            <span class="n">combustor_SZ_sm_EI_NOx</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>     <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">sm</span><span class="o">.</span><span class="n">EI</span><span class="o">.</span><span class="n">NOx</span>
+                            <span class="n">combustor_SZ_fm_z</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>          <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">fm</span><span class="o">.</span><span class="n">z</span>
+                            <span class="n">combustor_SZ_fm_phi</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>        <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">fm</span><span class="o">.</span><span class="n">phi</span>
+                            <span class="n">combustor_SZ_fm_T</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>          <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">fm</span><span class="o">.</span><span class="n">T</span>
+                            <span class="n">combustor_SZ_fm_EI_CO2</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>     <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">fm</span><span class="o">.</span><span class="n">EI</span><span class="o">.</span><span class="n">CO2</span>
+                            <span class="n">combustor_SZ_fm_EI_CO</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>      <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">fm</span><span class="o">.</span><span class="n">EI</span><span class="o">.</span><span class="n">CO</span>
+                            <span class="n">combustor_SZ_fm_EI_H2O</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>     <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">fm</span><span class="o">.</span><span class="n">EI</span><span class="o">.</span><span class="n">H2O</span>
+                            <span class="n">combustor_SZ_fm_EI_NOx</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>     <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">fm</span><span class="o">.</span><span class="n">EI</span><span class="o">.</span><span class="n">NOx</span>
+                            <span class="n">combustor_SZ_joint_z</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>       <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">joint</span><span class="o">.</span><span class="n">z</span>
+                            <span class="n">combustor_SZ_joint_phi</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>     <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">joint</span><span class="o">.</span><span class="n">phi</span>
+                            <span class="n">combustor_SZ_joint_T</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>       <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">joint</span><span class="o">.</span><span class="n">T</span>
+                            <span class="n">combustor_SZ_joint_EI_CO2</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>  <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">joint</span><span class="o">.</span><span class="n">EI</span><span class="o">.</span><span class="n">CO2</span>
+                            <span class="n">combustor_SZ_joint_EI_CO</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>   <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">joint</span><span class="o">.</span><span class="n">EI</span><span class="o">.</span><span class="n">CO</span>
+                            <span class="n">combustor_SZ_joint_EI_H2O</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>  <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">joint</span><span class="o">.</span><span class="n">EI</span><span class="o">.</span><span class="n">H2O</span>
+                            <span class="n">combustor_SZ_joint_EI_NOx</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,:]</span>  <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">joint</span><span class="o">.</span><span class="n">EI</span><span class="o">.</span><span class="n">NOx</span>
+
+                            <span class="n">EI_CO2_prev</span>                     <span class="o">=</span> <span class="n">EI_CO2_comb</span>
+                            <span class="n">EI_CO_prev</span>                      <span class="o">=</span> <span class="n">EI_CO_comb</span>
+                            <span class="n">EI_H2O_prev</span>                     <span class="o">=</span> <span class="n">EI_H2O_comb</span>
+                            <span class="n">EI_NOx_prev</span>                     <span class="o">=</span> <span class="n">EI_NOx_comb</span>
+                            <span class="n">combustor_PZ_phi_prev</span>           <span class="o">=</span> <span class="n">combustor_PZ_phi</span>
+                            <span class="n">combustor_PZ_T_prev</span>             <span class="o">=</span> <span class="n">combustor_PZ_T</span>
+                            <span class="n">combustor_PZ_f_psr_prev</span>         <span class="o">=</span> <span class="n">combustor_PZ_f_psr</span>
+                            <span class="n">combustor_PZ_EI_CO2_prev</span>        <span class="o">=</span> <span class="n">combustor_PZ_EI_CO2</span>
+                            <span class="n">combustor_PZ_EI_CO_prev</span>         <span class="o">=</span> <span class="n">combustor_PZ_EI_CO</span>
+                            <span class="n">combustor_PZ_EI_H2O_prev</span>        <span class="o">=</span> <span class="n">combustor_PZ_EI_H2O</span>
+                            <span class="n">combustor_PZ_EI_NOx_prev</span>        <span class="o">=</span> <span class="n">combustor_PZ_EI_NOx</span>
+                            <span class="n">combustor_SZ_sm_z_prev</span>          <span class="o">=</span> <span class="n">combustor_SZ_sm_z</span>
+                            <span class="n">combustor_SZ_sm_phi_prev</span>        <span class="o">=</span> <span class="n">combustor_SZ_sm_phi</span>
+                            <span class="n">combustor_SZ_sm_T_prev</span>          <span class="o">=</span> <span class="n">combustor_SZ_sm_T</span>
+                            <span class="n">combustor_SZ_sm_EI_CO2_prev</span>     <span class="o">=</span> <span class="n">combustor_SZ_sm_EI_CO2</span>
+                            <span class="n">combustor_SZ_sm_EI_CO_prev</span>      <span class="o">=</span> <span class="n">combustor_SZ_sm_EI_CO</span>
+                            <span class="n">combustor_SZ_sm_EI_H2O_prev</span>     <span class="o">=</span> <span class="n">combustor_SZ_sm_EI_H2O</span>
+                            <span class="n">combustor_SZ_sm_EI_NOx_prev</span>     <span class="o">=</span> <span class="n">combustor_SZ_sm_EI_NOx</span>
+                            <span class="n">combustor_SZ_fm_z_prev</span>          <span class="o">=</span> <span class="n">combustor_SZ_fm_z</span>
+                            <span class="n">combustor_SZ_fm_phi_prev</span>        <span class="o">=</span> <span class="n">combustor_SZ_fm_phi</span>
+                            <span class="n">combustor_SZ_fm_T_prev</span>          <span class="o">=</span> <span class="n">combustor_SZ_fm_T</span>
+                            <span class="n">combustor_SZ_fm_EI_CO2_prev</span>     <span class="o">=</span> <span class="n">combustor_SZ_fm_EI_CO2</span>
+                            <span class="n">combustor_SZ_fm_EI_CO_prev</span>      <span class="o">=</span> <span class="n">combustor_SZ_fm_EI_CO</span>
+                            <span class="n">combustor_SZ_fm_EI_H2O_prev</span>     <span class="o">=</span> <span class="n">combustor_SZ_fm_EI_H2O</span>
+                            <span class="n">combustor_SZ_fm_EI_NOx_prev</span>     <span class="o">=</span> <span class="n">combustor_SZ_fm_EI_NOx</span>
+                            <span class="n">combustor_SZ_joint_z_prev</span>       <span class="o">=</span> <span class="n">combustor_SZ_joint_z</span>
+                            <span class="n">combustor_SZ_joint_phi_prev</span>     <span class="o">=</span> <span class="n">combustor_SZ_joint_phi</span>
+                            <span class="n">combustor_SZ_joint_T_prev</span>       <span class="o">=</span> <span class="n">combustor_SZ_joint_T</span>
+                            <span class="n">combustor_SZ_joint_EI_CO2_prev</span>  <span class="o">=</span> <span class="n">combustor_SZ_joint_EI_CO2</span>
+                            <span class="n">combustor_SZ_joint_EI_CO_prev</span>   <span class="o">=</span> <span class="n">combustor_SZ_joint_EI_CO</span>
+                            <span class="n">combustor_SZ_joint_EI_H2O_prev</span>  <span class="o">=</span> <span class="n">combustor_SZ_joint_EI_H2O</span>
+                            <span class="n">combustor_SZ_joint_EI_NOx_prev</span>  <span class="o">=</span> <span class="n">combustor_SZ_joint_EI_NOx</span>
+
+                    <span class="c1"># Per-propulsor segment integrals (avoids GWP double-count on multi-engine)</span>
+                    <span class="n">CO2_seg</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="n">mdot_fuel</span> <span class="o">*</span> <span class="n">EI_CO2_comb</span><span class="p">)</span>
+                    <span class="n">CO_seg</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="n">mdot_fuel</span> <span class="o">*</span> <span class="n">EI_CO_comb</span><span class="p">)</span>
+                    <span class="n">H2O_seg</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="n">mdot_fuel</span> <span class="o">*</span> <span class="n">EI_H2O_comb</span><span class="p">)</span>
+                    <span class="n">NOx_seg</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="n">mdot_fuel</span> <span class="o">*</span> <span class="n">EI_NOx_comb</span><span class="p">)</span>
+                    <span class="n">SO2_seg</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="n">mdot_fuel</span> <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">SO2</span><span class="p">)</span>
+                    <span class="n">Soot_seg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="n">mdot_fuel</span> <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">Soot</span><span class="p">)</span>
+
+                    <span class="n">CO2_total</span>  <span class="o">+=</span> <span class="n">CO2_seg</span>
+                    <span class="n">CO_total</span>   <span class="o">+=</span> <span class="n">CO_seg</span>
+                    <span class="n">H2O_total</span>  <span class="o">+=</span> <span class="n">H2O_seg</span>
+                    <span class="n">NOx_total</span>  <span class="o">+=</span> <span class="n">NOx_seg</span>
+                    <span class="n">SO2_total</span>  <span class="o">+=</span> <span class="n">SO2_seg</span>
+                    <span class="n">Soot_total</span> <span class="o">+=</span> <span class="n">Soot_seg</span>
+
+                    <span class="n">total_gCO2e</span> <span class="o">+=</span> <span class="n">CO2_seg</span>  <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">CO2</span>  <span class="o">+</span> \
+                                   <span class="n">CO_seg</span>   <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">CO</span>   <span class="o">+</span> \
+                                   <span class="n">H2O_seg</span>  <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">H2O</span>  <span class="o">+</span> \
+                                   <span class="n">NOx_seg</span>  <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">NOx</span>  <span class="o">+</span> \
+                                   <span class="n">SO2_seg</span>  <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">SO2</span>  <span class="o">+</span> \
+                                   <span class="n">Soot_seg</span> <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">Soot</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Contrails (Schmidt-Appleman altitude threshold ~8,000 m)</span>
+    <span class="c1"># Only accumulate range flown above threshold; below that, temperatures</span>
+    <span class="c1"># are too warm for persistent ice-crystal formation.</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">flight_altitude</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">altitude</span>
+    <span class="n">flight_range</span>    <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">inertial</span><span class="o">.</span><span class="n">aircraft_range</span>
+    <span class="n">contrail_altitude_threshold</span> <span class="o">=</span> <span class="mf">8000.0</span>   <span class="c1"># metres (~26,247 ft)</span>
+    <span class="n">range_above</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">flight_altitude</span> <span class="o">&gt;=</span> <span class="n">contrail_altitude_threshold</span><span class="p">,</span> <span class="n">flight_range</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">Contrails_total</span> <span class="o">=</span> <span class="p">(</span><span class="n">range_above</span> <span class="o">-</span> <span class="n">range_above</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mf">1000.0</span>   <span class="c1"># m → km</span>
+
+    <span class="c1"># kg CO2e  (GWP_contrails units: kg CO2e / km)</span>
+    <span class="n">total_gCO2e</span> <span class="o">+=</span> <span class="n">Contrails_total</span> <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">Contrails</span>
+
+    <span class="n">emissions</span>                        <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">GWP_100</span>                <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">mass</span>                   <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span>                  <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">gCO2e</span>                  <span class="o">=</span> <span class="n">total_gCO2e</span> <span class="o">*</span> <span class="mi">1000</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">cumulative_gCO2e</span>       <span class="o">=</span> <span class="n">initial_cumulative_gCO2e</span> <span class="o">+</span> <span class="n">total_gCO2e</span> <span class="o">*</span> <span class="mi">1000</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">mass</span><span class="o">.</span><span class="n">CO2</span>               <span class="o">=</span> <span class="n">CO2_total</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">mass</span><span class="o">.</span><span class="n">CO</span>                <span class="o">=</span> <span class="n">CO_total</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">mass</span><span class="o">.</span><span class="n">H2O</span>               <span class="o">=</span> <span class="n">H2O_total</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">mass</span><span class="o">.</span><span class="n">NOx</span>               <span class="o">=</span> <span class="n">NOx_total</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">mass</span><span class="o">.</span><span class="n">SO2</span>               <span class="o">=</span> <span class="n">SO2_total</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">mass</span><span class="o">.</span><span class="n">Soot</span>              <span class="o">=</span> <span class="n">Soot_total</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">mass</span><span class="o">.</span><span class="n">Contrails</span>         <span class="o">=</span> <span class="n">Contrails_total</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">GWP_100</span><span class="o">.</span><span class="n">CO2</span>            <span class="o">=</span> <span class="n">CO2_total</span> <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">CO2</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">GWP_100</span><span class="o">.</span><span class="n">CO</span>             <span class="o">=</span> <span class="n">CO_total</span>  <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">CO</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">GWP_100</span><span class="o">.</span><span class="n">H2O</span>            <span class="o">=</span> <span class="n">H2O_total</span> <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">H2O</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">GWP_100</span><span class="o">.</span><span class="n">NOx</span>            <span class="o">=</span> <span class="n">NOx_total</span> <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">NOx</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">CO2</span>              <span class="o">=</span> <span class="n">EI_CO2_comb</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">CO</span>               <span class="o">=</span> <span class="n">EI_CO_comb</span> 
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">H2O</span>              <span class="o">=</span> <span class="n">EI_H2O_comb</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">NOx</span>              <span class="o">=</span> <span class="n">EI_NOx_comb</span> 
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">PZ_phi</span>           <span class="o">=</span> <span class="n">combustor_PZ_phi</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">PZ_T</span>             <span class="o">=</span> <span class="n">combustor_PZ_T</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">PZ_f_psr</span>         <span class="o">=</span> <span class="n">combustor_PZ_f_psr</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">PZ_EI_CO2</span>        <span class="o">=</span> <span class="n">combustor_PZ_EI_CO2</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">PZ_EI_CO</span>         <span class="o">=</span> <span class="n">combustor_PZ_EI_CO</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">PZ_EI_H2O</span>        <span class="o">=</span> <span class="n">combustor_PZ_EI_H2O</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">PZ_EI_NOx</span>        <span class="o">=</span> <span class="n">combustor_PZ_EI_NOx</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">SZ_sm_z</span>          <span class="o">=</span> <span class="n">combustor_SZ_sm_z</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">SZ_sm_phi</span>        <span class="o">=</span> <span class="n">combustor_SZ_sm_phi</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">SZ_sm_T</span>          <span class="o">=</span> <span class="n">combustor_SZ_sm_T</span>   
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">SZ_sm_EI_CO2</span>     <span class="o">=</span> <span class="n">combustor_SZ_sm_EI_CO2</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">SZ_sm_EI_CO</span>      <span class="o">=</span> <span class="n">combustor_SZ_sm_EI_CO</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">SZ_sm_EI_H2O</span>     <span class="o">=</span> <span class="n">combustor_SZ_sm_EI_H2O</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">SZ_sm_EI_NOx</span>     <span class="o">=</span> <span class="n">combustor_SZ_sm_EI_NOx</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">SZ_fm_z</span>          <span class="o">=</span> <span class="n">combustor_SZ_fm_z</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">SZ_fm_phi</span>        <span class="o">=</span> <span class="n">combustor_SZ_fm_phi</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">SZ_fm_T</span>          <span class="o">=</span> <span class="n">combustor_SZ_fm_T</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">SZ_fm_EI_CO2</span>     <span class="o">=</span> <span class="n">combustor_SZ_fm_EI_CO2</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">SZ_fm_EI_CO</span>      <span class="o">=</span> <span class="n">combustor_SZ_fm_EI_CO</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">SZ_fm_EI_H2O</span>     <span class="o">=</span> <span class="n">combustor_SZ_fm_EI_H2O</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">SZ_fm_EI_NOx</span>     <span class="o">=</span> <span class="n">combustor_SZ_fm_EI_NOx</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">SZ_joint_z</span>       <span class="o">=</span> <span class="n">combustor_SZ_joint_z</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">SZ_joint_phi</span>     <span class="o">=</span> <span class="n">combustor_SZ_joint_phi</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">SZ_joint_T</span>       <span class="o">=</span> <span class="n">combustor_SZ_joint_T</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">SZ_joint_EI_CO2</span>  <span class="o">=</span> <span class="n">combustor_SZ_joint_EI_CO2</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">SZ_joint_EI_CO</span>   <span class="o">=</span> <span class="n">combustor_SZ_joint_EI_CO</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">SZ_joint_EI_H2O</span>  <span class="o">=</span> <span class="n">combustor_SZ_joint_EI_H2O</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">SZ_joint_EI_NOx</span>  <span class="o">=</span> <span class="n">combustor_SZ_joint_EI_NOx</span>
+        
+    <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">emissions</span> <span class="o">=</span>  <span class="n">emissions</span>
+    <span class="k">return</span>   </div>
+
+    
+
+<div class="viewcode-block" id="evaluate_CRN_emissions_surrogate">
+<a class="viewcode-back" href="../../../../../../_autosummary/RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_CRN_emissions.evaluate_CRN_emissions_surrogate.html#RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_CRN_emissions.evaluate_CRN_emissions_surrogate">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">evaluate_CRN_emissions_surrogate</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span><span class="n">settings</span><span class="p">,</span><span class="n">vehicle</span><span class="p">):</span> 
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes emission indices using pre-trained Chemical Reactor Network surrogate models.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    segment : Data</span>
+<span class="sd">        Mission segment data container</span>
+<span class="sd">        </span>
+<span class="sd">        - state : Data</span>
+<span class="sd">            Current state of the system</span>
+
+<span class="sd">            - numerics : Data</span>
+<span class="sd">                Numerical integration parameters</span>
+<span class="sd">            - conditions : Data</span>
+<span class="sd">                Flight conditions and component states</span>
+<span class="sd">        - analyses : Data</span>
+<span class="sd">            Analysis settings and models</span>
+
+<span class="sd">            - emissions : Data</span>
+<span class="sd">                Emissions analysis settings</span>
+
+<span class="sd">                - surrogates : Data</span>
+<span class="sd">                    Trained surrogate models for each species</span>
+<span class="sd">                </span>
+<span class="sd">    settings : Data</span>
+<span class="sd">        Configuration settings for the simulation</span>
+<span class="sd">        </span>
+<span class="sd">    vehicle : Data</span>
+<span class="sd">        Vehicle configuration data</span>
+
+<span class="sd">        - networks : list</span>
+<span class="sd">            List of propulsion system networks</span>
+
+<span class="sd">            - propulsors : list</span>
+<span class="sd">                Propulsion units </span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Updates segment.state.conditions.emissions with:</span>
+<span class="sd">        </span>
+<span class="sd">    total : Data</span>
+<span class="sd">        Total emissions over segment</span>
+
+<span class="sd">        - CO2 : float</span>
+<span class="sd">            Total CO2 emissions [kg]</span>
+<span class="sd">        - H2O : float</span>
+<span class="sd">            Total H2O emissions [kg]</span>
+<span class="sd">        - NOx : float</span>
+<span class="sd">            Total NOx emissions [kg]</span>
+<span class="sd">    index : Data</span>
+<span class="sd">        Emission indices</span>
+
+<span class="sd">        - CO2 : ndarray</span>
+<span class="sd">            CO2 emission index [kg_CO2/kg_fuel]</span>
+<span class="sd">        - CO : ndarray</span>
+<span class="sd">            CO emission index [kg_CO/kg_fuel]</span>
+<span class="sd">        - H2O : ndarray</span>
+<span class="sd">            H2O emission index [kg_H2O/kg_fuel]</span>
+<span class="sd">        - NO : ndarray</span>
+<span class="sd">            NO emission index [kg_NO/kg_fuel]</span>
+<span class="sd">        - NO2 : ndarray</span>
+<span class="sd">            NO2 emission index [kg_NO2/kg_fuel]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Uses pre-trained surrogate models to estimate emission indices.</span>
+
+<span class="sd">    **Extra modules required**</span>
+
+<span class="sd">    * numpy</span>
+
+<span class="sd">    **Major Assumptions**</span>
+
+<span class="sd">    * Operating conditions fall within the training data range</span>
+<span class="sd">    * Linear interpolation can be employed between training points</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.train_CRN_EI_surrogates</span>
+<span class="sd">    RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.build_CRN_EI_surrogates</span>
+<span class="sd">    RCAIDE.Library.Methods.Emissions.Chemical_Reactor_Network_Method.evaluate_cantera </span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Goodwin, D. G., Speth, R. L., Moffat, H. K., &amp; Weber, B. W. (2023). Cantera: An object-oriented software toolkit for chemical kinetics, thermodynamics, and transport processes (Version 3.0.0) [Computer software]. https://www.cantera.org</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+  
+    <span class="n">state</span>      <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span>
+    <span class="n">I</span>          <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">numerics</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">integrate</span>
+    <span class="n">surrogates</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">analyses</span><span class="o">.</span><span class="n">emissions</span><span class="o">.</span><span class="n">surrogates</span>
+
+    <span class="n">CO2_total</span>   <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">CO_total</span>    <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">H2O_total</span>   <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">NOx_total</span>   <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">SO2_total</span>   <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">Soot_total</span>  <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">total_gCO2e</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">state</span><span class="o">.</span><span class="n">ones_row</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">initials</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">initial_cumulative_gCO2e</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">initials</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">emissions</span><span class="o">.</span><span class="n">cumulative_gCO2e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">initial_cumulative_gCO2e</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+
+    <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span>    
+        <span class="k">for</span> <span class="n">propulsor</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">propulsors</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">active</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turbofan</span><span class="p">)</span> <span class="ow">or</span> \
+                    <span class="nb">type</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turboprop</span> <span class="ow">or</span> \
+                    <span class="nb">type</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Converters</span><span class="o">.</span><span class="n">Turboshaft</span> <span class="ow">or</span> \
+                    <span class="nb">type</span><span class="p">(</span><span class="n">propulsor</span><span class="p">)</span> <span class="o">==</span> <span class="n">RCAIDE</span><span class="o">.</span><span class="n">Library</span><span class="o">.</span><span class="n">Components</span><span class="o">.</span><span class="n">Powertrain</span><span class="o">.</span><span class="n">Propulsors</span><span class="o">.</span><span class="n">Turbojet</span><span class="p">:</span>    
+                
+                    <span class="n">combustor</span> <span class="o">=</span> <span class="n">propulsor</span><span class="o">.</span><span class="n">combustor</span>
+                
+                    <span class="c1"># unpack component conditions</span>
+                    <span class="n">propulsor_conditions</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">propulsors</span><span class="p">[</span><span class="n">propulsor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span> 
+                    <span class="n">combustor_conditions</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="n">combustor</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>  
+
+                    <span class="n">T</span>    <span class="o">=</span> <span class="n">combustor_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">stagnation_temperature</span>
+                    <span class="n">P</span>    <span class="o">=</span> <span class="n">combustor_conditions</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">stagnation_pressure</span> 
+                    <span class="n">mdot</span> <span class="o">=</span> <span class="n">propulsor_conditions</span><span class="o">.</span><span class="n">core_mass_flow_rate</span> 
+                    <span class="n">FAR</span>  <span class="o">=</span> <span class="n">combustor_conditions</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">fuel_to_air_ratio</span> 
+
+                    <span class="n">mdot_fuel</span> <span class="o">=</span> <span class="n">propulsor_conditions</span><span class="o">.</span><span class="n">fuel_mass_flow_rate</span>
+                    
+                    <span class="n">pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">T</span><span class="p">,</span><span class="n">P</span><span class="p">,</span><span class="n">mdot</span><span class="p">,</span><span class="n">FAR</span><span class="p">))</span> 
+
+                    <span class="n">EI_CO2_comb</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">surrogates</span><span class="o">.</span><span class="n">EI_CO2</span><span class="p">(</span><span class="n">pts</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+                    <span class="n">EI_CO_comb</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">surrogates</span><span class="o">.</span><span class="n">EI_CO</span><span class="p">(</span><span class="n">pts</span><span class="p">))</span><span class="o">.</span><span class="n">T</span> 
+                    <span class="n">EI_H2O_comb</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">surrogates</span><span class="o">.</span><span class="n">EI_H2O</span><span class="p">(</span><span class="n">pts</span><span class="p">))</span><span class="o">.</span><span class="n">T</span> 
+                    <span class="n">EI_NOx_comb</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">surrogates</span><span class="o">.</span><span class="n">EI_NOx</span><span class="p">(</span><span class="n">pts</span><span class="p">))</span><span class="o">.</span><span class="n">T</span> 
+                          
+                    <span class="c1"># Per-propulsor segment integrals (avoids GWP double-count on multi-engine)</span>
+                    <span class="n">CO2_seg</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="n">mdot_fuel</span> <span class="o">*</span> <span class="n">EI_CO2_comb</span><span class="p">)</span>
+                    <span class="n">CO_seg</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="n">mdot_fuel</span> <span class="o">*</span> <span class="n">EI_CO_comb</span><span class="p">)</span>
+                    <span class="n">H2O_seg</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="n">mdot_fuel</span> <span class="o">*</span> <span class="n">EI_H2O_comb</span><span class="p">)</span>
+                    <span class="n">NOx_seg</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="n">mdot_fuel</span> <span class="o">*</span> <span class="n">EI_NOx_comb</span><span class="p">)</span>
+                    <span class="n">SO2_seg</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="n">mdot_fuel</span> <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">SO2</span><span class="p">)</span>
+                    <span class="n">Soot_seg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="n">mdot_fuel</span> <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">emission_indices</span><span class="o">.</span><span class="n">Soot</span><span class="p">)</span>
+
+                    <span class="n">CO2_total</span>  <span class="o">+=</span> <span class="n">CO2_seg</span>
+                    <span class="n">CO_total</span>   <span class="o">+=</span> <span class="n">CO_seg</span>
+                    <span class="n">H2O_total</span>  <span class="o">+=</span> <span class="n">H2O_seg</span>
+                    <span class="n">NOx_total</span>  <span class="o">+=</span> <span class="n">NOx_seg</span>
+                    <span class="n">SO2_total</span>  <span class="o">+=</span> <span class="n">SO2_seg</span>
+                    <span class="n">Soot_total</span> <span class="o">+=</span> <span class="n">Soot_seg</span>
+
+                    <span class="n">total_gCO2e</span> <span class="o">+=</span> <span class="n">CO2_seg</span>  <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">CO2</span>  <span class="o">+</span> \
+                                   <span class="n">CO_seg</span>   <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">CO</span>   <span class="o">+</span> \
+                                   <span class="n">H2O_seg</span>  <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">H2O</span>  <span class="o">+</span> \
+                                   <span class="n">NOx_seg</span>  <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">NOx</span>  <span class="o">+</span> \
+                                   <span class="n">SO2_seg</span>  <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">SO2</span>  <span class="o">+</span> \
+                                   <span class="n">Soot_seg</span> <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">Soot</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Contrails (Schmidt-Appleman altitude threshold ~8,000 m)</span>
+    <span class="c1"># Only accumulate range flown above threshold; below that, temperatures</span>
+    <span class="c1"># are too warm for persistent ice-crystal formation.</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">flight_altitude</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">freestream</span><span class="o">.</span><span class="n">altitude</span>
+    <span class="n">flight_range</span>    <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">frames</span><span class="o">.</span><span class="n">inertial</span><span class="o">.</span><span class="n">aircraft_range</span>
+    <span class="n">contrail_altitude_threshold</span> <span class="o">=</span> <span class="mf">8000.0</span>   <span class="c1"># metres (~26,247 ft)</span>
+    <span class="n">range_above</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">flight_altitude</span> <span class="o">&gt;=</span> <span class="n">contrail_altitude_threshold</span><span class="p">,</span> <span class="n">flight_range</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">Contrails_total</span> <span class="o">=</span> <span class="p">(</span><span class="n">range_above</span> <span class="o">-</span> <span class="n">range_above</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mf">1000.0</span>   <span class="c1"># m → km</span>
+
+    <span class="c1"># kg CO2e  (GWP_contrails units: kg CO2e / km)</span>
+    <span class="n">total_gCO2e</span> <span class="o">+=</span> <span class="n">Contrails_total</span> <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">Contrails</span>
+
+    <span class="n">emissions</span>                 <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">GWP_100</span>         <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">mass</span>            <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span>           <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">gCO2e</span>           <span class="o">=</span> <span class="n">total_gCO2e</span> <span class="o">*</span> <span class="mi">1000</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">cumulative_gCO2e</span> <span class="o">=</span> <span class="n">initial_cumulative_gCO2e</span> <span class="o">+</span> <span class="n">total_gCO2e</span> <span class="o">*</span> <span class="mi">1000</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">mass</span><span class="o">.</span><span class="n">CO2</span>        <span class="o">=</span> <span class="n">CO2_total</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">mass</span><span class="o">.</span><span class="n">CO</span>         <span class="o">=</span> <span class="n">CO_total</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">mass</span><span class="o">.</span><span class="n">H2O</span>        <span class="o">=</span> <span class="n">H2O_total</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">mass</span><span class="o">.</span><span class="n">NOx</span>        <span class="o">=</span> <span class="n">NOx_total</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">mass</span><span class="o">.</span><span class="n">SO2</span>        <span class="o">=</span> <span class="n">SO2_total</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">mass</span><span class="o">.</span><span class="n">Soot</span>       <span class="o">=</span> <span class="n">Soot_total</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">mass</span><span class="o">.</span><span class="n">Contrails</span>  <span class="o">=</span> <span class="n">Contrails_total</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">GWP_100</span><span class="o">.</span><span class="n">CO2</span>     <span class="o">=</span> <span class="n">CO2_total</span> <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">CO2</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">GWP_100</span><span class="o">.</span><span class="n">CO</span>      <span class="o">=</span> <span class="n">CO_total</span>  <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">CO</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">GWP_100</span><span class="o">.</span><span class="n">H2O</span>     <span class="o">=</span> <span class="n">H2O_total</span> <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">H2O</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">GWP_100</span><span class="o">.</span><span class="n">NOx</span>     <span class="o">=</span> <span class="n">NOx_total</span> <span class="o">*</span> <span class="n">combustor</span><span class="o">.</span><span class="n">fuel_data</span><span class="o">.</span><span class="n">global_warming_potential_100</span><span class="o">.</span><span class="n">NOx</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">CO2</span>       <span class="o">=</span> <span class="n">EI_CO2_comb</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">CO</span>        <span class="o">=</span> <span class="n">EI_CO_comb</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">H2O</span>       <span class="o">=</span> <span class="n">EI_H2O_comb</span>
+    <span class="n">emissions</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">NOx</span>       <span class="o">=</span> <span class="n">EI_NOx_comb</span> 
+ 
+    <span class="n">segment</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">emissions</span> <span class="o">=</span>  <span class="n">emissions</span>
+    <span class="k">return</span>   </div>
+
+
+     
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Laboratory for Electric Aircraft Design and Sustainability.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

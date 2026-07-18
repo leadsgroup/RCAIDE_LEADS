@@ -1,0 +1,32 @@
+RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Turbofan.noise_source_location
+
+noise\_source\_location
+=======================
+
+.. automodule:: RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Turbofan.noise_source_location
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      noise_source_location
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

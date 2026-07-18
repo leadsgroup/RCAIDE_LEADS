@@ -1,0 +1,25 @@
+RCAIDE.Library.Methods.Aeroacoustics.Common.background_noise
+
+background\_noise
+=================
+
+.. automodule:: RCAIDE.Library.Methods.Aeroacoustics.Common.background_noise
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

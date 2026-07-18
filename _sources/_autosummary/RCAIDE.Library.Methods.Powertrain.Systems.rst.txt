@@ -30,8 +30,11 @@ Systems
    :template: custom-module-template.rst
    :recursive:
 
-   append_avionics_conditions
-   append_payload_conditions
-   compute_avionics_power_draw
-   compute_payload_power_draw
+   append_systems_conditions
+   compute_cabin_loads_power_draw
+   compute_ecs_power_draw
+   compute_flight_controls_power_draw
+   compute_hydraulics_power_draw
+   compute_ice_protection_power_draw
+   compute_systems_power_draw
 

@@ -30,15 +30,16 @@ Plots
    :template: custom-module-template.rst
    :recursive:
 
+   Aeroacoustics
    Aerodynamics
    Common
    Emissions
-   Energy
    Geometry
+   Mass_Properties
    Mission
-   Noise
+   Performance
+   Powertrain
    Stability
    Thermal_Management
    Topography
-   Weights
 
