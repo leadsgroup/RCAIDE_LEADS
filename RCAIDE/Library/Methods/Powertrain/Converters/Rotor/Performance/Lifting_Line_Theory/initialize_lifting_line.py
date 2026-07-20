@@ -5,8 +5,6 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
 from RCAIDE.Framework.Core import Data, orientation_transpose
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -50,10 +48,10 @@ def initialize_lifting_line(rotor, conditions):
         rotor.blades.bound.chord             : (Nr, B)             chord distribution [m]
         rotor.blades.bound.radius            : (Nr, B)             radial stations [m]
         rotor.blades.bound.beta              : (ctrl_pts, Nr, B)    total blade pitch [rad]
-        rotor.blades.bound.nodes_hub_14c     : (ctrl_pts, Nr, B, 3) 1/4c nodes, hub/thrust frame (varies with rotation sense)
-        rotor.blades.bound.nodes_body_14c    : (ctrl_pts, Nr, B, 3) 1/4c nodes, body frame
-        rotor.blades.bound.nodes_hub_34c     : (ctrl_pts, Nr, B, 3) 3/4c nodes, hub/thrust frame (varies with pitch_c)
-        rotor.blades.bound.nodes_body_34c    : (ctrl_pts, Nr, B, 3) 3/4c nodes, body frame
+        rotor.blades.bound.nodes_hub_14c     : (ctrl_pts, Nr-1, B, 3) 1/4c nodes, hub/thrust frame (varies with rotation sense)
+        rotor.blades.bound.nodes_body_14c    : (ctrl_pts, Nr-1, B, 3) 1/4c nodes, body frame
+        rotor.blades.bound.nodes_hub_34c     : (ctrl_pts, Nr-1, B, 3) 3/4c nodes, hub/thrust frame (varies with pitch_c)
+        rotor.blades.bound.nodes_body_34c    : (ctrl_pts, Nr-1, B, 3) 3/4c nodes, body frame
         rotor.blades.bound.cl                : (ctrl_pts, Nr, B)    lift coefficient
         rotor.blades.bound.cd                : (ctrl_pts, Nr, B)    drag coefficient
         rotor.blades.bound.alpha             : (ctrl_pts, Nr, B)    angle of attack [rad]
@@ -114,8 +112,10 @@ def initialize_lifting_line(rotor, conditions):
 
     CW = omega[:, 0] > 0   # (ctrl_pts,) -- per-control-point rotation sense
 
+    CW_3 = CW[:, np.newaxis, np.newaxis]   # (ctrl_pts, 1, 1) -- broadcast helper
+
     # ------------------------------------------------------------------------------------------------------------------
-    #  Azimuth per blade per station  -- (Nr, B)
+    #  Azimuth per blade per station, corrected with the blade sweep -- (Nr, B)
     # ------------------------------------------------------------------------------------------------------------------
     psi = psi_root[np.newaxis, :] - sweep[:, np.newaxis]      # (Nr, B)
 
@@ -126,8 +126,6 @@ def initialize_lifting_line(rotor, conditions):
     # ------------------------------------------------------------------------------------------------------------------
     r_2d = r_1d[:, np.newaxis] * np.ones((Nr, B))    # (Nr, B)
     c_2d = c[:, np.newaxis]    * np.ones((Nr, B))    # (Nr, B)
-
-    CW_3 = CW[:, np.newaxis, np.newaxis]   # (ctrl_pts, 1, 1) -- broadcast helper
 
     nodes_hub_14c = np.zeros((ctrl_pts, Nr, B, 3))
     # x: along rotor axis (nodes lie in rotor plane)

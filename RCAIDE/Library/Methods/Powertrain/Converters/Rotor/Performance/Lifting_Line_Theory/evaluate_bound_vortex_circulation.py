@@ -159,7 +159,14 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
     max_iter_Gammab = wake_inputs.max_iter_Gammab # 50
     max_iter_CT     = wake_inputs.max_iter_CT # 50
     tol             = wake_inputs.tol # 1e-4
-    relax           = wake_inputs.relax # 0.2
+
+    # relax may arrive as a scalar (flat, one value for every control point) or a
+    # (ctrl_pts,)-per-point array -- normalize to (ctrl_pts,1,1) so it's always indexable by
+    # valid_cp below and broadcasts against Gamma_b (ctrl_pts, Nr-1, B).
+    relax = np.asarray(wake_inputs.relax, dtype=float).reshape(-1)
+    if relax.size == 1:
+        relax = np.full(ctrl_pts, relax[0])
+    relax = relax[:, np.newaxis, np.newaxis]
     mu              = wake_inputs.mu       # (ctrl_pts,) -- per-control-point edgewise advance ratio
     mu_max          = wake_inputs.mu_max   # scalar threshold
 

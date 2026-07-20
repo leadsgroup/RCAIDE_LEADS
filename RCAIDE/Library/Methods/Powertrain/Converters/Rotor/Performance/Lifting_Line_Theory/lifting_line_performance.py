@@ -8,6 +8,8 @@
 # [2] W. Johnson, Rotorcraft Aeromechanics, Cambridge University Press, 2013.
 # [3] A.J. Landgrebe, JAHS Vol. 17 No. 4, 1972.
 # [4] J.D. Kocurek and J.L. Tangler, JAHS Vol. 22 No. 1, 1977.
+# [5] Beddoes, ....
+# [6] van der Wall, ....
 
 
 import numpy as np
@@ -17,7 +19,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory.evaluate_bound_vortex_circulation import evaluate_bound_vortex_circulation
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory.compute_lifting_line_loads        import compute_lifting_line_loads
 
-def lifting_line_performance(rotor, conditions, wake_inputs=None):
+def lifting_line_performance(rotor, conditions):
     """
     Computes rotor performance using the lifting-line method with prescribed tip vortex wake.
     Drop-in replacement for BEMT_Helmholtz_performance with higher-fidelity inter-blade induction.
@@ -81,7 +83,9 @@ def lifting_line_performance(rotor, conditions, wake_inputs=None):
     # ------------------------------------------------------------------------------------------------------------------
     if rotor.wake_inputs is None:
         wake_inputs = Data()
-        wake_inputs.wake_model                   = 1                 # 1 simple model, 2 landgrebe, 3 landgrebe KT
+        wake_inputs.include_wake                 = True
+        wake_inputs.wake_model_hov               = 1                 # 1 simple model, 2 landgrebe, 3 landgrebe KT
+        wake_inputs.wake_model_FF                = 5                 # 4 undisorted, 5 Beddoes distorted, 6 Modified Beddoes distorted
         wake_inputs.vc_correction                = 1                 # vortex core factor, 1 standard Rankine, 2 Rankine, 3, scully, 4 Vatistas, 5 Oseen
         wake_inputs.dpsi                         = np.radians(6.8)   # filament length [rad]
         wake_inputs.n_turns                      = 5.0               # Number of wake turns
@@ -94,13 +98,19 @@ def lifting_line_performance(rotor, conditions, wake_inputs=None):
         wake_inputs.r_R_shed                     = 1.0               # location as fraction of R to shed the wake filament from               
         wake_inputs.tol                          = 1e-4
         wake_inputs.relax_0                      = 0.2
-        wake_inputs.max_iter_0                   = 300
+        wake_inputs.max_iter_Gammab_0            = 1000
+        wake_inputs.max_iter_CT_0                = 100
         wake_inputs.CT_iter                      = True
         wake_inputs.aerofoil_aero                = 2   # 1 simplified aerofoil aero, detailed panel aerofoil aero
         wake_inputs.mu_max                       = 1.0 # edgewise advance ratio above which a control point is treated as out of the model's valid range
     else:
         wake_inputs = rotor.wake_inputs
-    
+
+    # Always start CT from the known-good initial guess rather than carrying over the previous
+    # call's converged value -- simpler and safer than trying to judge whether a carried-over
+    # value is still trustworthy (no risk of a diverged/extreme trial point's CT contaminating
+    # the next call, and no shape mismatch across calls with different ctrl_pts).
+    wake_inputs.CT = 0.00654
 
     # Populate remaining wake_inputs fields from conditions
     wake_inputs.V_thrust      = V_thrust
@@ -133,13 +143,12 @@ def lifting_line_performance(rotor, conditions, wake_inputs=None):
     vy = V_thrust[:, 1]   # (ctrl_pts,) thrust-frame y freestream velocity
     vz = V_thrust[:, 2]   # (ctrl_pts,) thrust-frame z freestream velocity
     vy_term = np.where(CW[:, None, None], vy[:, None, None], -vy[:, None, None])
-    Ut = np.abs(omegar) + (vy_term * np.cos(psi)[None, :, :] +
+    Ut = np.abs(omegar) + (vy_term           * np.cos(psi)[None, :, :] +
                            vz[:, None, None] * np.sin(psi)[None, :, :])
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Inlcuding new terms in wake_inputs
     # ------------------------------------------------------------------------------------------------------------------
-    wake_inputs.include_wake        = True
     wake_inputs.velocity_total      = np.sqrt(Ua**2 + Ut**2)
     wake_inputs.velocity_axial      = Ua
     wake_inputs.velocity_tangential = Ut
@@ -152,7 +161,7 @@ def lifting_line_performance(rotor, conditions, wake_inputs=None):
     wake_inputs.speed_of_sound      = conditions.freestream.speed_of_sound[:, :, None]    * np.ones((ctrl_pts, Nr, B))
     wake_inputs.dynamic_viscosity   = conditions.freestream.dynamic_viscosity[:, :, None] * np.ones((ctrl_pts, Nr, B))
     wake_inputs.kinematic_viscosity = wake_inputs.dynamic_viscosity/conditions.freestream.density[:, :, None]
-    wake_inputs.relax               = wake_inputs.relax_0 / (1 + 50*mu_tot)[:, None, None]   # (ctrl_pts,1,1) -- broadcasts against Gamma_b (ctrl_pts, Nr-1, B)
+    wake_inputs.relax               = wake_inputs.relax_0 # / (1 + 50*mu_tot)[:, None, None]   # (ctrl_pts,1,1) -- broadcasts against Gamma_b (ctrl_pts, Nr-1, B)
     wake_inputs.max_iter_Gammab     = wake_inputs.max_iter_Gammab_0 # int(wake_inputs.max_iter_Gammab_0 * (1 + 5*np.max(mu_tot)))   # sized for the worst-case (highest advance ratio) control point
     wake_inputs.max_iter_CT         = wake_inputs.max_iter_CT_0 #int(wake_inputs.max_iter_CT_0    * (1 + 5*np.max(mu_tot)))   # sized for the worst-case (highest advance ratio) control point
 
@@ -161,6 +170,58 @@ def lifting_line_performance(rotor, conditions, wake_inputs=None):
     # ------------------------------------------------------------------------------------------------------------------
     initialize_wake_geometry(rotor, wake_inputs, conditions)
 
+    # Debugging
+    # Importing plotting libs
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+    
+    # ----------------------------------------------------------------------------------------------------------------------
+    #  Plot 1: Blade and wake geometry -- 3D, rotor plane, side view
+    # ----------------------------------------------------------------------------------------------------------------------
+    colors = plt.cm.tab10(np.linspace(0, 1, B))
+
+    if wake_inputs.include_wake:
+        nodes_body = rotor.blades.wake.nodes_body[0]    # (N+1, B, 3)
+
+    nodes_14c_body = rotor.blades.bound.nodes_body_14c[0]    # (Nr, B, 3)  -- add [0]
+    nodes_34c_body = rotor.blades.bound.nodes_body_34c[0]    # (Nr, B, 3)  -- already correct
+
+    fig = plt.figure(figsize=(18, 6))
+    ax1 = fig.add_subplot(131, projection='3d')
+    ax2 = fig.add_subplot(132)
+    ax3 = fig.add_subplot(133)
+
+    for b in range(B):
+        ax1.plot(nodes_14c_body[:,b,0], nodes_14c_body[:,b,1], nodes_14c_body[:,b,2],
+                '-o', color=colors[b], markersize=2, linewidth=2, label=f'Blade {b}')
+        ax1.plot(nodes_34c_body[:,b,0], nodes_34c_body[:,b,1], nodes_34c_body[:,b,2],
+                '-o', color=colors[b], markersize=2, linewidth=2, label=f'Blade {b}')
+        if wake_inputs.include_wake:
+            ax1.plot(nodes_body[:,b,0], nodes_body[:,b,1], nodes_body[:,b,2],
+                '-', color=colors[b], linewidth=0.8, alpha=0.7)
+        
+        ax2.plot(nodes_14c_body[:,b,1], nodes_14c_body[:,b,2], '-o', color=colors[b], markersize=2, linewidth=2)
+        ax2.plot(nodes_34c_body[:,b,1], nodes_34c_body[:,b,2], '-o', color=colors[b], markersize=2, linewidth=2)
+        if wake_inputs.include_wake:
+            ax2.plot(nodes_body[:,b,1], nodes_body[:,b,2], '-', color=colors[b], linewidth=0.8, alpha=0.7)
+        
+        ax3.plot(nodes_14c_body[:,b,0], nodes_14c_body[:,b,2], '-o', color=colors[b], markersize=2, linewidth=2)
+        ax3.plot(nodes_34c_body[:,b,0], nodes_34c_body[:,b,2], '-o', color=colors[b], markersize=2, linewidth=2)
+        if wake_inputs.include_wake:
+            ax3.plot(nodes_body[:,b,0], nodes_body[:,b,2], '-', color=colors[b], linewidth=1.0, label=f'Blade {b}')
+
+    ax1.set_xlabel('x (axial) [m]'); ax1.set_ylabel('y [m]'); ax1.set_zlabel('z [m]')
+    ax1.set_title(f'Wake geometry: {B} blades (body frame)'); ax1.legend(fontsize=6)
+    ax2.set_xlabel('y [m]'); ax2.set_ylabel('z [m]')
+    ax2.set_title('Rotor plane (y-z)'); ax2.set_aspect('equal'); ax2.invert_xaxis(); ax2.grid(True)
+    ax3.set_xlabel('x (axial) [m]'); ax3.set_ylabel('z [m]')
+    ax3.set_title('Side view (x-z)'); ax3.legend(fontsize=6); ax3.grid(True)
+
+    plt.tight_layout()
+    #plt.savefig('plot_wake.png', dpi=120)
+    #print("Saved plot_wake.png")
+    plt.show()
+    plt.close()
     # ------------------------------------------------------------------------------------------------------------------
     #  Step 3: Bound vortex circulation iteration
     # ------------------------------------------------------------------------------------------------------------------
