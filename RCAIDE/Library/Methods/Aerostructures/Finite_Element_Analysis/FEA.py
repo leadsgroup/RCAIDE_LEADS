@@ -51,7 +51,36 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
         structural_results[wing.tag].load                 = np.zeros((n_cpts,num_nodes,3))   # load x,y,z (formally w_z_load)
         structural_results[wing.tag].deflection           = np.zeros((n_cpts,num_nodes,3))   # deflection x,y,z
         structural_results[wing.tag].elastic_twist        = np.zeros((n_cpts,num_nodes,1))   # twist x,y,z 
-        
+ 
+    # append sources  
+    source_pts     = np.array([0,0,0])
+    propulsive_pts = np.array([0,0,0])
+    for network in geometry.network:
+        for fuel_line in network.fuel_lines:
+            for fuel_tank in fuel_line.fuel_tanks: 
+                # check to see it is integrated into wing 
+                if fuel_tank.wing_tag != None:
+                    total_fuel_load = (conditions.weights.components.mass[fuel_tank.fuel.tag][:,0] + fuel_tank.mass_properties.mass ) * conditions.freestream.gravitational_acceleration
+                    source_loads.append(total_fuel_load)
+                    global_CG =  np.array(fuel_tank.origin[0]) + np.array(fuel_tank.mass_properties.center_of_gravity)
+                    source_pts = np.concatenate(global_CG)
+    
+        for bus in network.busses:
+            for battery_module in bus.modules: 
+                # check to see it is integrated into wing 
+                 if battery_module.wing_tag != None:
+                    total_battery_load = battery_module.mass_properties.mass * conditions.freestream.gravitational_acceleration
+                    source_loads.append(total_battery_load)
+                    global_CG =  np.array(battery_module.origin[0]) + np.array(battery_module.mass_properties.center_of_gravity)
+                    source_pts = np.concatenate(global_CG)
+         
+        for propulsor in network.propulsors:
+            if propulsor.wing_mounted:
+                propulsive_loads = propulsor.mass_properties.mass * conditions.freestream.gravitational_acceleration  
+                global_CG =  np.array(propulsor.origin[0]) + np.array(propulsor.mass_properties.center_of_gravity)
+                propulsive_pts = np.concatenate(global_CG)
+
+    
     # Loop over control points 
     for ti in range(n_cpts):
          
@@ -79,11 +108,12 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             Fx          = - F_vec[:,1] # The normal is swaped in the VLM code, so Fx is actually the negative of the Y component of the force vector
             Fy          = F_vec[:,0]
             Fz          = F_vec[:,2]  
-            total_loads = np.column_stack((Fx, Fy, Fz)) 
-            total_pts   = np.column_stack((VD.XC[ti, start_idx:end_idx], VD.YC[ti, start_idx:end_idx], VD.ZC[ti, start_idx:end_idx]))
+            aero_loads  = np.column_stack((Fx, Fy, Fz)) 
+            aero_pts   = np.column_stack((VD.XC[ti, start_idx:end_idx], VD.YC[ti, start_idx:end_idx], VD.ZC[ti, start_idx:end_idx]))
       
-            # FUTURE: ADD FUNCTION HERE TO APPEND THE LOADS AND POINTS DATA STRUCTURE WIHT ADDITIONAL LOADS (BATTERIES, MOTORS/PROPELLERS,TANKS ETC)
-            # FUTURE WORK 
+       
+            total_loads = np.concatenate((np.concatenate((aero_loads,propulsive_loads),axis=0),source_loads),axis=0)
+            total_pts   = np.concatenate((np.concatenate((aero_pts,propulsive_pts),axis=0),source_pts),axis=0)
 
             # Map aerodynamic loads to structure
             fea_forces, fea_moments = map_panel_forces_to_fea(total_pts, total_loads, fea_pts)
