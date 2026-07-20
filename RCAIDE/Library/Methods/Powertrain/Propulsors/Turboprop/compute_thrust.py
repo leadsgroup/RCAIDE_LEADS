@@ -222,9 +222,14 @@ def compute_thrust(turboprop, conditions):
 
     # computing the power 
     power                                          = FD2*V0 
-    
+
+
     # pack outputs 
-    turboprop_conditions.thrust                            = FD2 
+    thrust_vector              = np.zeros((len(FD2), 3))
+    thrust_vector[:,0]         = FD2[:,0]
+    
+    # Pack turbofan outouts  
+    turboprop_conditions.thrust                            = thrust_vector       
     turboprop_conditions.thrust_specific_fuel_consumption  = TSFC
     turboprop_conditions.non_dimensional_thrust            = Fsp 
     turboprop_conditions.core_mass_flow_rate               = mdot_core

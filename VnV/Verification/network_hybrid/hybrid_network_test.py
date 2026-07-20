@@ -46,10 +46,10 @@ def main():
     series_hybrid    = True
     parallel_hybrid  = True
     
-    convetional_cruise_CL_truth      = 0.6872203267789949
-    electric_cruise_CL_truth         = 0.6935502862338622
-    series_hybrid_cruise_CL_truth    = 0.6920675183906465
-    parallel_hybrid_cruise_CL_truth  = 0.6932038207255684
+    convetional_cruise_CL_truth      = 0.6862607106121958
+    electric_cruise_CL_truth         = 0.795977976668617
+    series_hybrid_cruise_CL_truth    = 0.6907950151213048
+    parallel_hybrid_cruise_CL_truth  = 0.6922148639044265
 
     error = Data()
     
@@ -116,7 +116,7 @@ def main():
         powertrain_labels.append("Parallel Hybrid")
          
 
-    # add remaining networks MATTEO          
+    # add remaining networks           
     print("Elapsed Time", (time.time()-t0)/60)         
 
     print('Errors:')
@@ -174,7 +174,9 @@ def base_analysis(vehicle,weights_method):
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     # ------------------------------------------------------------------     
-    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
+    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()   
+    aerodynamics.settings.number_of_spanwise_vortices    = 10 # reducing the number of vortices to speed up the test 
+    aerodynamics.settings.number_of_chordwise_vortices   = 5  # reducing the number of vortices to speed up the test 
     analyses.append(aerodynamics) 
 
     # ------------------------------------------------------------------
@@ -253,7 +255,7 @@ def mission_setup(analyses,solver_type,solver_objective):
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]
     segment.assigned_control_variables.throttle.initial_guess_values = [[0.7]]
-    segment.assigned_control_variables.body_angle.active             = True     
+    segment.assigned_control_variables.pitch_angle.active             = True     
     mission.append_segment(segment)    
  
       

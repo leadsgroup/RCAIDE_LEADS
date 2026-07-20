@@ -11,10 +11,10 @@ from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Methods.Geometry.Airfoil import import_airfoil_geometry
 from RCAIDE.Library.Methods.Geometry.Airfoil import compute_naca_4series 
 
-# python imports 
-import numpy as np 
-import vtk
-import matplotlib.colors as mcolors   
+# python imports
+import numpy as np
+import pyvista as pv
+import matplotlib.colors as mcolors
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  PLOTS
@@ -74,64 +74,30 @@ def plot_3d_rotor(rotor,
     
     """
 
-    rotor_rgb_color      = mcolors.to_rgb(color)
-    
-    # -------------------------------------------------------------------------  
-    # Initalize Renderer
-    # -------------------------------------------------------------------------      
-    renderer  = vtk.vtkRenderer() 
-    num_B     = rotor.number_of_blades  
-    dim       = len(rotor.radius_distribution)
+    rotor_rgb_color = mcolors.to_rgb(color)
+    num_B = rotor.number_of_blades
+    dim   = len(rotor.radius_distribution)
+
+    plotter = pv.Plotter(off_screen=save_figure)
 
     for i in range(num_B):
-        GEOM = generate_3d_blade_points(rotor,number_of_airfoil_points,dim,i)
-        make_object(renderer, GEOM, rotor_rgb_color,opacity)   
-            
-    # Set camera and background
-    camera = vtk.vtkCamera()
-    camera.SetPosition(camera_eye_x, camera_eye_y, camera_eye_z)
-    camera.SetFocalPoint(0, 0, 0)
-    camera.SetViewUp(0, 0, 1)
+        GEOM = generate_3d_blade_points(rotor, number_of_airfoil_points, dim, i)
+        make_object(plotter, GEOM, rotor_rgb_color, opacity)
 
-    renderer.SetActiveCamera(camera)
-    renderer.ResetCamera()
-    renderer.SetBackground(1.0, 1.0, 1.0)  
-    
-    # 5. Create a render window to display the scene
-    renderWindow = vtk.vtkRenderWindow()
-    renderWindow.AddRenderer(renderer)
-    renderWindow.SetSize(1500, 1500)
-    renderWindow.SetWindowName(save_filename)
-    
-    # 6. Create an interactor to handle user input (mouse, keyboard)
-    renderWindowInteractor = vtk.vtkRenderWindowInteractor()
-    renderWindowInteractor.SetRenderWindow(renderWindow)
+    plotter.camera_position = [
+        (camera_eye_x, camera_eye_y, camera_eye_z),
+        (0, 0, 0),
+        (0, 0, 1),
+    ]
+    plotter.set_background('white')
+    plotter.window_size = [1500, 1500]
 
-    # Use the custom interactor style
-    custom_style = vtk.vtkInteractorStyleTrackballCamera()  
-    renderWindowInteractor.SetInteractorStyle(custom_style)
-    
     if save_figure:
-        # Create a vtkWindowToImageFilter to capture the render window content
-        window_to_image = vtk.vtkWindowToImageFilter()
-        window_to_image.SetInput(renderWindow)
-        window_to_image.SetInputBufferTypeToRGBA()  # or RGB
-        window_to_image.ReadFrontBufferOff()  # Read from back buffer for off-screen rendering
-        window_to_image.Update()
-        
-        # Create a vtkPNGWriter to save the image
-        writer = vtk.vtkPNGWriter()
-        writer.SetFileName(save_filename + ".png")
-        writer.SetInputConnection(window_to_image.GetOutputPort())
-        writer.Write() 
+        plotter.screenshot(save_filename + ".png")
+    elif show_figure:
+        plotter.show()
 
-    # Start the VTK interactor
-    if show_figure:  
-        renderWindowInteractor.Initialize()
-        renderWindow.Render() # Render the scene initially
-        renderWindowInteractor.Start()
-
-    return  
+    return
  
 def generate_3d_blade_points(rotor, n_points, dim, i, aircraftRefFrame = True):
     """
@@ -306,60 +272,25 @@ def generate_3d_blade_points(rotor, n_points, dim, i, aircraftRefFrame = True):
     
     return G
 
-def make_object(renderer, GEOM,  rgb_color, opacity): 
-
-    actor = generate_vtk_object(GEOM.PTS)
-
-    # Set color of fuselage
-    mapper = actor.GetMapper()
-    mapper.ScalarVisibilityOff()
-    actor.GetProperty().SetColor(rgb_color[0], rgb_color[1], rgb_color[2])  # Set wing color to Light Grey
-    actor.GetProperty().SetDiffuse(1.0)  # Set diffuse reflection
-    actor.GetProperty().SetSpecular(0.0)  # Set specular reflection
-    actor.GetProperty().SetOpacity(opacity)
-    renderer.AddActor(actor)
-    
+def make_object(plotter, GEOM, rgb_color, opacity):
+    mesh  = generate_vtk_object(GEOM.PTS)
+    actor = plotter.add_mesh(mesh, color=rgb_color, opacity=opacity, show_scalar_bar=False)
+    prop  = actor.GetProperty()
+    prop.SetDiffuse(1.0)
+    prop.SetSpecular(0.0)
     return
 
+
 def generate_vtk_object(pts):
-    comp = vtk.vtkPolyData()
-    points = vtk.vtkPoints()
-    polys = vtk.vtkCellArray()
-    scalars = vtk.vtkFloatArray()
-
-    size = np.shape(pts)
-    n_r = size[0]
-    n_a = size[1]
-    n = n_a * (n_r - 1)  # total number of cells
-    X = pts.reshape(n_r * n_a, 3)
-    geom_pts = write_azimuthal_cell_values(X, n, n_a)
-
-    size = np.shape(X)
-    for i, fxi in enumerate(X):
-        points.InsertPoint(i, fxi)
-        scalars.InsertTuple1(i, i)
-    for pt in geom_pts:
-        polys.InsertNextCell(mkVtkIdList(pt))
-
-    comp.SetPoints(points)
-    comp.SetPolys(polys)
-    comp.GetPointData().SetScalars(scalars)
-
-    mapper = vtk.vtkPolyDataMapper()
-    mapper.SetInputData(comp)
-    mapper.SetScalarRange(comp.GetScalarRange())
-
-    actor = vtk.vtkActor()
-    actor.SetMapper(mapper)
-
-    return actor
-
-
-def mkVtkIdList(it):
-    vil = vtk.vtkIdList()
-    for i in it:
-        vil.InsertNextId(int(i))
-    return vil
+    """Convert a GEOM.PTS array to a pv.PolyData quad mesh."""
+    n_r, n_a = pts.shape[0], pts.shape[1]
+    n = n_a * (n_r - 1)
+    X     = pts.reshape(n_r * n_a, 3).astype(float)
+    cells = write_azimuthal_cell_values(X, n, n_a).astype(int)
+    faces = np.empty((n, 5), dtype=int)
+    faces[:, 0] = 4
+    faces[:, 1:] = cells
+    return pv.PolyData(X, faces.ravel())
 
 
 def write_azimuthal_cell_values(f, n_cells, n_a):

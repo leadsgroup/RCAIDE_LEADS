@@ -28,12 +28,14 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Cessna_172                       import vehicle_setup  
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine import design_constant_speed_internal_combustion_engine
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 
 def main():   
+    ti = time.time()
      
     # Define internal combustion engine from Cessna Regression Aircraft 
     vehicle    = vehicle_setup()
@@ -51,11 +53,15 @@ def main():
     # mission analysis 
     results = missions.base_mission.evaluate()   
     
-    P_truth     = 41773.24166588215
-    mdot_truth  = 0.0036702920144760787
+    P_truth     = 61213.88277906869
+    mdot_truth  = 0.005378390955054601
     
     P    = results.segments.cruise.state.conditions.energy.converters['internal_combustion_engine'].power[-1,0]
     mdot = results.segments.cruise.state.conditions.weights.vehicle.mass_rate[-1,0]     
+
+    # Print the results
+    print('Power: ' + str(P))
+    print('Mass Flow Rate: ' + str(mdot))
 
     # Check the errors
     error = Data()
@@ -69,6 +75,10 @@ def main():
     for k,v in list(error.items()):
         assert(np.abs(v)<1e-6)
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 
@@ -121,7 +131,7 @@ def ICE_CS(vehicle):
     prop.hub_radius                        = 8.     * Units.inches
     prop.cruise.design_freestream_velocity = 119.   * Units.knots
     prop.cruise.design_angular_velocity    = 2650.  * Units.rpm
-    prop.cruise.design_Cl                  = 0.8
+    prop.cruise.design_lift_coefficient                  = 0.8
     prop.cruise.design_altitude            = 12000. * Units.feet
     prop.cruise.design_power               = .64 * 180. * Units.horsepower 
     airfoil                                = RCAIDE.Library.Components.Airfoils.Airfoil()   
@@ -239,8 +249,8 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['ice_constant_speed_propeller']] 
-    segment.assigned_control_variables.body_angle                   
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle                   
+    segment.assigned_control_variables.pitch_angle.active             = True                
                 
     mission.append_segment(segment)
 
@@ -271,6 +281,8 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Aerodynamics  
     aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
+    aerodynamics.settings.number_of_spanwise_vortices    = 10 # reducing the number of vortices to speed up the test 
+    aerodynamics.settings.number_of_chordwise_vortices   = 5  # reducing the number of vortices to speed up the test 
     analyses.append(aerodynamics)
 
     # ------------------------------------------------------------------

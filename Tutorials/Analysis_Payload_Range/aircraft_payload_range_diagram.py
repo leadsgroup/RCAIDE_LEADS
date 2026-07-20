@@ -46,7 +46,7 @@ def main():
     missions = missions_setup(mission)  
         
     # run payload range analysis 
-    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage=0.1, delete_training_data = True)
+    payload_range_results =  compute_payload_range_diagram(mission = missions.base_mission, fuel_reserve_percentage=0.1)
                                 
     plot_payload_range_diagram(payload_range_results)
     return 
@@ -104,7 +104,7 @@ def vehicle_setup():
     # Carbo Bays 
     # ------------------------------------------------------------------ 
     forward_cargo_bay = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
-    forward_cargo_bay.cargo.mass_properties.mass  = 1850
+    forward_cargo_bay.mass_properties.mass        = 1850
     forward_cargo_bay.origin                      = [[6.82, 0, -0.5]]
     forward_cargo_bay.length                      = 7.82
     forward_cargo_bay.width                       = 1.57  
@@ -112,7 +112,7 @@ def vehicle_setup():
     vehicle.cargo_bays.append(forward_cargo_bay) 
  
     aft_cargo_bay  = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
-    aft_cargo_bay.cargo.mass_properties.mass  = 1440
+    aft_cargo_bay.mass_properties.mass        = 1440
     aft_cargo_bay.origin                      = [[23.43, 0, -0.5]]
     aft_cargo_bay.length                      =  5.5
     aft_cargo_bay.width                       =  1.57 
@@ -489,7 +489,7 @@ def vehicle_setup():
     net                                         = RCAIDE.Framework.Networks.Fuel() 
     
     #------------------------------------------------------------------------------------------------------------------------------------  
-    # Fuel Distrubition Line 
+    # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------------------  
     fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line() 
     
@@ -823,7 +823,7 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]   
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle.active             = True                
     
     mission.append_segment(segment) 
  

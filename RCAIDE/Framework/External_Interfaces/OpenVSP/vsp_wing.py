@@ -577,15 +577,15 @@ def write_vsp_wing(vehicle,wing, area_tags, fuel_tank_set_ind, OML_set_ind):
             xsec1 = vsp.GetXSec(xsecsurf,0)
             xsec2 = vsp.GetXSec(xsecsurf,1) 
             if isinstance(wing.airfoil,  RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil):
+                code = wing.airfoil.NACA_4_Series_code
+                camber     = int(code[0]) / 100.0
+                camber_loc = int(code[1]) / 10.0
+                tc         = int(code[2:4]) / 100.0
                 for xsec in [xsec1, xsec2]:
-                    wid = vsp.GetXSecParm(xsec, 'ThickChord')
-                    import pdb; pdb.set_trace()
-                    vsp.SetParmVal(wid, wing.airfoil.geometry.thickness_to_chord)
-                    wid = vsp.GetXSecParm(xsec, 'Camber')
-                    vsp.SetParmVal(wid, wing.airfoil.geometry.camber)
-                    wid = vsp.GetXSecParm(xsec, 'CamberLoc')
-                    vsp.SetParmVal(wid, wing.airfoil.geometry.camber_location)
-        
+                    vsp.SetParmVal(vsp.GetXSecParm(xsec, 'ThickChord'), tc)
+                    vsp.SetParmVal(vsp.GetXSecParm(xsec, 'Camber'), camber)
+                    vsp.SetParmVal(vsp.GetXSecParm(xsec, 'CamberLoc'), camber_loc)
+
             else:
                 vsp.ReadFileAirfoil(xsec1,wing.airfoil.coordinate_file)
                 vsp.ReadFileAirfoil(xsec2,wing.airfoil.coordinate_file)
@@ -594,11 +594,21 @@ def write_vsp_wing(vehicle,wing, area_tags, fuel_tank_set_ind, OML_set_ind):
         if wing.segments[segment_keys[0]].airfoil != None:
             xsecsurf = vsp.GetXSecSurf(wing_id,0)
             vsp.ChangeXSecShape(xsecsurf,0,airfoil_vsp_types[0])
-            vsp.ChangeXSecShape(xsecsurf,1,airfoil_vsp_types[0]) 
+            vsp.ChangeXSecShape(xsecsurf,1,airfoil_vsp_types[0])
             xsec1 = vsp.GetXSec(xsecsurf,0)
             xsec2 = vsp.GetXSec(xsecsurf,1)
-            vsp.ReadFileAirfoil(xsec1,wing.segments[segment_keys[0]].airfoil.coordinate_file)
-            vsp.ReadFileAirfoil(xsec2,wing.segments[segment_keys[0]].airfoil.coordinate_file)
+            if isinstance(wing.segments[segment_keys[0]].airfoil, RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil):
+                code = wing.segments[segment_keys[0]].airfoil.NACA_4_Series_code
+                camber     = int(code[0]) / 100.0
+                camber_loc = int(code[1]) / 10.0
+                tc         = int(code[2:4]) / 100.0
+                for xsec in [xsec1, xsec2]:
+                    vsp.SetParmVal(vsp.GetXSecParm(xsec, 'ThickChord'), tc)
+                    vsp.SetParmVal(vsp.GetXSecParm(xsec, 'Camber'), camber)
+                    vsp.SetParmVal(vsp.GetXSecParm(xsec, 'CamberLoc'), camber_loc)
+            else:
+                vsp.ReadFileAirfoil(xsec1,wing.segments[segment_keys[0]].airfoil.coordinate_file)
+                vsp.ReadFileAirfoil(xsec2,wing.segments[segment_keys[0]].airfoil.coordinate_file)
             vsp.Update()
 
     # Thickness to chords
@@ -659,10 +669,19 @@ def write_vsp_wing(vehicle,wing, area_tags, fuel_tank_set_ind, OML_set_ind):
 
         # Insert the new wing section with specified airfoil if available
         if  wing.segments[segment_keys[i_segs-1]].airfoil != None:
-            vsp.InsertXSec(wing_id,i_segs-1+adjust,airfoil_vsp_types[i_segs]) 
+            vsp.InsertXSec(wing_id,i_segs-1+adjust,airfoil_vsp_types[i_segs])
             xsecsurf = vsp.GetXSecSurf(wing_id,0)
             xsec = vsp.GetXSec(xsecsurf,i_segs+adjust)
-            vsp.ReadFileAirfoil(xsec, wing.segments[segment_keys[i_segs]].airfoil.coordinate_file)
+            if isinstance(wing.segments[segment_keys[i_segs]].airfoil, RCAIDE.Library.Components.Airfoils.NACA_4_Series_Airfoil):
+                code = wing.segments[segment_keys[i_segs]].airfoil.NACA_4_Series_code
+                camber     = int(code[0]) / 100.0
+                camber_loc = int(code[1]) / 10.0
+                tc         = int(code[2:4]) / 100.0
+                vsp.SetParmVal(vsp.GetXSecParm(xsec, 'ThickChord'), tc)
+                vsp.SetParmVal(vsp.GetXSecParm(xsec, 'Camber'), camber)
+                vsp.SetParmVal(vsp.GetXSecParm(xsec, 'CamberLoc'), camber_loc)
+            else:
+                vsp.ReadFileAirfoil(xsec, wing.segments[segment_keys[i_segs]].airfoil.coordinate_file)
         else:
             vsp.InsertXSec(wing_id,i_segs-1+adjust,vsp.XS_FOUR_SERIES)
  
@@ -670,12 +689,13 @@ def write_vsp_wing(vehicle,wing, area_tags, fuel_tank_set_ind, OML_set_ind):
         x_sec_id  = vsp.GetXSec(vsp.GetXSecSurf(wing_id, 0),i_segs+adjust)
 
         # Find the parm strings
-        span_parm    = vsp.GetXSecParm(x_sec_id, 'Span')
-        dih_parm     = vsp.GetXSecParm(x_sec_id, 'Dihedral')
-        sweep_parm   = vsp.GetXSecParm(x_sec_id, 'Sweep')
-        swp_loc_parm = vsp.GetXSecParm(x_sec_id, 'Sweep_Location')
-        rt_ch_parm   = vsp.GetXSecParm(x_sec_id, 'Root_Chord')
-        tc_parm      = vsp.GetXSecParm(x_sec_id, 'ThickChord')
+        span_parm      = vsp.GetXSecParm(x_sec_id, 'Span')
+        dih_parm       = vsp.GetXSecParm(x_sec_id, 'Dihedral')
+        sweep_parm     = vsp.GetXSecParm(x_sec_id, 'Sweep')
+        swp_loc_parm   = vsp.GetXSecParm(x_sec_id, 'Sweep_Location')
+        twist_loc_parm = vsp.GetXSecParm(x_sec_id, 'Twist_Location')
+        rt_ch_parm     = vsp.GetXSecParm(x_sec_id, 'Root_Chord')
+        tc_parm        = vsp.GetXSecParm(x_sec_id, 'ThickChord')
 
         # Set the parm values
         vsp.SetParmVal(span_parm, span_i)
@@ -683,6 +703,7 @@ def write_vsp_wing(vehicle,wing, area_tags, fuel_tank_set_ind, OML_set_ind):
         vsp.SetParmVal(swp_loc_parm, sweep_loc)
         vsp.SetParmVal(rt_ch_parm, chord_i)
         vsp.SetParmVal(tc_parm, tc_i)
+        vsp.SetParmVal(twist_loc_parm, 0.0)
         
         # OpenVSP's rotation on vertical segmented wings is opposite of RCAIDE's
         if not wing.vertical:

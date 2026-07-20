@@ -123,27 +123,5 @@ def trim_drag(state,settings,geometry):
                 control_surface_drag += CD_0 * (0.0011 * (cs.deflection / Units.degrees))  
                 state.conditions.aerodynamics.coefficients.lift.total  +=  -0.0075 *(cs.deflection / Units.degrees)  
                 state.conditions.static_stability.coefficients.M       +=  0.0053 *(cs.deflection / Units.degrees)
-                
-            if type(cs) == RCAIDE.Library.Components.Wings.Control_Surfaces.Flap:
-                if cs.type ==  'split':
-                    A = 0.0014
-                    B = 1.5
-                elif cs.type ==  'plain':
-                    A = 0.0016
-                    B = 1.5
-                elif cs.type ==  'single_slotted':
-                    A = 0.00018
-                    B = 2
-                elif cs.type ==  'flowler':
-                    A = 0.00015
-                    B = 1.5 
-                elif cs.type ==  'double_slotted':
-                    A = 0.0011
-                    B = 1     
-                else:
-                    A = 0.0011
-                    B = 1                     
-                control_surface_drag += cs.chord_fraction * A * (state.conditions.control_surfaces.flap.deflection /Units.degree **B )
-                     
     state.conditions.aerodynamics.coefficients.drag.trim.total =  control_surface_drag 
     return  

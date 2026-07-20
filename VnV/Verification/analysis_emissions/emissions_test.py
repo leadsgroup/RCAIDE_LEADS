@@ -12,10 +12,11 @@ from RCAIDE.Framework.Core                          import Units , Data
 from RCAIDE.Library.Plots                           import *        
 
 # python imports     
-import numpy as np  
+import numpy as np
 import sys
 import os
-import matplotlib.pyplot as plt  
+import matplotlib.pyplot as plt
+import time
 
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -34,18 +35,18 @@ from Boeing_737    import configs_setup as configs_setup
 # ----------------------------------------------------------------------------------------------------------------------
 
 def main():
+    ti = time.time()
     
-    cantera_installation = False 
+    cantera_installation = False
 
-    emissions_methods = ['Emission_Index_Correlation_Method']
+    emissions_methods = ['Emission_Index_Correlation_Method', 'Emission_Index_CRN_Method']
     use_surrogate     = [True, False]
 
-    try: 
+    try:
         import cantera as ct
-        cantera_installation = True 
-        emissions_methods = ['Emission_Index_Correlation_Method', 'Emission_Index_CRN_Method']
+        cantera_installation = True
     except:
-        pass 
+        pass
        
     true_EI_CO2s =  [3.16, 3.0996295865239563, 3.1371106320136155]
     true_EI_H2Os =  [1.23, 1.1911420639654764, 1.2053455595806213]
@@ -70,27 +71,30 @@ def main():
                 # create mission instances (for multiple types of missions)
                 missions = missions_setup(mission) 
                  
-                # mission analysis 
+                # mission analysis - skip evaluate when Cantera is not installed
+                if emissions_methods[em] == 'Emission_Index_CRN_Method' and not cantera_installation:
+                    i += 1
+                    continue
                 results = missions.base_mission.evaluate()
-                
+
                 # check results
                 EI_CO2         = results.segments.cruise.conditions.emissions.index.CO2[0,0]
-                EI_H2O         = results.segments.cruise.conditions.emissions.index.H2O[0,0]  
+                EI_H2O         = results.segments.cruise.conditions.emissions.index.H2O[0,0]
                 true_EI_CO2    = true_EI_CO2s[i]
-                true_EI_H2O    = true_EI_H2Os[i]   
+                true_EI_H2O    = true_EI_H2Os[i]
                 diff_EI_CO2    = np.abs(EI_CO2 - true_EI_CO2)
                 diff_EI_H2O    = np.abs(EI_H2O - true_EI_H2O)
-                
-                if cantera_installation == False and  i > 0:
-                    pass
-                else:
-                    print('EI CO2 Error: ',diff_EI_CO2)
-                    assert (diff_EI_CO2/true_EI_CO2) < 1e-1
-                    print('EI H2O Error: ',diff_EI_H2O)
-                    assert (diff_EI_H2O/true_EI_H2O) < 1e-1
+
+                print('EI CO2 Error: ',diff_EI_CO2)
+                assert (diff_EI_CO2/true_EI_CO2) < 1e-1
+                print('EI H2O Error: ',diff_EI_H2O)
+                assert (diff_EI_H2O/true_EI_H2O) < 1e-1
                 i += 1
-             
-    return 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
+    return
 
 # ----------------------------------------------------------------------
 #   Define the Vehicle Analyses
@@ -126,8 +130,9 @@ def base_analysis(vehicle,emissions_method, use_surrogate):
     
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis 
-    aerodynamics                                       = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.settings.model_fuselage               = True 
+    aerodynamics                                       = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
+    aerodynamics.settings.number_of_spanwise_vortices    = 10 # reducing the number of vortices to speed up the test 
+    aerodynamics.settings.number_of_chordwise_vortices   = 5  # reducing the number of vortices to speed up the test 
     analyses.append(aerodynamics)
 
     # ------------------------------------------------------------------
@@ -198,7 +203,7 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors = [['propulsor_1','propulsor_2']] 
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle.active             = True                
     
     mission.append_segment(segment)    
      

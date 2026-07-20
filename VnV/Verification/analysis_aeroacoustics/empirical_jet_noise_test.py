@@ -31,12 +31,14 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Embraer_190    import vehicle_setup as vehicle_setup
 from Embraer_190    import configs_setup as configs_setup 
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 
 def main():     
+    ti = time.time()
 
     # vehicle data
     vehicle                           = vehicle_setup()
@@ -54,10 +56,14 @@ def main():
      
     # SPL of rotor check during hover 
     E190_SPL        = np.max(baseline_results.segments.takeoff.conditions.aeroacoustics.hemisphere_SPL_dBA)
-    E190_SPL_true   = 124.19217253485145 # this value is high because its of a hemisphere of radius 20
+    E190_SPL_true   = 124.34375998448735 # this value is high because its of a hemisphere of radius 20
     E190_diff_SPL   = np.abs(E190_SPL - E190_SPL_true)
     print('SPL difference: ',E190_diff_SPL)
     assert np.abs((E190_SPL - E190_SPL_true)/E190_SPL_true) < 1e-3 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 def base_analysis(vehicle):
@@ -77,9 +83,7 @@ def base_analysis(vehicle):
     analyses.append(weights)    
  
     #  Aerodynamics Analysis 
-    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.settings.number_of_spanwise_vortices   = 10
-    aerodynamics.settings.number_of_chordwise_vortices  = 2     
+    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()     
     analyses.append(aerodynamics)
 
     # ------------------------------------------------------------------
@@ -151,7 +155,7 @@ def baseline_mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle.active             = True                
     
     mission.append_segment(segment) 
 
@@ -171,10 +175,10 @@ def baseline_mission_setup(analyses):
     segment.flight_dynamics.force_z                           = True     
     
     # define flight controls 
-    segment.assigned_control_variables.wind_angle.active                 = True     
-    segment.assigned_control_variables.wind_angle.initial_guess_values   = [[ 1.0 * Units.deg]] 
-    segment.assigned_control_variables.body_angle.active                 = True        
-    segment.assigned_control_variables.body_angle.initial_guess_values   = [[ 5.0 * Units.deg]]
+    segment.assigned_control_variables.angle_of_attack.active                 = True     
+    segment.assigned_control_variables.angle_of_attack.initial_guess_values   = [[ 1.0 * Units.deg]] 
+    segment.assigned_control_variables.pitch_angle.active                 = True        
+    segment.assigned_control_variables.pitch_angle.initial_guess_values   = [[ 5.0 * Units.deg]]
      
     mission.append_segment(segment)
 
@@ -195,7 +199,7 @@ def baseline_mission_setup(analyses):
     # define flight controls
     segment.assigned_control_variables.throttle.active               = True
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]
-    segment.assigned_control_variables.body_angle.active             = True
+    segment.assigned_control_variables.pitch_angle.active             = True
 
     mission.append_segment(segment)
 
@@ -217,7 +221,7 @@ def baseline_mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]  
-    segment.assigned_control_variables.body_angle.active             = True                 
+    segment.assigned_control_variables.pitch_angle.active             = True                 
        
     mission.append_segment(segment) 
 

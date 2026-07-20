@@ -27,12 +27,14 @@ vehicles_path = os.path.abspath(
 if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Navion    import vehicle_setup, configs_setup 
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 
 def main():
+    ti = time.time()
     
     new_regression_results = False  # Keep False, Only True when getting new results for regression 
 
@@ -49,6 +51,10 @@ def main():
     folder_name            = '_surrogate'
     AVL_Surrogate_Mission(use_surrogate,trim_aircraft,keep_regression_files,new_regression_results,folder_name)    
  
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
     
 def AVL_Surrogate_Mission(use_surrogate,trim_aircraft,keep_regression_files,new_regression_results,folder_name):
@@ -72,7 +78,7 @@ def AVL_Surrogate_Mission(use_surrogate,trim_aircraft,keep_regression_files,new_
  
     # Extract sample values from computation   
     cruise_CL        = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0] 
-    cruise_CL_thruth = 0.4207404923969484
+    cruise_CL_thruth = 0.4282429131385143
     # Truth values  
     error = Data()  
     error.cruise_CL   = np.max(np.abs(cruise_CL - cruise_CL_thruth))   
@@ -106,7 +112,7 @@ def AVL_Single_Point_Trim_Mission(use_surrogate,trim_aircraft,keep_regression_fi
  
     # Extract sample values from computation   
     cruise_CL        = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[0][0]
-    cruise_CL_thruth = 0.48
+    cruise_CL_thruth = 0.399996
     
     # Truth values  
     error = Data()  
@@ -157,8 +163,7 @@ def base_analysis(vehicle,use_surrogate,trim_aircraft,keep_regression_files,new_
     aerodynamics.settings.filenames.avl_bin_name     = '/Users/matthewclarke/Documents/LEADS/CODES/AVL/avl3.35'
     aerodynamics.settings.filenames.run_folder       = os.path.join(os.path.dirname(__file__),'avl_files' +  folder_name)
     aerodynamics.settings.use_surrogate              = use_surrogate
-    aerodynamics.settings.trim_aircraft              = trim_aircraft 
-    aerodynamics.settings.model_fuselage             = False 
+    aerodynamics.settings.trim_aircraft              = trim_aircraft  
     aerodynamics.settings.print_output               = False 
     aerodynamics.settings.keep_files                 = keep_regression_files          
     aerodynamics.settings.new_regression_results     = new_regression_results
@@ -215,7 +220,7 @@ def AVL_Surrogate_mission_setup(analyses):
     segment.flight_dynamics.force_z                                 = True     
     
     # define flight controls 
-    segment.assigned_control_variables.body_angle.active             = True     
+    segment.assigned_control_variables.pitch_angle.active             = True     
     segment.assigned_control_variables.throttle.active               = True
     segment.assigned_control_variables.throttle.initial_guess_values = [[0.5]]
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['ice_propeller']]    
@@ -249,14 +254,14 @@ def AVL_Single_Point_mission_setup(analyses):
     segment.analyses.extend(analyses.base) 
     segment.altitude                                                = 2500 * Units.feet
     segment.air_speed                                               = 120 * Units['mph']
-    segment.trim_lift_coefficient                                   = 0.4
+    segment.lift_coefficient                                        = 0.4
                 
     # define flight dynamics to model             
     segment.flight_dynamics.force_x                                 = True  
     segment.flight_dynamics.force_z                                 = True     
     
     # define flight controls 
-    segment.assigned_control_variables.body_angle.active             = True     
+    segment.assigned_control_variables.pitch_angle.active             = True     
     segment.assigned_control_variables.throttle.active               = True
     segment.assigned_control_variables.throttle.initial_guess_values = [[0.5]]
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['ice_propeller']]   

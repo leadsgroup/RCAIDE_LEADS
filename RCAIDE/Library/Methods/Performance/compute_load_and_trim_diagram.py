@@ -14,6 +14,7 @@ from RCAIDE.Library.Methods.Mass_Properties.estimate_maximum_landing_weight impo
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_vehicle_center_of_gravity 
 from RCAIDE.Library.Mission.Common.Pre_Process import  geometry, mass_properties
 import pandas as pd
+
 # Pacakge imports 
 import numpy as np
 from copy import  deepcopy
@@ -36,8 +37,7 @@ def compute_load_and_trim_diagram(mission = None, cruise_segment_tag = "cruise",
     # where 2: is for the loading and unloading cases
     # and N is the number of object types i.e cabin,cargo and fuel 
   
-    """  
-            
+    """   
     #------------------------------------------------------------------------  
     # Remove Takeoff mass
     #------------------------------------------------------------------------   
@@ -46,10 +46,10 @@ def compute_load_and_trim_diagram(mission = None, cruise_segment_tag = "cruise",
         segment.analyses.geometry.settings.compute_fuel_volume             = True 
         segment.analyses.weights.print_weight_analysis_report              = True 
         segment.analyses.weights.settings.run_center_of_gravity_analysis   = True
+        segment.analyses.weights.settings.overwrite_center_of_gravity      = True
         segment.analyses.weights.settings.run_moments_of_inertia_analysis  = True  
         segment.analyses.stability.print_stability_analysis_report         = True
         segment.analyses.stability.settings.compute_neutral_point          = True
-        segment.analyses.weights.settings.overwrite_center_of_gravity      = True
     
     #------------------------------------------------------------------------  
     # Check Input Args
@@ -90,7 +90,7 @@ def compute_load_and_trim_diagram(mission = None, cruise_segment_tag = "cruise",
     vehicle_0.mass_properties.payload = PLD  
     PLD_per_pax   =  (weight_breakdown.payload.passengers  + weight_breakdown.payload.baggage) / PAX
     OEW           =  vehicle_0.mass_properties.operating_empty
-    if mission.segments[cruise_segment_tag].analyses.weights.propulsion_architecture == 'Hydrogen': 
+    if mission.segments[cruise_segment_tag].analyses.weights.propulsion_architecture == 'Cryogenic':
         MLW = (vehicle_0.mass_properties.max_takeoff - 0.65 * vehicle_0.mass_properties.max_fuel)
     else:
         MLW =  estimate_maximum_landing_weight(MTOW)
@@ -103,12 +103,12 @@ def compute_load_and_trim_diagram(mission = None, cruise_segment_tag = "cruise",
     W_CARGO += PLD-W_PAX
      
 
-    m_f = []     
+    m_f = []
     for network in vehicle_0.networks:
         for fuel_line in  network.fuel_lines:
-            for fuel_tank in fuel_line.fuel_tanks: 
+            for fuel_tank in fuel_line.fuel_tanks:
                 m_f.append(fuel_tank.fuel.mass_properties.mass)
-    fuel_tank_ratio = np.array(m_f) / sum(np.array(m_f)) 
+    fuel_tank_ratio = np.array(m_f) / sum(np.array(m_f))
 
     #------------------------------------------------------------------------  
     # Compute Loading Points 

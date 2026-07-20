@@ -26,12 +26,14 @@ if vehicles_path not in sys.path:
 # the analysis functions 
  
 from Cessna_172  import vehicle_setup ,configs_setup
+import time
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  REGRESSION
 # ----------------------------------------------------------------------------------------------------------------------  
 def main():   
+    ti = time.time()
     
     # vehicle data
     vehicle  = vehicle_setup() 
@@ -51,11 +53,16 @@ def main():
     # mission analysis 
     results = missions.base_mission.evaluate()  
 
-    P_truth     = 41448.65514895566
-    mdot_truth  = 0.003641773104916447
+    P_truth     = 61264.08298406276
+    mdot_truth  = 0.005382801659231894
     
     P    = results.segments.cruise.state.conditions.energy.converters['internal_combustion_engine'].power[-1,0]
     mdot = results.segments.cruise.state.conditions.weights.vehicle.mass_rate[-1,0]
+
+    # Print the results
+    print('Power: ' + str(P))
+    print('Mass Flow Rate: ' + str(mdot))
+
 
     # Check the errors
     error = Data()
@@ -68,6 +75,10 @@ def main():
     for k,v in list(error.items()):
         assert(np.abs(v)<1e-3)
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return    
 
 
@@ -110,7 +121,7 @@ def mission_setup(analyses):
     # define flight controls   
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['ice_propeller']]  
-    segment.assigned_control_variables.body_angle.active             = True                  
+    segment.assigned_control_variables.pitch_angle.active             = True                  
     
     mission.append_segment(segment)
 
@@ -139,6 +150,8 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Aerodynamics  
     aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
+    aerodynamics.settings.number_of_spanwise_vortices    = 10 # reducing the number of vortices to speed up the test 
+    aerodynamics.settings.number_of_chordwise_vortices   = 5  # reducing the number of vortices to speed up the test 
     analyses.append(aerodynamics) 
 
     # ------------------------------------------------------------------

@@ -66,8 +66,8 @@ def compute_neutral_point(stability, vehicle):
 
     """ 
     settings       = stability.settings
-    AoA            = stability.training.angle_of_attack 
-    Mach           = stability.training.Mach   
+    AoA            = np.array([stability.training.angle_of_attack[2],stability.training.angle_of_attack[3]])  
+    Mach           = np.array([stability.training.Mach[0]]) 
     len_Mach       = len(Mach)        
     len_AoA        = len(AoA)
      
@@ -84,6 +84,7 @@ def compute_neutral_point(stability, vehicle):
     clean_wing_vehicle_np = deepcopy(vehicle) # Double check this is correct
     for wing in clean_wing_vehicle_np.wings:
         wing.control_surfaces = []
+        
     # use center of gravity as inital guess
     cg     =  vehicle.mass_properties.center_of_gravity[0][0]
     bnds   = [[0, 100]]
@@ -142,7 +143,7 @@ def neutral_point_objective(cg_location,conditions,settings,clean_wing_vehicle_n
     CM        = np.reshape(CM_res,(len_Mach,len_AoA)).T 
     
     # compute dCM_dalpha 
-    dCM_dalpha = ( CM[2, 0] - CM[1, 0]) /( AoA[2] - AoA[1])
+    dCM_dalpha = ( CM[1, 0] - CM[0, 0]) /( AoA[1] - AoA[0])
      
     # find abs 
     return  abs(dCM_dalpha)

@@ -116,13 +116,13 @@ def plot_aircraft_aerodynamics(results,
     #------------------------------------------------------------------------
     # setup figures
     #------------------------------------------------------------------------
-    fig = plt.figure()  
+    fig = plt.figure("Aircraft_Aerodynamic_Analysis")  
     fig.set_size_inches(12,6) 
     axis_1 = fig.add_subplot(1, 2, 1)
     axis_2 = fig.add_subplot(1, 2, 2) 
   
-    axis_1.plot( results.alpha/Units.degree, results.lift_coefficient) 
-    axis_2.plot( results.alpha/Units.degree, results.drag_coefficient) 
+    axis_1.plot( results.aerodynamics.angles.alpha/Units.degree, results.aerodynamics.coefficients.lift.total) 
+    axis_2.plot( results.aerodynamics.angles.alpha/Units.degree, results.aerodynamics.coefficients.drag.total) 
             
     axis_1.set_xlabel('AoA') 
     axis_2.set_xlabel('AoA')  
@@ -136,5 +136,4 @@ def plot_aircraft_aerodynamics(results,
     if save_figure:    
         fig.savefig(save_filename + file_type) 
     
-    plt.tight_layout()
     return

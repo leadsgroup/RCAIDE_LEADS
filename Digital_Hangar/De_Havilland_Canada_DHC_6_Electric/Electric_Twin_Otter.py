@@ -5,6 +5,8 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units    
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor   import design_electric_rotor  
+from RCAIDE.Library.Methods.Thermal_Management.Heat_Exchangers.Cross_Flow_Heat_Exchanger  import design_cross_flow_heat_exchanger
+from RCAIDE.Library.Methods.Thermal_Management.Batteries.Liquid_Cooled_Wavy_Channel       import design_wavy_channel
 from RCAIDE.Library.Plots                 import *       
 
 # python imports  
@@ -24,12 +26,12 @@ def main():
     try:
         import vsp as vsp
         from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
-        export_vsp_vehicle(vehicle, 'Twin_Otter_all_electric')
+        export_vsp_vehicle(vehicle, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Twin_Otter_all_electric'))
     except ImportError:
         pass
         
     # Step 2: plot vehicle 
-    plot_3d_vehicle(vehicle,export_gltf=True)  
+    plot_3d_vehicle(vehicle,save_filename=os.path.join(os.path.dirname(os.path.abspath(__file__)),'Electric_Twin_Otter'),export_gltf=True,show_figure=True)  
     
     return 
  
@@ -38,12 +40,16 @@ def vehicle_setup():
     
     airfoil_file_path =  os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') + os.sep 
     polar_file_path   =  os.path.join(os.path.join(os.path.split(sys.path[0])[0], 'Airfoils_and_Polars') , 'Polars') + os.sep  
+
+ 
+    # ################################################# Vehicle-level Properties ########################################################  
+
     #------------------------------------------------------------------------------------------------------------------------------------
     #   Initialize the Vehicle
     #------------------------------------------------------------------------------------------------------------------------------------
 
     vehicle = RCAIDE.Vehicle()
-    vehicle.tag = 'Twin_Otter_all_electric'
+    vehicle.tag = 'All_Electric_Twin_Otter'
 
  
     # ################################################# Vehicle-level Properties ########################################################  
@@ -71,27 +77,27 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------
     # ##################################################### Landing Gear ################################################################    
     #------------------------------------------------------------------------------------------------------------------------------------ 
-    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
-    main_gear.tire_diameter                  = 6  *  Units.inches 
-    main_gear.rim_diameter                   = 3  *  Units.inches 
-    main_gear.tire_width                     = 6  *  Units.inches 
-    main_gear.strut_length                   = 12  * Units.ft 
-    main_gear.wheels                         = 4   
+    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
+    main_gear.tire_diameter                  = 22.0 *  Units.inches
+    main_gear.rim_diameter                   = 10.0 *  Units.inches
+    main_gear.tire_width                     = 8.5  *  Units.inches
+    main_gear.strut_length                   = 0.65 * Units.m
+    main_gear.origin                         = [[5.7, 2.055, -.5]]
+    main_gear.wheels                         = 4
     main_gear.number_of_gear_types_in_tandem = 1
-    main_gear.number_of_wheels_in_gear_type  = 2  
+    main_gear.number_of_wheels_in_gear_type  = 1
     main_gear.symmetric                      = True
-    main_gear.origin = [[8.0, 0, 0]]
-    vehicle.append_component(main_gear)  
+    vehicle.append_component(main_gear)
 
-    nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
-    nose_gear.tire_diameter                  =  5 *  Units.inches   
-    nose_gear.rim_diameter                   =  3 *  Units.inches 
-    nose_gear.tire_width                     =  5 *  Units.inches 
-    nose_gear.strut_length                   =  6.* Units.ft 
-    nose_gear.origin = [[2.0, 0, 0]]
-    nose_gear.wheels                         = 2   
+    nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()
+    nose_gear.tire_diameter                  = 22.0 *  Units.inches
+    nose_gear.rim_diameter                   = 10.0 *  Units.inches
+    nose_gear.tire_width                     = 8.5  *  Units.inches
+    nose_gear.strut_length                   = 0.65 * Units.m
+    nose_gear.origin                         = [[2.0, 0, -.5]]
+    nose_gear.wheels                         = 1
     nose_gear.number_of_gear_types_in_tandem = 1
-    nose_gear.number_of_wheels_in_gear_type  = 2    
+    nose_gear.number_of_wheels_in_gear_type  = 1
     vehicle.append_component(nose_gear)
             
 
@@ -163,13 +169,13 @@ def vehicle_setup():
     wing.append_control_surface(aileron)  
 
     # control surfaces -------------------------------------------
-    aileron                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Flap()
-    aileron.tag                   = 'flap'
-    aileron.span_fraction_start   = 0.15
-    aileron.span_fraction_end     = 0.55
-    aileron.deflection            = 0.0  * Units.deg
-    aileron.chord_fraction        = 0.25 
-    wing.append_control_surface(aileron)      
+    flap                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Flap()
+    flap.tag                   = 'flap'
+    flap.span_fraction_start   = 0.15
+    flap.span_fraction_end     = 0.55
+    flap.deflection            = 0.0  * Units.deg
+    flap.chord_fraction        = 0.25 
+    wing.append_control_surface(flap)      
     
     # add to vehicle
     vehicle.append_component(wing)
@@ -319,7 +325,8 @@ def vehicle_setup():
     fuselage.areas.side_projected               = fuselage.lengths.total *fuselage.heights.maximum  # estimate    
     fuselage.areas.wetted                       = 2 * np.pi * fuselage.width *  fuselage.lengths.total +  2 * np.pi * fuselage.width ** 2
     fuselage.areas.front_projected              =  np.pi * fuselage.width ** 2 
-    fuselage.effective_diameter                 = 1.75 
+    fuselage.effective_diameter                 = 1.75
+    fuselage.operational_items.origin            = [[fuselage.lengths.total * 0.6, 0, 0]]
 
     # Segment
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
@@ -432,7 +439,46 @@ def vehicle_setup():
     vehicle.append_component(fuselage)
     
     # ########################################################  Energy Network  #########################################################  
-    net                                         = RCAIDE.Framework.Networks.Electric()    
+    net                                         = RCAIDE.Framework.Networks.Electric()   
+
+    #------------------------------------------------------------------------------------------------------------------------------------  
+    ##  Systems
+    #------------------------------------------------------------------------------------------------------------------------------------  
+ 
+    avionics =  RCAIDE.Library.Components.Powertrain.Systems.Avionics()
+    avionics.origin                   = [[2,0,0]]
+    avionics.mass_properties.uninstalled        = 2. * Units.lbs
+    net.systems.append(avionics)
+
+    flight_controls =  RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
+    flight_controls.origin            = [[7,0,0]]
+    net.systems.append(flight_controls)
+
+    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
+    auxillary_power_unit.origin       = [[14,0,0]]
+    net.systems.append(auxillary_power_unit)
+
+    electrical =  RCAIDE.Library.Components.Powertrain.Systems.Electrical()
+    electrical.origin                 = [[6,0,0]]
+    net.systems.append(electrical)
+
+    hydraulics =  RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
+    hydraulics.origin                 = [[7,0,0]]
+    net.systems.append(hydraulics)
+
+    environmental_controls =  RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
+    environmental_controls.origin     = [[6,0,-0.5]]
+    net.systems.append(environmental_controls)
+
+    instruments =  RCAIDE.Library.Components.Powertrain.Systems.Instruments()
+    instruments.origin                = [[6,0,0]]
+    net.systems.append(instruments)
+
+    furnishings = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
+    furnishings.origin                = [[7,0,0]]
+    net.systems.append(furnishings)
+
+
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus
     #------------------------------------------------------------------------------------------------------------------------------------  
@@ -442,31 +488,53 @@ def vehicle_setup():
     # Battery
     #------------------------------------------------------------------------------------------------------------------------------------  
     bat_module                                             = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC()
-    bat_module.electrical_configuration.series             = 85
-    bat_module.electrical_configuration.parallel           = 53
-    bat_module.cell.nominal_capacity                       = 6
-    bat_module.cell.mass                                   = 0.03 * Units.kg
-    bat_module.geometrtic_configuration.normal_count       = 85
-    bat_module.geometrtic_configuration.parallel_count     = 53 
-    for _ in range(4):
+    bat_module.electrical_configuration.series             = 10
+    bat_module.electrical_configuration.parallel           = 210
+    bat_module.cell.nominal_capacity                       = 3.8 
+    bat_module.geometric_configuration.stacking_rows       = 8
+    bat_module.geometric_configuration.normal_count        = 75
+    bat_module.geometric_configuration.parallel_count      = 30 
+
+    for i in range(12):
         bat_copy = deepcopy(bat_module)
+        bat_copy.origin   = [[3 + (i * 0.5) , 0, -0.35]]
         bus.battery_modules.append(bat_copy)
 
-    bus.battery_module_electric_configuration = 'Parallel'  
-    bus.initialize_bus_properties()
+    bus.battery_module_electric_configuration = 'Series' 
+    bus.initialize_bus_properties()  
+ 
 
-    #------------------------------------------------------------------------------------------------------------------------------------  
+    ##------------------------------------------------------------------------------------------------------------------------------------  
     # Coolant Line
     #------------------------------------------------------------------------------------------------------------------------------------  
-    coolant_line                                 = RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line([bus])
-    coolant_line.tag                             = 'air_cooled_coolant_line'
+    coolant_line                                           = RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line([bus])
+    coolant_line.tag                                       = 'liquid_cooled_coolant_line'
     net.coolant_lines.append(coolant_line)
-    HAS                                         = RCAIDE.Library.Components.Thermal_Management.Batteries.Air_Cooled() 
+    HAS                                                    = RCAIDE.Library.Components.Thermal_Management.Batteries.Liquid_Cooled_Wavy_Channel(coolant_line)
+    HAS.design_altitude                                    = 2500. * Units.feet  
+    atmosphere                                             = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976() 
+    atmo_data                                              = atmosphere.compute_values(altitude = HAS.design_altitude)     
+    HAS.coolant_inlet_temperature                          = atmo_data.temperature[0,0]  
+    HAS.design_battery_operating_temperature               = 313
+    HAS.design_heat_removed                                = 50000 /len(bus.battery_modules)
+    HAS                                                    = design_wavy_channel(HAS,bat_module) 
+    
     for battery_module in bus.battery_modules:
         coolant_line.battery_modules[battery_module.tag].append(HAS)
-
+        
+    # Battery Heat Exchanger               
+    HEX                                                    = RCAIDE.Library.Components.Thermal_Management.Heat_Exchangers.Cross_Flow_Heat_Exchanger() 
+    HEX.design_altitude                                    = 2500. * Units.feet 
+    HEX.inlet_temperature_of_cold_fluid                    = atmo_data.temperature[0,0]   
+    HEX                                                    = design_cross_flow_heat_exchanger(HEX,coolant_line,bat_module)     
+    coolant_line.heat_exchangers.append(HEX)
     
-     #------------------------------------------------------------------------------------------------------------------------------------  
+    # Reservoir for Battery TMS
+    RES                                                    = RCAIDE.Library.Components.Thermal_Management.Reservoirs.Reservoir()
+    coolant_line.reservoirs.append(RES) 
+    
+     
+    #------------------------------------------------------------------------------------------------------------------------------------  
     #  Starboard Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------   
     starboard_propulsor                              = RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor()  
@@ -476,7 +544,7 @@ def vehicle_setup():
     esc                                              = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller()
     esc.tag                                          = 'esc_1'
     esc.efficiency                                   = 0.95 
-    esc.origin                                       = [[4.75,2.8129,1.0]]
+    esc.origin                                       = [[3.8,2.8129,1. ]]
     esc.bus_voltage                                  = bus.voltage   
     starboard_propulsor.electronic_speed_controller  = esc   
      
@@ -484,17 +552,21 @@ def vehicle_setup():
     propeller                                        = RCAIDE.Library.Components.Powertrain.Converters.Propeller() 
     propeller.tag                                    = 'propeller_1'  
     propeller.tip_radius                             = 2.59/2
-    propeller.number_of_blades                       = 5
-    propeller.hub_radius                             = 0.1 
-    propeller.cruise.design_freestream_velocity      = 200 * Units.kts  
-    propeller.cruise.design_angular_velocity         = 2500.0 * Units.rpm  
-    propeller.cruise.design_altitude                 = 10000*Units.ft  
-    propeller.cruise.design_thrust                   = 10000.0 * Units.N
-    
-    propeller.origin                                 =  [[3.9,2.8129,1.]] 
+    propeller.number_of_blades                       = 3
+    propeller.hub_radius                             = 5.    * Units.inches 
+    propeller.cruise.design_freestream_velocity      = 150 * Units.kts      
+    speed_of_sound                                   = 343 
+    propeller.cruise.design_tip_mach                 = 0.8
+    propeller.cruise.design_angular_velocity         = propeller.cruise.design_tip_mach *speed_of_sound/propeller.tip_radius
+    propeller.cruise.design_lift_coefficient         = 0.8
+    propeller.cruise.design_altitude                 = 10000. * Units.feet 
+    propeller.cruise.design_thrust                   = 5000  
+    propeller.clockwise_rotation                     = False
+    propeller.variable_pitch                         = True  
+    propeller.origin                                 = [[3.5,2.8129,1.]]   
     airfoil                                          = RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil.tag                                      = 'NACA_4412' 
-    airfoil.coordinate_file                          =  airfoil_file_path + 'NACA_4412.txt'   # absolute path   
+    airfoil.coordinate_file                          =  airfoil_file_path+ 'NACA_4412.txt'   # absolute path   
     airfoil.polar_files                              =[ polar_file_path + 'NACA_4412_polar_Re_50000.txt',
                                                         polar_file_path + 'NACA_4412_polar_Re_100000.txt',
                                                         polar_file_path + 'NACA_4412_polar_Re_200000.txt',
@@ -502,19 +574,18 @@ def vehicle_setup():
                                                         polar_file_path + 'NACA_4412_polar_Re_1000000.txt']   
     propeller.append_airfoil(airfoil)                       
     propeller.airfoil_polar_stations                 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]    
-    starboard_propulsor.rotor                        = propeller
-
+    starboard_propulsor.rotor                        = propeller   
+              
     # DC_Motor       
     motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     motor.efficiency                                 = 0.98
-    motor.origin                                     = [[5.0,2.8129,1.0]]
+    motor.origin                                     = [[4.0,2.8129,1. ]]   
     motor.nominal_voltage                            = bus.voltage 
-    motor.no_load_current                            = 1
+    motor.no_load_current                            = 1   
     starboard_propulsor.motor                        = motor
-
+    
     # design starboard propulsor 
     design_electric_rotor(starboard_propulsor)
-    
 
     
     #########################################################   Nacelles  ############################################################    
@@ -610,27 +681,12 @@ def vehicle_setup():
     port_propulsor.rotor.tag                           = 'port_propulsor_propeller' 
     port_propulsor.rotor.origin                        = [[3.9,-2.8129,1.]]
     port_propulsor.motor.tag                           ='port_propulsor_motor' 
-    port_propulsor.motor.origin                        = [[5.0,-2.8129,1.15]]    
+    port_propulsor.motor.origin                        = [[5.0,-2.8129,1.]]    
     port_propulsor.nacelle.tag                         = 'nacelle_2'
     port_propulsor.nacelle.origin                      = [[3.5,-2.8129,1]] 
     # append propulsor to distribution line 
     net.propulsors.append(port_propulsor) 
-
-    #------------------------------------------------------------------------------------------------------------------------------------ 
-    # Avionics
-    #------------------------------------------------------------------------------------------------------------------------------------ 
-    Wuav                                        = 2. * Units.lbs
-    avionics                                    = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.mass_properties.uninstalled        = Wuav
-    vehicle.avionics                            = avionics    
-
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    # Avionics
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    avionics                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.power_draw          = 30. # Watts
-    bus.avionics                 = avionics
-    
+ 
     #------------------------------------------------------------------------------------------------------------------------------------   
     # Assign propulsors to bus       
     bus.assigned_propulsors =  [[starboard_propulsor.tag, port_propulsor.tag]] 
@@ -639,6 +695,7 @@ def vehicle_setup():
     net.busses.append(bus)
     vehicle.append_energy_network(net)   
  
+    
     
     return vehicle 
 

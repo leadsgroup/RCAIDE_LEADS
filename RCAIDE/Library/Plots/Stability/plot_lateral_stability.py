@@ -7,9 +7,8 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
 from RCAIDE.Framework.Core import Units
-from RCAIDE.Library.Plots.Common import set_axes, plot_style
+from RCAIDE.Library.Plots.Common import set_axes, plot_style, segment_colors
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
 import numpy as np  
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -103,7 +102,7 @@ def plot_lateral_stability(results,
     plt.rcParams.update(parameters)
      
     # get line colors for plots 
-    line_colors   = cm.inferno(np.linspace(0,0.9,len(results.segments)))     
+    line_colors   = segment_colors(len(results.segments))     
      
     fig   = plt.figure(save_filename)
     fig.set_size_inches(width,height) 
@@ -133,7 +132,11 @@ def plot_lateral_stability(results,
         axis_3.set_xlabel('Time (mins)')
         axis_3.set_ylabel(r'Rudder Defl. (deg)')
         set_axes(axis_3)         
-         
+    
+    axis_1.set_ylim([-40, 40])  
+    axis_2.set_ylim([-40, 40])    
+    axis_3.set_ylim([-40, 40])
+    
     if show_legend:
         leg =  fig.legend(bbox_to_anchor=(0.5, 0.95), loc='upper center', ncol = 4) 
         leg.set_title('Flight Segment', prop={'size': ps.legend_font_size, 'weight': 'heavy'})    

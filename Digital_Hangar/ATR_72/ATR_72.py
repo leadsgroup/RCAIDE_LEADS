@@ -8,9 +8,10 @@ from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop  import design_turbo
 from RCAIDE.Library.Plots                 import *      
 from RCAIDE.Library.Methods.Performance   import *  
 
-# python imports 
-import numpy as np   
-from copy import deepcopy 
+# python imports
+import numpy as np
+import os
+from copy import deepcopy
 
 # ----------------------------------------------------------------------
 #   Main
@@ -23,12 +24,12 @@ def main():
     try:
         import vsp as vsp
         from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
-        export_vsp_vehicle(vehicle, 'ATR_72')
+        export_vsp_vehicle(vehicle, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ATR_72'))
     except ImportError:
         pass
         
     # Step 2: plot vehicle 
-    plot_3d_vehicle(vehicle,export_gltf=True) 
+    plot_3d_vehicle(vehicle,save_filename=os.path.join(os.path.dirname(os.path.abspath(__file__)),'ATR_72'),export_gltf=True,show_figure=True) 
     
     return 
 
@@ -53,7 +54,7 @@ def vehicle_setup():
     vehicle.mass_properties.takeoff                   = 23000  
     vehicle.mass_properties.operating_empty           = 13010
     vehicle.mass_properties.max_zero_fuel             = 20000 
-    vehicle.mass_properties.max_payload               = 7100 
+    vehicle.mass_properties.max_payload               = 7400 
     vehicle.mass_properties.center_of_gravity         = [[13.00381052,0,1.026]]  
     vehicle.mass_properties.max_fuel                  = 5450
     
@@ -73,18 +74,18 @@ def vehicle_setup():
   
 
     # ################################################# Landing Gear #############################################################    
-
     # ------------------------------------------------------------------
     #  Main Gear 
     # ------------------------------------------------------------------       
     main_gear                                 = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
-    main_gear.tire_diameter                   = 34  *  Units.inches 
-    main_gear.rim_diameter                    = 16  *  Units.inches 
-    main_gear.tire_width                      = 10  *  Units.inches 
+    main_gear.tire_diameter                   = 30   *  Units.inches
+    main_gear.rim_diameter                    = 14   *  Units.inches
+    main_gear.tire_width                      = 9.75 *  Units.inches
     main_gear.strut_length                    = 1 *  Units.meter 
     main_gear.wheels                          = 4   
     main_gear.number_of_gear_types_in_tandem  = 1
     main_gear.number_of_wheels_in_gear_type   = 2  
+    main_gear.origin                          = [[13.0, 2.05, -0.5]]
     main_gear.xz_plane_symmetric              = True
     vehicle.append_component(main_gear)  
 
@@ -93,15 +94,16 @@ def vehicle_setup():
     #  Nose Gear 
     # ------------------------------------------------------------------    
     nose_gear                                 = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
-    nose_gear.tire_diameter                   = 17   *  Units.inches   
-    nose_gear.rim_diameter                    = 7    *  Units.inches 
-    nose_gear.tire_width                      = 17   *  Units.inches 
+    nose_gear.tire_diameter                   = 18   *  Units.inches
+    nose_gear.rim_diameter                    = 8    *  Units.inches
+    nose_gear.tire_width                      = 5.5  *  Units.inches
     nose_gear.strut_length                    = 1 *  Units.meter 
     nose_gear.wheels                          = 2   
-    nose_gear.number_of_gear_types_in_tandem  = 1
+    nose_gear.number_of_gear_types_in_tandem  = 1 
+    nose_gear.origin                          = [[5,0,-0.5]]  
     nose_gear.number_of_wheels_in_gear_type   = 2    
-    vehicle.append_component(nose_gear)
-
+    vehicle.append_component(nose_gear) 
+  
     # ------------------------------------------------------------------
     #  Landing Gear Pod 
     # ------------------------------------------------------------------      
@@ -411,21 +413,9 @@ def vehicle_setup():
     fuselage.heights.at_quarter_length          = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_three_quarters_length   = fuselage.heights.maximum * Units.meter
     fuselage.heights.at_wing_root_quarter_chord = fuselage.heights.maximum* Units.meter
+    fuselage.operational_items.origin = [[fuselage.lengths.total * 0.6, 0, 0]]
 
-    # define cabin    
-    cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-    cabin.origin                                      = [[2,0,0]] 
-    economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
-    economy_class.number_of_seats_abrest              = 4
-    economy_class.number_of_rows                      = 18
-    economy_class.galley_lavatory_percent_x_locations = [0, 9]  
-    economy_class.emergency_exit_percent_x_locations  = []      
-    economy_class.type_A_exit_percent_x_locations     = [0.01,1] 
-    economy_class.number_of_seats                     = economy_class.number_of_rows  * economy_class.number_of_seats_abrest 
-    cabin.append_cabin_class(economy_class)
-    fuselage.append_cabin(cabin)
-    
-     # Segment  
+     # Segment
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment() 
     segment.tag                                 = 'segment_1'    
     segment.percent_x_location                  = 0.0000
@@ -551,15 +541,64 @@ def vehicle_setup():
     segment.width                               = 0.401839552  
     fuselage.append_segment(segment) 
     
+    # define cabin    
+    cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
+    cabin.origin                                      = [[2,0,0]] 
+    cabin.segments_bounding_cabin                     = ['segment_9','segment_13'] 
+    economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
+    economy_class.number_of_seats_abrest              = 4
+    economy_class.number_of_rows                      = 18
+    economy_class.galley_lavatory_percent_x_locations = [0, 9]  
+    economy_class.emergency_exit_percent_x_locations  = []      
+    economy_class.type_A_exit_percent_x_locations     = [0.01,1] 
+    economy_class.number_of_seats                     = economy_class.number_of_rows  * economy_class.number_of_seats_abrest 
+    cabin.append_cabin_class(economy_class)
+    fuselage.append_cabin(cabin) 
+
     # add to vehicle
     vehicle.append_component(fuselage)
 
 
     # ########################################################  Energy Network  #########################################################  
-    net                                              = RCAIDE.Framework.Networks.Fuel()    
+    net                                              = RCAIDE.Framework.Networks.Fuel()
 
-    #------------------------------------------------------------------------------------------------------------------------- 
-    # Fuel Distrubition Line 
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Systems
+    #------------------------------------------------------------------------------------------------------------------------------------
+    avionics = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
+    avionics.origin                   = [[3,0,0]]
+    net.systems.append(avionics)
+
+    flight_controls = RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
+    flight_controls.origin            = [[12,0,0]]
+    net.systems.append(flight_controls)
+
+    auxillary_power_unit = RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
+    auxillary_power_unit.origin       = [[24,0,0]]
+    net.systems.append(auxillary_power_unit)
+
+    electrical = RCAIDE.Library.Components.Powertrain.Systems.Electrical()
+    electrical.origin                 = [[11,0,0]]
+    net.systems.append(electrical)
+
+    hydraulics = RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
+    hydraulics.origin                 = [[12,0,0]]
+    net.systems.append(hydraulics)
+
+    environmental_controls = RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
+    environmental_controls.origin     = [[11,0,-0.5]]
+    net.systems.append(environmental_controls)
+
+    instruments = RCAIDE.Library.Components.Powertrain.Systems.Instruments()
+    instruments.origin                = [[11,0,0]]
+    net.systems.append(instruments)
+
+    furnishings = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
+    furnishings.origin                = [[13,0,0]]
+    net.systems.append(furnishings)
+
+    #-------------------------------------------------------------------------------------------------------------------------
+    # Fuel Distribution Line
     #------------------------------------------------------------------------------------------------------------------------- 
     fuel_line                                       = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
  
@@ -573,7 +612,9 @@ def vehicle_setup():
     starboard_propulsor.gearbox.efficiency           = 0.99                                             
     starboard_propulsor.design_thrust                = 15000.0 * Units.N 
     starboard_propulsor.design_altitude              = 25000*Units.ft                                
-    starboard_propulsor.design_freestream_velocity   = 270 * Units.kts  
+    starboard_propulsor.design_freestream_velocity   = 270 * Units.kts
+    starboard_propulsor.length                       = 2.0
+    starboard_propulsor.diameter                     = 0.60
 
     #Propeller Design              
     propeller                                        = RCAIDE.Library.Components.Powertrain.Converters.Propeller()   

@@ -360,14 +360,14 @@ def vehicle_setup(fuel_cell_model= 'PEM'):
         fuel_cell_stack = RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell() 
         fuel_cell_stack.electrical_configuration.series             = 940
         fuel_cell_stack.electrical_configuration.parallel           = 7
-        fuel_cell_stack.geometrtic_configuration.normal_count       = 940
-        fuel_cell_stack.geometrtic_configuration.parallel_count     = 7
+        fuel_cell_stack.geometric_configuration.normal_count       = 940
+        fuel_cell_stack.geometric_configuration.parallel_count     = 7
     if fuel_cell_model == 'Larminie':  
         fuel_cell_stack   = RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack() 
         fuel_cell_stack.electrical_configuration.series             = 1020
         fuel_cell_stack.electrical_configuration.parallel           = 1
-        fuel_cell_stack.geometrtic_configuration.normal_count       = 1020
-        fuel_cell_stack.geometrtic_configuration.parallel_count     = 1
+        fuel_cell_stack.geometric_configuration.normal_count       = 1020
+        fuel_cell_stack.geometric_configuration.parallel_count     = 1
         
     bus.fuel_cell_stacks.append(fuel_cell_stack)  
     bus.initialize_bus_properties() 
@@ -413,7 +413,7 @@ def vehicle_setup(fuel_cell_model= 'PEM'):
     speed_of_sound                                   = 343 
     propeller.cruise.design_tip_mach                 = 0.65
     propeller.cruise.design_angular_velocity         = propeller.cruise.design_tip_mach *speed_of_sound/propeller.tip_radius
-    propeller.cruise.design_Cl                       = 0.7
+    propeller.cruise.design_lift_coefficient                       = 0.7
     propeller.cruise.design_altitude                 = 8000. * Units.feet 
     propeller.cruise.design_thrust                   = 12500  
     propeller.clockwise_rotation                     = False
@@ -560,7 +560,7 @@ def vehicle_setup(fuel_cell_model= 'PEM'):
     #------------------------------------------------------------------------------------------------------------------------------------  
     avionics                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
     avionics.power_draw          = 30. # Watts
-    bus.avionics                 = avionics
+    net.systems.append(avionics)
     
     #------------------------------------------------------------------------------------------------------------------------------------   
     # Assign propulsors to bus       

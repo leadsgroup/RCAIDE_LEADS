@@ -31,12 +31,14 @@ vehicles_path = os.path.abspath(
 if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Battery_Cell   import vehicle_setup , configs_setup  
+import time
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  REGRESSION
 # ----------------------------------------------------------------------------------------------------------------------  
 
 def main(): 
+    ti = time.time()
     Ereq                           = 3000*Units.Wh  
     Preq                           = 2000.  
 
@@ -51,6 +53,10 @@ def main():
         
     # Lithium-Ion Test
     lithium_ion_battery_test()
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
     
      

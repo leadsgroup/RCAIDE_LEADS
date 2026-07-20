@@ -24,11 +24,13 @@ vehicles_path = os.path.abspath(
 if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 import Boeing_787 
+import time
 
 # ---------------------------------------------------------------------- 
 #   Main
 # ----------------------------------------------------------------------
 def main():
+     ti = time.time()
      
      # Boeing 787 Fuselage  
      vehicle          = Boeing_787.vehicle_setup() 
@@ -81,6 +83,11 @@ def main():
      for k,v in list(error.items()):
           assert np.any(np.abs(v)<1e-6)
           
+
+     elapsed_time = time.time() - ti
+     elapsed_time_min = elapsed_time / 60
+     print('Elapsed time (min): ', elapsed_time_min)
+     return
 if __name__ == '__main__': 
      main()
      plt.show()

@@ -294,11 +294,11 @@ def make_section_text(vsp_bem,rotor):
     t_c        = rotor.thickness_to_chord
     
     if type(rotor) == RCAIDE.Library.Components.Powertrain.Converters.Lift_Rotor: 
-        CLi        = np.ones(N)*rotor.hover.design_Cl  
+        CLi        = np.ones(N)*rotor.hover.design_lift_coefficient  
     elif type(rotor) == RCAIDE.Library.Components.Powertrain.Converters.Propeller:
-        CLi        = np.ones(N)*rotor.cruise.design_Cl   
+        CLi        = np.ones(N)*rotor.cruise.design_lift_coefficient   
     elif type(rotor) == RCAIDE.Library.Components.Powertrain.Converters.Prop_Rotor: 
-        CLi        = np.ones(N)*rotor.hover.design_Cl  
+        CLi        = np.ones(N)*rotor.hover.design_lift_coefficient  
     
     Axial      = np.zeros(N)
     Tangential = np.zeros(N)

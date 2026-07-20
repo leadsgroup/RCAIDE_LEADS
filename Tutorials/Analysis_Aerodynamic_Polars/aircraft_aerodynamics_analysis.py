@@ -13,8 +13,7 @@ Date   : Feb 18th, 2026
 # ---------------------------------------------------------------------- 
 import RCAIDE
 from RCAIDE.Framework.Core import Units , Data   
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan         import design_turbofan 
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan         import design_turbofan 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan         import design_turbofan  
 from RCAIDE.Library.Methods.Performance                            import aircraft_aerodynamic_analysis 
 from RCAIDE.Library.Plots                                          import *
 
@@ -34,8 +33,8 @@ def main():
     vehicle  = vehicle_setup()    
     configs  = configs_setup(vehicle) 
     analyses = analyses_setup(configs)  
-    
-    angle_of_attack_range                 = np.atleast_2d(np.linspace(-5, 15, 21)).T*Units.degrees   
+ 
+    angle_of_attack_range                 = np.atleast_2d(np.linspace(-5, 15, 5)).T*Units.degrees   
     Mach_number_range                     = np.ones_like(angle_of_attack_range) * 0.78 
     temperatures                          = np.ones_like(angle_of_attack_range) * 340
     non_dimensional_reynolds_numbers      = np.ones_like(angle_of_attack_range) * 1E7 
@@ -47,10 +46,12 @@ def main():
                                                                           mach_numbers                     = Mach_number_range)
  
 
-    # plot results 
-    plot_aircraft_aerodynamics(results, save_filename = "B737_Aircraft_Aerodynamic_Analysis")    
-      
-    return   
+    # plot results
+    plot_aircraft_aerodynamics(results, save_filename = "B737_Aircraft_Aerodynamic_Analysis")
+    plot_pressure_coefficient_distribution(results)
+    plot_3d_vehicle_vlm_panelization(results.vortex_distribution)
+
+    return
  
  
 def vehicle_setup(): 
@@ -123,7 +124,7 @@ def vehicle_setup():
     # Carbo Bays 
     # ------------------------------------------------------------------ 
     forward_cargo_bay = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
-    forward_cargo_bay.cargo.mass_properties.mass  = 1850
+    forward_cargo_bay.mass_properties.mass        = 1850
     forward_cargo_bay.origin                      = [[5.82, 0, -0.6]]
     forward_cargo_bay.length                      = 7.82
     forward_cargo_bay.width                       = 2.5
@@ -131,7 +132,7 @@ def vehicle_setup():
     vehicle.append_component(forward_cargo_bay) 
  
     aft_cargo_bay  = RCAIDE.Library.Components.Cargo_Bays.Cargo_Bay()
-    aft_cargo_bay.cargo.mass_properties.mass  = 1440
+    aft_cargo_bay.mass_properties.mass        = 1440
     aft_cargo_bay.origin                      = [[23.43, 0, -0.6]]
     aft_cargo_bay.length                      =  5.5
     aft_cargo_bay.width                       =  2.5
@@ -161,9 +162,7 @@ def vehicle_setup():
     wing.vertical                         = False
     wing.xz_plane_symmetric               = True
     wing.twists.root                      = 2.5 * Units.degrees 
-    wing.twists.tip                       = 3.5  * Units.degrees 
-    wing.transition_x_upper               = 0.5
-    wing.transition_x_lower               = 0.5
+    wing.twists.tip                       = 3.5  * Units.degrees
     
 
     # Wing Segments
@@ -338,9 +337,7 @@ def vehicle_setup():
     wing.vertical                         = True
     wing.xz_plane_symmetric               = False
     wing.t_tail                           = False 
-    wing.dynamic_pressure_ratio           = 1.0
-    wing.transition_x_upper               = 0.5
-    wing.transition_x_lower               = 0.5
+    wing.dynamic_pressure_ratio           = 1.0 
 
     # Wing Segments
     segment                               = RCAIDE.Library.Components.Wings.Segments.Segment()
@@ -578,7 +575,7 @@ def vehicle_setup():
     net                                           = RCAIDE.Framework.Networks.Fuel() 
     
     #------------------------------------------------------------------------------------------------------------------------- 
-    # Fuel Distrubition Line 
+    # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
     fuel_line                                      = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
     
@@ -890,7 +887,8 @@ def base_analysis(vehicle):
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
     analyses.append(geometry)
   
-    aerodynamics   = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()     
+    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
+    aerodynamics.settings.use_surrogate = False
     analyses.append(aerodynamics)
     
     return analyses 

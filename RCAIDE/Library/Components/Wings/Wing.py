@@ -185,6 +185,7 @@ class Wing(Component):
         self.chords.mean_geometric                  = 0.0
         self.chords.root                            = 0.0
         self.chords.tip                             = 0.0
+        self.outer_mold_line_cabin_offset_factor    = 0.95
                                                     
         self.sweeps                                 = Data()
         self.sweeps.quarter_chord                   = None

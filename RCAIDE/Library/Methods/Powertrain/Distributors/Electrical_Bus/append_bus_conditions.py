@@ -176,5 +176,7 @@ def append_bus_segment_conditions(bus,segment):
             bus_initials.battery_discharge_flag           = True     
         bus_conditions.energy[0,0] = bus_initials.energy[-1,0]
 
+    elif 'initial_battery_state_of_charge' in segment:
+        bus_conditions.energy[:,0] = segment.initial_battery_state_of_charge * bus.maximum_energy
 
     return

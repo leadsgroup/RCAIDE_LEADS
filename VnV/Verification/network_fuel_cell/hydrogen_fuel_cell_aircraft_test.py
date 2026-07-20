@@ -31,14 +31,16 @@ vehicles_path = os.path.abspath(
 if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Hydrogen_Fuel_Cell_Twin_Otter   import vehicle_setup , configs_setup  
+import time
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  REGRESSION
 # ----------------------------------------------------------------------------------------------------------------------  
 
 def main():  
+    ti = time.time()
  
-    mdot_H2_true         = [0.016750563112746693 , 0.016563286022628142 ]
+    mdot_H2_true         = [0.01783053350249817, 0.017434650919374024]
     fuel_cell_models     = ['PEM', 'Larminie']
     
     for i in range(2): 
@@ -70,6 +72,10 @@ def main():
         if i == 0: 
             plot_results(results)
         
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
  
 def analyses_setup(configs):
@@ -108,6 +114,8 @@ def base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis  
     aerodynamics                   = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
+    aerodynamics.settings.number_of_spanwise_vortices    = 10 # reducing the number of vortices to speed up the test 
+    aerodynamics.settings.number_of_chordwise_vortices   = 5  # reducing the number of vortices to speed up the test     
     analyses.append(aerodynamics)
 
     # ------------------------------------------------------------------
@@ -170,7 +178,7 @@ def mission_setup(analyses):
     # define flight controls 
     segment.assigned_control_variables.throttle.active               = True           
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
-    segment.assigned_control_variables.body_angle.active             = True                  
+    segment.assigned_control_variables.pitch_angle.active             = True                  
        
     mission.append_segment(segment) 
     

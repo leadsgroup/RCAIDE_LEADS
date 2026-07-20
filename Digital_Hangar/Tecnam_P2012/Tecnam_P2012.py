@@ -27,12 +27,12 @@ def main():
     try:
         import vsp as vsp
         from RCAIDE.Framework.External_Interfaces.OpenVSP import export_vsp_vehicle 
-        export_vsp_vehicle(vehicle, 'Tecnam_P2012')
+        export_vsp_vehicle(vehicle, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Tecnam_P2012'))
     except ImportError:
         pass
         
     # Step 2: plot vehicle 
-    plot_3d_vehicle(vehicle,export_gltf=True)  
+    plot_3d_vehicle(vehicle,save_filename=os.path.join(os.path.dirname(os.path.abspath(__file__)),'Tecnam_P2012'),export_gltf=True,show_figure=True)  
     
     return 
  
@@ -305,7 +305,8 @@ def vehicle_setup():
     fuselage.areas.side_projected               = 16.9613 * Units.meter**2.
     fuselage.areas.wetted                       = 52.94 * Units.meter**2.
     fuselage.areas.front_projected              = 2.72 * Units.meter**2.
-    fuselage.effective_diameter                 = 1.760 * Units.meter 
+    fuselage.effective_diameter                 = 1.760 * Units.meter
+    fuselage.operational_items.origin            = [[fuselage.lengths.total * 0.6, 0, 0]]
 
     # Segment
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
@@ -402,8 +403,8 @@ def vehicle_setup():
     fuselage.append_segment(segment)
 
     # define cabin    
-    cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-    cabin.offset_x                                    = 2.5  
+    cabin                                             = RCAIDE.Library.Components.Fuselages.Cabins.Cabin() 
+    cabin.origin                                      = [[2,0,0.46]]
     economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
     economy_class.number_of_seats_abrest              = 2
     economy_class.seat_pitch                          = 31 * Units.inches
@@ -413,7 +414,9 @@ def vehicle_setup():
     economy_class.galley_lavatory_percent_x_locations = []  
     economy_class.emergency_exit_percent_x_locations  = []      
     economy_class.type_A_exit_percent_x_locations     = [0.01,1] 
-    economy_class.number_of_seats                     = economy_class.number_of_rows  * economy_class.number_of_seats_abrest 
+    economy_class.number_of_seats                     = economy_class.number_of_rows  * economy_class.number_of_seats_abrest
+    cabin.append_cabin_class(economy_class)
+    fuselage.append_cabin(cabin)          
     
 
     # add to vehicle
@@ -524,7 +527,7 @@ def vehicle_setup():
     propeller.hub_radius                             = 10.     * Units.inches 
     propeller.cruise.design_freestream_velocity      = 175.*Units['mph']   
     propeller.cruise.design_angular_velocity         = 2700. * Units.rpm 
-    propeller.cruise.design_Cl                       = 0.7 
+    propeller.cruise.design_lift_coefficient         = 0.7 
     propeller.cruise.design_altitude                 = 2500. * Units.feet 
     propeller.cruise.design_thrust                   = 5000   
     propeller.clockwise_rotation                     = False
@@ -532,12 +535,15 @@ def vehicle_setup():
     propeller.origin                                 = [[3.36,2.25,1.15]]   
     airfoil                                          = RCAIDE.Library.Components.Airfoils.Airfoil()
     airfoil.tag                                      = 'NACA_4412' 
-    airfoil.coordinate_file                          = 'NACA_4412.txt'     
-    airfoil.polar_files                              =[ 'NACA_4412_polar_Re_50000.txt',
-                                                        'NACA_4412_polar_Re_100000.txt',
-                                                        'NACA_4412_polar_Re_200000.txt',
-                                                        'NACA_4412_polar_Re_500000.txt',
-                                                        'NACA_4412_polar_Re_1000000.txt']   
+    airfoil.coordinate_file                       =  airfoil_file_path  + 'NACA_4412.txt'
+    airfoil.polar_files                           = [polar_file_path  + 'NACA_4412_polar_Re_50000.txt' ,
+                                                     polar_file_path  + 'NACA_4412_polar_Re_100000.txt' ,
+                                                     polar_file_path  + 'NACA_4412_polar_Re_200000.txt' ,
+                                                     polar_file_path  + 'NACA_4412_polar_Re_500000.txt' ,
+                                                     polar_file_path  + 'NACA_4412_polar_Re_1000000.txt',
+                                                     polar_file_path  + 'NACA_4412_polar_Re_3500000.txt',
+                                                     polar_file_path  + 'NACA_4412_polar_Re_5000000.txt',
+                                                     polar_file_path  + 'NACA_4412_polar_Re_7500000.txt' ]
     propeller.append_airfoil(airfoil)                       
     propeller.airfoil_polar_stations                 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]   
     starboard_propulsor.propeller                    = propeller   
@@ -550,8 +556,7 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Port Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------   
-    port_propulsor                                  = deepcopy(starboard_propulsor)
-    port_propulsor.active_fuel_tanks                = ['fuel_tank'] 
+    port_propulsor                                  = deepcopy(starboard_propulsor) 
     port_propulsor.tag                              = 'port_propulsor' 
     port_propulsor.origin                           = [[3.36,-2.25,1.15]]
     port_propulsor.nacelle.tag                      = 'port_propulsor_nacelle' 

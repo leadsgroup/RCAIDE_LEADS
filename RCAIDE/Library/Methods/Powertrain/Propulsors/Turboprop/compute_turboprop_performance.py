@@ -274,15 +274,11 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     compute_thrust(turboprop,conditions) 
 
     # Compute forces and moments
-    moment_vector      = 0*state.ones_row(3)
-    thrust_vector      = 0*state.ones_row(3)
-    thrust_vector[:,0] = turboprop_conditions.thrust[:,0]
+    moment_vector      = 0*state.ones_row(3)  
     moment_vector[:,0] = turboprop.origin[0][0] -   center_of_gravity[0][0] 
     moment_vector[:,1] = turboprop.origin[0][1]  -  center_of_gravity[0][1] 
     moment_vector[:,2] = turboprop.origin[0][2]  -  center_of_gravity[0][2]
-    M                  = np.cross(moment_vector, thrust_vector)   
-    moment             = M 
-    power              = turboprop_conditions.power 
+    turboprop_conditions.moment = np.cross(moment_vector, turboprop_conditions.thrust)   
   
     # compute efficiencies 
     mdot_air_core                                  = turboprop_conditions.core_mass_flow_rate 
@@ -292,7 +288,7 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     h_0                                            = turboprop.working_fluid.compute_cp(T,P) * T 
     h_t4                                           = combustor_conditions.outputs.stagnation_enthalpy
     h_t3                                           = compressor_conditions.outputs.stagnation_enthalpy 
-    turboprop_conditions.overall_efficiency        = thrust_vector* U0 / (mdot_fuel * fuel_enthalpy)  
+    turboprop_conditions.overall_efficiency        = turboprop_conditions.thrust[:, 0]* U0 / (mdot_fuel * fuel_enthalpy)  
     turboprop_conditions.thermal_efficiency        = 1 - ((mdot_air_core +  mdot_fuel)*(h_e_c -  h_0) + mdot_fuel *h_0)/((mdot_air_core +  mdot_fuel)*h_t4 - mdot_air_core *h_t3)   
     compressor_conditions.omega                    = compressor.design_angular_velocity * turboprop_conditions.throttle 
     
@@ -300,14 +296,14 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     power_elec = 0*state.ones_row(1)
     if compressor.motor != None and  len(state.numerics.time.differentiate) > 0: 
         compressor_motor_conditions                 = conditions.energy.converters[compressor.motor.tag] 
-        compressor_motor_conditions.outputs.power   = power *conditions.energy.hybrid_power_split_ratio   
+        compressor_motor_conditions.outputs.power   = turboprop_conditions.power  *conditions.energy.hybrid_power_split_ratio   
         compressor_motor_conditions.outputs.omega   = compressor_conditions.omega
         compressor_motor_conditions.outputs.torque  = compressor_motor_conditions.outputs.power / compressor_motor_conditions.outputs.omega   
         power_elec =  compressor_motor_conditions.outputs.power  
     
     if compressor.generator != None and len(state.numerics.time.differentiate) > 0: 
         compressor_generator_conditions                = conditions.energy.converters[compressor.generator.tag] 
-        compressor_generator_conditions.inputs.power   = power *conditions.energy.hybrid_power_split_ratio  
+        compressor_generator_conditions.inputs.power   = turboprop_conditions.power  *conditions.energy.hybrid_power_split_ratio  
         compressor_generator_conditions.inputs.omega   = compressor_conditions.omega
         compressor_generator_conditions.outputs.torque = compressor_generator_conditions.outputs.power / compressor_generator_conditions.outputs.omega  
         power_elec =  compressor_generator_conditions.inputs.power  
@@ -326,7 +322,7 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     # Pack results    
     stored_results_flag    = True
     stored_propulsor_tag   = turboprop.tag
-    return thrust_vector,moment,power,power_elec,stored_results_flag,stored_propulsor_tag 
+    return turboprop_conditions.thrust,turboprop_conditions.moment,turboprop_conditions.power,power_elec,stored_results_flag,stored_propulsor_tag 
 
 def reuse_stored_turboprop_data(turboprop,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one turboprop for identical propulsors

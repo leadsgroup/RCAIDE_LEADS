@@ -1,149 +1,257 @@
-# test_take_off_field_length.py
+# V_n_diagram_test.py
 #
-# Created: Dec 2024, M Clarke   
+# Created: Dec 2024, M Clarke
 
-# ----------------------------------------------------------------------
-#  Imports
-# ----------------------------------------------------------------------
-
-# SUave Imports
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
-from RCAIDE.Framework.Core   import Data,Units 
-from RCAIDE.Library.Methods.Performance  import generate_V_n_diagram
-from RCAIDE.Library.Methods.Geometry.Planform import wing_planform
-import matplotlib.pyplot as plt
+from RCAIDE.Framework.Core              import Data
+from RCAIDE.Library.Methods.Performance import generate_V_n_diagram
 
-# package imports
-import numpy as np 
+import numpy as np
 import sys
 import os
-import numpy as np 
+import time
 
-# import vehicle file
-base_dir = os.path.dirname(os.path.abspath(__file__))
-
-vehicles_path = os.path.abspath(
-    os.path.join(base_dir, "..", "..", "Vehicles")
-)
-
+base_dir      = os.path.dirname(os.path.abspath(__file__))
+vehicles_path = os.path.abspath(os.path.join(base_dir, "..", "..", "Vehicles"))
 if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 
-from  Cessna_172 import vehicle_setup   as GA_vehicle_setup  
-from  Boeing_737 import vehicle_setup   as Transport_vehicle_setup  
+from Cessna_172 import vehicle_setup as GA_vehicle_setup
+from Cessna_172 import configs_setup  as GA_configs_setup
+from Boeing_737 import vehicle_setup as Transport_vehicle_setup
+from Boeing_737 import configs_setup  as Transport_configs_setup
 
+# ----------------------------------------------------------------------------------------------------------------------
+#  Main
+# ----------------------------------------------------------------------------------------------------------------------
 def main():
-    part_35_V_n_Diagram()
-    part_23_V_n_Diagram()
-    
+    ti = time.time()
+
+    test_part_23_normal()
+    test_part_23_utility()
+    test_part_23_acrobatic()
+    test_part_25()
+
+    elapsed_time = time.time() - ti
+    print(f'\nElapsed time (min): {elapsed_time / 60:.4f}')
     return
 
-def part_35_V_n_Diagram():
+# ----------------------------------------------------------------------------------------------------------------------
+#  Helpers
+# ----------------------------------------------------------------------------------------------------------------------
+def GA_analyses_setup(configs):
+    analyses = RCAIDE.Framework.Analyses.Analysis.Container()
+    for tag, config in configs.items():
+        analyses[tag] = GA_base_analysis(config)
+    return analyses
 
-    
-    vehicle  = Transport_vehicle_setup() 
+def GA_base_analysis(vehicle):
+    analyses            = RCAIDE.Framework.Analyses.Vehicle()
+    analyses.vehicle    = vehicle
+    analyses.append(RCAIDE.Framework.Analyses.Geometry.Geometry())
+    weights             = RCAIDE.Framework.Analyses.Weights.Conventional_General_Aviation()
+    weights.method      = 'Raymer'
+    analyses.append(weights)
+    aero = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
+    aero.settings.number_of_spanwise_vortices  = 10
+    aero.settings.number_of_chordwise_vortices = 5
+    analyses.append(aero)
+    analyses.append(RCAIDE.Framework.Analyses.Energy.Energy())
+    analyses.append(RCAIDE.Framework.Analyses.Planets.Earth())
+    analyses.append(RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976())
+    return analyses
 
-    vehicle.flight_envelope.category                  = 'normal'
-    vehicle.flight_envelope.FAR_part_number           = '25' 
-    vehicle.flight_envelope.maximum_lift_coefficient  = 3
-    vehicle.flight_envelope.minimum_lift_coefficient  = -1.5 
+def Transport_analyses_setup(configs):
+    analyses = RCAIDE.Framework.Analyses.Analysis.Container()
+    for tag, config in configs.items():
+        analyses[tag] = TR_base_analysis(config)
+    return analyses
 
-    for wing in vehicle.wings: 
-        wing_planform(wing) 
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
-            vehicle.reference_area = wing.areas.reference
+def TR_base_analysis(vehicle):
+    analyses         = RCAIDE.Framework.Analyses.Vehicle()
+    analyses.vehicle = vehicle
+    analyses.append(RCAIDE.Framework.Analyses.Geometry.Geometry())
+    analyses.append(RCAIDE.Framework.Analyses.Weights.Conventional_Transport())
+    aero = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
+    aero.settings.number_of_spanwise_vortices  = 10
+    aero.settings.number_of_chordwise_vortices = 5
+    analyses.append(aero)
+    analyses.append(RCAIDE.Framework.Analyses.Energy.Energy())
+    analyses.append(RCAIDE.Framework.Analyses.Planets.Earth())
+    analyses.append(RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976())
+    return analyses
 
-    analyses = RCAIDE.Framework.Analyses.Vehicle()
+# ----------------------------------------------------------------------------------------------------------------------
+#  Tests
+# ----------------------------------------------------------------------------------------------------------------------
+def test_part_23_normal():
+    """FAR Part 23 normal category — positive gust at Va exceeds structural limit,
+    triggering the Vb intersection branch and extended stall line."""
+    print('\n--- FAR Part 23 normal category (Cessna 172) ---')
+    vehicle  = GA_vehicle_setup()
+    configs  = GA_configs_setup(vehicle)
+    analyses = GA_analyses_setup(configs)
 
-    # ------------------------------------------------------------------
-    #  Planet Analysis
-    planet = RCAIDE.Framework.Analyses.Planets.Earth()
-    analyses.append(planet)
+    V_n_data = generate_V_n_diagram(analyses=analyses.cruise)
 
-    # ------------------------------------------------------------------
-    #  Atmosphere Analysis
-    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    analyses.append(atmosphere)   
+    truth = Data()
+    truth.Vs1_pos             = 37.98585717834934
+    truth.Vs1_neg             = 53.720114399989036
+    truth.Va_pos              = 74.04806758573127
+    truth.Va_neg              = 66.23060508967755
+    truth.Vc                  = 126.33084642567567
+    truth.Vd                  = 176.86318499594594
+    truth.limit_load_pos      = 3.9899834399932685
+    truth.limit_load_neg      = -1.9899834399932685
+    truth.dive_limit_load_pos = 3.8
+    truth.dive_limit_load_neg = -1.0929884079952883
 
-    V_n_data = generate_V_n_diagram(vehicle,analyses)
-    
-    return    
-    
-    
-def part_23_V_n_Diagram():
-    
-    vehicle  = GA_vehicle_setup() 
+    error = Data()
+    error.Vs1_pos             = (truth.Vs1_pos             - V_n_data.Vs1.positive)            / truth.Vs1_pos
+    error.Vs1_neg             = (truth.Vs1_neg             - V_n_data.Vs1.negative)            / truth.Vs1_neg
+    error.Va_pos              = (truth.Va_pos              - V_n_data.Va.positive)             / truth.Va_pos
+    error.Va_neg              = (truth.Va_neg              - V_n_data.Va.negative)             / truth.Va_neg
+    error.Vc                  = (truth.Vc                  - V_n_data.Vc)                      / truth.Vc
+    error.Vd                  = (truth.Vd                  - V_n_data.Vd)                      / truth.Vd
+    error.limit_load_pos      = (truth.limit_load_pos      - V_n_data.positive_limit_load)     / truth.limit_load_pos
+    error.limit_load_neg      = (truth.limit_load_neg      - V_n_data.negative_limit_load)     / truth.limit_load_neg
+    error.dive_limit_load_pos = (truth.dive_limit_load_pos - V_n_data.limit_loads.dive.positive) / truth.dive_limit_load_pos
+    error.dive_limit_load_neg = (truth.dive_limit_load_neg - V_n_data.limit_loads.dive.negative)
 
-    vehicle.flight_envelope.category                  = 'normal'
-    vehicle.flight_envelope.FAR_part_number           = '23' 
-    vehicle.flight_envelope.maximum_lift_coefficient  = 3
-    vehicle.flight_envelope.minimum_lift_coefficient  = -1.5 
+    for k, v in error.items():
+        assert np.abs(v) < 1e-6, f'Part 23 normal: {k} error {v:.2e} exceeds tolerance'
 
-    for wing in vehicle.wings: 
-        wing_planform(wing) 
-        if isinstance(wing, RCAIDE.Library.Components.Wings.Main_Wing):
-            vehicle.reference_area = wing.areas.reference
-
-    analyses = RCAIDE.Framework.Analyses.Vehicle()
-
-    # ------------------------------------------------------------------
-    #  Planet Analysis
-    planet = RCAIDE.Framework.Analyses.Planets.Earth()
-    analyses.append(planet)
-
-    # ------------------------------------------------------------------
-    #  Atmosphere Analysis
-    atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    analyses.append(atmosphere)   
-
-    V_n_data = generate_V_n_diagram(vehicle,analyses) 
-
-    print(V_n_data.Vs1.positive)
-    print(V_n_data.Vs1.negative) 
-    print(V_n_data.Va.positive) 
-    print(V_n_data.Va.negative) 
-    print(V_n_data.Vc)
-    print(V_n_data.Vd)
-    print(V_n_data.positive_limit_load)
-    print(V_n_data.negative_limit_load)
-    print(V_n_data.limit_loads.dive.positive)
-    print(V_n_data.limit_loads.dive.negative)
-
-    # regression values    
-    actual                          = Data()
-    actual.Vs1_pos                  = 37.98585717834934
-    actual.Vs1_neg                  = 53.720114399989036
-    actual.Va_pos                   = 74.04806758573127
-    actual.Va_neg                   = 104.71978144726074
-    actual.Vc                       = 126.33084642567567
-    actual.Vd                       = 176.86318499594594
-    actual.limit_load_pos           = 4.702338496897422
-    actual.limit_load_neg           = -3.8
-    actual.dive_limit_load_pos      = 3.8
-    actual.dive_limit_load_neg      = -1.5916369478281958
-
-    # error calculations
-    error                         = Data()
-    error.Vs1_pos                 = (actual.Vs1_pos - V_n_data.Vs1.positive)/actual.Vs1_pos
-    error.Vs1_neg                 = (actual.Vs1_neg - V_n_data.Vs1.negative)/actual.Vs1_neg
-    error.Va_pos                  = (actual.Va_pos - V_n_data.Va.positive)/actual.Va_pos
-    error.Va_neg                  = (actual.Va_neg - V_n_data.Va.negative)/actual.Va_neg
-    error.Vc                      = (actual.Vc - V_n_data.Vc)/actual.Vc
-    error.Vd                      = (actual.Vd - V_n_data.Vd)/actual.Vd
-    error.limit_load_pos          = (actual.limit_load_pos - V_n_data.positive_limit_load)/actual.limit_load_pos
-    error.limit_load_neg          = (actual.limit_load_neg - V_n_data.negative_limit_load)/actual.limit_load_neg
-    error.dive_limit_load_pos     = (actual.dive_limit_load_pos - V_n_data.limit_loads.dive.positive)/actual.dive_limit_load_pos
-    error.dive_limit_load_neg     = (actual.dive_limit_load_neg - V_n_data.limit_loads.dive.negative)
+    print('  PASSED')
 
 
-    for k,v in error.items():
-        assert(np.abs(v)<1E-6)  
+def test_part_23_utility():
+    """FAR Part 23 utility category — positive limit enforced to minimum 4.4 g,
+    negative limit = -0.4 * positive. Dive speed scaled by 1.5."""
+    print('\n--- FAR Part 23 utility category ---')
+    vehicle = GA_vehicle_setup()
+    vehicle.flight_envelope.category           = 'utility'
+    vehicle.flight_envelope.positive_limit_load = 3.8   # below minimum → clamped to 4.4
+    vehicle.flight_envelope.negative_limit_load = -1.5
+    configs  = GA_configs_setup(vehicle)
+    analyses = GA_analyses_setup(configs)
 
-    return 
-# ----------------------------------------------------------------------        
-#   Call Main
-# ----------------------------------------------------------------------    
+    V_n_data = generate_V_n_diagram(analyses=analyses.cruise)
+
+    truth = Data()
+    truth.Vs1_pos             = 37.98585717834934
+    truth.Vs1_neg             = 53.720114399989036
+    truth.Va_pos              = 79.67980622796094
+    truth.Va_neg              = 71.26778526389269
+    truth.Vc                  = 126.33084642567567
+    truth.Vd                  = 189.49626963851352
+    truth.limit_load_pos      = 4.4
+    truth.limit_load_neg      = -1.9899834399932685
+    truth.dive_limit_load_pos = 4.4
+    truth.dive_limit_load_neg = -1.2424875799949517
+
+    error = Data()
+    error.Vs1_pos             = (truth.Vs1_pos             - V_n_data.Vs1.positive)              / truth.Vs1_pos
+    error.Vs1_neg             = (truth.Vs1_neg             - V_n_data.Vs1.negative)              / truth.Vs1_neg
+    error.Va_pos              = (truth.Va_pos              - V_n_data.Va.positive)               / truth.Va_pos
+    error.Va_neg              = (truth.Va_neg              - V_n_data.Va.negative)               / truth.Va_neg
+    error.Vc                  = (truth.Vc                  - V_n_data.Vc)                        / truth.Vc
+    error.Vd                  = (truth.Vd                  - V_n_data.Vd)                        / truth.Vd
+    error.limit_load_pos      = (truth.limit_load_pos      - V_n_data.positive_limit_load)       / truth.limit_load_pos
+    error.limit_load_neg      = (truth.limit_load_neg      - V_n_data.negative_limit_load)       / truth.limit_load_neg
+    error.dive_limit_load_pos = (truth.dive_limit_load_pos - V_n_data.limit_loads.dive.positive) / truth.dive_limit_load_pos
+    error.dive_limit_load_neg = (truth.dive_limit_load_neg - V_n_data.limit_loads.dive.negative) / truth.dive_limit_load_neg
+
+    for k, v in error.items():
+        assert np.abs(v) < 1e-6, f'Part 23 utility: {k} error {v:.2e} exceeds tolerance'
+
+    print('  PASSED')
+
+
+def test_part_23_acrobatic():
+    """FAR Part 23 acrobatic category — positive limit enforced to minimum 6.0 g,
+    negative limit = -0.5 * positive. Special gust intersection formula applies."""
+    print('\n--- FAR Part 23 acrobatic category ---')
+    vehicle = GA_vehicle_setup()
+    vehicle.flight_envelope.category           = 'acrobatic'
+    vehicle.flight_envelope.positive_limit_load = 3.8   # below minimum → clamped to 6.0
+    vehicle.flight_envelope.negative_limit_load = -1.5
+    configs  = GA_configs_setup(vehicle)
+    analyses = GA_analyses_setup(configs)
+
+    V_n_data = generate_V_n_diagram(analyses=analyses.cruise)
+
+    truth = Data()
+    truth.Vs1_pos             = 37.98585717834934
+    truth.Vs1_neg             = 53.720114399989036
+    truth.Va_pos              = 93.04596752919348
+    truth.Va_neg              = 93.04596752919348
+    truth.Vc                  = 137.81546882800984
+    truth.Vd                  = 213.61397668341527
+    truth.limit_load_pos      = 6.0
+    truth.limit_load_neg      = -3.0
+    truth.dive_limit_load_pos = 6.0
+    truth.dive_limit_load_neg = -1.527895090176128
+
+    error = Data()
+    error.Vs1_pos             = (truth.Vs1_pos             - V_n_data.Vs1.positive)              / truth.Vs1_pos
+    error.Vs1_neg             = (truth.Vs1_neg             - V_n_data.Vs1.negative)              / truth.Vs1_neg
+    error.Va_pos              = (truth.Va_pos              - V_n_data.Va.positive)               / truth.Va_pos
+    error.Va_neg              = (truth.Va_neg              - V_n_data.Va.negative)               / truth.Va_neg
+    error.Vc                  = (truth.Vc                  - V_n_data.Vc)                        / truth.Vc
+    error.Vd                  = (truth.Vd                  - V_n_data.Vd)                        / truth.Vd
+    error.limit_load_pos      = (truth.limit_load_pos      - V_n_data.positive_limit_load)       / truth.limit_load_pos
+    error.limit_load_neg      = (truth.limit_load_neg      - V_n_data.negative_limit_load)       / truth.limit_load_neg
+    error.dive_limit_load_pos = (truth.dive_limit_load_pos - V_n_data.limit_loads.dive.positive) / truth.dive_limit_load_pos
+    error.dive_limit_load_neg = (truth.dive_limit_load_neg - V_n_data.limit_loads.dive.negative) / truth.dive_limit_load_neg
+
+    for k, v in error.items():
+        assert np.abs(v) < 1e-6, f'Part 23 acrobatic: {k} error {v:.2e} exceeds tolerance'
+
+    print('  PASSED')
+
+
+def test_part_25():
+    """FAR Part 25 transport category (Boeing 737) — load limits follow
+    the 2.1 + 24000/(W+10000) formula, capped at 3.8."""
+    print('\n--- FAR Part 25 transport category (Boeing 737) ---')
+    vehicle  = Transport_vehicle_setup()
+    configs  = Transport_configs_setup(vehicle)
+    analyses = Transport_analyses_setup(configs)
+
+    V_n_data = generate_V_n_diagram(analyses=analyses.cruise)
+
+    truth = Data()
+    truth.Vs1_pos             = 113.20236642595314
+    truth.Vs1_neg             = 160.09232189231165
+    truth.Va_pos              = 178.9886572134933
+    truth.Va_neg              = 196.0722501867801
+    truth.Vc                  = 515.9537531823821
+    truth.Vd                  = 644.9421914779776
+    truth.limit_load_pos      = 3.538568908482968
+    truth.limit_load_neg      = -1.5385689084829681
+    truth.dive_limit_load_pos = 2.586605567801855
+    truth.dive_limit_load_neg = -0.5866055678018549
+
+    error = Data()
+    error.Vs1_pos             = (truth.Vs1_pos             - V_n_data.Vs1.positive)              / truth.Vs1_pos
+    error.Vs1_neg             = (truth.Vs1_neg             - V_n_data.Vs1.negative)              / truth.Vs1_neg
+    error.Va_pos              = (truth.Va_pos              - V_n_data.Va.positive)               / truth.Va_pos
+    error.Va_neg              = (truth.Va_neg              - V_n_data.Va.negative)               / truth.Va_neg
+    error.Vc                  = (truth.Vc                  - V_n_data.Vc)                        / truth.Vc
+    error.Vd                  = (truth.Vd                  - V_n_data.Vd)                        / truth.Vd
+    error.limit_load_pos      = (truth.limit_load_pos      - V_n_data.positive_limit_load)       / truth.limit_load_pos
+    error.limit_load_neg      = (truth.limit_load_neg      - V_n_data.negative_limit_load)       / truth.limit_load_neg
+    error.dive_limit_load_pos = (truth.dive_limit_load_pos - V_n_data.limit_loads.dive.positive) / truth.dive_limit_load_pos
+    error.dive_limit_load_neg = (truth.dive_limit_load_neg - V_n_data.limit_loads.dive.negative) / truth.dive_limit_load_neg
+
+    for k, v in error.items():
+        assert np.abs(v) < 1e-6, f'Part 25: {k} error {v:.2e} exceeds tolerance'
+
+    print('  PASSED')
+
 
 if __name__ == '__main__':
-    main()    
-    plt.show()
+    main()

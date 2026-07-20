@@ -92,11 +92,11 @@ def plot_lift_distribution(results,
             fig  = plt.figure(save_filename + '_' + str(img_idx))
             fig.set_size_inches(8,8)  
             fig.set_size_inches(width,height)      
-            b_sw = np.concatenate(([0],np.cumsum(VD.n_sw[ti])))
+            b_sw = np.concatenate(([0],np.cumsum(VD.n_sw[0])))
             axes = plt.subplot(1,1,1)
-            for i in range(VD.n_w[ti][0]): 
-                y_pts = VD.Y_SW[ti,b_sw[i]:b_sw[i+1]]
-                z_pts = segment.conditions.aerodynamics.coefficients.lift.inviscid.spanwise[ti,b_sw[i]:b_sw[i+1]]
+            for i in range(VD.n_w[0][0]): 
+                y_pts = VD.Y_SW[0,b_sw[i]:b_sw[i+1]]
+                z_pts = segment.conditions.aerodynamics.coefficients.lift.spanwise[ti,b_sw[i]:b_sw[i+1]]
                 axes.plot(y_pts, z_pts, line[i] ) 
             axes.set_xlabel("Spanwise Location (m)")
             axes.set_ylabel('$C_{Ly}$')  

@@ -198,7 +198,7 @@ class Rotor(Component):
         self.cruise.design_power_coefficient   = 0.01 
         self.cruise.design_thrust_coefficient  = 0.01
         self.cruise.design_torque_coefficient  = 0.005
-        self.cruise.design_Cl                  = 0.7 
+        self.cruise.design_lift_coefficient    = 0.7 
         self.cruise.design_efficiency          = 0.86  
         self.cruise.design_angular_velocity    = None
         self.cruise.design_tip_mach            = None
@@ -381,7 +381,7 @@ class Rotor(Component):
         rots       = np.repeat(rots[None,:], cpts, axis=0) 
         rots[:,1] += commanded_thrust_vector[:,0]
         
-        vehicle_2_prop_vec = sp.spatial.transform.Rotation.from_rotvec(rots).as_matrix()
+        vehicle_2_prop_vec = sp.spatial.transform.Rotation.from_euler('xyz', rots).as_matrix()
 
         # GO from the propeller vehicle frame to the propeller velocity frame: rot 2
         prop_vec_2_prop_vel = self.vec_to_vel()

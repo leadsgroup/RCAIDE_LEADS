@@ -170,7 +170,9 @@ class Fuselage(Component):
         self.heights.at_quarter_length              = 0.0
         self.heights.at_three_quarters_length       = 0.0
         self.heights.at_wing_root_quarter_chord     = 0.0
-        self.heights.at_vertical_root_quarter_chord = 0.0  
+        self.heights.at_vertical_root_quarter_chord = 0.0 
+
+        self.outer_mold_line_cabin_offset_factor    = 0.95        
         self.lengths                                = Data()     
         self.lengths.nose                           = 0.0
         self.lengths.tail                           = 0.0
@@ -188,7 +190,9 @@ class Fuselage(Component):
         self.vsp_data.xsec_surf_id                  = ''    # There is only one XSecSurf in each VSP geom.
         self.vsp_data.xsec_num                      = None  # Number if XSecs in fuselage geom. 
         self.segments                               = Container()
-        self.cabins                                 = Container() 
+        self.cabins                                 = Container()
+        self.operational_items                      = Component()
+        self.operational_items.tag                  = 'operational_items'
         self.vsp_data                               = Data()
         self.vsp_data.xsec_id                       = ''       
         self.vsp_data.shape                         = ''                

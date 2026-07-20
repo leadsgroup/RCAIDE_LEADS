@@ -8,6 +8,7 @@
 import RCAIDE 
 from RCAIDE.Framework.Mission.Common                                             import Results  
 from RCAIDE.Library.Methods.Aerodynamics.Athena_Vortex_Lattice.run_AVL_analysis  import run_AVL_analysis  
+from RCAIDE.Library.Components.Wings.Control_Surfaces                            import Aileron , Elevator , Slat , Flap , Rudder 
  
 # Package imports 
 import os
@@ -40,19 +41,134 @@ def train_AVL_surrogates(aerodynamics,vehicle):
     side_slip_angle        = aerodynamics.settings.side_slip_angle
     roll_rate_coefficient  = aerodynamics.settings.roll_rate_coefficient
     pitch_rate_coefficient = aerodynamics.settings.pitch_rate_coefficient
-    lift_coefficient       = aerodynamics.settings.lift_coefficient
+    lift_coefficient       = aerodynamics.settings.lift_coefficient 
+    n_sw                   = aerodynamics.settings.number_of_spanwise_vortices 
     atmosphere             = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
     atmo_data              = atmosphere.compute_values(altitude = 0.0)         
     
+    
+    n_wings = 0   
+    cs_functions = []  
+         
+    for wing in vehicle.wings:         
+        n_wings += 1 
+        if wing.xz_plane_symmetric: 
+            n_wings += 1
+            
+        if wing.control_surfaces:   
+            for ctrl_surf in wing.control_surfaces:  
+                if (type(ctrl_surf) ==  Slat):
+                    ctrl_surf_function  = 'slat'
+                    aerodynamics.slat_flag   = True 
+                elif (type(ctrl_surf) ==  Flap):
+                    ctrl_surf_function  = 'flap'  
+                    aerodynamics.flap_flag   = True 
+                elif (type(ctrl_surf) ==  Aileron):
+                    ctrl_surf_function  = 'aileron'     
+                    aerodynamics.aileron_flag   = True                      
+                elif (type(ctrl_surf) ==  Elevator):
+                    ctrl_surf_function  = 'elevator' 
+                    aerodynamics.elevator_flag   = True 
+                elif (type(ctrl_surf) ==  Rudder):
+                    ctrl_surf_function = 'rudder'   
+                    aerodynamics.rudder_flag      = True                    
+                cs_functions.append(ctrl_surf_function)  
+            
+    aerodynamics.settings.control_surface_tags =  cs_functions
+            
+            
     len_AoA  = len(AoA)
     len_Mach = len(Mach)
-    CM       = np.zeros((len_AoA,len_Mach))
-    CL       = np.zeros_like(CM)
-    CD       = np.zeros_like(CM)
-    e        = np.zeros_like(CM)
-    Cm_alpha = np.zeros_like(CM)
-    Cn_beta  = np.zeros_like(CM)
-    NP       = np.zeros_like(CM)  
+    
+    training.Clift_alpha          = np.zeros((len_AoA,len_Mach))
+    training.Cdrag_induced_alpha  = np.zeros((len_AoA,len_Mach))
+    training.span_efficincy       = np.zeros((len_AoA,len_Mach))
+    training.oswald_efficiency    = np.zeros((len_AoA,len_Mach))
+    training.Clift_spanwise       =  np.zeros((len_AoA,len_Mach,n_sw*n_wings))
+    training.dClift_dalpha        = np.zeros((len_AoA,len_Mach))
+    training.dCY_dalpha           = np.zeros((len_AoA,len_Mach))
+    training.dCL_dalpha           = np.zeros((len_AoA,len_Mach))
+    training.dCM_dalpha           = np.zeros((len_AoA,len_Mach))
+    training.dCN_dalpha           = np.zeros((len_AoA,len_Mach))
+    training.dClift_dbeta         = np.zeros((len_AoA,len_Mach))
+    training.dCY_dbeta            = np.zeros((len_AoA,len_Mach))
+    training.dCL_dbeta            = np.zeros((len_AoA,len_Mach))
+    training.dCM_dbeta            = np.zeros((len_AoA,len_Mach))
+    training.dCN_dbeta            = np.zeros((len_AoA,len_Mach))       
+    training.dClift_dp            = np.zeros((len_AoA,len_Mach))       
+    training.dClift_dq            = np.zeros((len_AoA,len_Mach))       
+    training.dClift_dr            = np.zeros((len_AoA,len_Mach))       
+    training.dCY_dp               = np.zeros((len_AoA,len_Mach))     
+    training.dCY_dq               = np.zeros((len_AoA,len_Mach))     
+    training.dCY_dr               = np.zeros((len_AoA,len_Mach))     
+    training.dCL_dp               = np.zeros((len_AoA,len_Mach))     
+    training.dCL_dq               = np.zeros((len_AoA,len_Mach))     
+    training.dCL_dr               = np.zeros((len_AoA,len_Mach))     
+    training.dCM_dp               = np.zeros((len_AoA,len_Mach))     
+    training.dCM_dq               = np.zeros((len_AoA,len_Mach))     
+    training.dCM_dr               = np.zeros((len_AoA,len_Mach))     
+    training.dCN_dp               = np.zeros((len_AoA,len_Mach))     
+    training.dCN_dq               = np.zeros((len_AoA,len_Mach))     
+    training.dCN_dr               = np.zeros((len_AoA,len_Mach))     
+    training.dCX_du               = np.zeros((len_AoA,len_Mach))     
+    training.dCX_dv               = np.zeros((len_AoA,len_Mach))     
+    training.dCX_dw               = np.zeros((len_AoA,len_Mach))     
+    training.dCY_du               = np.zeros((len_AoA,len_Mach))     
+    training.dCY_dv               = np.zeros((len_AoA,len_Mach))     
+    training.dCY_dw               = np.zeros((len_AoA,len_Mach))     
+    training.dCZ_du               = np.zeros((len_AoA,len_Mach))     
+    training.dCZ_dv               = np.zeros((len_AoA,len_Mach))     
+    training.dCZ_dw               = np.zeros((len_AoA,len_Mach))     
+    training.dCL_du               = np.zeros((len_AoA,len_Mach))     
+    training.dCL_dv               = np.zeros((len_AoA,len_Mach))     
+    training.dCL_dw               = np.zeros((len_AoA,len_Mach))     
+    training.dCM_du               = np.zeros((len_AoA,len_Mach))     
+    training.dCM_dv               = np.zeros((len_AoA,len_Mach))     
+    training.dCM_dw               = np.zeros((len_AoA,len_Mach))     
+    training.dCN_du               = np.zeros((len_AoA,len_Mach))     
+    training.dCN_dv               = np.zeros((len_AoA,len_Mach))     
+    training.dCN_dw               = np.zeros((len_AoA,len_Mach))
+    training.dCX_dp               = np.zeros((len_AoA,len_Mach))
+    training.dCX_dq               = np.zeros((len_AoA,len_Mach))
+    training.dCX_dr               = np.zeros((len_AoA,len_Mach))
+    training.dCY_dp               = np.zeros((len_AoA,len_Mach))
+    training.dCY_dq               = np.zeros((len_AoA,len_Mach))
+    training.dCY_dr               = np.zeros((len_AoA,len_Mach))
+    training.dCZ_dp               = np.zeros((len_AoA,len_Mach))
+    training.dCZ_dq               = np.zeros((len_AoA,len_Mach))
+    training.dCZ_dr               = np.zeros((len_AoA,len_Mach))
+    training.neutral_point        = np.zeros((len_AoA,len_Mach))
+    training.spiral_criteria      = np.zeros((len_AoA,len_Mach)) 
+     
+
+    '''  for control surfaces, subtract inflence WITHOUT control surface deflected from coefficients WITH control surfaces'''
+
+    for cs in  aerodynamics.settings.control_surface_tags:  
+        if cs == 'flap':
+            letter = 'f' 
+        if cs == 'slat':
+            letter = 's'
+        if cs == 'rudder':
+            letter = 'r'
+        if cs == 'elevator':
+            letter = 'e' 
+        if cs == 'aileron':
+            letter = 'a'    
+            
+        lift_derivative = 'dClift_ddelta_' + letter 
+        drag_derivative = 'dCdrag_induced_ddelta_' + letter 
+        L_derivative    = 'dCL_ddelta_' + letter 
+        M_derivative    = 'dCM_ddelta_' + letter 
+        N_derivative    = 'dCN_ddelta_' + letter 
+        Y_derivative    = 'dCY_ddelta_' + letter   
+            
+        training[lift_derivative]  = np.zeros((len_AoA,len_Mach))
+        training[drag_derivative]  = np.zeros((len_AoA,len_Mach))
+        training[L_derivative]     = np.zeros((len_AoA,len_Mach))
+        training[M_derivative]     = np.zeros((len_AoA,len_Mach))
+        training[N_derivative]     = np.zeros((len_AoA,len_Mach))
+        training[Y_derivative]     = np.zeros((len_AoA,len_Mach)) 
+        
 
     # remove old files in run directory  
     if os.path.exists(aerodynamics.settings.filenames.run_folder):
@@ -78,61 +194,103 @@ def train_AVL_surrogates(aerodynamics,vehicle):
         run_conditions.static_stability.coefficients.pitch = np.ones_like(run_conditions.aerodynamics.angles.alpha)*pitch_rate_coefficient 
 
         # Run Analysis at AoA[i] and Mach[i]
-        run_AVL_analysis(aerodynamics,run_conditions, vehicle)
- 
-        CL[:,i]       = run_conditions.aerodynamics.coefficients.lift.inviscid.total[:,0]
-        CD[:,i]       = run_conditions.aerodynamics.coefficients.drag.induced.total[:,0]      
-        e [:,i]       = run_conditions.aerodynamics.coefficients.drag.induced.efficiency_factor[:,0]   
-        CM[:,i]       = run_conditions.static_stability.coefficients.pitch[:,0]
-        Cm_alpha[:,i] = run_conditions.static_stability.derivatives.CM_alpha[:,0]
-        Cn_beta[:,i]  = run_conditions.static_stability.derivatives.CN_beta[:,0]
-        NP[:,i]       = run_conditions.static_stability.neutral_point[:,0]     
-
-    if aerodynamics.training_file:
-        # load data 
-        data_array   = np.loadtxt(aerodynamics.training_file) 
-        
-        # convert from 1D to 2D        
-        CL_1D         = np.atleast_2d(data_array[:,0]) 
-        CD_1D         = np.atleast_2d(data_array[:,1])            
-        e_1D          = np.atleast_2d(data_array[:,2])
-        CM_1D         = np.atleast_2d(data_array[:,3]) 
-        Cm_alpha_1D   = np.atleast_2d(data_array[:,4])            
-        Cn_beta_1D    = np.atleast_2d(data_array[:,5])
-        NP_1D         = np.atleast_2d(data_array[:,6])
-
-        # convert from 1D to 2D
-        CL        = np.reshape(CL_1D, (len_AoA,-1))
-        CD        = np.reshape(CD_1D, (len_AoA,-1))
-        e         = np.reshape(e_1D , (len_AoA,-1)) 
-        CM        = np.reshape(CM_1D, (len_AoA,-1))
-        Cm_alpha  = np.reshape(Cm_alpha_1D, (len_AoA,-1))
-        Cn_beta   = np.reshape(Cn_beta_1D , (len_AoA,-1))
-        NP        = np.reshape(NP_1D , (len_AoA,-1))
-
-    # Save the data for regression 
-    if aerodynamics.settings.new_regression_results:
-        # convert from 2D to 1D
-        CL_1D       = CL.reshape([len_AoA*len_Mach,1]) 
-        CD_1D       = CD.reshape([len_AoA*len_Mach,1])  
-        e_1D        = e.reshape([len_AoA*len_Mach,1]) 
-        CM_1D       = CM.reshape([len_AoA*len_Mach,1]) 
-        Cm_alpha_1D = Cm_alpha.reshape([len_AoA*len_Mach,1])  
-        Cn_beta_1D  = Cn_beta.reshape([len_AoA*len_Mach,1])         
-        NP_1D       = Cn_beta.reshape([len_AoA*len_Mach,1]) 
-        np.savetxt(vehicle.tag+'_stability_data.txt',np.hstack([CL_1D,CD_1D,e_1D,CM_1D,Cm_alpha_1D, Cn_beta_1D,NP_1D ]),fmt='%10.8f',header='   CM       Cm_alpha       Cn_beta       NP ')
-
-    # Store training data
-    # Save the data for regression
-    training_data = np.zeros((7,len_AoA,len_Mach))
-    training_data[0,:,:] = CL 
-    training_data[1,:,:] = CD 
-    training_data[2,:,:] = e  
-    training_data[3,:,:] = CM       
-    training_data[4,:,:] = Cm_alpha 
-    training_data[5,:,:] = Cn_beta  
-    training_data[6,:,:] = NP      
-
-    # Store training data
-    training.coefficients = training_data
+        run_AVL_analysis(aerodynamics,run_conditions, vehicle) 
     
+        # Pack the outputs
+        training.Clift_alpha[:,i]          = run_conditions.aerodynamics.coefficients.lift.inviscid.total[:,0]             
+        training.Cdrag_induced_alpha[:,i]  = run_conditions.aerodynamics.coefficients.drag.induced.inviscid[:,0]          
+        training.span_efficincy[:,i]       = run_conditions.aerodynamics.coefficients.drag.induced.efficiency_factor[:,0]      
+        training.oswald_efficiency[:,i]    = run_conditions.aerodynamics.oswald_efficiency[:,0]                             
+        training.Clift_spanwise[:,i]       = run_conditions.aerodynamics.coefficients.lift.spanwise   
+        training.dClift_dalpha[:,i]        = run_conditions.static_stability.derivatives.Clift_alpha[:,0]     
+        training.dCY_dalpha[:,i]           = run_conditions.static_stability.derivatives.CY_alpha[:,0]       
+        training.dCL_dalpha[:,i]           = run_conditions.static_stability.derivatives.CL_alpha[:,0]       
+        training.dCM_dalpha[:,i]           = run_conditions.static_stability.derivatives.CM_alpha[:,0]       
+        training.dCN_dalpha[:,i]           = run_conditions.static_stability.derivatives.CN_alpha[:,0]       
+        training.dClift_dbeta[:,i]         = run_conditions.static_stability.derivatives.Clift_beta[:,0]    
+        training.dCY_dbeta[:,i]            = run_conditions.static_stability.derivatives.CY_beta[:,0]        
+        training.dCL_dbeta[:,i]            = run_conditions.static_stability.derivatives.CL_beta[:,0]        
+        training.dCM_dbeta[:,i]            = run_conditions.static_stability.derivatives.CM_beta[:,0]        
+        training.dCN_dbeta[:,i]            = run_conditions.static_stability.derivatives.CN_beta[:,0]        
+        training.dClift_dp[:,i]            = run_conditions.static_stability.derivatives.Clift_p[:,0]        
+        training.dClift_dq[:,i]            = run_conditions.static_stability.derivatives.Clift_q[:,0]        
+        training.dClift_dr[:,i]            = run_conditions.static_stability.derivatives.Clift_r[:,0]        
+        training.dCY_dp[:,i]               = run_conditions.static_stability.derivatives.CY_p[:,0]         
+        training.dCY_dq[:,i]               = run_conditions.static_stability.derivatives.CY_q[:,0]         
+        training.dCY_dr[:,i]               = run_conditions.static_stability.derivatives.CY_r[:,0]         
+        training.dCL_dp[:,i]               = run_conditions.static_stability.derivatives.CL_p[:,0]         
+        training.dCL_dq[:,i]               = run_conditions.static_stability.derivatives.CL_q[:,0]         
+        training.dCL_dr[:,i]               = run_conditions.static_stability.derivatives.CL_r[:,0]         
+        training.dCM_dp[:,i]               = run_conditions.static_stability.derivatives.CM_p[:,0]         
+        training.dCM_dq[:,i]               = run_conditions.static_stability.derivatives.CM_q[:,0]         
+        training.dCM_dr[:,i]               = run_conditions.static_stability.derivatives.CM_r[:,0]         
+        training.dCN_dp[:,i]               = run_conditions.static_stability.derivatives.CN_p[:,0]         
+        training.dCN_dq[:,i]               = run_conditions.static_stability.derivatives.CN_q[:,0]         
+        training.dCN_dr[:,i]               = run_conditions.static_stability.derivatives.CN_r[:,0]         
+        training.dCX_du[:,i]               = run_conditions.static_stability.derivatives.CX_u[:,0]         
+        training.dCX_dv[:,i]               = run_conditions.static_stability.derivatives.CX_v[:,0]         
+        training.dCX_dw[:,i]               = run_conditions.static_stability.derivatives.CX_w[:,0]         
+        training.dCY_du[:,i]               = run_conditions.static_stability.derivatives.CY_u[:,0]         
+        training.dCY_dv[:,i]               = run_conditions.static_stability.derivatives.CY_v[:,0]         
+        training.dCY_dw[:,i]               = run_conditions.static_stability.derivatives.CY_w[:,0]         
+        training.dCZ_du[:,i]               = run_conditions.static_stability.derivatives.CZ_u[:,0]         
+        training.dCZ_dv[:,i]               = run_conditions.static_stability.derivatives.CZ_v[:,0]         
+        training.dCZ_dw[:,i]               = run_conditions.static_stability.derivatives.CZ_w[:,0]         
+        training.dCL_du[:,i]               = run_conditions.static_stability.derivatives.CL_u[:,0]         
+        training.dCL_dv[:,i]               = run_conditions.static_stability.derivatives.CL_v[:,0]         
+        training.dCL_dw[:,i]               = run_conditions.static_stability.derivatives.CL_w[:,0]         
+        training.dCM_du[:,i]               = run_conditions.static_stability.derivatives.CM_u[:,0]         
+        training.dCM_dv[:,i]               = run_conditions.static_stability.derivatives.CM_v[:,0]         
+        training.dCM_dw[:,i]               = run_conditions.static_stability.derivatives.CM_w[:,0]         
+        training.dCN_du[:,i]               = run_conditions.static_stability.derivatives.CN_u[:,0]         
+        training.dCN_dv[:,i]               = run_conditions.static_stability.derivatives.CN_v[:,0]         
+        training.dCN_dw[:,i]               = run_conditions.static_stability.derivatives.CN_w[:,0]   
+        training.dCX_dp[:,i]               = run_conditions.static_stability.derivatives.CX_p[:,0] 
+        training.dCX_dq[:,i]               = run_conditions.static_stability.derivatives.CX_q[:,0] 
+        training.dCX_dr[:,i]               = run_conditions.static_stability.derivatives.CX_r[:,0] 
+        training.dCY_dp[:,i]               = run_conditions.static_stability.derivatives.CY_p[:,0] 
+        training.dCY_dq[:,i]               = run_conditions.static_stability.derivatives.CY_q[:,0] 
+        training.dCY_dr[:,i]               = run_conditions.static_stability.derivatives.CY_r[:,0] 
+        training.dCZ_dp[:,i]               = run_conditions.static_stability.derivatives.CZ_p[:,0] 
+        training.dCZ_dq[:,i]               = run_conditions.static_stability.derivatives.CZ_q[:,0] 
+        training.dCZ_dr[:,i]               = run_conditions.static_stability.derivatives.CZ_r[:,0]  
+        training.neutral_point[:,i]        = run_conditions.static_stability.neutral_point[:,0]  
+        training.spiral_criteria[:,i]      = run_conditions.static_stability.spiral_criteria[:,0]   
+    
+        '''  for control surfaces, subtract inflence WITHOUT control surface deflected from coefficients WITH control surfaces''' 
+
+        for cs in  aerodynamics.settings.control_surface_tags:  
+            if cs == 'flap':
+                letter = 'f' 
+            if cs == 'slat':
+                letter = 's'
+            if cs == 'rudder':
+                letter = 'r'
+            if cs == 'elevator':
+                letter = 'e' 
+            if cs == 'aileron':
+                letter = 'a'    
+                
+            lift_derivative = 'Clift_delta_' + letter 
+            drag_derivative = 'Cdrag_induced_delta_' + letter 
+            L_derivative    = 'CL_delta_' + letter 
+            M_derivative    = 'CM_delta_' + letter 
+            N_derivative    = 'CN_delta_' + letter 
+            Y_derivative    = 'CY_delta_' + letter
+
+            training_lift_derivative = 'dClift_ddelta_' + letter 
+            training_drag_derivative = 'dCdrag_induced_ddelta_' + letter 
+            training_L_derivative    = 'dCL_ddelta_' + letter 
+            training_M_derivative    = 'dCM_ddelta_' + letter 
+            training_N_derivative    = 'dCN_ddelta_' + letter 
+            training_Y_derivative    = 'dCY_ddelta_' + letter
+            
+                
+            training[training_lift_derivative][:,i] = run_conditions.static_stability.derivatives[lift_derivative][:,0]
+            training[training_drag_derivative][:,i] = run_conditions.static_stability.derivatives[drag_derivative][:,0]
+            training[training_L_derivative][:,i]    = run_conditions.static_stability.derivatives[L_derivative][:,0]
+            training[training_M_derivative][:,i]    = run_conditions.static_stability.derivatives[M_derivative][:,0]
+            training[training_N_derivative][:,i]    = run_conditions.static_stability.derivatives[N_derivative][:,0]
+            training[training_Y_derivative][:,i]    = run_conditions.static_stability.derivatives[Y_derivative][:,0] 
+ 
+    return training

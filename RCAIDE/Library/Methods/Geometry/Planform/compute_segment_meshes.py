@@ -20,11 +20,11 @@ import trimesh
 def compute_segment_meshes(x_in,y_in, x_out, y_out, L, spanwise_shift):
 
     points_out = list(zip(x_out, y_out))
-    poly_out = Polygon(points_out)
+    poly_out = Polygon(points_out).buffer(0)
 
     points_in = list(zip(x_in, y_in))
-    poly_in = Polygon(points_in) 
-    
+    poly_in = Polygon(points_in).buffer(0)
+
     # STEP 1: Build 3D point clouds for both sections
     x1, y1 = poly_in.exterior.xy
     x2, y2 = poly_out.exterior.xy

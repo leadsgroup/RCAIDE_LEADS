@@ -112,6 +112,8 @@ class Blended_Wing_Body(Main_Wing):
         self.y_rotation                             = 0.0
         self.z_rotation                             = 0.0    
         self.cabins                                 = Container()
+        self.operational_items                      = Component()
+        self.operational_items.tag                  = 'operational_items'
 
     def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
         """

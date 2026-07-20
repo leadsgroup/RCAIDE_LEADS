@@ -203,7 +203,7 @@ def add_mission_variables(segment):
     initial_values    = full_unkn_vals.pack_array()
     input_len_strings = np.tile('Variable_', len_inputs)
     input_numbers     = np.linspace(1,len_inputs,len_inputs,dtype=np.int16)
-    input_names       = np.core.defchararray.add(input_len_strings,np.array(input_numbers+input_count).astype(str))
+    input_names       = np.char.add(input_len_strings,np.array(input_numbers+input_count).astype(str))
     lower_bounds      = full_lower_bound_vals.pack_array()
     upper_bounds      = full_upper_bound_vals.pack_array()     
     units             = np.broadcast_to(Units.less,(len_inputs,))
@@ -229,7 +229,7 @@ def add_mission_variables(segment):
     con_count       = 0
     con_len_strings = np.tile('Residual_', len_residuals)
     con_numbers     = np.linspace(1,len_residuals,len_residuals,dtype=np.int16)
-    con_names       = np.core.defchararray.add(con_len_strings,np.array(con_numbers+con_count).astype(str))
+    con_names       = np.char.add(con_len_strings,np.array(con_numbers+con_count).astype(str))
     equals          = np.broadcast_to('=',(len_residuals,))
     zeros           = np.zeros(len_residuals)
     ones            = np.ones(len_residuals)
@@ -250,38 +250,32 @@ def add_mission_variables(segment):
     if ground_seg_flag:       
         output_numbers = np.linspace(0,n_points-2,n_points-1,dtype=np.int16)
         basic_string_con[unknown_keys[1]] = np.tile('segment.state.unknowns.'+unknown_keys[1]+'[', n_points-1)
-        input_string.append(np.core.defchararray.add(basic_string_con[unknown_keys[1]],np.array(output_numbers).astype(str)))
+        input_string.append(np.char.add(basic_string_con[unknown_keys[1]],np.array(output_numbers).astype(str)))
         input_string        = np.array(input_string[0])
-        input_string        = np.core.defchararray.add(input_string, np.tile(']',len_inputs-1))
+        input_string        = np.char.add(input_string, np.tile(']',len_inputs-1))
         input_aliases       = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_inputs), (-1, 2)) 
         input_aliases[:,0]  = input_names
         input_aliases[0,1]  = 'segment.state.unknowns.'+unknown_keys[0] 
         input_aliases[1:,1] = input_string 
         
-    elif single_pt_seg:  
-        for unkn in unknown_keys:
-            basic_string_con[unkn] = np.tile('segment.state.unknowns.'+unkn+'[', n_points)
-            input_string.append(np.core.defchararray.add(basic_string_con[unkn],np.array([0]).astype(str)))
-        input_string       = np.ravel(input_string)
-        input_string       = np.core.defchararray.add(input_string, np.tile(']',len_inputs))
-        input_aliases      = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_inputs), (-1, 2)) 
+    elif single_pt_seg:
+        input_string       = np.array([f'segment.state.unknowns.{unkn}[0]'
+                                        for unkn in unknown_keys], dtype=str)
+        input_aliases      = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_inputs), (-1, 2))
         input_aliases[:,0] = input_names
-        input_aliases[:,1] = input_string    
-    else:  
-        output_numbers = np.linspace(0,n_points-1,n_points,dtype=np.int16) 
-        for unkn in unknown_keys:
-            basic_string_con[unkn] = np.tile('segment.state.unknowns.'+unkn+'[', n_points)
-            input_string.append(np.core.defchararray.add(basic_string_con[unkn],np.array(output_numbers).astype(str)))
-        input_string       = np.ravel(input_string)
-        input_string       = np.core.defchararray.add(input_string, np.tile(']',len_inputs))
-        input_aliases      = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_inputs), (-1, 2)) 
+        input_aliases[:,1] = input_string
+    else:
+        input_string       = np.array([f'segment.state.unknowns.{unkn}[{i}]'
+                                        for unkn in unknown_keys
+                                        for i in range(n_points)], dtype=str)
+        input_aliases      = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_inputs), (-1, 2))
         input_aliases[:,0] = input_names
         input_aliases[:,1] = input_string
     
     # Step 4.2: Setup the aliases for the residuals
     basic_string_res      = np.tile('segment.state.residuals.pack_array()[', len_residuals)
-    residual_string       = np.core.defchararray.add(basic_string_res,np.array(con_numbers-1).astype(str))
-    residual_string       = np.core.defchararray.add(residual_string, np.tile(']',len_residuals))
+    residual_string       = np.char.add(basic_string_res,np.array(con_numbers-1).astype(str))
+    residual_string       = np.char.add(residual_string, np.tile(']',len_residuals))
     residual_aliases      = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_residuals), (-1, 2)) 
     residual_aliases[:,0] = con_names
     residual_aliases[:,1] = residual_string

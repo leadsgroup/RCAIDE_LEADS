@@ -59,9 +59,10 @@ class Set_Speed_Set_Altitude_AVL_Trimmed(Segment):
         
         # conditions
         self.temperature_deviation                   = 0.0
-        self.sideslip_angle                          = 0.0 
+        self.sideslip_angle                          = 0.0
+        self.crosswind_speed                         = 0.0
         self.angle_of_attack                         = None
-        self.trim_lift_coefficient                   = None        
+        self.lift_coefficient                        = None        
         self.bank_angle                              = 0.0 
         self.linear_acceleration_x                   = 0.
         self.linear_acceleration_y                   = 0.  

@@ -81,6 +81,8 @@ def initialize_conditions(segment):
     for network in vehicle.networks:
         for bus in  network.busses:
             bus.append_operating_conditions(segment)
+            for system in network.systems:
+                system.append_operating_conditions(segment, bus)
             for battery_module in  bus.battery_modules:
                 battery_module.append_operating_conditions(segment,bus)
 

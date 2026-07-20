@@ -21,6 +21,7 @@ import matplotlib.cm as cm
 # local imports 
 import sys 
 import os
+import time
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
 vehicles_path = os.path.abspath(
@@ -31,11 +32,13 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Hydrogen_Fuel_Cell   import vehicle_setup , configs_setup  
 
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  REGRESSION
 # ----------------------------------------------------------------------------------------------------------------------  
 
 def main():   
+    ti = time.time()
     
     # Operating conditions for battery p 
     marker_size           = 5   
@@ -80,8 +83,8 @@ def main():
         print(mdot_H2_diff) 
         assert np.abs((mdot_H2_diff)/mdot_H2_true[i]) < 1e-6  
 
-        time     = results.segments[0].conditions.frames.inertial.time[:,0] 
-        axes1.plot(time , mdot_H2 , marker= marker[i], linestyle = linestyles[i],  color= linecolors[i]  , markersize=marker_size   ,label = fuel_cell_tpye[i])             
+        elapsed_time     = results.segments[0].conditions.frames.inertial.time[:,0] 
+        axes1.plot(elapsed_time , mdot_H2 , marker= marker[i], linestyle = linestyles[i],  color= linecolors[i]  , markersize=marker_size   ,label = fuel_cell_tpye[i])             
              
     legend_font_size = 6
 
@@ -91,6 +94,10 @@ def main():
     axes1.legend(loc='upper right', ncol = 2, prop={'size': legend_font_size})  
     axes1.set_ylim([0,1E-6])  
     
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return  
  
 def analyses_setup(configs):

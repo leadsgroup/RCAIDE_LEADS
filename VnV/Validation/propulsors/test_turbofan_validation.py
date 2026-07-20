@@ -20,12 +20,14 @@ from   RCAIDE.Framework.Mission.Common import Conditions
 # Python imports 
 import numpy  as np                   
 import pandas as pd
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 
 def main():  
+    ti = time.time()
 
     altitude            = 35000*Units.feet
     mach_number         = 0.8
@@ -135,6 +137,10 @@ def main():
     print("\nError in Fuel Mass Flow Rate [%]:", error)
     assert error < 8e-1
     
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 def GE90_94B():

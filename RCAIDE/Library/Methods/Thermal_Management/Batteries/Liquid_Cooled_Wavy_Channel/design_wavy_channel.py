@@ -92,8 +92,8 @@ def design_wavy_channel(HAS,battery,single_side_contact=True, dry_mass=True,
     HAS.channel_area               = HAS_opt.surface_area_channel 
     
     # Update Battery Spacing based on Wavy Channel
-    battery.geometrtic_configuration.parallel_spacing  = HAS_opt.battery_parllel_spacing 
-    battery.geometrtic_configuration.normal_spacing    = HAS_opt.battery_series_spacing 
+    battery.geometric_configuration.parallel_spacing  = HAS_opt.battery_parllel_spacing 
+    battery.geometric_configuration.normal_spacing    = HAS_opt.battery_series_spacing 
 
     return HAS
 

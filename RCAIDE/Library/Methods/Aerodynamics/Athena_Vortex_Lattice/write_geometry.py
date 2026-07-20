@@ -49,13 +49,7 @@ def write_geometry(avl_object,run_script_path,vehicle):
         for w in vehicle.wings:
             avl_wing      = translate_avl_wing(w)
             wing_text     = make_surface_text(avl_wing,number_of_spanwise_vortices,number_of_chordwise_vortices)
-            geometry.write(wing_text)  
-        
-        if avl_object.settings.model_fuselage:
-            for b in vehicle.fuselages:
-                avl_body  = translate_avl_body(b)
-                body_text = make_body_text(avl_body,number_of_chordwise_vortices)
-                geometry.write(body_text)
+            geometry.write(wing_text)   
             
     return
 

@@ -40,19 +40,23 @@ from Stopped_Rotor_EVTOL    import configs_setup as  SR_configs_setup
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
-def main(): 
+def main():
+    ti = time.time()
     # make true only when resizing aircraft. should be left false for regression
     update_regression_values = False
-    
+
     # TEST 1
     tiltrotor_transition_test(update_regression_values)
-     
+
     # TEST 2
     tiltwing_transition_test(update_regression_values)
-    
+
     # TEST 3
     stopped_rotor_transition_test(update_regression_values)
-    
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 def tiltrotor_transition_test(update_regression_values): 
@@ -88,8 +92,8 @@ def tiltrotor_transition_test(update_regression_values):
             print(val)
     
     # Truth values 
-    hover_throttle_truth    = 0.5961266565749898
-    cruise_rpm_truth        = 396.22413812373867
+    hover_throttle_truth    = 0.5955245683608479
+    cruise_rpm_truth        = 394.74449646470083
     
     # Store errors 
     error = Data() 
@@ -132,9 +136,9 @@ def tiltwing_transition_test(update_regression_values):
             print(val)
     
     # Truth values 
-    hover_throttle_truth              = 0.7336052390182969
-    vertical_climb_1_throttle_truth   = 0.7436815431612642
-    vertical_descent_throttle_truth   = 0.723131676668686
+    hover_throttle_truth              = 0.7335468860209833
+    vertical_climb_1_throttle_truth   = 0.7437381205693946
+    vertical_descent_throttle_truth   = 0.7231914426939331
     
     # Store errors 
     error = Data() 
@@ -177,9 +181,9 @@ def stopped_rotor_transition_test(update_regression_values):
             print(val)
     
     # Truth values 
-    hover_throttle_truth  = 0.5574925738438762
-    lst_throttle_truth    = 0.5406669816914917
-    hsct_throttle_truth   = 0.43935354191548714
+    hover_throttle_truth  = 0.5460222782236255
+    lst_throttle_truth    = 0.5291774514692811
+    hsct_throttle_truth   = 0.41822149309842144
     
     # Store errors 
     error = Data() 
@@ -462,8 +466,8 @@ def TR_mission_setup(analyses):
     segment.flight_dynamics.force_z                       = True     
     
     # define flight controls                                       
-    segment.assigned_control_variables.body_angle                   
-    segment.assigned_control_variables.body_angle.active             = True                
+    segment.assigned_control_variables.pitch_angle                   
+    segment.assigned_control_variables.pitch_angle.active             = True                
            
     segment.assigned_control_variables.blade_pitch_command.active                     = True        
     segment.assigned_control_variables.blade_pitch_command.assigned_rotors            =  [['front_port_rotor','front_starboard_rotor','outboard_port_rotor',
