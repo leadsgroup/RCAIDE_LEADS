@@ -170,58 +170,6 @@ def lifting_line_performance(rotor, conditions):
     # ------------------------------------------------------------------------------------------------------------------
     initialize_wake_geometry(rotor, wake_inputs, conditions)
 
-    # Debugging
-    # Importing plotting libs
-    import matplotlib.pyplot as plt
-    from mpl_toolkits.mplot3d import Axes3D
-    
-    # ----------------------------------------------------------------------------------------------------------------------
-    #  Plot 1: Blade and wake geometry -- 3D, rotor plane, side view
-    # ----------------------------------------------------------------------------------------------------------------------
-    colors = plt.cm.tab10(np.linspace(0, 1, B))
-
-    if wake_inputs.include_wake:
-        nodes_body = rotor.blades.wake.nodes_body[0]    # (N+1, B, 3)
-
-    nodes_14c_body = rotor.blades.bound.nodes_body_14c[0]    # (Nr, B, 3)  -- add [0]
-    nodes_34c_body = rotor.blades.bound.nodes_body_34c[0]    # (Nr, B, 3)  -- already correct
-
-    fig = plt.figure(figsize=(18, 6))
-    ax1 = fig.add_subplot(131, projection='3d')
-    ax2 = fig.add_subplot(132)
-    ax3 = fig.add_subplot(133)
-
-    for b in range(B):
-        ax1.plot(nodes_14c_body[:,b,0], nodes_14c_body[:,b,1], nodes_14c_body[:,b,2],
-                '-o', color=colors[b], markersize=2, linewidth=2, label=f'Blade {b}')
-        ax1.plot(nodes_34c_body[:,b,0], nodes_34c_body[:,b,1], nodes_34c_body[:,b,2],
-                '-o', color=colors[b], markersize=2, linewidth=2, label=f'Blade {b}')
-        if wake_inputs.include_wake:
-            ax1.plot(nodes_body[:,b,0], nodes_body[:,b,1], nodes_body[:,b,2],
-                '-', color=colors[b], linewidth=0.8, alpha=0.7)
-        
-        ax2.plot(nodes_14c_body[:,b,1], nodes_14c_body[:,b,2], '-o', color=colors[b], markersize=2, linewidth=2)
-        ax2.plot(nodes_34c_body[:,b,1], nodes_34c_body[:,b,2], '-o', color=colors[b], markersize=2, linewidth=2)
-        if wake_inputs.include_wake:
-            ax2.plot(nodes_body[:,b,1], nodes_body[:,b,2], '-', color=colors[b], linewidth=0.8, alpha=0.7)
-        
-        ax3.plot(nodes_14c_body[:,b,0], nodes_14c_body[:,b,2], '-o', color=colors[b], markersize=2, linewidth=2)
-        ax3.plot(nodes_34c_body[:,b,0], nodes_34c_body[:,b,2], '-o', color=colors[b], markersize=2, linewidth=2)
-        if wake_inputs.include_wake:
-            ax3.plot(nodes_body[:,b,0], nodes_body[:,b,2], '-', color=colors[b], linewidth=1.0, label=f'Blade {b}')
-
-    ax1.set_xlabel('x (axial) [m]'); ax1.set_ylabel('y [m]'); ax1.set_zlabel('z [m]')
-    ax1.set_title(f'Wake geometry: {B} blades (body frame)'); ax1.legend(fontsize=6)
-    ax2.set_xlabel('y [m]'); ax2.set_ylabel('z [m]')
-    ax2.set_title('Rotor plane (y-z)'); ax2.set_aspect('equal'); ax2.invert_xaxis(); ax2.grid(True)
-    ax3.set_xlabel('x (axial) [m]'); ax3.set_ylabel('z [m]')
-    ax3.set_title('Side view (x-z)'); ax3.legend(fontsize=6); ax3.grid(True)
-
-    plt.tight_layout()
-    #plt.savefig('plot_wake.png', dpi=120)
-    #print("Saved plot_wake.png")
-    plt.show()
-    plt.close()
     # ------------------------------------------------------------------------------------------------------------------
     #  Step 3: Bound vortex circulation iteration
     # ------------------------------------------------------------------------------------------------------------------

@@ -513,7 +513,7 @@ def vehicle_setup(rotor_type):
         propeller.wake_inputs.max_iter_Gammab_0            = 1000
         propeller.wake_inputs.max_iter_CT_0                = 100
         propeller.wake_inputs.CT_iter                      = True
-        propeller.wake_inputs.aerofoil_aero                = 2                # 1 simplified aerofoil aero, detailed panel aerofoil aero
+        propeller.wake_inputs.aerofoil_aero                = 1                # 1 simplified aerofoil aero, detailed panel aerofoil aero
         propeller.wake_inputs.mu_max                       = 1.0
 
         starboard_propulsor.rotor                        = propeller   
@@ -825,7 +825,7 @@ def mission_setup(analyses):
     Segments = RCAIDE.Framework.Mission.Segments  
     base_segment = Segments.Segment() 
     base_segment.state.numerics.solver.type = 'root_finder'
-    base_segment.state.numerics.number_of_control_points = 4
+    base_segment.state.numerics.number_of_control_points = 8
     vehicle        = analyses.base.vehicle
     vehicle_mass   = vehicle.mass_properties.max_takeoff
     reference_area = vehicle.reference_area 
