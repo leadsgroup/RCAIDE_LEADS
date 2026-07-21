@@ -88,64 +88,55 @@ def biot_savart_velocity_induction(P, A, B, rc=1e-6, vc_correction=1, tol=1e-6):
     r1_norm = np.linalg.norm(r1, axis=-1, keepdims=True)  # (M, N, 1)
     r2_norm = np.linalg.norm(r2, axis=-1, keepdims=True)  # (M, N, 1)
 
-    rc_sq = np.atleast_1d(rc)**2
+    r1_dot_r2   = np.einsum('mnk,mnk->mn', r1, r2)           # (M, N)
+    s           = np.sqrt(r1_norm[..., 0]**2 + r2_norm[..., 0]**2 - 2*r1_dot_r2 + 1e-300)   # (M, N)
 
-    # r0 = B - A  (filament direction vector)  -- (N, 3)
-    r0      = B - A
+    r2_minus_r1 = r2 - r1                               # (M, N, 3)
+    
+    s1 = np.einsum('mnk,mnk->mn', r1, r2_minus_r1) / s     # (M, N)
+    s2 = np.einsum('mnk,mnk->mn', r2, r2_minus_r1) / s
 
+    rm = (r1 * s2[:, :, np.newaxis] - r2 * s1[:, :, np.newaxis]) / s[:, :, np.newaxis]   # (M, N, 3)
+    rm_sq = np.einsum('mnk,mnk->mn', rm, rm)   # (M, N)
+    
     # Cross product r1 x r2  -- (M, N, 3)
     cross = np.cross(r1, r2)
-    cross_norm_sq = np.einsum('mnk,mnk->mn', cross, cross)
     
-    # Unit vectors along r1 and r2  -- (M, N, 3)
-    r1_hat = r1 / (r1_norm + 1e-300)
-    r2_hat = r2 / (r2_norm + 1e-300)
+    rc_sq = np.atleast_1d(rc)**2
 
-    # Geometric dot products:  r1_hat . r0  and  r2_hat . r0  -- (M, N)
-    cos1 = np.einsum('mnk,nk->mn', r1_hat, r0)
-    cos2 = np.einsum('mnk,nk->mn', r2_hat, r0)
-    
+    factor = cross / (4.0 * np.pi * s[:, :, np.newaxis])
+
+    bracket = (s2/r2_norm[..., 0] - s1/r1_norm[..., 0])
+
+    denom = rm_sq
+
+    f = 1 
+
     # Vortex core correction
     if   vc_correction == 1: # Standard method
-        denom = cross_norm_sq + rc_sq
+        denom = rm_sq + rc_sq
 
-    elif vc_correction in (2, 3, 4, 5):
+    elif vc_correction == 2: # Rankine method
+        f = np.minimum(rm_sq/rc_sq[np.newaxis, :],1)
 
-        r1_dot_r2   = np.einsum('mnk,mnk->mn', r1, r2)           # (M, N)
-        s           = np.sqrt(r1_norm**2 + r2_norm**2 - 2*r1_dot_r2 + 1e-300)   # (M, N)
-        r2_minus_r1 = r2 - r1                               # (M, N, 3)
-        s1 = np.einsum('mnk,mnk->mn', r1, r2_minus_r1) / s     # (M, N)
-        s2 = np.einsum('mnk,mnk->mn', r2, r2_minus_r1) / s
-        rm = (r1 * s2[:, :, np.newaxis] - r2 * s1[:, :, np.newaxis]) / s[:, :, np.newaxis]   # (M, N, 3)
-        rm_sq = np.einsum('mnk,mnk->mn', rm, rm)   # (M, N)
+    elif vc_correction == 3: # Scully method
+        f = rm_sq/(rm_sq+rc_sq[np.newaxis, :])
 
-        if vc_correction == 2: # Rankine method
-            f = np.minimum(rm_sq/rc_sq[np.newaxis, :],1)
-            denom = cross_norm_sq * (1 / f)
-
-        elif vc_correction == 3: # Scully method
-            f = rm_sq/(rm_sq+rc_sq[np.newaxis, :])
-            denom = cross_norm_sq * (1 / f)
-
-        elif vc_correction == 4: # Vatistas method
-            rc_qd = np.atleast_1d(rc)**4
-            f = rm_sq/np.sqrt(rm_sq**2+rc_qd[np.newaxis, :])
-            denom = cross_norm_sq * (1 / f)
-            
-        elif vc_correction == 5: # Oseen method
-            a = 1.25643
-            f = 1 - np.exp(-a*rm_sq/rc_sq[np.newaxis, :])
-            denom = cross_norm_sq * (1 / f)
-
-    # Biot-Savart scalar factor: (cos1 - cos2) / (4*pi*denom)  -- (M, N)
-    factor = (cos1 - cos2) / (4.0 * np.pi * denom)
+    elif vc_correction == 4: # Vatistas method
+        rc_qd = np.atleast_1d(rc)**4
+        f = rm_sq/np.sqrt(rm_sq**2+rc_qd[np.newaxis, :])
+        
+    elif vc_correction == 5: # Oseen method
+        a = 1.25643
+        f = 1 - np.exp(-a*rm_sq/rc_sq[np.newaxis, :])
 
     # Influence tensor  -- (M, N, 3)
-    K = cross * factor[:, :, np.newaxis]
+    scalar_coeff = f * bracket / denom          # (M, N) -- f, bracket, denom are all scalar per (m,n)
+    K            = factor * scalar_coeff[:, :, np.newaxis]
 
     # Mask: skip contribution if P is on or near A, on or near B,
     # or if P is collinear with the segment (cross product near zero)
-    mask = (r1_norm[..., 0] < tol) | (r2_norm[..., 0] < tol) | (cross_norm_sq < tol)
+    mask = (r1_norm[..., 0] < tol) | (r2_norm[..., 0] < tol) | (rm_sq < tol)
     K[mask] = 0.0
 
     return K
