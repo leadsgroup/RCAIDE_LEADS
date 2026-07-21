@@ -106,7 +106,7 @@ def initialize_wake_geometry(rotor, wake_inputs, conditions):
 
     # CT may arrive as a scalar default (first call) or a per-control-point array (subsequent
     # CT-convergence iterations) -- normalize to (ctrl_pts,)
-    CT = np.asarray(wake_inputs.get('CT', 0.0065), dtype=float).reshape(-1)
+    CT = np.asarray(wake_inputs.get('thrust_coeff_initial_guess', 0.0065), dtype=float).reshape(-1)
     if CT.size == 1:
         CT = np.full(ctrl_pts, CT[0])
 

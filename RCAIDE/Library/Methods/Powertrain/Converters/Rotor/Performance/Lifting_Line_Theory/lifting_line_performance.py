@@ -89,7 +89,7 @@ def lifting_line_performance(rotor, conditions):
         wake_inputs.vc_correction                = 1                 # vortex core factor, 1 standard Rankine, 2 Rankine, 3, scully, 4 Vatistas, 5 Oseen
         wake_inputs.dpsi                         = np.radians(6.8)   # filament length [rad]
         wake_inputs.n_turns                      = 5.0               # Number of wake turns
-        wake_inputs.CT                           = 0.00654           # initial guess for CT to intialize the wake geometry
+        wake_inputs.thrust_coeff_initial_guess    = 0.00654           # initial guess for CT to intialize the wake geometry
         wake_inputs.lamb_oseen_rc_0              = 0.05             # initial core radius for the wake filaments [fraction of R]
         wake_inputs.lamb_oseen_alpha             = 1.25643           # parameters for the core radius growth rate Lamb-Oseen model  
         wake_inputs.lamb_oseen_delta             = 120000            # 8.243
@@ -110,7 +110,7 @@ def lifting_line_performance(rotor, conditions):
     # call's converged value -- simpler and safer than trying to judge whether a carried-over
     # value is still trustworthy (no risk of a diverged/extreme trial point's CT contaminating
     # the next call, and no shape mismatch across calls with different ctrl_pts).
-    wake_inputs.CT = 0.00654
+    wake_inputs.thrust_coeff_initial_guess = 0.00654
 
     # Populate remaining wake_inputs fields from conditions
     wake_inputs.V_thrust      = V_thrust

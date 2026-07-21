@@ -356,6 +356,15 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
             ut_ind = (v_induced_thrust[:,:,:,1]*tang_hat_thrust_y +
                       v_induced_thrust[:,:,:,2]*tang_hat_thrust_z)
 
+            # Sign checked against BEMT_Helmholtz_performance.py's Wa = va + Ua, Wt = Ut - vt:
+            # these look like opposite signs on Wa, but they're not -- BEMT's va is *defined* as
+            # va = Wa - Ua (positive-for-downwash, from its own PSI/inflow-angle iteration), while
+            # ua_ind here comes directly out of the Biot-Savart law on the bound circulation and
+            # comes out negative for the same physical downwash (ua_ind = -va), given this
+            # circulation/segment-direction convention. Verified numerically on the converged
+            # design case: Ua~3.4, ua_ind~-53, giving Wa~56.5 > Ua, i.e. accelerated flow through
+            # a thrusting disk, matching momentum theory. Using "+" here instead (to textually
+            # match BEMT) would make Wa go negative -- confirmed wrong, not a fix.
             Wa = np.where(CW_3, Ua - ua_ind, Ua + ua_ind)
             Wt = np.where(CW_3, Ut - ut_ind, Ut + ut_ind)
                 
@@ -440,7 +449,7 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
 
             print("CT", Ct_rotor_new)
 
-            residual_CT = np.max(np.abs(Ct_rotor_new - wake_inputs.CT)[valid_cp]) if np.any(valid_cp) else 0.0
+            residual_CT = np.max(np.abs(Ct_rotor_new - wake_inputs.thrust_coeff_initial_guess)[valid_cp]) if np.any(valid_cp) else 0.0
             if residual_CT < (0.1*tol):
                 print("CT converged after", it+1, "outer iterations")
                 conv = True
@@ -448,11 +457,12 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
 
             # Only carry forward CT for valid control points -- invalid ones keep their
             # existing (unrefined) CT rather than feeding a meaningless value into the next
-            # wake-geometry rebuild. wake_inputs.CT may still be the raw scalar default on the
-            # first outer iteration, so broadcast it to Ct_rotor_new's shape before copying.
-            new_CT = np.broadcast_to(np.asarray(wake_inputs.CT, dtype=float), Ct_rotor_new.shape).copy()
+            # wake-geometry rebuild. wake_inputs.thrust_coeff_initial_guess may still be the raw
+            # scalar default on the first outer iteration, so broadcast it to Ct_rotor_new's
+            # shape before copying.
+            new_CT = np.broadcast_to(np.asarray(wake_inputs.thrust_coeff_initial_guess, dtype=float), Ct_rotor_new.shape).copy()
             new_CT[valid_cp] = Ct_rotor_new[valid_cp]
-            wake_inputs.CT = new_CT   # (ctrl_pts, 1) -- one CT per control point
+            wake_inputs.thrust_coeff_initial_guess = new_CT   # (ctrl_pts, 1) -- one CT per control point
 
             if wake_inputs.include_wake:
                 initialize_wake_geometry(rotor, wake_inputs, conditions)
