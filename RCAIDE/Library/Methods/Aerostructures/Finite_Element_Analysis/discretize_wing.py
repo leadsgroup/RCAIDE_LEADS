@@ -214,29 +214,37 @@ def discretize_wing(wing, num_elements):
  
 def map_panel_forces_to_fea(vlm_pts, vlm_F, fea_pts):
     """
-    Translates 3D VLM panel forces onto 1D FEA beam elements using 
+    Translates 3D VLM panel forces onto 1D FEA beam elements using
     Rigid Link Equivalent Force/Moment transfer.
+    Forces are distributed linearly between the two FEA nodes that bracket
+    each VLM panel in the spanwise (Y) direction.
     """
-    num_fea = len(fea_pts)
-    fea_forces = np.zeros((num_fea, 3))
+    num_fea     = len(fea_pts)
+    fea_forces  = np.zeros((num_fea, 3))
     fea_moments = np.zeros((num_fea, 3))
-    
-    Y_fea = fea_pts[:, 1]
-    
+    Y_fea       = fea_pts[:, 1]
+
     for i in range(len(vlm_pts)):
         p_vlm = vlm_pts[i]
         f_vlm = vlm_F[i]
-        
-        # 1. Find closest FEA element along the span
-        closest_idx = np.argmin(np.abs(Y_fea - p_vlm[1]))
-        p_fea = fea_pts[closest_idx]
-        
-        # 2. Add Forces
-        fea_forces[closest_idx] += f_vlm
-        
-        # 3. Calculate Moment Arm & Torsion (r x F)
-        r = p_vlm - p_fea 
-        m_equiv = np.cross(r, f_vlm)
-        fea_moments[closest_idx] += m_equiv
-        
+        y_p   = p_vlm[1]
+
+        # Find the right-hand bracketing node; clamp so we always have a valid pair
+        idx_r = int(np.searchsorted(Y_fea, y_p))
+        idx_r = np.clip(idx_r, 1, num_fea - 1)
+        idx_l = idx_r - 1
+
+        # Linear interpolation weights
+        dy  = Y_fea[idx_r] - Y_fea[idx_l]
+        w_r = (y_p - Y_fea[idx_l]) / dy if dy > 1e-12 else 0.5
+        w_l = 1.0 - w_r
+
+        # Distribute force
+        fea_forces[idx_l] += w_l * f_vlm
+        fea_forces[idx_r] += w_r * f_vlm
+
+        # Moment arm from each node to the load application point
+        fea_moments[idx_l] += w_l * np.cross(p_vlm - fea_pts[idx_l], f_vlm)
+        fea_moments[idx_r] += w_r * np.cross(p_vlm - fea_pts[idx_r], f_vlm)
+
     return fea_forces, fea_moments

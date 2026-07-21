@@ -108,53 +108,36 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             start_idx = int(b_pts[vd_idx])
             end_idx   = int(b_pts[vd_idx+1]) 
             
-            # # Extract VLM forces 
-            # Delta_CP    = VLM_results.CP[ti, start_idx:end_idx]  
-            # Normals     = VD.normals[ti, start_idx:end_idx]
-            # Panel_Areas = VD.panel_areas[ti, start_idx:end_idx]
-            #
-            # # Force (N) = Cp * Normal_Vector * q_dyn * Area
-            # F_vec       = np.tile(Delta_CP[:, np.newaxis], (1, 3))  * Normals * q_dyn * Panel_Areas[:, np.newaxis]
-            # Fx          = - F_vec[:,1] # The normal is swaped in the VLM code, so Fx is actually the negative of the Y component of the force vector
-            # Fy          = F_vec[:,0]
-            # Fz          = F_vec[:,2]  
-            # aero_loads  = np.column_stack((Fx, Fy, Fz)) 
-            # aero_pts   = np.column_stack((VD.XC[ti, start_idx:end_idx], VD.YC[ti, start_idx:end_idx], VD.ZC[ti, start_idx:end_idx]))
-            #
-            #
-            # total_loads = np.concatenate((aero_loads, propulsive_loads, ti_source_loads), axis=0)
-            # total_pts   = np.concatenate((aero_pts,   propulsive_pts,   ti_source_pts),   axis=0)
-            #
-            # # Map aerodynamic loads to structure
-            # fea_forces, fea_moments = map_panel_forces_to_fea(total_pts, total_loads, fea_pts)
-            #
-            # # Extract panel forces (N)
-            # load_w_x_aero = fea_forces[:, 0]  # Drag
-            # load_w_y_aero = fea_forces[:, 1]  # Spanwise Force (Sideslip)
-            # load_w_z_aero = fea_forces[:, 2]  # Lift
-            #
-            # # Extract Global Moments (N-m)
-            # M_x = fea_moments[:, 0]
-            # M_y = fea_moments[:, 1]
-            # M_z = fea_moments[:, 2]
-            #
-            # # Project global moments onto the local swept/dihedral elastic axis for True Torsion
-            # load_t_y_aero = (M_x * np.sin(VD_structural_wing.sweep_mid_elems) * np.cos(VD_structural_wing.dihedral_elems) + 
-            # M_y * np.cos(VD_structural_wing.sweep_mid_elems) * np.cos(VD_structural_wing.dihedral_elems) + 
-            # M_z * np.sin(VD_structural_wing.dihedral_elems)) # Pitching Moment
-            
-            # --- VERIFICATION LOAD OVERRIDE (30 000 Pa, matches Version13 exactly) ---
-            # To restore production VLM loads: uncomment the VLM extraction above,
-            # remove this block, and change load_w_z_distributed back to w_z_struct+w_z_ribs.
-            w_z_aero      = (30000
-                             * VD_structural_wing.chord_elems
-                             * (VD_structural_wing.spar_r_elems - VD_structural_wing.spar_f_elems)
-                             * np.cos(VD_structural_wing.sweep_mid_elems))  # N/m distributed
-            load_w_z_aero = w_z_aero  # for result storage
-            M_x           = np.zeros(num_elements)
-            M_y           = np.zeros(num_elements)
-            M_z           = np.zeros(num_elements)
-            # --- END VERIFICATION LOAD OVERRIDE ---
+            # Extract VLM forces
+            Delta_CP    = VLM_results.CP[ti, start_idx:end_idx]
+            Normals     = VD.normals[ti, start_idx:end_idx]
+            Panel_Areas = VD.panel_areas[ti, start_idx:end_idx]
+
+            # Force (N) = Cp * Normal_Vector * q_dyn * Area
+            F_vec      = np.tile(Delta_CP[:, np.newaxis], (1, 3)) * Normals * q_dyn * Panel_Areas[:, np.newaxis]
+            Fx         = -F_vec[:, 1]
+            Fy         =  F_vec[:, 0]
+            Fz         =  F_vec[:, 2]
+            aero_loads = np.column_stack((Fx, Fy, Fz))
+            aero_pts   = np.column_stack((VD.XC[ti, start_idx:end_idx], VD.YC[ti, start_idx:end_idx], VD.ZC[ti, start_idx:end_idx]))
+
+            total_loads = np.concatenate((aero_loads, propulsive_loads, ti_source_loads), axis=0)
+            total_pts   = np.concatenate((aero_pts,   propulsive_pts,   ti_source_pts),   axis=0)
+
+            # Map aerodynamic loads to structure and convert to distributed (N/m)
+            fea_forces, fea_moments = map_panel_forces_to_fea(total_pts, total_loads, fea_pts)
+            w_x_aero = fea_forces[:, 0] / VD_structural_wing.Le
+            w_y_aero = fea_forces[:, 1] / VD_structural_wing.Le
+            w_z_aero = fea_forces[:, 2] / VD_structural_wing.Le
+
+            # Project eccentricity moments onto the elastic axis for torsion
+            M_x = fea_moments[:, 0]
+            M_y = fea_moments[:, 1]
+            M_z = fea_moments[:, 2]
+            load_t_y_aero = (M_x * np.sin(VD_structural_wing.sweep_mid_elems) * np.cos(VD_structural_wing.dihedral_elems) +
+                             M_y * np.cos(VD_structural_wing.sweep_mid_elems) * np.cos(VD_structural_wing.dihedral_elems) +
+                             M_z * np.sin(VD_structural_wing.dihedral_elems))
+
             # Run structural solver 
             E    = wing.structural.material.youngs_modulus      
             G    = wing.structural.material.shear_modulus     
@@ -170,7 +153,7 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             w_z_ribs           = -Rib_Mass_Per_Meter * 9.81 * n 
 
             # Total Distributed Loads
-            load_w_z_distributed = w_z_struct + w_z_ribs + w_z_aero
+            load_w_z_distributed = w_z_struct + w_z_ribs
             
             # Matrices Assembly
             T_all         = compute_3d_transformation_matrix(VD_structural_wing.sweep_mid_elems, VD_structural_wing.dihedral_elems, VD_structural_wing.twist_elems, num_elements)
@@ -179,8 +162,8 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             K_temp        = np.matmul(K_local, T_all)
             K_global_elem = np.matmul(np.transpose(T_all, (0, 2, 1)), K_temp)
             
-            # Distributed force vector — all loads (including aero) through T for correct bending-torsion coupling
-            F_global_elem = compute_force_vector(w_x=np.zeros(num_elements), w_y=np.zeros(num_elements), w_z=load_w_z_distributed, t_y=np.zeros(num_elements), Le=VD_structural_wing.Le, num_elem=num_elements, T=T_all)
+            # All loads routed through T for correct bending-torsion coupling
+            F_global_elem = compute_force_vector(w_x=w_x_aero, w_y=w_y_aero, w_z=w_z_aero + load_w_z_distributed, t_y=load_t_y_aero, Le=VD_structural_wing.Le, num_elem=num_elements, T=T_all)
             
             # Global Assembly
             num_nodes     = num_elements + 1
@@ -200,27 +183,6 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             np.add.at(K_global, (rows, cols), K_global_elem)
             np.add.at(F_global, global_indices, F_global_elem)
             
-            # # Direct Nodal Injection of Discrete Aero Loads
-            # # Split the mapped element force 50/50 to its left and right nodes
-            # node1_idx = 6 * np.arange(num_elements)
-            # node2_idx = 6 * (np.arange(num_elements) + 1)
-            #
-            # # Inject Forces (Fx, Fy, Fz in Newtons)
-            # F_global[node1_idx + 0] += load_w_x_aero / 2
-            # F_global[node2_idx + 0] += load_w_x_aero / 2
-            # F_global[node1_idx + 1] += load_w_y_aero / 2
-            # F_global[node2_idx + 1] += load_w_y_aero / 2
-            # F_global[node1_idx + 2] += load_w_z_aero / 2
-            # F_global[node2_idx + 2] += load_w_z_aero / 2
-            #
-            # # Inject Global Moments (Mx, My, Mz in Newton-meters)
-            # F_global[node1_idx + 3] += M_x / 2
-            # F_global[node2_idx + 3] += M_x / 2
-            # F_global[node1_idx + 4] += M_y / 2
-            # F_global[node2_idx + 4] += M_y / 2
-            # F_global[node1_idx + 5] += M_z / 2
-            # F_global[node2_idx + 5] += M_z / 2
-            #
             # Solve boundary conditions (Cantilever)
             constrained_dof  = np.arange(0, 6)
             all_dofs         = np.arange(total_dof)
@@ -234,10 +196,20 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             twist_local      = ( u_full[3::6] * np.sin(VD_structural_wing.sweep_nodes) + u_full[4::6] * np.cos(VD_structural_wing.sweep_nodes))
             
             # store results
-            # Create an arc-length coordinate array for the center of each element
-            y_elem_centers = (VD_structural_wing.y_local[:-1] + VD_structural_wing.y_local[1:]) / 2  
-            node_aero_loads = np.interp(VD_structural_wing.y_local, y_elem_centers, load_w_z_aero)
-            
+            # Build spanwise loading directly from VLM strips (sum over chordwise panels per strip)
+            n_sw_wing     = int(VD.n_sw[ti][vd_idx])
+            n_cw_wing     = int(VD.n_cw[ti][vd_idx])
+            aero_Fz_2d    = aero_loads[:, 2].reshape(n_sw_wing, n_cw_wing)
+            aero_Y_2d     = aero_pts[:, 1].reshape(n_sw_wing, n_cw_wing)
+            vlm_strip_Fz  = aero_Fz_2d.sum(axis=1)
+            vlm_strip_Y   = aero_Y_2d.mean(axis=1)
+            vlm_dy        = np.empty(n_sw_wing)
+            vlm_dy[1:-1]  = (vlm_strip_Y[2:] - vlm_strip_Y[:-2]) / 2.0
+            vlm_dy[0]     =  vlm_strip_Y[1]  - vlm_strip_Y[0]
+            vlm_dy[-1]    =  vlm_strip_Y[-1] - vlm_strip_Y[-2]
+            vlm_strip_wz  = vlm_strip_Fz / np.maximum(vlm_dy, 1e-6)
+            node_aero_loads = np.interp(VD_structural_wing.y_local, vlm_strip_Y, vlm_strip_wz)
+
             structural_results[wing.tag].load[ti,:,2]           = node_aero_loads
             structural_results[wing.tag].elastic_twist[ti,:,0]  = twist_local
             structural_results[wing.tag].deflection[ti,:,0]     = u_full[0::6]  # X deflection (Chordwise)
