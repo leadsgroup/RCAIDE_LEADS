@@ -16,4 +16,5 @@ RCAIDE.Library.Methods.Aerodynamics : Aerodynamic analysis tools
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-from .plot_aerostructural_deflection                import plot_aerostructural_deflection 
+from .plot_aerostructural_deflection   import plot_aerostructural_deflection
+from .plot_aerostructural_properties  import plot_aerostructural_properties

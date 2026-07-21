@@ -37,7 +37,7 @@ def build_FEA_surrogates(aerostructures, vehicle):
 
     surrogates.subsonic = build_surrogate(aerostructures, training.subsonic, vehicle)
 
-    if len(sup_Mach) > 2:
+    if len(sup_Mach) > 2 and training.supersonic is not None:
         surrogates.supersonic = build_surrogate(aerostructures, training.supersonic, vehicle)
         surrogates.transonic  = build_surrogate(aerostructures, training.transonic,  vehicle)
     else:

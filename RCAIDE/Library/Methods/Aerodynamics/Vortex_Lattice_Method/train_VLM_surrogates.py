@@ -41,11 +41,11 @@ def train_VLM_surrogates(aerodynamics, vehicle,aerostructural_analyses=None):
     sub_Mach      = Mach[:sub_len] 
     sup_Mach      = Mach[sub_len:] 
 
-    training.subsonic    =  train_model(aerodynamics, sub_Mach, vehicle)
-    
+    training.subsonic    =  train_model(aerodynamics, sub_Mach, vehicle, aerostructural_analyses)
+
     # only build supersonic surrogates if necessary
-    if len(sup_Mach) > 2: 
-        training.supersonic  =  train_model(aerodynamics, sup_Mach, vehicle,aerostructural_analyses)
+    if len(sup_Mach) > 2:
+        training.supersonic  =  train_model(aerodynamics, sup_Mach, vehicle, aerostructural_analyses)
         training.transonic   =  train_trasonic_model(aerodynamics, training.subsonic,training.supersonic,sub_Mach, sup_Mach, vehicle)
     else:
         training.supersonic  = None
@@ -67,13 +67,14 @@ def train_model(aerodynamics,Mach, vehicle,aerostructural_analyses=None):
     Returns: 
         None    
     """
-    settings       = aerodynamics.settings
-    AoA            = aerodynamics.training.angle_of_attack                  
-    Beta           = aerodynamics.training.sideslip_angle
-    MAC            = vehicle.reference_chord
-    b              = vehicle.reference_span
-    training       = Data()
-    training.Mach  = Mach 
+    settings     = aerodynamics.settings
+    settings_str = aerostructural_analyses.settings if aerostructural_analyses is not None else None
+    AoA          = aerodynamics.training.angle_of_attack
+    Beta         = aerodynamics.training.sideslip_angle
+    MAC          = vehicle.reference_chord
+    b            = vehicle.reference_span
+    training     = Data()
+    training.Mach = Mach
     
     # loop through wings to determine what control surfaces are present
     delta_a_0 = 0
@@ -128,36 +129,74 @@ def train_model(aerodynamics,Mach, vehicle,aerostructural_analyses=None):
     
     # Setup new array shapes for vectorization 
     # stakcing 9x9 matrices into one horizontal line(81)  
-    AoAs       = np.atleast_2d(np.tile(AoA,len_Mach).T.flatten()).T 
-    Machs      = np.atleast_2d(np.repeat(Mach,len_AoA)).T      
-    conditions                                      = RCAIDE.Framework.Mission.Common.Results() 
+    AoAs       = np.atleast_2d(np.tile(AoA,len_Mach).T.flatten()).T
+    Machs      = np.atleast_2d(np.repeat(Mach,len_AoA)).T
+
+    # Sea-level atmosphere: VLM only needs Mach, but FEA needs physical dynamic pressure
+    atmosphere  = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
+    atmo        = atmosphere.compute_values(aerodynamics.training.altitude)
+    a0   =  atmo.speed_of_sound[0][0]
+    rho0 =  atmo.density[0][0]
+    mu0  =  atmo.dynamic_viscosity[0][0]
+    T0   =  atmo.temperature[0][0]
+    P0   =  atmo.pressure[0][0]    
+    V    = Machs * a0
+
+    conditions                                      = RCAIDE.Framework.Mission.Common.Results()
     conditions.freestream.mach_number               = Machs
-    conditions.aerodynamics.angles.alpha            = np.ones_like(Machs)*AoAs 
-    conditions.aerodynamics.angles.beta             = np.zeros_like(Machs)*AoAs  
-    conditions.freestream.velocity                  = np.zeros_like(Machs)*AoAs  
-    conditions.static_stability.pitch_rate          = np.zeros_like(Machs)*AoAs  
-    conditions.static_stability.roll_rate           = np.zeros_like(Machs)*AoAs  
-    conditions.static_stability.yaw_rate            = np.zeros_like(Machs)*AoAs 
-   
+    conditions.freestream.velocity                  = V
+    conditions.freestream.density                   = rho0 * np.ones_like(Machs)
+    conditions.freestream.dynamic_viscosity         = mu0  * np.ones_like(Machs)
+    conditions.freestream.temperature               = T0   * np.ones_like(Machs)
+    conditions.freestream.pressure                  = P0   * np.ones_like(Machs)
+    conditions.freestream.dynamic_pressure          = 0.5 * rho0 * V**2
+    conditions.freestream.gravitational_acceleration = 9.81 * np.ones_like(Machs)
+    conditions.aerodynamics.angles.alpha            = np.ones_like(Machs)*AoAs
+    conditions.aerodynamics.angles.beta             = np.zeros_like(Machs)*AoAs
+    conditions.static_stability.pitch_rate          = np.zeros_like(Machs)*AoAs
+    conditions.static_stability.roll_rate           = np.zeros_like(Machs)*AoAs
+    conditions.static_stability.yaw_rate            = np.zeros_like(Machs)*AoAs
+
     clean_wing_vehicle = deepcopy(vehicle)
     for wing in clean_wing_vehicle.wings:
         wing.control_surfaces = []
 
-    # run VLM and FEA for all conditions
-    VLM_results      = call_VLM(conditions,settings,clean_wing_vehicle)
-    FEA_results      = FEA(conditions,VLM_results,settings.vortex_distribution,settings_str,clean_wing_vehicle)
+    # run VLM for all conditions
+    VLM_results = call_VLM(conditions, settings, clean_wing_vehicle)
 
-    # Store structural training data (deflections and twist per wing)
-    training.deflection_u  = Data()
-    training.deflection_v  = Data()
-    training.deflection_w  = Data()
-    training.elastic_twist = Data()
-    for wing in clean_wing_vehicle.wings:
-        n_nodes = FEA_results[wing.tag].deflection.shape[1]
-        training.deflection_u[wing.tag]  = FEA_results[wing.tag].deflection[:, :, 0].reshape(len_Mach, len_AoA, n_nodes).transpose(1, 0, 2)
-        training.deflection_v[wing.tag]  = FEA_results[wing.tag].deflection[:, :, 1].reshape(len_Mach, len_AoA, n_nodes).transpose(1, 0, 2)
-        training.deflection_w[wing.tag]  = FEA_results[wing.tag].deflection[:, :, 2].reshape(len_Mach, len_AoA, n_nodes).transpose(1, 0, 2)
-        training.elastic_twist[wing.tag] = FEA_results[wing.tag].elastic_twist[:, :, 0].reshape(len_Mach, len_AoA, n_nodes).transpose(1, 0, 2)
+    # run FEA alongside VLM training if aerostructural_analyses is provided
+    if aerostructural_analyses is not None:
+        n_pts = int(AoAs.shape[0])
+        conditions.aerostructures                    = Data()
+        conditions.control_surfaces                  = Data()
+        conditions.weights                           = Data()
+        conditions.weights.components                = Data()
+        conditions.weights.components.mass           = Data()
+        for network in vehicle.networks:
+            for fuel_line in network.fuel_lines:
+                for fuel_tank in fuel_line.fuel_tanks:
+                    conditions.weights.components.mass[fuel_tank.fuel.tag] = (
+                        fuel_tank.mass_properties.mass * np.ones((n_pts, 1)))
+
+        FEA_results = FEA(conditions, VLM_results, settings.vortex_distribution,
+                          settings_str, clean_wing_vehicle)
+
+        # Normalise by dynamic pressure so the surrogate stores δ/q_dyn.
+        # At query time evaluate_surrogate multiplies by the mission q_dyn,
+        # giving the correct deflection at any altitude without a third
+        # surrogate dimension.
+        q_dyn_train = 0.5 * rho0 * V**2   # shape (n_pts, 1)
+
+        training.deflection_u  = Data()
+        training.deflection_v  = Data()
+        training.deflection_w  = Data()
+        training.elastic_twist = Data()
+        for wing in clean_wing_vehicle.wings:
+            n_nodes = FEA_results[wing.tag].deflection.shape[1]
+            training.deflection_u[wing.tag]  = (FEA_results[wing.tag].deflection[:, :, 0] / q_dyn_train).reshape(len_Mach, len_AoA, n_nodes).transpose(1, 0, 2)
+            training.deflection_v[wing.tag]  = (FEA_results[wing.tag].deflection[:, :, 1] / q_dyn_train).reshape(len_Mach, len_AoA, n_nodes).transpose(1, 0, 2)
+            training.deflection_w[wing.tag]  = (FEA_results[wing.tag].deflection[:, :, 2] / q_dyn_train).reshape(len_Mach, len_AoA, n_nodes).transpose(1, 0, 2)
+            training.elastic_twist[wing.tag] = (FEA_results[wing.tag].elastic_twist[:, :, 0] / q_dyn_train).reshape(len_Mach, len_AoA, n_nodes).transpose(1, 0, 2)
 
     Clift_res        = VLM_results.CLift
     VD_0             = settings.vortex_distribution
@@ -752,17 +791,19 @@ def call_VLM(full_conditions,settings,vehicle):
             RES                 = Data()
             RES.CLift           = VLM_results.CLift
             RES.CDrag_induced   = VLM_results.CDrag_induced
+            RES.CP              = VLM_results.CP 
             RES.CX              = VLM_results.CX
             RES.CY              = VLM_results.CY
             RES.CZ              = VLM_results.CZ
             RES.CL              = VLM_results.CL
             RES.CM              = VLM_results.CM
-            RES.CN              = VLM_results.CN
+            RES.CN              = VLM_results.CN      
             RES.sectional_CLift = VLM_results.sectional_CLift         
-            settings.vortex_distribution  = settings.vortex_distribution  
+            settings.vortex_distribution  = settings.vortex_distribution    
         else: 
             RES.CLift           = np.vstack((RES.CLift          ,VLM_results.CLift)) 
             RES.CDrag_induced   = np.vstack((RES.CDrag_induced  ,VLM_results.CDrag_induced))
+            RES.CP              = np.vstack((RES.CP             ,VLM_results.CP))
             RES.CX              = np.vstack((RES.CX             ,VLM_results.CX))
             RES.CY              = np.vstack((RES.CY             ,VLM_results.CY))
             RES.CZ              = np.vstack((RES.CZ             ,VLM_results.CZ))

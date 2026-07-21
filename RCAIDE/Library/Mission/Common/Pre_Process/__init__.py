@@ -9,6 +9,7 @@
 # ----------------------------------------------------------------------------------------------------------------------- 
    
 from .aerodynamics                            import aerodynamics
+from .aerostructures                          import aerostructures
 from .geometry                                import geometry, geometry_preprocess_routine
 from .stability                               import stability
 from .energy                                  import energy

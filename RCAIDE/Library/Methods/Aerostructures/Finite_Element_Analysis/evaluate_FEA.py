@@ -56,8 +56,14 @@ def evaluate_surrogate(state, settings, vehicle):
         conditions.aerostructures[wing.tag].elastic_twist = np.zeros((n_cpts, n_nodes, 1))
 
         for ti in range(n_cpts):
-            aoa_ti  = float(AoA[ti])
-            mach_ti = float(Mach[ti])
+            aoa_ti  = AoA[ti]
+            mach_ti = Mach[ti]
+
+            # Mission dynamic pressure for de-normalisation (surrogate stores δ/q_dyn)
+            rho_ti = conditions.freestream.density[ti]
+            V_ti   = conditions.freestream.velocity[ti]
+            q_dyn_ti = 0.5 * rho_ti * V_ti**2
+
             # Build query array: one row per node, columns = (AoA, Mach, node_idx)
             node_pts = np.column_stack([
                 np.full(n_nodes, aoa_ti),
@@ -65,16 +71,16 @@ def evaluate_surrogate(state, settings, vehicle):
                 np.arange(n_nodes, dtype=float)
             ])
 
-            conditions.aerostructures[wing.tag].deflection[ti, :, 0] = blend_structural(
+            conditions.aerostructures[wing.tag].deflection[ti, :, 0] = q_dyn_ti * blend_structural(
                 sub_sur.deflection_u[wing.tag], trans_sur.deflection_u[wing.tag],
                 sup_sur.deflection_u[wing.tag], h_sub, h_sup, mach_ti, node_pts)
-            conditions.aerostructures[wing.tag].deflection[ti, :, 1] = blend_structural(
+            conditions.aerostructures[wing.tag].deflection[ti, :, 1] = q_dyn_ti * blend_structural(
                 sub_sur.deflection_v[wing.tag], trans_sur.deflection_v[wing.tag],
                 sup_sur.deflection_v[wing.tag], h_sub, h_sup, mach_ti, node_pts)
-            conditions.aerostructures[wing.tag].deflection[ti, :, 2] = blend_structural(
+            conditions.aerostructures[wing.tag].deflection[ti, :, 2] = q_dyn_ti * blend_structural(
                 sub_sur.deflection_w[wing.tag], trans_sur.deflection_w[wing.tag],
                 sup_sur.deflection_w[wing.tag], h_sub, h_sup, mach_ti, node_pts)
-            conditions.aerostructures[wing.tag].elastic_twist[ti, :, 0] = blend_structural(
+            conditions.aerostructures[wing.tag].elastic_twist[ti, :, 0] = q_dyn_ti * blend_structural(
                 sub_sur.elastic_twist[wing.tag], trans_sur.elastic_twist[wing.tag],
                 sup_sur.elastic_twist[wing.tag], h_sub, h_sup, mach_ti, node_pts)
     return

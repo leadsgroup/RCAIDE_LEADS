@@ -32,9 +32,8 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
     """
     # compute freestream properties 
     rho           = conditions.freestream.density
-    V             = conditions.freestream.velocity  
-    rho[rho==0.0] =  1.225 
-    q_dyn         = 0.5 * rho * (V ** 2)
+    V             = conditions.freestream.velocity   
+    q_dyn         = conditions.freestream.dynamic_pressure 
     n             = settings.load_factor  
     
     n_cpts = len(VLM_results.CLift)
@@ -59,27 +58,27 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
     propulsive_loads = np.zeros((0, 3))
     fuel_tank_info   = []  # list of (global_CG, fuel_tag, tank_static_mass)
 
-    for network in geometry.networks:
-        for fuel_line in network.fuel_lines:
-            for fuel_tank in fuel_line.fuel_tanks:
-                if fuel_tank.wing_tag is not None:
-                    global_CG = np.array(fuel_tank.origin[0]) + np.array(fuel_tank.mass_properties.center_of_gravity)
-                    fuel_tank_info.append((global_CG, fuel_tank.fuel.tag, fuel_tank.mass_properties.mass))
+    # for network in geometry.networks:
+    #     for fuel_line in network.fuel_lines:
+    #         for fuel_tank in fuel_line.fuel_tanks:
+    #             if fuel_tank.wing_tag is not None:
+    #                 global_CG = np.array(fuel_tank.origin[0]) + np.array(fuel_tank.mass_properties.center_of_gravity)
+    #                 fuel_tank_info.append((global_CG, fuel_tank.fuel.tag, fuel_tank.mass_properties.mass))
 
-        for bus in network.busses:
-            for battery_module in bus.modules:
-                if battery_module.wing_tag is not None:
-                    battery_load = float(np.mean(battery_module.mass_properties.mass * conditions.freestream.gravitational_acceleration)) * n
-                    global_CG    = np.array(battery_module.origin[0]) + np.array(battery_module.mass_properties.center_of_gravity)
-                    source_pts       = np.vstack([source_pts,       global_CG.reshape(1, 3)])
-                    source_loads_cst = np.vstack([source_loads_cst, [[0.0, 0.0, -battery_load]]])
+    #     for bus in network.busses:
+    #         for battery_module in bus.modules:
+    #             if battery_module.wing_tag is not None:
+    #                 battery_load = float(np.mean(battery_module.mass_properties.mass * conditions.freestream.gravitational_acceleration)) * n
+    #                 global_CG    = np.array(battery_module.origin[0]) + np.array(battery_module.mass_properties.center_of_gravity)
+    #                 source_pts       = np.vstack([source_pts,       global_CG.reshape(1, 3)])
+    #                 source_loads_cst = np.vstack([source_loads_cst, [[0.0, 0.0, -battery_load]]])
 
-        for propulsor in network.propulsors:
-            if propulsor.wing_mounted:
-                prop_load = float(np.mean(propulsor.mass_properties.mass * conditions.freestream.gravitational_acceleration)) * n
-                global_CG = np.array(propulsor.origin[0]) + np.array(propulsor.mass_properties.center_of_gravity)
-                propulsive_pts   = np.vstack([propulsive_pts,   global_CG.reshape(1, 3)])
-                propulsive_loads = np.vstack([propulsive_loads, [[0.0, 0.0, -prop_load]]])
+    #     for propulsor in network.propulsors:
+    #         if propulsor.wing_mounted:
+    #             prop_load = float(np.mean(propulsor.mass_properties.mass * conditions.freestream.gravitational_acceleration)) * n
+    #             global_CG = np.array(propulsor.origin[0]) + np.array(propulsor.mass_properties.center_of_gravity)
+    #             propulsive_pts   = np.vstack([propulsive_pts,   global_CG.reshape(1, 3)])
+    #             propulsive_loads = np.vstack([propulsive_loads, [[0.0, 0.0, -prop_load]]])
 
     
     # Loop over control points
@@ -88,15 +87,16 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
         # Time-varying fuel loads for this control point
         ti_source_pts   = source_pts.copy()
         ti_source_loads = source_loads_cst.copy()
-        for (global_CG, fuel_tag, tank_mass) in fuel_tank_info:
-            fuel_mass = float(conditions.weights.components.mass[fuel_tag][ti, 0]) + tank_mass
-            fuel_load = fuel_mass * float(conditions.freestream.gravitational_acceleration[ti, 0]) * n
-            ti_source_pts   = np.vstack([ti_source_pts,   global_CG.reshape(1, 3)])
-            ti_source_loads = np.vstack([ti_source_loads, [[0.0, 0.0, -fuel_load]]])
+        # for (global_CG, fuel_tag, tank_mass) in fuel_tank_info:
+        #     fuel_mass = conditions.weights.components.mass[fuel_tag][ti, 0] + tank_mass
+        #     fuel_load = fuel_mass * float(conditions.freestream.gravitational_acceleration[ti, 0]) * n
+        #     ti_source_pts   = np.vstack([ti_source_pts,   global_CG.reshape(1, 3)])
+        #     ti_source_loads = np.vstack([ti_source_loads, [[0.0, 0.0, -fuel_load]]])
 
-        panels_per_wing = VD.n_sw[ti] * VD.n_cw[ti]
-        b_pts = np.concatenate(([0], np.cumsum(panels_per_wing)))  
-        vd_idx = 0 
+        vd_ti           = min(ti, len(VD.n_sw) - 1)   # n_sw/n_cw stored once when mesh is fixed
+        panels_per_wing = VD.n_sw[vd_ti] * VD.n_cw[vd_ti]
+        b_pts = np.concatenate(([0], np.cumsum(panels_per_wing)))
+        vd_idx = 0
          
         for wing in geometry.wings.values():
             VD_structural_wing = structural_results[wing.tag].structural_node_data
@@ -110,16 +110,16 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             
             # Extract VLM forces
             Delta_CP    = VLM_results.CP[ti, start_idx:end_idx]
-            Normals     = VD.normals[ti, start_idx:end_idx]
-            Panel_Areas = VD.panel_areas[ti, start_idx:end_idx]
+            Normals     = VD.normals[vd_ti, start_idx:end_idx]
+            Panel_Areas = VD.panel_areas[vd_ti, start_idx:end_idx]
 
             # Force (N) = Cp * Normal_Vector * q_dyn * Area
-            F_vec      = np.tile(Delta_CP[:, np.newaxis], (1, 3)) * Normals * q_dyn * Panel_Areas[:, np.newaxis]
+            F_vec      = np.tile(Delta_CP[:, np.newaxis], (1, 3)) * Normals * q_dyn[ti,0] * Panel_Areas[:, np.newaxis]
             Fx         = -F_vec[:, 1]
             Fy         =  F_vec[:, 0]
             Fz         =  F_vec[:, 2]
             aero_loads = np.column_stack((Fx, Fy, Fz))
-            aero_pts   = np.column_stack((VD.XC[ti, start_idx:end_idx], VD.YC[ti, start_idx:end_idx], VD.ZC[ti, start_idx:end_idx]))
+            aero_pts   = np.column_stack((VD.XC[vd_ti, start_idx:end_idx], VD.YC[vd_ti, start_idx:end_idx], VD.ZC[vd_ti, start_idx:end_idx]))
 
             total_loads = np.concatenate((aero_loads, propulsive_loads, ti_source_loads), axis=0)
             total_pts   = np.concatenate((aero_pts,   propulsive_pts,   ti_source_pts),   axis=0)
@@ -197,8 +197,8 @@ def FEA(conditions,VLM_results,VD,settings,geometry):
             
             # store results
             # Build spanwise loading directly from VLM strips (sum over chordwise panels per strip)
-            n_sw_wing     = int(VD.n_sw[ti][vd_idx])
-            n_cw_wing     = int(VD.n_cw[ti][vd_idx])
+            n_sw_wing     = int(VD.n_sw[vd_ti][vd_idx])
+            n_cw_wing     = int(VD.n_cw[vd_ti][vd_idx])
             aero_Fz_2d    = aero_loads[:, 2].reshape(n_sw_wing, n_cw_wing)
             aero_Y_2d     = aero_pts[:, 1].reshape(n_sw_wing, n_cw_wing)
             vlm_strip_Fz  = aero_Fz_2d.sum(axis=1)

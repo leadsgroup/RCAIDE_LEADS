@@ -16,16 +16,12 @@ def discretize_wing(wing, num_elements):
     symmetric = wing.xz_plane_symmetric
     semi_span = wing.spans.projected / (1 + symmetric) 
     
-    # Assign elements proportionally, ensuring a minimum of 5 elements per segment
-    seg_elements = np.zeros(len(wing.segments) - 1)
-    # Assign any remaining elements to the last segment to ensure total matches num_elements
-    seg_elements[-1] += num_elements - np.sum(seg_elements)
-
     seg_list = list(wing.segments.keys())
+    seg_elements = np.zeros(len(wing.segments) - 1)
     for seg_i in range(len(wing.segments) - 1):
         inboard_seg  =  wing.segments[seg_list[seg_i]]
         outboard_seg = wing.segments[seg_list[seg_i + 1]]
-        
+
         if seg_i == 0:
             seg_span =  (outboard_seg.percent_span_location - (inboard_seg.percent_span_location + wing.percent_span_unexposed)) * semi_span
         else:
@@ -33,8 +29,10 @@ def discretize_wing(wing, num_elements):
         seg_elements[seg_i] = ((seg_span / semi_span) * num_elements)
 
     wing_t_c = wing.thickness_to_chord
- 
-    seg_elements    = np.round(seg_elements)
+
+    seg_elements  = np.round(seg_elements).astype(int)
+    # Correct rounding error so total is always exactly num_elements
+    seg_elements[-1] += num_elements - int(np.sum(seg_elements))
     X_nodes         = np.empty((1, 0))
     Y_nodes         = np.empty((1, 0))
     Z_nodes         = np.empty((1, 0))

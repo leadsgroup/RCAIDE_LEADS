@@ -160,7 +160,10 @@ class Vortex_Lattice_Method(Aerodynamics):
                     self.training = pickle.load(file) 
                 print("\n Aerodynamic training data loaded. Delete the file and rerun to regenerate.")
             else:
-                print("\n Creating aerodynamic surrogate ...")
+                if aerostructural_analyses is not None:
+                    print("\n Creating aerodynamic and aerostructural surrogates ...")
+                else:
+                    print("\n Creating aerodynamic surrogate ...")
                 train_VLM_surrogates(self, vehicle,aerostructural_analyses)
     
                 if self.settings.store_training_data:
