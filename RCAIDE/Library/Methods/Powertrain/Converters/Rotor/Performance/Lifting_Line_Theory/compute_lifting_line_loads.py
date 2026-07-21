@@ -146,13 +146,12 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     [1] J. Katz and A. Plotkin, Low-Speed Aerodynamics, 2nd ed.,
         Cambridge University Press, 2001, Section 2.12.
     [2] W. Johnson, Rotorcraft Aeromechanics, Cambridge university press, 2013, Section 9.9.
-
     [3] I. Chopra and A. Datta, Helicopter Dynamics, Lecture Notes, UMD, Section 4.8.
     
     See Also
     --------
      RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory.initialize_lifting_line
-    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory.Biot_Savart_velocity_induction
+     RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory.Biot_Savart_velocity_induction
     """
     # ------------------------------------------------------------------------------------------------------------------
     #  Unpack converged solution
@@ -180,6 +179,7 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     Wa         = rotor.blades.bound.Wa   
     Wt         = rotor.blades.bound.Wt   
     lamdaw     = rotor.blades.bound.lamdaw   
+    mu         = wake_inputs.mu   # (ctrl_pts,)
 
     r_1d      = rotor.radius_distribution   # (Nr,) -- use the 1D version from rotor
     c_mid     = 0.5*(c_1d[:, :-1, :] + c_1d[:, 1:, :])   # (ctrl_pts, Nr-1, B)
@@ -267,22 +267,20 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
 
     c_mean    = np.mean(rotor.chord_distribution)          # scalar, mean chord (Nr,) averaged
     sigma     = B * c_mean / (np.pi * R)                   # scalar solidity
-
-    # calculate coefficients
     A         = np.pi*(R**2)
     D         = 2*R
+
+    # calculate coefficients
     Cq        = torque/(rho_0*(n**2)*(D**5))
     Cq_rotor  = torque / (rho_0 * A * (omega*R)**2 * R)
     Ct        = thrust/(rho_0*(n**2)*(D**4))
-    Ct_rotor  = thrust / (rho_0 * A * (omega * R)**2)   # rotor convention
+    Ct_rotor  = thrust / (rho_0 * A * (omega*R)**2)   # rotor convention
     Ct_sigma  = Ct_rotor / sigma                                 
     Cp        = power/(rho_0*(n**3)*(D**5))
     Cp_rotor  = power  / (rho_0 * A * (np.abs(omega)*R)**3)
     Crd       = rotor_drag/(rho_0*(n**2)*(D**4))
     etap      = V*thrust/power
-    FoM       = thrust*np.sqrt(thrust/(2*rho_0*A))/power  
-
-    print("FM: ", FoM, ", Ct_sigma: ", Ct_sigma)
+    FM        = thrust*np.sqrt(thrust/(2*rho_0*A))/power  
 
     # prevent things from breaking
     thrust[omega==0.0]         = 0.
@@ -303,7 +301,7 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     power[eta>1.0]             = power[eta>1.0]*eta[eta>1.0]
     thrust[eta[:,0]>1.0,:]     = thrust[eta[:,0]>1.0,:]*eta[eta[:,0]>1.0,:] 
 
-    disc_loading              = thrust/(np.pi*(R**2))
+    disc_loading              = thrust/(A)
     disc_loading[omega==0.0]  = 0.
 
     power_loading             = thrust/(power)
@@ -312,13 +310,24 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
 
     advance_ratio                   = V/(n*D) 
     advance_ratio[omega==0.0]       = 0.
-    advance_ratio_rotor              = np.sqrt(V_thrust[:,2,None]**2)/(omega*R)
+    advance_ratio_rotor             = mu[:, None]
     advance_ratio_rotor[omega==0.0] = 0.
 
     # Make the thrust a 3D vector
     thrust_prop_frame      = np.zeros((ctrl_pts,3))
     thrust_prop_frame[:,0] = thrust[:,0]
     thrust_vector          = orientation_product(orientation_transpose(T_body2thrust),thrust_prop_frame)
+
+    mu_edgewise_threshold = wake_inputs.get('mu_edgewise_threshold', 1e-3)   # same hover/FF cutoff as initialize_wake_geometry.py
+    hover_mask            = mu < mu_edgewise_threshold
+    if np.any(hover_mask):
+        print("FM: ", FM[hover_mask], ", Ct_sigma: ", Ct_sigma[hover_mask])
+    if np.any(~hover_mask):
+        N_per_lbf      = 4.4482216152605     # 1 lbf = 4.4482216152605 N
+        W_per_hp       = 745.6998715822702   # 1 hp  = 745.6998715822702 W
+        ft2_per_m2     = 10.76391041670972   # 1 m^2 = 10.76391041670972 ft^2
+        print("power loading [lbf/hp]:   ", power_loading[~hover_mask] * (W_per_hp / N_per_lbf), \
+              "disc loading  [lbf/ft^2]: ", disc_loading[~hover_mask] / N_per_lbf / ft2_per_m2)
      
     conditions.energy.converters[rotor.tag]  = Data( 
                 torque                            = torque,
@@ -385,7 +394,7 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
                 rotor_drag_coefficient            = Crd,
                 blade_pitch_command               = pitch_c,
                 commanded_thrust_vector_angle     = commanded_TV, 
-                figure_of_merit                   = FoM, 
+                figure_of_merit                   = FM, 
         )  
 
     return 

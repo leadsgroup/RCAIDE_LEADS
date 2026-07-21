@@ -178,7 +178,7 @@ def initialize_wake_geometry(rotor, wake_inputs, conditions):
     #  in the same call can independently land in the hover and FF branches below).
     # ------------------------------------------------------------------------------------------------------------------
     mu_edge               = np.sqrt(muys**2 + muzs**2)
-    mu_edgewise_threshold = wake_inputs.get('mu_edgewise_threshold', 1e-2)
+    mu_edgewise_threshold = wake_inputs.get('mu_edgewise_threshold', 1e-3)
     is_edgewise           = mu_edge > mu_edgewise_threshold   # (ctrl_pts,)
     is_edgewise_3         = is_edgewise[:, np.newaxis, np.newaxis]   # (ctrl_pts, 1, 1) -- broadcast helper
 
