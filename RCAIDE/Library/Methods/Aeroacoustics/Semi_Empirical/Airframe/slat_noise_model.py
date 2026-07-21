@@ -61,7 +61,7 @@ def slat_noise(microphone_locations, phi, theta, Ls, gamma_s, sigma_s, alpha, se
     """
     #Unpack Segment Data:
     M = segment.state.conditions.freestream.mach_number
-    distance = 24 #ft np.linalg.norm(microphone_locations,axis = 1)
+    distance = 100 #ft np.linalg.norm(microphone_locations,axis = 1)
     rho_0 = segment.state.conditions.freestream.density / Units["slugs/ft^3"]
     c_0 = segment.state.conditions.freestream.speed_of_sound / Units["ft/s"]
     velocity = segment.state.conditions.freestream.velocity / Units["ft/s"]
@@ -94,11 +94,9 @@ def slat_noise(microphone_locations, phi, theta, Ls, gamma_s, sigma_s, alpha, se
     convective_amplification = doppler_factor**(-2)
     
     # Directivity Function D(theta, phi) with Coordinate Rotation
-    # Total pitch rotation is the aircraft AoA plus the mechanical slat angle.
     total_pitch = alpha + gamma_s
     
     # Transform the observer coordinates into the local slat coordinate system.
-    # This projects the observer's vector onto the rotated dipole axis.
     cos_theta_local = (np.cos(theta) * np.cos(total_pitch) + 
                        np.sin(theta) * np.sin(phi) * np.sin(total_pitch))
     
@@ -114,7 +112,7 @@ def slat_noise(microphone_locations, phi, theta, Ls, gamma_s, sigma_s, alpha, se
     Pi = A * ambient_scale * W_M * spherical_spreading * convective_amplification * D_theta_phi * F_St
     
     # Convert to Sound Pressure Level (dB)
-    p_ref_psf = segment.state.conditions.freestream.pressure / Units.psf
+    p_ref_psf = 1/Units.psf #reference lowest spl
     SPL = 10.0 * np.log10(Pi / (p_ref_psf**2) + 1e-12)
     
     return SPL

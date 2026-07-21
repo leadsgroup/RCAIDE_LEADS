@@ -26,11 +26,11 @@ def flap_noise_model(microphone_locations,cf,thickness, deltaf, theta, frequency
         U = segment.state.conditions.freestream.velocity,                                    # Flight velocity (m/s)
         c0 = segment.state.conditions.freestream.speed_of_sound,                             # Speed of sound (m/s)
         rho0 = segment.state.conditions.freestream.density,                                  # Ambient density (kg/m^3)
-        r = 121.92, #np.linalg.norm(microphone_locations,axis = 1),                             # Observer distance (m)
-        theta = theta/Units.degree,                                                    # Polar angle (overhead = 90 deg) 
+        r = 121, #np.linalg.norm(microphone_locations,axis = 1),                             # Observer distance (m)
+        theta = 90 #theta/Units.degree,                                                    # Polar angle (overhead = 90 deg) 
     )
 
-
+    print('FLAP', params)
     # SPL_comp = predict_flap_noise_spl(frequency, input_parameters, None)
     # return SPL_comp
 
@@ -75,7 +75,7 @@ def flap_noise_model(microphone_locations,cf,thickness, deltaf, theta, frequency
     # Calculate the Mach integral once for this specific Mach number
     I_M = calc_mach_integral(M, constants.mu0, constants.mu1, constants.mu2)
     
-    PSD_total = np.zeros_like(frequency, dtype=float)
+    PSD_total = [np.zeros_like(frequency, dtype=float)]
     comp_li = []
     # Loop over the two distinct noise bands to get the two bumps)
     for is_high_freq in [False, True]:
@@ -90,22 +90,22 @@ def flap_noise_model(microphone_locations,cf,thickness, deltaf, theta, frequency
         for is_high_freq in [False, True]:
             # Calculate fresh for this band
             f_source = (frequency * Delta) + (10 if not is_high_freq else 100)
-        print(params)
         F_f = calc_spectral_shape(f_source, M, l, c0, U, 
                                 constants.mu0, constants.mu1, constants.mu2)
 
-        shape_dB = 10.0 * np.log10(F_f)
+        
         
         # Distance and absorption scaling
         length_scale = (params.L_f * l) / ((Delta**2) * (r**2))
         atmospheric_absorption = np.exp(-constants.alpha_0 * r)
         # Combine all to get PSD
         PSD_component = (rho0**2) * (c0**4) * A_G * A_F * W_M * F_f  * (l / c0) * length_scale * atmospheric_absorption
-        comp_li.append(shape_dB)
-        
+        PSD_total += PSD_component
+        component_SPL = 10.0 * np.log10(PSD_component / (p_ref**2))
+        comp_li.append(component_SPL)
     # Convert total PSD [Pa^2/Hz] to SPL [dB/Hz]
     SPL = 10.0 * np.log10(PSD_total / (p_ref**2))
-    return shape_dB
+    return SPL #constant added
 
 
 def calc_geometric_amplitude(params, is_high_freq, A0):

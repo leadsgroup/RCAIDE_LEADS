@@ -16,9 +16,11 @@ from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Airframe.landing_gear_n
 from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Airframe.flap_noise_model import flap_noise_model
 from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Airframe.slat_noise_model import slat_noise
 from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Propulsion.Engine_Noise.compute_fan_noise import compute_fan_noise
+from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Propulsion.Engine_Noise.compute_core_noise import compute_core_noise
 from RCAIDE.Framework.Mission.Common                                              import Results  
 from RCAIDE.Framework.Mission.Segments.Segment                                    import Segment 
 from RCAIDE.Framework.Mission.Common                                              import Conditions 
+from RCAIDE.Library.Methods.Aeroacoustics.Common   import SPL_arithmetic 
 from RCAIDE.Library.Plots import * 
  
 # Python Imports  
@@ -84,7 +86,7 @@ flight_params: dict
     Weight = 68038.8555 #kg
     strut_diameter=0.11811#m
     theta =(np.pi)/2 #deg 
-    frequency = np.logspace(1.5, 4, 100)
+    frequency = np.logspace(1.5, 4.5, 100)
     W = 0.3556#m
     
     #define params for flap model
@@ -99,6 +101,11 @@ flight_params: dict
     sigma_s =  np.radians(25)
     alpha =  np.radians(30)
 
+    #define param for core noise model
+    pr = 13.1
+    
+
+
  # define operating conditions                                            
     a                       = 343.376
     T                       = 288.16889478  
@@ -110,7 +117,6 @@ flight_params: dict
     M = 0.2 #mach number
     frequency_flp = np.logspace(1, 4, 100)
 
-    #define params for core noise model
     #------------------------------------------------------------------------------------------------------------------------------------
     # Propulsor: Starboard Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------
@@ -134,6 +140,28 @@ flight_params: dict
     ram.tag                                     = 'ram'
     turbofan.ram                                = ram
 
+    #combustor
+    combustor                                         = RCAIDE.Library.Components.Powertrain.Converters.Combustor()
+    combustor.tag                                     = 'combustor'
+    combustor.number_of_fuel_nozzle                   = 18
+    combustor.diameter                                = 0.6858
+    turbofan.combustor                                = combustor
+
+    # core nozzle
+    core_nozzle                                    = RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle()   
+    core_nozzle.tag                                = 'core nozzle'
+    core_nozzle.polytropic_efficiency              = 0.98                    
+    core_nozzle.pressure_ratio                     = 0.995 
+    core_nozzle.diameter                           = 0.38118288
+    turbofan.core_nozzle                           = core_nozzle
+             
+    # fan nozzle             
+    fan_nozzle                                     = RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle()   
+    fan_nozzle.tag                                 = 'fan nozzle'
+    fan_nozzle.polytropic_efficiency               = 0.98                    
+    fan_nozzle.pressure_ratio                      = 0.995
+    turbofan.fan_nozzle                            = fan_nozzle 
+
     m = None #mass flow rate
 
 
@@ -144,7 +172,7 @@ flight_params: dict
     segment                                                = Segment()  
     conditions                                             = Results() 
     conditions.aeroacoustics.relative_microphone_locations = np.repeat(microphone_locations[ np.newaxis,:,: ],1,axis=0)   
-    conditions.aerodynamics.angles.alpha                   = np.atleast_2d(AoA).T 
+    conditions.aerodynamics.angles.alpha                   = alpha
     conditions.freestream.density                          = np.ones((ctrl_pts,1)) * density
     conditions.freestream.dynamic_viscosity                = np.ones((ctrl_pts,1)) * dynamic_viscosity   
     conditions.freestream.speed_of_sound                   = np.ones((ctrl_pts,1)) * a 
@@ -169,30 +197,59 @@ flight_params: dict
     turbofan.append_operating_conditions(segment, segment.state.conditions.energy,segment.state.conditions.aeroacoustics)
  
     segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.angular_velocity = 4200
-    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.exit_velocity = 416
-    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.exit_stagnation_temperature = T+80
+    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.exit_velocity = 350 * Units.mph
+    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.exit_stagnation_temperature = 440
     segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.exit_stagnation_pressure = 152*1000
     
-    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.number_of_blades = 54
-    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.diameter = 70 / Units.inches
+    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.number_of_blades = 22
+    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.diameter = 70*Units.inches
 
-    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.static_temperature_output = T + 80
+    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.static_temperature_output = T + (80/1.8)
     segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.static_temperature_input  = T
+
+    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan_nozzle.exit_velocity = 280.0
+    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan_nozzle.exit_stagnation_temperature = 340.0
+    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan_nozzle.exit_stagnation_pressure = 2611.8 
+
+    # Core Nozzle (Primary) Parameters - Realistic for CFM56
+    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].core_nozzle.exit_velocity = 400.0
+    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].core_nozzle.exit_stagnation_temperature = 800.0
+    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].core_nozzle.exit_stagnation_pressure = 165000.0
+        
+    segment.state.conditions.energy.converters['combustor'].inputs.static_temperature = 622.7
+    segment.state.conditions.energy.converters['combustor'].outputs.static_temperature = 1000
     
       
     segment.state.conditions.expand_rows(ctrl_pts)   
            
     # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    # Get Raw Data
+    # Get Raw Validation Data
     # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
-   
+    import csv
+    def read_noise_data(file_path):
+        frequency_hz = []
+        total_SPL = []
+        
+        with open(file_path, mode='r') as file:
+            reader = csv.reader(file)
+            
+            # Skip the header row ("Frequency (Hz),Total SPL (dB)")
+            next(reader)
+            
+            # Extract and convert the data
+            for row in reader:
+                if row: # Check to ensure the row isn't empty
+                    frequency_hz.append(float(row[0]))
+                    total_SPL.append(float(row[1]))
+                    
+        return frequency_hz, total_SPL
     # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     # Run simulation  
     # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      
 
-    results = compute_landing_gear_noise(microphone_locations, D, H, W, wheels, M, Weight, strut_diameter, theta, frequency, segment)
-
+    lg_noise1 = compute_landing_gear_noise(microphone_locations, D, H, W, wheels, M, Weight, strut_diameter, theta, frequency, segment)
+    validation_lg = read_noise_data('/Users/siripunn/Desktop/LEADS_WORK/RESEARCH/05_Aeroacoustics/Boeing_Method/LG_Noise/b737_gear_noise_data.csv')
     # plt.figure(figsize=(10, 6))
     # plt.semilogx(results['Freq'], results['Total'], 'k-', linewidth=2, label='Total Noise')
     # plt.semilogx(results['Freq'], results['Low'], 'r--', label='Low Freq (Wheels)')
@@ -205,7 +262,8 @@ flight_params: dict
     # plt.grid(True, which="both", alpha=0.5)
     # plt.show()
     
-    comp_li = flap_noise_model(microphone_locations,cf,thickness, deltaf, theta, frequency_flp,segment)
+    flap_noise1 = flap_noise_model(microphone_locations,cf,thickness, deltaf, theta, frequency,segment)
+    validation_flap = read_noise_data('/Users/siripunn/Desktop/LEADS_WORK/RESEARCH/05_Aeroacoustics/Boeing_Method/Flap_Side_Edge_Noise/b737_flap_noise_data.csv')
     # print(comp_li)
     # fig, ax = plt.subplots(figsize=(8, 5))
     # ax.plot(frequency_flp,comp_li[0],label='HF Curve')
@@ -220,6 +278,7 @@ flight_params: dict
     # plt.show()
 
     slat_noise1 = slat_noise(microphone_locations, phi, theta, Ls, gamma_s, sigma_s, alpha, segment, frequency, A=1e-5)
+    #validation_slat = read_noise_data('/Users/siripunn/Desktop/LEADS_WORK/RESEARCH/05_Aeroacoustics/Boeing_Method/Core Noise/b737_core_noise_data.csv')
     # print(slat_noise1)
     # fig, ax = plt.subplots(figsize=(8, 5))
     # ax.plot(frequency_flp,slat_noise1[0],label='HF Curve')
@@ -230,10 +289,34 @@ flight_params: dict
     # plt.legend()
     # plt.show()
 
-    core_noise1 = compute_fan_noise(microphone_locations, turbofan,m, segment.state.conditions.aeroacoustics, segment, frequency)
-    print(core_noise1)
-    
-    return  
+    fan_noise1 = compute_fan_noise(microphone_locations, turbofan,m, segment.state.conditions.aeroacoustics, segment, frequency)
+    validation_fan = read_noise_data('/Users/siripunn/Desktop/LEADS_WORK/RESEARCH/05_Aeroacoustics/Boeing_Method/Fan Noise/b737_fan_noise_data.csv')
+    core_noise1 = compute_core_noise(microphone_locations, turbofan, pr, segment.state.conditions.aeroacoustics, segment, frequency)
+    validation_core = read_noise_data('/Users/siripunn/Desktop/LEADS_WORK/RESEARCH/05_Aeroacoustics/Boeing_Method/Core Noise/b737_core_noise_data.csv')
+    # print(core_noise1.SPL_1_3_spectrum)
+    # fig, ax = plt.subplots(figsize=(8, 5))
+    # ax.plot(frequency,core_noise1.SPL_1_3_spectrum[0][0],label='HF Curve')
+    # ax.set_xscale('log')
+
+    #flap slat noise is current neg. db
+    SPL_total = np.concatenate((lg_noise1.Total,-flap_noise1[0],-slat_noise1[0],fan_noise1.SPL_1_3_spectrum[0][0],core_noise1.SPL_1_3_spectrum[0][0]), axis=0)
+    twodim = np.atleast_2d(SPL_total)
+    total_SPL_dBA = SPL_arithmetic(np.array([lg_noise1.Total,flap_noise1[0],slat_noise1[0],fan_noise1.SPL_1_3_spectrum[0][0],core_noise1.SPL_1_3_spectrum[0][0]]),sum_axis = 0)
+    print(total_SPL_dBA,-slat_noise1[0])
+    fig, ax = plt.subplots(figsize=(8, 5))
+    #ax.plot(validation_lg[0],validation_lg[1], 'bo')
+    ax.plot(validation_flap[0],validation_flap[1],'bo')
+    ax.plot(validation_fan[0],validation_fan[1],'bo')
+    #ax.plot(validation_core[0],validation_core[1],'bo')
+    ax.plot(frequency,total_SPL_dBA,label='Total Noise')
+    ax.plot(frequency,core_noise1.SPL_1_3_spectrum[0][0],label='Core Noise')
+    ax.plot(frequency,fan_noise1.SPL_1_3_spectrum[0][0],label='Fan Noise')
+    ax.plot(frequency,slat_noise1[0],label='Slat Noise')
+    ax.plot(frequency,flap_noise1[0],label='Flap Noise')
+    ax.plot(frequency,lg_noise1.Total,label='Landing Gear Noise')
+    ax.set_xscale('log')
+    plt.legend()
+    return
 
 def plot_parameters():
      

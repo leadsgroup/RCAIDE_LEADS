@@ -87,26 +87,25 @@ def compute_fan_noise(microphone_locations, turbofan, m, aeroacoustic_data, segm
     Cp  = R_gas/(1-1/gamma)
     
     # densities
-    density_secondary = Pressure_secondary/(R_gas*Temperature_secondary-(0.5*R_gas*Velocity_secondary**2/Cp))
+    density_secondary = Pressure_secondary / (R_gas * (Temperature_secondary - (0.5 * Velocity_secondary**2 / Cp)))
     delt_T =Temperature_static_output-Temperature_static_input    #find temp difference of moving air
-    M_TR = ((Velocity_aircraft**2 + ((np.pi*Num_blades*0.5*Diameter_secondary)/60)**2)**0.5) / sound_ambient #compute the Tip relative Mach number
+    M_TR = ((Velocity_aircraft**2 + ((np.pi*Diameter_secondary*N1)/60)**2)**0.5) / sound_ambient #compute the Tip relative Mach number
 
     if m == None:
         m = (Area_secondary*Velocity_secondary*density_secondary) / Units.lbs
 
     
     fan_inputs = Data(
-    m = m ,# Mass flow rate (kg/s -> lb/sec)
+    m = m - 600 , # Mass flow rate (kg/s -> lb/sec) Adjust for landing amount
     delta_T = delt_T*1.8,                                                  # Total temperature rise across the fan (K -> deg R)
     M_TR = M_TR,                                                                   # Tip relative Mach number
     RSS = 150.0,                                                                   # Rotor stator spacing / fan blade chord (%) Tune this
-    f_b = (N1*Num_blades) / Units.minute,                                          # Blade passage frequency (Hz)
-    M_Tip = (np.pi*0.5*Diameter_secondary*Num_blades)/(Units.minute*sound_ambient),    # Fan tip Mach number
+    f_b = (N1*Num_blades*Diameter_secondary) / Units.minute,                                          # Blade passage frequency (Hz)
+    M_Tip = (np.pi*Diameter_secondary*N1*(1/60))/(sound_ambient),                   # Fan tip Mach number
     V_Number = 54,                                                     # Number of stator vanes
     B_Number = Num_blades,                                             # Number of rotor blades
     inlet_distortion = False                                           # Boolean
     )
-    print(fan_inputs)
 
     def calc_base_level(inputs):
     #Calculates the mass flow and temperature rise base terms.

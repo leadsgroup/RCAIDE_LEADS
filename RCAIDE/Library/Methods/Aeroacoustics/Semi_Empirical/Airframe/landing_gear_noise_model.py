@@ -75,7 +75,6 @@ def compute_landing_gear_noise(microphone_locations, D, H, W, wheels, M, Weight,
         c0 = (segment.state.conditions.freestream.speed_of_sound / Units.foot_per_second), # sound speed (ft/s)
         rho0 = segment.state.conditions.freestream.density / Units["slugs/ft^3"]   # slug/ft^3
     )
-    print(gear_params,flight_cond)
     return predict_spectrum(frequency, gear_params, flight_cond)
 
 

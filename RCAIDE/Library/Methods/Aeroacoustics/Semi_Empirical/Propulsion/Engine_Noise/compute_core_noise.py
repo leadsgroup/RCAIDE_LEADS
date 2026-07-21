@@ -21,30 +21,25 @@ import math
 #  turbofan engine core noise
 # ---------------------------------------------------------------------------------------------------------------------- 
 
-def compute_core_noise(microphone_locations, turbofan, aeroacoustic_data, segment, frequencies):
+def compute_core_noise(microphone_locations, turbofan, pr, aeroacoustic_data, segment, frequencies):
     conditions = segment.conditions
-    N1                     = aeroacoustic_data.fan.angular_velocity / Units.rpm
-    Velocity_secondary     = aeroacoustic_data.fan_nozzle.exit_velocity   
-    Temperature_secondary  = aeroacoustic_data.fan_nozzle.exit_stagnation_temperature 
-    Pressure_secondary     = aeroacoustic_data.fan_nozzle.exit_stagnation_pressure 
-    Velocity_primary       = aeroacoustic_data.core_nozzle.exit_velocity  
-    Temperature_primary    = aeroacoustic_data.core_nozzle.exit_stagnation_temperature 
-    Pressure_primary       = aeroacoustic_data.core_nozzle.exit_stagnation_pressure      
-    Velocity_aircraft      = segment.conditions.freestream.velocity
-    Mach_aircraft          = segment.conditions.freestream.mach_number 
-    AOA                    = segment.conditions.aerodynamics.angles.alpha / Units.deg 
-    noise_time             = segment.conditions.frames.inertial.time  
+    N1                     = aeroacoustic_data.propulsors[turbofan.tag].fan.angular_velocity
+    Velocity_secondary     = aeroacoustic_data.propulsors[turbofan.tag].fan_nozzle.exit_velocity   
+    Temperature_secondary  = aeroacoustic_data.propulsors[turbofan.tag].fan_nozzle.exit_stagnation_temperature 
+    Pressure_secondary     = aeroacoustic_data.propulsors[turbofan.tag].fan_nozzle.exit_stagnation_pressure 
+    Velocity_primary       = aeroacoustic_data.propulsors[turbofan.tag].core_nozzle.exit_velocity  
+    Temperature_primary    = aeroacoustic_data.propulsors[turbofan.tag].core_nozzle.exit_stagnation_temperature 
+    Pressure_primary       = aeroacoustic_data.propulsors[turbofan.tag].core_nozzle.exit_stagnation_pressure      
+
+
+    Velocity_aircraft      = segment.state.conditions.freestream.velocity
+    Mach_aircraft          = segment.state.conditions.freestream.mach_number 
+    AOA                    = segment.state.conditions.aerodynamics.angles.alpha / Units.deg 
+    noise_time             = segment.state.conditions.frames.inertial.time  
     distance_microphone    = np.linalg.norm(microphone_locations,axis = 1)    
     Diameter_primary       = turbofan.core_nozzle.diameter
     Diameter_secondary     = turbofan.fan_nozzle.diameter
-    Num_blades             = turbofan.number_of_blades
-    Num_nozzle             = turbofan.number_of_fuel_nozzle
-    engine_height          = turbofan.origin[0][2] # This needs to be updated in a future PR
-    EXA                    = turbofan.length /  turbofan.diameter 
-    Plug_diameter          = turbofan.plug_diameter 
-    Xe                     = turbofan.geometry_xe
-    Ye                     = turbofan.geometry_ye
-    Ce                     = turbofan.geometry_Ce 
+    Num_nozzle             = turbofan.combustor.number_of_fuel_nozzle
 
     ram                       = turbofan.ram
     inlet_nozzle              = turbofan.inlet_nozzle
@@ -59,16 +54,7 @@ def compute_core_noise(microphone_locations, turbofan, aeroacoustic_data, segmen
     bypass_ratio              = turbofan.bypass_ratio 
     
     # unpack component conditions 
-    ram_conditions          = conditions.energy.converters[ram.tag]    
-    inlet_nozzle_conditions = conditions.energy.converters[inlet_nozzle.tag]
-    fan_conditions          = conditions.energy.converters[fan.tag]    
-    lpc_conditions          = conditions.energy.converters[low_pressure_compressor.tag]
-    hpc_conditions          = conditions.energy.converters[high_pressure_compressor.tag]
-    combustor_conditions    = conditions.energy.converters[combustor.tag]     
-    lpt_conditions          = conditions.energy.converters[low_pressure_turbine.tag]
-    hpt_conditions          = conditions.energy.converters[high_pressure_turbine.tag]
-    core_nozzle_conditions  = conditions.energy.converters[core_nozzle.tag]
-    fan_nozzle_conditions   = conditions.energy.converters[fan_nozzle.tag]    
+
 
 
     frequency              = frequencies    
@@ -79,10 +65,10 @@ def compute_core_noise(microphone_locations, turbofan, aeroacoustic_data, segmen
     # ============================================================================= 
     # Step 1: Computing atmospheric conditions
     # ============================================================================= 
-    sound_ambient       = segment.conditions.freestream.speed_of_sound
-    density_ambient     = segment.conditions.freestream.density  
-    pressure_amb        = segment.conditions.freestream.pressure 
-    temp_amb            = segment.conditions.freestream.temperature
+    sound_ambient       = segment.state.conditions.freestream.speed_of_sound
+    density_ambient     = segment.state.conditions.freestream.density  
+    pressure_amb        = segment.state.conditions.freestream.pressure 
+    temp_amb            = segment.state.conditions.freestream.temperature
     pressure_isa        = 101325 # [Pa]
     R_gas               = 287.1  # [J/kg K]
     gamma_primary       = 1.37  # Corretion for the primary jet
@@ -130,15 +116,6 @@ def compute_core_noise(microphone_locations, turbofan, aeroacoustic_data, segmen
     density_secondary = Pressure_secondary/(R_gas*Temperature_secondary-(0.5*R_gas*Velocity_secondary**2/Cp))
 
     standard_freqs          = np.tile(np.atleast_2d(frequency),(n_cpts,1))  
-    Diameter_primary   = np.tile(np.array([[Diameter_primary]]),(n_cpts,n_freq))  
-    DVPS               = np.tile(DVPS,(1,n_freq))  
-    Diameter_secondary = np.tile(np.array([[Diameter_secondary]]),(n_cpts,n_freq))  
-    Velocity_secondary = np.tile(Velocity_secondary,(1,n_freq))
-    Velocity_primary   = np.tile(Velocity_primary,(1,n_freq))
-    Velocity_aircraft  = np.tile(Velocity_aircraft,(1,n_freq))   
-    Diameter_mixed     = np.tile(Diameter_mixed,(1,n_freq))  
-    Velocity_mixed     = np.tile(Velocity_mixed,(1,n_freq))
-    sound_ambient      = np.tile(sound_ambient,(1,n_freq))
     
     
     #convert code theta and distance to observe ft and distance for the input
@@ -164,22 +141,23 @@ def compute_core_noise(microphone_locations, turbofan, aeroacoustic_data, segmen
     for i in range(n_mic): #to vectorize next
     
         model_inputs = Data(
-        W1 = (Area_secondary*Velocity_secondary*density_secondary) / Units.lbm,  # Total core mass flow rate (lbm/sec)
-        T_C_o = combustor_conditions.outputs.static_temperature*1.8,             # Combustor outlet total temperature (deg R)
-        T_C_i = combustor_conditions.inputs.static_temperature*1.8,              # Combustor inlet total temperature (deg R)
+        W1 = ((Area_secondary*Velocity_secondary*density_secondary) / Units.lbm),  # Total core mass flow rate (lbm/sec)
+        T_C_o = segment.state.conditions.energy.converters['combustor'].outputs.static_temperature * 1.8,             # Combustor outlet total temperature (deg R)
+        T_C_i = segment.state.conditions.energy.converters['combustor'].inputs.static_temperature * 1.8,              # Combustor inlet total temperature (deg R)
         P_amb = pressure_amb / Units.psi,                                               # Ambient pressure (pa -> psia)
-        T_amb = temp_amb*1.8,                                                           # Ambient temperature (deg R)
+        T_amb = (temp_amb*1.8)[0][0],                                                           # Ambient temperature (deg R)
         n_f =  Num_nozzle,                                                              # Number of fuel nozzles
-        R = distance_microphone[i] / Units.feet,                                        # Microphone distance (ft)
+        R = 100, #distance_microphone[i] / Units.feet,                                        # Microphone distance (ft)
         D_h_1 = core_nozzle.diameter / Units.feet,                                      # core nozzle hydraulic diameter
-        c_amb = sound_ambient / Units.feet,                                             # Ambient sonic velocity (ft/sec)
+        c_amb = (sound_ambient / Units.feet)[0][0],                                             # Ambient sonic velocity (ft/sec)
         D_C = combustor.diameter / Units.feet,                                          # Combustor diameter (ft)
-        c_C_o = (331.3*(1+((combustor_conditions.outputs.static_temperature-273)/273))**0.5) / Units.feet,      # Combustor exit sonic velocity (ft/sec)
-        f = standard_freqs,                                                                                     # Frequency (Hz) -> injected list
-        theta_c = theta,                                                                                        # theta (radians)
-        pressure_ratio = lpt_conditions.outputs.stagnation_pressure/ram_conditions.outputs.stagnation_pressure  # Pressure ratio
+        c_C_o = (331.3*(1+((segment.state.conditions.energy.converters['combustor'].outputs.static_temperature-273)/273))**0.5) / Units.feet,      # Combustor exit sonic velocity (ft/sec)
+        f = frequencies,                                                                                     # Frequency (Hz) -> injected list
+        theta_c = theta[i],                                                                                        # theta (radians)
+        pressure_ratio = pr  # Pressure ratio
         )
 
+        print('CORE NOISE', model_inputs)
         # Calculate Base Parameters
         core_param_log = calc_core_param(
         model_inputs.W1, model_inputs.T_C_o, model_inputs.T_C_i, 
@@ -211,7 +189,7 @@ def compute_core_noise(microphone_locations, turbofan, aeroacoustic_data, segmen
         # calculate log_S before get_spl
         # Store SPL history      
         SPL_1_3_spectrum[:,i,:]       = SPL_total 
-        SPL[:,i]                      = SPL_arithmetic(SPL_total,sum_axis=1 )
+        SPL[:,i]                      = SPL_arithmetic(np.atleast_2d(SPL_total), sum_axis=1)
         SPL_1_3_spectrum_dBA[:,i,:]   = A_weighting_metric(SPL_total,frequency)
         SPL_dBA[:,i]                  = SPL_arithmetic(np.atleast_2d(A_weighting_metric(SPL_total,frequency)),sum_axis=1)
 
@@ -224,16 +202,16 @@ def compute_core_noise(microphone_locations, turbofan, aeroacoustic_data, segmen
 # Standard 1/3-octave-band center frequencies (Hz)
 
 def get_normalized_spl(interpolator_obj, strouhal_num, theta_c):
-    if strouhal_num <= 0:
+    if (np.array(strouhal_num) <= 0).any():
         return 0
-    log_S = math.log10(strouhal_num)
+    log_S = np.log10(strouhal_num)
     return get_spl(interpolator_obj, theta_c, log_S)
 
 def calc_core_param(W1, T_C_o, T_C_i, pressure_ratio, T_amb):
     temp_ratio_diff = T_C_o - T_C_i
     temp_ratio_amb = T_amb / T_C_i
     inner_term = W1 * ((temp_ratio_diff * pressure_ratio * temp_ratio_amb) ** 2)
-    return math.log10(inner_term)
+    return np.log10(inner_term)
 
 def calc_uol_c1(R, n_f, core_param_log):
     C_C1, N_C1, F_C1 = 78.0, 7.0, 14.0
