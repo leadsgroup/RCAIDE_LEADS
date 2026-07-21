@@ -513,9 +513,8 @@ def vehicle_setup(rotor_type):
         propeller.wake_inputs.max_iter_Gammab_0            = 1000
         propeller.wake_inputs.max_iter_CT_0                = 100
         propeller.wake_inputs.CT_iter                      = True
-        propeller.wake_inputs.aerofoil_aero                = 2                # 1 simplified aerofoil aero, detailed panel aerofoil aero
+        propeller.wake_inputs.aerofoil_aero                = 1                # 1 simplified aerofoil aero, detailed panel aerofoil aero
         propeller.wake_inputs.mu_max                       = 1.0
-        propeller.wake_inputs.mu_edgewise_threshold        = 1e-3             # threshold to split between hover and FF cases
 
         starboard_propulsor.rotor                        = propeller   
                 
