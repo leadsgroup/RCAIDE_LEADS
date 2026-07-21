@@ -9,6 +9,7 @@ import RCAIDE
 from RCAIDE.Framework.Core import  Data 
 from RCAIDE.Library.Plots import *
 from RCAIDE.Library.Methods.Aerodynamics.Vortex_Lattice_Method.VLM   import VLM 
+from RCAIDE.Library.Methods.Aerostructures.Finite_Element_Analysis.FEA   import FEA 
 from copy import deepcopy 
 
 # package imports
@@ -17,7 +18,7 @@ import numpy  as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Vortex_Lattice
 # ---------------------------------------------------------------------------------------------------------------------- 
-def train_VLM_surrogates(aerodynamics, vehicle):
+def train_VLM_surrogates(aerodynamics, vehicle,aerostructural_analyses=None):
     """Call methods to run VLM for sample point evaluation. 
     
     Assumptions:
@@ -44,14 +45,14 @@ def train_VLM_surrogates(aerodynamics, vehicle):
     
     # only build supersonic surrogates if necessary
     if len(sup_Mach) > 2: 
-        training.supersonic  =  train_model(aerodynamics, sup_Mach, vehicle)
+        training.supersonic  =  train_model(aerodynamics, sup_Mach, vehicle,aerostructural_analyses)
         training.transonic   =  train_trasonic_model(aerodynamics, training.subsonic,training.supersonic,sub_Mach, sup_Mach, vehicle)
     else:
         training.supersonic  = None
         training.transonic   = None
     return 
     
-def train_model(aerodynamics,Mach, vehicle): 
+def train_model(aerodynamics,Mach, vehicle,aerostructural_analyses=None): 
     """Sub function that call methods to run VLM for sample point evaluation. 
     
     Assumptions:
@@ -141,7 +142,23 @@ def train_model(aerodynamics,Mach, vehicle):
     clean_wing_vehicle = deepcopy(vehicle)
     for wing in clean_wing_vehicle.wings:
         wing.control_surfaces = []
+
+    # run VLM and FEA for all conditions
     VLM_results      = call_VLM(conditions,settings,clean_wing_vehicle)
+    FEA_results      = FEA(conditions,VLM_results,settings.vortex_distribution,settings_str,clean_wing_vehicle)
+
+    # Store structural training data (deflections and twist per wing)
+    training.deflection_u  = Data()
+    training.deflection_v  = Data()
+    training.deflection_w  = Data()
+    training.elastic_twist = Data()
+    for wing in clean_wing_vehicle.wings:
+        n_nodes = FEA_results[wing.tag].deflection.shape[1]
+        training.deflection_u[wing.tag]  = FEA_results[wing.tag].deflection[:, :, 0].reshape(len_Mach, len_AoA, n_nodes).transpose(1, 0, 2)
+        training.deflection_v[wing.tag]  = FEA_results[wing.tag].deflection[:, :, 1].reshape(len_Mach, len_AoA, n_nodes).transpose(1, 0, 2)
+        training.deflection_w[wing.tag]  = FEA_results[wing.tag].deflection[:, :, 2].reshape(len_Mach, len_AoA, n_nodes).transpose(1, 0, 2)
+        training.elastic_twist[wing.tag] = FEA_results[wing.tag].elastic_twist[:, :, 0].reshape(len_Mach, len_AoA, n_nodes).transpose(1, 0, 2)
+
     Clift_res        = VLM_results.CLift
     VD_0             = settings.vortex_distribution
     Cdrag_res        = VLM_results.CDrag_induced
@@ -188,6 +205,7 @@ def train_model(aerodynamics,Mach, vehicle):
     conditions.static_stability.yaw_rate            = np.zeros_like(Machs)    
     
     VLM_results = call_VLM(conditions,settings,clean_wing_vehicle)
+    
     Clift_res   = VLM_results.CLift
     Cdrag_res   = VLM_results.CDrag_induced
     CX_res      = VLM_results.CX

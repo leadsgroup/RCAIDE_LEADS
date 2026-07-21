@@ -153,7 +153,9 @@ def VLM(conditions,settings,geometry):
     settings.vortex_distribution.YC                       = VD.YC
     settings.vortex_distribution.ZC                       = VD.ZC
     settings.vortex_distribution.Y_SW                     = VD.Y_SW
-     
+    settings.vortex_distribution.normals                  = VD.normals
+    settings.vortex_distribution.panel_areas              = VD.panel_areas
+
     # unpack conditions--------------------------------------------------------------
     pwm      = settings.propeller_wake_model
     K_SPC    = settings.leading_edge_suction_multiplier 

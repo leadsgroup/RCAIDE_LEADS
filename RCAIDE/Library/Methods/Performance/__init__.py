@@ -19,6 +19,7 @@ RCAIDE.Library.Methods.Aerodynamics
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 from .aircraft_aerodynamic_analysis         import aircraft_aerodynamic_analysis
+from .aircraft_aerostructural_analysis      import aircraft_aerostructural_analysis
 from .compute_load_and_trim_diagram         import compute_load_and_trim_diagram
 from .compute_noise_certification_metrics   import compute_noise_certification_metrics
 from .compute_payload_range_diagram         import compute_payload_range_diagram

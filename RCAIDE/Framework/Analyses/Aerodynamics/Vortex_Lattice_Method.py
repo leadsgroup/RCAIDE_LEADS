@@ -147,7 +147,7 @@ class Vortex_Lattice_Method(Aerodynamics):
         self.process.compute                                        = compute
         
 
-    def initialize(self, vehicle): 
+    def initialize(self, vehicle, aerostructural_analyses = None): 
          
         use_surrogate        = self.settings.use_surrogate 
         reuse_training_data  = self.settings.reuse_training_data   
@@ -161,13 +161,13 @@ class Vortex_Lattice_Method(Aerodynamics):
                 print("\n Aerodynamic training data loaded. Delete the file and rerun to regenerate.")
             else:
                 print("\n Creating aerodynamic surrogate ...")
-                train_VLM_surrogates(self, vehicle)
+                train_VLM_surrogates(self, vehicle,aerostructural_analyses)
     
                 if self.settings.store_training_data:
                     with open(self.filename, 'wb') as file:
                         pickle.dump(self.training, file) 
 
-            build_VLM_surrogates(self, vehicle)        
+            build_VLM_surrogates(self, vehicle,aerostructural_analyses)        
     
         # build the evaluation process
         compute   =  self.process.compute                  

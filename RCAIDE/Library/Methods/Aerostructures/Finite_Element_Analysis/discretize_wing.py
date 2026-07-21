@@ -27,10 +27,12 @@ def discretize_wing(wing, num_elements):
         outboard_seg = wing.segments[seg_list[seg_i + 1]]
         
         if seg_i == 0:
-            seg_span =  (outboard_seg.percent_span_location - (inboard_seg.percent_span_location + wing.percent_span_unexposed)) * semi_span  
-        else: 
+            seg_span =  (outboard_seg.percent_span_location - (inboard_seg.percent_span_location + wing.percent_span_unexposed)) * semi_span
+        else:
             seg_span  = (outboard_seg.percent_span_location - inboard_seg.percent_span_location) * semi_span
         seg_elements[seg_i] = ((seg_span / semi_span) * num_elements)
+
+    wing_t_c = wing.thickness_to_chord
  
     seg_elements    = np.round(seg_elements)
     X_nodes         = np.empty((1, 0))
@@ -51,14 +53,16 @@ def discretize_wing(wing, num_elements):
     first_inboard_seg  = wing.segments[seg_list[0]]
     next_seg           = wing.segments[seg_list[1]]
     dih_0              = first_inboard_seg.dihedral_outboard
-    inboard_x_fs       = first_inboard_seg.origin[0][0] + first_inboard_seg.structural.front_spar_percent_chord * first_inboard_seg.root_chord_percent * wing.chords.root
-    inboard_y_fs       = first_inboard_seg.origin[0][1]
-    outboard_x_fs      = next_seg.origin[0][0] + next_seg.structural.front_spar_percent_chord * next_seg.root_chord_percent * wing.chords.root
-    outboard_y_fs      = next_seg.origin[0][1]
-    spar_sweep_0       = np.arctan((outboard_x_fs - inboard_x_fs) / (outboard_y_fs - inboard_y_fs))
+    mid_spar_0         = (first_inboard_seg.structural.front_spar_percent_chord + first_inboard_seg.structural.rear_spar_percent_chord) / 2
+    mid_spar_1         = (next_seg.structural.front_spar_percent_chord          + next_seg.structural.rear_spar_percent_chord)          / 2
+    inboard_x_ea       = first_inboard_seg.origin[0][0] + mid_spar_0 * first_inboard_seg.root_chord_percent * wing.chords.root
+    inboard_y_ea       = first_inboard_seg.origin[0][1]
+    outboard_x_ea      = next_seg.origin[0][0]          + mid_spar_1 * next_seg.root_chord_percent          * wing.chords.root
+    outboard_y_ea      = next_seg.origin[0][1]
+    spar_sweep_0       = np.arctan((outboard_x_ea - inboard_x_ea) / (outboard_y_ea - inboard_y_ea))
     del_y              = wing.percent_span_unexposed * semi_span
-    X_0 = inboard_x_fs + del_y * np.tan(spar_sweep_0)
-    Y_0 = inboard_y_fs + del_y
+    X_0 = inboard_x_ea + del_y * np.tan(spar_sweep_0)
+    Y_0 = inboard_y_ea + del_y
     Z_0 = del_y * np.tan(dih_0) / np.cos(spar_sweep_0)
       
     for i in range(len(wing.segments)-1):
@@ -77,13 +81,15 @@ def discretize_wing(wing, num_elements):
         front_spar_pts = np.linspace(inboard_seg.structural.front_spar_percent_chord, outboard_seg.structural.front_spar_percent_chord, n_nodes)
         rear_spar_pts  = np.linspace(inboard_seg.structural.rear_spar_percent_chord, outboard_seg.structural.rear_spar_percent_chord, n_nodes)
         
-        # Calculate Sweep of the Elastic Axis using physical distances
-        inboard_x_fs  = inboard_seg.origin[0][0] + inboard_seg.structural.front_spar_percent_chord * inboard_seg.root_chord_percent*wing.chords.root
-        inboard_y_fs  = inboard_seg.origin[0][1]   
-        outboard_x_fs = outboard_seg.origin[0][0] + outboard_seg.structural.front_spar_percent_chord * outboard_seg.root_chord_percent*wing.chords.root
-        outboard_y_fs = outboard_seg.origin[0][1]
-        
-        spar_sweep = np.arctan((outboard_x_fs-inboard_x_fs) / ( outboard_y_fs - inboard_y_fs)) 
+        # Calculate Sweep of the Elastic Axis (mid-spar) using physical distances
+        mid_spar_in   = (inboard_seg.structural.front_spar_percent_chord  + inboard_seg.structural.rear_spar_percent_chord)  / 2
+        mid_spar_out  = (outboard_seg.structural.front_spar_percent_chord + outboard_seg.structural.rear_spar_percent_chord) / 2
+        inboard_x_ea  = inboard_seg.origin[0][0]  + mid_spar_in  * inboard_seg.root_chord_percent  * wing.chords.root
+        inboard_y_ea  = inboard_seg.origin[0][1]
+        outboard_x_ea = outboard_seg.origin[0][0] + mid_spar_out * outboard_seg.root_chord_percent * wing.chords.root
+        outboard_y_ea = outboard_seg.origin[0][1]
+
+        spar_sweep = np.arctan((outboard_x_ea - inboard_x_ea) / (outboard_y_ea - inboard_y_ea))
         dihedral_rad  = inboard_seg.dihedral_outboard  
         
         # Calculate True Spar Length for this segment
@@ -95,22 +101,26 @@ def discretize_wing(wing, num_elements):
             y_local_non_dim =  wing.percent_span_unexposed * semi_span / seg_span
             c_root          = inboard_seg.root_chord_percent*wing.chords.root + c_diff * y_local_non_dim
             tw_start        = inboard_seg.twist + (outboard_seg.twist - inboard_seg.twist) * y_local_non_dim
-            t_c_start       = inboard_seg.thickness_to_chord + (outboard_seg.thickness_to_chord - inboard_seg.thickness_to_chord) * y_local_non_dim
+            t_c_in          = inboard_seg.thickness_to_chord  if inboard_seg.thickness_to_chord  > 0 else wing_t_c
+            t_c_out         = outboard_seg.thickness_to_chord if outboard_seg.thickness_to_chord > 0 else wing_t_c
+            t_c_start       = t_c_in + (t_c_out - t_c_in) * y_local_non_dim
 
             # Local 1D arrays
             y_local = np.linspace(0, L_spar, n_nodes)
             c_arr   = np.linspace(c_root,    outboard_seg.root_chord_percent*wing.chords.root, n_nodes)
             tw_arr  = np.linspace(tw_start,  outboard_seg.twist,                               n_nodes)
-            t_c_arr = np.linspace(t_c_start, outboard_seg.thickness_to_chord,                  n_nodes)
+            t_c_arr = np.linspace(t_c_start, t_c_out,                                          n_nodes)
         else:
             seg_span = (outboard_seg.percent_span_location - inboard_seg.percent_span_location) * semi_span
             L_spar = (seg_span / np.cos(spar_sweep)) / np.cos(dihedral_rad)
         
             # Local 1D arrays
+            t_c_in  = inboard_seg.thickness_to_chord  if inboard_seg.thickness_to_chord  > 0 else wing_t_c
+            t_c_out = outboard_seg.thickness_to_chord if outboard_seg.thickness_to_chord > 0 else wing_t_c
             y_local = np.linspace(0, L_spar, n_nodes)
             c_arr   = np.linspace(inboard_seg.root_chord_percent*wing.chords.root, outboard_seg.root_chord_percent*wing.chords.root, n_nodes)
             tw_arr  = np.linspace(inboard_seg.twist, outboard_seg.twist, n_nodes)
-            t_c_arr = np.linspace(inboard_seg.thickness_to_chord, outboard_seg.thickness_to_chord, n_nodes)
+            t_c_arr = np.linspace(t_c_in, t_c_out, n_nodes)
         
         # Transform local spar distance into Global X, Y, Z
         # We start from the exact (X,Y,Z) where the last segment ended

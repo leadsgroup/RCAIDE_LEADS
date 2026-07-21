@@ -220,7 +220,8 @@ class Wing(Component):
         self.structural.rear_spar.t_cap             = 0.0     
         self.structural.stringer_percent_chords     = []       
         self.structural.top_skin_thickness          = 0.0065
-        self.structural.bottom_skin_thickness       = 0.0065 
+        self.structural.bottom_skin_thickness       = 0.0065
+        self.structural.stringer_smeared_thickness  = 0.00376
         self.structural.rib_spacing                 = 0.6 # in Meters - space between two ribs
         self.structural.rib_thickness               = 0.004
 

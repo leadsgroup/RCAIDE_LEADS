@@ -134,24 +134,38 @@ def aircraft_aerostructural_analysis(analyses                         = None,
     # Evaluate Without Surrogate
     # ----------------------------------------------------------------- 
     ctrl_pts = len(angle_of_attacks[:, 0] ) 
-    conditions                                   = RCAIDE.Framework.Mission.Common.Results() 
-    conditions.freestream.density                = rho * np.ones_like(angle_of_attacks)
-    conditions.freestream.dynamic_viscosity      = mu  * np.ones_like(angle_of_attacks)
-    conditions.freestream.temperature            = T   * np.ones_like(angle_of_attacks)
-    conditions.freestream.pressure               = P   * np.ones_like(angle_of_attacks)
-    conditions.freestream.dynamic_pressure       = 0.5 * rho * V**2  
-    conditions.freestream.velocity               = V
-    conditions.aerodynamics.angles.alpha         = angle_of_attacks  
-    conditions.aerodynamics.angles.beta          = angle_of_attacks *0  
-    conditions.freestream.u                      = angle_of_attacks *0       
-    conditions.freestream.v                      = angle_of_attacks *0       
-    conditions.freestream.w                      = angle_of_attacks *0       
-    conditions.static_stability.roll_rate        = angle_of_attacks *0       
-    conditions.static_stability.pitch_rate       = angle_of_attacks *0 
-    conditions.static_stability.yaw_rate         = angle_of_attacks *0 
-    conditions.frames.wind.transform_to_inertial = np.tile( np.array([[[1., 0., 0.],[0., 1., 0.],[0., 0.,  1.]]]) , ( ctrl_pts,  1, 1)  ) 
+    conditions                                        = RCAIDE.Framework.Mission.Common.Results() 
+    conditions.freestream.density                     = rho * np.ones_like(angle_of_attacks)
+    conditions.freestream.dynamic_viscosity           = mu  * np.ones_like(angle_of_attacks)
+    conditions.freestream.temperature                 = T   * np.ones_like(angle_of_attacks)
+    conditions.freestream.pressure                    = P   * np.ones_like(angle_of_attacks)
+    conditions.freestream.dynamic_pressure            = 0.5 * rho * V**2  
+    conditions.freestream.velocity                    = V
+    conditions.freestream.gravitational_acceleration  = 9.81 * np.ones_like(angle_of_attacks)
+    conditions.freestream.mach_number                 = mach_numbers
+    conditions.aerodynamics.angles.alpha              = angle_of_attacks
+    conditions.aerodynamics.angles.beta               = angle_of_attacks *0  
+    conditions.freestream.u                           = angle_of_attacks *0       
+    conditions.freestream.v                           = angle_of_attacks *0       
+    conditions.freestream.w                           = angle_of_attacks *0       
+    conditions.static_stability.roll_rate             = angle_of_attacks *0       
+    conditions.static_stability.pitch_rate            = angle_of_attacks *0 
+    conditions.static_stability.yaw_rate              = angle_of_attacks *0 
+    conditions.frames.wind.transform_to_inertial      = np.tile( np.array([[[1., 0., 0.],[0., 1., 0.],[0., 0.,  1.]]]) , ( ctrl_pts,  1, 1)  ) 
     conditions.expand_rows(ctrl_pts)
-    conditions.control_surfaces = Data() 
+    conditions.control_surfaces                       = Data()
+    conditions.aerostructures                         = Data()
+
+    # Initialise fuel masses so FEA can compute fuel tank structural loads.
+    # In a direct analysis (no mission), fuel is held at its current vehicle-level mass.
+    conditions.weights                       = Data()
+    conditions.weights.components            = Data()
+    conditions.weights.components.mass       = Data()
+    for network in analyses.vehicle.networks:
+        for fuel_line in network.fuel_lines:
+            for fuel_tank in fuel_line.fuel_tanks:
+                fuel_tag = fuel_tank.fuel.tag
+                conditions.weights.components.mass[fuel_tag] = fuel_tank.mass_properties.mass * np.ones((ctrl_pts, 1))
 
     for wing in analyses.vehicle.wings: 
         for control_surface in wing.control_surfaces: 
