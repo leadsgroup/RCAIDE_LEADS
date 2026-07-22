@@ -83,60 +83,70 @@ RCAIDE has seen widespread adoption across industry, government, and academia, p
 </p>
 
 ## Code Architecture
-The code is structured into hierarchical repositories containing native data structures, functions, component abstractions, and subroutines implementing discipline analyses. Solely written in Python, RCAIDE is organized into two primary subdirectories:
 
-* **RCAIDE** — source code, split into `Framework` (core data structures, class hierarchies, mission and energy networks) and `Library` (physical component abstractions and analytical methods)
-* **Regressions** — unit tests for verification and validation
+RCAIDE is a pure-Python framework built around two principles: **separation of physics from numerics** and **declarative vehicle specification**. The source package is divided into a `Framework` — which owns the simulation engine, mission solver, and energy networks — and a `Library` — which owns the physical world: component geometries, material attributes, and discipline methods. Adding a new propulsion architecture or analysis method requires only Library changes; the Framework solver operates on it automatically.
 
 ```mermaid
-%%{init: {'flowchart': {'curve': 'linear', 'nodeSpacing': 50, 'rankSpacing': 50}}}%%
-flowchart LR
-    RCAIDE_LEADS[RCAIDE_LEADS]
-    RCAIDE[RCAIDE]
-    Regressions[Regressions]
-    
-    RCAIDE_LEADS ---> RCAIDE
-    RCAIDE_LEADS ---> Regressions
-
-    style RCAIDE_LEADS fill:#0d6dc5,color:#fff
-    style RCAIDE fill:#09d0d9,color:#fff
-    style Regressions fill:#09d0d9,color:#fff
-```
-
-```mermaid
-%%{init: {'flowchart': {'curve': 'linear', 'nodeSpacing': 50, 'rankSpacing': 50}}}%%
+%%{init: {'flowchart': {'curve': 'basis', 'nodeSpacing': 38, 'rankSpacing': 52}}}%%
 flowchart TB
-    RCAIDE[RCAIDE] --> Framework
-    RCAIDE --> Libraries
-    
-    Framework --> Mission
-    Framework --> Analyses
-    Framework --> Optimization
-    Framework --> Data
-    
-    Libraries --> Aerodynamics
-    Libraries --> Aeroacoustics
-    Libraries --> Costs
-    Libraries --> Stability
-    Libraries --> Energy
-    Libraries --> FlightPerf[Flight Performance]
-    Libraries --> Weights
-    
-    style RCAIDE fill:#09d0d9,color:#fff
-    style Framework fill:#0fcf99,color:#fff
-    style Libraries fill:#0fcf99,color:#fff
-    style Mission fill:#ffaf33,color:#fff
-    style Analyses fill:#ffaf33,color:#fff
-    style Optimization fill:#ffaf33,color:#fff
-    style Data fill:#ffaf33,color:#fff
-    style Aerodynamics fill:#ffaf33,color:#fff
-    style Aeroacoustics fill:#ffaf33,color:#fff
-    style Costs fill:#ffaf33,color:#fff
-    style Stability fill:#ffaf33,color:#fff
-    style Energy fill:#ffaf33,color:#fff
-    style FlightPerf fill:#ffaf33,color:#fff
-    style Weights fill:#ffaf33,color:#fff
+    ROOT([RCAIDE-LEADS])
+
+    ROOT --> RCAIDE_PKG[RCAIDE]
+    ROOT --> VNV_PKG[VnV]
+
+    RCAIDE_PKG --> FW[Framework]
+    RCAIDE_PKG --> LIB[Library]
+
+    FW --> AN[Analyses]
+    FW --> CO[Core]
+    FW --> EI[External Interfaces]
+    FW --> MI[Mission]
+    FW --> NE[Networks]
+    FW --> OP[Optimization]
+
+    LIB --> AT[Attributes]
+    LIB --> CM[Components]
+    LIB --> ME[Methods]
+    LIB --> PL[Plots]
+
+    VNV_PKG --> VA[Validation]
+    VNV_PKG --> VE[Verification]
+    VNV_PKG --> VH[Vehicles]
+
+    style ROOT      fill:#0d6dc5,color:#fff,stroke:none
+    style RCAIDE_PKG fill:#0284c7,color:#fff,stroke:none
+    style VNV_PKG   fill:#0284c7,color:#fff,stroke:none
+    style FW        fill:#059669,color:#fff,stroke:none
+    style LIB       fill:#b45309,color:#fff,stroke:none
+    style AN        fill:#6ee7b7,color:#064e3b,stroke:none
+    style CO        fill:#6ee7b7,color:#064e3b,stroke:none
+    style EI        fill:#6ee7b7,color:#064e3b,stroke:none
+    style MI        fill:#6ee7b7,color:#064e3b,stroke:none
+    style NE        fill:#6ee7b7,color:#064e3b,stroke:none
+    style OP        fill:#6ee7b7,color:#064e3b,stroke:none
+    style AT        fill:#fde68a,color:#78350f,stroke:none
+    style CM        fill:#fde68a,color:#78350f,stroke:none
+    style ME        fill:#fde68a,color:#78350f,stroke:none
+    style PL        fill:#fde68a,color:#78350f,stroke:none
+    style VA        fill:#c4b5fd,color:#3b0764,stroke:none
+    style VE        fill:#c4b5fd,color:#3b0764,stroke:none
+    style VH        fill:#c4b5fd,color:#3b0764,stroke:none
 ```
+
+**`Framework`** — the simulation engine. `Core` provides the base data container and unit system. `Mission` and `Networks` implement the coupled ODE and closed-loop energy solvers. `Analyses` manages fidelity-swappable discipline modules. `Optimization` wraps gradient-based and gradient-free drivers. `External_Interfaces` connects to OpenVSP and AVL.
+
+**`Library`** — the physical world. `Components` are declarative Python objects (wings, fuselages, motors, batteries) that compose the `Vehicle`. `Attributes` stores material and propellant properties. `Methods` implements all discipline analyses, organised across 14 subdisciplines:
+
+| Domain | Subdirectories |
+|---|---|
+| Aerodynamics | `Aerodynamics`, `Aerostructures`, `Stability` |
+| Propulsion & Energy | `Powertrain`, `Gas_Dynamics`, `Thermal_Management` |
+| Acoustics | `Aeroacoustics`, `Noise` |
+| Geometry & Mass | `Geometry`, `Geodesics`, `Mass_Properties` |
+| Vehicle Performance | `Performance`, `Emissions` |
+| Utilities | `Utilities` |
+
+**`VnV`** — the test suite. `Verification` contains unit and integration tests for numerical correctness. `Validation` contains regression tests against experimental and reference data. `Vehicles` provides the reference vehicle configurations used across both suites.
 
 ## Computational Workflow
 
