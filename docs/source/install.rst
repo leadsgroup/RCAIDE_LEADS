@@ -1,7 +1,7 @@
 .. _install:
 
 ##############
-Installation
+Install
 ##############
 
 This guide will help you install RCAIDE and its dependencies.
