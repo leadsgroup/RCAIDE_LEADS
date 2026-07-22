@@ -9,7 +9,7 @@
 #
 # Initializes the tip vortex wake geometry. AUTO-DISPATCHED PER CONTROL POINT: computes the
 # in-plane (edgewise) advance ratio mu_edge = sqrt(muys**2 + muzs**2) for each control point;
-# any control point at or below wake_inputs.mu_edgewise_threshold (default 1e-3) uses
+# any control point at or below wake_inputs.mu_edgewise_threshold (default 1e-2) uses
 # wake_inputs.wake_model_hov, the rest use wake_inputs.wake_model_FF -- which of the two model
 # FAMILIES applies is NOT user-selectable, it is driven by each control point's own flight
 # condition. The caller sets both wake_model_hov and wake_model_FF up front (each with its own
@@ -68,7 +68,7 @@ def initialize_wake_geometry(rotor, wake_inputs, conditions):
                                   4=undistorted, 5=Beddoes distorted, 6=modified Beddoes
         mu_edgewise_threshold : float -- in-plane advance ratio at/above which a control point
                                   is routed to wake_model_FF instead of wake_model_hov (default
-                                  1e-3). This is a per-control-point regime switch driven by the
+                                  1e-2). This is a per-control-point regime switch driven by the
                                   actual flight condition (mu_edge), not a model request.
         V_thrust      : (ctrl_pts, 3)
         T_body2thrust : (ctrl_pts, 3, 3)

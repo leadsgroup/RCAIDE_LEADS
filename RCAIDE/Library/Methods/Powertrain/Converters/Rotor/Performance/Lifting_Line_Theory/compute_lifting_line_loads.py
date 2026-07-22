@@ -280,9 +280,7 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     Cp_rotor  = power  / (rho_0 * A * (np.abs(omega)*R)**3)
     Crd       = rotor_drag/(rho_0*(n**2)*(D**4))
     etap      = V*thrust/power
-    FoM       = thrust*np.sqrt(thrust/(2*rho_0*A))/power  
-
-    print("FM: ", FoM, ", Ct_sigma: ", Ct_sigma)
+    FoM       = thrust*np.sqrt(thrust/(2*rho_0*A))/power
 
     # prevent things from breaking
     thrust[omega==0.0]         = 0.
@@ -309,6 +307,21 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     power_loading             = thrust/(power)
     power_loading[omega==0.0] = 0.
     power_loading[eta[:,0]  <=0.0] = 0.
+
+    # FM/Ct_sigma are hover-only metrics; power/disc loading are the forward-flight equivalent --
+    # print whichever is meaningful for each control point's actual regime, using the same
+    # mu_edgewise_threshold cutoff as the hover/FF wake model dispatch in initialize_wake_geometry.py.
+    mu                    = wake_inputs.mu
+    mu_edgewise_threshold = wake_inputs.get('mu_edgewise_threshold', 1e-2)
+    hover_mask            = mu < mu_edgewise_threshold
+    if np.any(hover_mask):
+        print("FM: ", FoM[hover_mask], ", Ct_sigma: ", Ct_sigma[hover_mask])
+    if np.any(~hover_mask):
+        N_per_lbf   = 4.4482216152605
+        W_per_hp    = 745.6998715822702
+        ft2_per_m2  = 10.76391041670972
+        print("power loading [lbf/hp]:   ", power_loading[~hover_mask] * (W_per_hp / N_per_lbf),
+              "disc loading  [lbf/ft^2]: ", disc_loading[~hover_mask] / N_per_lbf / ft2_per_m2)
 
     advance_ratio                   = V/(n*D) 
     advance_ratio[omega==0.0]       = 0.
