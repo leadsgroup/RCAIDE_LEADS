@@ -595,11 +595,11 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------ 
     # Propulsor: Starboard Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------         
-    turbofan1                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan()   
-    turbofan1.origin                             = [[ 16.0 , 0.0 , 0.0 ]]
-    turbofan1.tag                                = 'propulsor_1'    
-    turbofan1.length                             = 5.59                     
-    turbofan1.diameter                           = 1.17               
+    turbofan1                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan()
+    turbofan1.origin                             = [[ 8.0 , 0.0 , 0.0 ]]
+    turbofan1.tag                                = 'propulsor_1'
+    turbofan1.length                             = 5.59
+    turbofan1.diameter                           = 1.168               
     turbofan1.bypass_ratio                       = 0.57                     
     turbofan1.design_altitude                    = 50000*Units.ft             
     turbofan1.design_mach_number                 = 1.6                    
@@ -690,7 +690,7 @@ def vehicle_setup():
     fan_nozzle.tag                                = 'fan_nozzle'
     fan_nozzle.polytropic_efficiency              = 0.98                     
     fan_nozzle.pressure_ratio                     = 0.995 
-    fan_nozzle.diameter                           = 1.3
+    fan_nozzle.diameter                           = 1.168
     turbofan1.fan_nozzle                          = fan_nozzle
     
     # # design turbofan
