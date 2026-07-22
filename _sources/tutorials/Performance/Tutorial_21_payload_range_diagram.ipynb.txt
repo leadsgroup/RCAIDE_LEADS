@@ -25,10 +25,10 @@
    "execution_count": 1,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-17T23:57:14.852859Z",
-     "iopub.status.busy": "2026-07-17T23:57:14.852728Z",
-     "iopub.status.idle": "2026-07-17T23:57:15.222007Z",
-     "shell.execute_reply": "2026-07-17T23:57:15.221245Z"
+     "iopub.execute_input": "2026-07-22T22:54:15.596420Z",
+     "iopub.status.busy": "2026-07-22T22:54:15.596255Z",
+     "iopub.status.idle": "2026-07-22T22:54:15.947103Z",
+     "shell.execute_reply": "2026-07-22T22:54:15.946136Z"
     }
    },
    "outputs": [],
@@ -68,10 +68,10 @@
    "execution_count": 2,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-17T23:57:15.224281Z",
-     "iopub.status.busy": "2026-07-17T23:57:15.224062Z",
-     "iopub.status.idle": "2026-07-17T23:57:16.653380Z",
-     "shell.execute_reply": "2026-07-17T23:57:16.652650Z"
+     "iopub.execute_input": "2026-07-22T22:54:15.948883Z",
+     "iopub.status.busy": "2026-07-22T22:54:15.948661Z",
+     "iopub.status.idle": "2026-07-22T22:54:17.205831Z",
+     "shell.execute_reply": "2026-07-22T22:54:17.204955Z"
     }
    },
    "outputs": [],
@@ -100,10 +100,10 @@
    "execution_count": 3,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-17T23:57:16.655973Z",
-     "iopub.status.busy": "2026-07-17T23:57:16.655735Z",
-     "iopub.status.idle": "2026-07-17T23:57:16.696263Z",
-     "shell.execute_reply": "2026-07-17T23:57:16.695525Z"
+     "iopub.execute_input": "2026-07-22T22:54:17.208046Z",
+     "iopub.status.busy": "2026-07-22T22:54:17.207789Z",
+     "iopub.status.idle": "2026-07-22T22:54:17.242652Z",
+     "shell.execute_reply": "2026-07-22T22:54:17.241850Z"
     }
    },
    "outputs": [],
@@ -684,10 +684,10 @@
    "execution_count": 4,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-17T23:57:16.698056Z",
-     "iopub.status.busy": "2026-07-17T23:57:16.697928Z",
-     "iopub.status.idle": "2026-07-17T23:57:16.702347Z",
-     "shell.execute_reply": "2026-07-17T23:57:16.701712Z"
+     "iopub.execute_input": "2026-07-22T22:54:17.244333Z",
+     "iopub.status.busy": "2026-07-22T22:54:17.244199Z",
+     "iopub.status.idle": "2026-07-22T22:54:17.248441Z",
+     "shell.execute_reply": "2026-07-22T22:54:17.247852Z"
     }
    },
    "outputs": [],
@@ -743,10 +743,10 @@
    "execution_count": 5,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-17T23:57:16.703873Z",
-     "iopub.status.busy": "2026-07-17T23:57:16.703743Z",
-     "iopub.status.idle": "2026-07-17T23:57:16.708197Z",
-     "shell.execute_reply": "2026-07-17T23:57:16.707585Z"
+     "iopub.execute_input": "2026-07-22T22:54:17.250104Z",
+     "iopub.status.busy": "2026-07-22T22:54:17.249998Z",
+     "iopub.status.idle": "2026-07-22T22:54:17.254165Z",
+     "shell.execute_reply": "2026-07-22T22:54:17.253432Z"
     }
    },
    "outputs": [],
@@ -795,10 +795,10 @@
    "execution_count": 6,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-17T23:57:16.709794Z",
-     "iopub.status.busy": "2026-07-17T23:57:16.709664Z",
-     "iopub.status.idle": "2026-07-17T23:57:16.712612Z",
-     "shell.execute_reply": "2026-07-17T23:57:16.711866Z"
+     "iopub.execute_input": "2026-07-22T22:54:17.255909Z",
+     "iopub.status.busy": "2026-07-22T22:54:17.255655Z",
+     "iopub.status.idle": "2026-07-22T22:54:17.258747Z",
+     "shell.execute_reply": "2026-07-22T22:54:17.258145Z"
     }
    },
    "outputs": [],
@@ -817,10 +817,10 @@
    "execution_count": 7,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-17T23:57:16.713979Z",
-     "iopub.status.busy": "2026-07-17T23:57:16.713860Z",
-     "iopub.status.idle": "2026-07-17T23:57:16.768505Z",
-     "shell.execute_reply": "2026-07-17T23:57:16.767868Z"
+     "iopub.execute_input": "2026-07-22T22:54:17.260349Z",
+     "iopub.status.busy": "2026-07-22T22:54:17.260221Z",
+     "iopub.status.idle": "2026-07-22T22:54:17.308596Z",
+     "shell.execute_reply": "2026-07-22T22:54:17.307915Z"
     }
    },
    "outputs": [],
@@ -867,10 +867,10 @@
    "execution_count": 8,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-17T23:57:16.770204Z",
-     "iopub.status.busy": "2026-07-17T23:57:16.770052Z",
-     "iopub.status.idle": "2026-07-17T23:59:02.499356Z",
-     "shell.execute_reply": "2026-07-17T23:59:02.498534Z"
+     "iopub.execute_input": "2026-07-22T22:54:17.310198Z",
+     "iopub.status.busy": "2026-07-22T22:54:17.310077Z",
+     "iopub.status.idle": "2026-07-22T22:56:29.696803Z",
+     "shell.execute_reply": "2026-07-22T22:56:29.696173Z"
     }
    },
    "outputs": [
@@ -996,7 +996,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.99seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.27seg/s]"
      ]
     },
     {
@@ -1004,7 +1004,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.99seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.26seg/s]"
      ]
     },
     {
@@ -1048,7 +1048,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.06seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.45seg/s]"
      ]
     },
     {
@@ -1056,7 +1056,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.05seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.45seg/s]"
      ]
     },
     {
@@ -1100,7 +1100,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.04seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.45seg/s]"
      ]
     },
     {
@@ -1108,7 +1108,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.04seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.44seg/s]"
      ]
     },
     {
@@ -1152,7 +1152,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.08seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.41seg/s]"
      ]
     },
     {
@@ -1160,7 +1160,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.07seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.41seg/s]"
      ]
     },
     {
@@ -1204,7 +1204,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.04seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.43seg/s]"
      ]
     },
     {
@@ -1212,7 +1212,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.03seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.42seg/s]"
      ]
     },
     {
@@ -1256,7 +1256,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.01seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.43seg/s]"
      ]
     },
     {
@@ -1264,7 +1264,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.00seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.42seg/s]"
      ]
     },
     {
@@ -1308,7 +1308,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.07seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.44seg/s]"
      ]
     },
     {
@@ -1316,7 +1316,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.07seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.44seg/s]"
      ]
     },
     {
@@ -1360,7 +1360,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.06seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.43seg/s]"
      ]
     },
     {
@@ -1368,7 +1368,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.05seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.42seg/s]"
      ]
     },
     {
@@ -1412,7 +1412,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.08seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.41seg/s]"
      ]
     },
     {
@@ -1420,7 +1420,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.07seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.40seg/s]"
      ]
     },
     {
@@ -1464,7 +1464,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.08seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.42seg/s]"
      ]
     },
     {
@@ -1472,7 +1472,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.08seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.42seg/s]"
      ]
     },
     {
@@ -1516,7 +1516,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.68seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.97seg/s]"
      ]
     },
     {
@@ -1524,7 +1524,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.68seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.96seg/s]"
      ]
     },
     {
@@ -1568,7 +1568,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.69seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.95seg/s]"
      ]
     },
     {
@@ -1576,7 +1576,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.68seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.94seg/s]"
      ]
     },
     {
@@ -1620,7 +1620,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.67seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.97seg/s]"
      ]
     },
     {
@@ -1628,7 +1628,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.66seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.96seg/s]"
      ]
     },
     {
@@ -1672,7 +1672,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.67seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.97seg/s]"
      ]
     },
     {
@@ -1680,7 +1680,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.67seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.96seg/s]"
      ]
     },
     {

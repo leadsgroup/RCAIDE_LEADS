@@ -8,8 +8,6 @@ Missions
 - :doc:`Tutorial 05 Electric Aircraft <Missions/Tutorial_05_electric_aircraft>`
 - :doc:`Tutorial 06 Tiltrotor eVTOL Aircraft <Missions/Tutorial_06_tiltrotor_evtol_aircraft>`
 - :doc:`Tutorial 07 Lift Cruise eVTOL Aircraft <Missions/Tutorial_07_lift_cruise_evtol_aircraft>`
-- :doc:`Tutorial 08 Tilt Stopped Rotor Vtail eVTOL Aircraft <Missions/Tutorial_08_tilt_stopped_rotor_vtail_evtol_aircraft>`
-- :doc:`Tutorial 09 Tilt Stopped Rotor eVTOL Aircraft <Missions/Tutorial_09_tilt_stopped_rotor_evtol_aircraft>`
 
 .. toctree::
    :maxdepth: 1
@@ -22,5 +20,3 @@ Missions
    Missions/Tutorial_05_electric_aircraft
    Missions/Tutorial_06_tiltrotor_evtol_aircraft
    Missions/Tutorial_07_lift_cruise_evtol_aircraft
-   Missions/Tutorial_08_tilt_stopped_rotor_vtail_evtol_aircraft
-   Missions/Tutorial_09_tilt_stopped_rotor_evtol_aircraft

@@ -147,7 +147,7 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../install.html">
-    Installation
+    Install
   </a>
 </li>
 
@@ -174,11 +174,35 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../api.html">
+  <a class="nav-link nav-internal" href="../../validation.html">
+    Validation
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../api.html">
     API Reference
   </a>
 </li>
 
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://www.rcaide.leadsresearchgroup.com">
+    RCAIDE Home
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
   </ul>
 </nav></div>
       
@@ -272,7 +296,7 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../install.html">
-    Installation
+    Install
   </a>
 </li>
 
@@ -299,8 +323,22 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../validation.html">
+    Validation
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../api.html">
     API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://www.rcaide.leadsresearchgroup.com">
+    RCAIDE Home
   </a>
 </li>
 
@@ -1816,8 +1854,8 @@ Solving Vertical_Climb:  |<span class="ansi-green-fg">          </span>| 0/9 seg
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Prop-rotor Optimization Successful
-Simulation Time: 0.53 mins
+Prop-rotor Optimization Failed:  Inequality constraints incompatible
+Simulation Time: 0.38 mins
 
  Optimum motor design failed. Using slack constraints
 
@@ -1835,30 +1873,30 @@ Method                 : Physics_Based
 Structural Components:
 Component                    Weight (kg)
 ----------------------------------------
-Wings                             132.85
-Fuselage                          135.31
+Wings                             132.84
+Fuselage                          135.07
 Empennage                           0.00
-Landing Gear                       51.17
+Landing Gear                       51.03
 Nacelle                             0.00
 Booms                               0.00
 Paint                               0.00
 ----------------------------------------
-Total                             319.33
+Total                             318.94
 
 Propulsion Components:
 Component                    Weight (kg)
 ----------------------------------------
-Engines                            58.03
+Engines                            48.59
 Thrust Reversers                    0.00
 Miscellaneous                      35.20
 Fuel System                         0.00
 Fuel Tanks                          0.00
-Electrical Cabling                 60.29
+Electrical Cabling                 59.65
 Thermal Management                  0.00
 Battery                          1049.66
-Motors                            316.09
+Motors                            320.07
 ----------------------------------------
-Total                            1519.28
+Total                            1513.17
 
 Systems:
 Component                    Weight (kg)
@@ -1896,11 +1934,11 @@ Total                               0.00
 Overall Summary:
 Metric                       Weight (kg)
 ----------------------------------------
-Operating Empty Weight           1976.11
+Operating Empty Weight           1969.62
 Payload Weight                    350.00
 Fuel Weight                         0.00
-Takeoff Weight                   2326.11
-Zero Fuel Weight                 2326.11
+Takeoff Weight                   2319.62
+Zero Fuel Weight                 2319.62
 Max Takeoff Weight               2177.00
 
 ===============================
@@ -1919,12 +1957,12 @@ Max Takeoff Weight               2177.00
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Solving Vertical_Descent:  |<span class="ansi-red-fg">██████████</span>| 9/9 segs [08:02&lt;00:00, 53.60s/seg]
-<span class="ansi-yellow-fg">2026-07-17 23:49:21.256 ( 552.607s) [    7F9D9422BB80]vtkXOpenGLRenderWindow.:1460  WARN| bad X server connection. DISPLAY=</span>
-<span class="ansi-yellow-fg">2026-07-17 23:49:21.257 ( 552.608s) [    7F9D9422BB80]vtkOpenGLRenderWindow.c:645   WARN| Failed to load EGL! Please install the EGL library from your distribution&#39;s package manager.</span>
-<span class="ansi-yellow-fg">2026-07-17 23:49:21.257 ( 552.608s) [    7F9D9422BB80]vtkOSOpenGLRenderWindow:149   WARN| libOSMesa not found. It appears that OSMesa is not installed in your system. Please install the OSMesa library from your distribution&#39;s package manager.</span>
-<span class="ansi-yellow-fg">2026-07-17 23:49:21.258 ( 552.609s) [    7F9D9422BB80]vtkOpenGLRenderWindow.c:645   WARN| Failed to load EGL! Please install the EGL library from your distribution&#39;s package manager.</span>
-<span class="ansi-yellow-fg">2026-07-17 23:49:21.259 ( 552.609s) [    7F9D9422BB80]vtkOSOpenGLRenderWindow:149   WARN| libOSMesa not found. It appears that OSMesa is not installed in your system. Please install the OSMesa library from your distribution&#39;s package manager.</span>
+Solving Vertical_Descent:  |<span class="ansi-red-fg">██████████</span>| 9/9 segs [03:32&lt;00:00, 23.56s/seg]
+<span class="ansi-yellow-fg">2026-07-22 22:47:55.812 ( 282.288s) [    7F10C1BA9B80]vtkXOpenGLRenderWindow.:1460  WARN| bad X server connection. DISPLAY=</span>
+<span class="ansi-yellow-fg">2026-07-22 22:47:55.812 ( 282.288s) [    7F10C1BA9B80]vtkOpenGLRenderWindow.c:645   WARN| Failed to load EGL! Please install the EGL library from your distribution&#39;s package manager.</span>
+<span class="ansi-yellow-fg">2026-07-22 22:47:55.813 ( 282.288s) [    7F10C1BA9B80]vtkOSOpenGLRenderWindow:149   WARN| libOSMesa not found. It appears that OSMesa is not installed in your system. Please install the OSMesa library from your distribution&#39;s package manager.</span>
+<span class="ansi-yellow-fg">2026-07-22 22:47:55.814 ( 282.290s) [    7F10C1BA9B80]vtkOpenGLRenderWindow.c:645   WARN| Failed to load EGL! Please install the EGL library from your distribution&#39;s package manager.</span>
+<span class="ansi-yellow-fg">2026-07-22 22:47:55.814 ( 282.290s) [    7F10C1BA9B80]vtkOSOpenGLRenderWindow:149   WARN| libOSMesa not found. It appears that OSMesa is not installed in your system. Please install the OSMesa library from your distribution&#39;s package manager.</span>
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1933,7 +1971,7 @@ Solving Vertical_Descent:  |<span class="ansi-red-fg">████████�
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;pyvista.plotting.plotter.Plotter at 0x7f9d28b70f10&gt;
+&lt;pyvista.plotting.plotter.Plotter at 0x7f10563aa950&gt;
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1949,9 +1987,34 @@ findfont: Failed to find font weight heavy, now using 700.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
+Segment did not converge. Segment Tag: Vertical_Climb
+Error Message:
+The number of calls to function has reached maxfev = 200.
+Segment did not converge. Segment Tag: Vertical_Transition
+Error Message:
+Singular matrix C in LSQ subproblem
+Segment did not converge. Segment Tag: low_speed_climb_transition
+Error Message:
+Singular matrix C in LSQ subproblem
+Segment did not converge. Segment Tag: high_speed_climb_transition
+Error Message:
+Singular matrix C in LSQ subproblem
+Segment did not converge. Segment Tag: Climb
+Error Message:
+The number of calls to function has reached maxfev = 200.
 Segment did not converge. Segment Tag: Cruise
 Error Message:
 The number of calls to function has reached maxfev = 200.
+Segment did not converge. Segment Tag: Descent
+Error Message:
+The number of calls to function has reached maxfev = 200.
+Segment did not converge. Segment Tag: Approach_Transition
+Error Message:
+Singular matrix C in LSQ subproblem
+Segment did not converge. Segment Tag: Vertical_Descent
+Error Message:
+The iteration is not making good progress, as measured by the
+ improvement from the last ten iterations.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -2152,7 +2215,7 @@ The number of calls to function has reached maxfev = 200.
 
   <p class="copyright">
     
-      © Copyright 2024, Laboratory for Electric Aircraft Design and Sustainability.
+      © Copyright 2026, Laboratory for Emerging Aircraft Design and Systems.
       <br/>
     
   </p>
