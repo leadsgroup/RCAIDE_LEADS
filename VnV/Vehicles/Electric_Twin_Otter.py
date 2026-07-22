@@ -478,22 +478,6 @@ def vehicle_setup(rotor_type):
         propeller.cruise.design_thrust                   = 12500  
         propeller.clockwise_rotation                     = True # Initially was set to False
         propeller.variable_pitch                         = True
-        # blade_pitch_command is not an active trim control in any mission segment below (only
-        # throttle and pitch_angle are), so it never moves off whatever value is set here -- it
-        # is a fixed offset for the entire mission, not a per-segment/per-condition optimum.
-        # Confirmed as the actual root cause of the Cruise segment failing to trim (maxfev=200):
-        # with pitch stuck at 0.0, RPM (via throttle) was the only free variable, which isn't
-        # enough for a variable_pitch rotor to satisfy thrust=drag at this flight condition. The
-        # rotor/wake physics (Biot-Savart, Gamma_b/CT iteration) was independently verified and
-        # was never the problem -- every rotor-level solve converged cleanly throughout the
-        # mission even while Cruise failed to trim.
-        # 5 deg fixed here is a value that happens to let this specific mission trim, picked by
-        # trial, not solved for -- it is not guaranteed to work if the mission profile changes
-        # (different speeds/altitudes may need a different, or varying, collective). The proper
-        # fix is to make blade_pitch_command an active control variable per segment (mirroring
-        # how throttle is set up via assigned_control_variables), letting the trim solver pick
-        # the right value per condition instead of carrying one fixed guess through everything.
-        propeller.blade_pitch_command                    = np.radians(5.0)
         propeller.origin                                 = [[3.5,2.8129,1.22 ]]
         propeller.use_2d_analysis                        = False # False for nominal case
         propeller.wing_to_rotor                          = False # False for nominal case
@@ -961,18 +945,28 @@ def mission_setup(analyses):
     # segment.initial_battery_state_of_charge   = 1.0
     
     
-    # define flight controls 
-    segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
-    segment.assigned_control_variables.pitch_angle.active             = True
-          
-    mission.append_segment(segment)    
-    
+    # define flight controls
+    # throttle fixed (converged value from the old throttle+pitch_angle trim), blade_pitch_command
+    # takes over the force_x (thrust=drag) role instead -- see discussion: this keeps the trim
+    # system square (2 unknowns: pitch_angle, blade_pitch_command <-> 2 residuals: force_x, force_z),
+    # it just swaps which variable does the thrust trim, since a fixed 0 deg collective can leave
+    # force_x unreachable at this flight condition (deep negative-AoA / negative-CT regime).
+    segment.throttle                                                   = 0.75
+
+    segment.assigned_control_variables.pitch_angle.active              = True
+
+    segment.assigned_control_variables.blade_pitch_command.active                  = True
+    segment.assigned_control_variables.blade_pitch_command.assigned_rotors         = [['propeller_1','propeller_2']]
+    segment.assigned_control_variables.blade_pitch_command.initial_guess_values    = [[np.radians(5.0)]]
+    segment.assigned_control_variables.blade_pitch_command.bounds                  = [[np.radians(-5.0), np.radians(25.0)]]
+
+    mission.append_segment(segment)
+
     '''
     # ------------------------------------------------------------------
     #   Descent Segment Flight 1
-    # ------------------------------------------------------------------ 
-    segment = Segments.Climb.Linear_Speed_Constant_Rate(base_segment) 
+    # ------------------------------------------------------------------
+    segment = Segments.Climb.Linear_Speed_Constant_Rate(base_segment)
     segment.tag = "Descent"  
     segment.analyses.extend( analyses.base )   
     #segment.analyses.extend( analyses.hex_descent_operation )       
@@ -1084,7 +1078,10 @@ def plot_mission(results):
     
     # Plot throttles
     plot_propulsor_throttles(results)
-    
+
+    # Plot rotor conditions (RPM, thrust, torque, blade_pitch_command, etc.)
+    plot_rotor_conditions(results)
+
     # Battery Conditions
     plot_battery_module_conditions(results)
     plot_battery_cell_conditions(results)
