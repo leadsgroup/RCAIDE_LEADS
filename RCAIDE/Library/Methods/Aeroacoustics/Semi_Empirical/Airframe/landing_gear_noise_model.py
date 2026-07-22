@@ -59,10 +59,10 @@ def compute_landing_gear_noise(microphone_locations, D, H, W, wheels, M, Weight,
 
     gear_params = Data(
         num_wheels = wheels,
-        wheel_diam = D / Units.ft,                  # Approximate (in)
-        wheel_width = W / Units.ft,                 # Approximate (in)
-        strut_lengths = [H / Units.ft],             # Total length L=317 in
-        strut_dims = [strut_diameter / Units.ft],   # Average dimension a=4.65 in
+        wheel_diam = D / Units.inches,                  # Approximate (in)
+        wheel_width = W / Units.inches,                 # Approximate (in)
+        strut_lengths = [H / Units.inches],             # Total length L=317 in
+        strut_dims = [strut_diameter / Units.inches],   # Average dimension a=4.65 in
         aircraft_weight = Weight / Units.pounds,        # Reference weight (lbs)
         track_angle = 0.0,                              # Assume track angle of zero
     )
@@ -70,16 +70,18 @@ def compute_landing_gear_noise(microphone_locations, D, H, W, wheels, M, Weight,
 
     flight_cond = Data(
         M_flight = M / 0.75, 
-        theta = theta / Units.rad, # (deg),
-        R = 10, #np.linalg.norm(microphone_locations, axis=1) if hasattr(microphone_locations, 'ndim') else microphone_locations,
+        theta = theta / Units.deg, # (deg),
+        R = np.linalg.norm(microphone_locations, axis=1)[0]/Units.feet, #if hasattr(microphone_locations, 'ndim') else microphone_locations,
         c0 = (segment.state.conditions.freestream.speed_of_sound / Units.foot_per_second), # sound speed (ft/s)
         rho0 = segment.state.conditions.freestream.density / Units["slugs/ft^3"]   # slug/ft^3
     )
+
+    print("GEAR", gear_params, flight_cond)
     return predict_spectrum(frequency, gear_params, flight_cond)
 
 
 # --- Global Constants & Empirical Parameters ---
-P_REF_VAL = 4.177e-7  # Reference pressure [psf]
+P_REF_VAL = (2*10**-5)/Units.psf  # Reference pressure [psf]
 
 NOISE_PARAMS = Data(
     Low = Data(
@@ -100,11 +102,11 @@ NOISE_PARAMS = Data(
 
 def calculate_geometry(gear_params):
     """Calculates S (Area), l0 (Length scale), and complexity factor for each regime."""
-    Nw = gear_params.num_wheels
-    w_ft = gear_params.wheel_width
-    d_ft = gear_params.wheel_diam
-    L_struts_ft = np.array(gear_params.strut_lengths)
-    D_struts_ft = np.array(gear_params.strut_dims)
+    Nw = gear_params.num_wheels 
+    w_ft = gear_params.wheel_width /12
+    d_ft = gear_params.wheel_diam /12
+    L_struts_ft = np.array(gear_params.strut_lengths) /12
+    D_struts_ft = np.array(gear_params.strut_dims) /12
     W_ac = gear_params.aircraft_weight
     gamma = np.radians(gear_params.track_angle)
     

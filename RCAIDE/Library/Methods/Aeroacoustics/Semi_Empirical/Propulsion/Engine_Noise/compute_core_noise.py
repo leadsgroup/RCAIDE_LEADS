@@ -59,7 +59,7 @@ def compute_core_noise(microphone_locations, turbofan, pr, aeroacoustic_data, se
 
     frequency              = frequencies    
     n_cpts                 = len(noise_time)     
-    n_freq                  = len(frequency) 
+    n_freq                 = len(frequency) 
     n_mic                  = len(microphone_locations)
   
     # ============================================================================= 
@@ -141,13 +141,13 @@ def compute_core_noise(microphone_locations, turbofan, pr, aeroacoustic_data, se
     for i in range(n_mic): #to vectorize next
     
         model_inputs = Data(
-        W1 = ((Area_secondary*Velocity_secondary*density_secondary) / Units.lbm),  # Total core mass flow rate (lbm/sec)
+        W1 = ((Area_primary*Velocity_primary*density_primary) / Units.lbm),  # Total core mass flow rate (lbm/sec)
         T_C_o = segment.state.conditions.energy.converters['combustor'].outputs.static_temperature * 1.8,             # Combustor outlet total temperature (deg R)
         T_C_i = segment.state.conditions.energy.converters['combustor'].inputs.static_temperature * 1.8,              # Combustor inlet total temperature (deg R)
         P_amb = pressure_amb / Units.psi,                                               # Ambient pressure (pa -> psia)
         T_amb = (temp_amb*1.8)[0][0],                                                           # Ambient temperature (deg R)
         n_f =  Num_nozzle,                                                              # Number of fuel nozzles
-        R = 100, #distance_microphone[i] / Units.feet,                                        # Microphone distance (ft)
+        R = np.linalg.norm(microphone_locations,axis=1)[0]/Units.feet, #distance_microphone[i] / Units.feet, # Microphone distance (ft)
         D_h_1 = core_nozzle.diameter / Units.feet,                                      # core nozzle hydraulic diameter
         c_amb = (sound_ambient / Units.feet)[0][0],                                             # Ambient sonic velocity (ft/sec)
         D_C = combustor.diameter / Units.feet,                                          # Combustor diameter (ft)
@@ -194,7 +194,7 @@ def compute_core_noise(microphone_locations, turbofan, pr, aeroacoustic_data, se
         SPL_dBA[:,i]                  = SPL_arithmetic(np.atleast_2d(A_weighting_metric(SPL_total,frequency)),sum_axis=1)
 
     core_noise                   = Data()   
-    core_noise.SPL_1_3_spectrum  = SPL_1_3_spectrum_dBA
+    core_noise.SPL_1_3_spectrum  = SPL_1_3_spectrum
     core_noise.SPL               = SPL
     core_noise.SPL_dBA           = SPL_dBA
 

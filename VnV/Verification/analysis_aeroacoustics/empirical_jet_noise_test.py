@@ -99,7 +99,7 @@ flight_params: dict
     Ls = 0.08128
     gamma_s = np.radians(20)
     sigma_s =  np.radians(25)
-    alpha =  np.radians(30)
+    alpha =  np.radians(10)
 
     #define param for core noise model
     pr = 13.1
@@ -167,11 +167,12 @@ flight_params: dict
 
     # define microphone locations
     microphone_locations = np.zeros((1,3))   
+    microphone_locations = np.array([[80,80,80]])
+    print('setting distance:', np.linalg.norm(microphone_locations, axis=1))
 
     # define segment 
     segment                                                = Segment()  
-    conditions                                             = Results() 
-    conditions.aeroacoustics.relative_microphone_locations = np.repeat(microphone_locations[ np.newaxis,:,: ],1,axis=0)   
+    conditions                                             = Results()  
     conditions.aerodynamics.angles.alpha                   = alpha
     conditions.freestream.density                          = np.ones((ctrl_pts,1)) * density
     conditions.freestream.dynamic_viscosity                = np.ones((ctrl_pts,1)) * dynamic_viscosity   
@@ -289,8 +290,9 @@ flight_params: dict
     # plt.legend()
     # plt.show()
 
+
     fan_noise1 = compute_fan_noise(microphone_locations, turbofan,m, segment.state.conditions.aeroacoustics, segment, frequency)
-    validation_fan = read_noise_data('/Users/siripunn/Desktop/LEADS_WORK/RESEARCH/05_Aeroacoustics/Boeing_Method/Fan Noise/b737_fan_noise_data.csv')
+    validation_fan = read_noise_data('/Users/siripunn/Desktop/LEADS_WORK/RESEARCH/05_Aeroacoustics/Boeing_Method/Fan Noise/b737_fan_noise_data.csv/b737_fan_noise_data.csv')
     core_noise1 = compute_core_noise(microphone_locations, turbofan, pr, segment.state.conditions.aeroacoustics, segment, frequency)
     validation_core = read_noise_data('/Users/siripunn/Desktop/LEADS_WORK/RESEARCH/05_Aeroacoustics/Boeing_Method/Core Noise/b737_core_noise_data.csv')
     # print(core_noise1.SPL_1_3_spectrum)
@@ -299,16 +301,15 @@ flight_params: dict
     # ax.set_xscale('log')
 
     #flap slat noise is current neg. db
-    SPL_total = np.concatenate((lg_noise1.Total,-flap_noise1[0],-slat_noise1[0],fan_noise1.SPL_1_3_spectrum[0][0],core_noise1.SPL_1_3_spectrum[0][0]), axis=0)
+    SPL_total = np.concatenate((lg_noise1.Total,flap_noise1[0],slat_noise1[0],fan_noise1.SPL_1_3_spectrum[0][0],core_noise1.SPL_1_3_spectrum[0][0]), axis=0)
     twodim = np.atleast_2d(SPL_total)
-    total_SPL_dBA = SPL_arithmetic(np.array([lg_noise1.Total,flap_noise1[0],slat_noise1[0],fan_noise1.SPL_1_3_spectrum[0][0],core_noise1.SPL_1_3_spectrum[0][0]]),sum_axis = 0)
-    print(total_SPL_dBA,-slat_noise1[0])
+    total_SPL_classic = SPL_arithmetic(np.array([lg_noise1.Total,flap_noise1[0],slat_noise1[0],fan_noise1.SPL_1_3_spectrum[0][0],core_noise1.SPL_1_3_spectrum[0][0]]),sum_axis = 0)
     fig, ax = plt.subplots(figsize=(8, 5))
     #ax.plot(validation_lg[0],validation_lg[1], 'bo')
-    ax.plot(validation_flap[0],validation_flap[1],'bo')
-    ax.plot(validation_fan[0],validation_fan[1],'bo')
+    #ax.plot(validation_flap[0],validation_flap[1],'bo')
+    #ax.plot(validation_fan[0],validation_fan[1],'bo')
     #ax.plot(validation_core[0],validation_core[1],'bo')
-    ax.plot(frequency,total_SPL_dBA,label='Total Noise')
+    ax.plot(frequency,total_SPL_classic,label='Total Noise')
     ax.plot(frequency,core_noise1.SPL_1_3_spectrum[0][0],label='Core Noise')
     ax.plot(frequency,fan_noise1.SPL_1_3_spectrum[0][0],label='Fan Noise')
     ax.plot(frequency,slat_noise1[0],label='Slat Noise')

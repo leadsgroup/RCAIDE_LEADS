@@ -38,7 +38,7 @@ def compute_fan_noise(microphone_locations, turbofan, m, aeroacoustic_data, segm
     Pressure_secondary     = aeroacoustic_data.propulsors[turbofan.tag].fan.exit_stagnation_pressure 
     Velocity_aircraft      = segment.state.conditions.freestream.velocity
     noise_time             = segment.state.conditions.frames.inertial.time  
-    distance_microphone    = [74] #np.linalg.norm(microphone_locations,axis = 1)    
+    distance_microphone    = [np.linalg.norm(microphone_locations,axis = 1)[0]]#ft #np.linalg.norm(microphone_locations,axis = 1)    
     Diameter_secondary     = aeroacoustic_data.propulsors[turbofan.tag].fan.diameter
     Num_blades             = aeroacoustic_data.propulsors[turbofan.tag].fan.number_of_blades
 
@@ -106,7 +106,7 @@ def compute_fan_noise(microphone_locations, turbofan, m, aeroacoustic_data, segm
     B_Number = Num_blades,                                             # Number of rotor blades
     inlet_distortion = False                                           # Boolean
     )
-
+    print('FAN',fan_inputs)
     def calc_base_level(inputs):
     #Calculates the mass flow and temperature rise base terms.
         m_0 = 1.0     # 1 lb/sec reference
@@ -230,18 +230,18 @@ def compute_fan_noise(microphone_locations, turbofan, m, aeroacoustic_data, segm
         theta_S = np.tile(theta[None,:],(n_cpts,1))  
         theta_s = np.tile(np.atleast_2d(abs(theta_S[:,i])).T,(1,n_freq))
         spl = calc_combination_tones(fan_inputs, frequency, theta=theta_s)
-        distance_attenuated_spl = spl - 20*np.log10((7.44*0.3048)/distance_microphone[i]) # 7.44ft as the microphone sideline to fan distance
-        spl_values.append(distance_attenuated_spl)
+        distance_attenuated_spl = spl + 20*np.log10(1/distance_microphone[i]) # 1 [m] as the microphone sideline to fan distance
+        
 
-        SPL_1_3_spectrum[:,i,:]       = spl 
-        SPL[:,i]                      = SPL_arithmetic(spl,sum_axis=1 )
-        SPL_1_3_spectrum_dBA[:,i,:]   = A_weighting_metric(spl,frequency)
-        SPL_dBA[:,i]                  = SPL_arithmetic(np.atleast_2d(A_weighting_metric(spl,frequency)),sum_axis=1)
+        SPL_1_3_spectrum[:,i,:]       = distance_attenuated_spl 
+        SPL[:,i]                      = SPL_arithmetic(distance_attenuated_spl,sum_axis=1 )
+        SPL_1_3_spectrum_dBA[:,i,:]   = A_weighting_metric(distance_attenuated_spl,frequency)
+        SPL_dBA[:,i]                  = SPL_arithmetic(np.atleast_2d(A_weighting_metric(distance_attenuated_spl,frequency)),sum_axis=1)
 
 
     
 
-    fan_noise.SPL_1_3_spectrum  = SPL_1_3_spectrum_dBA
+    fan_noise.SPL_1_3_spectrum  = SPL_1_3_spectrum
     fan_noise.SPL               = SPL
     fan_noise.SPL_dBA           = SPL_dBA
     return fan_noise

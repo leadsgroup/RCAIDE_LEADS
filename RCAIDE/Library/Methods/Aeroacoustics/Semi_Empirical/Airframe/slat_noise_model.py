@@ -61,7 +61,7 @@ def slat_noise(microphone_locations, phi, theta, Ls, gamma_s, sigma_s, alpha, se
     """
     #Unpack Segment Data:
     M = segment.state.conditions.freestream.mach_number
-    distance = 100 #ft np.linalg.norm(microphone_locations,axis = 1)
+    distance = np.linalg.norm(microphone_locations,axis = 1)[0]/ Units.feet
     rho_0 = segment.state.conditions.freestream.density / Units["slugs/ft^3"]
     c_0 = segment.state.conditions.freestream.speed_of_sound / Units["ft/s"]
     velocity = segment.state.conditions.freestream.velocity / Units["ft/s"]
@@ -105,14 +105,13 @@ def slat_noise(microphone_locations, phi, theta, Ls, gamma_s, sigma_s, alpha, se
     
     # Overall Scaling Factor
     ambient_scale = (rho_0 * c_0**2)**2
-    print(distance)
     spherical_spreading = 1/(distance**2)
     
     # Assemble Far-Field Noise Power Spectral Density (Pi)
     Pi = A * ambient_scale * W_M * spherical_spreading * convective_amplification * D_theta_phi * F_St
     
     # Convert to Sound Pressure Level (dB)
-    p_ref_psf = 1/Units.psf #reference lowest spl
-    SPL = 10.0 * np.log10(Pi / (p_ref_psf**2) + 1e-12)
+    p_ref_psf = (2*10**-5)/Units.psf #reference lowest spl
+    SPL = 10.0 * np.log10(Pi / (p_ref_psf**2) + 1e-12) + + np.log10(0.231 * frequency)
     
     return SPL
