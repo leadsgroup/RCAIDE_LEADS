@@ -110,7 +110,8 @@ def compute_airfoil_aerodynamics(beta,c,r,R,B,Wa,Wt,a,nu,airfoils,airfoil_locati
 
         # By 90 deg, it's totally stalled.
         Cl[Cl>Cl1maxp]  = Cl1maxp[Cl>Cl1maxp] # This line of code is what changed the regression testing
-        Cl[alpha>=np.pi/2] = 0.
+        Cl[alpha>=np.pi/2]  = 0.
+        Cl[alpha<=-np.pi/2] = 0.
 
         # Scale for Mach, this is Karmen_Tsien
         KT_cond = np.logical_and((Ma[:,:]<1.),(Cl>0))
@@ -121,7 +122,8 @@ def compute_airfoil_aerodynamics(beta,c,r,R,B,Wa,Wt,a,nu,airfoils,airfoil_locati
 
         #This is an atrocious fit of DAE51 data at RE=50k for Cd
         Cdval = (0.108*(Cl*Cl*Cl*Cl)-0.2612*(Cl*Cl*Cl)+0.181*(Cl*Cl)-0.0139*Cl+0.0278)*((50000./Re)**0.2)
-        Cdval[alpha>=np.pi/2] = 2.
+        Cdval[alpha>=np.pi/2]  = 2.
+        Cdval[alpha<=-np.pi/2] = 2.
         
         alpha_disc = np.tile(alpha[:,:, None], (1, 1, Nr)) 
         Re_disc    = np.tile(Re[:,:, None], (1, 1, Nr))  

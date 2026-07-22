@@ -478,6 +478,7 @@ def vehicle_setup(rotor_type):
         propeller.cruise.design_thrust                   = 12500  
         propeller.clockwise_rotation                     = True # Initially was set to False
         propeller.variable_pitch                         = True
+        propeller.blade_pitch_command                    = np.radians(8.0)
         propeller.origin                                 = [[3.5,2.8129,1.22 ]]
         propeller.use_2d_analysis                        = False # False for nominal case
         propeller.wing_to_rotor                          = False # False for nominal case
@@ -825,12 +826,12 @@ def mission_setup(analyses):
     Segments = RCAIDE.Framework.Mission.Segments  
     base_segment = Segments.Segment() 
     base_segment.state.numerics.solver.type = 'root_finder'
-    base_segment.state.numerics.number_of_control_points = 8
+    base_segment.state.numerics.number_of_control_points = 16
     vehicle        = analyses.base.vehicle
     vehicle_mass   = vehicle.mass_properties.max_takeoff
     reference_area = vehicle.reference_area 
     Vstall         = estimate_stall_speed(vehicle_mass,reference_area,altitude = 0.0,maximum_lift_coefficient = 1.2)
-    '''
+    
     # ------------------------------------------------------------------
     #   Departure End of Runway Segment Flight 1 : 
     # ------------------------------------------------------------------ 
@@ -854,7 +855,7 @@ def mission_setup(analyses):
     segment.assigned_control_variables.pitch_angle.active             = True
        
     mission.append_segment(segment)
-    
+
     # ------------------------------------------------------------------
     #   Initial Climb Area Segment Flight 1  
     # ------------------------------------------------------------------ 
@@ -877,7 +878,7 @@ def mission_setup(analyses):
     segment.assigned_control_variables.pitch_angle.active             = True
           
     mission.append_segment(segment)  
-              
+    
     # ------------------------------------------------------------------
     #   Climb Segment Flight 1 
     # ------------------------------------------------------------------ 
@@ -912,7 +913,7 @@ def mission_setup(analyses):
     segment.analyses.extend( analyses.base )  
     #segment.analyses.extend( analyses.hex_high_alt_climb_operation)
     segment.altitude_start                                = 3000.0  * Units.feet
-    segment.altitude_end                                  = 10000   * Units.feet  
+    segment.altitude_end                                  = 10000   * Units.feet   
     segment.air_speed_end                                 = 150 * Units.kts 
     segment.climb_rate                                    = 700 * Units['ft/min']   
     
@@ -926,7 +927,7 @@ def mission_setup(analyses):
     segment.assigned_control_variables.pitch_angle.active             = True
             
     mission.append_segment(segment)
-    '''
+    
     # ------------------------------------------------------------------
     #   Cruise Segment: constant Speed, constant altitude
     # ------------------------------------------------------------------ 
@@ -944,25 +945,13 @@ def mission_setup(analyses):
     segment.flight_dynamics.force_z                       = True     
     # segment.initial_battery_state_of_charge   = 1.0
     
+    # define flight controls 
+    segment.assigned_control_variables.throttle.active               = True           
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
+    segment.assigned_control_variables.pitch_angle.active             = True
     
-    # define flight controls
-    # throttle fixed (converged value from the old throttle+pitch_angle trim), blade_pitch_command
-    # takes over the force_x (thrust=drag) role instead -- see discussion: this keeps the trim
-    # system square (2 unknowns: pitch_angle, blade_pitch_command <-> 2 residuals: force_x, force_z),
-    # it just swaps which variable does the thrust trim, since a fixed 0 deg collective can leave
-    # force_x unreachable at this flight condition (deep negative-AoA / negative-CT regime).
-    segment.throttle                                                   = 0.75
-
-    segment.assigned_control_variables.pitch_angle.active              = True
-
-    segment.assigned_control_variables.blade_pitch_command.active                  = True
-    segment.assigned_control_variables.blade_pitch_command.assigned_rotors         = [['propeller_1','propeller_2']]
-    segment.assigned_control_variables.blade_pitch_command.initial_guess_values    = [[np.radians(5.0)]]
-    segment.assigned_control_variables.blade_pitch_command.bounds                  = [[np.radians(-5.0), np.radians(25.0)]]
-
     mission.append_segment(segment)
 
-    '''
     # ------------------------------------------------------------------
     #   Descent Segment Flight 1
     # ------------------------------------------------------------------
@@ -1030,7 +1019,6 @@ def mission_setup(analyses):
     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
     segment.assigned_control_variables.pitch_angle.active             = True    
     mission.append_segment(segment)  
-    '''
     
 
     # ------------------------------------------------------------------
