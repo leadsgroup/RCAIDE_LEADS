@@ -85,10 +85,7 @@ def append_bus_conditions(bus,segment):
 
 def append_bus_segment_conditions(bus,segment):
 
-    elif 'initial_battery_state_of_charge' in segment:
-        bus_conditions.energy[:,0] = segment.initial_battery_state_of_charge * bus.maximum_energy
-
-    bus_conditions   = segment.state.conditions.energy.distributors[bus.tag]  
+    bus_conditions   = segment.state.conditions.energy.distributors[bus.tag]
     bus_conditions.inputs.power.electrical[:,0]             = 0.0
     bus_conditions.inputs.power.thermal[:,0]                = 0.0
     bus_conditions.inputs.power.hydraulic[:,0]              = 0.0

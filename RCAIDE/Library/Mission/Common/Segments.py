@@ -44,10 +44,12 @@ def sequential_segments(mission):
                     error_flag = True
 
             # do the init/skip dance
+            original_expand = segment.process.initialize.expand_state
             segment.process.initialize.expand_state(segment)
             segment.process.initialize.expand_state = RCAIDE.Library.Methods.skip
 
             segment.evaluate()
+            segment.process.initialize.expand_state = original_expand
             segment.state.number_of_mission_residuals = 0
             segment.state.number_of_mission_unknowns  = 0
             segment.state.number_of_network_residuals = 0
