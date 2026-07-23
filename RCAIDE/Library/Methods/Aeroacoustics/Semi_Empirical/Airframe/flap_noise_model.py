@@ -15,7 +15,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  Flap Noise Model 
 # ----------------------------------------------------------------------------------------------------------------------
-def flap_noise_model(microphone_locations,cf,thickness, deltaf, theta, frequency,segment): #add microphone location, unpack like LG noise model
+def flap_noise_model(R_val, theta_flap ,cf,thickness, deltaf, frequency,segment): #add microphone location, unpack like LG noise model
     params = Data(
         h = thickness,                  # Flap thickness (m)
         L_f = cf,                       # Flap chord length (m)
@@ -26,11 +26,11 @@ def flap_noise_model(microphone_locations,cf,thickness, deltaf, theta, frequency
         U = segment.state.conditions.freestream.velocity,                                    # Flight velocity (m/s)
         c0 = segment.state.conditions.freestream.speed_of_sound,                             # Speed of sound (m/s)
         rho0 = segment.state.conditions.freestream.density,                                  # Ambient density (kg/m^3)
-        r = np.linalg.norm(microphone_locations,axis = 1)[0],                             # Observer distance (m)
-        theta = 0 #theta/Units.degree,                                                    # Polar angle (overhead = 90 deg) 
+        r = R_val,                             # Observer distance (m)
+        theta = theta_flap #theta/Units.degree,                                                    # Polar angle (overhead = 90 deg) 
     )
+    #print(params)
 
-    print('FLAP', params)
     # SPL_comp = predict_flap_noise_spl(frequency, input_parameters, None)
     # return SPL_comp
 
@@ -54,7 +54,7 @@ def flap_noise_model(microphone_locations,cf,thickness, deltaf, theta, frequency
         'theta': Polar angle (overhead = 90 deg)
     """
     constants = Data(
-        A0= 3e-5, mu0= 0.7693, mu1= 1.0, mu2= 0.292, alpha_0= 0.01
+        A0= 3e5, mu0= 0.7693, mu1= 1.0, mu2= 0.292, alpha_0= 0.01
     )
         
     p_ref = 2e-5 # Reference SPL in Pascals

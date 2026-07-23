@@ -26,7 +26,7 @@ interpolator_fan = create_interpolator_fan()
 #  turbofan fan noise 
 # ----------------------------------------------------------------------------------------------------------------------  
 
-def compute_fan_noise(microphone_locations, turbofan, m, aeroacoustic_data, segment, frequencies):
+def compute_fan_noise(R_val, theta_engine, turbofan, m, aeroacoustic_data, segment, frequencies):
     #unpack
 
     conditions = segment.conditions
@@ -38,7 +38,7 @@ def compute_fan_noise(microphone_locations, turbofan, m, aeroacoustic_data, segm
     Pressure_secondary     = aeroacoustic_data.propulsors[turbofan.tag].fan.exit_stagnation_pressure 
     Velocity_aircraft      = segment.state.conditions.freestream.velocity
     noise_time             = segment.state.conditions.frames.inertial.time  
-    distance_microphone    = [np.linalg.norm(microphone_locations,axis = 1)[0]]#ft #np.linalg.norm(microphone_locations,axis = 1)    
+    distance_microphone    = R_val#ft #np.linalg.norm(microphone_locations,axis = 1)    
     Diameter_secondary     = aeroacoustic_data.propulsors[turbofan.tag].fan.diameter
     Num_blades             = aeroacoustic_data.propulsors[turbofan.tag].fan.number_of_blades
 
@@ -47,7 +47,7 @@ def compute_fan_noise(microphone_locations, turbofan, m, aeroacoustic_data, segm
     frequency              = frequencies        
     n_cpts                 = len(noise_time)     
     n_freq                 = len(frequency) 
-    n_mic                  = len(microphone_locations)
+    n_mic                  = 1
   
     # ============================================================================= 
     # Step 1: Computing atmospheric conditions
@@ -66,15 +66,7 @@ def compute_fan_noise(microphone_locations, turbofan, m, aeroacoustic_data, segm
 
     # Defining each array before the main loop 
     theta     =  np.zeros(n_mic)
-    bool_1    = (microphone_locations[:,1] > 0) &  (microphone_locations[:,0] > 0)
-    bool_2    = (microphone_locations[:,1] > 0) &  (microphone_locations[:,0] < 0)
-    bool_3    = (microphone_locations[:,1] < 0) &  (microphone_locations[:,0] < 0)
-    bool_4    = (microphone_locations[:,1] < 0) &  (microphone_locations[:,0] > 0)
-    
-    theta[bool_1] =  np.pi - np.arctan(microphone_locations[:,1]/microphone_locations[:,0])[bool_1]
-    theta[bool_2] =  np.arctan(microphone_locations[:,1]/ abs(microphone_locations[:,0]))[bool_2]
-    theta[bool_3] =  np.arctan(abs(microphone_locations[:,1])/ abs(microphone_locations[:,0]))[bool_3]
-    theta[bool_4] =  np.pi - np.arctan(abs(microphone_locations[:,1])/ microphone_locations[:,0])[bool_4] 
+
 
     SPL                    = np.zeros((n_cpts,n_mic))
     SPL_dBA                = np.zeros((n_cpts,n_mic))
@@ -106,7 +98,6 @@ def compute_fan_noise(microphone_locations, turbofan, m, aeroacoustic_data, segm
     B_Number = Num_blades,                                             # Number of rotor blades
     inlet_distortion = False                                           # Boolean
     )
-    print('FAN',fan_inputs)
     def calc_base_level(inputs):
     #Calculates the mass flow and temperature rise base terms.
         m_0 = 1.0     # 1 lb/sec reference
@@ -215,15 +206,6 @@ def compute_fan_noise(microphone_locations, turbofan, m, aeroacoustic_data, segm
     
     fan_noise= Data()
     theta     =  np.zeros(n_mic)
-    bool_1    = (microphone_locations[:,1] > 0) &  (microphone_locations[:,0] > 0)
-    bool_2    = (microphone_locations[:,1] > 0) &  (microphone_locations[:,0] < 0)
-    bool_3    = (microphone_locations[:,1] < 0) &  (microphone_locations[:,0] < 0)
-    bool_4    = (microphone_locations[:,1] < 0) &  (microphone_locations[:,0] > 0)
-    
-    theta[bool_1] =  np.pi - np.arctan(microphone_locations[:,1]/microphone_locations[:,0])[bool_1]
-    theta[bool_2] =  np.arctan(microphone_locations[:,1]/ abs(microphone_locations[:,0]))[bool_2]
-    theta[bool_3] =  np.arctan(abs(microphone_locations[:,1])/ abs(microphone_locations[:,0]))[bool_3]
-    theta[bool_4] =  np.pi - np.arctan(abs(microphone_locations[:,1])/ microphone_locations[:,0])[bool_4] 
 
     for i in range(n_mic):
         spl_values = []

@@ -17,7 +17,7 @@ import numpy as np
 #  Slat Noise Model 
 # ----------------------------------------------------------------------------------------------------------------------
 
-def slat_noise(microphone_locations, phi, theta, Ls, gamma_s, sigma_s, alpha, segment, frequency, A=1e-5):
+def slat_noise(R_val, phi, theta, Ls, gamma_s, sigma_s, alpha, segment, frequency, A=1e-5):
     """
     Computes the Slat Noise Power Spectral Density based on Guo (2010).
     
@@ -61,7 +61,7 @@ def slat_noise(microphone_locations, phi, theta, Ls, gamma_s, sigma_s, alpha, se
     """
     #Unpack Segment Data:
     M = segment.state.conditions.freestream.mach_number
-    distance = np.linalg.norm(microphone_locations,axis = 1)[0]/ Units.feet
+    distance = R_val[0][0]/ Units.feet
     rho_0 = segment.state.conditions.freestream.density / Units["slugs/ft^3"]
     c_0 = segment.state.conditions.freestream.speed_of_sound / Units["ft/s"]
     velocity = segment.state.conditions.freestream.velocity / Units["ft/s"]

@@ -21,7 +21,8 @@ import math
 #  turbofan engine core noise
 # ---------------------------------------------------------------------------------------------------------------------- 
 
-def compute_core_noise(microphone_locations, turbofan, pr, aeroacoustic_data, segment, frequencies):
+def compute_core_noise(R_val, theta_engine, turbofan, pr, aeroacoustic_data, segment, frequencies):
+    n_mic = 1
     conditions = segment.conditions
     N1                     = aeroacoustic_data.propulsors[turbofan.tag].fan.angular_velocity
     Velocity_secondary     = aeroacoustic_data.propulsors[turbofan.tag].fan_nozzle.exit_velocity   
@@ -36,7 +37,7 @@ def compute_core_noise(microphone_locations, turbofan, pr, aeroacoustic_data, se
     Mach_aircraft          = segment.state.conditions.freestream.mach_number 
     AOA                    = segment.state.conditions.aerodynamics.angles.alpha / Units.deg 
     noise_time             = segment.state.conditions.frames.inertial.time  
-    distance_microphone    = np.linalg.norm(microphone_locations,axis = 1)    
+    distance_microphone    = R_val 
     Diameter_primary       = turbofan.core_nozzle.diameter
     Diameter_secondary     = turbofan.fan_nozzle.diameter
     Num_nozzle             = turbofan.combustor.number_of_fuel_nozzle
@@ -60,7 +61,6 @@ def compute_core_noise(microphone_locations, turbofan, pr, aeroacoustic_data, se
     frequency              = frequencies    
     n_cpts                 = len(noise_time)     
     n_freq                 = len(frequency) 
-    n_mic                  = len(microphone_locations)
   
     # ============================================================================= 
     # Step 1: Computing atmospheric conditions
@@ -82,18 +82,8 @@ def compute_core_noise(microphone_locations, turbofan, pr, aeroacoustic_data, se
     Area_secondary =  np.pi*(Diameter_secondary/2)**2   
 
     # Defining each array before the main loop 
-    theta     =  np.zeros(n_mic)
-    bool_1    = (microphone_locations[:,1] > 0) &  (microphone_locations[:,0] > 0)
-    bool_2    = (microphone_locations[:,1] > 0) &  (microphone_locations[:,0] < 0)
-    bool_3    = (microphone_locations[:,1] < 0) &  (microphone_locations[:,0] < 0)
-    bool_4    = (microphone_locations[:,1] < 0) &  (microphone_locations[:,0] > 0)
-    
-    theta[bool_1] =  np.pi - np.arctan(microphone_locations[:,1]/microphone_locations[:,0])[bool_1]
-    theta[bool_2] =  np.arctan(microphone_locations[:,1]/ abs(microphone_locations[:,0]))[bool_2]
-    theta[bool_3] =  np.arctan(abs(microphone_locations[:,1])/ abs(microphone_locations[:,0]))[bool_3]
-    theta[bool_4] =  np.pi - np.arctan(abs(microphone_locations[:,1])/ microphone_locations[:,0])[bool_4] 
 
-    theta_P                = np.tile(theta[None,:],(n_cpts,1)) 
+
     EX_p                   = np.zeros((n_cpts,n_mic,n_freq)) 
     EX_s                   = np.zeros((n_cpts,n_mic,n_freq)) 
     EX_m                   = np.zeros((n_cpts,n_mic,n_freq))  
@@ -122,23 +112,14 @@ def compute_core_noise(microphone_locations, turbofan, pr, aeroacoustic_data, se
     #also convert the injected frequency list to code input
 
     core_noise= Data()
-    theta     =  np.zeros(n_mic)
-    bool_1    = (microphone_locations[:,1] > 0) &  (microphone_locations[:,0] > 0)
-    bool_2    = (microphone_locations[:,1] > 0) &  (microphone_locations[:,0] < 0)
-    bool_3    = (microphone_locations[:,1] < 0) &  (microphone_locations[:,0] < 0)
-    bool_4    = (microphone_locations[:,1] < 0) &  (microphone_locations[:,0] > 0)
-    
-    theta[bool_1] =  np.pi - np.arctan(microphone_locations[:,1]/microphone_locations[:,0])[bool_1]
-    theta[bool_2] =  np.arctan(microphone_locations[:,1]/ abs(microphone_locations[:,0]))[bool_2]
-    theta[bool_3] =  np.arctan(abs(microphone_locations[:,1])/ abs(microphone_locations[:,0]))[bool_3]
-    theta[bool_4] =  np.pi - np.arctan(abs(microphone_locations[:,1])/ microphone_locations[:,0])[bool_4]
+
 
     # Load interpolators ONCE
     interp_C1 = create_interpolator("table_c1")
     interp_C2 = create_interpolator("table_c2")
     interp_C3 = create_interpolator("table_c3")
     
-    for i in range(n_mic): #to vectorize next
+    for i in range(1): #to vectorize next
     
         model_inputs = Data(
         W1 = ((Area_primary*Velocity_primary*density_primary) / Units.lbm),  # Total core mass flow rate (lbm/sec)
@@ -147,17 +128,16 @@ def compute_core_noise(microphone_locations, turbofan, pr, aeroacoustic_data, se
         P_amb = pressure_amb / Units.psi,                                               # Ambient pressure (pa -> psia)
         T_amb = (temp_amb*1.8)[0][0],                                                           # Ambient temperature (deg R)
         n_f =  Num_nozzle,                                                              # Number of fuel nozzles
-        R = np.linalg.norm(microphone_locations,axis=1)[0]/Units.feet, #distance_microphone[i] / Units.feet, # Microphone distance (ft)
+        R = R_val[0][0]/Units.feet, #distance_microphone[i] / Units.feet, # Microphone distance (ft)
         D_h_1 = core_nozzle.diameter / Units.feet,                                      # core nozzle hydraulic diameter
         c_amb = (sound_ambient / Units.feet)[0][0],                                             # Ambient sonic velocity (ft/sec)
         D_C = combustor.diameter / Units.feet,                                          # Combustor diameter (ft)
         c_C_o = (331.3*(1+((segment.state.conditions.energy.converters['combustor'].outputs.static_temperature-273)/273))**0.5) / Units.feet,      # Combustor exit sonic velocity (ft/sec)
         f = frequencies,                                                                                     # Frequency (Hz) -> injected list
-        theta_c = theta[i],                                                                                        # theta (radians)
+        theta_c = theta_engine[0][0],                                                                                        # theta (radians)
         pressure_ratio = pr  # Pressure ratio
         )
 
-        print('CORE NOISE', model_inputs)
         # Calculate Base Parameters
         core_param_log = calc_core_param(
         model_inputs.W1, model_inputs.T_C_o, model_inputs.T_C_i, 

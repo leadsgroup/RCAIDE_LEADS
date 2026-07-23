@@ -16,7 +16,7 @@ import numpy as np
 #  Landing Gear Noise Model 
 # ----------------------------------------------------------------------------------------------------------------------
 
-def compute_landing_gear_noise(microphone_locations, D, H, W, wheels, M, Weight, strut_diameter, theta, frequency, segment):
+def compute_landing_gear_noise(R_val, theta_raw, D, H, W, wheels, M, Weight, strut_diameter, frequency, segment):
     """
         This calculates the Landing gear overall sound pressure level.
 
@@ -70,13 +70,12 @@ def compute_landing_gear_noise(microphone_locations, D, H, W, wheels, M, Weight,
 
     flight_cond = Data(
         M_flight = M / 0.75, 
-        theta = theta / Units.deg, # (deg),
-        R = np.linalg.norm(microphone_locations, axis=1)[0]/Units.feet, #if hasattr(microphone_locations, 'ndim') else microphone_locations,
+        theta = theta_raw[0][0]/ Units.deg, # (deg),
+        R = R_val[0][0]/Units.feet, #if hasattr(microphone_locations, 'ndim') else microphone_locations,
         c0 = (segment.state.conditions.freestream.speed_of_sound / Units.foot_per_second), # sound speed (ft/s)
         rho0 = segment.state.conditions.freestream.density / Units["slugs/ft^3"]   # slug/ft^3
     )
 
-    print("GEAR", gear_params, flight_cond)
     return predict_spectrum(frequency, gear_params, flight_cond)
 
 
