@@ -62,6 +62,11 @@
             0.0
         ]
     ],
+    "orientation_euler_angles": [
+        0.0,
+        0.0,
+        0.0
+    ],
     "xz_plane_symmetric": false,
     "xy_plane_symmetric": false,
     "yz_plane_symmetric": false,
@@ -131,6 +136,11 @@
                 0.0
             ]
         ],
+        "orientation_euler_angles": [
+            0.0,
+            0.0,
+            0.0
+        ],
         "xz_plane_symmetric": false,
         "xy_plane_symmetric": false,
         "yz_plane_symmetric": false,
@@ -147,11 +157,6 @@
         "diameter": 0.3,
         "inlet_diameter": 0.0,
         "length": 0.45,
-        "orientation_euler_angles": [
-            0.0,
-            0.0,
-            0.0
-        ],
         "flow_through": false,
         "has_pylon": true,
         "differential_pressure": 0.0,
@@ -247,6 +252,11 @@
                 0.0
             ]
         ],
+        "orientation_euler_angles": [
+            0.0,
+            0.0,
+            0.0
+        ],
         "xz_plane_symmetric": false,
         "xy_plane_symmetric": false,
         "yz_plane_symmetric": false,
@@ -331,6 +341,11 @@
                 0.0,
                 0.0
             ]
+        ],
+        "orientation_euler_angles": [
+            0.0,
+            0.0,
+            0.0
         ],
         "xz_plane_symmetric": false,
         "xy_plane_symmetric": false,
@@ -540,6 +555,11 @@
                         0.0,
                         0.0
                     ]
+                ],
+                "orientation_euler_angles": [
+                    0.0,
+                    0.0,
+                    0.0
                 ],
                 "xz_plane_symmetric": false,
                 "xy_plane_symmetric": false,
@@ -14215,11 +14235,6 @@
         "profile_drag_coefficient": 0.03,
         "clockwise_rotation": true,
         "phase_offset_angle": 0.0,
-        "orientation_euler_angles": [
-            0.0,
-            0.0,
-            0.0
-        ],
         "ducted": false,
         "sol_tolerance": 1e-08,
         "use_2d_analysis": false,
@@ -14345,6 +14360,11 @@
                 0.0,
                 0.0
             ]
+        ],
+        "orientation_euler_angles": [
+            0.0,
+            0.0,
+            0.0
         ],
         "xz_plane_symmetric": false,
         "xy_plane_symmetric": false,

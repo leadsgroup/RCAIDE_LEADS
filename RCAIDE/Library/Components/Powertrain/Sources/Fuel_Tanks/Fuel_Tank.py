@@ -66,7 +66,7 @@ class Fuel_Tank(Source):
         self.xz_plane_symmetric             = True
         self.wing_tag                       = None
         self.fuselage_tag                   = None
-        self.transverse_tank                   = False
+        self.transverse_tank                = False
         self.gravimetric_efficiency         = 1.0
         self.lengths                        = Data()
         self.lengths.external               = 0.0

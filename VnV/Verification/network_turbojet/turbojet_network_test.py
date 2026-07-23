@@ -29,12 +29,14 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Concorde    import vehicle_setup as vehicle_setup
 from Concorde    import configs_setup as configs_setup 
+import time
 
 # ----------------------------------------------------------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------------------------------------------------------
 
 def main():
+    ti = time.time()
     # vehicle data
     vehicle  = vehicle_setup()
 
@@ -74,6 +76,10 @@ def main():
     # IO round-trip tests
     io_test(vehicle, configs, analyses, missions, results, CL)
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 

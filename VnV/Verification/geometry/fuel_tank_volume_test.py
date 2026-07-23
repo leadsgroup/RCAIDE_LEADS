@@ -33,13 +33,16 @@ if vehicles_path not in sys.path:
 from BWB         import vehicle_setup as BWB_vehicle_setup
 from Boeing_737  import vehicle_setup as B737_vehicle_setup
 from Navion      import vehicle_setup as Nav_vehicle_setup
+import time
 
 # ----------------------------------------------------------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------------------------------------------------------
 
 def main():
+    ti = time.time()
     integral_fuel_tank_volume_test()
+    non_integral_tank_test()
     # -------------------------------------------------------------
     # Run test only if Python version >= 3.11
     # Shapely < 2.1 (and Python < 3.11) may not include functions
@@ -52,6 +55,10 @@ def main():
     else:
         print("Skipping non_conformal_lh2_fuel_tank_volume_test() and conformal_lh2_fuel_tank_volume_test():\
             Shapely lacks 'maximum_inscribed_circle' support for Python < 3.11.")
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 def integral_fuel_tank_volume_test():
@@ -133,11 +140,69 @@ def integral_fuel_tank_volume_test():
 
     return
 
+def non_integral_tank_test():
+    print('\n----- Non-Integral Tank Test -----')
+
+    # --- Cylindrical MOI and CoG (lines 218 and 246 in Non_Integral_Tank) ---
+    # These branches are never reached via Cryogenic_Tank (which overrides the methods).
+    cyl_tank = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank()
+    cyl_tank.geometry_type      = 'cylindrical'
+    cyl_tank.lengths.external   = 8.0
+    cyl_tank.diameters.external = 2.0
+    cyl_tank.wall_thickness     = 0.05
+    cyl_tank.fuel               = RCAIDE.Library.Attributes.Propellants.Jet_A1()
+    cyl_tank.compute_moments_of_inertia(None)
+    cyl_tank.compute_center_of_gravity(None)
+
+    # --- Wing-mounted cylindrical and transverse Non_Integral_Tank (lines 174-181) ---
+    # These use shapely so require Python >= 3.11.
+    if sys.version_info >= (3, 11):
+        # Wing-mounted cylindrical tank (lines 174-177)
+        vehicle   = B737_vehicle_setup()
+        fuel_line = vehicle.networks.fuel.fuel_lines.fuel_line
+        fuel_line.fuel_tanks.clear()
+
+        wing_tank = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.wings.main_wing)
+        wing_tank.tag                    = 'wing_cyl_tank'
+        wing_tank.geometry_type          = 'cylindrical'
+        wing_tank.segments_bounding_tank = ['root', 'yehudi']
+        wing_tank.fuel                   = RCAIDE.Library.Attributes.Propellants.Jet_A()
+        fuel_line.fuel_tanks.append(wing_tank)
+
+        wing_tank.compute_volume(vehicle.wings, vehicle.fuselages, fuel_line.fuel_tanks)
+        assert wing_tank.volume_properties.net_volume > 0, \
+            f'Wing-mounted cylindrical Non_Integral_Tank volume should be > 0, got {wing_tank.volume_properties.net_volume}'
+
+        # Transverse Non_Integral_Tank (lines 178-181)
+        vehicle_bwb   = BWB_vehicle_setup()
+        fuel_line_bwb = vehicle_bwb.networks.fuel.fuel_lines.fuel_line
+        fuel_line_bwb.fuel_tanks.clear()
+
+        trans_tank = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle_bwb.wings.main_wing)
+        trans_tank.tag                           = 'transverse_tank'
+        trans_tank.transverse_tank               = True
+        trans_tank.transverse_tank_chord_bounds  = [0.65, 0.9]
+        trans_tank.transverse_tank_segment_bound = 'cabin_wall'
+        trans_tank.radial_offset                 = 0.2
+        trans_tank.orientation_euler_angles      = [0, 0, np.pi/2]
+        trans_tank.xz_plane_symmetric            = False
+        trans_tank.fuel                          = RCAIDE.Library.Attributes.Propellants.Jet_A()
+        fuel_line_bwb.fuel_tanks.append(trans_tank)
+
+        trans_tank.compute_volume(vehicle_bwb.wings, vehicle_bwb.fuselages, fuel_line_bwb.fuel_tanks)
+        assert trans_tank.volume_properties.net_volume > 0, \
+            f'Transverse Non_Integral_Tank volume should be > 0, got {trans_tank.volume_properties.net_volume}'
+    else:
+        print('  Skipping wing-mounted and transverse Non_Integral_Tank tests: shapely requires Python >= 3.11')
+
+    print('  PASSED')
+
+
 def non_conformal_lh2_fuel_tank_volume_test():
 
     print('\n----- Non-Conformal LH2 Fuel Tank Volume Test -----')
 
-    fuel_volume_true = 509.42635029498
+    fuel_volume_true = 612.218299
     vehicle          = BWB_vehicle_setup()
     fuel_line        = vehicle.networks.fuel.fuel_lines.fuel_line
     fuel_line.fuel_tanks.clear()
@@ -147,6 +212,10 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_tank_1.tag                             = 'H2_Fuel_Tank_1'
     fuel_tank_1.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     fuel_tank_1.design_inlet_temperature        = 20
+    fuel_tank_1.design_altitude                 = 30000 * Units.ft
+    fuel_tank_1.design_heat_flux                = 20
+    fuel_tank_1.design_total_heat_transfer      = 2000
+    fuel_tank_1.ullage_volume_fraction          = 0.07
     fuel_tank_1.inner_structure.material        = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
     fuel_tank_1.insulation.material             = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_1.gravimetric_efficiency          = 0.5
@@ -156,23 +225,29 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_tank_1.wall_thickness                  = 2*Units.inches
     fuel_line.fuel_tanks.append(fuel_tank_1)
 
-    # ---- Prismatic non-integral tank ----
-    fuel_tank_2                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank()
+    # ---- Cylindrical non-integral tank ----
+    fuel_tank_2                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank()
     fuel_tank_2.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     fuel_tank_2.tag                             = 'H2_Fuel_Tank_2'
-    fuel_tank_2.geometry_type                   = 'prismatic'
-    fuel_tank_2.lengths.external                = 1
-    fuel_tank_2.widths.external                 = 1
-    fuel_tank_2.heights.external                = 1
-    fuel_tank_2.segments_bounding_tank          = ['fuselage_section_3', 'wing_section_2']
-    fuel_tank_2.segments_percent_chord_start    = [0.2 ,0.2]
-    fuel_tank_2.segments_percent_chord_end      = [0.6,0.6]
-    fuel_tank_2.wall_thickness                  = 2*Units.inches
+    fuel_tank_2.design_inlet_temperature        = 20
+    fuel_tank_2.design_altitude                 = 30000 * Units.ft
+    fuel_tank_2.design_heat_flux                = 20
+    fuel_tank_2.design_total_heat_transfer      = 2000
+    fuel_tank_2.ullage_volume_fraction          = 0.07
+    fuel_tank_2.geometry_type                   = 'cylindrical'
+    fuel_tank_2.lengths.external                = 8
+    fuel_tank_2.diameters.external              = 4
     fuel_line.fuel_tanks.append(fuel_tank_2)
-
-    fuel_tank_2a                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank()
+ 
+    # ---- Prismatic non-integral tank ----
+    fuel_tank_2a                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank()
     fuel_tank_2a.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     fuel_tank_2a.tag                             = 'H2_Fuel_Tank_2a'
+    fuel_tank_2a.design_inlet_temperature        = 20
+    fuel_tank_2a.design_altitude                 = 30000 * Units.ft
+    fuel_tank_2a.design_heat_flux                = 20
+    fuel_tank_2a.design_total_heat_transfer      = 2000
+    fuel_tank_2a.ullage_volume_fraction          = 0.07
     fuel_tank_2a.geometry_type                   = 'prismatic'
     fuel_tank_2a.lengths.external                = 1
     fuel_tank_2a.widths.external                 = 1
@@ -181,10 +256,15 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_tank_2a.fuel.mass_properties.mass       = 0.1
     fuel_line.fuel_tanks.append(fuel_tank_2a)
 
-    # ---- Wing-mounted cylindrical non-integral tank ----
-    fuel_tank_3                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.wings.main_wing)
+    # ---- Wing-mounted prismatic non-integral tank ----
+    fuel_tank_3                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
     fuel_tank_3.tag                             = 'H2_Fuel_Tank_3'
-    fuel_tank_3.fuel                            = RCAIDE.Library.Attributes.Propellants.Jet_A1()
+    fuel_tank_3.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+    fuel_tank_3.design_inlet_temperature        = 20
+    fuel_tank_3.design_altitude                 = 30000 * Units.ft
+    fuel_tank_3.design_heat_flux                = 20
+    fuel_tank_3.design_total_heat_transfer      = 2000
+    fuel_tank_3.ullage_volume_fraction          = 0.07
     fuel_tank_3.gravimetric_efficiency          = 0.5
     fuel_tank_3.wall_thickness                  = 2*Units.inches
     fuel_tank_3.segments_bounding_tank          = ['fuselage_section_3', 'wing_section_2']
@@ -197,6 +277,10 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_tank_4.tag                           = 'H2_Fuel_Tank_4'
     fuel_tank_4.fuel                          = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     fuel_tank_4.design_inlet_temperature      = 20
+    fuel_tank_4.design_altitude               = 30000 * Units.ft
+    fuel_tank_4.design_heat_flux              = 20
+    fuel_tank_4.design_total_heat_transfer    = 2000
+    fuel_tank_4.ullage_volume_fraction        = 0.07
     fuel_tank_4.inner_structure.material      = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
     fuel_tank_4.insulation.material           = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_4.gravimetric_efficiency        = 0.5
@@ -209,15 +293,20 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_line.fuel_tanks.append(fuel_tank_4)
 
     # ---- Non-integral BWB aft tank ----
-    fuel_tank_4a                               = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.wings.main_wing)
+    fuel_tank_4a                               = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
     fuel_tank_4a.tag                           = 'H2_Fuel_Tank_4a'
     fuel_tank_4a.fuel                          = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+    fuel_tank_4a.design_inlet_temperature      = 20
+    fuel_tank_4a.design_altitude               = 30000 * Units.ft
+    fuel_tank_4a.design_heat_flux              = 20
+    fuel_tank_4a.design_total_heat_transfer    = 2000
+    fuel_tank_4a.ullage_volume_fraction        = 0.07
     fuel_tank_4a.gravimetric_efficiency        = 0.5
     fuel_tank_4a.xz_plane_symmetric            = False
     fuel_tank_4a.orientation_euler_angles      = [0,0,np.pi/2]
-    fuel_tank_4a.transverse_tank                  = True
-    fuel_tank_4a.transverse_tank_chord_bounds    = [0.65,0.9]
-    fuel_tank_4a.transverse_tank_segment_bound        = 'cabin_wall'
+    fuel_tank_4a.transverse_tank               = True
+    fuel_tank_4a.transverse_tank_chord_bounds  = [0.65,0.9]
+    fuel_tank_4a.transverse_tank_segment_bound = 'cabin_wall'
     fuel_tank_4a.radial_offset                 = 0.2
     fuel_line.fuel_tanks.append(fuel_tank_4a)
 
@@ -226,6 +315,10 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_tank_5.tag                           = 'H2_Fuel_Tank_5'
     fuel_tank_5.fuel                          = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     fuel_tank_5.design_inlet_temperature      = 20
+    fuel_tank_5.design_altitude               = 30000 * Units.ft
+    fuel_tank_5.design_heat_flux              = 20
+    fuel_tank_5.design_total_heat_transfer    = 2000
+    fuel_tank_5.ullage_volume_fraction        = 0.07
     fuel_tank_5.inner_structure.material      = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
     fuel_tank_5.insulation.material           = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_5.gravimetric_efficiency        = 0.5
@@ -239,9 +332,14 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_line.fuel_tanks.append(fuel_tank_5)
 
     # ---- Non-integral wing tank with specified mass ----
-    fuel_tank_6                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.wings.main_wing)
+    fuel_tank_6                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
     fuel_tank_6.tag                             = 'H2_Fuel_Tank_6'
     fuel_tank_6.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+    fuel_tank_6.design_inlet_temperature        = 20
+    fuel_tank_6.design_altitude                 = 30000 * Units.ft
+    fuel_tank_6.design_heat_flux                = 20
+    fuel_tank_6.design_total_heat_transfer      = 2000
+    fuel_tank_6.ullage_volume_fraction          = 0.07
     fuel_tank_6.gravimetric_efficiency          = 0.5
     fuel_tank_6.wall_thickness                  = 2*Units.inches
     fuel_tank_6.fuel.mass_properties.mass       = 0.1
@@ -288,6 +386,10 @@ def conformal_lh2_fuel_tank_volume_test():
     fuel_tank.geometry_type                            = 'conformal'
     fuel_tank.fuel                                     = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     fuel_tank.design_inlet_temperature                 = 20
+    fuel_tank.design_altitude                          = 30000 * Units.ft
+    fuel_tank.design_heat_flux                         = 20
+    fuel_tank.design_total_heat_transfer               = 2000
+    fuel_tank.ullage_volume_fraction                   = 0.07
     fuel_tank.inner_structure.material                 = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
     fuel_tank.insulation.material                      = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank.segments_bounding_tank                   = ['fuel_wall', 'wing_section_1']
@@ -301,6 +403,10 @@ def conformal_lh2_fuel_tank_volume_test():
     fuel_tank_2.geometry_type                          = 'conformal'
     fuel_tank_2.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     fuel_tank_2.design_inlet_temperature               = 20
+    fuel_tank_2.design_altitude                        = 30000 * Units.ft
+    fuel_tank_2.design_heat_flux                       = 20
+    fuel_tank_2.design_total_heat_transfer             = 2000
+    fuel_tank_2.ullage_volume_fraction                 = 0.07
     fuel_tank_2.inner_structure.material               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
     fuel_tank_2.insulation.material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_2.xz_plane_symmetric                     = False
@@ -349,6 +455,10 @@ def non_conformal_lng_fuel_tank_volume_test():
     fuel_tank_1.tag                             = 'LNG_Fuel_Tank_1'
     fuel_tank_1.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas()
     fuel_tank_1.design_inlet_temperature        = 100
+    fuel_tank_1.design_altitude                 = 30000 * Units.ft
+    fuel_tank_1.design_heat_flux                = 20
+    fuel_tank_1.design_total_heat_transfer      = 2000
+    fuel_tank_1.ullage_volume_fraction          = 0.07
     fuel_tank_1.inner_structure.material        = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
     fuel_tank_1.insulation.material             = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_1.gravimetric_efficiency     = 0.5
@@ -363,6 +473,10 @@ def non_conformal_lng_fuel_tank_volume_test():
     fuel_tank_2.tag                           = 'LNG_Fuel_Tank_2'
     fuel_tank_2.fuel                          = RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas()
     fuel_tank_2.design_inlet_temperature      = 100
+    fuel_tank_2.design_altitude               = 30000 * Units.ft
+    fuel_tank_2.design_heat_flux              = 20
+    fuel_tank_2.design_total_heat_transfer    = 2000
+    fuel_tank_2.ullage_volume_fraction        = 0.07
     fuel_tank_2.inner_structure.material      = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
     fuel_tank_2.insulation.material           = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_2.gravimetric_efficiency        = 0.5

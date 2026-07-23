@@ -84,11 +84,9 @@ jobs:
             BASE_VERSION=${{ steps.base_version.outputs.version }}
             echo "Base Version: $BASE_VERSION"
             
-            # Remove dots and convert to integer for simple comparison
-            CURRENT_NUM=$(echo $CURRENT_VERSION | tr -d '.')
-            BASE_NUM=$(echo $BASE_VERSION | tr -d '.')
-            
-            if [ $CURRENT_NUM -le $BASE_NUM ]; then
+            # Use sort -V for proper semantic version comparison
+            if [ "$(printf '%s\n' "$CURRENT_VERSION" "$BASE_VERSION" | sort -V | tail -n1)" != "$CURRENT_VERSION" ] || \
+               [ "$CURRENT_VERSION" = "$BASE_VERSION" ]; then
               echo "Error: New version must be greater than base version"
               exit 1
             fi
@@ -99,6 +97,8 @@ jobs:
     name: Publish Package to PyPI
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+    permissions:
+      id-token: write
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -110,7 +110,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade build twine
+          python -m pip install --upgrade build
 
       - name: Prepare PyPI-Compatible README
         run: |
@@ -126,8 +126,4 @@ jobs:
           mv README_GitHub.md README.md
 
       - name: Publish to PyPI
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: |
-          twine upload dist/*
+        uses: pypa/gh-action-pypi-publish@release/v1

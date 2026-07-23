@@ -549,7 +549,7 @@ def vehicle_setup():
     net.systems.append(furnishings)
 
     #------------------------------------------------------------------------------------------------------------------------------------  
-    # Fuel Distrubition Line 
+    # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------------------  
     fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line() 
     
@@ -575,7 +575,8 @@ def vehicle_setup():
     turbofan                                        = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
     turbofan.tag                                    = 'outer_starboard_propulsor' 
     turbofan.origin                                 = [[26.429, 17.6, 0.2]] 
-    turbofan.length                                 = 7.92    
+    turbofan.length                                 = 4.92 
+    turbofan.diameter                               = 2.5   
     turbofan.bypass_ratio                           = 8  
     turbofan.design_altitude                        = 0*Units.ft
     turbofan.design_mach_number                     = 0.01

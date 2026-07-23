@@ -475,7 +475,7 @@ def vehicle_setup():
     net                                              = RCAIDE.Framework.Networks.Fuel()    
 
     #------------------------------------------------------------------------------------------------------------------------- 
-    # Fuel Distrubition Line 
+    # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
     fuel_line                                       = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
  
@@ -489,7 +489,9 @@ def vehicle_setup():
     starboard_propulsor.gearbox.efficiency           = 0.99                                             
     starboard_propulsor.design_thrust                = 15000.0 * Units.N 
     starboard_propulsor.design_altitude              = 25000*Units.ft                                
-    starboard_propulsor.design_freestream_velocity   = 270 * Units.kts  
+    starboard_propulsor.design_freestream_velocity   = 270 * Units.kts
+    starboard_propulsor.length                       = 2.0
+    starboard_propulsor.diameter                     = 0.60
 
      #Propeller Design              
     propeller                                        = RCAIDE.Library.Components.Powertrain.Converters.Propeller()   

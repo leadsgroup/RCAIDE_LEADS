@@ -26,11 +26,13 @@ vehicles_path = os.path.abspath(
 if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from NASA_X57    import vehicle_setup, configs_setup     
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ---------------------------------------------------------------------- 
 def main(): 
+    ti = time.time()
 
     current_dir = os.path.dirname(__file__)
     data_file = os.path.join(current_dir, 'LA_Metropolitan_Area.txt')
@@ -68,6 +70,10 @@ def main():
     print('Error: ',X57_diff_SPL)
     assert np.abs((X57_SPL - X57_SPL_true)/X57_SPL_true) < 1e-3 
      
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return      
 
 # ----------------------------------------------------------------------

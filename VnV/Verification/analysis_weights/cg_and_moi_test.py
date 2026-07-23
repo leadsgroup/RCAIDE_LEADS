@@ -28,7 +28,9 @@ from Lockheed_C5a           import vehicle_setup as transport_setup
 from Cessna_172             import vehicle_setup as general_aviation_setup
 from Stopped_Rotor_EVTOL    import vehicle_setup as EVTOL_setup
 from BWB                    import vehicle_setup as BWB_vehicle_setup
+import time
 def main(): 
+    ti = time.time()
     # make true only when resizing aircraft. should be left false for regression
     update_regression_values = False  
     Transport_Aircraft_Test()
@@ -44,6 +46,10 @@ def main():
     else:
         print("Skipping BWB_Test():\
             Shapely lacks 'maximum_inscribed_circle' support for Python < 3.11.")
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 def BWB_Test():
@@ -61,6 +67,10 @@ def BWB_Test():
     fuel_tank_1.tag                             = 'LNG_Fuel_Tank_1'
     fuel_tank_1.fuel                            = RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas()
     fuel_tank_1.design_inlet_temperature        = 100
+    fuel_tank_1.design_altitude                 = 30000 * Units.ft
+    fuel_tank_1.design_heat_flux                = 20
+    fuel_tank_1.design_total_heat_transfer      = 2000
+    fuel_tank_1.ullage_volume_fraction          = 0.07
     fuel_tank_1.inner_structure.material        = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
     fuel_tank_1.insulation.material             = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_1.gravimetric_efficiency          = 0.5
@@ -75,6 +85,10 @@ def BWB_Test():
     fuel_tank_2.tag                           = 'LNG_Fuel_Tank_2'
     fuel_tank_2.fuel                          = RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas()
     fuel_tank_2.design_inlet_temperature      = 100
+    fuel_tank_2.design_altitude               = 30000 * Units.ft
+    fuel_tank_2.design_heat_flux              = 20
+    fuel_tank_2.design_total_heat_transfer    = 2000
+    fuel_tank_2.ullage_volume_fraction        = 0.07
     fuel_tank_2.inner_structure.material      = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
     fuel_tank_2.insulation.material           = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_2.gravimetric_efficiency        = 0.5
@@ -104,10 +118,10 @@ def BWB_Test():
     print('BWB  OEW CG Mass Percentage: ' + str(mission_vehicle.mass_properties.OEW_CG_mass_percentage) + ' %')
     print('BWB  Moment of Inertia')
     print(computed_moi)
-    truth_OEW_CG_mass_percentage = 99.34
-    truth_moi = np.array([[ 3718367.96918734,  1217750.86758788,  -863024.23812853],
-                          [ 1217750.86758788, 13844895.97177752,    52136.11018868],
-                          [ -863024.23812853,    52136.11018868, 16390186.23977657]])
+    truth_OEW_CG_mass_percentage = 95.66
+    truth_moi = np.array([[ 3673194.85814275,  1408681.72257896,  -792445.12519905],
+                          [ 1408681.72257896, 12678162.42794893,    45141.97278135],
+                          [ -792445.12519905,    45141.97278135, 15212804.74026015]])
 
     error_moi = abs((computed_moi - truth_moi) / truth_moi)
     assert np.all(error_moi < 1e-2),\
@@ -141,10 +155,10 @@ def Transport_Aircraft_Test():
     print('Transport Moment of Inertia')
     print(MOI)
 
-    truth_OEW_CG_mass_percentage = 111.88
-    truth_moi  = np.array([[ 7317066.68118963,  -102481.15213347,    92929.8510052 ],
-                           [ -102481.15213347, 34562824.23910017,   210365.5831478 ],
-                           [   92929.8510052 ,   210365.5831478 , 37397106.90877086]])
+    truth_OEW_CG_mass_percentage = 99.32
+    truth_moi  = np.array([[ 7065324.68531665,   -37427.59065828,  -251815.96462790],
+                           [  -37427.59065828, 33603798.78999502,   111974.20695348],
+                           [ -251815.96462790,   111974.20695348, 36335240.25372727]])
 
     error_moi = abs((MOI - truth_moi) / np.where(truth_moi != 0, truth_moi, 1))
     assert np.all(error_moi < 1e-6),\
@@ -215,9 +229,9 @@ def EVTOL_Aircraft_Test(update_regression_values):
     print(MOI)
 
     truth_OEW_CG_mass_percentage = 86.35
-    truth_moi  = np.array([[ 9365.33138772,  -450.90746732,  -440.58026539],
-                           [ -450.90746732,  9156.50731552,   -99.75208906],
-                           [ -440.58026539,   -99.75208906, 16759.72413936]])
+    truth_moi  = np.array([[ 9365.33138772,  -432.66324662,  -320.31323661],
+                           [ -432.66324662,  9223.12124891,   -99.75208906],
+                           [ -320.31323661,   -99.75208906, 16826.33807276]])
 
     error_moi = abs((MOI - truth_moi) / truth_moi)
     assert np.all(error_moi < 5e-2),\
@@ -318,12 +332,12 @@ def BWB_base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Weights
     # ------------------------------------------------------------------
-    weights = RCAIDE.Framework.Analyses.Weights.Conventional_BWB() 
-    weights.aircraft_type                                                    = 'BWB'
-    weights.settings.FLOPS.fidelity                                          = 'Complex' 
-    weights.settings.run_weights_analysis                                    = True
-    weights.settings.run_center_of_gravity_analysis                          = True
-    weights.settings.run_moments_of_inertia_analysis                         = True
+    weights = RCAIDE.Framework.Analyses.Weights.Cryogenic_BWB()
+    weights.aircraft_type                                 = 'BWB'
+    weights.settings.FLOPS.fidelity                       = 'Complex' 
+    weights.settings.run_weights_analysis                 = True
+    weights.settings.run_center_of_gravity_analysis       = True
+    weights.settings.run_moments_of_inertia_analysis      = True
     weights.print_weight_analysis_report                  = False
     analyses.append(weights)
 
@@ -425,7 +439,7 @@ def EVTOL_base_analysis(vehicle):
     weights.settings.run_weights_analysis                = True
     weights.settings.run_center_of_gravity_analysis      = True
     weights.settings.run_moments_of_inertia_analysis     = True
-    weights.print_weight_analysis_report                  = False
+    weights.print_weight_analysis_report                 = False
     analyses.append(weights)
 
     return analyses

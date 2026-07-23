@@ -55,7 +55,7 @@ def plot_3d_vehicle(vehicle,
                     show_Cabin                  = True,
                     wing_opacity                = 0.5, 
                     fuselage_opacity            = 0.5,
-                    boom_opacity                = 1.0,
+                    boom_opacity                = 0.5,
                     nacelle_opacity             = 0.5,
                     fuel_tank_opacity           = 0.5,
                     lopa_opacity                = 1.0,
@@ -282,8 +282,10 @@ def plot_3d_vehicle(vehicle,
     for network in geometry.networks:
         for propulsor in network.propulsors:
 
-            if type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() or type(propulsor) == RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet():
-       
+            if type(propulsor) in (RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan,
+                                   RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet,
+                                   RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop):
+
                 GEOM = generate_3d_propulsor_points(propulsor, tessellation)
                 plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=propulsor_rgb_color, opacity=propulsor_opacity)
                 

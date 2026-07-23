@@ -266,7 +266,7 @@ def compute_wing_transverse_non_integral_tank_volume(fuel_tank, wing,fuel_tanks)
     # fuel tank C.G.
     fuel_tank.fuel.mass_properties.center_of_gravity = [[fuel_tank.lengths.external / 2, 0, 0]]
     fuel_tank.mass_properties.center_of_gravity      = [[fuel_tank.lengths.external / 2, 0, 0]]
-    if fuel_tank.orientation_euler_angles == [0., 0., np.pi/2]:
+    if np.allclose(fuel_tank.orientation_euler_angles, [0., 0., np.pi/2]):
         fuel_tank.fuel.mass_properties.center_of_gravity = [[fuel_tank.diameters.external / 2, 0, 0]]
         fuel_tank.mass_properties.center_of_gravity      = [[fuel_tank.diameters.external / 2, 0, 0]]
 
@@ -281,82 +281,3 @@ def compute_wing_transverse_non_integral_tank_volume(fuel_tank, wing,fuel_tanks)
     fuel_tank.fuel.mass_properties.moments_of_inertia.non_dimensional_tensor = compute_rounded_end_cylinder_non_dimensional_moi(fuel_tank.diameters.internal / 2, L_cyl_i)
 
     return
-
-
-def compute_largest_circle(x_points, z_upper, z_lower):
-    """
-    Computes the largest circle that can fit within a polygon defined by airfoil coordinates.
-
-    This function finds the optimal center point and radius for the largest possible circle
-    that fits within the polygon formed by the upper and lower airfoil surfaces. It uses
-    a grid search approach to find the best center location.
-
-    Parameters
-    ----------
-    x_points : array_like
-        X-coordinates of the airfoil points
-    z_upper : array_like
-        Z-coordinates of the upper airfoil surface
-    z_lower : array_like
-        Z-coordinates of the lower airfoil surface
-
-    Returns
-    -------
-    max_diameter : float
-        Diameter of the largest possible circle
-    x_center : float
-        X-coordinate of the circle center
-    z_center : float
-        Z-coordinate of the circle center
-
-    Notes
-    -----
-    The function creates a polygon from the airfoil coordinates and performs a grid search
-    within the polygon's bounding box to find the optimal circle center. The radius is
-    limited by the distance to the closest polygon edge.
-
-    **Major Assumptions**
-        * Airfoil coordinates form a valid polygon
-        * Grid resolution is sufficient for accurate results
-        * Polygon is simply connected
-
-    **Theory**
-
-    The largest circle is found by maximizing the radius r such that:
-    
-    .. math::
-        r = \\min_{i} d(p, e_i)
-
-    where p is the circle center and e_i are the polygon edges.
-
-    **Definitions**
-
-    'Inscribed Circle'
-        The largest circle that can fit completely within a given polygon
-    """
-
-    coords = list(zip(x_points, z_upper)) + list(zip(x_points[::-1], z_lower[::-1]))
-    poly   = Polygon(coords)
-
-    #scan a fine grid inside the polygon's bounding box to find the best center
-    minx, minz, maxx, maxz = poly.bounds
-    nx, nz = 200, 200  
-    xs = np.linspace(minx, maxx, nx)
-    zs = np.linspace(minz, maxz, nz)
-
-    best_r = 0.0
-    best_pt = None
-
-    for x in xs:
-        for z in zs:
-            p = Point(x, z)
-            if not poly.contains(p):
-                continue
-            # the radius is limited by the closest polygon edge
-            r = p.distance(poly.exterior)
-            if r > best_r:
-                best_r = r
-                best_pt = (x, z)
-    max_diameter = 2 * best_r
-    
-    return max_diameter , best_pt[0],best_pt[1]

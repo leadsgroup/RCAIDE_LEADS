@@ -27,12 +27,14 @@ vehicles_path = os.path.abspath(
 if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Navion    import vehicle_setup, configs_setup 
+import time
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 
 def main():
+    ti = time.time()
     
     new_regression_results = False  # Keep False, Only True when getting new results for regression 
 
@@ -49,6 +51,10 @@ def main():
     folder_name            = '_surrogate'
     AVL_Surrogate_Mission(use_surrogate,trim_aircraft,keep_regression_files,new_regression_results,folder_name)    
  
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
     
 def AVL_Surrogate_Mission(use_surrogate,trim_aircraft,keep_regression_files,new_regression_results,folder_name):

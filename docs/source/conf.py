@@ -18,8 +18,8 @@ sys.path.insert(0, os.path.abspath('../../RCAIDE'))  # RCAIDE directory
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath('.'))))  # Parent of docs
 
 project = 'RCAIDE'
-copyright = '2024, Laboratory for Electric Aircraft Design and Sustainability'
-author = ' Laboratory for Electric Aircraft Design and Sustainability'
+copyright = '2026, Laboratory for Emerging Aircraft Design and Systems'
+author = 'Laboratory for Emerging Aircraft Design and Systems'
 release = '1.0.0'
 
 # Add these lines for the logo
@@ -90,6 +90,9 @@ html_theme_options = {
     "navigation_depth": 3,
     'logo_only': True,
     'display_version': False,
+    "external_links": [
+        {"name": "RCAIDE Home", "url": "https://www.rcaide.leadsresearchgroup.com"},
+    ],
     "icon_links": [
         {
             "name": "GitHub",

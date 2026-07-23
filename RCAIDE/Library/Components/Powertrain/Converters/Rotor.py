@@ -381,7 +381,7 @@ class Rotor(Converter):
         rots       = np.repeat(rots[None,:], cpts, axis=0) 
         rots[:,1] += commanded_thrust_vector[:,0]
         
-        vehicle_2_prop_vec = sp.spatial.transform.Rotation.from_rotvec(rots).as_matrix()
+        vehicle_2_prop_vec = sp.spatial.transform.Rotation.from_euler('xyz', rots).as_matrix()
 
         # GO from the propeller vehicle frame to the propeller velocity frame: rot 2
         prop_vec_2_prop_vel = self.vec_to_vel()

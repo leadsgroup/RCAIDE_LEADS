@@ -40,19 +40,23 @@ from Stopped_Rotor_EVTOL    import configs_setup as  SR_configs_setup
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
-def main(): 
+def main():
+    ti = time.time()
     # make true only when resizing aircraft. should be left false for regression
     update_regression_values = False
-    
+
     # TEST 1
     tiltrotor_transition_test(update_regression_values)
-     
+
     # TEST 2
     tiltwing_transition_test(update_regression_values)
-    
+
     # TEST 3
     stopped_rotor_transition_test(update_regression_values)
-    
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 def tiltrotor_transition_test(update_regression_values): 

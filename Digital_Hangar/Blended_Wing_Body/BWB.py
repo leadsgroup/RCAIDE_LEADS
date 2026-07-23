@@ -106,8 +106,8 @@ def vehicle_setup():
     wing.aft_center_body.length  = 9.021    
     wing.aft_center_body.taper   = 0.85
     wing.total_length            = 32.4
-    wing.twists.outwash          = 0.055547748
-    wing.twists.root_twist       = 0.014967432
+    wing.twists.outwash          = -3*Units.degrees
+    wing.twists.root_twist       = 0
     wing.origin                  = [[0.0,  0.0,  0.0]] 
     wing.aerodynamic_center      = [17.43511294,  0.        ,  1.08931241] 
     wing.vertical                = False
@@ -233,7 +233,7 @@ def vehicle_setup():
     segment.tag                                    = 'Wing_Section_1' 
     segment.percent_span_location                  = 0.3346858066654701/  wing.spans.projected*64
     segment.twist                                  = wing.twists.root_twist  +  segment.percent_span_location * wing.twists.outwash 
-    segment.root_chord_percent                     = 0.27 
+    segment.root_chord_percent                     = 0.2 
     segment.dihedral_outboard                      = 1 *  Units.degrees 
     segment.sweeps.quarter_chord                   = 0.610554743 #0.557707107
     airfoil                                        =  RCAIDE.Library.Components.Airfoils.Airfoil()
@@ -408,11 +408,44 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------- 
     #  Turbofan Network
     #-------------------------------------------------------------------------------------------------------------------------   
-    net                                         = RCAIDE.Framework.Networks.Fuel() 
+    net                                         = RCAIDE.Framework.Networks.Fuel()
 
-    #------------------------------------------------------------------------------------------------------------------------- 
-    # Fuel Distrubition Line 
-    #------------------------------------------------------------------------------------------------------------------------- 
+    ##  Systems
+    avionics =  RCAIDE.Library.Components.Powertrain.Systems.Avionics()
+    avionics.origin                   = [[3,0,0]]
+    net.systems.append(avionics)
+
+    flight_controls =  RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
+    flight_controls.origin            = [[14,0,0]]
+    net.systems.append(flight_controls)
+
+    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
+    auxillary_power_unit.origin       = [[29,0,0]]
+    net.systems.append(auxillary_power_unit)
+
+    electrical =  RCAIDE.Library.Components.Powertrain.Systems.Electrical()
+    electrical.origin                 = [[13,0,0]]
+    net.systems.append(electrical)
+
+    hydraulics =  RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
+    hydraulics.origin                 = [[14,0,0]]
+    net.systems.append(hydraulics)
+
+    environmental_controls =  RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
+    environmental_controls.origin     = [[13,0,-0.5]]
+    net.systems.append(environmental_controls)
+
+    instruments =  RCAIDE.Library.Components.Powertrain.Systems.Instruments()
+    instruments.origin                = [[13,0,0]]
+    net.systems.append(instruments)
+
+    furnishings = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
+    furnishings.origin                = [[15,0,0]]
+    net.systems.append(furnishings)
+
+    #-------------------------------------------------------------------------------------------------------------------------
+    # Fuel Distribution Line
+    #-------------------------------------------------------------------------------------------------------------------------
     fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
     #------------------------------------------------------------------------------------------------------------------------------------ 
     # Propulsor

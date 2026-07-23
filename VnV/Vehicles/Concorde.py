@@ -418,7 +418,7 @@ def vehicle_setup():
     net.propulsors.identical_propulsors            = True 
     
     #------------------------------------------------------------------------------------------------------------------------------------  
-    # Fuel Distrubition Line 
+    # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------------------  
     fuel_line                                     = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
 

@@ -302,7 +302,7 @@ class Ducted_Fan(Converter):
         rots       = np.repeat(rots[None,:], cpts, axis=0) 
         rots[:,1] += commanded_thrust_vector[:,0] 
         
-        vehicle_2_duct_vec = sp.spatial.transform.Rotation.from_rotvec(rots).as_matrix()
+        vehicle_2_duct_vec = sp.spatial.transform.Rotation.from_euler('xyz', rots).as_matrix()
 
         # GO from the ducted fan vehicle frame to the ducted fan velocity frame: rot 2
         duct_vec_2_duct_vel = self.vec_to_vel()

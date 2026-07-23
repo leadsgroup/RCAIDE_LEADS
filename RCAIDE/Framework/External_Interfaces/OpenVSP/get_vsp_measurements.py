@@ -20,7 +20,6 @@ except ImportError:
         pass
 import numpy as np
 import os
-import sys
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Get VSP Measurements
@@ -65,10 +64,7 @@ def get_vsp_measurements(filename = 'Unnamed_CompGeom.csv', measurement_type = '
         print('VSP import failed')
         return -1
 
-    # Get the last path from sys.path
-    system_path = sys.path[0]
-    # Append the system path to the filename
-    filename = os.path.join(system_path, filename)
+    filename = os.path.abspath(filename)
     vsp.SetComputationFileName(file_type, filename)
     vsp.ComputeCompGeom(vsp.SET_ALL, half_mesh, file_type)
     

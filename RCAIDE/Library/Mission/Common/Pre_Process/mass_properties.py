@@ -158,8 +158,8 @@ def mass_properties_preprocess_routine(segment, i = 0):
         # ---------------------------------------------------------------------------------------------------------------------------
         # STEP 3: Run weights analysis 
         # ---------------------------------------------------------------------------------------------------------------------------         
-        if analyses.vehicle.mass_properties.payload > analyses.vehicle.mass_properties.max_payload:
-            print('Warning:Prescribed payload weight is greater than maxmimum payload weight')
+        if i == 0 and analyses.vehicle.mass_properties.payload > analyses.vehicle.mass_properties.max_payload:
+            print('Warning: Prescribed payload weight is greater than maximum payload weight')
         if weights_analysis.settings.iterate_mtow:
             solve_for_mtow(analyses, weights_analysis, i)
             
@@ -172,8 +172,8 @@ def mass_properties_preprocess_routine(segment, i = 0):
             
             _ = weights_analysis.evaluate(analyses.vehicle) 
 
-            if analyses.vehicle.mass_properties.payload > analyses.vehicle.mass_properties.max_payload:
-                print('Warning: Computed payload weight is greater than maxmimum payload weight')        
+            if i == 0 and analyses.vehicle.mass_properties.payload > analyses.vehicle.mass_properties.max_payload:
+                print('Warning: Computed payload weight is greater than maximum payload weight')        
             
             # Compute OEW
             if weights_analysis.settings.overwrite_operating_empty_weight:
@@ -280,9 +280,13 @@ def iterate_max_fuel_and_max_zero_fuel(analyses, max_iterations=100):
         
         residual_max_fuel = 0
         if compute_max_fuel:
-            new_max_fuel  = analyses.vehicle.mass_properties.max_takeoff - analyses.vehicle.mass_properties.operating_empty - analyses.vehicle.mass_properties.min_payload
-            residual_max_fuel =  abs(new_max_fuel - analyses.vehicle.mass_properties.max_fuel) 
-            analyses.vehicle.mass_properties.max_fuel = new_max_fuel                
+            new_max_fuel       = analyses.vehicle.mass_properties.max_takeoff - analyses.vehicle.mass_properties.operating_empty - analyses.vehicle.mass_properties.min_payload
+            fuel_density       = next((ft.fuel.density for network in analyses.vehicle.networks for fl in network.fuel_lines for ft in fl.fuel_tanks), None)
+            if fuel_density is not None:
+                max_fuel_by_volume = analyses.vehicle.volume_properties.max_fuel * fuel_density
+                new_max_fuel       = min(new_max_fuel, max_fuel_by_volume)
+            residual_max_fuel  = abs(new_max_fuel - analyses.vehicle.mass_properties.max_fuel)
+            analyses.vehicle.mass_properties.max_fuel = new_max_fuel
         
         iteration += 1
         if residual_max_fuel < 1 and residual_max_zero_fuel <1:

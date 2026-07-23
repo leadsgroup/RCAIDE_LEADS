@@ -405,7 +405,7 @@ def vehicle_setup():
     flight_controls.origin            = [[6,0,0]]
     net.systems.append(flight_controls)
 
-    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit()
+    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
     auxillary_power_unit.origin       = [[25,0,0]]
     net.systems.append(auxillary_power_unit)
 
@@ -430,7 +430,7 @@ def vehicle_setup():
     net.systems.append(furnishings)
 
     #------------------------------------------------------------------------------------------------------------------------- 
-    # Fuel Distrubition Line 
+    # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
     fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()   
 
@@ -562,6 +562,10 @@ def vehicle_setup():
     fuel_tank_1.tag                                    = 'tank_1l_1r'
     fuel_tank_1.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     fuel_tank_1.design_inlet_temperature               = 20
+    fuel_tank_1.design_altitude                        = 40000.0 * Units.feet
+    fuel_tank_1.design_heat_flux                       = 20
+    fuel_tank_1.design_total_heat_transfer             = 2000
+    fuel_tank_1.ullage_volume_fraction                 = 0.07
     fuel_tank_1.inner_structure.material               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
     fuel_tank_1.insulation.material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_1.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']
@@ -573,6 +577,10 @@ def vehicle_setup():
     fuel_tank_2.tag                                    = 'tank_2l_2r'
     fuel_tank_2.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     fuel_tank_2.design_inlet_temperature               = 20
+    fuel_tank_2.design_altitude                        = 40000.0 * Units.feet
+    fuel_tank_2.design_heat_flux                       = 20
+    fuel_tank_2.design_total_heat_transfer             = 2000
+    fuel_tank_2.ullage_volume_fraction                 = 0.07
     fuel_tank_2.inner_structure.material               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
     fuel_tank_2.insulation.material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_2.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']
@@ -584,6 +592,10 @@ def vehicle_setup():
     fuel_tank_3.tag                                    = 'tank_3l_3r'
     fuel_tank_3.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     fuel_tank_3.design_inlet_temperature               = 20
+    fuel_tank_3.design_altitude                        = 40000.0 * Units.feet
+    fuel_tank_3.design_heat_flux                       = 20
+    fuel_tank_3.design_total_heat_transfer             = 2000
+    fuel_tank_3.ullage_volume_fraction                 = 0.07 
     fuel_tank_3.inner_structure.material               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
     fuel_tank_3.insulation.material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
     fuel_tank_3.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']
@@ -609,13 +621,17 @@ def vehicle_setup():
         fuel_tank_4.tag                                    = 'aft_tank'
         fuel_tank_4.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
         fuel_tank_4.design_inlet_temperature               = 20
+        fuel_tank_4.design_altitude                        = 40000.0 * Units.feet
+        fuel_tank_4.design_heat_flux                       = 20
+        fuel_tank_4.design_total_heat_transfer             = 2000
+        fuel_tank_4.ullage_volume_fraction                 = 0.07
         fuel_tank_4.inner_structure.material               = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
         fuel_tank_4.insulation.material                    = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
         fuel_tank_4.xz_plane_symmetric                     = False
         fuel_tank_4.orientation_euler_angles               = [0,0,np.pi/2]
         fuel_tank_4.transverse_tank                        = True
-        fuel_tank_4.transverse_tank_chord_bounds             = [cabin_bound,rotor_burst_bound]
-        fuel_tank_4.transverse_tank_segment_bound                 = aft_segment_bound
+        fuel_tank_4.transverse_tank_chord_bounds           = [cabin_bound,rotor_burst_bound]
+        fuel_tank_4.transverse_tank_segment_bound          = aft_segment_bound
         fuel_tank_4.radial_offset                          = 0.1
         fuel_line.fuel_tanks.append(fuel_tank_4)
 

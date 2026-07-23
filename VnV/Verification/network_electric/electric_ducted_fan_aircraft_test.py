@@ -27,12 +27,14 @@ if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from NASA_X48    import vehicle_setup as vehicle_setup
 from NASA_X48    import configs_setup as configs_setup 
+import time
 
 # ----------------------------------------------------------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------------------------------------------------------
 
 def main():
+    ti = time.time()
 
     regression_flag = True # Keep True for regression 
     ducted_fan_type  = ['Blade_Element_Momentum_Theory', 'Rankine_Froude_Momentum_Theory']
@@ -81,6 +83,10 @@ def main():
         for k,v in list(error.items()):
             assert(np.abs(v)<1e-5) 
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
 
 # ----------------------------------------------------------------------

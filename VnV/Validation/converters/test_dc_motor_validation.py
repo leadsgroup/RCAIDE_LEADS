@@ -11,6 +11,7 @@ from   RCAIDE.Library.Methods.Powertrain                  import setup_operating
 from   RCAIDE.Library.Methods.Powertrain.Converters       import Motor
 import matplotlib.pyplot as plt
 import numpy as np
+import time
 
 #----------------------------------------------------------------------
 #   Reference Values
@@ -22,6 +23,7 @@ import numpy as np
 #   Main
 # ----------------------------------------------------------------------
 def main(): 
+    ti = time.time()
 
     plot_flag = False
 
@@ -71,6 +73,11 @@ def main():
     print("\nError in Current [%]:", error)
     assert error < 10
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
+    return
 def plot_power_and_torque(x_current, y_current, x_rpm, y_rpm, motor_torque_vector, motor_current, motor_rpm_vector):
     
     fig, ax1 = plt.subplots(figsize=(10, 5))

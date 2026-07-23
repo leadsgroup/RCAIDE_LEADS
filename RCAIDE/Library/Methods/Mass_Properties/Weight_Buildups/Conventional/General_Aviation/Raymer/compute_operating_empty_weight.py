@@ -247,18 +247,29 @@ def compute_operating_empty_weight(vehicle, settings=None):
     output                                    = Data()
     output.empty                              = Data()
     output.empty.structural                   = Data()
-    output.empty.structural.wings             = W_wing +  W_tail_horizontal + W_tail_vertical 
+    output.empty.structural.wings             = W_wing  
     output.empty.structural.fuselage          = W_fuselage
-    output.empty.structural.landing_gear      = W_landing_gear.main +  W_landing_gear.nose 
+    output.empty.structural.empennage         = W_tail_horizontal + W_tail_vertical
+    output.empty.structural.landing_gear      = W_landing_gear.main +  W_landing_gear.nose
     output.empty.structural.nacelle           = 0
-    output.empty.structural.paint             = 0  
+    output.empty.structural.booms             = 0
+    output.empty.structural.paint             = 0
     output.empty.structural.total             = output.empty.structural.wings \
-                                                     + output.empty.structural.fuselage  + output.empty.structural.landing_gear \
+                                                     + output.empty.structural.fuselage + output.empty.structural.empennage \
+                                                     + output.empty.structural.landing_gear \
                                                      + output.empty.structural.paint + output.empty.structural.nacelle
           
     output.empty.propulsion                   = Data()
     output.empty.propulsion.total             = W_energy_network_cumulative
+    output.empty.propulsion.engines           = 0
+    output.empty.propulsion.thrust_reversers  = 0
+    output.empty.propulsion.miscellaneous     = 0
     output.empty.propulsion.fuel_system       = W_systems.W_fuel_system
+    output.empty.propulsion.fuel_tanks        = 0
+    output.empty.propulsion.electrical_cabling = 0
+    output.empty.propulsion.thermal_management = 0
+    output.empty.propulsion.battery           = 0
+    output.empty.propulsion.motors            = 0
   
     output.empty.systems                      = Data()
     output.empty.systems.control_systems      = W_systems.W_flight_control
@@ -279,12 +290,14 @@ def compute_operating_empty_weight(vehicle, settings=None):
     output.payload                                = Data()
     output.payload                                = W_payload
     output.operational_items                      = Data()
-    output.operational_items.oper_items           = 0
+    output.operational_items.misc                 = 0
     output.operational_items.flight_crew          = 0
     output.operational_items.flight_attendants    = 0
+    output.operational_items.passenger_service    = 0
     output.operational_items.total                = 0
 
     output.empty.total      = output.empty.structural.total + output.empty.propulsion.total + output.empty.systems.total + output.operational_items.total
     output.zero_fuel_weight = output.empty.total + output.payload.total
+    output.max_takeoff      = vehicle.mass_properties.max_takeoff
 
     return output

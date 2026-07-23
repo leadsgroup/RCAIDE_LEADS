@@ -468,7 +468,7 @@ def vehicle_setup():
     flight_controls.origin            = [[25,0,0]]  
     vehicle.append_component(flight_controls)
     
-    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxillary_Power_Unit()  
+    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()  
     auxillary_power_unit.origin       = [[35,0,0]] 
     vehicle.append_component(auxillary_power_unit)
 
@@ -496,7 +496,7 @@ def vehicle_setup():
     net                                         = RCAIDE.Framework.Networks.Fuel() 
     
     #------------------------------------------------------------------------------------------------------------------------------------  
-    # Fuel Distrubition Line 
+    # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------------------  
     fuel_line                                      = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
     fuel_line.pipe.rigid_material                  = RCAIDE.Library.Attributes.Materials.Aluminum()

@@ -218,7 +218,7 @@ def vehicle_setup():
     cabin.origin                                      =  [[2, 0, 0]]
     economy_class                                     = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
     economy_class.number_of_seats_abrest              = 2
-    economy_class.number_of_rows                      = 3 
+    economy_class.number_of_rows                      = 1 
     economy_class.aisle_width                         = 0 
     economy_class.galley_lavatory_percent_x_locations = []  
     economy_class.emergency_exit_percent_x_locations  = []      
@@ -240,7 +240,8 @@ def vehicle_setup():
     fuselage.areas.side_projected               = 8000.  * Units.inches**2.
     fuselage.areas.wetted                       = 22.36
     fuselage.areas.front_projected              = 1.35 * Units.meters**2.
-    fuselage.effective_diameter                 = 50. * Units.inches 
+    fuselage.effective_diameter                 = 50. * Units.inches
+    fuselage.operational_items.origin            = [[fuselage.lengths.total * 0.6, 0, 0]]
 
     # Segment
     segment                                     = RCAIDE.Library.Components.Fuselages.Segments.Segment()
@@ -366,15 +367,17 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------           
     # Battery
     #------------------------------------------------------------------------------------------------------------------------------------  
-    bat                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC() 
-    bat.tag                                                = 'li_ion_battery'
-    bat.electrical_configuration.series                    = 30   
-    bat.electrical_configuration.parallel                  = 40
-    bat.geometric_configuration.normal_count              = 30
-    bat.geometric_configuration.parallel_count            = 40
-     
-    for _ in range(8):
-        bus.battery_modules.append(deepcopy(bat))      
+    module                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC() 
+    module.tag                                                = 'li_ion_battery'
+    module.electrical_configuration.series                    = 30   
+    module.electrical_configuration.parallel                  = 20
+    module.geometric_configuration.normal_count               = 30
+    module.geometric_configuration.parallel_count             = 20 
+    module.geometric_configuration.stacking_rows              = 12   
+    for i in range(8):
+        bat_module = deepcopy(module)
+        bat_module.origin = [[3+i*0.15, 0, 0.4]]
+        bus.battery_modules.append(bat_module)      
     bus.initialize_bus_properties()      
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Starboard Propulsor

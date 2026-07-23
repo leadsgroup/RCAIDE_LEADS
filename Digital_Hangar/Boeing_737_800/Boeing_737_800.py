@@ -191,7 +191,8 @@ def vehicle_setup():
     segment.sweeps.quarter_chord          = 56.75 * Units.degrees 
     segment.thickness_to_chord            = 0.14
     segment.append_airfoil(tip_airfoil)
-    wing.append_segment(segment) 
+    wing.append_segment(segment)
+    
     
 
     # control surfaces -------------------------------------------
@@ -553,7 +554,7 @@ def vehicle_setup():
     #  Turbofan Network
     #-------------------------------------------------------------------------------------------------------------------------   
     net                                           = RCAIDE.Framework.Networks.Fuel() 
-        #------------------------------------------------------------------------------------------------------------------------------------ 
+    #------------------------------------------------------------------------------------------------------------------------------------ 
     # Systems 
     #------------------------------------------------------------------------------------------------------------------------------------  
     avionics = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
@@ -561,11 +562,11 @@ def vehicle_setup():
     net.systems.append(avionics)
 
     flight_controls = RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
-    flight_controls.origin            = [[36.5, 0, 0]]
+    flight_controls.origin            = [[30.0, 0, 0]]
     net.systems.append(flight_controls)
 
     auxiliary_power_unit = RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
-    auxiliary_power_unit.origin       = [[70.9, 0, 0]]
+    auxiliary_power_unit.origin       = [[36.5, 0, 0]]
     net.systems.append(auxiliary_power_unit)
 
     electrical = RCAIDE.Library.Components.Powertrain.Systems.Electrical()
@@ -573,7 +574,7 @@ def vehicle_setup():
     net.systems.append(electrical)
 
     hydraulics = RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
-    hydraulics.origin                 = [[36.5, 0, -0.8]]
+    hydraulics.origin                 = [[28.0, 0, -0.8]]
     net.systems.append(hydraulics)
 
     environmental_controls = RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
@@ -585,13 +586,26 @@ def vehicle_setup():
     net.systems.append(instruments)
 
     furnishings = RCAIDE.Library.Components.Powertrain.Systems.Furnishings()
-    furnishings.origin                = [[36.5, 0, 0]]
+    furnishings.origin                = [[26.0, 0, 0]]
     net.systems.append(furnishings)
-    
+
     #------------------------------------------------------------------------------------------------------------------------- 
     # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
     fuel_line                                      = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
+    fuel_line.pipe.rigid_material                  = RCAIDE.Library.Attributes.Materials.Aluminum()
+    fuel_line.pipe.flexible_material               = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304()
+    fuel_line.pipe.flexible_material_ratio         = 0.25
+    fuel_line.pipe.diameters                       = Data()
+    fuel_line.pipe.diameters.external              = 0.625 *  Units.inches 
+    fuel_line.pipe.diameters.internal              = 0.625 *  Units.inches -  (2 * 0.035)*  Units.inches
+    fuel_line.insulation                           = Data()
+    fuel_line.insulation.rigid_material            = RCAIDE.Library.Attributes.Materials.Aluminum() 
+    fuel_line.insulation.flexible_material         = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304() 
+    fuel_line.insulation.flexible_material_ratio   = 0.25
+    fuel_line.insulation.diameters                 = Data()
+    fuel_line.insulation.diameters.external        = 0.0
+    fuel_line.insulation.diameters.internal        = 0.0
     
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor: Starboard Propulsor

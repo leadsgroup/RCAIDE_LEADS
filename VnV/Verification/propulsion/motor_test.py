@@ -27,13 +27,19 @@ vehicles_path = os.path.abspath(
 if vehicles_path not in sys.path:
     sys.path.insert(0, vehicles_path)
 from Test_Propeller    import Test_Propeller   
+import time
  
 def main():
+    ti = time.time()
     
     forward_mode_model()
     
     inverse_mode_model()
     
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return 
     
 def forward_mode_model():

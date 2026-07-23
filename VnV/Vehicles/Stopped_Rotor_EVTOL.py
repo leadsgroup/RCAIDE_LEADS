@@ -261,7 +261,8 @@ def vehicle_setup(new_regression=True) :
 
     # define cabin    
     cabin                                       = RCAIDE.Library.Components.Fuselages.Cabins.Cabin()
-    cabin.origin                                = [[1, 0, 0]] 
+    cabin.origin                                = [[1, 0, 0]]
+    cabin.filled_seats_arrangement              = 'ascending'
     economy_class                               = RCAIDE.Library.Components.Fuselages.Cabins.Classes.Economy() 
     economy_class.number_of_seats_abrest        = 2
     economy_class.number_of_rows                = 3 
@@ -757,7 +758,7 @@ def vehicle_setup(new_regression=True) :
         propulsor_i.tag                                   = 'lift_propulsor_' + str(i + 1)
         propulsor_i.rotor.tag                             = 'lift_rotor_' + str(i + 1) 
         propulsor_i.rotor.origin                          = [origins[i]] 
-        propulsor_i.rotor.orientation_euler_angle         = orientation_euler_angles[i]
+        propulsor_i.rotor.orientation_euler_angles         = orientation_euler_angles[i]
         propulsor_i.motor.tag                             = 'lift_rotor_motor_' + str(i + 1)   
         propulsor_i.motor.origin                          = [origins[i]]  
         propulsor_i.electronic_speed_controller.tag       = 'lift_rotor_esc_' + str(i + 1)  

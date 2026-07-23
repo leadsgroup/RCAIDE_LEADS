@@ -26,6 +26,7 @@ from RCAIDE.Library.Plots import *
 base_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.abspath(os.path.join(os.path.join(sys.path[0]), "../../Vehicles"))) 
 from CRM import vehicle_setup as CRM_setup
+import time
 
 # ----------------------------------------------------------------------
 #   Experimental Reference Data (Mach ~0.85, Re ~5e7)
@@ -94,12 +95,17 @@ TRUTH_VALUES = {
 # ----------------------------------------------------------------------
 
 def main():
+    ti = time.time()
     update_regression = False
     vehicle    = CRM_setup()
     results    = run_aero_analysis(vehicle)
     paper_data = pd.read_csv(StringIO(raw_data_paper), sep='\t')
     plot_drag_validation(results, paper_data)
     check_truth_values(results)
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return
 
 
@@ -263,20 +269,6 @@ def run_aero_analysis(vehicle):
                                     - results_data['Induced Drag']
                                     - results_data['Wave Drag'])
 
-
-    # Run VLM - Non-Surrogate
-    analyses.aerodynamics.settings.use_surrogate =  False
-    results_non_surrogate = aircraft_aerodynamic_analysis(
-        analyses                         = analyses,
-        angle_of_attacks                 = AoAs,
-        mach_numbers                     = Machs,
-        non_dimensional_reynolds_numbers = Non_Dim_Res,
-        temperatures                     = Ts,
-    )
-    
-    # Plot surface pressure coefficient
-    plot_pressure_coefficient_distribution(results_non_surrogate)
-    
     return results_data
 
 

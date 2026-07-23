@@ -26,12 +26,14 @@ if vehicles_path not in sys.path:
 # the analysis functions 
  
 from Cessna_172  import vehicle_setup ,configs_setup
+import time
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  REGRESSION
 # ----------------------------------------------------------------------------------------------------------------------  
 def main():   
+    ti = time.time()
     
     # vehicle data
     vehicle  = vehicle_setup() 
@@ -73,6 +75,10 @@ def main():
     for k,v in list(error.items()):
         assert(np.abs(v)<1e-3)
 
+
+    elapsed_time = time.time() - ti
+    elapsed_time_min = elapsed_time / 60
+    print('Elapsed time (min): ', elapsed_time_min)
     return    
 
 
