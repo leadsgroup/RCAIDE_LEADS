@@ -280,32 +280,32 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     Cp_rotor  = power  / (rho_0 * A * (np.abs(omega)*R)**3)
     Crd       = rotor_drag/(rho_0*(n**2)*(D**4))
     etap      = V*thrust/power
-    FoM       = thrust*np.sqrt(thrust/(2*rho_0*A))/power
+    FM       = thrust*np.sqrt(thrust/(2*rho_0*A))/power
 
     # prevent things from breaking
-    thrust[omega==0.0]         = 0.
-    power[omega==0.0]          = 0.
-    torque[omega==0.0]         = 0.
-    rotor_drag[omega==0.0]     = 0.
-    Ct[omega==0.0]             = 0.
-    Ct_rotor[omega==0.0]       = 0.
-    Cp[omega==0.0]             = 0.
-    Cp_rotor[omega==0.0]       = 0.
-    Cq[omega==0.0]             = 0.
-    Cq_rotor[omega==0.0]       = 0.
-    etap[omega==0.0]           = 0.
+    thrust[omega==0.0]             = 0.
+    power[omega==0.0]              = 0.
+    torque[omega==0.0]             = 0.
+    rotor_drag[omega==0.0]         = 0.
+    Ct[omega==0.0]                 = 0.
+    Ct_rotor[omega==0.0]           = 0.
+    Cp[omega==0.0]                 = 0.
+    Cp_rotor[omega==0.0]           = 0.
+    Cq[omega==0.0]                 = 0.
+    Cq_rotor[omega==0.0]           = 0.
+    etap[omega==0.0]               = 0.
 
-    thrust[eta[:,0]  <=0.0]    = 0.
-    power[eta[:,0]   <=0.0]    = 0.
-    torque[eta[:,0]  <=0.0]    = 0.  
-    power[eta>1.0]             = power[eta>1.0]*eta[eta>1.0]
-    thrust[eta[:,0]>1.0,:]     = thrust[eta[:,0]>1.0,:]*eta[eta[:,0]>1.0,:] 
+    thrust[eta[:,0]  <=0.0]        = 0.
+    power[eta[:,0]   <=0.0]        = 0.
+    torque[eta[:,0]  <=0.0]        = 0.  
+    power[eta>1.0]                 = power[eta>1.0]*eta[eta>1.0]
+    thrust[eta[:,0]>1.0,:]         = thrust[eta[:,0]>1.0,:]*eta[eta[:,0]>1.0,:] 
 
-    disc_loading              = thrust/(np.pi*(R**2))
-    disc_loading[omega==0.0]  = 0.
+    disc_loading                   = thrust/(np.pi*(R**2))
+    disc_loading[omega==0.0]       = 0.
 
-    power_loading             = thrust/(power)
-    power_loading[omega==0.0] = 0.
+    power_loading                  = thrust/(power)
+    power_loading[omega==0.0]      = 0.
     power_loading[eta[:,0]  <=0.0] = 0.
 
     # FM/Ct_sigma are hover-only metrics; power/disc loading are the forward-flight equivalent --
@@ -315,7 +315,7 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     mu_edgewise_threshold = wake_inputs.get('mu_edgewise_threshold', 1e-2)
     hover_mask            = mu < mu_edgewise_threshold
     if np.any(hover_mask):
-        print("FM: ", FoM[hover_mask], ", Ct_sigma: ", Ct_sigma[hover_mask])
+        print("FM: ", FM[hover_mask], ", Ct_sigma: ", Ct_sigma[hover_mask])
     if np.any(~hover_mask):
         N_per_lbf   = 4.4482216152605
         W_per_hp    = 745.6998715822702
@@ -325,7 +325,7 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
 
     advance_ratio                   = V/(n*D) 
     advance_ratio[omega==0.0]       = 0.
-    advance_ratio_rotor              = np.sqrt(V_thrust[:,1,None]**2+V_thrust[:,2,None]**2)/(omega*R)
+    advance_ratio_rotor             = np.sqrt(V_thrust[:,1,None]**2+V_thrust[:,2,None]**2)/(omega*R)
     advance_ratio_rotor[omega==0.0] = 0.
 
     # Make the thrust a 3D vector
@@ -398,7 +398,7 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
                 rotor_drag_coefficient            = Crd,
                 blade_pitch_command               = pitch_c,
                 commanded_thrust_vector_angle     = commanded_TV, 
-                figure_of_merit                   = FoM, 
+                figure_of_merit                   = FM, 
         )  
 
     return 

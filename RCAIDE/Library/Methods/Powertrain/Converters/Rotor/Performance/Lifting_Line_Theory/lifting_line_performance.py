@@ -4,12 +4,14 @@
 #
 # References
 # ----------
-# [1] J. Katz and A. Plotkin, Low-Speed Aerodynamics, 2nd ed., Cambridge University Press, 2001.
-# [2] W. Johnson, Rotorcraft Aeromechanics, Cambridge University Press, 2013.
-# [3] A.J. Landgrebe, JAHS Vol. 17 No. 4, 1972.
-# [4] J.D. Kocurek and J.L. Tangler, JAHS Vol. 22 No. 1, 1977.
-# [5] Beddoes, ....
-# [6] van der Wall, ....
+# [1] Landgrebe, A.J., JAHS Vol. 17 No. 4, 1972.
+# [2] Kocurek, J.D. and Tangler, J.L., JAHS Vol. 22 No. 1, 1977.
+# [3] W. Johnson, Rotorcraft Aeromechanics, Cambridge University Press, 2013.
+# [4] J. G. Leishman, Principles of Helicopters, Cambridge University Press, 2006.
+# [5] Beddoes, T.S., "A Wake Model for High Resolution Airloads," 2nd International Conference
+#     on Basic Rotorcraft Research, Research Triangle Park, NC, 1985.
+# [6] van der Wall, B. G., "The Effect of HHC on the Vortex Convection in the Wake of a
+#     Helicopter Rotor," Aerospace Science and Technology, 4 (2000), pp. 321-336.
 
 
 import numpy as np
