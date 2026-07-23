@@ -254,13 +254,6 @@ def plot_3d_vehicle(vehicle,
             lopa_geom = generate_3d_lopa_points(fuselage)
             add_lopa_seats(plotter, lopa_geom, lopa_opacity)
 
-    # -------------------------------------------------------------------------
-    # Plot systems
-    # -------------------------------------------------------------------------
-    for system in vehicle.systems:
-        if isinstance(system, Component):
-            GEOM = generate_3d_cuboid_points(system)
-            plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=system_rgb_color, opacity=systems_opacity)
 
     # -------------------------------------------------------------------------
     # Plot cargo bay
@@ -280,6 +273,15 @@ def plot_3d_vehicle(vehicle,
     # Plot Nacelle, Rotors and Fuel Tanks
     # -------------------------------------------------------------------------
     for network in geometry.networks:
+        # -------------------------------------------------------------------------
+        # Plot systems
+        # -------------------------------------------------------------------------
+        for system in network.systems:
+            if isinstance(system, Component):
+                GEOM = generate_3d_cuboid_points(system)
+                plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=system_rgb_color, opacity=systems_opacity)
+
+
         for propulsor in network.propulsors:
 
             if type(propulsor) in (RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan,
