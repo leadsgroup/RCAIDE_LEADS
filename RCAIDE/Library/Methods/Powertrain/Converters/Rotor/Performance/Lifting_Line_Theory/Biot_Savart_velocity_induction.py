@@ -113,20 +113,17 @@ def biot_savart_velocity_induction(P, A, B, rc=1e-6, vc_correction=1, tol=1e-6):
     f = 1 
 
     # Vortex core correction
-    if   vc_correction == 1: # Standard method
+    if   vc_correction == 1: # Standard/Scully method 
         denom = rm_sq + rc_sq
 
     elif vc_correction == 2: # Rankine method
         f = np.minimum(rm_sq/rc_sq[np.newaxis, :],1)
 
-    elif vc_correction == 3: # Scully method
-        f = rm_sq/(rm_sq+rc_sq[np.newaxis, :])
-
-    elif vc_correction == 4: # Vatistas method
+    elif vc_correction == 3: # Vatistas method
         rc_qd = np.atleast_1d(rc)**4
         f = rm_sq/np.sqrt(rm_sq**2+rc_qd[np.newaxis, :])
         
-    elif vc_correction == 5: # Oseen method
+    elif vc_correction == 4: # Oseen method
         a = 1.25643
         f = 1 - np.exp(-a*rm_sq/rc_sq[np.newaxis, :])
 

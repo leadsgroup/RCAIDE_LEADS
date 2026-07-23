@@ -86,7 +86,7 @@ def lifting_line_performance(rotor, conditions):
         wake_inputs.include_wake                 = True
         wake_inputs.wake_model_hov               = 1                 # 1 simple model, 2 landgrebe, 3 landgrebe KT
         wake_inputs.wake_model_FF                = 5                 # 4 undisorted, 5 Beddoes distorted, 6 Modified Beddoes distorted
-        wake_inputs.vc_correction                = 1                 # vortex core factor, 1 standard Rankine, 2 Rankine, 3, scully, 4 Vatistas, 5 Oseen
+        wake_inputs.vc_correction                = 1                 # vortex core factor, 1 standard/Scully, 2 Rankine, 3 Vatistas, 4 Oseen
         wake_inputs.dpsi                         = np.radians(6.8)   # filament length [rad]
         wake_inputs.n_turns                      = 5.0               # Number of wake turns
         wake_inputs.thrust_coeff_initial_guess    = 0.00654           # initial guess for CT to intialize the wake geometry
