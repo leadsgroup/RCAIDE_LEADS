@@ -128,15 +128,16 @@ def compute_core_noise(R_val, theta_engine, turbofan, pr, aeroacoustic_data, seg
         P_amb = pressure_amb / Units.psi,                                               # Ambient pressure (pa -> psia)
         T_amb = (temp_amb*1.8)[0][0],                                                           # Ambient temperature (deg R)
         n_f =  Num_nozzle,                                                              # Number of fuel nozzles
-        R = R_val[0][0]/Units.feet, #distance_microphone[i] / Units.feet, # Microphone distance (ft)
+        R = R_val[0][0]/Units.feet, #distance_microphone[i] / Units.feet, # Microphone distance (ft), passed in m, used ft
         D_h_1 = core_nozzle.diameter / Units.feet,                                      # core nozzle hydraulic diameter
         c_amb = (sound_ambient / Units.feet)[0][0],                                             # Ambient sonic velocity (ft/sec)
         D_C = combustor.diameter / Units.feet,                                          # Combustor diameter (ft)
         c_C_o = (331.3*(1+((segment.state.conditions.energy.converters['combustor'].outputs.static_temperature-273)/273))**0.5) / Units.feet,      # Combustor exit sonic velocity (ft/sec)
         f = frequencies,                                                                                     # Frequency (Hz) -> injected list
-        theta_c = theta_engine[0][0],                                                                                        # theta (radians)
+        theta_c = np.degrees(theta_engine[0][0]),     #degrees, because interpolator is in degrees                                                                                   # theta (radians)
         pressure_ratio = pr  # Pressure ratio
         )
+        print(model_inputs.theta_c)
 
         # Calculate Base Parameters
         core_param_log = calc_core_param(

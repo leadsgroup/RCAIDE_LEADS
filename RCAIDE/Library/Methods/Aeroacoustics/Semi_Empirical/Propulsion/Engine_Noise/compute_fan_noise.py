@@ -205,7 +205,7 @@ def compute_fan_noise(R_val, theta_engine, turbofan, m, aeroacoustic_data, segme
         return 10 * math.log10(energy_sum)
     
     fan_noise= Data()
-    theta     =  np.zeros(n_mic)
+    theta     =  np.zeros(n_mic) #theta ???
 
     for i in range(n_mic):
         spl_values = []

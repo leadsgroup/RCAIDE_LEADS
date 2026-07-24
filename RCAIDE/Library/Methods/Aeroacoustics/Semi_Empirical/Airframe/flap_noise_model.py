@@ -26,8 +26,8 @@ def flap_noise_model(R_val, theta_flap ,cf,thickness, deltaf, frequency,segment)
         U = segment.state.conditions.freestream.velocity,                                    # Flight velocity (m/s)
         c0 = segment.state.conditions.freestream.speed_of_sound,                             # Speed of sound (m/s)
         rho0 = segment.state.conditions.freestream.density,                                  # Ambient density (kg/m^3)
-        r = R_val,                             # Observer distance (m), passed in m
-        theta = theta_flap #theta/Units.degree,                                                    # Polar angle (overhead = 90 deg) 
+        r = R_val,                                                                           # Observer distance (m), passed in m
+        theta = theta_flap #theta/Units.degree,                                              # Polar angle (overhead = 90 deg), need to be radians
     )
     #print(params)
 
