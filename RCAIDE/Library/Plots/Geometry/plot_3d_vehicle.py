@@ -273,9 +273,6 @@ def plot_3d_vehicle(vehicle,
     # Plot Nacelle, Rotors and Fuel Tanks
     # -------------------------------------------------------------------------
     for network in geometry.networks:
-        # -------------------------------------------------------------------------
-        # Plot systems
-        # -------------------------------------------------------------------------
         for system in network.systems:
             if isinstance(system, Component):
                 GEOM = generate_3d_cuboid_points(system)
