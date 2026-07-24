@@ -135,8 +135,9 @@ def compute_fuel_system_weight(vehicle, NENG,settings):
                 WTANK += source.tank_accesories_weight_factor * (source.insulation.mass_properties.mass + source.inner_structure.mass_properties.mass)
 
         for distributor in network.distributors:
-            compute_distributor_center_of_gravity(distributor, vehicle, length=0)
-            WLINE = distributor.mass_properties.mass
+            if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
+                compute_distributor_center_of_gravity(distributor, vehicle, length=0)
+                WLINE += distributor.mass_properties.mass
 
         for converter in network.converters:
             if issubclass(type(converter),RCAIDE.Library.Components.Powertrain.Converters.Pump):

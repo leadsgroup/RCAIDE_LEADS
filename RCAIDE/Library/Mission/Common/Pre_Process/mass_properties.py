@@ -249,6 +249,7 @@ def mass_properties_preprocess_routine(segment, i = 0):
                 moment_of_inertia_df.to_excel(writer,sheet_name="Moment of Inertia",index=False)
             print(f"MOI breakdown written to Excel:\n  {excel_filename}") 
  
+    return 
 
 def iterate_max_fuel_and_max_zero_fuel(analyses, max_iterations=100):
     # Inital guess for max fuel and max zero fuel based on regressional analysis which use max takeoff weight of the aircraft
