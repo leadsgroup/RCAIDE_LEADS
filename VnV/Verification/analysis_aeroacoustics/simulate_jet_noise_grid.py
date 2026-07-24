@@ -272,7 +272,7 @@ flight_params: dict
         print(f"Aircraft Position: Lat {ac_lat}, Lon {ac_lon}, Alt {ac_alt} ft")
         print(f"Grid Center: Lat {np.mean(rec_lats)}, Lon {np.mean(rec_lons)}")
 
-        if index == 14:
+        if index > 10:
 
             # 1. Calculate distances and angles for ALL receptors at once for this timestep
             ground_dist, los_distance, angle_to_ground = calc_3d_dist_vectorized(
@@ -304,7 +304,7 @@ flight_params: dict
             # 4. Loop through each receptor to run RCAIDE noise models
             for i in range(num_receptors):
                 # Extract scalar values and format as 2D arrays (RCAIDE generally expects 2D inputs for these states)
-                R_val = np.array([[los_distance[i]*Units.feet]]) 
+                R_val = np.array([[los_distance[i]*Units.feet]]) #passed in meters
                 theta_raw = np.array([[angle_to_ground[i]]])
                 theta_flap = np.array([[tf[i]]])
                 theta_engine = np.array([[te[i]]])

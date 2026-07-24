@@ -71,7 +71,7 @@ def compute_landing_gear_noise(R_val, theta_raw, D, H, W, wheels, M, Weight, str
     flight_cond = Data(
         M_flight = M / 0.75, 
         theta = theta_raw[0][0]/ Units.deg, # (deg),
-        R = R_val[0][0]/Units.feet, #if hasattr(microphone_locations, 'ndim') else microphone_locations,
+        R = R_val[0][0]/Units.feet, #convert back to feet from m
         c0 = (segment.state.conditions.freestream.speed_of_sound / Units.foot_per_second), # sound speed (ft/s)
         rho0 = segment.state.conditions.freestream.density / Units["slugs/ft^3"]   # slug/ft^3
     )

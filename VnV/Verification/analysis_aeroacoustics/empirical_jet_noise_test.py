@@ -248,8 +248,12 @@ flight_params: dict
     # Run simulation  
     # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      
+    R_val = np.array([[2500]])
+    theta_raw = np.array([[45]])
+    theta_flap = np.array([[45]])
+    theta_engine = np.array([[45]])
 
-    lg_noise1 = compute_landing_gear_noise(microphone_locations, D, H, W, wheels, M, Weight, strut_diameter, theta, frequency, segment)
+    lg_noise1 = compute_landing_gear_noise(R_val, theta_raw, D, H, W, wheels, M, Weight, strut_diameter, frequency, segment)
     validation_lg = read_noise_data('/Users/siripunn/Desktop/LEADS_WORK/RESEARCH/05_Aeroacoustics/Boeing_Method/LG_Noise/b737_gear_noise_data.csv')
     # plt.figure(figsize=(10, 6))
     # plt.semilogx(results['Freq'], results['Total'], 'k-', linewidth=2, label='Total Noise')
@@ -263,7 +267,7 @@ flight_params: dict
     # plt.grid(True, which="both", alpha=0.5)
     # plt.show()
     
-    flap_noise1 = flap_noise_model(microphone_locations,cf,thickness, deltaf, theta, frequency,segment)
+    flap_noise1 = flap_noise_model(R_val, theta_flap, cf, thickness, deltaf, frequency, segment)
     validation_flap = read_noise_data('/Users/siripunn/Desktop/LEADS_WORK/RESEARCH/05_Aeroacoustics/Boeing_Method/Flap_Side_Edge_Noise/b737_flap_noise_data.csv')
     # print(comp_li)
     # fig, ax = plt.subplots(figsize=(8, 5))
@@ -278,7 +282,7 @@ flight_params: dict
     # plt.legend()
     # plt.show()
 
-    slat_noise1 = slat_noise(microphone_locations, phi, theta, Ls, gamma_s, sigma_s, alpha, segment, frequency, A=1e-5)
+    slat_noise1 = slat_noise(R_val, phi, theta_flap[0][0], Ls, gamma_s, sigma_s, alpha, segment, frequency, A=1e-5)
     #validation_slat = read_noise_data('/Users/siripunn/Desktop/LEADS_WORK/RESEARCH/05_Aeroacoustics/Boeing_Method/Core Noise/b737_core_noise_data.csv')
     # print(slat_noise1)
     # fig, ax = plt.subplots(figsize=(8, 5))
@@ -291,9 +295,9 @@ flight_params: dict
     # plt.show()
 
 
-    fan_noise1 = compute_fan_noise(microphone_locations, turbofan,m, segment.state.conditions.aeroacoustics, segment, frequency)
+    fan_noise1 = compute_fan_noise(R_val[0], theta_engine[0][0], turbofan, m, segment.state.conditions.aeroacoustics, segment, frequency)
     validation_fan = read_noise_data('/Users/siripunn/Desktop/LEADS_WORK/RESEARCH/05_Aeroacoustics/Boeing_Method/Fan Noise/b737_fan_noise_data.csv/b737_fan_noise_data.csv')
-    core_noise1 = compute_core_noise(microphone_locations, turbofan, pr, segment.state.conditions.aeroacoustics, segment, frequency)
+    core_noise1 = compute_core_noise(R_val, theta_engine, turbofan, pr, segment.state.conditions.aeroacoustics, segment, frequency)
     validation_core = read_noise_data('/Users/siripunn/Desktop/LEADS_WORK/RESEARCH/05_Aeroacoustics/Boeing_Method/Core Noise/b737_core_noise_data.csv')
     # print(core_noise1.SPL_1_3_spectrum)
     # fig, ax = plt.subplots(figsize=(8, 5))

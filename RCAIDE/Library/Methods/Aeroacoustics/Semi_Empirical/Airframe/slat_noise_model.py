@@ -61,11 +61,11 @@ def slat_noise(R_val, phi, theta, Ls, gamma_s, sigma_s, alpha, segment, frequenc
     """
     #Unpack Segment Data:
     M = segment.state.conditions.freestream.mach_number
-    distance = R_val[0][0]/ Units.feet
+    distance = R_val[0][0]/ Units.feet # passed in m, converted to ft
     rho_0 = segment.state.conditions.freestream.density / Units["slugs/ft^3"]
     c_0 = segment.state.conditions.freestream.speed_of_sound / Units["ft/s"]
     velocity = segment.state.conditions.freestream.velocity / Units["ft/s"]
-    Ls = Ls/Units.ft
+    Ls = Ls/Units.feet
 
     U_eff = velocity * np.cos(sigma_s)
     M_eff = M * np.cos(sigma_s)

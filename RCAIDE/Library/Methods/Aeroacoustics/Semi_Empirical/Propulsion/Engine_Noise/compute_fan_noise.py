@@ -38,7 +38,7 @@ def compute_fan_noise(R_val, theta_engine, turbofan, m, aeroacoustic_data, segme
     Pressure_secondary     = aeroacoustic_data.propulsors[turbofan.tag].fan.exit_stagnation_pressure 
     Velocity_aircraft      = segment.state.conditions.freestream.velocity
     noise_time             = segment.state.conditions.frames.inertial.time  
-    distance_microphone    = R_val#ft #np.linalg.norm(microphone_locations,axis = 1)    
+    distance_microphone    = R_val#ft #np.linalg.norm(microphone_locations,axis = 1)    #passed in m, used m
     Diameter_secondary     = aeroacoustic_data.propulsors[turbofan.tag].fan.diameter
     Num_blades             = aeroacoustic_data.propulsors[turbofan.tag].fan.number_of_blades
 
@@ -212,7 +212,7 @@ def compute_fan_noise(R_val, theta_engine, turbofan, m, aeroacoustic_data, segme
         theta_S = np.tile(theta[None,:],(n_cpts,1))  
         theta_s = np.tile(np.atleast_2d(abs(theta_S[:,i])).T,(1,n_freq))
         spl = calc_combination_tones(fan_inputs, frequency, theta=theta_s)
-        distance_attenuated_spl = spl + 20*np.log10(1/distance_microphone[i]) # 1 [m] as the microphone sideline to fan distance
+        distance_attenuated_spl = spl + 20*np.log10(2.36/distance_microphone[i]) # 1 [m] as the microphone sideline to fan distance, paper sideline = 93 in
         
 
         SPL_1_3_spectrum[:,i,:]       = distance_attenuated_spl 
