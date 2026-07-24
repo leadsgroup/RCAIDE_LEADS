@@ -27,10 +27,10 @@
    "execution_count": 1,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-22T22:48:03.913101Z",
-     "iopub.status.busy": "2026-07-22T22:48:03.912956Z",
-     "iopub.status.idle": "2026-07-22T22:48:05.536007Z",
-     "shell.execute_reply": "2026-07-22T22:48:05.535236Z"
+     "iopub.execute_input": "2026-07-24T14:02:14.171933Z",
+     "iopub.status.busy": "2026-07-24T14:02:14.171809Z",
+     "iopub.status.idle": "2026-07-24T14:02:15.885359Z",
+     "shell.execute_reply": "2026-07-24T14:02:15.884486Z"
     }
    },
    "outputs": [],
@@ -134,10 +134,10 @@
    "execution_count": 2,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-22T22:48:05.538980Z",
-     "iopub.status.busy": "2026-07-22T22:48:05.538741Z",
-     "iopub.status.idle": "2026-07-22T22:48:05.586102Z",
-     "shell.execute_reply": "2026-07-22T22:48:05.585374Z"
+     "iopub.execute_input": "2026-07-24T14:02:15.888047Z",
+     "iopub.status.busy": "2026-07-24T14:02:15.887773Z",
+     "iopub.status.idle": "2026-07-24T14:02:15.936741Z",
+     "shell.execute_reply": "2026-07-24T14:02:15.935790Z"
     }
    },
    "outputs": [],
@@ -875,10 +875,10 @@
    "execution_count": 3,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-22T22:48:05.587646Z",
-     "iopub.status.busy": "2026-07-22T22:48:05.587516Z",
-     "iopub.status.idle": "2026-07-22T22:48:05.591435Z",
-     "shell.execute_reply": "2026-07-22T22:48:05.590840Z"
+     "iopub.execute_input": "2026-07-24T14:02:15.938387Z",
+     "iopub.status.busy": "2026-07-24T14:02:15.938235Z",
+     "iopub.status.idle": "2026-07-24T14:02:15.942343Z",
+     "shell.execute_reply": "2026-07-24T14:02:15.941683Z"
     }
    },
    "outputs": [],
@@ -979,10 +979,10 @@
    "execution_count": 4,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-22T22:48:05.592953Z",
-     "iopub.status.busy": "2026-07-22T22:48:05.592842Z",
-     "iopub.status.idle": "2026-07-22T22:48:05.597411Z",
-     "shell.execute_reply": "2026-07-22T22:48:05.596690Z"
+     "iopub.execute_input": "2026-07-24T14:02:15.944299Z",
+     "iopub.status.busy": "2026-07-24T14:02:15.944176Z",
+     "iopub.status.idle": "2026-07-24T14:02:15.949312Z",
+     "shell.execute_reply": "2026-07-24T14:02:15.948438Z"
     }
    },
    "outputs": [],
@@ -1094,10 +1094,10 @@
    "execution_count": 5,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-22T22:48:05.598816Z",
-     "iopub.status.busy": "2026-07-22T22:48:05.598674Z",
-     "iopub.status.idle": "2026-07-22T22:48:05.601346Z",
-     "shell.execute_reply": "2026-07-22T22:48:05.600789Z"
+     "iopub.execute_input": "2026-07-24T14:02:15.950612Z",
+     "iopub.status.busy": "2026-07-24T14:02:15.950506Z",
+     "iopub.status.idle": "2026-07-24T14:02:15.953616Z",
+     "shell.execute_reply": "2026-07-24T14:02:15.952812Z"
     }
    },
    "outputs": [],
@@ -1161,10 +1161,10 @@
    "execution_count": 6,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-22T22:48:05.603034Z",
-     "iopub.status.busy": "2026-07-22T22:48:05.602921Z",
-     "iopub.status.idle": "2026-07-22T22:48:05.616442Z",
-     "shell.execute_reply": "2026-07-22T22:48:05.615636Z"
+     "iopub.execute_input": "2026-07-24T14:02:15.955140Z",
+     "iopub.status.busy": "2026-07-24T14:02:15.954996Z",
+     "iopub.status.idle": "2026-07-24T14:02:15.969262Z",
+     "shell.execute_reply": "2026-07-24T14:02:15.968427Z"
     }
    },
    "outputs": [],
@@ -1401,10 +1401,10 @@
    "execution_count": 7,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-22T22:48:05.617793Z",
-     "iopub.status.busy": "2026-07-22T22:48:05.617674Z",
-     "iopub.status.idle": "2026-07-22T22:48:05.620627Z",
-     "shell.execute_reply": "2026-07-22T22:48:05.619806Z"
+     "iopub.execute_input": "2026-07-24T14:02:15.970624Z",
+     "iopub.status.busy": "2026-07-24T14:02:15.970512Z",
+     "iopub.status.idle": "2026-07-24T14:02:15.973557Z",
+     "shell.execute_reply": "2026-07-24T14:02:15.972665Z"
     }
    },
    "outputs": [],
@@ -1435,10 +1435,10 @@
    "execution_count": 8,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-22T22:48:05.621900Z",
-     "iopub.status.busy": "2026-07-22T22:48:05.621788Z",
-     "iopub.status.idle": "2026-07-22T22:48:05.624966Z",
-     "shell.execute_reply": "2026-07-22T22:48:05.624265Z"
+     "iopub.execute_input": "2026-07-24T14:02:15.974925Z",
+     "iopub.status.busy": "2026-07-24T14:02:15.974815Z",
+     "iopub.status.idle": "2026-07-24T14:02:15.978053Z",
+     "shell.execute_reply": "2026-07-24T14:02:15.977397Z"
     }
    },
    "outputs": [],
@@ -1486,10 +1486,10 @@
    "execution_count": 9,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-22T22:48:05.626436Z",
-     "iopub.status.busy": "2026-07-22T22:48:05.626318Z",
-     "iopub.status.idle": "2026-07-22T22:48:05.629447Z",
-     "shell.execute_reply": "2026-07-22T22:48:05.628494Z"
+     "iopub.execute_input": "2026-07-24T14:02:15.979428Z",
+     "iopub.status.busy": "2026-07-24T14:02:15.979328Z",
+     "iopub.status.idle": "2026-07-24T14:02:15.982383Z",
+     "shell.execute_reply": "2026-07-24T14:02:15.981451Z"
     }
    },
    "outputs": [],
@@ -1515,10 +1515,10 @@
    "execution_count": 10,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-22T22:48:05.630781Z",
-     "iopub.status.busy": "2026-07-22T22:48:05.630651Z",
-     "iopub.status.idle": "2026-07-22T22:48:05.633518Z",
-     "shell.execute_reply": "2026-07-22T22:48:05.632781Z"
+     "iopub.execute_input": "2026-07-24T14:02:15.983640Z",
+     "iopub.status.busy": "2026-07-24T14:02:15.983539Z",
+     "iopub.status.idle": "2026-07-24T14:02:15.986228Z",
+     "shell.execute_reply": "2026-07-24T14:02:15.985593Z"
     }
    },
    "outputs": [],
@@ -1545,10 +1545,10 @@
    "execution_count": 11,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-22T22:48:05.634860Z",
-     "iopub.status.busy": "2026-07-22T22:48:05.634740Z",
-     "iopub.status.idle": "2026-07-22T22:48:05.637529Z",
-     "shell.execute_reply": "2026-07-22T22:48:05.636666Z"
+     "iopub.execute_input": "2026-07-24T14:02:15.987646Z",
+     "iopub.status.busy": "2026-07-24T14:02:15.987540Z",
+     "iopub.status.idle": "2026-07-24T14:02:15.989840Z",
+     "shell.execute_reply": "2026-07-24T14:02:15.989263Z"
     }
    },
    "outputs": [],
@@ -1574,10 +1574,10 @@
    "execution_count": 12,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-22T22:48:05.638753Z",
-     "iopub.status.busy": "2026-07-22T22:48:05.638628Z",
-     "iopub.status.idle": "2026-07-22T22:48:05.641164Z",
-     "shell.execute_reply": "2026-07-22T22:48:05.640527Z"
+     "iopub.execute_input": "2026-07-24T14:02:15.991249Z",
+     "iopub.status.busy": "2026-07-24T14:02:15.991147Z",
+     "iopub.status.idle": "2026-07-24T14:02:15.993551Z",
+     "shell.execute_reply": "2026-07-24T14:02:15.992926Z"
     }
    },
    "outputs": [],
@@ -1602,10 +1602,10 @@
    "execution_count": 13,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-22T22:48:05.642818Z",
-     "iopub.status.busy": "2026-07-22T22:48:05.642668Z",
-     "iopub.status.idle": "2026-07-22T22:54:11.919964Z",
-     "shell.execute_reply": "2026-07-22T22:54:11.919437Z"
+     "iopub.execute_input": "2026-07-24T14:02:15.995139Z",
+     "iopub.status.busy": "2026-07-24T14:02:15.995013Z",
+     "iopub.status.idle": "2026-07-24T14:08:26.115582Z",
+     "shell.execute_reply": "2026-07-24T14:08:26.114825Z"
     }
    },
    "outputs": [
@@ -1733,7 +1733,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving Vertical_Climb:  |\u001b[32m█▎        \u001b[0m| 1/8 segs [01:22<09:40, 82.98s/seg]"
+      "Solving Vertical_Climb:  |\u001b[32m█▎        \u001b[0m| 1/8 segs [01:23<09:47, 83.91s/seg]"
      ]
     },
     {
@@ -1741,7 +1741,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving High_Speed_Climbing_Transition:  |\u001b[32m█▎        \u001b[0m| 1/8 segs [01:22<09:40, 82.98s/seg]"
+      "Solving High_Speed_Climbing_Transition:  |\u001b[32m█▎        \u001b[0m| 1/8 segs [01:23<09:47, 83.91s/seg]"
      ]
     },
     {
@@ -1749,7 +1749,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving High_Speed_Climbing_Transition:  |\u001b[32m██▌       \u001b[0m| 2/8 segs [02:43<08:10, 81.81s/seg]"
+      "Solving High_Speed_Climbing_Transition:  |\u001b[32m██▌       \u001b[0m| 2/8 segs [02:45<08:15, 82.53s/seg]"
      ]
     },
     {
@@ -1757,7 +1757,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving Climb:  |\u001b[32m██▌       \u001b[0m| 2/8 segs [02:43<08:10, 81.81s/seg]                         "
+      "Solving Climb:  |\u001b[32m██▌       \u001b[0m| 2/8 segs [02:45<08:15, 82.53s/seg]                         "
      ]
     },
     {
@@ -1765,7 +1765,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving Climb:  |\u001b[32m███▊      \u001b[0m| 3/8 segs [03:23<05:13, 62.64s/seg]"
+      "Solving Climb:  |\u001b[32m███▊      \u001b[0m| 3/8 segs [03:25<05:16, 63.30s/seg]"
      ]
     },
     {
@@ -1773,7 +1773,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving Cruise:  |\u001b[32m███▊      \u001b[0m| 3/8 segs [03:23<05:13, 62.64s/seg]"
+      "Solving Cruise:  |\u001b[32m███▊      \u001b[0m| 3/8 segs [03:25<05:16, 63.30s/seg]"
      ]
     },
     {
@@ -1781,7 +1781,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving Cruise:  |\u001b[32m█████     \u001b[0m| 4/8 segs [03:46<03:07, 46.86s/seg]"
+      "Solving Cruise:  |\u001b[32m█████     \u001b[0m| 4/8 segs [03:49<03:09, 47.45s/seg]"
      ]
     },
     {
@@ -1789,7 +1789,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving Descent:  |\u001b[32m█████     \u001b[0m| 4/8 segs [03:46<03:07, 46.86s/seg]"
+      "Solving Descent:  |\u001b[32m█████     \u001b[0m| 4/8 segs [03:49<03:09, 47.45s/seg]"
      ]
     },
     {
@@ -1797,7 +1797,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving Descent:  |\u001b[32m██████▎   \u001b[0m| 5/8 segs [04:17<02:03, 41.29s/seg]"
+      "Solving Descent:  |\u001b[32m██████▎   \u001b[0m| 5/8 segs [04:20<02:05, 41.71s/seg]"
      ]
     },
     {
@@ -1805,7 +1805,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving Descending_Transition:  |\u001b[32m██████▎   \u001b[0m| 5/8 segs [04:17<02:03, 41.29s/seg]"
+      "Solving Descending_Transition:  |\u001b[32m██████▎   \u001b[0m| 5/8 segs [04:20<02:05, 41.71s/seg]"
      ]
     },
     {
@@ -1813,7 +1813,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving Descending_Transition:  |\u001b[32m███████▌  \u001b[0m| 6/8 segs [04:32<01:04, 32.09s/seg]"
+      "Solving Descending_Transition:  |\u001b[32m███████▌  \u001b[0m| 6/8 segs [04:34<01:04, 32.41s/seg]"
      ]
     },
     {
@@ -1821,7 +1821,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving Low_Speed_Approach_Transition:  |\u001b[32m███████▌  \u001b[0m| 6/8 segs [04:32<01:04, 32.09s/seg]"
+      "Solving Low_Speed_Approach_Transition:  |\u001b[32m███████▌  \u001b[0m| 6/8 segs [04:34<01:04, 32.41s/seg]"
      ]
     },
     {
@@ -1829,7 +1829,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving Low_Speed_Approach_Transition:  |\u001b[31m████████▊ \u001b[0m| 7/8 segs [04:47<00:26, 26.56s/seg]"
+      "Solving Low_Speed_Approach_Transition:  |\u001b[31m████████▊ \u001b[0m| 7/8 segs [04:50<00:26, 26.82s/seg]"
      ]
     },
     {
@@ -1837,7 +1837,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving Vertical_Descent:  |\u001b[31m████████▊ \u001b[0m| 7/8 segs [04:47<00:26, 26.56s/seg]             "
+      "Solving Vertical_Descent:  |\u001b[31m████████▊ \u001b[0m| 7/8 segs [04:50<00:26, 26.82s/seg]             "
      ]
     },
     {
@@ -1845,7 +1845,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving Vertical_Descent:  |\u001b[31m██████████\u001b[0m| 8/8 segs [04:49<00:00, 18.88s/seg]"
+      "Solving Vertical_Descent:  |\u001b[31m██████████\u001b[0m| 8/8 segs [04:52<00:00, 19.07s/seg]"
      ]
     },
     {
@@ -1853,7 +1853,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving Vertical_Descent:  |\u001b[31m██████████\u001b[0m| 8/8 segs [04:49<00:00, 36.21s/seg]"
+      "Solving Vertical_Descent:  |\u001b[31m██████████\u001b[0m| 8/8 segs [04:52<00:00, 36.59s/seg]"
      ]
     },
     {
@@ -1867,17 +1867,17 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "\u001b[0m\u001b[33m2026-07-22 22:54:06.297 ( 361.102s) [    7FBA26A2CB80]vtkXOpenGLRenderWindow.:1460  WARN| bad X server connection. DISPLAY=\u001b[0m\n",
-      "\u001b[0m\u001b[33m2026-07-22 22:54:06.297 ( 361.102s) [    7FBA26A2CB80]vtkOpenGLRenderWindow.c:645   WARN| Failed to load EGL! Please install the EGL library from your distribution's package manager.\u001b[0m\n",
-      "\u001b[0m\u001b[33m2026-07-22 22:54:06.298 ( 361.102s) [    7FBA26A2CB80]vtkOSOpenGLRenderWindow:149   WARN| libOSMesa not found. It appears that OSMesa is not installed in your system. Please install the OSMesa library from your distribution's package manager.\u001b[0m\n",
-      "\u001b[0m\u001b[33m2026-07-22 22:54:06.299 ( 361.104s) [    7FBA26A2CB80]vtkOpenGLRenderWindow.c:645   WARN| Failed to load EGL! Please install the EGL library from your distribution's package manager.\u001b[0m\n",
-      "\u001b[0m\u001b[33m2026-07-22 22:54:06.299 ( 361.104s) [    7FBA26A2CB80]vtkOSOpenGLRenderWindow:149   WARN| libOSMesa not found. It appears that OSMesa is not installed in your system. Please install the OSMesa library from your distribution's package manager.\u001b[0m\n"
+      "\u001b[0m\u001b[33m2026-07-24 14:08:20.422 ( 364.898s) [    7F8E6AE4CB80]vtkXOpenGLRenderWindow.:1460  WARN| bad X server connection. DISPLAY=\u001b[0m\n",
+      "\u001b[0m\u001b[33m2026-07-24 14:08:20.422 ( 364.898s) [    7F8E6AE4CB80]vtkOpenGLRenderWindow.c:645   WARN| Failed to load EGL! Please install the EGL library from your distribution's package manager.\u001b[0m\n",
+      "\u001b[0m\u001b[33m2026-07-24 14:08:20.422 ( 364.899s) [    7F8E6AE4CB80]vtkOSOpenGLRenderWindow:149   WARN| libOSMesa not found. It appears that OSMesa is not installed in your system. Please install the OSMesa library from your distribution's package manager.\u001b[0m\n",
+      "\u001b[0m\u001b[33m2026-07-24 14:08:20.424 ( 364.900s) [    7F8E6AE4CB80]vtkOpenGLRenderWindow.c:645   WARN| Failed to load EGL! Please install the EGL library from your distribution's package manager.\u001b[0m\n",
+      "\u001b[0m\u001b[33m2026-07-24 14:08:20.424 ( 364.900s) [    7F8E6AE4CB80]vtkOSOpenGLRenderWindow:149   WARN| libOSMesa not found. It appears that OSMesa is not installed in your system. Please install the OSMesa library from your distribution's package manager.\u001b[0m\n"
      ]
     },
     {
      "data": {
       "text/plain": [
-       "<pyvista.plotting.plotter.Plotter at 0x7fb9b711a850>"
+       "<pyvista.plotting.plotter.Plotter at 0x7f8dfb59a850>"
       ]
      },
      "execution_count": 13,

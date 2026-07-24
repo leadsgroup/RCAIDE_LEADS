@@ -26,10 +26,10 @@
    "execution_count": 1,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-22T22:34:05.469222Z",
-     "iopub.status.busy": "2026-07-22T22:34:05.469028Z",
-     "iopub.status.idle": "2026-07-22T22:34:07.190508Z",
-     "shell.execute_reply": "2026-07-22T22:34:07.189612Z"
+     "iopub.execute_input": "2026-07-24T13:47:57.754598Z",
+     "iopub.status.busy": "2026-07-24T13:47:57.754470Z",
+     "iopub.status.idle": "2026-07-24T13:47:59.466783Z",
+     "shell.execute_reply": "2026-07-24T13:47:59.465953Z"
     }
    },
    "outputs": [],
@@ -131,10 +131,10 @@
    "execution_count": 2,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-22T22:34:07.192627Z",
-     "iopub.status.busy": "2026-07-22T22:34:07.192347Z",
-     "iopub.status.idle": "2026-07-22T22:34:07.230813Z",
-     "shell.execute_reply": "2026-07-22T22:34:07.229985Z"
+     "iopub.execute_input": "2026-07-24T13:47:59.469422Z",
+     "iopub.status.busy": "2026-07-24T13:47:59.469141Z",
+     "iopub.status.idle": "2026-07-24T13:47:59.508102Z",
+     "shell.execute_reply": "2026-07-24T13:47:59.507304Z"
     }
    },
    "outputs": [],
@@ -770,10 +770,10 @@
    "execution_count": 3,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-22T22:34:07.232594Z",
-     "iopub.status.busy": "2026-07-22T22:34:07.232470Z",
-     "iopub.status.idle": "2026-07-22T22:34:07.237533Z",
-     "shell.execute_reply": "2026-07-22T22:34:07.236593Z"
+     "iopub.execute_input": "2026-07-24T13:47:59.509975Z",
+     "iopub.status.busy": "2026-07-24T13:47:59.509835Z",
+     "iopub.status.idle": "2026-07-24T13:47:59.514955Z",
+     "shell.execute_reply": "2026-07-24T13:47:59.514065Z"
     }
    },
    "outputs": [],
@@ -903,10 +903,10 @@
    "execution_count": 4,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-22T22:34:07.238896Z",
-     "iopub.status.busy": "2026-07-22T22:34:07.238783Z",
-     "iopub.status.idle": "2026-07-22T22:34:07.243324Z",
-     "shell.execute_reply": "2026-07-22T22:34:07.242606Z"
+     "iopub.execute_input": "2026-07-24T13:47:59.516447Z",
+     "iopub.status.busy": "2026-07-24T13:47:59.516300Z",
+     "iopub.status.idle": "2026-07-24T13:47:59.521028Z",
+     "shell.execute_reply": "2026-07-24T13:47:59.520329Z"
     }
    },
    "outputs": [],
@@ -1021,10 +1021,10 @@
    "execution_count": 5,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-22T22:34:07.244589Z",
-     "iopub.status.busy": "2026-07-22T22:34:07.244484Z",
-     "iopub.status.idle": "2026-07-22T22:34:07.247559Z",
-     "shell.execute_reply": "2026-07-22T22:34:07.246767Z"
+     "iopub.execute_input": "2026-07-24T13:47:59.522434Z",
+     "iopub.status.busy": "2026-07-24T13:47:59.522312Z",
+     "iopub.status.idle": "2026-07-24T13:47:59.525356Z",
+     "shell.execute_reply": "2026-07-24T13:47:59.524590Z"
     }
    },
    "outputs": [],
@@ -1089,10 +1089,10 @@
    "execution_count": 6,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-22T22:34:07.249063Z",
-     "iopub.status.busy": "2026-07-22T22:34:07.248944Z",
-     "iopub.status.idle": "2026-07-22T22:34:07.269896Z",
-     "shell.execute_reply": "2026-07-22T22:34:07.269119Z"
+     "iopub.execute_input": "2026-07-24T13:47:59.526885Z",
+     "iopub.status.busy": "2026-07-24T13:47:59.526766Z",
+     "iopub.status.idle": "2026-07-24T13:47:59.547743Z",
+     "shell.execute_reply": "2026-07-24T13:47:59.547157Z"
     }
    },
    "outputs": [],
@@ -1448,10 +1448,10 @@
    "execution_count": 7,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-22T22:34:07.271247Z",
-     "iopub.status.busy": "2026-07-22T22:34:07.271136Z",
-     "iopub.status.idle": "2026-07-22T22:34:07.273846Z",
-     "shell.execute_reply": "2026-07-22T22:34:07.273191Z"
+     "iopub.execute_input": "2026-07-24T13:47:59.549407Z",
+     "iopub.status.busy": "2026-07-24T13:47:59.549240Z",
+     "iopub.status.idle": "2026-07-24T13:47:59.552207Z",
+     "shell.execute_reply": "2026-07-24T13:47:59.551382Z"
     }
    },
    "outputs": [],
@@ -1480,10 +1480,10 @@
    "execution_count": 8,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-22T22:34:07.275250Z",
-     "iopub.status.busy": "2026-07-22T22:34:07.275118Z",
-     "iopub.status.idle": "2026-07-22T22:34:07.278126Z",
-     "shell.execute_reply": "2026-07-22T22:34:07.277460Z"
+     "iopub.execute_input": "2026-07-24T13:47:59.553552Z",
+     "iopub.status.busy": "2026-07-24T13:47:59.553428Z",
+     "iopub.status.idle": "2026-07-24T13:47:59.556627Z",
+     "shell.execute_reply": "2026-07-24T13:47:59.555758Z"
     }
    },
    "outputs": [],
@@ -1526,10 +1526,10 @@
    "execution_count": 9,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-22T22:34:07.279676Z",
-     "iopub.status.busy": "2026-07-22T22:34:07.279535Z",
-     "iopub.status.idle": "2026-07-22T22:35:19.569593Z",
-     "shell.execute_reply": "2026-07-22T22:35:19.568776Z"
+     "iopub.execute_input": "2026-07-24T13:47:59.558096Z",
+     "iopub.status.busy": "2026-07-24T13:47:59.557939Z",
+     "iopub.status.idle": "2026-07-24T13:49:14.773422Z",
+     "shell.execute_reply": "2026-07-24T13:49:14.772332Z"
     }
    },
    "outputs": [
@@ -1537,11 +1537,11 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "\u001b[0m\u001b[33m2026-07-22 22:34:07.536 (   0.719s) [    7F46001C9B80]vtkXOpenGLRenderWindow.:1460  WARN| bad X server connection. DISPLAY=\u001b[0m\n",
-      "\u001b[0m\u001b[33m2026-07-22 22:34:07.536 (   0.719s) [    7F46001C9B80]vtkOpenGLRenderWindow.c:645   WARN| Failed to load EGL! Please install the EGL library from your distribution's package manager.\u001b[0m\n",
-      "\u001b[0m\u001b[33m2026-07-22 22:34:07.537 (   0.719s) [    7F46001C9B80]vtkOSOpenGLRenderWindow:149   WARN| libOSMesa not found. It appears that OSMesa is not installed in your system. Please install the OSMesa library from your distribution's package manager.\u001b[0m\n",
-      "\u001b[0m\u001b[33m2026-07-22 22:34:07.538 (   0.721s) [    7F46001C9B80]vtkOpenGLRenderWindow.c:645   WARN| Failed to load EGL! Please install the EGL library from your distribution's package manager.\u001b[0m\n",
-      "\u001b[0m\u001b[33m2026-07-22 22:34:07.538 (   0.721s) [    7F46001C9B80]vtkOSOpenGLRenderWindow:149   WARN| libOSMesa not found. It appears that OSMesa is not installed in your system. Please install the OSMesa library from your distribution's package manager.\u001b[0m\n"
+      "\u001b[0m\u001b[33m2026-07-24 13:47:59.832 (   0.743s) [    7F82EAC56B80]vtkXOpenGLRenderWindow.:1460  WARN| bad X server connection. DISPLAY=\u001b[0m\n",
+      "\u001b[0m\u001b[33m2026-07-24 13:47:59.833 (   0.744s) [    7F82EAC56B80]vtkOpenGLRenderWindow.c:645   WARN| Failed to load EGL! Please install the EGL library from your distribution's package manager.\u001b[0m\n",
+      "\u001b[0m\u001b[33m2026-07-24 13:47:59.833 (   0.744s) [    7F82EAC56B80]vtkOSOpenGLRenderWindow:149   WARN| libOSMesa not found. It appears that OSMesa is not installed in your system. Please install the OSMesa library from your distribution's package manager.\u001b[0m\n",
+      "\u001b[0m\u001b[33m2026-07-24 13:47:59.834 (   0.745s) [    7F82EAC56B80]vtkOpenGLRenderWindow.c:645   WARN| Failed to load EGL! Please install the EGL library from your distribution's package manager.\u001b[0m\n",
+      "\u001b[0m\u001b[33m2026-07-24 13:47:59.834 (   0.746s) [    7F82EAC56B80]vtkOSOpenGLRenderWindow:149   WARN| libOSMesa not found. It appears that OSMesa is not installed in your system. Please install the OSMesa library from your distribution's package manager.\u001b[0m\n"
      ]
     },
     {
@@ -1673,7 +1673,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving climb_1:  |\u001b[32m▊         \u001b[0m| 1/12 segs [00:00<00:04,  2.62seg/s]"
+      "Solving climb_1:  |\u001b[32m▊         \u001b[0m| 1/12 segs [00:00<00:04,  2.52seg/s]"
      ]
     },
     {
@@ -1681,7 +1681,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving climb_2:  |\u001b[32m▊         \u001b[0m| 1/12 segs [00:00<00:04,  2.62seg/s]"
+      "Solving climb_2:  |\u001b[32m▊         \u001b[0m| 1/12 segs [00:00<00:04,  2.52seg/s]"
      ]
     },
     {
@@ -1689,7 +1689,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving climb_2:  |\u001b[32m█▋        \u001b[0m| 2/12 segs [00:00<00:03,  2.75seg/s]"
+      "Solving climb_2:  |\u001b[32m█▋        \u001b[0m| 2/12 segs [00:00<00:03,  2.64seg/s]"
      ]
     },
     {
@@ -1697,7 +1697,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving climb_3:  |\u001b[32m█▋        \u001b[0m| 2/12 segs [00:00<00:03,  2.75seg/s]"
+      "Solving climb_3:  |\u001b[32m█▋        \u001b[0m| 2/12 segs [00:00<00:03,  2.64seg/s]"
      ]
     },
     {
@@ -1705,7 +1705,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving climb_3:  |\u001b[32m██▌       \u001b[0m| 3/12 segs [00:01<00:03,  2.93seg/s]"
+      "Solving climb_3:  |\u001b[32m██▌       \u001b[0m| 3/12 segs [00:01<00:03,  2.82seg/s]"
      ]
     },
     {
@@ -1713,7 +1713,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving climb_4:  |\u001b[32m██▌       \u001b[0m| 3/12 segs [00:01<00:03,  2.93seg/s]"
+      "Solving climb_4:  |\u001b[32m██▌       \u001b[0m| 3/12 segs [00:01<00:03,  2.82seg/s]"
      ]
     },
     {
@@ -1721,7 +1721,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving climb_4:  |\u001b[32m███▎      \u001b[0m| 4/12 segs [00:01<00:02,  3.07seg/s]"
+      "Solving climb_4:  |\u001b[32m███▎      \u001b[0m| 4/12 segs [00:01<00:02,  2.94seg/s]"
      ]
     },
     {
@@ -1729,7 +1729,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving climb_5:  |\u001b[32m███▎      \u001b[0m| 4/12 segs [00:01<00:02,  3.07seg/s]"
+      "Solving climb_5:  |\u001b[32m███▎      \u001b[0m| 4/12 segs [00:01<00:02,  2.94seg/s]"
      ]
     },
     {
@@ -1737,7 +1737,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving climb_5:  |\u001b[32m████▏     \u001b[0m| 5/12 segs [00:01<00:02,  3.10seg/s]"
+      "Solving climb_5:  |\u001b[32m████▏     \u001b[0m| 5/12 segs [00:01<00:02,  2.97seg/s]"
      ]
     },
     {
@@ -1745,7 +1745,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving climbing_cruise:  |\u001b[32m████▏     \u001b[0m| 5/12 segs [00:01<00:02,  3.10seg/s]"
+      "Solving climbing_cruise:  |\u001b[32m████▏     \u001b[0m| 5/12 segs [00:01<00:02,  2.97seg/s]"
      ]
     },
     {
@@ -1753,7 +1753,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving climbing_cruise:  |\u001b[32m█████     \u001b[0m| 6/12 segs [00:02<00:02,  2.93seg/s]"
+      "Solving climbing_cruise:  |\u001b[32m█████     \u001b[0m| 6/12 segs [00:02<00:02,  2.81seg/s]"
      ]
     },
     {
@@ -1761,7 +1761,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving level_cruise:  |\u001b[32m█████     \u001b[0m| 6/12 segs [00:02<00:02,  2.93seg/s]   "
+      "Solving level_cruise:  |\u001b[32m█████     \u001b[0m| 6/12 segs [00:02<00:02,  2.81seg/s]   "
      ]
     },
     {
@@ -1769,7 +1769,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving level_cruise:  |\u001b[32m█████▊    \u001b[0m| 7/12 segs [00:02<00:01,  3.01seg/s]"
+      "Solving level_cruise:  |\u001b[32m█████▊    \u001b[0m| 7/12 segs [00:02<00:01,  2.90seg/s]"
      ]
     },
     {
@@ -1777,7 +1777,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving decel_1:  |\u001b[32m█████▊    \u001b[0m| 7/12 segs [00:02<00:01,  3.01seg/s]     "
+      "Solving decel_1:  |\u001b[32m█████▊    \u001b[0m| 7/12 segs [00:02<00:01,  2.90seg/s]     "
      ]
     },
     {
@@ -1785,7 +1785,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving decel_1:  |\u001b[32m██████▋   \u001b[0m| 8/12 segs [00:02<00:01,  3.02seg/s]"
+      "Solving decel_1:  |\u001b[32m██████▋   \u001b[0m| 8/12 segs [00:02<00:01,  2.93seg/s]"
      ]
     },
     {
@@ -1793,7 +1793,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving descent_1:  |\u001b[32m██████▋   \u001b[0m| 8/12 segs [00:02<00:01,  3.02seg/s]"
+      "Solving descent_1:  |\u001b[32m██████▋   \u001b[0m| 8/12 segs [00:02<00:01,  2.93seg/s]"
      ]
     },
     {
@@ -1801,7 +1801,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving descent_1:  |\u001b[32m███████▌  \u001b[0m| 9/12 segs [00:03<00:00,  3.01seg/s]"
+      "Solving descent_1:  |\u001b[32m███████▌  \u001b[0m| 9/12 segs [00:03<00:01,  2.91seg/s]"
      ]
     },
     {
@@ -1809,7 +1809,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving decel_2:  |\u001b[32m███████▌  \u001b[0m| 9/12 segs [00:03<00:00,  3.01seg/s]  "
+      "Solving decel_2:  |\u001b[32m███████▌  \u001b[0m| 9/12 segs [00:03<00:01,  2.91seg/s]  "
      ]
     },
     {
@@ -1817,7 +1817,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving decel_2:  |\u001b[32m████████▎ \u001b[0m| 10/12 segs [00:03<00:00,  3.01seg/s]"
+      "Solving decel_2:  |\u001b[32m████████▎ \u001b[0m| 10/12 segs [00:03<00:00,  2.92seg/s]"
      ]
     },
     {
@@ -1825,7 +1825,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving descent_2:  |\u001b[32m████████▎ \u001b[0m| 10/12 segs [00:03<00:00,  3.01seg/s]"
+      "Solving descent_2:  |\u001b[32m████████▎ \u001b[0m| 10/12 segs [00:03<00:00,  2.92seg/s]"
      ]
     },
     {
@@ -1833,7 +1833,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving descent_2:  |\u001b[32m█████████▏\u001b[0m| 11/12 segs [00:03<00:00,  2.90seg/s]"
+      "Solving descent_2:  |\u001b[32m█████████▏\u001b[0m| 11/12 segs [00:03<00:00,  2.82seg/s]"
      ]
     },
     {
@@ -1841,7 +1841,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving descent_3:  |\u001b[32m█████████▏\u001b[0m| 11/12 segs [00:03<00:00,  2.90seg/s]"
+      "Solving descent_3:  |\u001b[32m█████████▏\u001b[0m| 11/12 segs [00:03<00:00,  2.82seg/s]"
      ]
     },
     {
@@ -1849,7 +1849,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving descent_3:  |\u001b[32m██████████\u001b[0m| 12/12 segs [00:04<00:00,  2.85seg/s]"
+      "Solving descent_3:  |\u001b[32m██████████\u001b[0m| 12/12 segs [00:04<00:00,  2.78seg/s]"
      ]
     },
     {
@@ -1857,7 +1857,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving descent_3:  |\u001b[32m██████████\u001b[0m| 12/12 segs [00:04<00:00,  2.93seg/s]"
+      "Solving descent_3:  |\u001b[32m██████████\u001b[0m| 12/12 segs [00:04<00:00,  2.84seg/s]"
      ]
     },
     {
