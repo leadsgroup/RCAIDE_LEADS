@@ -25,10 +25,10 @@
    "execution_count": 1,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-24T14:10:50.138133Z",
-     "iopub.status.busy": "2026-07-24T14:10:50.137974Z",
-     "iopub.status.idle": "2026-07-24T14:10:50.489390Z",
-     "shell.execute_reply": "2026-07-24T14:10:50.488535Z"
+     "iopub.execute_input": "2026-07-25T17:10:41.228003Z",
+     "iopub.status.busy": "2026-07-25T17:10:41.227900Z",
+     "iopub.status.idle": "2026-07-25T17:10:41.561255Z",
+     "shell.execute_reply": "2026-07-25T17:10:41.560688Z"
     }
    },
    "outputs": [],
@@ -62,10 +62,10 @@
    "execution_count": 2,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-24T14:10:50.491372Z",
-     "iopub.status.busy": "2026-07-24T14:10:50.491161Z",
-     "iopub.status.idle": "2026-07-24T14:10:51.758786Z",
-     "shell.execute_reply": "2026-07-24T14:10:51.757986Z"
+     "iopub.execute_input": "2026-07-25T17:10:41.563321Z",
+     "iopub.status.busy": "2026-07-25T17:10:41.563122Z",
+     "iopub.status.idle": "2026-07-25T17:10:42.823764Z",
+     "shell.execute_reply": "2026-07-25T17:10:42.823253Z"
     }
    },
    "outputs": [],
@@ -108,10 +108,10 @@
    "execution_count": 3,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-24T14:10:51.760986Z",
-     "iopub.status.busy": "2026-07-24T14:10:51.760726Z",
-     "iopub.status.idle": "2026-07-24T14:10:51.768231Z",
-     "shell.execute_reply": "2026-07-24T14:10:51.767489Z"
+     "iopub.execute_input": "2026-07-25T17:10:42.825903Z",
+     "iopub.status.busy": "2026-07-25T17:10:42.825624Z",
+     "iopub.status.idle": "2026-07-25T17:10:42.832254Z",
+     "shell.execute_reply": "2026-07-25T17:10:42.831812Z"
     }
    },
    "outputs": [],
@@ -178,10 +178,10 @@
    "execution_count": 4,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-24T14:10:51.769756Z",
-     "iopub.status.busy": "2026-07-24T14:10:51.769642Z",
-     "iopub.status.idle": "2026-07-24T14:10:55.767010Z",
-     "shell.execute_reply": "2026-07-24T14:10:55.766028Z"
+     "iopub.execute_input": "2026-07-25T17:10:42.833752Z",
+     "iopub.status.busy": "2026-07-25T17:10:42.833642Z",
+     "iopub.status.idle": "2026-07-25T17:10:46.246678Z",
+     "shell.execute_reply": "2026-07-25T17:10:46.245999Z"
     }
    },
    "outputs": [
@@ -189,11 +189,11 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "\u001b[0m\u001b[33m2026-07-24 14:10:54.971 (   3.571s) [    7FAA10A41B80]vtkXOpenGLRenderWindow.:1460  WARN| bad X server connection. DISPLAY=\u001b[0m\n",
-      "\u001b[0m\u001b[33m2026-07-24 14:10:54.972 (   3.571s) [    7FAA10A41B80]vtkOpenGLRenderWindow.c:645   WARN| Failed to load EGL! Please install the EGL library from your distribution's package manager.\u001b[0m\n",
-      "\u001b[0m\u001b[33m2026-07-24 14:10:54.972 (   3.572s) [    7FAA10A41B80]vtkOSOpenGLRenderWindow:149   WARN| libOSMesa not found. It appears that OSMesa is not installed in your system. Please install the OSMesa library from your distribution's package manager.\u001b[0m\n",
-      "\u001b[0m\u001b[33m2026-07-24 14:10:54.973 (   3.573s) [    7FAA10A41B80]vtkOpenGLRenderWindow.c:645   WARN| Failed to load EGL! Please install the EGL library from your distribution's package manager.\u001b[0m\n",
-      "\u001b[0m\u001b[33m2026-07-24 14:10:54.973 (   3.573s) [    7FAA10A41B80]vtkOSOpenGLRenderWindow:149   WARN| libOSMesa not found. It appears that OSMesa is not installed in your system. Please install the OSMesa library from your distribution's package manager.\u001b[0m\n"
+      "\u001b[0m\u001b[33m2026-07-25 17:10:45.501 (   3.049s) [    7F555F9B7B80]vtkXOpenGLRenderWindow.:1460  WARN| bad X server connection. DISPLAY=\u001b[0m\n",
+      "\u001b[0m\u001b[33m2026-07-25 17:10:45.502 (   3.049s) [    7F555F9B7B80]vtkOpenGLRenderWindow.c:645   WARN| Failed to load EGL! Please install the EGL library from your distribution's package manager.\u001b[0m\n",
+      "\u001b[0m\u001b[33m2026-07-25 17:10:45.502 (   3.050s) [    7F555F9B7B80]vtkOSOpenGLRenderWindow:149   WARN| libOSMesa not found. It appears that OSMesa is not installed in your system. Please install the OSMesa library from your distribution's package manager.\u001b[0m\n",
+      "\u001b[0m\u001b[33m2026-07-25 17:10:45.503 (   3.051s) [    7F555F9B7B80]vtkOpenGLRenderWindow.c:645   WARN| Failed to load EGL! Please install the EGL library from your distribution's package manager.\u001b[0m\n",
+      "\u001b[0m\u001b[33m2026-07-25 17:10:45.503 (   3.051s) [    7F555F9B7B80]vtkOSOpenGLRenderWindow:149   WARN| libOSMesa not found. It appears that OSMesa is not installed in your system. Please install the OSMesa library from your distribution's package manager.\u001b[0m\n"
      ]
     },
     {

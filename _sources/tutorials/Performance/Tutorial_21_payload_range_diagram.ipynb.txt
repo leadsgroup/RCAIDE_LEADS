@@ -25,10 +25,10 @@
    "execution_count": 1,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-24T14:08:29.731465Z",
-     "iopub.status.busy": "2026-07-24T14:08:29.731326Z",
-     "iopub.status.idle": "2026-07-24T14:08:30.085468Z",
-     "shell.execute_reply": "2026-07-24T14:08:30.084357Z"
+     "iopub.execute_input": "2026-07-25T17:09:03.142605Z",
+     "iopub.status.busy": "2026-07-25T17:09:03.142463Z",
+     "iopub.status.idle": "2026-07-25T17:09:03.481655Z",
+     "shell.execute_reply": "2026-07-25T17:09:03.481114Z"
     }
    },
    "outputs": [],
@@ -68,10 +68,10 @@
    "execution_count": 2,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-24T14:08:30.087593Z",
-     "iopub.status.busy": "2026-07-24T14:08:30.087398Z",
-     "iopub.status.idle": "2026-07-24T14:08:31.367151Z",
-     "shell.execute_reply": "2026-07-24T14:08:31.366435Z"
+     "iopub.execute_input": "2026-07-25T17:09:03.483671Z",
+     "iopub.status.busy": "2026-07-25T17:09:03.483479Z",
+     "iopub.status.idle": "2026-07-25T17:09:04.760294Z",
+     "shell.execute_reply": "2026-07-25T17:09:04.759755Z"
     }
    },
    "outputs": [],
@@ -100,10 +100,10 @@
    "execution_count": 3,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-24T14:08:31.369779Z",
-     "iopub.status.busy": "2026-07-24T14:08:31.369496Z",
-     "iopub.status.idle": "2026-07-24T14:08:31.405112Z",
-     "shell.execute_reply": "2026-07-24T14:08:31.404460Z"
+     "iopub.execute_input": "2026-07-25T17:09:04.762640Z",
+     "iopub.status.busy": "2026-07-25T17:09:04.762361Z",
+     "iopub.status.idle": "2026-07-25T17:09:04.796928Z",
+     "shell.execute_reply": "2026-07-25T17:09:04.796427Z"
     }
    },
    "outputs": [],
@@ -684,10 +684,10 @@
    "execution_count": 4,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-24T14:08:31.407124Z",
-     "iopub.status.busy": "2026-07-24T14:08:31.406964Z",
-     "iopub.status.idle": "2026-07-24T14:08:31.411370Z",
-     "shell.execute_reply": "2026-07-24T14:08:31.410652Z"
+     "iopub.execute_input": "2026-07-25T17:09:04.798932Z",
+     "iopub.status.busy": "2026-07-25T17:09:04.798797Z",
+     "iopub.status.idle": "2026-07-25T17:09:04.802957Z",
+     "shell.execute_reply": "2026-07-25T17:09:04.802363Z"
     }
    },
    "outputs": [],
@@ -743,10 +743,10 @@
    "execution_count": 5,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-24T14:08:31.412818Z",
-     "iopub.status.busy": "2026-07-24T14:08:31.412693Z",
-     "iopub.status.idle": "2026-07-24T14:08:31.417027Z",
-     "shell.execute_reply": "2026-07-24T14:08:31.416092Z"
+     "iopub.execute_input": "2026-07-25T17:09:04.804204Z",
+     "iopub.status.busy": "2026-07-25T17:09:04.804089Z",
+     "iopub.status.idle": "2026-07-25T17:09:04.808001Z",
+     "shell.execute_reply": "2026-07-25T17:09:04.807401Z"
     }
    },
    "outputs": [],
@@ -795,10 +795,10 @@
    "execution_count": 6,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-24T14:08:31.418422Z",
-     "iopub.status.busy": "2026-07-24T14:08:31.418307Z",
-     "iopub.status.idle": "2026-07-24T14:08:31.420969Z",
-     "shell.execute_reply": "2026-07-24T14:08:31.420324Z"
+     "iopub.execute_input": "2026-07-25T17:09:04.809330Z",
+     "iopub.status.busy": "2026-07-25T17:09:04.809225Z",
+     "iopub.status.idle": "2026-07-25T17:09:04.811688Z",
+     "shell.execute_reply": "2026-07-25T17:09:04.811138Z"
     }
    },
    "outputs": [],
@@ -817,10 +817,10 @@
    "execution_count": 7,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-24T14:08:31.422448Z",
-     "iopub.status.busy": "2026-07-24T14:08:31.422330Z",
-     "iopub.status.idle": "2026-07-24T14:08:31.472457Z",
-     "shell.execute_reply": "2026-07-24T14:08:31.471647Z"
+     "iopub.execute_input": "2026-07-25T17:09:04.812890Z",
+     "iopub.status.busy": "2026-07-25T17:09:04.812771Z",
+     "iopub.status.idle": "2026-07-25T17:09:04.858088Z",
+     "shell.execute_reply": "2026-07-25T17:09:04.857512Z"
     }
    },
    "outputs": [],
@@ -867,10 +867,10 @@
    "execution_count": 8,
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-24T14:08:31.474108Z",
-     "iopub.status.busy": "2026-07-24T14:08:31.473947Z",
-     "iopub.status.idle": "2026-07-24T14:10:46.948030Z",
-     "shell.execute_reply": "2026-07-24T14:10:46.947531Z"
+     "iopub.execute_input": "2026-07-25T17:09:04.859751Z",
+     "iopub.status.busy": "2026-07-25T17:09:04.859618Z",
+     "iopub.status.idle": "2026-07-25T17:10:37.465325Z",
+     "shell.execute_reply": "2026-07-25T17:10:37.464899Z"
     }
    },
    "outputs": [
@@ -996,111 +996,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.22seg/s]"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.21seg/s]"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "\n"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "\r",
-      " |\u001b[32m          \u001b[0m| 0/1 segs [00:00<?, ?seg/s]"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "\r",
-      "Solving cruise:  |\u001b[32m          \u001b[0m| 0/1 segs [00:00<?, ?seg/s]"
-     ]
-    },
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "\n",
-      " Aerodynamic training data loaded. Delete the file and rerun to regenerate.\n",
-      "\n",
-      "          +----------------------------------------------------+\n",
-      "          |              MISSION SOLVER INITIATED              |\n",
-      "          +----------------------------------------------------+\n",
-      "          \n"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.42seg/s]"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.41seg/s]"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "\n"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "\r",
-      " |\u001b[32m          \u001b[0m| 0/1 segs [00:00<?, ?seg/s]"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "\r",
-      "Solving cruise:  |\u001b[32m          \u001b[0m| 0/1 segs [00:00<?, ?seg/s]"
-     ]
-    },
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "\n",
-      " Aerodynamic training data loaded. Delete the file and rerun to regenerate.\n",
-      "\n",
-      "          +----------------------------------------------------+\n",
-      "          |              MISSION SOLVER INITIATED              |\n",
-      "          +----------------------------------------------------+\n",
-      "          \n"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.40seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.39seg/s]"
      ]
     },
     {
@@ -1152,7 +1048,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.38seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.46seg/s]"
      ]
     },
     {
@@ -1160,7 +1056,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.37seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.45seg/s]"
      ]
     },
     {
@@ -1204,7 +1100,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.37seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.47seg/s]"
      ]
     },
     {
@@ -1212,7 +1108,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.37seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.47seg/s]"
      ]
     },
     {
@@ -1257,6 +1153,162 @@
      "text": [
       "\r",
       "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.40seg/s]"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "\r",
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.40seg/s]"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "\r",
+      " |\u001b[32m          \u001b[0m| 0/1 segs [00:00<?, ?seg/s]"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "\r",
+      "Solving cruise:  |\u001b[32m          \u001b[0m| 0/1 segs [00:00<?, ?seg/s]"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      " Aerodynamic training data loaded. Delete the file and rerun to regenerate.\n",
+      "\n",
+      "          +----------------------------------------------------+\n",
+      "          |              MISSION SOLVER INITIATED              |\n",
+      "          +----------------------------------------------------+\n",
+      "          \n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "\r",
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.50seg/s]"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "\r",
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.49seg/s]"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "\r",
+      " |\u001b[32m          \u001b[0m| 0/1 segs [00:00<?, ?seg/s]"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "\r",
+      "Solving cruise:  |\u001b[32m          \u001b[0m| 0/1 segs [00:00<?, ?seg/s]"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      " Aerodynamic training data loaded. Delete the file and rerun to regenerate.\n",
+      "\n",
+      "          +----------------------------------------------------+\n",
+      "          |              MISSION SOLVER INITIATED              |\n",
+      "          +----------------------------------------------------+\n",
+      "          \n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "\r",
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.47seg/s]"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "\r",
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.47seg/s]"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "\r",
+      " |\u001b[32m          \u001b[0m| 0/1 segs [00:00<?, ?seg/s]"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "\r",
+      "Solving cruise:  |\u001b[32m          \u001b[0m| 0/1 segs [00:00<?, ?seg/s]"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      " Aerodynamic training data loaded. Delete the file and rerun to regenerate.\n",
+      "\n",
+      "          +----------------------------------------------------+\n",
+      "          |              MISSION SOLVER INITIATED              |\n",
+      "          +----------------------------------------------------+\n",
+      "          \n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "\r",
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.39seg/s]"
      ]
     },
     {
@@ -1316,58 +1368,6 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.40seg/s]"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "\n"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "\r",
-      " |\u001b[32m          \u001b[0m| 0/1 segs [00:00<?, ?seg/s]"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "\r",
-      "Solving cruise:  |\u001b[32m          \u001b[0m| 0/1 segs [00:00<?, ?seg/s]"
-     ]
-    },
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "\n",
-      " Aerodynamic training data loaded. Delete the file and rerun to regenerate.\n",
-      "\n",
-      "          +----------------------------------------------------+\n",
-      "          |              MISSION SOLVER INITIATED              |\n",
-      "          +----------------------------------------------------+\n",
-      "          \n"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.41seg/s]"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "\r",
       "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.41seg/s]"
      ]
     },
@@ -1412,7 +1412,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.40seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.46seg/s]"
      ]
     },
     {
@@ -1420,7 +1420,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.39seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.46seg/s]"
      ]
     },
     {
@@ -1464,7 +1464,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.40seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.48seg/s]"
      ]
     },
     {
@@ -1472,7 +1472,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.40seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.48seg/s]"
      ]
     },
     {
@@ -1516,7 +1516,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.95seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.01seg/s]"
      ]
     },
     {
@@ -1524,7 +1524,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.95seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  2.01seg/s]"
      ]
     },
     {
@@ -1568,7 +1568,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.94seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.99seg/s]"
      ]
     },
     {
@@ -1576,7 +1576,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.93seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.99seg/s]"
      ]
     },
     {
@@ -1620,7 +1620,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.93seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.99seg/s]"
      ]
     },
     {
@@ -1628,7 +1628,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.93seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.99seg/s]"
      ]
     },
     {
@@ -1672,7 +1672,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.95seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.98seg/s]"
      ]
     },
     {
@@ -1680,7 +1680,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.95seg/s]"
+      "Solving cruise:  |\u001b[32m██████████\u001b[0m| 1/1 segs [00:00<00:00,  1.98seg/s]"
      ]
     },
     {

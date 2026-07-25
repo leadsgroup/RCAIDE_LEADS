@@ -28,10 +28,10 @@
    "id": "240295e0-7be5-40b7-ba3a-c1754fbd604a",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-24T13:44:30.542083Z",
-     "iopub.status.busy": "2026-07-24T13:44:30.541899Z",
-     "iopub.status.idle": "2026-07-24T13:44:32.266989Z",
-     "shell.execute_reply": "2026-07-24T13:44:32.266283Z"
+     "iopub.execute_input": "2026-07-25T16:48:59.251956Z",
+     "iopub.status.busy": "2026-07-25T16:48:59.251810Z",
+     "iopub.status.idle": "2026-07-25T16:49:00.851542Z",
+     "shell.execute_reply": "2026-07-25T16:49:00.850972Z"
     }
    },
    "outputs": [],
@@ -68,10 +68,10 @@
    "id": "3ba2ac60-625b-42b7-b247-4991fd479b6d",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-24T13:44:32.269336Z",
-     "iopub.status.busy": "2026-07-24T13:44:32.269123Z",
-     "iopub.status.idle": "2026-07-24T13:44:34.292482Z",
-     "shell.execute_reply": "2026-07-24T13:44:34.291580Z"
+     "iopub.execute_input": "2026-07-25T16:49:00.853509Z",
+     "iopub.status.busy": "2026-07-25T16:49:00.853339Z",
+     "iopub.status.idle": "2026-07-25T16:49:02.648117Z",
+     "shell.execute_reply": "2026-07-25T16:49:02.647542Z"
     },
     "scrolled": true
    },
@@ -168,10 +168,10 @@
    "id": "7a804f20-6182-4036-94d5-571e1d7da8ba",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-24T13:44:34.294894Z",
-     "iopub.status.busy": "2026-07-24T13:44:34.294631Z",
-     "iopub.status.idle": "2026-07-24T13:44:34.335707Z",
-     "shell.execute_reply": "2026-07-24T13:44:34.334736Z"
+     "iopub.execute_input": "2026-07-25T16:49:02.650357Z",
+     "iopub.status.busy": "2026-07-25T16:49:02.650126Z",
+     "iopub.status.idle": "2026-07-25T16:49:02.687254Z",
+     "shell.execute_reply": "2026-07-25T16:49:02.686631Z"
     }
    },
    "outputs": [],
@@ -866,10 +866,10 @@
    "id": "40b6618a-2300-4934-9959-76275669406b",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-24T13:44:34.337539Z",
-     "iopub.status.busy": "2026-07-24T13:44:34.337401Z",
-     "iopub.status.idle": "2026-07-24T13:44:34.346445Z",
-     "shell.execute_reply": "2026-07-24T13:44:34.345504Z"
+     "iopub.execute_input": "2026-07-25T16:49:02.688632Z",
+     "iopub.status.busy": "2026-07-25T16:49:02.688517Z",
+     "iopub.status.idle": "2026-07-25T16:49:02.696006Z",
+     "shell.execute_reply": "2026-07-25T16:49:02.695457Z"
     }
    },
    "outputs": [],
@@ -1042,10 +1042,10 @@
    "id": "e368c067-09c1-4def-8aa6-7d592af8ae61",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-24T13:44:34.348070Z",
-     "iopub.status.busy": "2026-07-24T13:44:34.347902Z",
-     "iopub.status.idle": "2026-07-24T13:44:34.352675Z",
-     "shell.execute_reply": "2026-07-24T13:44:34.351750Z"
+     "iopub.execute_input": "2026-07-25T16:49:02.697229Z",
+     "iopub.status.busy": "2026-07-25T16:49:02.697130Z",
+     "iopub.status.idle": "2026-07-25T16:49:02.700917Z",
+     "shell.execute_reply": "2026-07-25T16:49:02.700310Z"
     }
    },
    "outputs": [],
@@ -1153,10 +1153,10 @@
    "id": "0dcaa85a-5ade-465a-9ccd-14ae6c9d6261",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-24T13:44:34.354232Z",
-     "iopub.status.busy": "2026-07-24T13:44:34.354111Z",
-     "iopub.status.idle": "2026-07-24T13:44:34.357168Z",
-     "shell.execute_reply": "2026-07-24T13:44:34.356528Z"
+     "iopub.execute_input": "2026-07-25T16:49:02.702025Z",
+     "iopub.status.busy": "2026-07-25T16:49:02.701933Z",
+     "iopub.status.idle": "2026-07-25T16:49:02.704488Z",
+     "shell.execute_reply": "2026-07-25T16:49:02.704002Z"
     }
    },
    "outputs": [],
@@ -1224,10 +1224,10 @@
    "id": "e0ff2c51-2b38-464a-a47d-9e1976d3e1e7",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-24T13:44:34.358956Z",
-     "iopub.status.busy": "2026-07-24T13:44:34.358829Z",
-     "iopub.status.idle": "2026-07-24T13:44:34.374707Z",
-     "shell.execute_reply": "2026-07-24T13:44:34.373949Z"
+     "iopub.execute_input": "2026-07-25T16:49:02.705732Z",
+     "iopub.status.busy": "2026-07-25T16:49:02.705640Z",
+     "iopub.status.idle": "2026-07-25T16:49:02.719217Z",
+     "shell.execute_reply": "2026-07-25T16:49:02.718736Z"
     }
    },
    "outputs": [],
@@ -1509,10 +1509,10 @@
    "id": "b380bfb9-64a0-4d65-9e66-c74ff025c6b4",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-24T13:44:34.376111Z",
-     "iopub.status.busy": "2026-07-24T13:44:34.375978Z",
-     "iopub.status.idle": "2026-07-24T13:44:34.378931Z",
-     "shell.execute_reply": "2026-07-24T13:44:34.378268Z"
+     "iopub.execute_input": "2026-07-25T16:49:02.720455Z",
+     "iopub.status.busy": "2026-07-25T16:49:02.720349Z",
+     "iopub.status.idle": "2026-07-25T16:49:02.722876Z",
+     "shell.execute_reply": "2026-07-25T16:49:02.722321Z"
     }
    },
    "outputs": [],
@@ -1543,10 +1543,10 @@
    "id": "1edc8815-56a3-4ce9-9357-0b3e45910d84",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-24T13:44:34.380496Z",
-     "iopub.status.busy": "2026-07-24T13:44:34.380388Z",
-     "iopub.status.idle": "2026-07-24T13:44:34.383496Z",
-     "shell.execute_reply": "2026-07-24T13:44:34.382817Z"
+     "iopub.execute_input": "2026-07-25T16:49:02.724033Z",
+     "iopub.status.busy": "2026-07-25T16:49:02.723938Z",
+     "iopub.status.idle": "2026-07-25T16:49:02.726475Z",
+     "shell.execute_reply": "2026-07-25T16:49:02.726026Z"
     }
    },
    "outputs": [],
@@ -1593,10 +1593,10 @@
    "id": "a81c45f1",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-07-24T13:44:34.384983Z",
-     "iopub.status.busy": "2026-07-24T13:44:34.384881Z",
-     "iopub.status.idle": "2026-07-24T13:47:54.184617Z",
-     "shell.execute_reply": "2026-07-24T13:47:54.183692Z"
+     "iopub.execute_input": "2026-07-25T16:49:02.727916Z",
+     "iopub.status.busy": "2026-07-25T16:49:02.727744Z",
+     "iopub.status.idle": "2026-07-25T16:51:15.449460Z",
+     "shell.execute_reply": "2026-07-25T16:51:15.448877Z"
     }
    },
    "outputs": [
@@ -1729,7 +1729,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving Takeoff:  |\u001b[32m▉         \u001b[0m| 1/11 segs [00:00<00:02,  3.64seg/s]"
+      "Solving Takeoff:  |\u001b[32m▉         \u001b[0m| 1/11 segs [00:00<00:02,  4.20seg/s]"
      ]
     },
     {
@@ -1737,7 +1737,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving climb_1:  |\u001b[32m▉         \u001b[0m| 1/11 segs [00:00<00:02,  3.64seg/s]"
+      "Solving climb_1:  |\u001b[32m▉         \u001b[0m| 1/11 segs [00:00<00:02,  4.20seg/s]"
      ]
     },
     {
@@ -1745,7 +1745,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving climb_1:  |\u001b[32m█▊        \u001b[0m| 2/11 segs [00:00<00:02,  3.12seg/s]"
+      "Solving climb_1:  |\u001b[32m█▊        \u001b[0m| 2/11 segs [00:00<00:02,  3.48seg/s]"
      ]
     },
     {
@@ -1753,7 +1753,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving climb_2:  |\u001b[32m█▊        \u001b[0m| 2/11 segs [00:00<00:02,  3.12seg/s]"
+      "Solving climb_2:  |\u001b[32m█▊        \u001b[0m| 2/11 segs [00:00<00:02,  3.48seg/s]"
      ]
     },
     {
@@ -1761,7 +1761,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving climb_2:  |\u001b[32m██▋       \u001b[0m| 3/11 segs [00:00<00:02,  3.01seg/s]"
+      "Solving climb_2:  |\u001b[32m██▋       \u001b[0m| 3/11 segs [00:00<00:02,  3.37seg/s]"
      ]
     },
     {
@@ -1769,7 +1769,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving climb_3:  |\u001b[32m██▋       \u001b[0m| 3/11 segs [00:00<00:02,  3.01seg/s]"
+      "Solving climb_3:  |\u001b[32m██▋       \u001b[0m| 3/11 segs [00:00<00:02,  3.37seg/s]"
      ]
     },
     {
@@ -1777,7 +1777,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving climb_3:  |\u001b[32m███▋      \u001b[0m| 4/11 segs [00:01<00:02,  2.98seg/s]"
+      "Solving climb_3:  |\u001b[32m███▋      \u001b[0m| 4/11 segs [00:01<00:02,  3.33seg/s]"
      ]
     },
     {
@@ -1785,7 +1785,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m███▋      \u001b[0m| 4/11 segs [00:01<00:02,  2.98seg/s] "
+      "Solving cruise:  |\u001b[32m███▋      \u001b[0m| 4/11 segs [00:01<00:02,  3.33seg/s] "
      ]
     },
     {
@@ -1793,7 +1793,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving cruise:  |\u001b[32m████▌     \u001b[0m| 5/11 segs [00:01<00:02,  2.97seg/s]"
+      "Solving cruise:  |\u001b[32m████▌     \u001b[0m| 5/11 segs [00:01<00:01,  3.29seg/s]"
      ]
     },
     {
@@ -1801,7 +1801,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving descent_1:  |\u001b[32m████▌     \u001b[0m| 5/11 segs [00:01<00:02,  2.97seg/s]"
+      "Solving descent_1:  |\u001b[32m████▌     \u001b[0m| 5/11 segs [00:01<00:01,  3.29seg/s]"
      ]
     },
     {
@@ -1809,7 +1809,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving descent_1:  |\u001b[32m█████▍    \u001b[0m| 6/11 segs [00:02<00:01,  2.93seg/s]"
+      "Solving descent_1:  |\u001b[32m█████▍    \u001b[0m| 6/11 segs [00:01<00:01,  3.25seg/s]"
      ]
     },
     {
@@ -1817,7 +1817,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving descent_2:  |\u001b[32m█████▍    \u001b[0m| 6/11 segs [00:02<00:01,  2.93seg/s]"
+      "Solving descent_2:  |\u001b[32m█████▍    \u001b[0m| 6/11 segs [00:01<00:01,  3.25seg/s]"
      ]
     },
     {
@@ -1825,7 +1825,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving descent_2:  |\u001b[32m██████▎   \u001b[0m| 7/11 segs [00:02<00:01,  2.87seg/s]"
+      "Solving descent_2:  |\u001b[32m██████▎   \u001b[0m| 7/11 segs [00:02<00:01,  3.18seg/s]"
      ]
     },
     {
@@ -1833,7 +1833,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving descent_3:  |\u001b[32m██████▎   \u001b[0m| 7/11 segs [00:02<00:01,  2.87seg/s]"
+      "Solving descent_3:  |\u001b[32m██████▎   \u001b[0m| 7/11 segs [00:02<00:01,  3.18seg/s]"
      ]
     },
     {
@@ -1841,7 +1841,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving descent_3:  |\u001b[32m███████▎  \u001b[0m| 8/11 segs [00:02<00:01,  2.87seg/s]"
+      "Solving descent_3:  |\u001b[32m███████▎  \u001b[0m| 8/11 segs [00:02<00:00,  3.16seg/s]"
      ]
     },
     {
@@ -1849,7 +1849,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving descent_4:  |\u001b[32m███████▎  \u001b[0m| 8/11 segs [00:02<00:01,  2.87seg/s]"
+      "Solving descent_4:  |\u001b[32m███████▎  \u001b[0m| 8/11 segs [00:02<00:00,  3.16seg/s]"
      ]
     },
     {
@@ -1857,7 +1857,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving descent_4:  |\u001b[32m████████▏ \u001b[0m| 9/11 segs [00:03<00:00,  2.86seg/s]"
+      "Solving descent_4:  |\u001b[32m████████▏ \u001b[0m| 9/11 segs [00:02<00:00,  3.14seg/s]"
      ]
     },
     {
@@ -1865,7 +1865,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving descent_5:  |\u001b[32m████████▏ \u001b[0m| 9/11 segs [00:03<00:00,  2.86seg/s]"
+      "Solving descent_5:  |\u001b[32m████████▏ \u001b[0m| 9/11 segs [00:02<00:00,  3.14seg/s]"
      ]
     },
     {
@@ -1873,7 +1873,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving descent_5:  |\u001b[32m█████████ \u001b[0m| 10/11 segs [00:03<00:00,  2.82seg/s]"
+      "Solving descent_5:  |\u001b[32m█████████ \u001b[0m| 10/11 segs [00:03<00:00,  3.11seg/s]"
      ]
     },
     {
@@ -1881,7 +1881,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving Landing:  |\u001b[32m█████████ \u001b[0m| 10/11 segs [00:03<00:00,  2.82seg/s]  "
+      "Solving Landing:  |\u001b[32m█████████ \u001b[0m| 10/11 segs [00:03<00:00,  3.11seg/s]  "
      ]
     },
     {
@@ -1889,7 +1889,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving Landing:  |\u001b[32m██████████\u001b[0m| 11/11 segs [00:04<00:00,  1.76seg/s]"
+      "Solving Landing:  |\u001b[32m██████████\u001b[0m| 11/11 segs [00:04<00:00,  1.96seg/s]"
      ]
     },
     {
@@ -1897,7 +1897,7 @@
      "output_type": "stream",
      "text": [
       "\r",
-      "Solving Landing:  |\u001b[32m██████████\u001b[0m| 11/11 segs [00:04<00:00,  2.45seg/s]"
+      "Solving Landing:  |\u001b[32m██████████\u001b[0m| 11/11 segs [00:04<00:00,  2.72seg/s]"
      ]
     },
     {
