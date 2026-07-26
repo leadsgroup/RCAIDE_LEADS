@@ -24,3 +24,4 @@ from .Fuel_Tank            import Fuel_Tank
 from .Integral_Tank        import Integral_Tank
 from .Non_Integral_Tank    import Non_Integral_Tank
 from .Cryogenic_Tank       import Cryogenic_Tank
+from .Pressurized_Tank     import Pressurized_Tank

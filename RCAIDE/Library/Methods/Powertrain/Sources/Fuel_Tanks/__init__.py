@@ -21,3 +21,4 @@ from .compute_fuel_tank_performance import compute_fuel_tank_performance
 from . import Integral_Tank
 from . import Non_Integral_Tank
 from . import Cryogenic_Tank
+from . import Pressurized_Tank
