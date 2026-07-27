@@ -188,8 +188,14 @@ def compute_dynamic_flight_modes(state,settings,vehicle):
         Nr = 0.25 * rho * u0 * b_ref**2 * S_ref * SSD.CN_r
         
         # Aileron effectiveness  
-        # WHat is we don't have ailerons? Will this work? Check this
-        ail = conditions.control_surfaces.aileron.static_stability.coefficients                  
+        # Prefer aileron; if absent, use zeros (open-loop lateral modes still work)
+        if 'aileron' in conditions.control_surfaces:
+            ail = conditions.control_surfaces.aileron.static_stability.coefficients
+            Ya = 0.5 * rho * u0 * u0 * S_ref * ail.Y
+            La = 0.5 * rho * u0 * u0 * S_ref * b_ref * ail.L
+            Na = 0.5 * rho * u0 * u0 * S_ref * b_ref * ail.N
+        else:
+            Ya = La = Na = 0.0 * u0                 
         Ya = 0.5 * rho * u0 * u0 * S_ref * ail.Y 
         La = 0.5 * rho * u0 * u0 * S_ref * b_ref * ail.L 
         Na = 0.5 * rho * u0 * u0 * S_ref * b_ref * ail.N 
