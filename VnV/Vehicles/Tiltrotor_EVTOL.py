@@ -9,7 +9,7 @@
 #   Imports
 # ---------------------------------------------------------------------
 import RCAIDE
-from RCAIDE.Framework.Core import Units  
+from RCAIDE.Framework.Core import Units, Data
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor  import design_electric_rotor
 from RCAIDE.Library.Plots                                         import * 
 from RCAIDE import  load 
@@ -23,7 +23,11 @@ import  pickle
 # ----------------------------------------------------------------------
 #   Build the Vehicle
 # ----------------------------------------------------------------------
-def vehicle_setup(redesign_rotors=True) : 
+def vehicle_setup(redesign_rotors=True, design_iterations=200) :
+    # design_iterations is passed straight through to design_electric_rotor's own optimizer
+    # budget (its default is 200). Pass a small value (e.g. 2) to skip most of the expensive
+    # multi-point hover/OEI/cruise blade optimization -- useful when you only need *a* valid
+    # rotor to test mission-level solving, not a fully-optimized blade design.
 
     ospath      = os.path.abspath(__file__)
     separator   = os.path.sep 
@@ -430,10 +434,42 @@ def vehicle_setup(redesign_rotors=True) :
                                                      local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_3500000.txt',
                                                      local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_5000000.txt',
                                                      local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_7500000.txt' ]
-    prop_rotor.append_airfoil(airfoil)                
+    prop_rotor.append_airfoil(airfoil)
     prop_rotor.airfoil_polar_stations             = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-    propulsor.rotor = prop_rotor    
-    
+
+    # Lifting-line fidelity -- mirrors Electric_Twin_Otter.py's validated LL configuration.
+    # radius_distribution must be set explicitly before design_electric_rotor(), since
+    # initialize_lifting_line() needs it upfront (BEMT can auto-generate it, LL cannot).
+    prop_rotor.fidelity                                = 'Lifting_Line_Theory'
+    prop_rotor.rc                                      = 0.05
+    prop_rotor.variable_pitch                          = True
+    prop_rotor.radius_distribution                     = np.linspace(prop_rotor.hub_radius, prop_rotor.tip_radius, len(prop_rotor.airfoil_polar_stations))
+
+    prop_rotor.wake_inputs = Data()
+    prop_rotor.wake_inputs.include_wake                 = True
+    prop_rotor.wake_inputs.wake_model_hov               = 1                 # 1 simple model, 2 landgrebe, 3 landgrebe KT
+    prop_rotor.wake_inputs.wake_model_FF                = 5                 # 4 undistorted, 5 Beddoes distorted, 6 Modified Beddoes distorted
+    prop_rotor.wake_inputs.vc_correction                = 1                 # vortex core factor, 1 standard/Scully, 2 Rankine, 3 Vatistas, 4 Oseen
+    prop_rotor.wake_inputs.dpsi                         = np.radians(15)    # filament length [rad]
+    prop_rotor.wake_inputs.n_turns                      = 5.0               # Number of wake turns
+    prop_rotor.wake_inputs.thrust_coeff_initial_guess   = 0.00654           # initial guess for CT to intialize the wake geometry
+    prop_rotor.wake_inputs.lamb_oseen_rc_0              = 0.028             # initial core radius for the wake filaments [fraction of R]
+    prop_rotor.wake_inputs.lamb_oseen_alpha             = 1.25643           # parameters for the core radius growth rate Lamb-Oseen model
+    prop_rotor.wake_inputs.lamb_oseen_delta             = 120000
+    prop_rotor.wake_inputs.lamb_oseen_sigma             = 1.0
+    prop_rotor.wake_inputs.lamb_oseen_core_growth_delay = np.radians(30.0)  # delay the growth rate till certain wake age
+    prop_rotor.wake_inputs.r_R_shed                     = 1.0               # location as fraction of R to shed the wake filament from
+    prop_rotor.wake_inputs.tol                          = 1e-3
+    prop_rotor.wake_inputs.relax_0                      = 0.5
+    prop_rotor.wake_inputs.max_iter_Gammab_0            = 500
+    prop_rotor.wake_inputs.max_iter_CT_0                = 10
+    prop_rotor.wake_inputs.CT_iter                      = True
+    prop_rotor.wake_inputs.aerofoil_aero                = 2                 # 1 simplified aerofoil aero, 2 detailed panel aerofoil aero
+    prop_rotor.wake_inputs.mu_max                       = 1.0               # edgewise advance ratio above which a control point is treated as out of the model's valid range
+    prop_rotor.wake_inputs.mu_edgewise_threshold        = 1e-2              # in-plane advance ratio at/above which a control point uses the forward-flight wake model instead of hover
+
+    propulsor.rotor = prop_rotor
+
     #------------------------------------------------------------------------------------------------------------------------------------               
     # Lift Rotor Motor  
     #------------------------------------------------------------------------------------------------------------------------------------    
@@ -518,7 +554,7 @@ def vehicle_setup(redesign_rotors=True) :
     propulsor.nacelle                 = nacelle  
             
     if redesign_rotors:
-        design_electric_rotor(propulsor, print_iterations=True)
+        design_electric_rotor(propulsor, iterations=design_iterations, print_iterations=True)
         save_propulsor(propulsor, os.path.join(local_path, 'tilt_rotor_propulsor.res'))
     else:
         regression_prop_rotor_propulsor = deepcopy(propulsor)        
@@ -605,11 +641,19 @@ def configs_setup(vehicle):
     # ------------------------------------------------------------------
     config                                                 = RCAIDE.Library.Components.Configs.Config(vehicle)
     config.tag                                             = 'vertical_flight'
-    vector_angle                                           = 90.0 * Units.degrees    
-    for network in  config.networks:  
+    vector_angle                                           = 90.0 * Units.degrees
+    for network in  config.networks:
         for propulsor in  network.propulsors:
-            propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0] 
-    configs.append(config)  
+            propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]
+            # hover.design_blade_pitch_command is always 0.0 -- the design optimizer has no
+            # hover-collective DV at all (only OEI/cruise collective pitch are actual DVs, see
+            # optimization_setup.py's inputs list). Confirmed directly: 0 deg is a genuine
+            # thrust shortfall with this rotor, not just a solver quirk -- pushed past the
+            # physical throttle=1 ceiling, achieved thrust still fell ~24% short of what's
+            # needed to hover. 8 deg compensates for that shortfall -- matches
+            # Electric_Twin_Otter.py's validated value rather than an arbitrary round number.
+            propulsor.rotor.blade_pitch_command      = np.radians(8.0)
+    configs.append(config)
     
 
     # ------------------------------------------------------------------
@@ -632,8 +676,9 @@ def configs_setup(vehicle):
     config.tag                                        = 'transition_setting_2' 
     for network in  config.networks:  
         for propulsor in  network.propulsors:
-            propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0] 
-    configs.append(config)   
+            propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]
+            propulsor.rotor.blade_pitch_command      = propulsor.rotor.cruise.design_blade_pitch_command * 0.5
+    configs.append(config)
 
     # ------------------------------------------------------------------
     #  Transition Setting 4
@@ -644,7 +689,7 @@ def configs_setup(vehicle):
     for network in  config.networks:  
         for propulsor in  network.propulsors:
             propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]
-            propulsor.rotor.blade_pitch_command   = propulsor.rotor.cruise.design_blade_pitch_command * 0.5   
+            propulsor.rotor.blade_pitch_command      = propulsor.rotor.cruise.design_blade_pitch_command * 0.5   
     configs.append(config)
         
 
