@@ -39,19 +39,29 @@ def main():
     # create mission instances (for multiple types of missions)
     missions = missions_setup(mission) 
      
-    # mission analysis 
-    results = missions.base_mission.evaluate()  
-    
+    # mission analysis
+    results = missions.base_mission.evaluate()
+
     plot_mission(results)
     
-    # plot vehicle 
-    # plot_3d_vehicle(vehicle, 
-    #                 fuselage_opacity            = 0.25, 
-    #                 nacelle_opacity             = 0.5, 
-    #                 boom_opacity                = 1.0,
-    #                 fuel_tank_opacity=1.0, 
-    #                 fuel_tank_color= 'lightblue', 
-    #                 boom_color                  = 'lightgreen')
+    # plot vehicle -- must use analyses.base.vehicle, NOT the original `vehicle` object.
+    # configs_setup() -> Config(vehicle) deep-copies vehicle (see Diffed_Data.__init__); every
+    # mission segment mutates that copy's rotor.blades during evaluate(), never the original
+    # `vehicle` variable. Plotting `vehicle` here was showing the frozen design-time wake from
+    # vehicle_setup()'s design_electric_rotor() call, completely disconnected from whatever the
+    # mission actually converged to -- that's why the wake looked identical across every segment
+    # and every convergence state. Wake nodes now come from whichever segment/control point last
+    # populated rotor.blades.wake.nodes_body during the mission evaluate() call above.
+    plot_3d_vehicle(analyses.base.vehicle,
+                    fuselage_opacity            = 0.25,
+                    nacelle_opacity             = 0.5,
+                    boom_opacity                = 1.0,
+                    fuel_tank_opacity=1.0,
+                    fuel_tank_color= 'lightblue',
+                    boom_color                  = 'lightgreen',
+                    plot_wake                   = True,
+                    wake_control_point          = 0,
+                    wake_tube_radius            = 0.02)
  
 
     return results
@@ -499,7 +509,7 @@ def vehicle_setup(rotor_type):
         propeller.wake_inputs.include_wake                 = True
         propeller.wake_inputs.wake_model_hov               = 1                 # 1 simple model, 2 landgrebe, 3 landgrebe KT
         propeller.wake_inputs.wake_model_FF                = 5                 # 4 undisorted, 5 Beddoes distorted, 6 Modified Beddoes distorted
-        propeller.wake_inputs.vc_correction                = 1                 # vortex core factor, 1 standard Rankine, 2 Rankine, 3 scully, 4 Vatistas, 5 Oseen
+        propeller.wake_inputs.vc_correction                = 1                 # vortex core factor, 1 standard/Scully, 2 Rankine, 3 Vatistas, 4 Oseen
         propeller.wake_inputs.dpsi                         = np.radians(15)    # filament length [rad]
         propeller.wake_inputs.n_turns                      = 5.0               # Number of wake turns
         propeller.wake_inputs.thrust_coeff_initial_guess   = 0.00654           # initial guess for CT to intialize the wake geometry
@@ -697,10 +707,16 @@ def vehicle_setup(rotor_type):
     port_propulsor.electronic_speed_controller = esc_2  
 
     propeller_2                                = deepcopy(propeller)
-    propeller_2.tag                            = 'propeller_2' 
-    propeller_2.origin                         =  [[3.5, -2.8129,1.22 ]]   
-    propeller_2.clockwise_rotation             = False        
-    port_propulsor.rotor                       = propeller_2  
+    propeller_2.tag                            = 'propeller_2'
+    propeller_2.origin                         =  [[3.5, -2.8129,1.22 ]]
+    propeller_2.clockwise_rotation             = False
+    # propeller.blades (bound circulation, wake, etc.) is per-condition rotor STATE set by the
+    # LL solver during design/mission evaluation, not static geometry -- deepcopy() above carries
+    # over whatever propeller.blades held at design time (still positioned at propeller_1's
+    # origin), which was masking propeller_2's own missing wake data in plot_3d_vehicle's
+    # "identical propulsors" wake-mirroring fallback. Clear it so propeller_2 starts blank.
+    propeller_2.blades                         = None
+    port_propulsor.rotor                       = propeller_2
               
     motor_2                                    = deepcopy(motor)
     motor_2.origin                             =  [[4.0, -2.8129,1.22 ]]        

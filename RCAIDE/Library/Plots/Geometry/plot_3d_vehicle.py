@@ -51,7 +51,13 @@ def plot_3d_vehicle(vehicle,
                     cabin_color                 = 'grey',
                     landing_gear_color          = 'grey',
                     plot_actuator_disc          = False,
-                    show_LOPA                   = True, 
+                    plot_wake                   = False,
+                    wake_control_point           = 0,
+                    wake_color                  = 'deepskyblue',
+                    wake_opacity                = 0.7,
+                    wake_tube_radius            = None,
+                    wake_stride                 = 1,
+                    show_LOPA                   = True,
                     show_Cabin                  = True,
                     wing_opacity                = 0.5, 
                     fuselage_opacity            = 0.5,
@@ -114,6 +120,40 @@ def plot_3d_vehicle(vehicle,
 
     show_figure : bool, optional
         Flag to display the figure (default: True)
+
+    plot_wake : bool, optional
+        Flag to overlay each rotor's prescribed tip-vortex wake geometry (default: False).
+        Requires the vehicle's rotors to already have populated `rotor.blades.wake.nodes_body`
+        (i.e. a mission using Lifting_Line_Theory must have been evaluated first -- the wake
+        is a mission-condition result, not part of the static vehicle geometry). Rotors with no
+        wake of their own (e.g. "identical propulsors" that only had thrust/power reused, never
+        actually re-solved -- see network.identical_propulsors) reuse another rotor's real wake
+        data, translated to their own origin, and mirrored in y only if their own rotation sense
+        (clockwise_rotation) actually differs from the source's -- not just because they happen
+        to sit on the opposite side of the vehicle, which does not by itself imply the two
+        rotors counter-rotate.
+
+    wake_control_point : int, optional
+        Which control point's wake geometry to draw, indexing `rotor.blades.wake.nodes_body`
+        along its first axis (default: 0).
+
+    wake_color : str, optional
+        Color for the wake tube meshes (default: 'deepskyblue')
+
+    wake_opacity : float, optional
+        Opacity for the wake tube meshes (default: 0.7)
+
+    wake_tube_radius : float, optional
+        Tube radius for rendering each wake filament (default: None, drawn as thin lines
+        with no tube geometry)
+
+    wake_stride : int, optional
+        Draw every Nth wake-age point along each filament (default: 5). The underlying wake
+        geometry is discretized finely (hundreds of points per filament) for aerodynamic
+        accuracy in the actual Biot-Savart solve -- that resolution is unnecessary for a visual
+        filament and drastically increases render time, especially with wake_tube_radius set
+        (each point becomes a tube cross-section). The last point is always kept so the
+        filament's tip isn't cut short.
 
     Returns
     -------
@@ -279,6 +319,31 @@ def plot_3d_vehicle(vehicle,
     # -------------------------------------------------------------------------
     # Plot Nacelle, Rotors and Fuel Tanks
     # -------------------------------------------------------------------------
+    # Pre-pass: collect (origin, nodes_body, clockwise_rotation) for every rotor/propeller that
+    # already has real, origin-consistent wake data (see _wake_matches_origin), so "identical
+    # propulsors" that only had their thrust/power reused (rather than actually re-solved -- see
+    # network.identical_propulsors in RCAIDE/Framework/Networks/Network.py) can fall back to it,
+    # independent of loop order or how many propulsors the vehicle has.
+    wake_sources = []
+    if plot_wake:
+        for network in geometry.networks:
+            for propulsor in network.propulsors:
+                for attr in ('rotor', 'propeller'):
+                    if attr not in propulsor:
+                        continue
+                    r      = getattr(propulsor, attr)
+                    blades = r.get('blades', None)
+                    if blades is None:
+                        continue
+                    wake = blades.get('wake', None)
+                    if wake is None or wake.get('nodes_body', None) is None:
+                        continue
+                    all_cp = wake.nodes_body   # (ctrl_pts, N_wake+1, B, 3)
+                    if wake_control_point < all_cp.shape[0]:
+                        nodes_body = all_cp[wake_control_point]
+                        if _wake_matches_origin(nodes_body, r.origin[0], r.tip_radius):
+                            wake_sources.append((np.array(r.origin[0]), nodes_body, bool(r.clockwise_rotation)))
+
     for network in geometry.networks:
         for propulsor in network.propulsors:
 
@@ -311,6 +376,10 @@ def plot_3d_vehicle(vehicle,
                     for i in range(num_B):
                         GEOM = generate_3d_blade_points(rot, number_of_airfoil_points, dim, i)
                         plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=rotor_rgb_color, opacity=rotor_opacity)
+                if plot_wake:
+                    wake_source = find_wake_source(rot.origin[0], wake_sources)
+                    add_rotor_wake(plotter, rot, wake_control_point, wake_color, wake_opacity,
+                                   wake_tube_radius, wake_stride, wake_source=wake_source)
 
             if 'propeller' in propulsor:
                 prop  = propulsor.propeller
@@ -325,6 +394,10 @@ def plot_3d_vehicle(vehicle,
                     for i in range(num_B):
                         GEOM = generate_3d_blade_points(prop, number_of_airfoil_points, dim, i)
                         plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=rotor_rgb_color, opacity=rotor_opacity)
+                if plot_wake:
+                    wake_source = find_wake_source(prop.origin[0], wake_sources)
+                    add_rotor_wake(plotter, prop, wake_control_point, wake_color, wake_opacity,
+                                   wake_tube_radius, wake_stride, wake_source=wake_source)
 
         for fuel_line in network.fuel_lines:
             for fuel_tank in fuel_line.fuel_tanks:
@@ -433,6 +506,122 @@ def add_lopa_seats(plotter, lopa_geometry, opacity):
             actor.GetProperty().EdgeVisibilityOn()
             actor.GetProperty().SetEdgeColor(*rgb)
             actor.GetProperty().SetLineWidth(1.0)
+
+def _wake_matches_origin(nodes_body, origin, tip_radius, tol_factor=0.5):
+    """True if this wake's node nearest the rotor disk (wake age 0, the shed point) sits at
+    roughly `tip_radius` from `origin` -- where a genuinely fresh, correctly-positioned wake's
+    shed point actually is by construction (r_R_shed * tip_radius from the hub, and r_R_shed
+    defaults to 1.0) -- rather than merely "somewhere within a loose distance ceiling."
+
+    A rotor's wake data can be real (non-None) yet centered on the *wrong* origin entirely.
+    design_electric_rotor's sea-level-static evaluation (design_electric_rotor.py) calls
+    compute_performance() on the shared propulsor template *before* a vehicle's per-propulsor
+    origin loop has assigned it a real origin -- at that point rotor.origin is still the
+    [[0,0,0]] default. For an "identical propulsors" network, only one propulsor ever gets a
+    real solve *during the mission itself* (see network.identical_propulsors); the rest keep
+    whatever wake data survived from that shared design-time template (deepcopied into each
+    propulsor, each later given its own real origin, but the already-computed wake array is
+    never recomputed for it) -- non-None, but still centered on the stale [0,0,0]-ish origin,
+    not this rotor's real one.
+
+    A loose "distance < N*tip_radius" ceiling isn't tight enough: an inboard rotor whose real
+    origin happens to sit within a few tip radii of [0,0,0] (e.g. a rotor mounted close to the
+    fuselage centerline) can have its stale, wrongly-centered wake pass a loose check simply
+    because the two origins are coincidentally close -- observed directly: a stale wake ~2.57m
+    from a rotor's real origin passed a 3*tip_radius=~4.28m ceiling. Checking that the shed
+    point sits at ~tip_radius (not "< some multiple of it") catches this, since the stale wake's
+    distance from the real origin has no reason to land near tip_radius specifically.
+    """
+    near_disc = nodes_body[0]   # (B, 3) -- wake age 0, right at the rotor disk / shed point
+    dist      = np.linalg.norm(near_disc - np.array(origin), axis=-1)
+    tol       = max(tol_factor * float(tip_radius), 0.15)
+    return bool(np.all(np.abs(dist - float(tip_radius)) < tol))
+
+
+def find_wake_source(origin, wake_sources, tol=1e-3):
+    """Finds real wake data to reuse for a rotor that has none of its own (e.g. an "identical
+    propulsor" that only had its conditions reused, not actually re-solved -- see
+    network.identical_propulsors).
+
+    Prefers this rotor's exact XZ-plane mirror-image origin (same x, same z, opposite y),
+    within `tol` meters, if one exists with real wake data -- a reasonable tie-breaker when
+    several sources are available. Otherwise falls back to *any* other rotor's real wake data
+    (there is normally exactly one, the single real solve under network.identical_propulsors).
+    Either way, add_rotor_wake decides whether to actually mirror the shape based on the two
+    rotors' rotation sense (clockwise_rotation), not on which side of the vehicle they're on --
+    see add_rotor_wake's docstring. Without the "any source" fallback, a vehicle with more than
+    one spanwise pair of identical propulsors (e.g. front/outboard/rear rotor pairs) would only
+    ever get a wake drawn on the one pair that happens to exactly mirror the single real solve --
+    every other pair would silently get no wake at all.
+
+    `wake_sources` is a list of (origin, nodes_body, clockwise_rotation) triples -- see the
+    pre-pass in plot_3d_vehicle. Returns (source_origin, source_nodes_body,
+    source_clockwise_rotation), or None if wake_sources is empty.
+    """
+    origin = np.array(origin)
+    mirror_target = np.array([origin[0], -origin[1], origin[2]])
+    for src_origin, src_nodes, src_cw in wake_sources:
+        if np.linalg.norm(src_origin - mirror_target) < tol:
+            return src_origin, src_nodes, src_cw
+    if wake_sources:
+        return wake_sources[0]
+    return None
+
+
+def add_rotor_wake(plotter, rot, control_point, color, opacity, tube_radius, stride=1, wake_source=None):
+    """Overlays a rotor's prescribed tip-vortex wake (one polyline per blade) on the plotter.
+
+    Reads `rot.blades.wake.nodes_body`, shape (ctrl_pts, N_wake+1, B, 3), populated by
+    RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory.
+    initialize_wake_geometry after a mission has been evaluated. If this rotor has no wake data
+    of its own (e.g. it's an "identical propulsor" that only had its conditions reused, not
+    actually re-solved -- see network.identical_propulsors), falls back to `wake_source` (found
+    via find_wake_source): an (origin, nodes_body, clockwise_rotation) triple belonging to
+    another rotor with a real solve. The wake shape is re-centered on that source rotor's own
+    origin, then translated to this rotor's origin -- mirrored in y first only if this rotor's
+    own rotation sense (rot.clockwise_rotation) differs from the source's, since only a genuinely
+    counter-rotating rotor has a mirror-image wake; two rotors spinning the same direction (the
+    common case -- nothing in this vehicle's setup necessarily varies clockwise_rotation by side)
+    have the *same* wake shape, just at a different origin, and mirroring it would flip the
+    spiral's handedness backwards (observed: a same-direction rotor's "mirrored" wake spiralling
+    the wrong way and cutting back into the fuselage instead of trailing cleanly away).
+    """
+    nodes_body = None
+    blades = rot.get('blades', None)
+    if blades is not None:
+        wake = blades.get('wake', None)
+        if wake is not None and wake.get('nodes_body', None) is not None:
+            all_cp = wake.nodes_body   # (ctrl_pts, N_wake+1, B, 3)
+            if control_point < all_cp.shape[0]:
+                own_nodes = all_cp[control_point]   # (N_wake+1, B, 3)
+                # non-None doesn't mean *this rotor's* real solve -- see _wake_matches_origin
+                if _wake_matches_origin(own_nodes, rot.origin[0], rot.tip_radius):
+                    nodes_body = own_nodes
+
+    if nodes_body is None and wake_source is not None:
+        src_origin, src_nodes, src_cw = wake_source
+        target_origin = np.array(rot.origin[0])
+        local = src_nodes - src_origin   # hub-centered wake shape, source rotor's own frame
+        if bool(rot.clockwise_rotation) != bool(src_cw):
+            local = local.copy()
+            local[:, :, 1] = -local[:, :, 1]   # genuinely counter-rotating -- mirror handedness
+        nodes_body = local + target_origin
+
+    if nodes_body is None:
+        return
+
+    B = nodes_body.shape[1]
+    for b in range(B):
+        filament_pts = nodes_body[::stride, b, :]
+        # keep the true tip point even if the stride skips past it
+        if not np.array_equal(filament_pts[-1], nodes_body[-1, b, :]):
+            filament_pts = np.vstack([filament_pts, nodes_body[-1:, b, :]])
+        line = pv.lines_from_points(filament_pts)
+        if tube_radius is not None:
+            line = line.tube(radius=tube_radius, n_sides=24)
+        plotter.add_mesh(line, color=color, opacity=opacity)
+    return
+
 
 def make_actuator_disc(plotter, inner_radius, outer_radius, origin, rot_x,rot_y,rot_z, rgb_color, opacity):
     
