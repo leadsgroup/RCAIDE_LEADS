@@ -460,8 +460,16 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
             # wake-geometry rebuild. wake_inputs.thrust_coeff_initial_guess may still be the raw
             # scalar default on the first outer iteration, so broadcast it to Ct_rotor_new's
             # shape before copying.
-            new_CT = np.broadcast_to(np.asarray(wake_inputs.thrust_coeff_initial_guess, dtype=float), Ct_rotor_new.shape).copy()
-            new_CT[valid_cp] = Ct_rotor_new[valid_cp]
+            #
+            # Relaxed (not direct-replacement) update -- CT feeds initialize_wake_geometry's lam,
+            # which changes the wake geometry, which changes the next CT; with no damping this
+            # fixed-point map can settle into a stable N-cycle instead of converging (observed:
+            # hover oscillating between two fixed CT values indefinitely). Reuses the same
+            # relaxation factor as the inner Gamma_b update for consistency.
+            old_CT               = np.broadcast_to(np.asarray(wake_inputs.thrust_coeff_initial_guess, dtype=float), Ct_rotor_new.shape).copy()
+            new_CT               = old_CT.copy()
+            relax_CT             = relax[:, :, 0]   # (ctrl_pts, 1)
+            new_CT[valid_cp]     = old_CT[valid_cp] + relax_CT[valid_cp]*(Ct_rotor_new[valid_cp] - old_CT[valid_cp])
             wake_inputs.thrust_coeff_initial_guess = new_CT   # (ctrl_pts, 1) -- one CT per control point
 
             if wake_inputs.include_wake:
