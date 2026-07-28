@@ -497,8 +497,8 @@ def vehicle_setup():
     avionics.power_draw          = 30. # Watts
     bus.avionics                 = avionics
 
-    # append bus   
-    net.busses.append(bus)
+    # append bus
+    net.distributors.append(bus)
   
 
     #------------------------------------------------------------------------------------------------------------------------- 
@@ -551,7 +551,7 @@ def vehicle_setup():
     compressor                                       = RCAIDE.Library.Components.Powertrain.Converters.Compressor()    
     compressor.tag                                   = 'lpc'                   
     compressor.pressure_ratio                        = 10 
-    compressor.motor                                 = RCAIDE.Library.Components.Powertrain.Converters.Motor()
+    compressor.motor                                 = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     compressor.motor.tag                             =  "starboard_propulsor_compressor_motor"
     compressor.motor.efficiency                      = 0.98 
     compressor.motor.nominal_voltage                 = bus.voltage *  0.7
@@ -668,7 +668,8 @@ def vehicle_setup():
     
     net.propulsors.append(starboard_propulsor)  
     
-    net.converters.append(starboard_propulsor.compressor.motor)    
+    starboard_propulsor.assigned_distributors = [[fuel_line.tag]]
+    net.converters.append(starboard_propulsor.compressor.motor)
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor: Port Propulsor
@@ -686,10 +687,11 @@ def vehicle_setup():
     # append propulsor to distribution line 
     net.propulsors.append(port_propulsor)
 
-    net.converters.append(port_propulsor.compressor.motor)      
-    
+    port_propulsor.assigned_distributors = [[fuel_line.tag]]
+    net.converters.append(port_propulsor.compressor.motor)
 
-    bus.assigned_converters  = [["starboard_propulsor_compressor_motor" ,"port_propulsor_compressor_motor"]]       
+    starboard_propulsor.compressor.motor.assigned_distributors = [[bus.tag]]
+    port_propulsor.compressor.motor.assigned_distributors = [[bus.tag]]
 
     #------------------------------------------------------------------------------------------------------------------------- 
     #  Energy Source: Fuel Tank
@@ -702,15 +704,12 @@ def vehicle_setup():
     fuel_tank.fuel.origin                            = vehicle.wings.main_wing.mass_properties.center_of_gravity      
     fuel_tank.fuel.mass_properties.center_of_gravity = vehicle.wings.main_wing.aerodynamic_center  
     
-    # apend fuel tank to dataclass of fuel tanks on fuel line 
-    fuel_line.fuel_tanks.append(fuel_tank) 
+    fuel_tank.assigned_distributors = [[fuel_line.tag]]
+    net.sources.append(fuel_tank)
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to fuel line    
-    fuel_line.assigned_propulsors =  [[starboard_propulsor.tag, port_propulsor.tag]]
-    
-    # Append fuel line to Network      
-    net.fuel_lines.append(fuel_line)   
+    # Append fuel line to Network
+    fuel_line.working_fluid = RCAIDE.Library.Attributes.Propellants.Jet_A1()
+    net.distributors.append(fuel_line)
 
     # Append energy network to aircraft 
     vehicle.append_energy_network(net)     

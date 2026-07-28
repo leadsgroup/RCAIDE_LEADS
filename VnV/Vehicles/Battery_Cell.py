@@ -26,36 +26,30 @@ def vehicle_setup(current,C_rat,cell_chemistry,electrical_config):
     vehicle.mass_properties.max_takeoff     = 1 * Units.kg 
          
     net                              = RCAIDE.Framework.Networks.Electric()
-    net.charging_power               = 20  
+    net.charging_power               = 20 # Watt
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus
     #------------------------------------------------------------------------------------------------------------------------------------  
-    bus                              = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
-    bus.design_power   = 50  
-    bus.design_voltage = 10  
+    bus                                       = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus() 
     
-    # Battery Module
-    battery_pack = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack()
-    battery_pack.tag = 'battery_pack' 
-    battery_pack.battery_module_electric_configuration = electrical_config  
+    bus.battery_module_electric_configuration = electrical_config
     if cell_chemistry == 'lithium_ion_nmc': 
-        battery_module = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_NMC()
+        battery = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC()
     elif cell_chemistry == 'lithium_ion_lfp': 
-        battery_module = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_LFP()   
-    battery_pack.append_module(battery_module)
-    battery_pack.assigned_distributors =  [[bus.tag]]
-    net.sources.append(battery_pack)     
-     
+        battery = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP()    
+    bus.battery_modules.append(battery)  
+    bus.initialize_bus_properties()
+    
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Systems
     #------------------------------------------------------------------------------------------------------------------------------------  
-    system                     = RCAIDE.Library.Components.Powertrain.Systems.Systems()
-    system.power_draw          = current * battery_module.cell.maximum_voltage  
-    net.systems.append(system)     
+    systems                     = RCAIDE.Library.Components.Powertrain.Systems.Systems()
+    systems.power_draw          = current * bus.voltage  
+    bus.systems                 = systems 
+      
+    # append bus   
+    net.busses.append(bus) 
     
-    # append bus 
-    net.distributors.append(bus)     
-        
     # append network 
     vehicle.append_energy_network(net)
     
@@ -70,7 +64,7 @@ def configs_setup(vehicle):
     
     charge_config     = RCAIDE.Library.Components.Configs.Config(vehicle)
     charge_config.tag = 'charge'
-    charge_config.networks.electric.systems.system.power_draw =  0
+    charge_config.networks.electric.busses.bus.systems.power_draw =  0
     configs.append(charge_config)
    
     

@@ -137,7 +137,7 @@ class Turboprop(Propulsor):
     def append_unknowns_and_residuals(self,segment):
         return    
     
-    def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):
+    def compute_performance(self,state,network=None,center_of_gravity = [[0, 0, 0]]):
         """
         Computes turboprop performance including thrust, moment, and power.
         """

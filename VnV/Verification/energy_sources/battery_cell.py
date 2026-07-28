@@ -42,14 +42,14 @@ def main():
     Ereq                           = 3000*Units.Wh  
     Preq                           = 2000.  
 
-    ## Lithium Air Battery Test 
-    #lithium_air_battery_test(Ereq,Preq)
+    # Lithium Air Battery Test 
+    lithium_air_battery_test(Ereq,Preq)
     
-    ## Aluminum Air Battery Test 
-    #aluminum_air_battery_test(Ereq,Preq)
+    # Aluminum Air Battery Test 
+    aluminum_air_battery_test(Ereq,Preq)
     
-    ## Lithium Sulfur Test 
-    #lithium_sulphur_battery_test(Ereq,Preq)
+    # Lithium Sulfur Test 
+    lithium_sulphur_battery_test(Ereq,Preq)
         
     # Lithium-Ion Test
     lithium_ion_battery_test()
@@ -61,12 +61,12 @@ def main():
     
      
 def lithium_air_battery_test(Ereq,Preq): 
-    battery_li_air                 = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Air()     
+    battery_li_air                 = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Air()     
     return 
    
         
 def aluminum_air_battery_test(Ereq,Preq): 
-    battery_al_air                 = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Aluminum_Air()    
+    battery_al_air                 = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Aluminum_Air()    
     test_size_module_from_energy_and_power(battery_al_air, Ereq, Preq)
     test_mass_gain(battery_al_air, Preq)
     
@@ -76,7 +76,7 @@ def aluminum_air_battery_test(Ereq,Preq):
     return 
    
 def lithium_sulphur_battery_test(Ereq,Preq):   
-    battery_li_s                   = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Sulfur()
+    battery_li_s                   = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Sulfur()
     specific_energy_guess          = 400*Units.Wh/Units.kg 
     test_find_ragone_properties(specific_energy_guess,battery_li_s, Ereq,Preq) 
     plot_battery_ragone_diagram(battery_li_s,   save_filename =  'lithium_sulfur')     
@@ -99,16 +99,14 @@ def lithium_ion_battery_test():
     plt.rcParams.update({'font.size': 12})
     fig1 = plt.figure('Cell Test') 
     fig1.set_size_inches(12,7)   
-    axes1  = fig1.add_subplot(4,2,1)
-    axes2  = fig1.add_subplot(4,2,2) 
-    axes3  = fig1.add_subplot(4,2,3)
-    axes4  = fig1.add_subplot(4,2,4)  
-    axes5  = fig1.add_subplot(4,2,5) 
-    axes6  = fig1.add_subplot(4,2,6) 
-    axes7  = fig1.add_subplot(4,2,7) 
-    axes8  = fig1.add_subplot(4,2,8)  
+    axes1  = fig1.add_subplot(3,2,1)
+    axes2  = fig1.add_subplot(3,2,2)  
+    axes3  = fig1.add_subplot(3,2,3) 
+    axes4  = fig1.add_subplot(3,2,4) 
+    axes5  = fig1.add_subplot(3,2,5) 
+    axes6  = fig1.add_subplot(3,2,6)  
 
-    battery_chemistry     = ['lithium_ion_nmc'] # ,'lithium_ion_lfp']    
+    battery_chemistry     = ['lithium_ion_nmc','lithium_ion_lfp']    
     electrical_config     = ['Series','Parallel'] 
     for j in range(len(curr)):      
         for i in range(len(battery_chemistry)):
@@ -129,87 +127,63 @@ def lithium_ion_battery_test():
              
             # mission analysis 
             results = missions.base_mission.evaluate()  
-
-
-            battery = vehicle.networks.electric.sources.battery_pack
-            module  = battery.modules[battery_chemistry[i]]
-            
             
             # Voltage Cell Regression
-            #V_ul        = results.segments[0].conditions.energy.sources[battery.tag][module.tag].cell.voltage_under_load[2][0]   
-            #print('Under load voltage: ' + str(V_ul))
-            #V_ul_diff   = np.abs(V_ul - V_ul_true[j,i])
-            #print('Under load voltage difference')
-            #print(V_ul_diff) 
-            #assert np.abs((V_ul_diff)/V_ul_true[j,i]) < 1e-6  
+            V_ul        = results.segments[0].conditions.energy.busses['bus'].battery_modules[battery_chemistry[i]].cell.voltage_under_load[2][0]   
+            print('Under load voltage: ' + str(V_ul))
+            V_ul_diff   = np.abs(V_ul - V_ul_true[j,i])
+            print('Under load voltage difference')
+            print(V_ul_diff) 
+            assert np.abs((V_ul_diff)/V_ul_true[j,i]) < 1e-6  
            
-            ## Temperature Regression
-            #bat_temp        = results.segments[1].conditions.energy.sources[battery.tag][module.tag].cell.temperature[2][0]  
-            #print('Cell temperature: ' + str(bat_temp))
-            #bat_temp_diff   = np.abs(bat_temp  - bat_temp_true[j,i]) 
-            #print('cell temperature difference')
-            #print(bat_temp_diff)
-            #assert np.abs((bat_temp_diff)/bat_temp_true[j,i]) < 1e-6
+            # Temperature Regression
+            bat_temp        = results.segments[1].conditions.energy.busses['bus'].battery_modules[battery_chemistry[i]].cell.temperature[2][0]  
+            print('Cell temperature: ' + str(bat_temp))
+            bat_temp_diff   = np.abs(bat_temp  - bat_temp_true[j,i]) 
+            print('cell temperature difference')
+            print(bat_temp_diff)
+            assert np.abs((bat_temp_diff)/bat_temp_true[j,i]) < 1e-6
        
             for segment in results.segments.values(): 
-                volts         = segment.conditions.energy.sources[battery.tag][module.tag].cell.voltage_under_load[:,0] 
-                current         = segment.conditions.energy.sources[battery.tag][module.tag].cell.current[:,0] 
-                SOC           = segment.conditions.energy.sources[battery.tag][module.tag].cell.state_of_charge[:,0]   
-                cell_temp     = segment.conditions.energy.sources[battery.tag][module.tag].cell.temperature[:,0]   
-                Amp_Hrs       = segment.conditions.energy.sources[battery.tag][module.tag].cell.charge_throughput[:,0]                   
+                volts         = segment.conditions.energy.busses['bus'].voltage_under_load[:,0] 
+                SOC           = segment.conditions.energy.busses['bus'].battery_modules[battery_chemistry[i]].cell.state_of_charge[:,0]   
+                cell_temp     = segment.conditions.energy.busses['bus'].battery_modules[battery_chemistry[i]].cell.temperature[:,0]   
+                Amp_Hrs       = segment.conditions.energy.busses['bus'].battery_modules[battery_chemistry[i]].cell.charge_throughput[:,0]                   
                   
                 if battery_chemistry[i] == 'lithium_ion_nmc':
-                    axes1.plot(Amp_Hrs , current , marker= marker[i], linestyle = linestyles[i],  color= linecolors[j]  , markersize=marker_size   ,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C') 
-                    axes3.plot(Amp_Hrs , volts , marker= marker[i], linestyle = linestyles[i],  color= linecolors[j]  , markersize=marker_size   ,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C') 
-                    axes5.plot(Amp_Hrs , SOC   , marker= marker[i] , linestyle = linestyles[i],  color= linecolors[j], markersize=marker_size   ,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C') 
-                    axes7.plot(Amp_Hrs , cell_temp, marker= marker[i] , linestyle = linestyles[i],  color= linecolors[j] , markersize=marker_size,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C')              
+                    axes1.plot(Amp_Hrs , volts , marker= marker[i], linestyle = linestyles[i],  color= linecolors[j]  , markersize=marker_size   ,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C') 
+                    axes3.plot(Amp_Hrs , SOC   , marker= marker[i] , linestyle = linestyles[i],  color= linecolors[j], markersize=marker_size   ,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C') 
+                    axes5.plot(Amp_Hrs , cell_temp, marker= marker[i] , linestyle = linestyles[i],  color= linecolors[j] , markersize=marker_size,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C')              
                 else:
-                    axes2.plot(Amp_Hrs , current , marker= marker[i], linestyle = linestyles[i],  color= linecolors[j] , markersize=marker_size   ,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C') 
-                    axes4.plot(Amp_Hrs , volts , marker= marker[i], linestyle = linestyles[i],  color= linecolors[j] , markersize=marker_size   ,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C') 
-                    axes6.plot(Amp_Hrs , SOC   , marker= marker[i] , linestyle = linestyles[i],  color= linecolors[j], markersize=marker_size   ,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C') 
-                    axes8.plot(Amp_Hrs , cell_temp, marker= marker[i] , linestyle = linestyles[i],  color= linecolors[j] , markersize=marker_size,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C')              
+                    axes2.plot(Amp_Hrs , volts , marker= marker[i], linestyle = linestyles[i],  color= linecolors[j] , markersize=marker_size   ,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C') 
+                    axes4.plot(Amp_Hrs , SOC   , marker= marker[i] , linestyle = linestyles[i],  color= linecolors[j], markersize=marker_size   ,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C') 
+                    axes6.plot(Amp_Hrs , cell_temp, marker= marker[i] , linestyle = linestyles[i],  color= linecolors[j] , markersize=marker_size,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C')              
              
-    legend_font_size = 6                 
-    axes1.set_ylabel('Current (Apm)')  
+    legend_font_size = 6                     
+    axes1.set_ylabel('Voltage $(V_{UL}$)')  
     axes1.legend(loc='upper right', ncol = 2, prop={'size': legend_font_size})  
-    #axes1.set_ylim([2.25,5]) 
-    #axes1.set_xlim([0,7])
-    
-    axes2.set_xlabel('Current (Apm)') 
+    axes1.set_ylim([2.5,5]) 
+    axes1.set_xlim([0,7])
+    axes2.set_xlabel('Amp-Hours (A-hr)') 
     axes2.legend(loc='upper right', ncol = 2, prop={'size': legend_font_size})  
-    #axes2.set_ylim([2.25,5])   
-    #axes2.set_xlim([0,7])
-    
-                       
-    axes3.set_ylabel('Voltage $(V_{UL}$)')  
+    axes2.set_ylim([2.5,5])   
+    axes2.set_xlim([0,7])   
+    axes3.set_ylabel('SOC')  
     axes3.legend(loc='upper right', ncol = 2, prop={'size': legend_font_size})  
-    axes3.set_ylim([2.25,5]) 
-    axes3.set_xlim([0,7])
-    
-    axes4.set_xlabel('Amp-Hours (A-hr)') 
+    axes3.set_ylim([0,1]) 
+    axes3.set_xlim([0,7]) 
     axes4.legend(loc='upper right', ncol = 2, prop={'size': legend_font_size})  
-    axes4.set_ylim([2.25,5])   
-    axes4.set_xlim([0,7])
-    
-    axes5.set_ylabel('SOC')  
-    axes5.legend(loc='upper right', ncol = 2, prop={'size': legend_font_size})  
-    axes5.set_ylim([0,1.2]) 
-    axes5.set_xlim([0,7])
-    
-    axes6.legend(loc='upper right', ncol = 2, prop={'size': legend_font_size})  
-    axes6.set_ylim([0,1.2])   
-    axes6.set_xlim([0,7])
-    
-    axes7.set_xlabel('Amp-Hours (A-hr)') 
-    axes7.legend(loc='upper left', ncol = 2, prop={'size': legend_font_size})
-    axes7.set_ylim([273,340])
-    axes7.set_xlim([0,7]) 
-    axes7.set_ylabel(r'Temperature ($\degree$C)')    
-
-    axes8.set_xlabel('Amp-Hours (A-hr)')        
-    axes8.legend(loc='upper left', ncol = 2, prop={'size': legend_font_size})
-    axes8.set_ylim([273,340])
-    axes8.set_xlim([0,7])  
+    axes4.set_ylim([0,1])   
+    axes4.set_xlim([0,7])      
+    axes5.set_xlabel('Amp-Hours (A-hr)') 
+    axes5.legend(loc='upper right', ncol = 2, prop={'size': legend_font_size})
+    axes5.set_ylim([273,320])
+    axes5.set_xlim([0,7]) 
+    axes5.set_ylabel(r'Temperature ($\degree$C)')    
+    axes6.set_xlabel('Amp-Hours (A-hr)')        
+    axes6.legend(loc='upper left', ncol = 2, prop={'size': legend_font_size})
+    axes6.set_ylim([273,320])
+    axes6.set_xlim([0,7])  
     
     return  
  
@@ -231,7 +205,6 @@ def base_analysis(vehicle):
 
     #  Geometry
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry()
-    geometry.settings.unique_geometry = True
     analyses.append(geometry)
 
     #  Weights
@@ -260,22 +233,22 @@ def mission_setup(analyses,vehicle,battery_chemistry,current,mAh):
     mission.tag        = 'cell_cycle_test'   
     Segments           = RCAIDE.Framework.Mission.Segments 
     base_segment       = Segments.Segment()   
-    time               = 0.8 * (mAh/1000)/current * Units.hrs
-    base_segment.state.numerics.mission_solver.type =  'root_finder'
+    time               = 0.8 * (mAh/1000)/current * Units.hrs  
 
     # Charge Segment 
     segment                                 = Segments.Ground.Battery_Recharge(base_segment)      
     segment.analyses.extend(analyses.charge) 
     segment.cutoff_SOC                      = 1.0  
-    segment.initial_battery_conditions.state_of_charge  = 0.2  
+    segment.initial_battery_state_of_charge = 0.2  
     segment.tag                             = 'Recharge' 
-    mission.append_segment(segment)
-    
+    mission.append_segment(segment)   
+
+         
     segment                                 = Segments.Ground.Battery_Discharge(base_segment) 
     segment.analyses.extend(analyses.discharge)  
     segment.tag                             = 'Discharge_1' 
     segment.time                            = time/2  
-    segment.initial_battery_conditions.state_of_charge  = 1  
+    segment.initial_battery_state_of_charge = 1  
     mission.append_segment(segment)
     
     segment                                = Segments.Ground.Battery_Discharge(base_segment) 

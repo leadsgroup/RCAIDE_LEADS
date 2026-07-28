@@ -130,8 +130,10 @@ class Evaluate(Segment):
         iterate.conditions.planet_position       = Common.Update.planet_position
 
         # Solve Residuals
-        iterate.residuals = Process()  
-        iterate.residuals.flight_dynamics  = Common.Residuals.flight_dynamics   
+        iterate.residuals                  = Process()
+        iterate.residuals.mission          = Process()
+        iterate.residuals.network          = Process()
+        iterate.residuals.flight_dynamics  = Common.Residuals.flight_dynamics
 
         # --------------------------------------------------------------  
         #  Post Process   

@@ -58,7 +58,7 @@ def ground(segment):
     RCAIDE.Framework.Mission.Segments.Ground
     """       
     
-    # unpack unknowns 
+    # unpack unknowns
     ground_velocity = segment.state.unknowns.mission.ground_velocity
     time            = segment.state.unknowns.mission.elapsed_time
     
@@ -73,6 +73,6 @@ def ground(segment):
 
     # apply unknowns
     conditions = segment.state.conditions
-    conditions.frames.inertial.velocity_vector[1:,0] = ground_velocity
+    conditions.frames.inertial.velocity_vector[1:,0] = ground_velocity[:,0]
     conditions.frames.inertial.velocity_vector[0,0]  = v0
     conditions.frames.inertial.time[:,0]             = times[:,0]

@@ -234,8 +234,8 @@ def add_mission_variables(segment):
             len_inputs     += n_points * segment.state.number_of_network_unknowns
             len_residuals  += n_points * segment.state.number_of_network_residuals   
         
-    # -------------------------------------------------------------------------------------------    
-    # get unknowns assicated with the mission solver 
+    # -------------------------------------------------------------------------------------------
+    # get unknowns assicated with the mission solver
     # -------------------------------------------------------------------------------------------         
     full_unkn_vals        = Data()
     full_upper_bound_vals = Data()
@@ -351,57 +351,53 @@ def add_mission_variables(segment):
         input_aliases[:,0] = input_names
         input_aliases[:,1] = input_string
     
-    # Step 4.2: Setup the aliases for the residuals
-    basic_string_con = Data()
-    input_string = []
-    input_string_network = []
+    # Step 4.2: Setup the aliases for the residuals.
+    # Use pack_array()[i] so each alias evaluates to a true scalar regardless of the
+    # shape of individual residual fields (which are (n_points, 1) column vectors).
+    # pack_array() flattens each sub-container to a 1D vector; integer indexing then
+    # always produces a scalar, satisfying get_values / SLSQP's equality_constraint.
+    #
+    # Ordering convention: mission residuals first (indices 0..n_m-1), then network
+    # residuals (indices 0..n_n-1 from their own pack_array).  This mirrors the split
+    # in update_segment / root_finder: mission.unpack_array(x[:n_m]) followed by
+    # network.unpack_array(x[n_m:n_m+n_n]), keeping both solvers consistent.
 
-    if ground_seg_flag:       
-        output_numbers = np.linspace(0,n_points-2,n_points-1,dtype=np.int16)
-        basic_string_con[residual_keys[0]] = np.tile('segment.state.residuals.mission.'+residual_keys[0]+'[', n_points-1)
-        input_string.append(np.char.add(basic_string_con[residual_keys[0]],np.array(output_numbers).astype(str)))  
-        output_numbers = np.linspace(0,n_points-1,n_points,dtype=np.int16) 
+    def _pack_aliases(container_path, count):
+        """Build 'container_path[i]' strings for i in 0..count-1."""
+        base = np.tile(container_path + '[', count)
+        return np.char.add(np.char.add(base, np.arange(count, dtype=np.int16).astype(str)), ']')
+
+    if ground_seg_flag:
+        # Ground segments have two mission residual fields in pack_array order:
+        #   force_x: shape (n_points-1, 1) → indices 0..n_points-2
+        #   final_velocity_error: scalar float  → index n_points-1
+        # Total: n_points elements, matching len_residuals = n_points.
+        all_res = _pack_aliases('segment.state.residuals.mission.pack_array()', n_points)
+
         if segment.state.numerics.network_solver.type is None:
-            for res in net_residual_keys:  
-                basic_string_con[res] = np.tile('segment.state.residuals.network.'+res+'[', n_points)
-                input_string_network.append(np.char.add(basic_string_con[res],np.array(output_numbers).astype(str)))   
-            input_string = np.hstack((input_string[0],np.ravel(input_string_network))) 
-        input_string        = np.char.add(input_string, np.tile(']',len_residuals-1))
-        residual_aliases       = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_residuals), (-1, 2)) 
-        residual_aliases[:,0]  = con_names
-        residual_aliases[0,1]  = 'segment.state.residuals.mission.'+residual_keys[1] 
-        residual_aliases[1:,1] = input_string 
+            n_n_res = n_points * segment.state.number_of_network_residuals
+            res_n   = _pack_aliases('segment.state.residuals.network.pack_array()', n_n_res)
+            all_res = np.concatenate([all_res, res_n])
 
-    elif single_pt_seg:  
-        for res in residual_keys:
-            basic_string_con[res] = np.tile('segment.state.residuals.mission.'+res+'[', n_points)
-            input_string.append(np.char.add(basic_string_con[res],np.array([0]).astype(str)))
-        input_string       = np.ravel(input_string)   
-        input_string       = np.char.add(input_string, np.tile(']',len_residuals))
-        residual_aliases      = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_residuals), (-1, 2)) 
-        residual_aliases[:,0] = con_names
-        residual_aliases[:,1] = input_string    
+    elif single_pt_seg:
+        # Single-point: one control point per residual; no network coupling.
+        all_res = _pack_aliases('segment.state.residuals.mission.pack_array()', len_residuals)
 
     else:
-        output_numbers = np.linspace(0,n_points-1,n_points,dtype=np.int16) 
-        input_len_strings = np.tile('Residual_', len_residuals)
-        input_numbers     = np.linspace(1,len_residuals,len_residuals,dtype=np.int16)
-        input_names       = np.char.add(input_len_strings,np.array(input_numbers+input_count).astype(str))
-        for res in residual_keys:
-            basic_string_con[res] = np.tile('segment.state.residuals.mission.'+res+'[', n_points)
-            input_string.append(np.char.add(basic_string_con[res],np.array(output_numbers).astype(str)))
-        
+        # General multi-point segments (climb, cruise, descent, …).
+        n_m_res = n_points * segment.state.number_of_mission_residuals
+        res_m   = _pack_aliases('segment.state.residuals.mission.pack_array()', n_m_res)
+
         if segment.state.numerics.network_solver.type is None:
-            for res in net_residual_keys:
-                basic_string_con[res] = np.tile('segment.state.residuals.network.'+res+'[', n_points)
-                input_string_network.append(np.char.add(basic_string_con[res],np.array(output_numbers).astype(str)))
-            input_string = np.hstack((np.ravel(input_string),np.ravel(input_string_network)))
+            n_n_res = n_points * segment.state.number_of_network_residuals
+            res_n   = _pack_aliases('segment.state.residuals.network.pack_array()', n_n_res)
+            all_res = np.concatenate([res_m, res_n])
         else:
-            input_string = np.ravel(input_string)
-        input_string       = np.char.add(input_string, np.tile(']',len_residuals))
-        residual_aliases      = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_residuals), (-1, 2)) 
-        residual_aliases[:,0] = input_names
-        residual_aliases[:,1] = input_string
+            all_res = res_m
+
+    residual_aliases      = np.reshape(np.tile(np.atleast_2d(np.array((None, None))), len_residuals), (-1, 2))
+    residual_aliases[:,0] = con_names
+    residual_aliases[:,1] = all_res
         
     # Step 4.3: Append Aliases
     aliases = []
@@ -426,22 +422,19 @@ def add_mission_variables(segment):
     # append aliases 
     optimization_problem.aliases = aliases        
     
-    # Step 6: Expand Rows  
+    # Step 6: Expand Rows
     segment.process.initialize.expand_state(segment)
-    
-    # Step 7: Update iteration
-    input_count = input_count+input_numbers[-1]      
-     
-    # Step 8: Append segment
+
+    # Step 7: Append segment
     nexus.segment = segment
-     
-    # Step 9: Append procedure
+
+    # Step 8: Append procedure
     nexus.procedure = iterate_segment()
-     
+
     # Step 9: Append post-process
     nexus.postprocess = Data()
-    
-    # Step 10: Append optimization problem 
+
+    # Step 10: Append optimization problem
     nexus.optimization_problem   = optimization_problem
     
     return nexus
@@ -456,7 +449,7 @@ def iterate_segment():
     
 def iterate_optimizer(nexus):
     segment = nexus.segment
-     
+
     unknowns = segment.state.unknowns.pack_array()
     if isinstance(unknowns, np.ndarray):
         mission_vec = segment.state.unknowns.mission.pack_array()
@@ -472,9 +465,8 @@ def iterate_optimizer(nexus):
         segment.state.unknowns.mission = unknowns
         if segment.state.numerics.network_solver.type is None:
             segment.state.unknowns.network = unknowns
-        
     segment.process.iterate(segment)
-    
+
     residuals = segment.state.residuals.pack_array()    
     nexus.residuals =  residuals
     return nexus

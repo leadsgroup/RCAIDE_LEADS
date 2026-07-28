@@ -138,6 +138,6 @@ def unpack_unknowns(segment):
                                 
     """      
     
-    # unpack unknowns  
+    # unpack unknowns
     acceleration  = segment.state.unknowns.mission.acceleration
-    segment.state.conditions.frames.inertial.acceleration_vector[0,0] = acceleration
+    segment.state.conditions.frames.inertial.acceleration_vector[0,0] = acceleration[0,0]

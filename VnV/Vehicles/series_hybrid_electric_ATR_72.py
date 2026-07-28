@@ -530,7 +530,7 @@ def vehicle_setup():
     starboard_propulsor.rotor                        = propeller   
               
     # DC_Motor       
-    motor                                            = RCAIDE.Library.Components.Powertrain.Converters.Motor()
+    motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     motor.efficiency                                 = 0.98
     motor.origin                                     = [[ 9.559106394 ,4.219315295, 1.616135105]]
     motor.nominal_voltage                            = bus.voltage * 0.7
@@ -644,15 +644,14 @@ def vehicle_setup():
     net.systems.append(avionics)  
 
     #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to bus       
-    bus.assigned_propulsors =  [[starboard_propulsor.tag, port_propulsor.tag]] 
+    # Assign distributors to propulsors and append bus
+    starboard_propulsor.assigned_distributors = [[bus.tag]]
+    port_propulsor.assigned_distributors      = [[bus.tag]]
+    net.distributors.append(bus)
 
-    # append bus   
-    net.busses.append(bus)
 
-
-    #------------------------------------------------------------------------------------------------------------------------- 
-    # Fuel Distribution Line 
+    #-------------------------------------------------------------------------------------------------------------------------
+    # Fuel Distribution Line
     #------------------------------------------------------------------------------------------------------------------------- 
     fuel_line                                  = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line() 
 
@@ -740,25 +739,26 @@ def vehicle_setup():
     turboelectric_generator_2 = deepcopy(turboelectric_generator)
     turboelectric_generator_2.tag  = 'turboelectric_generator_2' 
     net.converters.append(turboelectric_generator_2)
-    fuel_line.assigned_converters = [[turboelectric_generator.tag,turboelectric_generator_2.tag]]
+    turboelectric_generator.assigned_distributors   = [[fuel_line.tag]]
+    turboelectric_generator_2.assigned_distributors = [[fuel_line.tag]]
 
-    #------------------------------------------------------------------------------------------------------------------------- 
+    #-------------------------------------------------------------------------------------------------------------------------
     #  Energy Source: Fuel Tank
-    #------------------------------------------------------------------------------------------------------------------------- 
+    #-------------------------------------------------------------------------------------------------------------------------
     # fuel tank
     fuel_tank                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank()
-    fuel_tank.origin                                 = vehicle.wings.main_wing.origin  
-    fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Jet_A1()   
+    fuel_tank.origin                                 = vehicle.wings.main_wing.origin
+    fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Jet_A1()
     fuel_tank.fuel.mass_properties.mass              = vehicle.mass_properties.max_fuel
-    fuel_tank.fuel.origin                            = vehicle.wings.main_wing.mass_properties.center_of_gravity      
+    fuel_tank.fuel.origin                            = vehicle.wings.main_wing.mass_properties.center_of_gravity
     fuel_tank.fuel.mass_properties.center_of_gravity = vehicle.wings.main_wing.aerodynamic_center
-    fuel_tank.volume_properties.internal             = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density   
+    fuel_tank.volume_properties.internal             = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density
 
-    # apend fuel tank to dataclass of fuel tanks on fuel line 
-    fuel_line.fuel_tanks.append(fuel_tank) 
+    fuel_tank.assigned_distributors = [[fuel_line.tag]]
+    net.sources.append(fuel_tank)
 
-    # Append fuel line to Network      
-    net.fuel_lines.append(fuel_line)   
+    # Append fuel line to network
+    net.distributors.append(fuel_line)
 
     # Append energy network to aircraft 
     vehicle.append_energy_network(net)     

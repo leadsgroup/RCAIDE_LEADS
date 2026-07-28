@@ -180,7 +180,7 @@ class Turbojet(Propulsor):
     def append_unknowns_and_residuals(self,segment):
         return
     
-    def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):
+    def compute_performance(self,state,network=None,center_of_gravity = [[0, 0, 0]]):
         inputs, outputs, stored_results_flag, stored_propulsor_tag =  compute_turbojet_performance(self,state,center_of_gravity)
         return inputs, outputs, stored_results_flag, stored_propulsor_tag
     

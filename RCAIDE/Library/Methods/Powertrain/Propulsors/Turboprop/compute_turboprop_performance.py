@@ -416,7 +416,7 @@ def reuse_stored_turboprop_data(turboprop,state,network,stored_propulsor_tag,cen
     moment_vector[:,2] = turboprop.origin[0][2]  -  center_of_gravity[0][2]
     moment             = np.cross(moment_vector,thrust_vector)    
 
-    power                                              = conditions.energy.propulsors[turboprop.tag].power.propulsive
+    power                                              = conditions.energy.propulsors[turboprop.tag].outputs.power.propulsive
     conditions.energy.propulsors[turboprop.tag].moment = moment
     
     power_elec = 0*state.ones_row(1)

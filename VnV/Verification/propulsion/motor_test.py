@@ -144,7 +144,7 @@ def inverse_mode_model():
 def design_test_motor(motor_type): 
     
     if motor_type == 'DC_Motor':
-        motor = RCAIDE.Library.Components.Powertrain.Converters.Motor()
+        motor = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     
         prop = Test_Propeller()
         motor.mass_properties.mass    = 9. * Units.kg 

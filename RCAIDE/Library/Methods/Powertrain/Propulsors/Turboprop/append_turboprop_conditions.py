@@ -91,7 +91,13 @@ def append_turboprop_conditions(propulsor, segment):
     segment.state.conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate           = 0. * ones_row(1)
     segment.state.conditions.energy.propulsors[propulsor.tag].throttle                      = 0. * ones_row(1)     
     segment.state.conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle = 0. * ones_row(1) 
-    segment.state.conditions.aeroacoustics.propulsors[propulsor.tag]                        = Conditions()  
+    segment.state.conditions.aeroacoustics.propulsors[propulsor.tag]                        = Conditions()
     segment.state.conditions.aeroacoustics.propulsors[propulsor.tag].core_nozzle            = Conditions()
-         
-    return 
+
+    for tag, item in propulsor.items():
+        if issubclass(type(item), RCAIDE.Library.Components.Component):
+            item.append_operating_conditions(segment)
+            for sub_tag, sub_item in item.items():
+                if issubclass(type(sub_item), RCAIDE.Library.Components.Component):
+                    sub_item.append_operating_conditions(segment)
+    return

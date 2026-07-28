@@ -89,7 +89,7 @@ def ICE_CS(vehicle):
 
     # ########################################################  Energy Network  #########################################################  
     net                                         = RCAIDE.Framework.Networks.Fuel()  
-    net.propulsors.identical_propulsors                    = False  
+    net.identical_propulsors                    = False  
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus

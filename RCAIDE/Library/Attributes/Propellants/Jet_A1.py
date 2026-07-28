@@ -148,6 +148,7 @@ class Jet_A1(Propellant):
         self.temperatures.boiling      = 0.0                              # K
 
         self.stoichiometric_fuel_air_ratio = 0.068          # [-] Stoichiometric Fuel to Air ratio
+        self.kinematic_viscosity           = 2.1e-6         # [m^2/s] kinematic viscosity at ~20 C
         self.heat_of_vaporization          = 360000         # [J/kg] Heat of vaporization at standard conditions
         self.temperature                   = 298.15         # [K] Temperature of fuel
         self.pressure                      = 101325         # [Pa] Pressure of fuel

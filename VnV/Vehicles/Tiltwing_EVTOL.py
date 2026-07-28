@@ -240,15 +240,7 @@ def vehicle_setup(new_regression=True):
     fuselage.segments.append(segment)        
 
     # add to vehicle
-<<<<<<< HEAD
-    vehicle.append_component(fuselage)    
-   
-    sys                            = RCAIDE.Library.Components.Powertrain.Systems.System()
-    sys.mass_properties.mass       = 5 # kg   
-    vehicle.append_component(sys)    
-=======
     vehicle.append_component(fuselage)     
->>>>>>> 3010a8169faaec3d73de7b5fd03471446e23db1f
 
     #------------------------------------------------------------------------------------------------------------------------------------
     # ########################################################  Energy Network  ######################################################### 
@@ -328,7 +320,7 @@ def vehicle_setup(new_regression=True):
     #------------------------------------------------------------------------------------------------------------------------------------               
     # Lift Rotor Motor  
     #------------------------------------------------------------------------------------------------------------------------------------    
-    prop_rotor_motor                         = RCAIDE.Library.Components.Powertrain.Converters.Motor()
+    prop_rotor_motor                         = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     prop_rotor_motor.efficiency              = 0.95
     prop_rotor_motor.nominal_voltage         = bus.voltage *0.75
     prop_rotor_motor.tag                     = 'motor_1'
@@ -386,9 +378,9 @@ def vehicle_setup(new_regression=True):
         prop_rotor_propulsor_i.electronic_speed_controller.origin    = [origins[i]]  
         prop_rotor_propulsor_i.nacelle.tag                           = 'nacelle_' + str(i + 1)  
         prop_rotor_propulsor_i.nacelle.origin                        = [origins[i]]
+        prop_rotor_propulsor_i.assigned_distributors = [[bus.tag]]
         assigned_propulsor_list.append(prop_rotor_propulsor_i.tag)
-        network.propulsors.append(prop_rotor_propulsor_i)  
-    bus.assigned_propulsors = [assigned_propulsor_list]
+        network.propulsors.append(prop_rotor_propulsor_i)
     
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Additional Bus Loads
@@ -422,7 +414,7 @@ def vehicle_setup(new_regression=True):
 
     
   
-    network.busses.append(bus) 
+    network.distributors.append(bus)
         
     # append energy network 
     vehicle.append_energy_network(network)  

@@ -357,7 +357,7 @@ def vehicle_setup(fuel_cell_model= 'PEM'):
     bus = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()   
       
     if fuel_cell_model == 'PEM': 
-        fuel_cell_stack = RCAIDE.Library.Components.Powertrain.Converters.Fuel_Cell() 
+        fuel_cell_stack = RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell() 
         fuel_cell_stack.electrical_configuration.series             = 940
         fuel_cell_stack.electrical_configuration.parallel           = 7
         fuel_cell_stack.geometric_configuration.normal_count       = 940
@@ -432,7 +432,7 @@ def vehicle_setup(fuel_cell_model= 'PEM'):
     starboard_propulsor.rotor                        = propeller   
               
     # DC_Motor       
-    motor                                            = RCAIDE.Library.Components.Powertrain.Converters.Motor()
+    motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     motor.efficiency                                 = 0.98
     motor.origin                                     = [[4.0,2.8129,1.22 ]]   
     motor.nominal_voltage                            = bus.voltage 
@@ -563,11 +563,10 @@ def vehicle_setup(fuel_cell_model= 'PEM'):
     net.systems.append(avionics)
     
     #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to bus       
-    bus.assigned_propulsors =  [[starboard_propulsor.tag, port_propulsor.tag]] 
-
-    # append bus   
-    net.busses.append(bus) 
+    # Assign distributors to propulsors and append bus
+    starboard_propulsor.assigned_distributors = [[bus.tag]]
+    port_propulsor.assigned_distributors      = [[bus.tag]]
+    net.distributors.append(bus)
     
     vehicle.append_energy_network(net)
 

@@ -748,11 +748,10 @@ def vehicle_setup():
     bus.flight_controls              = RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
     
     #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to bus       
-    bus.assigned_propulsors =  [[starboard_propulsor.tag, port_propulsor.tag]] 
-
-    # append bus   
-    net.busses.append(bus)
+    # Assign distributors to propulsors and append bus
+    starboard_propulsor.assigned_distributors = [[bus.tag]]
+    port_propulsor.assigned_distributors      = [[bus.tag]]
+    net.distributors.append(bus)
     vehicle.append_energy_network(net)   
     return vehicle
 

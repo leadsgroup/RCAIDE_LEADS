@@ -544,7 +544,8 @@ def vehicle_setup() :
     fuel_tank_1.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']
     fuel_tank_1.segments_percent_chord_bounds          = [0.1 ,0.1]
     fuel_tank_1.segments_percent_chord_end             = [0.55,0.55]
-    fuel_line.fuel_tanks.append(fuel_tank_1)
+    fuel_tank_1.assigned_distributors = [[fuel_line.tag]]
+    net.sources.append(fuel_tank_1)
 
     fuel_tank_2                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
     fuel_tank_2.tag                                    = 'tank_2l_2r'
@@ -559,7 +560,8 @@ def vehicle_setup() :
     fuel_tank_2.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']
     fuel_tank_2.segments_percent_chord_bounds          = [0.1 ,0.1]
     fuel_tank_2.segments_percent_chord_end             = [0.55,0.55]
-    fuel_line.fuel_tanks.append(fuel_tank_2)
+    fuel_tank_2.assigned_distributors = [[fuel_line.tag]]
+    net.sources.append(fuel_tank_2)
 
     fuel_tank_3                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
     fuel_tank_3.tag                                    = 'tank_3l_3r'
@@ -574,7 +576,8 @@ def vehicle_setup() :
     fuel_tank_3.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']
     fuel_tank_3.segments_percent_chord_bounds          = [0.1 ,0.1]
     fuel_tank_3.segments_percent_chord_end             = [0.55,0.55]
-    fuel_line.fuel_tanks.append(fuel_tank_3)
+    fuel_tank_3.assigned_distributors = [[fuel_line.tag]]
+    net.sources.append(fuel_tank_3)
 
     # ------------------------------------------------
     # Bounds for aft tank
@@ -607,14 +610,16 @@ def vehicle_setup() :
         fuel_tank_4.transverse_tank_chord_bounds             = [cabin_bound,rotor_burst_bound]
         fuel_tank_4.transverse_tank_segment_bound                 = aft_segment_bound
         fuel_tank_4.radial_offset                          = 0.1
-        fuel_line.fuel_tanks.append(fuel_tank_4)
+        fuel_tank_4.assigned_distributors = [[fuel_line.tag]]
+        net.sources.append(fuel_tank_4)
 
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to fuel line to network      
-    fuel_line.assigned_propulsors =  [['propulsor_1', 'propulsor_2']] 
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Assign distributors to propulsors and converters
+    turbofan1.assigned_distributors  = [[fuel_line.tag]]
+    turbofan2.assigned_distributors  = [[fuel_line.tag]]
 
-    ##------------------------------------------------------------------------------------------------------------------------- 
+    ##-------------------------------------------------------------------------------------------------------------------------
     ##  Systems
     ##-------------------------------------------------------------------------------------------------------------------------   
     avionics =  RCAIDE.Library.Components.Powertrain.Systems.Avionics()
@@ -663,7 +668,7 @@ def vehicle_setup() :
     #  PUMPS      
     #------------------------------------------------------------------------------------------------------------------------- 
     # Starboard Pump 
-    starboard_pump                                 = RCAIDE.Library.Components.Powertrain.Converters.Cryogenic_Pump()
+    starboard_pump                                 = RCAIDE.Library.Components.Powertrain.Converters.Liquid_Hydrogen_Fuel_Cell_Pump()
     starboard_pump.working_fluid                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()  
     starboard_pump.power_density                   = 15000 # W/kg
     starboard_pump.pump_efficiency                 = 0.8
@@ -707,12 +712,14 @@ def vehicle_setup() :
     starboard_pump.origin                          = [[27 * 36  /35,1,0]] # Location checked
     net.converters.append(starboard_pump)  
           
-    # Assign propulsors to fuel line to network      
-    fuel_line.assigned_converters =  [[starboard_pump.tag, port_pump.tag,reserve_pump.tag]]        
+    # Assign fuel line to converters (pumps)
+    starboard_pump.assigned_distributors = [[fuel_line.tag]]
+    port_pump.assigned_distributors      = [[fuel_line.tag]]
+    reserve_pump.assigned_distributors   = [[fuel_line.tag]]
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Append fuel line to fuel line to network      
-    net.fuel_lines.append(fuel_line)         
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Append fuel line to network
+    net.distributors.append(fuel_line)
 
     # Append energy network to aircraft 
     vehicle.append_energy_network(net)  
@@ -817,7 +824,7 @@ def configs_setup(vehicle):
 
     config = RCAIDE.Library.Components.Configs.Config(base_config)
     config.tag = 'oei'  
-    config.networks.fuel.fuel_lines.fuel_line.assigned_propulsors = [['propulsor_1']]
+    config.networks.fuel.propulsors['propulsor_2'].active = False
     config.networks.fuel.propulsors['propulsor_1'].fan.angular_velocity =  2030. * Units.rpm 
     configs.append(config)
 

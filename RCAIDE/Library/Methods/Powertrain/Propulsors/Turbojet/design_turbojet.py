@@ -25,7 +25,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Design Turbojet
 # ----------------------------------------------------------------------------------------------------------------------   
-def design_turbojet(turbojet,network):  
+def design_turbojet(turbojet):
     """
     Designs a turbojet engine by computing performance properties and sizing components based on design conditions.
     
@@ -146,19 +146,21 @@ def design_turbojet(turbojet,network):
         conditions.freestream.speed_of_sound              = np.atleast_1d(a)
         conditions.freestream.velocity                    = np.atleast_1d(a*turbojet.design_mach_number)
    
-    segment                                        = RCAIDE.Framework.Mission.Segments.Segment()  
-    segment.state.conditions                       = conditions 
-    turbojet.append_operating_conditions(segment,conditions.energy,conditions.aeroacoustics)        
-    
-    # extract compoment from network 
-    ram                       = network.converters(turbojet.ram_tag)
-    inlet_nozzle              = network.converters(turbojet.inlet_nozzle_tag)
-    low_pressure_compressor   = network.converters(turbojet.low_pressure_compressor_tag)
-    high_pressure_compressor  = network.converters(turbojet.high_pressure_compressor_tag)
-    combustor                 = network.converters(turbojet.combustor_tag)
-    high_pressure_turbine     = network.converters(turbojet.high_pressure_turbine_tag)
-    low_pressure_turbine      = network.converters(turbojet.low_pressure_turbine_tag)
-    core_nozzle               = network.converters(turbojet.core_nozzle_tag)
+    # create dummy distributor for setup_operating_conditions
+    fuel_line                                      = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+
+    segment                                        = RCAIDE.Framework.Mission.Segments.Segment()
+    segment.state.conditions                       = conditions
+    turbojet.append_operating_conditions(segment)
+
+    ram                       = turbojet.ram
+    inlet_nozzle              = turbojet.inlet_nozzle
+    low_pressure_compressor   = turbojet.low_pressure_compressor
+    high_pressure_compressor  = turbojet.high_pressure_compressor
+    combustor                 = turbojet.combustor
+    high_pressure_turbine     = turbojet.high_pressure_turbine
+    low_pressure_turbine      = turbojet.low_pressure_turbine
+    core_nozzle               = turbojet.core_nozzle
 
     # unpack component conditions
     turbojet_conditions     = conditions.energy.propulsors[turbojet.tag]
@@ -281,9 +283,9 @@ def design_turbojet(turbojet,network):
     # Step 21: Static Sea Level Thrust 
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
     V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
-    operating_state       = setup_operating_conditions(turbojet,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
-    operating_state.conditions.energy.propulsors[turbojet.tag].throttle[:,0] = 1.0  
-    _,sls_outputs,_,_      = turbojet.compute_performance(operating_state) 
+    operating_state       = setup_operating_conditions(turbojet,fuel_line,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)
+    operating_state.conditions.energy.propulsors[turbojet.tag].throttle[:,0] = 1.0
+    _,sls_outputs,_,_      = turbojet.compute_performance(operating_state)
     turbojet.sealevel_static_thrust = sls_outputs.thrust[0][0]
     turbojet.sealevel_static_power  = sls_outputs.power.propulsive[0][0]
     

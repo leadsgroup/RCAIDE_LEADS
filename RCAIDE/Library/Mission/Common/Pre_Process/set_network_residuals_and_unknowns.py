@@ -107,6 +107,6 @@ def set_network_residuals_and_unknowns(mission):
                 modulator.append_unknowns_and_residuals(segment)              
                  
             # Ensure the mission knows how to pack and unpack the unknowns and residuals
-            segment.process.iterate.unknowns.mission.network   = network.unpack_unknowns 
+            segment.process.iterate.unknowns.mission.network   = network.unpack_unknowns
             segment.process.iterate.residuals.mission.network  = network.residuals
              

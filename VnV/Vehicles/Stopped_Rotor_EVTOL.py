@@ -515,7 +515,7 @@ def vehicle_setup(new_regression=True) :
     cruise_propulsor_1.rotor                               = propeller    
                 
     # Propeller Motor              
-    propeller_motor                                        = RCAIDE.Library.Components.Powertrain.Converters.Motor()
+    propeller_motor                                        = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     propeller_motor.efficiency                             = 0.95
     propeller_motor.tag                                    = 'propeller_motor_1'  
     propeller_motor.origin                                 = [[6.583, 1.300,  1.092 ]] 
@@ -637,11 +637,12 @@ def vehicle_setup(new_regression=True) :
     propeller_nacelle_2.tag                        = 'propeller_nacelle_2' 
     propeller_nacelle_2.origin                     = [[5.583, - 1.300,     1.092]]
     cruise_propulsor_2.nacelle                     = propeller_nacelle_2
-    network.propulsors.append(cruise_propulsor_2) 
-    cruise_bus.assigned_propulsors = [['cruise_propulsor_1','cruise_propulsor_2' ]]   
+    network.propulsors.append(cruise_propulsor_2)
+    cruise_propulsor_1.assigned_distributors = [[cruise_bus.tag]]
+    cruise_propulsor_2.assigned_distributors = [[cruise_bus.tag]]
 
     # append forward bus
-    network.busses.append(cruise_bus)    
+    network.distributors.append(cruise_bus)    
     
         
     #==================================================================================================================================== 
@@ -710,7 +711,7 @@ def vehicle_setup(new_regression=True) :
     #------------------------------------------------------------------------------------------------------------------------------------               
     # Lift Rotor Motor  
     #------------------------------------------------------------------------------------------------------------------------------------    
-    lift_rotor_motor                                       = RCAIDE.Library.Components.Powertrain.Converters.Motor()
+    lift_rotor_motor                                       = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     lift_rotor_motor.efficiency                            = 0.9
     lift_rotor_motor.nominal_voltage                       = lift_bus.voltage*3/4  
     lift_rotor_motor.propeller_radius                      = lift_rotor.tip_radius 
@@ -765,9 +766,9 @@ def vehicle_setup(new_regression=True) :
         propulsor_i.electronic_speed_controller.origin    = [origins[i]]  
         propulsor_i.nacelle.tag                           = 'lift_rotor_nacelle_' + str(i + 1)  
         propulsor_i.nacelle.origin                        = [origins[i]]    
-        network.propulsors.append(propulsor_i)  
-        assigned_propulsor_list.append(propulsor_i.tag) 
-    lift_bus.assigned_propulsors = [assigned_propulsor_list]
+        propulsor_i.assigned_distributors = [[lift_bus.tag]]
+        network.propulsors.append(propulsor_i)
+        assigned_propulsor_list.append(propulsor_i.tag)
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Additional Bus Loads
@@ -794,7 +795,7 @@ def vehicle_setup(new_regression=True) :
     network.systems.append(furnishings)
 
    
-    network.busses.append(lift_bus)       
+    network.distributors.append(lift_bus)
         
     # append energy network 
     vehicle.append_energy_network(network)  

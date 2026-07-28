@@ -254,7 +254,7 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     center_propulsor.ducted_fan                  = ducted_fan    
               
     # DC_Motor       
-    motor                                         = RCAIDE.Library.Components.Powertrain.Converters.Motor()
+    motor                                         = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     motor.efficiency                              = 0.98
     motor.origin                                  = [[2.,  0, 0.95]]
     motor.nominal_voltage                         = bus.voltage 
@@ -313,11 +313,11 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     net.systems.append(avionics)   
 
     #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to bus       
-    bus.assigned_propulsors =  [[center_propulsor.tag, starboard_propulsor.tag, port_propulsor.tag]]
-
-    # append bus   
-    net.busses.append(bus)
+    # Assign distributors to propulsors and append bus
+    center_propulsor.assigned_distributors    = [[bus.tag]]
+    starboard_propulsor.assigned_distributors = [[bus.tag]]
+    port_propulsor.assigned_distributors      = [[bus.tag]]
+    net.distributors.append(bus)
     
     vehicle.append_energy_network(net)
 

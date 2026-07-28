@@ -486,7 +486,7 @@ def vehicle_setup(cell_chemistry, btms_type):
     starboard_propulsor.rotor                        = propeller   
               
     # DC_Motor       
-    motor                                            = RCAIDE.Library.Components.Powertrain.Converters.Motor()
+    motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     motor.efficiency                                 = 0.98
     motor.origin                                     = [[4.0,2.8129,1.22 ]]   
     motor.nominal_voltage                            = bus.voltage 
@@ -628,11 +628,10 @@ def vehicle_setup(cell_chemistry, btms_type):
     net.systems.append(avionics)
     
     #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to bus       
-    bus.assigned_propulsors =  [[starboard_propulsor.tag, port_propulsor.tag]] 
-
-    # append bus   
-    net.busses.append(bus)
+    # Assign distributors to propulsors and append bus
+    starboard_propulsor.assigned_distributors = [[bus.tag]]
+    port_propulsor.assigned_distributors      = [[bus.tag]]
+    net.distributors.append(bus)
     
     vehicle.append_energy_network(net)
 

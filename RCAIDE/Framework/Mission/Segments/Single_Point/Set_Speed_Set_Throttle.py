@@ -80,9 +80,8 @@ class Set_Speed_Set_Throttle(Evaluate):
         iterate.conditions.acceleration          = skip
         iterate.conditions.angular_acceleration  = skip 
         iterate.conditions.weights               = skip 
-        iterate.residuals.mission.flight_dynamics= Common.Residuals.flight_dynamics
-        post_process                             = self.process.post_process 
-        post_process.inertial_position           = skip    
+        post_process                             = self.process.post_process
+        post_process.inertial_position           = skip
                 
                 
         return

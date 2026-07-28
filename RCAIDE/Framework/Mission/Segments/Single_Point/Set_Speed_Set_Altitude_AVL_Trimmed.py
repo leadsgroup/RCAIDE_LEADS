@@ -119,11 +119,8 @@ class Set_Speed_Set_Altitude_AVL_Trimmed(Segment):
         iterate.conditions.moments               = Common.Update.moments
         iterate.conditions.planet_position       = skip
 
-        # Solve Residuals  
-        iterate.residuals.mission.flight_dynamics        = Common.Residuals.flight_dynamics
-
-        # --------------------------------------------------------------  
-        #  Post Process   
+        # --------------------------------------------------------------
+        #  Post Process
         # -------------------------------------------------------------- 
         post_process                    = self.process.post_process   
         post_process.inertial_position  = skip

@@ -203,9 +203,9 @@ def set_flight_kinematics_residuals_and_unknowns(segment):
     if ctrls.ground_velocity.active:
         segment.state.number_of_mission_unknowns  += 1
         if  ctrls.ground_velocity.initial_guess_values !=  None:
-            segment.state.unknowns.mission.ground_velocity = ones_row(1) * ctrls.ground_velocity.initial_guess_values[0][0]
+            segment.state.unknowns.mission.ground_velocity = ones_row_m1(1) * ctrls.ground_velocity.initial_guess_values[0][0]
         else:
-            segment.state.unknowns.mission.ground_velocity = ones_row(1) *  100
+            segment.state.unknowns.mission.ground_velocity = ones_row_m1(1) *  100
 
         if ctrls.ground_velocity.bounds !=  None:
             segment.state.unknowns_lower_bounds.mission.ground_velocity = ctrls.ground_velocity.bounds[0][0] * ones_row_m1(1)

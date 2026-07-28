@@ -564,9 +564,9 @@ def vehicle_setup(redesign_rotors=True) :
         propulsor_i.electronic_speed_controller.origin    = [origins[i]]  
         propulsor_i.nacelle.tag                           = tags[i] +'nacelle' 
         propulsor_i.nacelle.origin                        = [nacelle_origins[i]]   
-        network.propulsors.append(propulsor_i)   
-        assigned_propulsor_list.append(propulsor_i.tag) 
-    bus.assigned_propulsors = [assigned_propulsor_list]
+        propulsor_i.assigned_distributors = [[bus.tag]]
+        network.propulsors.append(propulsor_i)
+        assigned_propulsor_list.append(propulsor_i.tag)
 
 
     # Avionics                            
@@ -590,7 +590,7 @@ def vehicle_setup(redesign_rotors=True) :
     furnishings.origin                                      = [[2.5, 0, 0]]
     network.systems.append(furnishings) 
    
-    network.busses.append(bus)
+    network.distributors.append(bus)
      
     # append energy network 
     vehicle.append_energy_network(network)     

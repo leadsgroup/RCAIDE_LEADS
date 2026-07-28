@@ -88,16 +88,18 @@ class Takeoff(Evaluate):
         self.state.conditions.ground.friction_coefficient         = ones_row(1) * 0.0
         self.state.conditions.frames.inertial.ground_force_vector = ones_row(3) * 0.0  
 
-        # -------------------------------------------------------------------------------------------------------------- 
-        #  Mission specific processes 
-        # --------------------------------------------------------------------------------------------------------------  
+        # --------------------------------------------------------------------------------------------------------------
+        #  Mission specific processes
+        # --------------------------------------------------------------------------------------------------------------
         initialize                         = self.process.initialize
         initialize.conditions              = Ground.Takeoff.initialize_conditions
-        iterate                            = self.process.iterate   
+        iterate                            = self.process.iterate
         iterate.conditions.forces_ground   = Update.ground_forces
         iterate.unknowns.mission.mission           = Unpack_Unknowns.ground
         iterate.residuals.mission.flight_dynamics  = Residuals.flight_dynamics
-        
+
+        self.state.numerics.mission_solver.type = "root_finder"
+
         return
 
 

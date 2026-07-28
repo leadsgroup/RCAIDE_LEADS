@@ -90,9 +90,19 @@ def initialize_conditions(segment):
     if alt0 is None:
         if not segment.state.initials: raise AttributeError('initial altitude not set')
         alt0 = -1.0 * segment.state.initials.conditions.frames.inertial.position_vector[-1,2]
-    
-    # pack conditions   
-    conditions.freestream.altitude[:,0]   = -alts 
+
+    # seed altitude unknown on first call so the solver starts from a physical guess
+    if not getattr(segment, '_altitude_initialized', False):
+        alt_end = segment.altitude_end
+        t = segment.state.numerics.dimensionless.control_points[:,0]
+        init_alt = alt0 + (alt_end - alt0) * t
+        segment.state.unknowns.mission.altitude[:,0] = init_alt
+        conditions.frames.inertial.position_vector[:,2] = -init_alt
+        alts = conditions.frames.inertial.position_vector[:,2]
+        segment._altitude_initialized = True
+
+    # pack conditions
+    conditions.freestream.altitude[:,0]   = -alts
 
     # check for initial velocity
     if mach_number is None: 
