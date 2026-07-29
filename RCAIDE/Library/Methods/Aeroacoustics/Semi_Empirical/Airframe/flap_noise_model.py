@@ -54,7 +54,7 @@ def flap_noise_model(R_val, theta_flap ,cf,thickness, deltaf, frequency,segment)
         'theta': Polar angle (overhead = 90 deg)
     """
     constants = Data(
-        A0= 3e4, mu0= 0.7693, mu1= 1.0, mu2= 0.292, alpha_0= 0.01
+        A0= 3e5, mu0= 0.7693, mu1= 1.0, mu2= 0.292, alpha_0= 0.008
     )
         
     p_ref = 2e-5 # Reference SPL in Pascals

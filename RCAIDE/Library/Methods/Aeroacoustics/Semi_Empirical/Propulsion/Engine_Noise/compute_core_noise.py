@@ -137,7 +137,6 @@ def compute_core_noise(R_val, theta_engine, turbofan, pr, aeroacoustic_data, seg
         theta_c = np.degrees(theta_engine[0][0]),     #degrees, because interpolator is in degrees                                                                                   # theta (radians)
         pressure_ratio = pr  # Pressure ratio
         )
-        print(model_inputs.theta_c)
 
         # Calculate Base Parameters
         core_param_log = calc_core_param(

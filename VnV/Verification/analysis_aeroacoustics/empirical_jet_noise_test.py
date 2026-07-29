@@ -192,7 +192,7 @@ flight_params: dict
     conditions.frames.body.transform_to_inertial[:,2,0]    = -np.sin(AoA)
     conditions.frames.body.transform_to_inertial[:,2,2]    = np.cos(AoA)     
 
-    segment.state.conditions                                 = conditions 
+    segment.state.conditions                               = conditions 
 
 
     turbofan.append_operating_conditions(segment, segment.state.conditions.energy,segment.state.conditions.aeroacoustics)
@@ -248,10 +248,10 @@ flight_params: dict
     # Run simulation  
     # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      
-    R_val = np.array([[2500]])
-    theta_raw = np.array([[45]])
-    theta_flap = np.array([[45]])
-    theta_engine = np.array([[45]])
+    R_val = np.array([[3200]])
+    theta_raw = np.array([[1.55]])
+    theta_flap = np.array([[1.55]])
+    theta_engine = np.array([[1.55]])
 
     lg_noise1 = compute_landing_gear_noise(R_val, theta_raw, D, H, W, wheels, M, Weight, strut_diameter, frequency, segment)
     validation_lg = read_noise_data('/Users/siripunn/Desktop/LEADS_WORK/RESEARCH/05_Aeroacoustics/Boeing_Method/LG_Noise/b737_gear_noise_data.csv')
@@ -378,6 +378,7 @@ if __name__ == '__main__':
 # def base_analysis(vehicle):
 
 #     # ------------------------------------------------------------------
+
 #     #   Initialize the Analyses
 #     # ------------------------------------------------------------------     
 #     analyses = RCAIDE.Framework.Analyses.Vehicle() 

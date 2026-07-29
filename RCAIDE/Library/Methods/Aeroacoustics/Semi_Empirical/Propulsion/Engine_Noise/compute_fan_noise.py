@@ -205,14 +205,11 @@ def compute_fan_noise(R_val, theta_engine, turbofan, m, aeroacoustic_data, segme
         return 10 * math.log10(energy_sum)
     
     fan_noise= Data()
-    theta     =  np.zeros(n_mic) #theta ???
+    theta_s     =  np.degrees(theta_engine)
 
     for i in range(n_mic):
-        spl_values = []
-        theta_S = np.tile(theta[None,:],(n_cpts,1))  
-        theta_s = np.tile(np.atleast_2d(abs(theta_S[:,i])).T,(1,n_freq))
         spl = calc_combination_tones(fan_inputs, frequency, theta=theta_s)
-        distance_attenuated_spl = spl + 20*np.log10(2.36/distance_microphone[i]) # 1 [m] as the microphone sideline to fan distance, paper sideline = 93 in
+        distance_attenuated_spl = spl + 20*np.log10(0.25/distance_microphone[i]) # paper sideline = 93 in
         
 
         SPL_1_3_spectrum[:,i,:]       = distance_attenuated_spl 

@@ -17,7 +17,7 @@ import numpy as np
 #  Slat Noise Model 
 # ----------------------------------------------------------------------------------------------------------------------
 
-def slat_noise(R_val, phi, theta, Ls, gamma_s, sigma_s, alpha, segment, frequency, A=1e-5):
+def slat_noise(R_val, phi, theta, Ls, gamma_s, sigma_s, alpha, segment, frequency, A):
     """
     Computes the Slat Noise Power Spectral Density based on Guo (2010).
     
