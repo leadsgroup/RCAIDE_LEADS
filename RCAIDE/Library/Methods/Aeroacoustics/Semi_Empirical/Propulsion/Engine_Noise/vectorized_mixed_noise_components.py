@@ -160,7 +160,7 @@ def calc_mach_integral(M, mu0, mu1, mu2):
 # ----------------------------------------------------------------------------------------------------------------------
 #  Slat Noise Model 
 # ----------------------------------------------------------------------------------------------------------------------
-def slat_noise(R_val, phi, theta_raw, Ls, gamma_s, sigma_s, alpha, segment, frequency, A=1e-5):
+def slat_noise(R_val, phi, theta_raw, Ls, gamma_s, sigma_s, alpha, segment, frequency, A):
     
     distance = np.atleast_1d(R_val).reshape(-1, 1) / Units.feet
     theta = np.atleast_1d(theta_raw).reshape(-1, 1)
@@ -321,12 +321,16 @@ def compute_fan_noise(R_val, theta_engine, turbofan, m, aeroacoustic_data, segme
     delt_T = Temperature_static_output - Temperature_static_input    
     M_TR = ((Velocity_aircraft**2 + ((np.pi*Diameter_secondary*N1)/60)**2)**0.5) / sound_ambient 
 
-    if m == None:
-        Area_secondary = np.pi * (Diameter_secondary/2)**2   
-        m = (Area_secondary * Velocity_secondary * density_secondary) / Units.lbs
+    if m is None:
+            # CORRECTED: Calculate the annular area by subtracting the core nozzle area
+            Diameter_primary = turbofan.core_nozzle.diameter
+            Area_secondary = (np.pi / 4.0) * (Diameter_secondary**2 - Diameter_primary**2)
+            
+            # Removed the arbitrary `m - 600` hack
+            m = (Area_secondary * Velocity_secondary * density_secondary) / Units.lbs
 
     fan_inputs = Data(
-        m = m - 600, 
+        m = m, 
         delta_T = delt_T * 1.8,                                                  
         M_TR = M_TR,                                                                   
         RSS = 150.0,                                                                   
@@ -442,21 +446,19 @@ def compute_core_noise(R_val, theta_engine, turbofan, pr, aeroacoustic_data, seg
     return core_noise 
 
 def get_normalized_spl(interpolator_obj, strouhal_num, theta_c):
-    st_bcast = np.broadcast_to(strouhal_num, (theta_c.shape[0], strouhal_num.shape[1]))
+    # CORRECTED: Clip Strouhal numbers to prevent wild extrapolations outside empirical bounds
+    clamped_strouhal = np.clip(strouhal_num, 1e-2, 1e2)
+    st_bcast = np.broadcast_to(clamped_strouhal, (theta_c.shape[0], clamped_strouhal.shape[1]))
+    
     mask = st_bcast > 0
     log_S = np.full_like(st_bcast, -10.0, dtype=float)
     log_S[mask] = np.log10(st_bcast[mask])
     
-    # Broadcast theta_c across frequencies
     Theta = np.broadcast_to(theta_c, st_bcast.shape)
     
-    # Fast 2D Vectorized evaluation using scipy interpolator directly
     try:
-        # FIX: Swapped Theta and log_S to match (log_strouhal, angles) initialization
         res = interpolator_obj.ev(log_S.ravel(), Theta.ravel()).reshape(st_bcast.shape)
     except AttributeError:
-        # Fallback to scipy grid evaluation
-        # FIX: Swapped Theta and log_S here as well
         res = interpolator_obj(np.column_stack((log_S.ravel(), Theta.ravel()))).reshape(st_bcast.shape)
         
     res[~mask] = 0.0

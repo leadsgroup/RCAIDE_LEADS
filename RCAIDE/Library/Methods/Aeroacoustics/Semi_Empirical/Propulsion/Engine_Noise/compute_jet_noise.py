@@ -200,13 +200,16 @@ def compute_jet_noise(microphone_locations, turbofan, aeroacoustic_data, segment
     Diameter_mixed    = (4*Area_mixed/np.pi)**0.5
 
     XBPR = mass_flow_secondary/mass_flow_primary - 5.5
+    # Force the float into a 1D array to allow boolean indexing
+    XBPR = np.atleast_1d(XBPR) 
     XBPR[XBPR<0] = 0
     XBPR[XBPR>4] = 4
 
     # Auxiliary parameter defined as DVPS
     DVPS = np.abs((Velocity_primary - (Velocity_secondary*Area_secondary+Velocity_aircraft*Area_primary)/(Area_secondary+Area_primary)))
-    DVPS[DVPS<0.3] =0.3
-    
+    # Force the float into a 1D array
+    DVPS = np.atleast_1d(DVPS)
+    DVPS[DVPS<0.3] = 0.3
     # ============================================================================= 
     # Step 3: Update dimension of jet for spectral calculations  
     # =============================================================================

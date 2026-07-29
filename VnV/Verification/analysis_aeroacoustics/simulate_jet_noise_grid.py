@@ -17,10 +17,13 @@ from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Propulsion.Engine_Noise
 from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Propulsion.Engine_Noise.vectorized_mixed_noise_components import slat_noise
 from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Propulsion.Engine_Noise.vectorized_mixed_noise_components import compute_fan_noise
 from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Propulsion.Engine_Noise.vectorized_mixed_noise_components import compute_core_noise
+from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Propulsion.Engine_Noise.compute_jet_noise import compute_jet_noise
 from RCAIDE.Framework.Mission.Common                                              import Results  
 from RCAIDE.Framework.Mission.Segments.Segment                                    import Segment 
 from RCAIDE.Framework.Mission.Common                                              import Conditions 
 from RCAIDE.Library.Methods.Aeroacoustics.Common   import SPL_arithmetic 
+from RCAIDE.Library.Methods.Aeroacoustics.Metrics import A_weighting_metric
+from RCAIDE.Library.Methods.Aeroacoustics.Common.atmospheric_attenuation import atmospheric_attenuation
 from RCAIDE.Library.Plots import * 
  
 # Python Imports  
@@ -86,7 +89,11 @@ flight_params: dict
     Weight = 68038.8555 #kg
     strut_diameter=0.11811#m
     theta =(np.pi)/2 #deg 
-    frequency = np.logspace(1.5, 4.5, 100)
+    frequency = frequency = np.array([
+        50.0, 63.0, 80.0, 100.0, 125.0, 160.0, 200.0, 250.0, 
+        315.0, 400.0, 500.0, 630.0, 800.0, 1000.0, 1250.0, 1600.0, 
+        2000.0, 2500.0, 3150.0, 4000.0, 5000.0, 6300.0, 8000.0, 10000.0
+    ])
     W = 0.3556#m
     
     #define params for flap model
@@ -198,6 +205,14 @@ flight_params: dict
     segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.exit_velocity = 350 * Units.mph
     segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.exit_stagnation_temperature = 440
     segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.exit_stagnation_pressure = 152*1000
+
+    turbofan.origin = np.array([[0.0, 0.0, 1.0]]) # Engine height assumed 1.0m
+    turbofan.length = 97*Units.inches
+    turbofan.diameter = 70*Units.inches
+    turbofan.plug_diameter = 60*Units.inches
+    turbofan.geometry_xe = 2.0
+    turbofan.geometry_ye = 2.0
+    turbofan.geometry_Ce = 2.0
     
     segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.number_of_blades = 22
     segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.diameter = 70*Units.inches
@@ -268,34 +283,36 @@ flight_params: dict
     positionsx = []
     positionsy = []
     sim_results = []
-    # Loop over the first 5 steps in the aircraft path
-# Loop over the first 5 steps in the aircraft path
+    dt_array = [] # Store time steps for SEL integration
+    
+    # Aircraft speed from your conditions
+    U_flight = 72.0 # m/s 
+
+    #init jet noise settings
+    settings = Data()
+    settings.center_frequencies = np.pad(frequency, (5, 0), mode='constant')
+
+
     for index, track_point in track_df.head(45).iterrows(): 
         ac_lat = track_point['Latitude (deg)']
         ac_lon = track_point['Longitude (deg)']
         ac_alt = track_point['Altitude MSL (ft)'] 
-        
-        print(f"Aircraft Position: Lat {ac_lat}, Lon {ac_lon}, Alt {ac_alt} ft MSL")
-        print(f"Grid Center: Lat {np.mean(rec_lats)}, Lon {np.mean(rec_lons)}")
 
-        if index > 15:
-            positionsx.append(ac_lat)
-            positionsy.append(ac_lon)
+        if index > 9:
+            if index > 17:
+                positionsx.append(ac_lat)
+                positionsy.append(ac_lon)
 
-            # 1. Calculate distances and angles for ALL receptors at once for this timestep
+            # 1. Calculate distances
             ground_dist, los_distance, angle_to_ground = calc_3d_dist_vectorized(
                 ac_lat, ac_lon, ac_alt, rec_lats, rec_lons, rec_elevs
             )
             
-            # -------------------------------------------------------------------------
-            # 2. PROPER 3D POLAR ANGLE (THETA) CALCULATION 
-            # -------------------------------------------------------------------------
+            # 2. Proper 3D Polar Angle and dt calculation
             R_earth = 6371000.0
             
-            # A. Determine Aircraft Heading Vector 
             if index > 0:
                 prev_pt = track_df.iloc[index - 1]
-                # FIX 2: Added R_earth to dx and dy so the flight vector is in meters, not radians
                 dx_flight = np.radians(ac_lon - prev_pt['Longitude (deg)']) * R_earth * np.cos(np.radians(ac_lat))
                 dy_flight = np.radians(ac_lat - prev_pt['Latitude (deg)']) * R_earth
                 dz_flight = (ac_alt - prev_pt['Altitude MSL (ft)']) * 0.3048
@@ -304,6 +321,10 @@ flight_params: dict
                 
             mag_flight = np.sqrt(dx_flight**2 + dy_flight**2 + dz_flight**2)
             hx, hy, hz = (dx_flight/mag_flight, dy_flight/mag_flight, dz_flight/mag_flight) if mag_flight > 0 else (-1.0, 0.0, 0.0)
+            
+            # Calculate time delta for SEL (dt = distance / speed)
+            dt = mag_flight / U_flight if mag_flight > 0 else 1.0
+            dt_array.append(dt)
 
             # B. Determine Observer Vector (Aircraft -> Receptor)
             dx_obs = np.radians(rec_lons - ac_lon) * R_earth * np.cos(np.radians(ac_lat))
@@ -338,26 +359,56 @@ flight_params: dict
                 # --- RUN NOISE MODELS ---
                 lg_noise = compute_landing_gear_noise(R_val, theta_raw, D, H, W, wheels, M, Weight, strut_diameter, frequency, segment)
                 flap_noise = flap_noise_model(R_val, theta_flap, cf, thickness, deltaf, frequency, segment)
-                slat_noise_val = slat_noise(R_val, phi, theta_flap[0][0], Ls, gamma_s, sigma_s, alpha, segment, frequency, A=1e-5)
+                slat_noise_val = slat_noise(R_val, phi, theta_flap[0][0], Ls, gamma_s, sigma_s, alpha, segment, frequency, A=1e-6)
+
+
+                # Pass segment.state to match internal RCAIDE condition structure
+                aero_data = segment.state.conditions.aeroacoustics.propulsors[turbofan.tag]
                 
+                # Convert polar theta to Cartesian coordinates for jet_noise function logic
+                mic_x = -los_distance[i] * np.cos(theta_proper[i])
+                mic_y = los_distance[i] * np.sin(theta_proper[i])
+                mic_locations = np.array([[mic_x, mic_y, 0.0]])
+                
+                jet_noise = compute_jet_noise(mic_locations, turbofan, aero_data, segment.state, settings)
                 fan_noise = compute_fan_noise(R_val[0], theta_engine[0][0], turbofan, m, segment.state.conditions.aeroacoustics, segment, frequency)
                 core_noise = compute_core_noise(R_val, theta_engine, turbofan, pr, segment.state.conditions.aeroacoustics, segment, frequency)
+
+                jet_spec_dBA = jet_noise.SPL_1_3_spectrum[0][0]
+                a_weighting_curve = A_weighting_metric(np.zeros_like(frequency), frequency)
+                jet_spec_raw = jet_spec_dBA - a_weighting_curve
                 
                 # Combine spectra logarithmically
                 # Ensure slicing matches the output shape of your RCAIDE models (usually [0][0] for 1st ctrl pt, 1st observer)
                 spectra = np.array([
                     lg_noise.Total[0], 
                     flap_noise[0], 
-                    slat_noise_val[0], # problematic - overpredicting to 107 dB
+                    slat_noise_val[0],
                     fan_noise.SPL_1_3_spectrum[0][0], #slightly overpredicting - 84dB
                     core_noise.SPL_1_3_spectrum[0][0], #bottleneck here
+                    jet_spec_raw
                 ])
-                
                 total_spectrum = SPL_arithmetic(spectra, sum_axis=0)
                 
-                # Convert the 1/3 octave band spectrum into a single Overall Sound Pressure Level (OASPL)
-                # You cannot map a 100-length array to a color dot; you need a single dB value per coordinate.
-                oaspl = 10 * np.log10(np.sum(10 ** (total_spectrum / 10)))
+                # 2. Package the scalar distance into an array to satisfy RCAIDE's len(dist) check
+                dist_array = np.array([los_distance[i]])
+                
+                # 3. Calculate atmospheric attenuation
+                # Note the order: (dist, center_frequencies)
+                # We slice [0] at the end because the function returns a 2D array of shape (1, N_freqs)
+                att_dB = atmospheric_attenuation(dist_array, frequency)[0]
+                
+                # 4. Subtract the atmospheric absorption from the raw spectrum
+                attenuated_spectrum = total_spectrum - att_dB
+                
+                # 5. Apply A-weighting filter to the spectrum
+                a_weighted_spectrum = A_weighting_metric(attenuated_spectrum, frequency)
+
+                #Now to add jet noise into the picture
+
+
+                # 6. Convert the A-weighted spectrum into a single scalar dBA / SEL value
+                oaspl = 10 * np.log10(np.sum(10 ** (a_weighted_spectrum / 10)))
                 total_SPL_map[i] = oaspl
 
             # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -366,13 +417,15 @@ flight_params: dict
             sim_results.append(total_SPL_map)
             
 
-        if len(sim_results) == 9+20:
+        if len(sim_results) == 9+26:
             print(positionsx,positionsy)
             import matplotlib.tri as tri
+            sim_results_arr = np.array(sim_results)
+            dt_arr = np.array(dt_array).reshape(-1, 1) 
             
-            # FIX: Logarithmic energy sum for Sound Exposure
-            # Converts dB back to linear Pascals, sums them across time, converts back to dB
-            z = 10 * np.log10(np.sum(10**(np.array(sim_results) / 10.0), axis=0))
+            # SEL = 10 * log10( sum( 10^(SPL/10) * dt ) )
+            energy_integral = np.sum((10**(sim_results_arr / 10.0)) * dt_arr, axis=0)
+            z = 10 * np.log10(energy_integral)
             
             x = rec_lons
             y = rec_lats
@@ -384,13 +437,13 @@ flight_params: dict
             
             # Generate the filled contour (heatmap)
             # 'jet' is a standard colormap for aeroacoustic footprints
-            levels = np.linspace(np.min(z), np.max(z), 20) # 40 smooth color transitions
+            levels = np.linspace(45, 120, 20) # 40 smooth color transitions
             heatmap = ax.tricontourf(triangulation, z, levels=levels, cmap='jet', extend='both')
             plt.plot(positionsy,positionsx,'ko',markersize=1)
         
             # 5. Add colorbar and labels
             cbar = fig.colorbar(heatmap, ax=ax)
-            cbar.set_label(f'Level (Exposure)', fontsize=12, fontweight='bold')
+            cbar.set_label(f'Level (Exposure) - SEL', fontsize=12, fontweight='bold')
         
             ax.set_title('B737 Simulated Noise Footprint', fontsize=14, fontweight='bold', pad=15)
             ax.set_xlabel('Longitude', fontsize=12)
