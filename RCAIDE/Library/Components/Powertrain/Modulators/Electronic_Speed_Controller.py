@@ -49,7 +49,9 @@ class Electronic_Speed_Controller(Modulator):
         should be set to an appropriate value based on the specific ESC being modeled.
         """         
  
-        self.tag                   = 'electronic_speed_controller'  
+        self.tag                   = 'electronic_speed_controller'
+        self.efficiency            = 0.0
+        self.nominal_voltage       = 0.0
 
     def append_operating_conditions(self,segment): 
         append_esc_conditions(self,segment)

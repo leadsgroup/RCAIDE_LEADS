@@ -82,7 +82,7 @@ def plot_battery_module_C_rates(results,
 
                 module_energy  = battery_conditions.energy[:, 0]
                 module_volts   = battery_conditions.voltage_under_load[:, 0]
-                module_current = battery_conditions.current[:, 0]
+                module_current = battery_conditions.current_draw[:, 0]
 
                 module_amp_hr = (module_energy / Units.Wh) / module_volts
                 c_instant     = module_current / module_amp_hr

@@ -9,8 +9,9 @@
 # RCAIDE imports
 import RCAIDE
 from .Distributor                                             import Distributor
-from RCAIDE.Library.Components.Component                      import Container   
-from RCAIDE.Framework.Core                                    import Data 
+from RCAIDE.Library.Components.Component                      import Container
+from RCAIDE.Framework.Core                                    import Data
+from RCAIDE.Library.Methods.Powertrain.Distributors.Coolant_Line import append_coolant_line_conditions, append_coolant_line_segment_conditions
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Coolant Line
@@ -73,7 +74,8 @@ class Coolant_Line(Distributor):
         Source:
             None
         """           
-        self.tag                                  = 'coolant_line' 
+        self.tag                                  = 'coolant_line'
+        self.domain                               = 'thermal'
         self.heat_exchangers                      = Container()
         self.reservoirs                           = Container()
         self.connector_weight_factor              = 1.1  
@@ -112,25 +114,80 @@ class Coolant_Line(Distributor):
         When a distributor with battery modules is provided, the method creates
         containers to store the cooling system components for each battery.
         """               
-        self.active                        = True 
-        self.efficiency                    = 1.0 
+        self.active                        = True
+        self.efficiency                    = 1.0
 
-    def compute_performance(self, state):
+    def unpack_unknowns(self,segment):
+        for reservoir in self.reservoirs:
+            reservoir.unpack_unknowns(self,segment)
+        return
+
+    def pack_residuals(self,segment):
+        for reservoir in self.reservoirs:
+            reservoir.pack_residuals(self,segment)
+        return
+
+    def append_unknowns_and_residuals(self,segment):
+        for reservoir in self.reservoirs:
+            reservoir.append_unknowns_and_residuals(self,segment)
+        return
+
+    def append_operating_conditions(self, segment):
+        """
+        Append operating conditions for a flight segment
+
+        Parameters
+        ----------
+        segment : Segment
+            Flight segment containing operating conditions
+        """
+        append_coolant_line_conditions(self, segment)
+        for reservoir in self.reservoirs:
+            reservoir.append_operating_conditions(segment, self)
+        for heat_exchanger in self.heat_exchangers:
+            heat_exchanger.append_operating_conditions(segment, self)
+        return
+
+    def append_segment_conditions(self, segment):
+        """
+        Append segment-specific conditions to the coolant line
+
+        Parameters
+        ----------
+        segment : Segment
+            Flight segment data
+        """
+        append_coolant_line_segment_conditions(self, segment)
+        for reservoir in self.reservoirs:
+            reservoir.append_segment_conditions(segment, self)
+        for heat_exchanger in self.heat_exchangers:
+            heat_exchanger.append_segment_conditions(segment, self)
+        return
+
+    def compute_distribution_losses(self, component_conditions, state, network):
+        return
+
+    def compute_performance(self, state, network):
+
+        for reservoir in self.reservoirs:
+            reservoir.compute_performance(self, state, network)
 
         inputs = Data()
         outputs = Data()
+        inputs.power  = Data()
+        outputs.power = Data()
 
         inputs.power.mechanical  = state.conditions.energy.distributors[self.tag].inputs.power.mechanical
         inputs.power.electrical  = state.conditions.energy.distributors[self.tag].inputs.power.electrical
-        inputs.power.chemical    = state.conditions.energy.distributors[self.tag].inputs.power.chemical   
-        inputs.power.hydraulic   = state.conditions.energy.distributors[self.tag].inputs.power.hydraulic 
-        inputs.power.thermal     = state.conditions.energy.distributors[self.tag].inputs.power.thermal  
+        inputs.power.chemical    = state.conditions.energy.distributors[self.tag].inputs.power.chemical
+        inputs.power.hydraulic   = state.conditions.energy.distributors[self.tag].inputs.power.hydraulic
+        inputs.power.thermal     = state.conditions.energy.distributors[self.tag].inputs.power.thermal
 
         outputs.power.mechanical = state.conditions.energy.distributors[self.tag].outputs.power.mechanical
         outputs.power.electrical = state.conditions.energy.distributors[self.tag].outputs.power.electrical
-        outputs.power.chemical   = state.conditions.energy.distributors[self.tag].outputs.power.chemical   
-        outputs.power.hydraulic  = state.conditions.energy.distributors[self.tag].outputs.power.hydraulic 
-        outputs.power.thermal    = state.conditions.energy.distributors[self.tag].outputs.power.thermal  
+        outputs.power.chemical   = state.conditions.energy.distributors[self.tag].outputs.power.chemical
+        outputs.power.hydraulic  = state.conditions.energy.distributors[self.tag].outputs.power.hydraulic
+        outputs.power.thermal    = state.conditions.energy.distributors[self.tag].outputs.power.thermal
 
         return inputs, outputs
 

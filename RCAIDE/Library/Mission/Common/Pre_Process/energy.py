@@ -91,6 +91,10 @@ def energy(mission):
             for modulator in network.modulators:
                 modulator.initialize(network)
                 modulator.append_operating_conditions(segment)
+                
+            for distributor in network.distributors:
+                distributor.initialize(network)
+                distributor.append_operating_conditions(segment)
 
             for source in network.sources:
                 source.initialize(network)
@@ -99,10 +103,6 @@ def energy(mission):
             for system in network.systems:
                 system.initialize(network)
                 system.append_operating_conditions(segment)
-
-            for distributor in network.distributors:
-                distributor.initialize(network)
-                distributor.append_operating_conditions(segment)
 
     return
 
@@ -249,11 +249,24 @@ def _analyze_topology(network, seg_i,  verbose=False):
                     else:
                         connections[dist_tag].consumers.append(component)
 
+    def _register_by_domain(component, provider_domain):
+        # Registers a converter as a provider on distributors matching
+        # provider_domain (e.g. 'electrical' for a fuel cell or generator)
+        # and as a consumer on any other distributor it is assigned to
+        # (e.g. the chemical fuel line it draws fuel from).
+        if component.assigned_distributors is not None:
+            for dist_tag in component.assigned_distributors[0]:
+                if dist_tag in connections:
+                    if distributor_domains[dist_tag] == provider_domain:
+                        connections[dist_tag].providers.append(component)
+                    else:
+                        connections[dist_tag].consumers.append(component)
+
     for source in network.sources:
         _register(source, 'provider')
 
     for converter in fuel_cells + generators:
-        _register(converter, 'provider')
+        _register_by_domain(converter, 'electrical')
 
     for propulsor in network.propulsors:
         _register(propulsor, 'consumer')
@@ -350,12 +363,15 @@ def _resolve_hybridization(segment, topology,seg_i, verbose=False):
     # ------------------------------------------------------------------
     phi = segment.hybrid_power_split_ratio
 
+    has_chemical_propulsion   = len(topology.chemical_propulsors)   > 0
+    has_electrical_propulsion = len(topology.electrical_propulsors) > 0
+
     if phi is None:
-        if topology.has_chemical_path and not topology.has_electrical_path:
+        if has_chemical_propulsion and not has_electrical_propulsion:
             phi = 0.0
-        elif topology.has_electrical_path and not topology.has_chemical_path:
+        elif has_electrical_propulsion and not has_chemical_propulsion:
             phi = 1.0
-        elif topology.has_chemical_path and topology.has_electrical_path:
+        elif has_chemical_propulsion and has_electrical_propulsion:
             has_electrical_source = (len(topology.batteries)  > 0 or
                                     len(topology.fuel_cells)  > 0 or
                                     len(topology.generators)  > 0)

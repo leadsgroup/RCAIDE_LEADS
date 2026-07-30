@@ -81,11 +81,11 @@ def plot_battery_module_conditions(results,
                 time = segment.conditions.frames.inertial.time[:, 0] / Units.min
                 battery_conditions = segment.conditions.energy.sources[battery.tag]
 
-                module_power   = battery_conditions.power[:, 0]
+                module_power   = battery_conditions.power_draw[:, 0]
                 module_energy  = battery_conditions.energy[:, 0]
-                module_SOC     = battery_conditions.cell.state_of_charge[:, 0]
+                module_SOC     = battery_conditions.state_of_charge[:, 0]
                 module_volts   = battery_conditions.voltage_under_load[:, 0]
-                module_current = battery_conditions.current[:, 0]
+                module_current = battery_conditions.current_draw[:, 0]
                 module_temp    = battery_conditions.temperature[:, 0]
 
                 label = battery.tag if (i == 0) else None

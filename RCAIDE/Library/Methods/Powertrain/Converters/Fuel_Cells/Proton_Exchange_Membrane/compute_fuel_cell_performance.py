@@ -90,8 +90,18 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, network):
     # Retrieve converter conditions and power demand
     # ---------------------------------------------------------------------------------
     fc_conds = state.conditions.energy.converters[fuel_cell_stack.tag]
-    P_stack  = fc_conds.inputs.power.electrical
-    P_cell   = P_stack[:, 0] / n_total  # power demand per individual cell [W]
+
+    # Electrical demand this stack must meet: the network-wide electrical power
+    # requirement (solved implicitly when both a chemical and electrical path
+    # exist), split between battery/fuel-cell sources by psi and between multiple
+    # fuel-cell stacks by power_split_ratio.
+    psi = state.conditions.energy.battery_fuel_cell_power_split_ratio
+    if 'electrical_power' in state.unknowns.network:
+        total_electrical_demand = state.unknowns.network['electrical_power']
+    else:
+        total_electrical_demand = state.conditions.energy.inputs.power.electrical
+    P_stack  = total_electrical_demand * fuel_cell_stack.power_split_ratio * (1. - psi)
+    P_cell   = P_stack[:, 0] / n_total  # power demand per individual cell [W] 
 
     fc_conds.stagnation_temperature[:] = stagnation_temperature
     fc_conds.stagnation_pressure[:]    = stagnation_pressure
@@ -99,8 +109,28 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, network):
     # ---------------------------------------------------------------------------------
     # Vectorized Newton-Raphson to find current density matching power demand
     # ---------------------------------------------------------------------------------
-    i_vec = np.ones_like(P_cell)  # initial guess [A/cm^2]
-    di    = 1e-6                  # finite-difference step for Jacobian
+    # The residual has a vertical asymptote at the limiting current density i_lim (the
+    # concentration-loss term calculate_concentration_losses_LT/HT diverges there), so an
+    # unbounded Newton step taken from the shallow part of the power curve can overshoot
+    # past i_lim in a single iteration. Past that point, partial pressures go negative and
+    # activation losses (which raise P_O2 to a fractional power) return NaN, which then
+    # never recovers. Clamp every iterate to a physically valid bracket [i_floor, i_ceiling]
+    # so the solve stays well-defined even when the demanded power exceeds what the stack
+    # can actually deliver (in which case it saturates at i_ceiling instead of diverging).
+    i_floor   = 1e-6
+    stack_T   = fc_conds.stack_temperature[:, 0]
+    P_O2_ceiling = calculate_P_O2(fuel_cell_stack, fuel_cell.rated_air_pressure, stack_T,
+                                   fuel_cell.oxygen_relative_humidity, fuel_cell.air_excess_ratio, 0., 0.)
+    if fuel_cell.type == "LT":
+        i_ceiling = calculate_limiting_current_density_LT(fuel_cell_stack, stack_T, P_O2_ceiling,
+                                                            fuel_cell.oxygen_relative_humidity, fuel_cell.air_excess_ratio, 0., 0.)
+    else:
+        i_ceiling = calculate_limiting_current_density_HT(fuel_cell_stack, stack_T, P_O2_ceiling,
+                                                            fuel_cell.oxygen_relative_humidity, fuel_cell.air_excess_ratio, 0., 0.)
+    i_ceiling = 0.999 * i_ceiling
+
+    i_vec = np.clip(np.ones_like(P_cell), i_floor, i_ceiling)  # initial guess [A/cm^2]
+    di    = 1e-6                                                # finite-difference step for Jacobian
 
     for _ in range(50):
         # Evaluate residual: R(i) = P_net(i) - P_demand
@@ -116,8 +146,9 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, network):
         _, _, P_net_pert, _, _, _, _, _, _ = evaluate_PEM(fuel_cell_stack, fc_conds)
         dPdi = (P_net_pert - P_net) / di
 
-        # Newton update with safeguard against zero derivative
+        # Newton update with safeguard against zero derivative, clamped to stay physical
         i_vec -= residual / np.where(np.abs(dPdi) > 1e-30, dPdi, 1e-30)
+        i_vec  = np.clip(i_vec, i_floor, i_ceiling)
 
     # ---------------------------------------------------------------------------------
     # Final evaluation at converged current densities
@@ -137,6 +168,11 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, network):
     fc_conds.inlet_H2_mass_flow_rate[:, 0]  = mdot_H2
     fc_conds.inlet_air_mass_flow_rate[:, 0] = mdot_air_in
     fc_conds.outlet_air_mass_flow_rate[:, 0] = mdot_air_out
+
+    # Chemical (hydrogen) power draw, fed to the fuel line so assigned fuel tanks
+    # can compute their own mass depletion.
+    fc_conds.inputs.power.chemical = fc_conds.H2_mass_flow_rate * fuel_cell_stack.fuel_cell.propellant.lower_heating_value
+    fc_conds.fuel_mass_flow_rate   = fc_conds.H2_mass_flow_rate
 
     stored_results_flag  = True
     stored_converter_tag = fuel_cell_stack.tag
@@ -255,9 +291,13 @@ def evaluate_CEM(fuel_cell_stack, fc_conds):
     FC_air_p         = fuel_cell.rated_air_pressure
     air_excess_ratio = fuel_cell.air_excess_ratio
 
-    # Compressor: raise ambient air to cathode supply pressure
-    p_air_FC   = FC_air_p + p_drop_hum
-    comp_p_req = mdot_air_in * Cp * Tt_in * (((p_air_FC + p_drop_hum) / Pt_in) ** ((gam - 1) / gam) - 1) / CEM.compressor_efficiency
+    # Compressor: raise ambient air to cathode supply pressure (p_air_FC already includes
+    # the humidifier pressure drop the compressor must overcome, so it is not added again here).
+    # Ram air can already meet or exceed the required cathode pressure at low altitude/high
+    # speed; the compressor cannot do negative work in that case, so the ratio is floored at 1.
+    p_air_FC          = FC_air_p + p_drop_hum
+    pressure_ratio     = np.maximum(p_air_FC / Pt_in, 1.0)
+    comp_p_req         = mdot_air_in * Cp * Tt_in * (pressure_ratio ** ((gam - 1) / gam) - 1) / CEM.compressor_efficiency
     input_p    = comp_p_req / CEM.motor_efficiency
 
     # Expander: recover energy from cathode exhaust
@@ -273,7 +313,7 @@ def evaluate_CEM(fuel_cell_stack, fc_conds):
     # Store CEM conditions
     fc_conds.outlet_air_pressure[:, 0]              = p_air_FC
     fc_conds.compressor_inlet_pressure[:, 0]        = Pt_in
-    fc_conds.compressor_pressure_ratio[:, 0]        = (p_air_FC + p_drop_hum) / Pt_in
+    fc_conds.compressor_pressure_ratio[:, 0]        = pressure_ratio
     fc_conds.compressor_inlet_mass_flow_rate[:, 0]  = mdot_air_in
     fc_conds.compressor_power[:, 0]                 = comp_p_req
     fc_conds.expander_outlet_mass_flow_rate[:, 0]   = mdot_air_out
@@ -501,8 +541,15 @@ def calculate_E_cell(fuel_cell_stack, stack_temperature, P_H2, P_O2):
         Reversible cell potential [V].
     """
     fuel_cell = fuel_cell_stack.fuel_cell
+    # P_H2 and P_O2 can go non-positive when the Newton-Raphson current-density
+    # solve (in compute_fuel_cell_performance) overshoots into an unphysical
+    # region (e.g. demand far exceeding the stack's rated capacity). Floor them
+    # so log() returns a large negative value (very low, but finite, cell
+    # voltage) instead of NaN, keeping the solve well-defined everywhere.
+    P_H2_safe = np.maximum(P_H2, 1e-8)
+    P_O2_safe = np.maximum(P_O2, 1e-8)
     E_cell    = 1.229 - 8.45e-4 * (stack_temperature - 298.15) + \
-        fuel_cell.Universal_gas_constant * stack_temperature / (4 * fuel_cell.alpha * fuel_cell.Faraday_constant) * (np.log(P_H2) + 0.5 * np.log(P_O2))
+        fuel_cell.Universal_gas_constant * stack_temperature / (4 * fuel_cell.alpha * fuel_cell.Faraday_constant) * (np.log(P_H2_safe) + 0.5 * np.log(P_O2_safe))
     return E_cell
 
 

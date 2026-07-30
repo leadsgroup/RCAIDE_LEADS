@@ -80,6 +80,8 @@ class Liquid_Hydrogen(Propellant):
         self.reactant                      = 'O2' 
         self.density                       = 70.85                            # [kg/m^3]
         self.specific_energy               = 120e6  # [J/kg] Considering the lower heating value https://ntrs.nasa.gov/api/citations/20020085127/downloads/20020085127.pdf
+        self.lower_heating_value           = 120e6                              # J/kg
+        self.kinematic_viscosity           = 1.9e-7                           # [m^2/s] liquid hydrogen near its boiling point (~20 K)
         self.energy_density                = 8491.0e6                         # [J/m^3]
         self.stoichiometric_fuel_to_air    = 0.029411
         self.temperatures.autoignition     = 845.15                           # [K]  

@@ -80,9 +80,11 @@ def plot_battery_temperature(results,
             for i, segment in enumerate(results.segments):
                 time = segment.conditions.frames.inertial.time[:, 0] / Units.min
                 battery_conditions = segment.conditions.energy.sources[battery.tag]
+                module_tag         = list(battery.modules)[0].tag
+                module_conditions  = battery_conditions[module_tag]
 
-                cell_temp   = battery_conditions.cell.temperature[:, 0]
-                cell_charge = battery_conditions.cell.charge_throughput[:, 0]
+                cell_temp   = module_conditions.cell.temperature[:, 0]
+                cell_charge = module_conditions.cell.charge_throughput[:, 0]
                 pack_Q      = battery_conditions.heat_energy_generated[:, 0]
 
                 label = battery.tag if (i == 0) else None

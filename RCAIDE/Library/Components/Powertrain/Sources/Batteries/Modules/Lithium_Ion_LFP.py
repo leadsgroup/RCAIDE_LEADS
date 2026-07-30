@@ -11,7 +11,8 @@
 import RCAIDE
 from RCAIDE.Framework.Core          import Units,Data
 from .Generic_Battery_Module import  Generic_Battery_Module
-from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP  import * 
+from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP  import *
+from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.append_battery_unknown_and_residual      import append_battery_unknown_and_residual
 
 # package imports 
 import numpy as np  
@@ -141,56 +142,58 @@ class Lithium_Ion_LFP(Generic_Battery_Module):
 
         return                       
 
-    def compute_performance(self,state,bus,network): 
+    def append_unknowns_and_residuals(self,battery,segment):
+        """
+        Registers the cell temperature and state-of-charge unknowns/residuals,
+        solved implicitly alongside every other network unknown.
+        """
+        append_battery_unknown_and_residual(self,battery,segment)
+        return
+
+    def unpack_unknowns(self,battery,segment):
+        return
+
+    def pack_residuals(self,battery,segment):
+        return
+
+    def compute_performance(self,battery,state,network):
         """
         Computes the state of the LFP battery cell
-        
+
         Parameters
         ----------
+        battery : Battery_Pack
+            The battery pack containing this module
         state : Data
             Current system state
-        bus : Component
-            Connected electrical bus
-        coolant_lines : Component
-            Connected cooling system
-        t_idx : int
-            Time index
-        delta_t : float
-            Time step [s]
-            
+        network : Network
+            The powertrain network
+
         Returns
         -------
         stored_results_flag : bool
             Flag indicating if results were stored
         stored_battery_tag : str
             Identifier for stored results
-        """      
-        inputs, outputs, stored_results_flag, stored_source_tag =  compute_lfp_cell_performance(self,state,bus,network) 
+        """
+        inputs, outputs, stored_results_flag, stored_source_tag =  compute_lfp_cell_performance(self,battery,state,network)
                         
         return inputs, outputs, stored_results_flag, stored_source_tag
     
-    def reuse_stored_data(self,state,network,stored_results_flag,stored_battery_tag,stored_battery_module_tag):
+    def reuse_stored_data(self,state,stored_battery_tag,stored_battery_module_tag):
         """
         Reuses previously stored battery performance data
-        
+
         Parameters
         ----------
         state : Data
             Current system state
-        bus : Component
-            Connected electrical bus
-        coolant_lines : Component
-            Connected cooling system
-        t_idx : int
-            Time index
-        delta_t : float
-            Time step [s]
-        stored_results_flag : bool
-            Flag indicating stored results exist
         stored_battery_tag : str
-            Identifier for stored results
+            Tag of the battery pack whose module results are being reused
+        stored_battery_module_tag : str
+            Tag of the module whose results are being reused
         """
-        inputs, outputs = reuse_stored_lfp_cell_data(self,state,network,stored_results_flag,stored_battery_tag,stored_battery_module_tag)
+        inputs, outputs = reuse_stored_lfp_cell_data(self,state,stored_battery_tag,stored_battery_module_tag)
         return inputs, outputs
       
     def update_battery_age(self,battery,segment,increment_battery_age_by_one_day): 

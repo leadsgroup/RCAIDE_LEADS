@@ -231,8 +231,8 @@ def mission_setup(analyses,solver_type,solver_objective):
     # unpack Segments module
     Segments = RCAIDE.Framework.Mission.Segments  
     base_segment = Segments.Segment()
-    base_segment.state.numerics.solver.type       = solver_type
-    base_segment.state.numerics.solver.objective  = solver_objective  
+    base_segment.state.numerics.mission_solver.type       = solver_type
+    base_segment.state.numerics.mission_solver.objective  = solver_objective  
         
     # ------------------------------------------------------------------
     #   Cruise Segment: constant Speed, constant altitude

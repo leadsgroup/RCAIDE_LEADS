@@ -10,7 +10,7 @@ import RCAIDE
 from RCAIDE.Framework.Core                                                                import Data, Units 
 from RCAIDE.Library.Components                                                            import Component  
 from RCAIDE.Library.Attributes.Coolants.Glycol_Water                                      import Glycol_Water  
-from RCAIDE.Library.Methods.Thermal_Management.Heat_Exchangers.Cross_Flow_Heat_Exchanger  import  cross_flow_hex_rating_model, append_cross_flow_heat_exchanger_conditions, append_cross_flow_hex_segment_conditions
+from RCAIDE.Library.Methods.Powertrain.Converters.Cross_Flow_Heat_Exchanger  import  compute_cross_flow_heat_exchanger_performance, append_cross_flow_heat_exchanger_conditions, append_cross_flow_hex_segment_conditions
 from RCAIDE.Library.Plots.Thermal_Management.plot_cross_flow_heat_exchanger_conditions    import plot_cross_flow_heat_exchanger_conditions 
 
 import os
@@ -243,7 +243,7 @@ class Cross_Flow_Heat_Exchanger(Component):
         append_cross_flow_heat_exchanger_conditions(self, segment, coolant_line)
         return
   
-    def append_segment_conditions(self, segment, bus, coolant_line):
+    def append_segment_conditions(self, segment, coolant_line):
         """
         Adds specific segment conditions to the heat exchanger analysis.
 
@@ -251,35 +251,34 @@ class Cross_Flow_Heat_Exchanger(Component):
         ----------
         segment : Data
             Mission segment being analyzed
-        bus : Data
-            Electrical bus data
         coolant_line : Data
             Cooling system flow path information
         conditions : Data
             Operating conditions for the segment
         """
-        append_cross_flow_hex_segment_conditions(self, segment, bus, coolant_line)
+        append_cross_flow_hex_segment_conditions(self, segment, coolant_line)
         return
-       
-    def compute_heat_exchanger_performance(self, state, bus, coolant_line, delta_t, t_idx):
+
+    def compute_heat_exchanger_performance(self, coolant_line, T_coolant, state):
         """
-        Calculates thermal performance of the heat exchanger.
+        Calculates the heat rejected from the coolant loop to ambient air.
 
         Parameters
         ----------
-        state : Data
-            Current system state
-        bus : Data
-            Electrical bus data
         coolant_line : Data
             Cooling system flow path information
-        delta_t : float
-            Time step size
-        t_idx : int
-            Time index in the simulation
+        T_coolant : numpy.ndarray
+            Coolant temperature at every control point [Kelvin]
+        state : Data
+            Current system state
+
+        Returns
+        -------
+        Q_rejected : numpy.ndarray
+            Heat rejected to ambient air at every control point [Watts]
         """
-        cross_flow_hex_rating_model(self, state, bus, coolant_line, delta_t, t_idx)
-        return
+        Q_rejected = compute_cross_flow_heat_exchanger_performance(self, coolant_line, T_coolant, state)
+        return Q_rejected
 
     def plot_operating_conditions(self, results, coolant_line, save_filename, save_figure, 
                                 show_legend, file_type, width, height):
@@ -305,8 +304,8 @@ class Cross_Flow_Heat_Exchanger(Component):
         height : float
             Plot height
         """
-        plot_cross_flow_heat_exchanger_conditions(self, results, coolant_line, save_filename,
-                                                save_figure, show_legend, file_type, width, height)     
+        plot_cross_flow_heat_exchanger_conditions(self, results, coolant_line, save_figure,
+                                                show_legend, save_filename, file_type, width, height)
         return    
 
     def load_kc_values(): 

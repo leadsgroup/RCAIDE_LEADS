@@ -112,8 +112,10 @@ class Generic_Battery_Module(Source):
         self.volume_packaging_factor                           = 1.05
         self.BMS_additional_weight_factor                      = 1.42
                  
-        self.orientation_euler_angles                          = [0.,0.,0.]  # vector of angles defining default orientation of rotor        
-                     
+        self.orientation_euler_angles                          = [0.,0.,0.]  # vector of angles defining default orientation of rotor
+        self.heat_acquisition_system                           = None
+
+
         self.cell                                              = Data()
         self.cell.chemistry                                    = None                             
         self.cell.discharge_performance_map                    = None  

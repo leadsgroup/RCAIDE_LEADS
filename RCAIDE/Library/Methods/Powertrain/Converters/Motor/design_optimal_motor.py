@@ -108,10 +108,10 @@ def design_optimal_motor(motor):
     args       = (v , omega,  etam , Q , io,G ) 
     hard_cons  = [{'type':'eq', 'fun': hard_constraint_1,'args': args},{'type':'eq', 'fun': hard_constraint_2,'args': args}] 
     slack_cons = [{'type':'eq', 'fun': slack_constraint_1,'args': args},{'type':'eq', 'fun': slack_constraint_2,'args': args}]  
-    bnds       = ((KV_lower_bound, KV_upper_bound), (Res_lower_bound , Res_upper_bound)) 
-    
+    bnds       = ((KV_lower_bound, KV_upper_bound), (Res_lower_bound , Res_upper_bound))  
+
     # try hard constraints to find optimum motor parameters
-    sol = minimize(objective, [0.5, 0.1], args=(v , omega,  etam , Q , io,G) , method='SLSQP', bounds=bnds, tol=1e-6, constraints=hard_cons) 
+    sol = minimize(objective, [0.5, 0.1], args=(v , omega,  etam , Q , io,G) , method='SLSQP', bounds=bnds, tol=1e-6, constraints=hard_cons)
     
     if sol.success == False:
         # use slack constraints if optimizer fails and motor parameters cannot be found 

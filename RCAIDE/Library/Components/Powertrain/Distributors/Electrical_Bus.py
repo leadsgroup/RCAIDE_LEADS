@@ -165,6 +165,19 @@ class Electrical_Bus(Distributor):
         return
  
     def initialize(self,network):
+        self.design_power   = 0.0
+        self.design_voltage = 0.0
+        for source in network.sources:
+            if source.active and source.assigned_distributors != None and (self.tag in source.assigned_distributors[0]):
+                if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
+                    self.design_voltage = source.voltage
+                    self.design_power  += source.maximum_power
+        for converter in network.converters:
+            if converter.active and converter.assigned_distributors != None and (self.tag in converter.assigned_distributors[0]):
+                if isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack):
+                    n_series = converter.electrical_configuration.series
+                    self.design_voltage = converter.fuel_cell.ideal_voltage * n_series
+                    self.design_power  += converter.maximum_power
         size_electrical_cable(self)
         return
     

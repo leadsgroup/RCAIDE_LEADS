@@ -96,7 +96,17 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, network):
     # Compute fuel cell stack conditions
     # ---------------------------------------------------------------------------------
     fuel_cell_stack_conditions  = state.conditions.energy.converters[fuel_cell_stack.tag]
-    P_stack                     = fuel_cell_stack_conditions.inputs.power.electrical
+
+    # Electrical demand this stack must meet: the network-wide electrical power
+    # requirement (solved implicitly when both a chemical and electrical path
+    # exist), split between battery/fuel-cell sources by psi and between multiple
+    # fuel-cell stacks by power_split_ratio.
+    psi = state.conditions.energy.battery_fuel_cell_power_split_ratio
+    if 'electrical_power' in state.unknowns.network:
+        total_electrical_demand = state.unknowns.network['electrical_power']
+    else:
+        total_electrical_demand = state.conditions.energy.inputs.power.electrical
+    P_stack                     = total_electrical_demand * fuel_cell_stack.power_split_ratio * (1. - psi)
     n_ctrl_pts                  = state.numerics.number_of_control_points
 
     for t_idx in range(n_ctrl_pts):
@@ -124,6 +134,11 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, network):
     stored_results_flag                                               = True
     stored_converter_tag                                              = fuel_cell_stack.tag
     fuel_cell_stack_conditions.outputs.power.electrical               = fuel_cell_stack_conditions.power * fuel_cell_stack.electrical_efficiency
+
+    # Chemical (hydrogen) power draw, fed to the fuel line so assigned fuel tanks
+    # can compute their own mass depletion.
+    fuel_cell_stack_conditions.inputs.power.chemical = fuel_cell_stack_conditions.H2_mass_flow_rate * fuel_cell.propellant.specific_energy
+    fuel_cell_stack_conditions.fuel_mass_flow_rate    = fuel_cell_stack_conditions.H2_mass_flow_rate
 
     return  fuel_cell_stack_conditions.inputs, fuel_cell_stack_conditions.outputs, stored_results_flag, stored_converter_tag
 

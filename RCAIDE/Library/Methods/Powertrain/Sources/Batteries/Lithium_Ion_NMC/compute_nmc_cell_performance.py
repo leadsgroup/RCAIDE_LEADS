@@ -209,7 +209,7 @@ def compute_nmc_cell_performance(battery_module,battery,state,network):
     coolant_line = None  
     if battery_module.assigned_distributors != None: 
         for distributor_tag in battery_module.assigned_distributors[0]: 
-            distributor   = network.distributors(distributor_tag) 
+            distributor   = network.distributors[distributor_tag]
             if type(distributor) == RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line:
                 coolant_line = distributor 
     # ---------------------------------------------------------------------------------
@@ -254,7 +254,8 @@ def compute_nmc_cell_performance(battery_module,battery,state,network):
 
     if coolant_line != None and battery_module.heat_acquisition_system != None:
         HAS    = battery_module.heat_acquisition_system
-        dT_dt  = HAS.battery_module.compute_thermal_performance(coolant_line,Q_heat_cell,T_cell_bounded,state)
+        dT_dt, Q_to_coolant = HAS.compute_thermal_performance(battery_module,coolant_line,Q_heat_cell,T_cell_bounded,state)
+        battery_module_conditions.heat_to_coolant = Q_to_coolant
     else:
         # Temperature residual with scaling
         dT_dt  = Q_heat_cell / (cell_mass * Cp)

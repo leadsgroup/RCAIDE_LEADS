@@ -45,37 +45,33 @@ def append_fuel_cell_conditions(fuel_cell_stack,segment):
     ---------- 
     """      
     
-    ones_row = segment.state.ones_row  
-                                             
+    ones_row = segment.state.ones_row
+
+    segment.state.conditions.energy.converters[fuel_cell_stack.tag] = Conditions()
     fuel_cell_conditions                                           = segment.state.conditions.energy.converters[fuel_cell_stack.tag]
-    fuel_cell_conditions                                           = Conditions()
-    fuel_cell_conditions                                           = Conditions()
     fuel_cell_conditions.inputs                                    = Conditions()
     fuel_cell_conditions.outputs                                   = Conditions()
-    fuel_cell_conditions.cell                                      = Conditions()
     fuel_cell_conditions.inputs.power                              = Conditions()
-    fuel_cell_conditions.outputs.power                             = Conditions() 
+    fuel_cell_conditions.outputs.power                             = Conditions()
+    fuel_cell_conditions.inputs.power.propulsive                   = 0 * ones_row(1)
     fuel_cell_conditions.inputs.power.mechanical                   = 0 * ones_row(1)
     fuel_cell_conditions.inputs.power.electrical                   = 0 * ones_row(1)
     fuel_cell_conditions.inputs.power.chemical                     = 0 * ones_row(1)
     fuel_cell_conditions.inputs.power.pneumatic                    = 0 * ones_row(1)
     fuel_cell_conditions.inputs.power.hydraulic                    = 0 * ones_row(1)
-    fuel_cell_conditions.inputs.power.thermal                      = 0 * ones_row(1) 
+    fuel_cell_conditions.inputs.power.thermal                      = 0 * ones_row(1)
+    fuel_cell_conditions.outputs.power.propulsive                  = 0 * ones_row(1)
     fuel_cell_conditions.outputs.power.mechanical                  = 0 * ones_row(1)
     fuel_cell_conditions.outputs.power.electrical                  = 0 * ones_row(1)
     fuel_cell_conditions.outputs.power.chemical                    = 0 * ones_row(1)
     fuel_cell_conditions.outputs.power.pneumatic                   = 0 * ones_row(1)
     fuel_cell_conditions.outputs.power.hydraulic                   = 0 * ones_row(1)
     fuel_cell_conditions.outputs.power.thermal                     = 0 * ones_row(1)
+    fuel_cell_conditions.power                                     = 0 * ones_row(1)
     fuel_cell_conditions.voltage_under_load                        = 0 * ones_row(1)
-    fuel_cell_conditions.current                                   = 0 * ones_row(1)  
-    fuel_cell_conditions.voltage_open_circuit                      = 0 * ones_row(1) 
-    fuel_cell_conditions.fuel_cell.voltage_open_circuit            = 0 * ones_row(1)  
-    fuel_cell_conditions.fuel_cell.voltage_under_load              = 0 * ones_row(1)  
-    fuel_cell_conditions.fuel_cell.current                         = 0 * ones_row(1)  
-    fuel_cell_conditions.fuel_cell.inlet_H2_mass_flow_rate         = 0 * ones_row(1)
-    fuel_cell_conditions.fuel_cell.inlet_air_mass_flow_rate        = 0 * ones_row(1) 
-    fuel_cell_conditions.H2_mass_flow_rate                         = 0 * ones_row(1) 
+    fuel_cell_conditions.current                                   = 0 * ones_row(1)
+    fuel_cell_conditions.voltage_open_circuit                      = 0 * ones_row(1)
+    fuel_cell_conditions.H2_mass_flow_rate                         = 0 * ones_row(1)
     
     # Conditions for recharging fuel_cell 
     if isinstance(segment,RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge):
@@ -113,15 +109,16 @@ def append_fuel_cell_segment_conditions(fuel_cell_stack, segment):
     -------  
     """ 
     fuel_cell_conditions = segment.state.conditions.energy.converters[fuel_cell_stack.tag]
-    if segment.state.initials:  
-        fuel_cell_initials                                   = segment.state.initials.conditions.energy.converters[fuel_cell_stack.tag]
-        fuel_cell_conditions.temperature[:,0]                = fuel_cell_initials.temperature[-1,0]
-        fuel_cell_conditions.cell.temperature[:,0]           = fuel_cell_initials.cell.temperature[-1,0]     
+    fuel_cell_conditions.inputs.power.electrical[:,0]  = 0.0
+    fuel_cell_conditions.inputs.power.chemical[:,0]    = 0.0
+    fuel_cell_conditions.outputs.power.electrical[:,0] = 0.0
+    fuel_cell_conditions.outputs.power.chemical[:,0]   = 0.0
     return
   
-def reuse_stored_fuel_cell_data(fuel_cell_stack,state,bus,stored_results_flag, stored_fuel_cell_stack_tag):
-    '''Reuses results from one propulsor for identical fuel cells     
-    ''' 
-    state.conditions.energy.converters[fuel_cell_stack.tag] = deepcopy(state.conditions.energy.converters[stored_fuel_cell_stack_tag])
-     
-    return
+def reuse_stored_fuel_cell_data(fuel_cell_stack,state,network,stored_converter_tag):
+    '''Reuses results from one converter for identical fuel cells'''
+    stored_conditions    = state.conditions.energy.converters[stored_converter_tag]
+    fuel_cell_conditions = state.conditions.energy.converters[fuel_cell_stack.tag]
+    fuel_cell_conditions.update(deepcopy(stored_conditions))
+
+    return fuel_cell_conditions.inputs, fuel_cell_conditions.outputs

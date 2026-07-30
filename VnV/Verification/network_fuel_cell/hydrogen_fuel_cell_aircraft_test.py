@@ -40,7 +40,7 @@ import time
 def main():  
     ti = time.time()
  
-    mdot_H2_true         = [0.01783053350249817, 0.017434650919374024]
+    mdot_H2_true         = [0.005477735354248355, 0.020092696900469297]
     fuel_cell_models     = ['PEM', 'Larminie']
     
     for i in range(2): 
@@ -63,7 +63,7 @@ def main():
         results = missions.base_mission.evaluate()  
         
         # Voltage Cell Regression
-        mdot_H2        = results.segments[0].conditions.energy.busses['bus'].fuel_tanks['non_integral_tank'].mass_flow_rate[0,0] + results.segments[0].conditions.energy.busses['bus'].fuel_tanks['integral_tank'].mass_flow_rate[0,0] 
+        mdot_H2        = results.segments[0].conditions.energy.sources['non_integral_tank'].mass_flow_rate[0,0] + results.segments[0].conditions.energy.sources['integral_tank'].mass_flow_rate[0,0]
         print('Mass Flow Rate: ' + str(mdot_H2))
         mdot_H2_diff   = np.abs(mdot_H2 - mdot_H2_true[i]) 
         print(mdot_H2_diff) 

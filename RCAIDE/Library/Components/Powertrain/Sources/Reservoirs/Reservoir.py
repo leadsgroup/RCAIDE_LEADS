@@ -8,7 +8,7 @@
 from RCAIDE.Library.Components.Powertrain.Sources.Source                            import Source   
 from RCAIDE.Library.Attributes.Coolants.Glycol_Water                                import Glycol_Water
 from RCAIDE.Library.Attributes.Materials.Polyetherimide                             import Polyetherimide
-from RCAIDE.Library.Methods.Thermal_Management.Reservoirs.Reservoir_Tank            import compute_mixing_temperature, append_reservoir_conditions, append_reservoir_segment_conditions
+from RCAIDE.Library.Methods.Powertrain.Sources.Reservoirs.Reservoir_Tank            import compute_reservoir_performance, append_reservoir_conditions, append_reservoir_segment_conditions, append_reservoir_unknowns_and_residuals
 from RCAIDE.Library.Plots.Thermal_Management.plot_reservoir_conditions              import plot_reservoir_conditions
 
 # ----------------------------------------------------------------------
@@ -121,22 +121,40 @@ class Reservoir(Source):
         append_reservoir_segment_conditions(self, segment, coolant_line)
         return    
 
-    def compute_reservior_coolant_temperature(self, state, coolant_line, delta_t, t_idx):
+    def append_unknowns_and_residuals(self, coolant_line, segment):
         """
-        Calculates the mixed coolant temperature in the reservoir.
+        Registers the reservoir's coolant temperature unknown and residual.
 
         Parameters
         ----------
-        state : Data
-            Current system state
         coolant_line : Data
             Cooling system flow path information
-        delta_t : float
-            Time step size
-        t_idx : int
-            Time index in the simulation
+        segment : Data
+            Mission segment containing state conditions
         """
-        compute_mixing_temperature(self, state, coolant_line, delta_t, t_idx)
+        append_reservoir_unknowns_and_residuals(self, coolant_line, segment)
+        return
+
+    def unpack_unknowns(self, coolant_line, segment):
+        return
+
+    def pack_residuals(self, coolant_line, segment):
+        return
+
+    def compute_performance(self, coolant_line, state, network):
+        """
+        Computes the reservoir's coolant temperature residual.
+
+        Parameters
+        ----------
+        coolant_line : Data
+            Cooling system flow path information
+        state : Data
+            Current system state
+        network : Data
+            The powertrain network
+        """
+        compute_reservoir_performance(self, coolant_line, state, network)
         return
     
     def plot_operating_conditions(self, results, coolant_line, save_filename, save_figure, 
@@ -163,6 +181,6 @@ class Reservoir(Source):
         height : float
             Plot height
         """
-        plot_reservoir_conditions(self, results, coolant_line, save_filename, 
-                                save_figure, show_legend, file_type, width, height)
+        plot_reservoir_conditions(self, results, coolant_line, save_figure,
+                                show_legend, save_filename, file_type, width, height)
         return    

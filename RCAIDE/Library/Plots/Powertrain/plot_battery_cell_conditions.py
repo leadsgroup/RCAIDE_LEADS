@@ -80,13 +80,15 @@ def plot_battery_cell_conditions(results,
             for i, segment in enumerate(results.segments):
                 time = segment.conditions.frames.inertial.time[:, 0] / Units.min
                 battery_conditions = segment.conditions.energy.sources[battery.tag]
+                module_tag         = list(battery.modules)[0].tag
+                module_conditions  = battery_conditions[module_tag]
 
-                cell_power   = battery_conditions.cell.power[:, 0]
-                cell_energy  = battery_conditions.cell.energy[:, 0]
-                cell_SOC     = battery_conditions.cell.state_of_charge[:, 0]
-                cell_volts   = battery_conditions.cell.voltage_under_load[:, 0]
-                cell_current = battery_conditions.cell.current[:, 0]
-                cell_temp    = battery_conditions.cell.temperature[:, 0]
+                cell_power   = module_conditions.cell.power[:, 0]
+                cell_energy  = module_conditions.cell.energy[:, 0]
+                cell_SOC     = module_conditions.cell.state_of_charge[:, 0]
+                cell_volts   = module_conditions.cell.voltage_under_load[:, 0]
+                cell_current = module_conditions.cell.current[:, 0]
+                cell_temp    = module_conditions.cell.temperature[:, 0]
 
                 label = battery.tag if (i == 0) else None
 

@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
 from .Converter  import Converter 
-from RCAIDE.Library.Methods.Thermal_Management.Batteries.Air_Cooled import append_air_cooled_conditions, air_cooled_performance, append_air_cooled_segment_conditions
+from RCAIDE.Library.Methods.Powertrain.Converters.Air_Cooled import append_air_cooled_conditions, air_cooled_performance, append_air_cooled_segment_conditions
 from RCAIDE.Library.Plots.Thermal_Management.plot_air_cooled_conditions import plot_air_cooled_conditions
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -128,8 +128,8 @@ class Air_Cooled_Heat_Aquisition_System(Converter):
         float
             Updated battery temperature
         """
-        T_battery_current = air_cooled_performance(self, battery,coolant_line,Q_heat_gen,T_cell,state)
-        return T_battery_current
+        dT_dt, Q_convec = air_cooled_performance(self, battery,coolant_line,Q_heat_gen,T_cell,state)
+        return dT_dt, Q_convec
 
     def plot_operating_conditions(self, results, coolant_line, save_filename, save_figure, 
                                 show_legend, file_type, width, height):
@@ -155,7 +155,7 @@ class Air_Cooled_Heat_Aquisition_System(Converter):
         height : float
             Plot height
         """
-        plot_air_cooled_conditions(self, results, coolant_line, save_filename, 
-                                 save_figure, show_legend, file_type, width, height)
+        plot_air_cooled_conditions(self, results, coolant_line, save_figure,
+                                 show_legend, save_filename, file_type, width, height)
         return
         

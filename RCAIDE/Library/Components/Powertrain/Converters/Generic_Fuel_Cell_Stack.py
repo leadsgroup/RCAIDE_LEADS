@@ -48,11 +48,13 @@ class Generic_Fuel_Cell_Stack(Converter):
         Properties Used:
         None
         """           
-        self.tag                                        = 'fuel_cell'     
+        self.tag                                        = 'fuel_cell'
         self.mass_properties.mass                       = 1.0
-        self.energy_density                             = 0.0 
+        self.energy_density                             = 0.0
         self.current_capacitor_charge                   = 0.0
         self.capacity                                   = 0.0
+        self.power_split_ratio                          = 1.0    # fraction of the electrical demand this stack supplies, for multiple stacks sharing a bus
+        self.electrical_efficiency                       = 1.0    # DC-DC/inverter efficiency between the stack and the bus
             
         self.length                                     = 0.0
         self.width                                      = 0.0

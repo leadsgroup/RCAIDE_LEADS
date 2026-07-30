@@ -26,8 +26,9 @@ from .Ducted_Fan                                 import Ducted_Fan
 from .Expansion_Nozzle                           import Expansion_Nozzle
 from .Engine                                     import Engine
 from .Fan                                        import Fan 
-from .Lift_Rotor                                 import Lift_Rotor 
-from .Cryogenic_Pump                             import Cryogenic_Pump # NEED TO REMOVE 
+from .Lift_Rotor                                 import Lift_Rotor
+from .Liquid_Cooled_Wavy_Channel                 import Liquid_Cooled_Wavy_Channel
+from .Cryogenic_Pump                             import Cryogenic_Pump # NEED TO REMOVE
 from .Generic_Fuel_Cell_Stack                    import Generic_Fuel_Cell_Stack
 from .Generator                                  import Generator
 from .Pump                                       import Pump 

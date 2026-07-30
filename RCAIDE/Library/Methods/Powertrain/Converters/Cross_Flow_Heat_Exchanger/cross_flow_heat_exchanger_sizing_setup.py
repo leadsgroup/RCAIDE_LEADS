@@ -58,12 +58,12 @@ def modify_crossflow_hex_size(nexus):
              None
     """
     
-    for coolant_line in nexus.hex_configurations.optimized.networks.electric.coolant_lines:
-        for heat_exchanger in coolant_line.heat_exchangers: 
+    for coolant_line in nexus.hex_configurations.optimized.networks.electric.distributors:
+        for heat_exchanger in coolant_line.heat_exchangers:
             hex_opt       = heat_exchanger
-  
+
     # ------------------------------------------------------------------------------------------------------------------------
-    # Unpack paramters  
+    # Unpack paramters
     # ------------------------------------------------------------------------------------------------------------------------
     
     # Overall HEX properties
@@ -410,12 +410,12 @@ def post_process(nexus):
     """        
     
     summary              = nexus.summary  
-    for coolant_line in nexus.hex_configurations.optimized.networks.electric.coolant_lines:
-        for heat_exchanger in coolant_line.heat_exchangers: 
-            hex_opt       = heat_exchanger                 
-  
+    for coolant_line in nexus.hex_configurations.optimized.networks.electric.distributors:
+        for heat_exchanger in coolant_line.heat_exchangers:
+            hex_opt       = heat_exchanger
+
     # -------------------------------------------------------
-    # Objective 
+    # Objective
     # -------------------------------------------------------   
     power_air     =  hex_opt.power_draw_air    
     power_coolant =  hex_opt.power_draw_coolant * 1000

@@ -1,8 +1,9 @@
-# RCAIDE/Methods/Powertrain/Converters/Fuel_Cells/Common/compute_stack_properties.py
-# 
-# 
-# Created:   Nov 2024, M. Clarke 
-# Modified:  Jan 2025, M. Clarke 
+# RCAIDE/Methods/Powertrain/Converters/Fuel_Cells/Common/design_fuel_cell.py
+#
+#
+# Created:   Nov 2024, M. Clarke
+# Modified:  Jan 2025, M. Clarke
+# Modified:  Jul 2026, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -10,101 +11,103 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model import  compute_power, compute_voltage
-from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance import  evaluate_PEM ,  evaluate_max_gross_power, set_rated_current_density 
+from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance import  evaluate_PEM ,  evaluate_max_gross_power, set_rated_current_density
 import  scipy as  sp
 import  numpy as  np
-import matplotlib.pyplot as  plt
-import matplotlib.cm as cm
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  Compute Stack Properties
-# ----------------------------------------------------------------------------------------------------------------------  
-def compute_stack_properties(fuel_cell_stack):
+#  Design Fuel Cell
+# ----------------------------------------------------------------------------------------------------------------------
+def design_fuel_cell(fuel_cell_stack):
     """
-    Calculates fuel cell stack properties based on individual cell characteristics and stack configuration.
-    
+    Sizes a fuel cell stack at its rated operating point and computes its geometric, electrical,
+    and mass properties based on individual cell characteristics and stack configuration.
+
     Parameters
     ----------
     fuel_cell_stack : RCAIDE.Components.Powertrain.Converters.Fuel_Cell_Stack
-        The fuel cell stack component for which properties are being computed
-        
+        The fuel cell stack component to be sized. Must be called during vehicle definition,
+        before the stack is used in a mission, so that ``rated_current_density`` (and, for PEM
+        stacks, the resulting max power) reflect this stack's actual cell area and configuration
+        rather than the class defaults.
+
     Returns
     -------
     None
-    
+
     Notes
     -----
     This function computes geometric, electrical, and performance properties of a fuel cell stack
     based on individual cell properties and stack configuration. It handles both generic fuel cell
     stacks and proton exchange membrane (PEM) fuel cell stacks with different calculation methods.
-    
+
     For generic fuel cells, optimization is used to find the maximum power point.
     For PEM fuel cells, specialized performance models are used that account for
     operating conditions like temperature and pressure.
-    
+
     The function calculates:
         - Physical dimensions (length, width, height) based on cell arrangement
         - Maximum power, voltage, and current
         - Fuel consumption rates
         - Mass properties
-    
+
     **Major Assumptions**
         * Cell properties are uniform across the stack
         * Cells are arranged in a regular geometric pattern
         * For PEM cells, standard atmospheric conditions are used if not specified
         * Thermal effects within the stack are simplified
-    
+
     **Theory**
-    
+
     For generic fuel cells, the maximum power point is found by optimizing:
-    
+
     .. math::
         P_{max} = \\max_{j \\in [j_{min}, j_{max}]} P(j)
-    
+
     where j is the current density and P is the power function.
-    
+
     For PEM fuel cells, detailed electrochemical models account for:
         - Activation losses
         - Ohmic losses
         - Concentration losses
-        
+
     See Also
     --------
     RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Larminie_Model.compute_power
     RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Proton_Exchange_Membrane.compute_fuel_cell_performance
     """
-     
-    
+
+
     series_e           = fuel_cell_stack.electrical_configuration.series
     parallel_e         = fuel_cell_stack.electrical_configuration.parallel
     n_total            = parallel_e *series_e
-    normal_count       = fuel_cell_stack.geometric_configuration.normal_count  
+    normal_count       = fuel_cell_stack.geometric_configuration.normal_count
     parallel_count     = fuel_cell_stack.geometric_configuration.parallel_count
     stacking_rows      = fuel_cell_stack.geometric_configuration.stacking_rows
 
     if int(parallel_e*series_e) != int(normal_count*parallel_count):
         raise Exception('Number of cells in gemetric layout not equal to number of cells in electric circuit configuration ')
-         
-    normal_spacing     = fuel_cell_stack.geometric_configuration.normal_spacing   
+
+    normal_spacing     = fuel_cell_stack.geometric_configuration.normal_spacing
     parallel_spacing   = fuel_cell_stack.geometric_configuration.parallel_spacing
-    volume_factor      = fuel_cell_stack.volume_packaging_factor 
+    volume_factor      = fuel_cell_stack.volume_packaging_factor
     euler_angles       = fuel_cell_stack.orientation_euler_angles
-    fuel_cell_length   = fuel_cell_stack.fuel_cell.length 
-    fuel_cell_width    = fuel_cell_stack.fuel_cell.width   
-    fuel_cell_height   = fuel_cell_stack.fuel_cell.height    
-    
+    fuel_cell_length   = fuel_cell_stack.fuel_cell.length
+    fuel_cell_width    = fuel_cell_stack.fuel_cell.width
+    fuel_cell_height   = fuel_cell_stack.fuel_cell.height
+
     x1 =  normal_count * (fuel_cell_length +  normal_spacing) * volume_factor # distance in the module-level normal direction
     x2 =  parallel_count *  (fuel_cell_width +parallel_spacing) * volume_factor # distance in the module-level parallel direction
-    x3 =  fuel_cell_height * volume_factor # distance in the module-level height direction 
+    x3 =  fuel_cell_height * volume_factor # distance in the module-level height direction
 
     length = x1 / stacking_rows
     width  = x2
-    height = x3 *stacking_rows     
-    
+    height = x3 *stacking_rows
+
     if  euler_angles[0] == (np.pi / 2):
         x1prime      = x2
         x2prime      = -x1
-        x3prime      = x3 
+        x3prime      = x3
     if euler_angles[1] == (np.pi / 2):
         x1primeprime = -x3prime
         x2primeprime = x2prime
@@ -117,42 +120,42 @@ def compute_stack_properties(fuel_cell_stack):
     # store length, width and height
     fuel_cell_stack.length = length
     fuel_cell_stack.width  = width
-    fuel_cell_stack.height = height 
-    fuel_cell              = fuel_cell_stack.fuel_cell 
-     
+    fuel_cell_stack.height = height
+    fuel_cell              = fuel_cell_stack.fuel_cell
+
     if type(fuel_cell_stack) == RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack:
         lb                                     = 0.0001/(Units.cm**2.)    #lower bound on fuel cell current density
         ub                                     = 1.2/(Units.cm**2.)
-        sign                                   = -1. # used to minimize -power 
-        maximum_current_density                = sp.optimize.fminbound(compute_power, lb, ub, args=(fuel_cell, sign)) 
-        P_fuel_cell                            = compute_power(maximum_current_density,fuel_cell)  
-        V_fuel_cell                            = compute_voltage(fuel_cell,maximum_current_density)  # useful voltage vector 
+        sign                                   = -1. # used to minimize -power
+        maximum_current_density                = sp.optimize.fminbound(compute_power, lb, ub, args=(fuel_cell, sign))
+        P_fuel_cell                            = compute_power(maximum_current_density,fuel_cell)
+        V_fuel_cell                            = compute_voltage(fuel_cell,maximum_current_density)  # useful voltage vector
         efficiency                             = np.divide(V_fuel_cell, fuel_cell.ideal_voltage)
         mdot_H2                                = np.divide(P_fuel_cell,np.multiply(fuel_cell.propellant.specific_energy,efficiency))
-        
+
         # store properties
         fuel_cell.rated_current_density       = maximum_current_density
         fuel_cell.volume                       = fuel_cell.interface_area*fuel_cell.wall_thickness
-        fuel_cell.mass                         = fuel_cell.volume*fuel_cell.cell_density*fuel_cell.porosity_coefficient  
-        fuel_cell.density                      = fuel_cell.mass/fuel_cell.volume                      
-        fuel_cell.specific_power               = fuel_cell.max_power/fuel_cell.mass  
-  
-        fuel_cell_stack.mass_properties.mass   = n_total*fuel_cell.mass 
+        fuel_cell.mass                         = fuel_cell.volume*fuel_cell.cell_density*fuel_cell.porosity_coefficient
+        fuel_cell.density                      = fuel_cell.mass/fuel_cell.volume
+        fuel_cell.specific_power               = fuel_cell.max_power/fuel_cell.mass
+
+        fuel_cell_stack.mass_properties.mass   = n_total*fuel_cell.mass
         fuel_cell_stack.voltage                = V_fuel_cell  * series_e
         fuel_cell_stack.maximum_voltage        = V_fuel_cell  * series_e
-        fuel_cell_stack.maximum_power          = P_fuel_cell * series_e 
+        fuel_cell_stack.maximum_power          = P_fuel_cell * series_e
         fuel_cell_stack.maximum_current        = fuel_cell_stack.maximum_power / fuel_cell_stack.maximum_voltage
         fuel_cell_stack.maximum_fuel_mass_flow_rate = mdot_H2 * n_total
-    
-    elif type(fuel_cell_stack) == RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell: 
-    
+
+    elif type(fuel_cell_stack) == RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell:
+
         # check if mach number and temperature are passed
         design_altitude =  0
-        
+
         # call the atmospheric model to get the conditions at the specified altitude
         atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-        atmo_data  = atmosphere.compute_values(design_altitude) 
-         
+        atmo_data  = atmosphere.compute_values(design_altitude)
+
         segment                                     = RCAIDE.Framework.Mission.Segments.Segment()
         segment.state.conditions                    = RCAIDE.Framework.Mission.Common.Results()
 
@@ -169,19 +172,20 @@ def compute_stack_properties(fuel_cell_stack):
         set_rated_current_density(fuel_cell_stack, rated_current_density, rated_power_density)
 
         fuel_cell_stack_conditions.current_density[t_idx] = rated_current_density
-        m_dot_H2, V_fuel_cell, P_fuel_cell, _, _, _, _, _,_  =  evaluate_PEM(fuel_cell_stack,fuel_cell_stack_conditions, t_idx)
-   
+        m_dot_H2, V_fuel_cell, P_fuel_cell, _, _, _, _, _,_  =  evaluate_PEM(fuel_cell_stack,fuel_cell_stack_conditions)
+        m_dot_H2, V_fuel_cell, P_fuel_cell = m_dot_H2[t_idx], V_fuel_cell[t_idx], P_fuel_cell[t_idx]
+
         # store properties
         area_square_meters                          = fuel_cell.interface_area * 0.0001
         fuel_cell.volume                            = area_square_meters*fuel_cell.wall_thickness
-        fuel_cell.mass                              = fuel_cell.volume*fuel_cell.cell_density*fuel_cell.porosity_coefficient  
-        fuel_cell.density                           = fuel_cell.mass/fuel_cell.volume                      
-        fuel_cell.specific_power                    = fuel_cell.max_power/fuel_cell.mass  
-        fuel_cell_stack.mass_properties.mass        = n_total*fuel_cell.mass 
+        fuel_cell.mass                              = fuel_cell.volume*fuel_cell.cell_density*fuel_cell.porosity_coefficient
+        fuel_cell.density                           = fuel_cell.mass/fuel_cell.volume
+        fuel_cell.specific_power                    = fuel_cell.max_power/fuel_cell.mass
+        fuel_cell_stack.mass_properties.mass        = n_total*fuel_cell.mass
         fuel_cell_stack.voltage                     = V_fuel_cell  * series_e
         fuel_cell_stack.maximum_voltage             = V_fuel_cell  * series_e
-        fuel_cell_stack.maximum_power               = P_fuel_cell * n_total 
+        fuel_cell_stack.maximum_power               = P_fuel_cell * n_total
         fuel_cell_stack.maximum_current             = fuel_cell_stack.maximum_power / fuel_cell_stack.maximum_voltage
-        fuel_cell_stack.maximum_fuel_mass_flow_rate = m_dot_H2 * n_total         
-         
-    return 
+        fuel_cell_stack.maximum_fuel_mass_flow_rate = m_dot_H2 * n_total
+
+    return

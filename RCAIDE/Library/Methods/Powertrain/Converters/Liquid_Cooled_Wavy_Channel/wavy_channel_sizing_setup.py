@@ -60,12 +60,8 @@ def modify_wavy_channel_HAS(nexus):
              None
     """        
     network       = nexus.hrs_configurations.optimized.networks.electric
-    battery       = None
-    for source in network.sources:
-        if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
-            battery = source
-            break
-    has_opt       = network.coolant_lines.coolant_line.battery_modules[battery.tag].thermal_management_system.heat_acquisition_system
+    battery       = list(network.sources)[0]
+    has_opt       = battery.heat_acquisition_system
 
     # ------------------------------------------------------------------------------------------------------------------------
     # Unpack paramters  
@@ -141,7 +137,7 @@ def modify_wavy_channel_HAS(nexus):
     dp     = 2*f*rho*v*v*L_chan/dh	
 
     # Calculate the Power consumed
-    Power   = RCAIDE.Library.Components.Thermal_Management.Accessories.Pump.compute_power_consumed(dp, rho, m_coolant, n_pump) 
+    Power   = m_coolant * dp / (rho * n_pump)
 
     # Mass calculations - Channel  
     rho_line        = channel_density*(2*a*((2*b)+d)+(2*b*c))
@@ -205,10 +201,10 @@ def post_process(nexus):
              None
     """            
     
-    summary              = nexus.summary  
-    battery_list         = list(nexus.hrs_configurations.optimized.networks.electric.coolant_lines.coolant_line.battery_modules.keys())
-    battery              = nexus.hrs_configurations.optimized.networks.electric.coolant_lines.coolant_line.battery_modules[battery_list[0]]
-    has_opt              = battery.thermal_management_system.heat_acquisition_system 
+    summary              = nexus.summary
+    network              = nexus.hrs_configurations.optimized.networks.electric
+    battery              = list(network.sources)[0]
+    has_opt              = battery.heat_acquisition_system
     Q_line_rem           = has_opt.heat_removed
     Q_line_gen           = has_opt.heat_generated  
     new_normal_spacing   = has_opt.battery_series_spacing   

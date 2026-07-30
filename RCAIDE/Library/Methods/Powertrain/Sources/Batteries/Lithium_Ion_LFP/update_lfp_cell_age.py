@@ -11,18 +11,19 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 # update_lfp_cell_age
 # ----------------------------------------------------------------------------------------------------------------------  
-def update_lfp_cell_age(battery_module, segment, battery_conditions, increment_battery_age_by_one_day):  
+def update_lfp_cell_age(battery_module, battery, segment, increment_battery_age_by_one_day):
     """
     Updates the aging model for a 26650 A123 LFP cell.
-    
+
     Parameters
     ----------
     battery_module : BatteryModule
         The battery module containing LFP cells
+    battery : Battery_Pack
+        The battery pack containing this module
     segment : Segment
-        The mission segment in which the battery is operating
-    battery_conditions : Conditions
-        Object containing battery state with the following attributes:
+        The mission segment in which the battery is operating, with conditions
+        containing the following attributes:
             - cell.state_of_charge : numpy.ndarray
                 State of charge of the cell [unitless, 0-1]
             - cell.current : numpy.ndarray
@@ -65,11 +66,12 @@ def update_lfp_cell_age(battery_module, segment, battery_conditions, increment_b
     RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack.Lithium_Ion_LFP
     RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Lithium_Ion_LFP.compute_lfp_cell_performance
     """
+    battery_conditions = segment.state.conditions.energy.sources[battery.tag][battery_module.tag]
     SOC                = battery_conditions.cell.state_of_charge
     I                  = battery_conditions.cell.current
-    t                  = battery_conditions.cell.cycle_in_day         
+    t                  = battery_conditions.cell.cycle_in_day
     charge_thougput    = battery_conditions.cell.charge_throughput
-    Temp               = (battery_conditions.cell.temperature) 
+    Temp               = (battery_conditions.cell.temperature)
     C_rate             = np.sqrt(np.mean(I**2)) /battery_module.cell.nominal_capacity
     
     # Semi Emperical aging model  

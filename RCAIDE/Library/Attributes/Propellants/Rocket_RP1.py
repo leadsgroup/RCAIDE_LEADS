@@ -73,6 +73,7 @@ class Rocket_RP1(Propellant):
         self.combustion_temperature      = 3545.69*Units.kelvin             #[k]
         self.gas_specific_constant       = 8314.45986/self.molecular_weight*Units['J/(kg*K)']  # [J/(Kg-K)]
 
+        self.lower_heating_value           = 43.4e6                              # J/kg
         self.stoichiometric_fuel_air_ratio = 0         # [-] Stoichiometric Fuel to Air ratio
         self.heat_of_vaporization          = 0         # [J/kg] Heat of vaporization at standard conditions
         self.temperature                   = 0         # [K] Temperature of fuel

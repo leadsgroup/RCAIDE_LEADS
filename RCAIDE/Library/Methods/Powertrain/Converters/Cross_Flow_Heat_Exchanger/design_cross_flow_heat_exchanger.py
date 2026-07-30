@@ -7,8 +7,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports 
 from RCAIDE.Framework.Core                            import Units, Data   
-from RCAIDE.Library.Methods.Thermal_Management.Heat_Exchangers.Cross_Flow_Heat_Exchanger.cross_flow_heat_exchanger_sizing_setup import cross_flow_heat_exchanger_sizing_setup 
-from RCAIDE.Library.Methods.Thermal_Management.Heat_Exchangers.Cross_Flow_Heat_Exchanger.cross_flow_heat_exchanger_geometry_setup import cross_flow_heat_exchanger_geometry_setup
+from RCAIDE.Library.Methods.Powertrain.Converters.Cross_Flow_Heat_Exchanger.cross_flow_heat_exchanger_sizing_setup import cross_flow_heat_exchanger_sizing_setup 
+from RCAIDE.Library.Methods.Powertrain.Converters.Cross_Flow_Heat_Exchanger.cross_flow_heat_exchanger_geometry_setup import cross_flow_heat_exchanger_geometry_setup
 from RCAIDE.Framework.Optimization             import Nexus
 from RCAIDE.Framework.Optimization.Packages.scipy     import scipy_setup
 
@@ -57,7 +57,7 @@ def design_cross_flow_heat_exchanger(HEX,coolant_line,battery, single_side_conta
     print('\nSizing ', HEX.tag)
     print(output[4])   
 
-    for coolant_line in optimization_problem.hex_configurations.optimized.networks.electric.coolant_lines:
+    for coolant_line in optimization_problem.hex_configurations.optimized.networks.electric.distributors:
         for heat_exchanger in coolant_line.heat_exchangers: 
             HEX_opt       = heat_exchanger
              
@@ -135,7 +135,7 @@ def crossflow_heat_exchanger_design_problem_setup(HEX,coolant_line,print_iterati
     #  Aliases
     # ------------------------------------------------------------------- 
     aliases = [] 
-    btms = 'hex_configurations.optimized.networks.electric.coolant_lines.' +  coolant_line.tag + '.heat_exchangers.'+  HEX.tag
+    btms = 'hex_configurations.optimized.networks.electric.distributors.' +  coolant_line.tag + '.heat_exchangers.'+  HEX.tag
     aliases.append([ 'm_dot_c'     , btms + '.air_flow_rate' ]) 
     aliases.append([ 'm_dot_c'     , btms + '.coolant_flow_rate' ]) 
     aliases.append([ 'p_c_1'       , btms + '.air_inlet_pressure' ])       

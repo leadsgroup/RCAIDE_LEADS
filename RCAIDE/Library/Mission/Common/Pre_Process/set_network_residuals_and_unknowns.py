@@ -36,7 +36,16 @@ def set_network_residuals_and_unknowns(mission):
             ones_row = segment.state.ones_row
             topology = segment.state.conditions.energy.topology
 
-            is_hybrid = topology.has_chemical_path and topology.has_electrical_path
+            # "Hybrid" means the vehicle produces thrust via two distinct
+            # propulsive paths (a chemical propulsor and an electrical
+            # propulsor) whose power split cannot be resolved directly.
+            # A network with a chemical distributor that only feeds a
+            # fuel cell or generator (which then powers electrical
+            # propulsors) is NOT hybrid in this sense — it's a chemically
+            # -fueled all-electric architecture, and the electrical demand
+            # is already fully determined by the propulsors' draw (no
+            # extra degree of freedom needed).
+            is_hybrid = len(topology.chemical_propulsors) > 0 and len(topology.electrical_propulsors) > 0
 
             # ------------------------------------------------------------------
             # Electrical power unknown — only for hybrid networks

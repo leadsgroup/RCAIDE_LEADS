@@ -84,10 +84,12 @@ def plot_battery_degradation(results,
             for i, segment in enumerate(results.segments):
                 time_hrs[i]          = segment.conditions.frames.inertial.time[-1, 0] / Units.hour
                 battery_conditions   = segment.conditions.energy.sources[battery.tag]
-                cycle_day[i]         = battery_conditions.cell.cycle_in_day
-                capacity_fade[i]     = battery_conditions.cell.capacity_fade_factor
-                resistance_growth[i] = battery_conditions.cell.resistance_growth_factor
-                charge_throughput[i] = battery_conditions.cell.charge_throughput[-1, 0]
+                module_tag           = list(battery.modules)[0].tag
+                module_conditions    = battery_conditions[module_tag]
+                cycle_day[i]         = module_conditions.cell.cycle_in_day
+                capacity_fade[i]     = module_conditions.cell.capacity_fade_factor
+                resistance_growth[i] = module_conditions.cell.resistance_growth_factor
+                charge_throughput[i] = module_conditions.cell.charge_throughput[-1, 0]
 
             lw = ps.line_width
 

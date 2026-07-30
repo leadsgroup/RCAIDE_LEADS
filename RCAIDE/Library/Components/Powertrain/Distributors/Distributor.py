@@ -32,4 +32,7 @@ class Distributor(Component):
         self.efficiency               = 0.0
         
     def initialize(self,network):
-        return 
+        return
+
+    def compute_performance(self,state,network):
+        return None, None 

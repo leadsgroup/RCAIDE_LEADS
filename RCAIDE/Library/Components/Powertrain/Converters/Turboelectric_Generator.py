@@ -37,7 +37,11 @@ class Turboelectric_Generator(Converter):
         Gearbox data structure. Default is None. 
         
     reverse_mode_computation : Component
-        Flag that determines the how calculations are performed. Default is False    
+        Flag that determines the how calculations are performed. Default is False
+
+    power_split_ratio : float
+        Fraction of the network's electrical demand this generator supplies. Default is 1.0;
+        set to e.g. 0.5 on each of two identical generators sharing a bus.
 
     Notes
     -----
@@ -56,8 +60,9 @@ class Turboelectric_Generator(Converter):
         self.turboshaft                = None
         self.generator                 = None
         self.gearbox                   = Data()
-        self.gearbox.gear_ratio        = None  
-        self.reverse_mode_computation       = False 
+        self.gearbox.gear_ratio        = None
+        self.reverse_mode_computation       = False
+        self.power_split_ratio         = 1.0    # fraction of the electrical demand this generator supplies, for multiple identical generators sharing a bus
         self.assigned_converters       = Data()
         
     def initialize(self, network): 

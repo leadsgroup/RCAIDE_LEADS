@@ -72,7 +72,7 @@ class Cryogenic_Fuel_Line(Distributor):
         append_fuel_line_segment_conditions(self, segment)
         return   
 
-    def compute_performance(self, state):
+    def compute_performance(self, state, network):
 
         # Lookup table: inner diameter (inches) → dry weight (kg/m)
         dry_mass_lookup = {
@@ -133,6 +133,8 @@ class Cryogenic_Fuel_Line(Distributor):
         # Build inputs/outputs same as before
         inputs  = Data()
         outputs = Data()
+        inputs.power  = Data()
+        outputs.power = Data()
 
         inputs.power.mechanical  = state.conditions.energy.distributors[self.tag].inputs.power.mechanical
         inputs.power.electrical  = state.conditions.energy.distributors[self.tag].inputs.power.electrical

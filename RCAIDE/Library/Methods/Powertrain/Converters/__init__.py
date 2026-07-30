@@ -34,3 +34,6 @@ from . import Turbine
 from . import Reformer
 from . import Turboshaft
 from . import Turboelectric_Generator
+from . import Liquid_Cooled_Wavy_Channel
+from . import Air_Cooled
+from . import Cross_Flow_Heat_Exchanger

@@ -90,9 +90,16 @@ def compute_battery_properties(battery,network):
     ----------
     [1] Chin, J. C., Schnulo, S. L., Miller, T. B., Prokopius, K., and Gray, J., "Battery Performance Modeling on Maxwell X-57", AIAA Scitech, San Diego, CA, 2019. URL http://openmdao.org/pubs/chin_battery_performance_x57_2019.pdf.
     """
-    
-    
-    for battery_module in battery.modules: 
+
+    # reset pack-level accumulators so repeated calls (e.g. once per mission segment) do not double-count
+    battery.voltage                 = 0.0
+    battery.mass_properties.mass    = 0.0
+    battery.maximum_energy          = 0.0
+    battery.maximum_power           = 0.0
+    battery.initial_maximum_energy  = 0.0
+    battery.nominal_capacity        = 0.0
+
+    for battery_module in battery.modules:
         series_e           = battery_module.electrical_configuration.series
         parallel_e         = battery_module.electrical_configuration.parallel 
         normal_count       = battery_module.geometric_configuration.normal_count  
@@ -160,7 +167,7 @@ def compute_battery_properties(battery,network):
         battery.maximum_power           += battery_module.maximum_power                  
         battery.specific_power          = battery.maximum_power/ battery.mass_properties.mass      
         battery.maximum_voltage         = battery.voltage             
-        battery.initial_maximum_energy  +=  battery_module.initial_maximum_energy   
-        battery.nominal_capacity        += battery_module.nominal_capacity                     
-            
-        return 
+        battery.initial_maximum_energy  +=  battery_module.initial_maximum_energy
+        battery.nominal_capacity        += battery_module.nominal_capacity
+
+    return 

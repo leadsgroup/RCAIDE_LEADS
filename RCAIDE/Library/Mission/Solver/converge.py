@@ -206,11 +206,11 @@ def add_mission_variables(segment):
     residual_keys      = list(segment.state.residuals.mission.keys())  
     net_residual_keys  = list(segment.state.residuals.network.keys())
     
-    # remove tag 
-    unknown_keys.remove('tag')  
-    net_unknown_keys.remove('tag')   
-    residual_keys.remove('tag') 
-    net_residual_keys.remove('tag')     
+    # remove tag
+    unknown_keys.remove('tag')
+    net_unknown_keys.remove('tag')
+    residual_keys.remove('tag')
+    net_residual_keys.remove('tag')
 
     # -------------------------------------------------------------------------------------------   
     # determine dimension of optimization problem

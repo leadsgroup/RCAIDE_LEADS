@@ -10,6 +10,7 @@
 import RCAIDE
 from RCAIDE.Framework.Core                                                                import Units    
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor                          import design_electric_rotor
+from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common                       import design_fuel_cell
 
 # python imports 
 import numpy as np 
@@ -348,46 +349,58 @@ def vehicle_setup(fuel_cell_model= 'PEM'):
     # add to vehicle
     vehicle.append_component(fuselage)
     
-    # ########################################################  Energy Network  #########################################################  
-    net                              = RCAIDE.Framework.Networks.Fuel_Cell()   
+    # ########################################################  Energy Network  #########################################################
+    net                              = RCAIDE.Framework.Networks.Electric()
 
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    # Bus and Crogenic Line 
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    bus = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()   
-      
-    if fuel_cell_model == 'PEM': 
-        fuel_cell_stack = RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell() 
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Bus and Fuel Line
+    #------------------------------------------------------------------------------------------------------------------------------------
+    bus = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
+
+    fuel_line             = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    fuel_line.working_fluid = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+
+    if fuel_cell_model == 'PEM':
+        fuel_cell_stack = RCAIDE.Library.Components.Powertrain.Converters.Proton_Exchange_Membrane_Fuel_Cell()
         fuel_cell_stack.electrical_configuration.series             = 940
         fuel_cell_stack.electrical_configuration.parallel           = 7
-        fuel_cell_stack.geometric_configuration.normal_count       = 940
-        fuel_cell_stack.geometric_configuration.parallel_count     = 7
-    if fuel_cell_model == 'Larminie':  
-        fuel_cell_stack   = RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack() 
+        fuel_cell_stack.geometric_configuration.normal_count        = 940
+        fuel_cell_stack.geometric_configuration.parallel_count      = 7
+    if fuel_cell_model == 'Larminie':
+        fuel_cell_stack   = RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack()
         fuel_cell_stack.electrical_configuration.series             = 1020
         fuel_cell_stack.electrical_configuration.parallel           = 1
         fuel_cell_stack.geometric_configuration.normal_count       = 1020
         fuel_cell_stack.geometric_configuration.parallel_count     = 1
-        
-    bus.fuel_cell_stacks.append(fuel_cell_stack)  
-    bus.initialize_bus_properties() 
-      
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    # Crogenic Tank
-    #------------------------------------------------------------------------------------------------------------------------------------       
+ 
+    design_fuel_cell(fuel_cell_stack)
+
+    # linked to both the fuel line (hydrogen supply) and the electrical bus (power extraction)
+    fuel_cell_stack.assigned_distributors = [[fuel_line.tag, bus.tag]]
+    net.converters.append(fuel_cell_stack)
+
+    bus_nominal_voltage = fuel_cell_stack.voltage
+
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Cryogenic Tanks
+    #------------------------------------------------------------------------------------------------------------------------------------
     cryogenic_tank_1 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.fuselages.fuselage)    # for regression, aircraft has two tanks
-    cryogenic_tank_1.fuel_flow_split_ratio  = 0.5
+    cryogenic_tank_1.power_split_ratio    = 0.5
     cryogenic_tank_1.lengths.external     = 1.0
     cryogenic_tank_1.diameters.external   = 1.0
-    cryogenic_tank_1.fuel                 = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen() 
-    bus.fuel_tanks.append(cryogenic_tank_1)
-    
-    cryogenic_tank_2 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.fuselages.fuselage)  
-    cryogenic_tank_2.fuel_flow_split_ratio    = 0.5 
-    cryogenic_tank_2.fuel                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen() 
-    cryogenic_tank_2.segments_bounding_tank = ['segment_10','segment_11'] 
-    bus.fuel_tanks.append(cryogenic_tank_2)    
-          
+    cryogenic_tank_1.fuel                 = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+    cryogenic_tank_1.assigned_distributors = [[fuel_line.tag]]
+    net.sources.append(cryogenic_tank_1)
+
+    cryogenic_tank_2 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.fuselages.fuselage)
+    cryogenic_tank_2.power_split_ratio      = 0.5
+    cryogenic_tank_2.fuel                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+    cryogenic_tank_2.segments_bounding_tank = ['segment_10','segment_11']
+    cryogenic_tank_2.assigned_distributors  = [[fuel_line.tag]]
+    net.sources.append(cryogenic_tank_2)
+
+    net.distributors.append(fuel_line)
+
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Starboard Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------   
@@ -399,7 +412,7 @@ def vehicle_setup(fuel_cell_model= 'PEM'):
     esc.tag                                          = 'esc_1'
     esc.efficiency                                   = 0.95 
     esc.origin                                       = [[3.8,2.8129,1.22 ]]  
-    esc.bus_voltage                                  = bus.voltage    
+    esc.nominal_voltage                              = bus_nominal_voltage
     starboard_propulsor.electronic_speed_controller  = esc   
      
     # Propeller              
@@ -413,7 +426,7 @@ def vehicle_setup(fuel_cell_model= 'PEM'):
     speed_of_sound                                   = 343 
     propeller.cruise.design_tip_mach                 = 0.65
     propeller.cruise.design_angular_velocity         = propeller.cruise.design_tip_mach *speed_of_sound/propeller.tip_radius
-    propeller.cruise.design_lift_coefficient                       = 0.7
+    propeller.cruise.design_lift_coefficient         = 0.7
     propeller.cruise.design_altitude                 = 8000. * Units.feet 
     propeller.cruise.design_thrust                   = 12500  
     propeller.clockwise_rotation                     = False
@@ -435,7 +448,7 @@ def vehicle_setup(fuel_cell_model= 'PEM'):
     motor                                            = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     motor.efficiency                                 = 0.98
     motor.origin                                     = [[4.0,2.8129,1.22 ]]   
-    motor.nominal_voltage                            = bus.voltage 
+    motor.nominal_voltage                            = bus_nominal_voltage*0.75
     motor.no_load_current                            = 1
     starboard_propulsor.motor                        = motor 
 

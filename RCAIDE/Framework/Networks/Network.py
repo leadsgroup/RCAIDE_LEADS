@@ -226,12 +226,12 @@ class Network(Component):
 
                 # compute losses for assigned distributors
                 if system.assigned_distributors != None:
-                    for distributor_tag in system.assigned_distributors[0]: 
-                        distributor = network.distributors[distributor_tag]  
+                    for distributor_tag in system.assigned_distributors[0]:
+                        distributor = network.distributors[distributor_tag]
                         distributor.compute_distribution_losses(state.conditions.energy.systems[system.tag],state,network)
-                        
-                    state.conditions.energy.distributors[distributor_tag].outputs.power[distributor.domain]   += inputs.power[distributor.domain]  
-                    state.conditions.energy.distributors[distributor_tag].inputs.power[distributor.domain]    += outputs.power[distributor.domain] 
+
+                        state.conditions.energy.distributors[distributor_tag].outputs.power[distributor.domain]   += inputs.power[distributor.domain]
+                        state.conditions.energy.distributors[distributor_tag].inputs.power[distributor.domain]    += outputs.power[distributor.domain]
                 
         # ----------------------------------------------------------
         # Converters 
@@ -244,7 +244,7 @@ class Network(Component):
                     inputs, outputs, stored_results_flag, stored_conveter_tag = converter.compute_performance(state,network)
                 else:
                     inputs, outputs = converter.reuse_stored_data(state,network,stored_conveter_tag=stored_conveter_tag)  
-                total_mdot             += state.conditions.energy.propulsors[converter.tag].fuel_mass_flow_rate   
+                total_mdot             += state.conditions.energy.converters[converter.tag].fuel_mass_flow_rate
                 net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
                 net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)       
@@ -258,11 +258,12 @@ class Network(Component):
                 
                 # compute losses for assigned distributors
                 if converter.assigned_distributors != None:
-                    for distributor_tag in converter.assigned_distributors[0]: 
-                        distributor = network.distributors[distributor_tag]  
-                        distributor.compute_distribution_losses(state.conditions.energy.converters[converter.tag],state,network) 
-                    state.conditions.energy.distributors[distributor_tag].outputs.power[distributor.domain]   += inputs.power[distributor.domain]  
-                    state.conditions.energy.distributors[distributor_tag].inputs.power[distributor.domain]    += outputs.power[distributor.domain]   
+                    for distributor_tag in converter.assigned_distributors[0]:
+                        distributor = network.distributors[distributor_tag]
+                        distributor.compute_distribution_losses(state.conditions.energy.converters[converter.tag],state,network)
+
+                        state.conditions.energy.distributors[distributor_tag].outputs.power[distributor.domain]   += inputs.power[distributor.domain]
+                        state.conditions.energy.distributors[distributor_tag].inputs.power[distributor.domain]    += outputs.power[distributor.domain]
 
         # ----------------------------------------------------------
         # Sources 
@@ -277,12 +278,23 @@ class Network(Component):
                 net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)
 
                 if source.assigned_distributors != None:
-                    for distributor_tag in source.assigned_distributors[0]: 
-                        distributor = network.distributors[distributor_tag]  
-                        distributor.compute_distribution_losses(state.conditions.energy.sources[source.tag],state,network)                 
-                    state.conditions.energy.distributors[distributor_tag].outputs.power[distributor.domain]   += inputs.power[distributor.domain]  
-                    state.conditions.energy.distributors[distributor_tag].inputs.power[distributor.domain]    += outputs.power[distributor.domain] 
-                
+                    for distributor_tag in source.assigned_distributors[0]:
+                        distributor = network.distributors[distributor_tag]
+                        distributor.compute_distribution_losses(state.conditions.energy.sources[source.tag],state,network)
+
+                        state.conditions.energy.distributors[distributor_tag].outputs.power[distributor.domain]   += inputs.power[distributor.domain]
+                        state.conditions.energy.distributors[distributor_tag].inputs.power[distributor.domain]    += outputs.power[distributor.domain]
+
+
+        # ----------------------------------------------------------
+        # Distributors
+        # ----------------------------------------------------------
+        # Runs after sources so that any per-source condition values a
+        # distributor's own performance depends on (e.g. heat delivered to a
+        # coolant loop by the battery modules it cools) are already computed.
+        for distributor in distributors:
+            if distributor.active:
+                distributor.compute_performance(state,network)
 
         # Final aggregation for system level performance
         conditions.energy.total_force_vector       = total_thrust

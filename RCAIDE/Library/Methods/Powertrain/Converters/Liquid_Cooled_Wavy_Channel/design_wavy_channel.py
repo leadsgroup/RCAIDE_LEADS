@@ -7,8 +7,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports   
 from RCAIDE.Framework.Core                                                                                         import Units , Data  
-from RCAIDE.Library.Methods.Thermal_Management.Batteries.Liquid_Cooled_Wavy_Channel.wavy_channel_sizing_setup      import wavy_channel_sizing_setup
-from RCAIDE.Library.Methods.Thermal_Management.Batteries.Liquid_Cooled_Wavy_Channel.wavy_channel_geometry_setup    import wavy_channel_geometry_setup
+from RCAIDE.Library.Methods.Powertrain.Converters.Liquid_Cooled_Wavy_Channel.wavy_channel_sizing_setup      import wavy_channel_sizing_setup
+from RCAIDE.Library.Methods.Powertrain.Converters.Liquid_Cooled_Wavy_Channel.wavy_channel_geometry_setup    import wavy_channel_geometry_setup
 from RCAIDE.Framework.Optimization                                                                          import Nexus
 from RCAIDE.Framework.Optimization.Packages.scipy                                                                  import scipy_setup
 
@@ -78,8 +78,8 @@ def design_wavy_channel(HAS,battery,single_side_contact=True, dry_mass=True,
     print('\nSizing ', HAS.tag)
     print(output[4])
 
-    # print optimization results  
-    HAS_opt = optimization_problem.hrs_configurations.optimized.networks.electric.coolant_lines.coolant_line.battery_modules[battery.tag].thermal_management_system.heat_acquisition_system
+    # print optimization results
+    HAS_opt = list(optimization_problem.hrs_configurations.optimized.networks.electric.sources)[0].heat_acquisition_system
     HAS.mass_properties.mass       = HAS_opt.mass_properties.mass      
     HAS.design_power_draw          = HAS_opt.design_power_draw         
     HAS.design_heat_removed        = HAS_opt.design_heat_removed       
@@ -153,7 +153,7 @@ def wavy_channel_design_problem_setup(HAS,battery,print_iterations):
     #  Aliases
     # ---------------------------------------------------------------------------------------------------------- 
     aliases = [] 
-    btms = 'hrs_configurations.optimized.networks.electric.coolant_lines.coolant_line.battery_modules.'+battery.tag+'.thermal_management_system.heat_acquisition_system'  
+    btms = 'hrs_configurations.optimized.networks.electric.sources.'+battery.tag+'.heat_acquisition_system'
     aliases.append([ 'm_dot'       , btms + '.coolant_flow_rate'])    
     aliases.append([ 'b'           , btms + '.channel_side_thickness']) 
     aliases.append([ 'd'           , btms + '.channel_width']) 

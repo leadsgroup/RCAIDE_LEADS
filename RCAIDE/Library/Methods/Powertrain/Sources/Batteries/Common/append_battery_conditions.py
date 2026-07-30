@@ -103,14 +103,15 @@ def append_battery_conditions(battery,segment):
     segment.state.conditions.energy.sources[battery.tag].outputs.power.thermal               = 0 * ones_row(1)
      
     
-    # Append conditions for each battery module. If the battery pack has identical modules,
-    #  only the first module is used to compute the conditions for all modules
+    # Every module gets its own condition bucket, since compute_battery_performance
+    # indexes into it before deciding whether to compute it fresh or reuse module 0's
+    # results. The identical_modules optimization only skips the expensive per-cell
+    # physics call, not this cheap allocation.
     battery.number_of_active_modules = 0
     for m_i, module in enumerate(battery.modules):
         if module.active:
             battery.number_of_active_modules += 1
-        if (battery.identical_modules == False) or m_i == 0:
-            append_module_conditions(module,battery,segment)
+        append_module_conditions(module,battery,segment)
 
     return
     
@@ -170,8 +171,9 @@ def append_module_conditions(module,battery,segment):
     segment.state.conditions.energy.sources[battery.tag][module.tag].internal_resistance             = 0 * ones_row(1)
     segment.state.conditions.energy.sources[battery.tag][module.tag].voltage_under_load              = 0 * ones_row(1)
     segment.state.conditions.energy.sources[battery.tag][module.tag].energy                          = 0 * ones_row(1)  
-    segment.state.conditions.energy.sources[battery.tag][module.tag].heat_energy_generated           = 0 * ones_row(1) 
-    segment.state.conditions.energy.sources[battery.tag][module.tag].temperature                     = 0 * ones_row(1)  
+    segment.state.conditions.energy.sources[battery.tag][module.tag].heat_energy_generated           = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[battery.tag][module.tag].heat_to_coolant                 = 0 * ones_row(1)
+    segment.state.conditions.energy.sources[battery.tag][module.tag].temperature                     = 0 * ones_row(1)
     segment.state.conditions.energy.sources[battery.tag][module.tag].depth_of_discharge              = 0 * ones_row(1) 
     segment.state.conditions.energy.sources[battery.tag][module.tag].power_draw                      = 0 * ones_row(1)   # NEED TO UPDATE 
     segment.state.conditions.energy.sources[battery.tag][module.tag].power_split_ratio               = battery.power_split_ratio * ones_row(1) 
@@ -204,8 +206,13 @@ def append_module_conditions(module,battery,segment):
     segment.state.conditions.energy.sources[battery.tag][module.tag].cell.heat_energy_generated      = 0 * ones_row(1)  
     segment.state.conditions.energy.sources[battery.tag][module.tag].cell.energy                     = 0 * ones_row(1)       
     segment.state.conditions.energy.sources[battery.tag][module.tag].cell.temperature                = 0 * ones_row(1)    
-    segment.state.conditions.energy.sources[battery.tag][module.tag].cell.charge_throughput          = 0 * ones_row(1)   
+    segment.state.conditions.energy.sources[battery.tag][module.tag].cell.charge_throughput          = 0 * ones_row(1)
     segment.state.conditions.energy.sources[battery.tag][module.tag].cell.cycle_in_day               = 0
+
+    # heat acquisition system conditions (only if this module is thermally managed)
+    if module.heat_acquisition_system != None and module.assigned_distributors != None:
+        coolant_line_tag = module.assigned_distributors[0][0]
+        module.heat_acquisition_system.append_operating_conditions(segment,coolant_line_tag)
     segment.state.conditions.energy.sources[battery.tag][module.tag].cell.resistance_growth_factor   = 1. 
     segment.state.conditions.energy.sources[battery.tag][module.tag].cell.capacity_fade_factor       = 1.
      
@@ -295,14 +302,13 @@ def append_battery_segment_conditions(battery, segment):
             cell_temperature  = atmo_data.temperature[0,0] 
         battery_conditions.temperature[:,0]                = cell_temperature 
 
-    # Append conditions for each battery module. If the battery pack has identical modules,
-    #  only the first module is used to compute the conditions for all modules
+    # Every module gets its own condition bucket carried over; see append_battery_conditions
+    # for why this cannot be skipped for identical modules.
     battery.number_of_active_modules = 0
     for m_i, module in enumerate(battery.modules):
         if module.active:
             battery.number_of_active_modules += 1
-        if (battery.identical_modules == False) or m_i == 0:
-            append_module_segment_conditions(module,battery,segment)
+        append_module_segment_conditions(module,battery,segment)
     return
 
 def append_module_segment_conditions(module,battery,segment): 
@@ -358,6 +364,10 @@ def append_module_segment_conditions(module,battery,segment):
             atmo_data    = atmosphere.compute_values(altitude = alt,temperature_deviation=temp_dev)  
             cell_temperature  = atmo_data.temperature[0,0] 
         module_conditions.temperature[:,0]                = cell_temperature
-        module_conditions.cell.temperature[:,0]           = cell_temperature            
-     
-    return    
+        module_conditions.cell.temperature[:,0]           = cell_temperature
+
+    if module.heat_acquisition_system != None and module.assigned_distributors != None:
+        coolant_line_tag = module.assigned_distributors[0][0]
+        module.heat_acquisition_system.append_segment_conditions(segment,coolant_line_tag)
+
+    return
