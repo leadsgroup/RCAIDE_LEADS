@@ -377,17 +377,18 @@ def plot_3d_vehicle(vehicle,
                 for battery_module in source.modules:
                     GEOM = generate_3d_cuboid_points(battery_module)
                     plotter.add_mesh(generate_vtk_object(GEOM.PTS), color=battery_rgb_color, opacity=battery_opacity)
-    
+
+    # Cameraa Position [camera_position, focal_point, view_up]
     if front_view:
         plotter.camera_position = [(-2 * L , 0, 0), (0, 0,0), (0, 0, 1)] 
     elif side_view:
         plotter.camera_position = [(L /2 , 2 * L, 0), (L /4, 0, 0), (0, 0, 1)]  
     elif top_view:
-        plotter.camera_position = [(L, 0 , 2 * L ), (L/4, 0,0), (0, 0, 1)]       
+        plotter.camera_position = [(L/2, 0 , 2.5 * L ), (L/2.5, 0,0), (0, 0, 1)]       
     else:
         plotter.camera_position = [(L * camera_eye_x, L * camera_eye_y, L * camera_eye_z), (L /2, 0, 0), (0, 0, 1)]
     
-    plotter.window_size = [1500, 1500]
+    plotter.window_size = [3000, 2000]
     plotter.set_background('white')
 
     if export_gltf:
