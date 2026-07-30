@@ -101,11 +101,13 @@ class Liquid_Petroleum_Gas(Propellant):
     Source:
         None
         """    
-        self.tag             = 'Liquid_Petroleum_Gas'
-        self.reactant        = 'O2'
-        self.density         = 509.26                           # kg/m^3 
-        self.specific_energy = 43.1e6                           # J/kg
-        self.energy_density  = 21949.1e6                        # J/m^3
+        self.tag                           = 'Liquid_Petroleum_Gas'
+        self.reactant                      = 'O2'
+        self.density                       = 509.26                     # kg/m^3 
+        self.specific_energy               = 43.1e6                     # J/kg
+        self.energy_density                = 21949.1e6                  # J/m^3
+        self.gravimetric_efficiency        = 0.7
+        self.lower_heating_value           = 48.6e6                     # J/kg
         
         self.stoichiometric_fuel_air_ratio = 0         # [-] Stoichiometric Fuel to Air ratio
         self.heat_of_vaporization          = 0         # [J/kg] Heat of vaporization at standard conditions
