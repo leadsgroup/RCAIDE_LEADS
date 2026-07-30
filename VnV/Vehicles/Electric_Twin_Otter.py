@@ -526,7 +526,11 @@ def vehicle_setup(rotor_type):
         propeller.wake_inputs.CT_iter                      = True
         propeller.wake_inputs.aerofoil_aero                = 2                # 1 simplified aerofoil aero, detailed panel aerofoil aero
         propeller.wake_inputs.mu_max                       = 1.0
-        propeller.wake_inputs.mu_edgewise_threshold         = 1e-2 # in-plane advance ratio at/above which a control point uses the forward-flight wake model instead of hover
+        propeller.wake_inputs.mu_edgewise_threshold        = 1e-2 # in-plane advance ratio at/above which a control point uses the forward-flight wake model instead of hover
+        propeller.wake_inputs.free_wake                    = False
+        propeller.wake_inputs.free_wake_max_iter           = 40    
+        propeller.wake_inputs.free_wake_tol                = 1e-4
+        propeller.wake_inputs.free_wake_relax              = 0.3 
 
         starboard_propulsor.rotor                        = propeller   
                 

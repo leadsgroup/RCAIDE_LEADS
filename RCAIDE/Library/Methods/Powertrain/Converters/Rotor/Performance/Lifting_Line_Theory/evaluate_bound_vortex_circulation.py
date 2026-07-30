@@ -8,7 +8,7 @@
 import numpy as np
 from RCAIDE.Framework.Core                           import Data, orientation_product, orientation_transpose
 from RCAIDE.Library.Methods.Aerodynamics.Common.Lift  import compute_airfoil_aerodynamics
-from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory import biot_savart_velocity_induction, initialize_wake_geometry
+from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory import biot_savart_velocity_induction, initialize_wake_geometry, free_wake
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_lifting_line_inflow_and_tip_loss
@@ -294,8 +294,9 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
     # ------------------------------------------------------------------------------------------------------------------
     #  Outer loop: CT (CT_iter=True) or single pass (CT_iter=False)
     # ------------------------------------------------------------------------------------------------------------------
-    conv     = False
-    n_outer  = max_iter_CT if wake_inputs.CT_iter else 1
+    conv        = False
+    residual_CT = float('nan')   # in case the loop breaks (e.g. CT diverges to NaN) before ever computing a real residual
+    n_outer     = max_iter_CT if wake_inputs.CT_iter else 1
 
     for it in range(n_outer):
 
@@ -473,7 +474,16 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
             wake_inputs.thrust_coeff_initial_guess = new_CT   # (ctrl_pts, 1) -- one CT per control point
 
             if wake_inputs.include_wake:
-                initialize_wake_geometry(rotor, wake_inputs, conditions)
+                # free_wake() reads rotor.blades.bound.gamma / rotor.blades.wake.gamma as the
+                # current converged circulation -- push this outer iteration's values before
+                # calling it (the end-of-function assignments below only run once, after every
+                # outer iteration including this one has already completed).
+                if wake_inputs.free_wake:
+                    rotor.blades.bound.gamma = Gamma_b
+                    rotor.blades.wake.gamma  = Gamma_wake.reshape(ctrl_pts, N_wake, B)
+                    free_wake(rotor, wake_inputs, conditions)
+                else:
+                    initialize_wake_geometry(rotor, wake_inputs, conditions)
         else:
             conv = True   # simple mode always exits after one outer pass
 
