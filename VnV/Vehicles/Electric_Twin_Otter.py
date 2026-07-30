@@ -515,7 +515,7 @@ def vehicle_setup(rotor_type):
         propeller.wake_inputs.thrust_coeff_initial_guess   = 0.00654           # initial guess for CT to intialize the wake geometry
         propeller.wake_inputs.lamb_oseen_rc_0              = 0.028             # initial core radius for the wake filaments [fraction of R]
         propeller.wake_inputs.lamb_oseen_alpha             = 1.25643           # parameters for the core radius growth rate Lamb-Oseen model  
-        propeller.wake_inputs.lamb_oseen_delta             = 120000            # 8.243
+        propeller.wake_inputs.lamb_oseen_delta             = 100000            # 8.243
         propeller.wake_inputs.lamb_oseen_sigma             = 1.0               # ..
         propeller.wake_inputs.lamb_oseen_core_growth_delay = np.radians(30.0)  # paramter to delay the growth rate till certain wake age 
         propeller.wake_inputs.r_R_shed                     = 1.0               # location as fraction of R to shed the wake filament from               
@@ -527,10 +527,10 @@ def vehicle_setup(rotor_type):
         propeller.wake_inputs.aerofoil_aero                = 2                # 1 simplified aerofoil aero, detailed panel aerofoil aero
         propeller.wake_inputs.mu_max                       = 1.0
         propeller.wake_inputs.mu_edgewise_threshold        = 1e-2 # in-plane advance ratio at/above which a control point uses the forward-flight wake model instead of hover
-        propeller.wake_inputs.free_wake                    = False
+        propeller.wake_inputs.free_wake                    = True
         propeller.wake_inputs.free_wake_max_iter           = 40    
         propeller.wake_inputs.free_wake_tol                = 1e-4
-        propeller.wake_inputs.free_wake_relax              = 0.3 
+        propeller.wake_inputs.free_wake_relax              = 0.7 
 
         starboard_propulsor.rotor                        = propeller   
                 
