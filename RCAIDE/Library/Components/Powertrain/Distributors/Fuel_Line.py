@@ -73,7 +73,8 @@ class Fuel_Line(Distributor):
         self.boost_pump_unit_mass                 = 12.5 * Units.lbs
         self.venting_system_length                = 0.0 
         self.pipe                                 = Data()
-        self.pipe.surface_roughness               = 0.015 
+        self.pipe.surface_roughness               = 0.015
+        self.pipe.rigid_material                  = RCAIDE.Library.Attributes.Materials.Aluminum()
         self.pipe.flexible_material               = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304()
         self.pipe.flexible_material_ratio         = 0.25
         self.pipe.diameters                       = Data()

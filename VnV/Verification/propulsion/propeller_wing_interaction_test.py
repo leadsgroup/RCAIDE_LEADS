@@ -175,8 +175,7 @@ def mission_setup(analyses):
     #   Cruise Segment: constant Speed, constant altitude 
     segment                           = Segments.Untrimmed.Untrimmed()
     segment.analyses.extend( analyses.base ) 
-    segment.tag = "cruise"    
-    segment.initial_battery_state_of_charge              = 1.0       
+    segment.tag = "cruise"
     segment.altitude                                     = 30
     segment.air_speed                                    = 100
     segment.distance                                     = 1 * Units.miles

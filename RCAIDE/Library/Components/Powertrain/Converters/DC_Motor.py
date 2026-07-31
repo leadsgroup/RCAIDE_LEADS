@@ -171,9 +171,9 @@ class DC_Motor(Converter):
         _  = compute_cylinder_center_of_gravity(self, length=self.length) 
         return
 
-    def compute_performance(self,state):
+    def compute_performance(self,state,network=None):
 
-        inputs, outputs, stored_results_flag,stored_converter_tag = compute_motor_performance(self,state)
+        inputs, outputs, stored_results_flag,stored_converter_tag = compute_motor_performance(self,state.conditions)
         return inputs, outputs, stored_results_flag, stored_converter_tag
     
         

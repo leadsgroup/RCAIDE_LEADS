@@ -54,12 +54,12 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
                 Low pressure compressor component
                     - tag : str
                         Identifier for the low pressure compressor
-                    - motor : Data, optional
-                        Electric motor component
-                    - generator : Data, optional
-                        Electric generator component
                     - design_angular_velocity : float
                         Design angular velocity [rad/s]
+            - integrated_drive_motor : Data, optional
+                Electric motor on the compressor shaft (parallel-hybrid assist)
+            - integrated_drive_generator : Data, optional
+                Electric generator on the compressor shaft (shaft power extraction)
             - high_pressure_compressor : Data
                 High pressure compressor component
                     - tag : str
@@ -570,12 +570,17 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
     conditions.energy.propulsors[turbofan.tag].inputs.power.chemical      = conditions.energy.propulsors[stored_propulsor_tag].inputs.power.chemical    
     
     
-    if low_pressure_compressor.motor != None and  len(state.numerics.time.differentiate) > 0:
-        conditions.energy.converters[low_pressure_compressor.motor.tag] = deepcopy(conditions.energy.converters[low_pressure_compressor_0.motor.tag]) 
-        conditions.energy.propulsors[turbofan.tag].inputs.power.electrical = conditions.energy.converters[low_pressure_compressor.motor.tag].inputs.power 
-    
-    if low_pressure_compressor.generator != None and len(state.numerics.time.differentiate) > 0:  
-        conditions.energy.converters[low_pressure_compressor.generator.tag] = deepcopy(conditions.energy.converters[low_pressure_compressor_0.generator.tag]) 
-        conditions.energy.propulsors[turbofan.tag].outputs.power.electrical = conditions.energy.converters[low_pressure_compressor.generator.tag].outputs.power 
-        
+    idm   = turbofan.integrated_drive_motor
+    idm_0 = network.propulsors[stored_propulsor_tag].integrated_drive_motor
+    if idm != None and  len(state.numerics.time.differentiate) > 0:
+        conditions.energy.converters[idm.tag] = deepcopy(conditions.energy.converters[idm_0.tag])
+        conditions.energy.propulsors[turbofan.tag].inputs.power.electrical = conditions.energy.converters[idm.tag].inputs.power.electrical
+
+    idg   = turbofan.integrated_drive_generator
+    idg_0 = network.propulsors[stored_propulsor_tag].integrated_drive_generator
+    if idg != None and len(state.numerics.time.differentiate) > 0:
+        conditions.energy.converters[idg.tag] = deepcopy(conditions.energy.converters[idg_0.tag])
+        conditions.energy.propulsors[turbofan.tag].outputs.power.electrical = conditions.energy.converters[idg.tag].outputs.power.electrical
+
+
     return conditions.energy.propulsors[turbofan.tag].inputs, conditions.energy.propulsors[turbofan.tag].outputs

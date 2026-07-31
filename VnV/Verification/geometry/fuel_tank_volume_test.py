@@ -69,8 +69,8 @@ def integral_fuel_tank_volume_test():
     total_volume_true = 79.86653355539846
 
     vehicle   = B737_vehicle_setup()
-    fuel_line = vehicle.networks.fuel.fuel_lines.fuel_line
-    fuel_line.fuel_tanks.clear()
+    fuel_line = vehicle.networks.fuel.distributors.fuel_line
+    vehicle.networks.fuel.sources.clear()
 
     # ---- Main Wing Tanks ----
     wing_tank_1                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)
@@ -79,7 +79,8 @@ def integral_fuel_tank_volume_test():
     wing_tank_1.segments_bounding_tank       = ['root', 'yehudi']
     wing_tank_1.segments_percent_chord_start = [0.1, 0.1]
     wing_tank_1.segments_percent_chord_end   = [0.7, 0.7]
-    fuel_line.fuel_tanks.append(wing_tank_1)
+    wing_tank_1.assigned_distributors        = [[fuel_line.tag]]
+    vehicle.networks.fuel.sources.append(wing_tank_1)
 
     wing_tank_2                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)
     wing_tank_2.fuel_flow_split_ratio        = 0.5
@@ -87,7 +88,8 @@ def integral_fuel_tank_volume_test():
     wing_tank_2.segments_bounding_tank       = ['yehudi', 'section_2']
     wing_tank_2.segments_percent_chord_start = [0.1, 0.1]
     wing_tank_2.segments_percent_chord_end   = [0.7, 0.7]
-    fuel_line.fuel_tanks.append(wing_tank_2)
+    wing_tank_2.assigned_distributors        = [[fuel_line.tag]]
+    vehicle.networks.fuel.sources.append(wing_tank_2)
 
     configs  = configs_setup(vehicle)
     analyses = analyses_setup(configs)
@@ -103,19 +105,22 @@ def integral_fuel_tank_volume_test():
     fus_tank_1.fuel_flow_split_ratio    = 0.5
     fus_tank_1.fuel                     = RCAIDE.Library.Attributes.Propellants.Jet_A()
     fus_tank_1.segments_bounding_tank   = ['segment_5','segment_6']
-    fuel_line.fuel_tanks.append(fus_tank_1)
+    fus_tank_1.assigned_distributors    = [[fuel_line.tag]]
+    vehicle.networks.fuel.sources.append(fus_tank_1)
 
     fus_tank_2 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.fuselages.fuselage)
     fus_tank_2.fuel_flow_split_ratio    = 0.5
     fus_tank_2.fuel                     = RCAIDE.Library.Attributes.Propellants.Jet_A()
     fus_tank_2.segments_bounding_tank   = ['segment_6','segment_7']
-    fuel_line.fuel_tanks.append(fus_tank_2)
+    fus_tank_2.assigned_distributors    = [[fuel_line.tag]]
+    vehicle.networks.fuel.sources.append(fus_tank_2)
 
     fus_tank_3 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.fuselages.fuselage)
     fus_tank_3.fuel_flow_split_ratio    = 0.5
     fus_tank_3.fuel                     = RCAIDE.Library.Attributes.Propellants.Jet_A()
     fus_tank_3.segments_bounding_tank   = ['segment_7','segment_8']
-    fuel_line.fuel_tanks.append(fus_tank_3)
+    fus_tank_3.assigned_distributors    = [[fuel_line.tag]]
+    vehicle.networks.fuel.sources.append(fus_tank_3)
 
     configs  = configs_setup(vehicle)
     analyses = analyses_setup(configs)
@@ -159,24 +164,25 @@ def non_integral_tank_test():
     if sys.version_info >= (3, 11):
         # Wing-mounted cylindrical tank (lines 174-177)
         vehicle   = B737_vehicle_setup()
-        fuel_line = vehicle.networks.fuel.fuel_lines.fuel_line
-        fuel_line.fuel_tanks.clear()
+        fuel_line = vehicle.networks.fuel.distributors.fuel_line
+        vehicle.networks.fuel.sources.clear()
 
         wing_tank = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle.wings.main_wing)
         wing_tank.tag                    = 'wing_cyl_tank'
         wing_tank.geometry_type          = 'cylindrical'
         wing_tank.segments_bounding_tank = ['root', 'yehudi']
         wing_tank.fuel                   = RCAIDE.Library.Attributes.Propellants.Jet_A()
-        fuel_line.fuel_tanks.append(wing_tank)
+        wing_tank.assigned_distributors = [[fuel_line.tag]]
+        vehicle.networks.fuel.sources.append(wing_tank)
 
-        wing_tank.compute_volume(vehicle.wings, vehicle.fuselages, fuel_line.fuel_tanks)
+        wing_tank.compute_volume(vehicle.wings, vehicle.fuselages, vehicle.networks.fuel.sources)
         assert wing_tank.volume_properties.net_volume > 0, \
             f'Wing-mounted cylindrical Non_Integral_Tank volume should be > 0, got {wing_tank.volume_properties.net_volume}'
 
         # Transverse Non_Integral_Tank (lines 178-181)
         vehicle_bwb   = BWB_vehicle_setup()
-        fuel_line_bwb = vehicle_bwb.networks.fuel.fuel_lines.fuel_line
-        fuel_line_bwb.fuel_tanks.clear()
+        fuel_line_bwb = vehicle_bwb.networks.fuel.distributors.fuel_line
+        vehicle_bwb.networks.fuel.sources.clear()
 
         trans_tank = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank(vehicle_bwb.wings.main_wing)
         trans_tank.tag                           = 'transverse_tank'
@@ -187,9 +193,10 @@ def non_integral_tank_test():
         trans_tank.orientation_euler_angles      = [0, 0, np.pi/2]
         trans_tank.xz_plane_symmetric            = False
         trans_tank.fuel                          = RCAIDE.Library.Attributes.Propellants.Jet_A()
-        fuel_line_bwb.fuel_tanks.append(trans_tank)
+        trans_tank.assigned_distributors = [[fuel_line_bwb.tag]]
+        vehicle_bwb.networks.fuel.sources.append(trans_tank)
 
-        trans_tank.compute_volume(vehicle_bwb.wings, vehicle_bwb.fuselages, fuel_line_bwb.fuel_tanks)
+        trans_tank.compute_volume(vehicle_bwb.wings, vehicle_bwb.fuselages, vehicle_bwb.networks.fuel.sources)
         assert trans_tank.volume_properties.net_volume > 0, \
             f'Transverse Non_Integral_Tank volume should be > 0, got {trans_tank.volume_properties.net_volume}'
     else:
@@ -204,8 +211,8 @@ def non_conformal_lh2_fuel_tank_volume_test():
 
     fuel_volume_true = 612.218299
     vehicle          = BWB_vehicle_setup()
-    fuel_line        = vehicle.networks.fuel.fuel_lines.fuel_line
-    fuel_line.fuel_tanks.clear()
+    fuel_line        = vehicle.networks.fuel.distributors.fuel_line
+    vehicle.networks.fuel.sources.clear()
 
     # ---- LH2 wing tank (non-conformal) ----
     fuel_tank_1                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
@@ -223,7 +230,8 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_tank_1.segments_percent_chord_start    = [0.2,0.2]
     fuel_tank_1.segments_percent_chord_end      = [0.6,0.6]
     fuel_tank_1.wall_thickness                  = 2*Units.inches
-    fuel_line.fuel_tanks.append(fuel_tank_1)
+    fuel_tank_1.assigned_distributors = [[fuel_line.tag]]
+    vehicle.networks.fuel.sources.append(fuel_tank_1)
 
     # ---- Cylindrical non-integral tank ----
     fuel_tank_2                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank()
@@ -237,7 +245,8 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_tank_2.geometry_type                   = 'cylindrical'
     fuel_tank_2.lengths.external                = 8
     fuel_tank_2.diameters.external              = 4
-    fuel_line.fuel_tanks.append(fuel_tank_2)
+    fuel_tank_2.assigned_distributors = [[fuel_line.tag]]
+    vehicle.networks.fuel.sources.append(fuel_tank_2)
  
     # ---- Prismatic non-integral tank ----
     fuel_tank_2a                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank()
@@ -254,7 +263,8 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_tank_2a.heights.external                = 1
     fuel_tank_2a.wall_thickness                  = 2*Units.inches
     fuel_tank_2a.fuel.mass_properties.mass       = 0.1
-    fuel_line.fuel_tanks.append(fuel_tank_2a)
+    fuel_tank_2a.assigned_distributors = [[fuel_line.tag]]
+    vehicle.networks.fuel.sources.append(fuel_tank_2a)
 
     # ---- Wing-mounted prismatic non-integral tank ----
     fuel_tank_3                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
@@ -270,7 +280,8 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_tank_3.segments_bounding_tank          = ['fuselage_section_3', 'wing_section_2']
     fuel_tank_3.segments_percent_chord_start    = [0.2 ,0.2]
     fuel_tank_3.segments_percent_chord_end      = [0.6,0.6]
-    fuel_line.fuel_tanks.append(fuel_tank_3)
+    fuel_tank_3.assigned_distributors = [[fuel_line.tag]]
+    vehicle.networks.fuel.sources.append(fuel_tank_3)
 
     # ---- LH2 BWB aft tank ----
     fuel_tank_4                               = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
@@ -290,7 +301,8 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_tank_4.transverse_tank_chord_bounds    = [0.65,0.9]
     fuel_tank_4.transverse_tank_segment_bound        = 'fuel_wall'
     fuel_tank_4.radial_offset                 = 0.2
-    fuel_line.fuel_tanks.append(fuel_tank_4)
+    fuel_tank_4.assigned_distributors = [[fuel_line.tag]]
+    vehicle.networks.fuel.sources.append(fuel_tank_4)
 
     # ---- Non-integral BWB aft tank ----
     fuel_tank_4a                               = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
@@ -308,7 +320,8 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_tank_4a.transverse_tank_chord_bounds  = [0.65,0.9]
     fuel_tank_4a.transverse_tank_segment_bound = 'cabin_wall'
     fuel_tank_4a.radial_offset                 = 0.2
-    fuel_line.fuel_tanks.append(fuel_tank_4a)
+    fuel_tank_4a.assigned_distributors = [[fuel_line.tag]]
+    vehicle.networks.fuel.sources.append(fuel_tank_4a)
 
     # ---- LH2 BWB aft tank with specified mass ----
     fuel_tank_5                               = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
@@ -329,7 +342,8 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_tank_5.transverse_tank_segment_bound        = 'cabin_wall'
     fuel_tank_5.radial_offset                 = 0.5
     fuel_tank_5.fuel.mass_properties.mass     = 0.1
-    fuel_line.fuel_tanks.append(fuel_tank_5)
+    fuel_tank_5.assigned_distributors = [[fuel_line.tag]]
+    vehicle.networks.fuel.sources.append(fuel_tank_5)
 
     # ---- Non-integral wing tank with specified mass ----
     fuel_tank_6                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
@@ -344,7 +358,8 @@ def non_conformal_lh2_fuel_tank_volume_test():
     fuel_tank_6.wall_thickness                  = 2*Units.inches
     fuel_tank_6.fuel.mass_properties.mass       = 0.1
     fuel_tank_6.segments_bounding_tank          = ['fuel_wall', 'wing_section_2']
-    fuel_line.fuel_tanks.append(fuel_tank_6)
+    fuel_tank_6.assigned_distributors = [[fuel_line.tag]]
+    vehicle.networks.fuel.sources.append(fuel_tank_6)
 
     configs  = configs_setup(vehicle)
     analyses = analyses_setup(configs)
@@ -377,8 +392,8 @@ def conformal_lh2_fuel_tank_volume_test():
 
     fuel_volume_true = 275.10296942
     vehicle          = BWB_vehicle_setup()
-    fuel_line        = vehicle.networks.fuel.fuel_lines.fuel_line
-    fuel_line.fuel_tanks.clear()
+    fuel_line        = vehicle.networks.fuel.distributors.fuel_line
+    vehicle.networks.fuel.sources.clear()
 
     # ---- Conformal wing tank ----
     fuel_tank                                          = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
@@ -395,7 +410,8 @@ def conformal_lh2_fuel_tank_volume_test():
     fuel_tank.segments_bounding_tank                   = ['fuel_wall', 'wing_section_1']
     fuel_tank.segments_percent_chord_start             = [0.2,0.2]
     fuel_tank.segments_percent_chord_end               = [0.6,0.6]
-    fuel_line.fuel_tanks.append(fuel_tank)
+    fuel_tank.assigned_distributors = [[fuel_line.tag]]
+    vehicle.networks.fuel.sources.append(fuel_tank)
 
     # ---- Conformal aft tank ----
     fuel_tank_2                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
@@ -416,7 +432,8 @@ def conformal_lh2_fuel_tank_volume_test():
     fuel_tank_2.transverse_tank_segment_bound                 = 'cabin_wall'
     fuel_tank_2.radial_offset                          = 0.1
     fuel_tank_2.fuel.tag                               = '_lh2'
-    fuel_line.fuel_tanks.append(fuel_tank_2)
+    fuel_tank_2.assigned_distributors = [[fuel_line.tag]]
+    vehicle.networks.fuel.sources.append(fuel_tank_2)
 
     configs  = configs_setup(vehicle)
     analyses = analyses_setup(configs)
@@ -447,8 +464,8 @@ def non_conformal_lng_fuel_tank_volume_test():
 
     fuel_volume_true = 289.5878436558366
     vehicle          = BWB_vehicle_setup()
-    fuel_line        = vehicle.networks.fuel.fuel_lines.fuel_line
-    fuel_line.fuel_tanks.clear()
+    fuel_line        = vehicle.networks.fuel.distributors.fuel_line
+    vehicle.networks.fuel.sources.clear()
 
     # ---- LNG wing tank ----
     fuel_tank_1                                 = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
@@ -466,7 +483,8 @@ def non_conformal_lng_fuel_tank_volume_test():
     fuel_tank_1.segments_percent_chord_start    = [0.2,0.2]
     fuel_tank_1.segments_percent_chord_end      = [0.6,0.6]
     fuel_tank_1.wall_thickness                  = 2*Units.inches
-    fuel_line.fuel_tanks.append(fuel_tank_1)
+    fuel_tank_1.assigned_distributors = [[fuel_line.tag]]
+    vehicle.networks.fuel.sources.append(fuel_tank_1)
 
     # ---- LNG BWB aft tank ----
     fuel_tank_2                               = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
@@ -486,7 +504,8 @@ def non_conformal_lng_fuel_tank_volume_test():
     fuel_tank_2.transverse_tank_chord_bounds    = [0.65,0.9]
     fuel_tank_2.transverse_tank_segment_bound        = 'fuel_wall'
     fuel_tank_2.radial_offset                 = 0.2
-    fuel_line.fuel_tanks.append(fuel_tank_2)
+    fuel_tank_2.assigned_distributors = [[fuel_line.tag]]
+    vehicle.networks.fuel.sources.append(fuel_tank_2)
 
     configs  = configs_setup(vehicle)
     analyses = analyses_setup(configs)

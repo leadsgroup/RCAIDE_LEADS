@@ -151,7 +151,9 @@ class Turbojet(Propulsor):
         self.specific_fuel_consumption_reduction_factor  = 0.0  
         self.compressor_nondimensional_massflow          = 0.0
         self.reference_temperature                       = 288.15
-        self.reference_pressure                          = 1.01325*10**5 
+        self.reference_pressure                          = 1.01325*10**5
+        self.integrated_drive_generator                  = None
+        self.integrated_drive_motor                      = None 
         self.design_thrust                               = 0.0
         self.design_mass_flow_rate                       = 0.0 
         self.OpenVSP_flow_through                        = False

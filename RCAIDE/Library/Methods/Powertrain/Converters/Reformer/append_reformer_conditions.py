@@ -48,7 +48,16 @@ def append_reformer_conditions(reformer, segment):
     --------
     RCAIDE.Library.Methods.Powertrain.Converters.Ram.compute_ram_performance
     """
-    segment.state.conditions.energy.converters[reformer.tag]                              = Conditions() 
-    segment.state.conditions.energy.converters[reformer.tag].inputs                       = Conditions() 
-    segment.state.conditions.energy.converters[reformer.tag].outputs                      = Conditions() 
+    ones_row                                                                               = segment.state.ones_row
+    segment.state.conditions.energy.converters[reformer.tag]                              = Conditions()
+    segment.state.conditions.energy.converters[reformer.tag].inputs                       = Conditions()
+    segment.state.conditions.energy.converters[reformer.tag].outputs                      = Conditions()
+    segment.state.conditions.energy.converters[reformer.tag].power                        = Conditions()
+    segment.state.conditions.energy.converters[reformer.tag].power.propulsive              = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[reformer.tag].power.mechanical              = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[reformer.tag].power.electrical              = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[reformer.tag].power.chemical                = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[reformer.tag].power.pneumatic               = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[reformer.tag].power.hydraulic               = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[reformer.tag].power.thermal                 = 0. * ones_row(1)
     return 

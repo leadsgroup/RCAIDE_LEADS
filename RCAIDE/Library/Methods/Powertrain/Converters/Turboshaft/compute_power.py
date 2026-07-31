@@ -66,8 +66,9 @@ def compute_power(turboshaft,conditions):
                         Reference total pressure [Pa]
                     - combustor_stagnation_temperature : numpy.ndarray
                         Combustor exit stagnation temperature [K]
-                    - power : numpy.ndarray
-                        Required power output (for inverse calculation) [W]
+                    - outputs.power.mechanical : numpy.ndarray
+                        Required power output, set by the caller before this call
+                        (for inverse/reverse-mode calculation) [W]
 
     Returns
     -------
@@ -113,7 +114,7 @@ def compute_power(turboshaft,conditions):
     Tt4                                        = turboshaft_conditions.combustor_stagnation_temperature  
     total_temperature_reference                = turboshaft_conditions.total_temperature_reference                                                          
     total_pressure_reference                   = turboshaft_conditions.total_pressure_reference                                                                                           
-    Power                                      = turboshaft_conditions.power                              
+    Power                                      = turboshaft_conditions.outputs.power.mechanical
     Cp                                         = working_fluid.compute_cp(total_temperature_reference,total_pressure_reference)
                                                                                                                                                         
     # unpacking from turboshaft                                                                                                                          

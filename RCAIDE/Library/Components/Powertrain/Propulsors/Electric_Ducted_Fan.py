@@ -97,7 +97,7 @@ class Electric_Ducted_Fan(Propulsor):
             append_electric_ducted_fan_residual_and_unknown(self,segment)
         return 
     
-    def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):
+    def compute_performance(self,state,network=None,center_of_gravity = [[0, 0, 0]]):
         inputs, outputs, stored_results_flag, stored_propulsor_tag =  compute_electric_ducted_fan_performance(self,state,center_of_gravity)
         return inputs, outputs, stored_results_flag, stored_propulsor_tag
     

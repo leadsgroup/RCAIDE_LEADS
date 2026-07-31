@@ -61,12 +61,12 @@ def main():
     
      
 def lithium_air_battery_test(Ereq,Preq): 
-    battery_li_air                 = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Air()     
+    battery_li_air                 = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Air()
     return 
    
         
 def aluminum_air_battery_test(Ereq,Preq): 
-    battery_al_air                 = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Aluminum_Air()    
+    battery_al_air                 = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Aluminum_Air()
     test_size_module_from_energy_and_power(battery_al_air, Ereq, Preq)
     test_mass_gain(battery_al_air, Preq)
     
@@ -76,7 +76,7 @@ def aluminum_air_battery_test(Ereq,Preq):
     return 
    
 def lithium_sulphur_battery_test(Ereq,Preq):   
-    battery_li_s                   = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Sulfur()
+    battery_li_s                   = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Sulfur()
     specific_energy_guess          = 400*Units.Wh/Units.kg 
     test_find_ragone_properties(specific_energy_guess,battery_li_s, Ereq,Preq) 
     plot_battery_ragone_diagram(battery_li_s,   save_filename =  'lithium_sulfur')     
@@ -90,8 +90,8 @@ def lithium_ion_battery_test():
     C_rat                 = [0.5,1]  
     marker_size           = 5 
     mAh                   = np.array([3800,2600]) 
-    V_ul_true             = np.array([[3.1746312064954223, 3.14117403134389],[3.1746312064954223,3.14117403134389]])
-    bat_temp_true         =  np.array([[309.51908573114554,304.75340976482204], [309.51908573114554,304.75240451615923]])  
+    V_ul_true             = np.array([[3.175511494116564, 3.14117403134389],[3.175511494116564,3.14117403134389]])
+    bat_temp_true         =  np.array([[309.51628620872344,304.7562500891714], [309.51628620872344,304.7552852790537]])
     # PLot parameters 
     marker                = ['s' ,'o' ,'P']
     linestyles            = ['-','--',':']
@@ -129,7 +129,7 @@ def lithium_ion_battery_test():
             results = missions.base_mission.evaluate()  
             
             # Voltage Cell Regression
-            V_ul        = results.segments[0].conditions.energy.busses['bus'].battery_modules[battery_chemistry[i]].cell.voltage_under_load[2][0]   
+            V_ul        = results.segments[0].conditions.energy.sources['battery_pack'][battery_chemistry[i]].cell.voltage_under_load[2][0]
             print('Under load voltage: ' + str(V_ul))
             V_ul_diff   = np.abs(V_ul - V_ul_true[j,i])
             print('Under load voltage difference')
@@ -137,7 +137,7 @@ def lithium_ion_battery_test():
             assert np.abs((V_ul_diff)/V_ul_true[j,i]) < 1e-6  
            
             # Temperature Regression
-            bat_temp        = results.segments[1].conditions.energy.busses['bus'].battery_modules[battery_chemistry[i]].cell.temperature[2][0]  
+            bat_temp        = results.segments[1].conditions.energy.sources['battery_pack'][battery_chemistry[i]].cell.temperature[2][0]
             print('Cell temperature: ' + str(bat_temp))
             bat_temp_diff   = np.abs(bat_temp  - bat_temp_true[j,i]) 
             print('cell temperature difference')
@@ -145,10 +145,10 @@ def lithium_ion_battery_test():
             assert np.abs((bat_temp_diff)/bat_temp_true[j,i]) < 1e-6
        
             for segment in results.segments.values(): 
-                volts         = segment.conditions.energy.busses['bus'].voltage_under_load[:,0] 
-                SOC           = segment.conditions.energy.busses['bus'].battery_modules[battery_chemistry[i]].cell.state_of_charge[:,0]   
-                cell_temp     = segment.conditions.energy.busses['bus'].battery_modules[battery_chemistry[i]].cell.temperature[:,0]   
-                Amp_Hrs       = segment.conditions.energy.busses['bus'].battery_modules[battery_chemistry[i]].cell.charge_throughput[:,0]                   
+                volts         = segment.conditions.energy.sources['battery_pack'].voltage_under_load[:,0]
+                SOC           = segment.conditions.energy.sources['battery_pack'][battery_chemistry[i]].cell.state_of_charge[:,0]
+                cell_temp     = segment.conditions.energy.sources['battery_pack'][battery_chemistry[i]].cell.temperature[:,0]
+                Amp_Hrs       = segment.conditions.energy.sources['battery_pack'][battery_chemistry[i]].cell.charge_throughput[:,0]
                   
                 if battery_chemistry[i] == 'lithium_ion_nmc':
                     axes1.plot(Amp_Hrs , volts , marker= marker[i], linestyle = linestyles[i],  color= linecolors[j]  , markersize=marker_size   ,label = battery_chemistry[i] + ': '+ str(C_rat[j]) + ' C') 
@@ -239,7 +239,7 @@ def mission_setup(analyses,vehicle,battery_chemistry,current,mAh):
     segment                                 = Segments.Ground.Battery_Recharge(base_segment)      
     segment.analyses.extend(analyses.charge) 
     segment.cutoff_SOC                      = 1.0  
-    segment.initial_battery_state_of_charge = 0.2  
+    segment.initial_battery_conditions.state_of_charge = 0.2
     segment.tag                             = 'Recharge' 
     mission.append_segment(segment)   
 
@@ -248,7 +248,7 @@ def mission_setup(analyses,vehicle,battery_chemistry,current,mAh):
     segment.analyses.extend(analyses.discharge)  
     segment.tag                             = 'Discharge_1' 
     segment.time                            = time/2  
-    segment.initial_battery_state_of_charge = 1  
+    segment.initial_battery_conditions.state_of_charge = 1
     mission.append_segment(segment)
     
     segment                                = Segments.Ground.Battery_Discharge(base_segment) 

@@ -88,7 +88,9 @@ class Network(Component):
     - **phi** (``hybrid_power_split_ratio``) — fraction of propulsive power from
       electrical sources (0 = all fuel, 1 = all electric).
     - **psi** (``battery_fuel_cell_power_split_ratio``) — fraction of electrical
-      power from batteries vs fuel cells (1 = all battery, 0 = all fuel cell).
+      power from batteries vs. other electrical providers — fuel cells or
+      generators (e.g. Turboelectric_Generator) (1 = all battery, 0 = all
+      fuel cell/generator).
 
     ::
 
@@ -100,7 +102,7 @@ class Network(Component):
                                     |
                                     |--- (psi) ------> Batteries
                                     |
-                                    |--- (1 - psi) --> Fuel Cells
+                                    |--- (1 - psi) --> Fuel Cells / Generators
 
     These ratios are resolved during pre-processing by
     ``RCAIDE.Library.Mission.Common.Pre_Process.energy``, which analyzes the

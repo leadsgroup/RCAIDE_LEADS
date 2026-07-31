@@ -70,7 +70,7 @@ def compute_motor_performance(motor,state):
     # Unpack
     motor_conditions = state.energy.converters[motor.tag]
     
-    if (motor.type == RCAIDE.Library.Components.Powertrain.Converters.DC_Motor): 
+    if isinstance(motor, RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor):
         if motor.reverse_mode_computation == False:
             Res            = motor.resistance
             G              = motor.gearbox.gear_ratio
@@ -160,9 +160,9 @@ def compute_motor_performance(motor,state):
         else:
             io              = motor.no_load_current
             G               = motor.gearbox.gear_ratio 
-            omega_gearbox   = motor_conditions.outputs.omega 
+            omega_gearbox   = motor_conditions.outputs.omega
             omega           = omega_gearbox / G
-            power           = motor_conditions.outputs.power  
+            power           = motor_conditions.outputs.power.mechanical
             Kv              = motor.speed_constant 
             D_in            = motor.stator_inner_diameter  
             kw              = motor.winding_factor  
@@ -204,8 +204,8 @@ def compute_motor_performance(motor,state):
             
         else: 
             G              = motor.gearbox.gear_ratio 
-            omega_gearbox  = motor_conditions.outputs.omega 
-            power          = motor_conditions.outputs.power  
+            omega_gearbox  = motor_conditions.outputs.omega
+            power          = motor_conditions.outputs.power.mechanical
             io             = motor.no_load_current  
             Q_gearbox      = power / omega_gearbox   
             omega          = omega_gearbox / G

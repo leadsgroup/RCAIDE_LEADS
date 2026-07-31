@@ -9,6 +9,6 @@ def unpack_internal_combustion_engine_unknowns(propulsor,segment):
     """Unpack internal combustion engine unknowns and assigns them to the specfic
     compoment each interation of the mission solver
     """
-    engine            = propulsor.engine  
-    segment.state.conditions.energy.converters[engine.tag].omega = segment.state.unknowns[propulsor.tag + '_propeller_omega'] 
-    return 
+    engine            = propulsor.engine
+    segment.state.conditions.energy.converters[engine.tag].omega = segment.state.unknowns.mission[propulsor.tag + '_propeller_omega']
+    return

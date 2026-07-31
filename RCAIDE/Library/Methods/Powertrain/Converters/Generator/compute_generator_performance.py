@@ -57,8 +57,8 @@ def compute_generator_performance(generator,state):
     generator_conditions = state.conditions.energy.converters[generator.tag]  
     if generator.voltage_type == 'DC':   
         if generator.reverse_mode_computation == False:
-            P_mech          = generator_conditions.inputs.power 
-            Res            = generator.resistance  
+            P_mech          = generator_conditions.inputs.power.mechanical
+            Res            = generator.resistance
             Kv             = generator.speed_constant
             G              = generator.gearbox.gear_ratio 
             io             = generator.no_load_current  
@@ -88,8 +88,8 @@ def compute_generator_performance(generator,state):
         if generator.reverse_mode_computation == False:
             io     = generator.no_load_current
             G      = generator.gearbox.gear_ratio 
-            omega  = generator_conditions.inputs.omega  
-            power  = generator_conditions.inputs.power  
+            omega  = generator_conditions.inputs.omega
+            power  = generator_conditions.inputs.power.mechanical
             Kv     = generator.speed_constant                  
             D_in   = generator.inner_diameter         
             kw     = generator.winding_factor     

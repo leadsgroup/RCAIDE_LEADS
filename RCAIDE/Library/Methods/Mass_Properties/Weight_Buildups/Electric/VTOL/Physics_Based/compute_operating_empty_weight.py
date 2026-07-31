@@ -229,15 +229,18 @@ def compute_operating_empty_weight(vehicle,settings = None):
             #-------------------------------------------------------------------------------
             # Thermal Management System Weight
             #-------------------------------------------------------------------------------
-            tms_weight = 0.0 
-            for coolant_line in network.coolant_lines:
+            tms_weight = 0.0
+            coolant_lines = [d for d in network.distributors if isinstance(d, RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line)]
+            for coolant_line in coolant_lines:
                 weight.thermal_management_system.battery_module = Data()  # Add container for battery module
-                for i, battery_module in enumerate(coolant_line.battery_modules):
-                    module_key = f'module_{i+1}'  # Create unique key for each module
-                    weight.thermal_management_system.battery_module[module_key] = 0.0  # Initialize weight
-                    for HAS in battery_module:
-                        weight.thermal_management_system.battery_module[module_key] = HAS.mass_properties.mass
-                        tms_weight +=  HAS.mass_properties.mass
+                for source in network.sources:
+                    if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
+                        for i, battery_module in enumerate(source.modules):
+                            HAS = battery_module.heat_acquisition_system
+                            if HAS is not None and battery_module.assigned_distributors is not None and coolant_line.tag in battery_module.assigned_distributors[0]:
+                                module_key = f'module_{i+1}'  # Create unique key for each module
+                                weight.thermal_management_system.battery_module[module_key] = HAS.mass_properties.mass
+                                tms_weight +=  HAS.mass_properties.mass
 
                 for tag, item in coolant_line.items():
                     if tag == 'heat_exchangers':

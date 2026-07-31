@@ -106,14 +106,9 @@ def append_fuel_cell_conditions(fuel_cell_stack,segment):
     fuel_cell_conditions.compressor_expander_module      = Conditions
     fuel_cell_conditions.compressor_expander_module_power= 0 * ones_row(1)
 
-    # Conditions for recharging fuel_cell         
-    if type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Battery_Discharge:
-        segment.state.conditions.energy.recharging   = False     
-        segment.state.unknowns.mission['recharge']           = 0* ones_row(1)  
-        segment.state.residuals.mission['recharge']          = 0* ones_row(1)
-    else:
-        segment.state.conditions.energy.recharging  = False            
-    
+    # Conditions for recharging fuel_cell
+    segment.state.conditions.energy.recharging = False
+
     return
 
 def reuse_stored_fuel_cell_data(fuel_cell_stack, state, network, stored_conveter_tag):

@@ -48,12 +48,14 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
                 Compressor component
                     - tag : str
                         Identifier for the compressor
-                    - motor : Data, optional
-                        Electric motor component
-                    - generator : Data, optional
-                        Electric generator component
                     - design_angular_velocity : float
                         Design angular velocity [rad/s]
+            - integrated_drive_motor : Data, optional
+                Electric motor on the compressor shaft (parallel-hybrid assist),
+                same convention as Turbofan.integrated_drive_motor
+            - integrated_drive_generator : Data, optional
+                Electric generator on the compressor shaft (shaft power extraction),
+                same convention as Turbofan.integrated_drive_generator
             - combustor : Data
                 Combustor component
                     - tag : str
@@ -300,15 +302,15 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     power_elec = 0*state.ones_row(1)
 
     # Motor: consumes electrical from bus, delivers mechanical to compressor shaft
-    if compressor.motor != None and len(state.numerics.time.differentiate) > 0:
-        motor_conditions = conditions.energy.converters[compressor.motor.tag]
+    if turboprop.integrated_drive_motor != None and len(state.numerics.time.differentiate) > 0:
+        motor_conditions = conditions.energy.converters[turboprop.integrated_drive_motor.tag]
         phi = conditions.energy.hybrid_power_split_ratio
         if 'electrical_power' in state.unknowns.network:
             motor_electrical_power = state.unknowns.network['electrical_power'] * phi
         else:
             motor_electrical_power = conditions.energy.inputs.power.electrical * phi
 
-        eta_motor = compressor.motor.efficiency
+        eta_motor = turboprop.integrated_drive_motor.efficiency
         motor_mechanical_power = motor_electrical_power * eta_motor
 
         motor_conditions.inputs.power.electrical  = motor_electrical_power
@@ -318,14 +320,14 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
         power_elec = motor_electrical_power
 
     # Generator: extracts mechanical from compressor shaft, provides electrical to bus
-    if compressor.generator != None and len(state.numerics.time.differentiate) > 0:
-        gen_conditions = conditions.energy.converters[compressor.generator.tag]
+    if turboprop.integrated_drive_generator != None and len(state.numerics.time.differentiate) > 0:
+        gen_conditions = conditions.energy.converters[turboprop.integrated_drive_generator.tag]
         if 'electrical_power' in state.unknowns.network:
-            gen_electrical_power = state.unknowns.network['electrical_power'] * compressor.generator.power_split_ratio
+            gen_electrical_power = state.unknowns.network['electrical_power'] * turboprop.integrated_drive_generator.power_split_ratio
         else:
-            gen_electrical_power = conditions.energy.inputs.power.electrical * compressor.generator.power_split_ratio
+            gen_electrical_power = conditions.energy.inputs.power.electrical * turboprop.integrated_drive_generator.power_split_ratio
 
-        eta_gen = compressor.generator.efficiency
+        eta_gen = turboprop.integrated_drive_generator.efficiency
         gen_mechanical_power = gen_electrical_power / eta_gen
 
         gen_conditions.outputs.power.electrical  = gen_electrical_power
@@ -420,13 +422,17 @@ def reuse_stored_turboprop_data(turboprop,state,network,stored_propulsor_tag,cen
     conditions.energy.propulsors[turboprop.tag].moment = moment
     
     power_elec = 0*state.ones_row(1)
-    if compressor.motor != None and  len(state.numerics.time.differentiate) > 0: 
-        conditions.energy.converters[compressor.motor.tag]  = deepcopy(conditions.energy.converters[compressor_0.motor.tag]) 
-        power_elec =  conditions.energy.converters[compressor.motor.tag].inputs.power.electric  
-    
-    if compressor.generator != None and len(state.numerics.time.differentiate) > 0:  
-        conditions.energy.converters[compressor.generator.tag]  = deepcopy(conditions.energy.converters[compressor_0.generator.tag]) 
-        power_elec =  conditions.energy.converters[compressor.generator.tag].outputs.power.electric
+    idm   = turboprop.integrated_drive_motor
+    idm_0 = network.propulsors[stored_propulsor_tag].integrated_drive_motor
+    if idm != None and  len(state.numerics.time.differentiate) > 0:
+        conditions.energy.converters[idm.tag]  = deepcopy(conditions.energy.converters[idm_0.tag])
+        power_elec =  conditions.energy.converters[idm.tag].inputs.power.electrical
+
+    idg   = turboprop.integrated_drive_generator
+    idg_0 = network.propulsors[stored_propulsor_tag].integrated_drive_generator
+    if idg != None and len(state.numerics.time.differentiate) > 0:
+        conditions.energy.converters[idg.tag]  = deepcopy(conditions.energy.converters[idg_0.tag])
+        power_elec =  conditions.energy.converters[idg.tag].outputs.power.electrical
 
     conditions.energy.propulsors[turboprop.tag].outputs.power.electrical  = power_elec 
     conditions.energy.propulsors[turboprop.tag].outputs.moment            = moment

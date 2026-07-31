@@ -273,19 +273,19 @@ def design_turboprop(turboprop):
     turboprop.design_thermal_efficiency               = turboprop_conditions.thermal_efficiency                
     turboprop.design_propulsive_efficiency            = turboprop_conditions.propulsive_efficiency
     
-    if compressor.motor != None: 
+    if turboprop.integrated_drive_motor != None:
         V                     = turboprop.design_freestream_velocity
         operating_state       = setup_operating_conditions(turboprop,fuel_line,velocity_range=np.array([V]), altitude = turboprop.design_altitude, angle_of_attack=0, temperature_deviation=0)
-        operating_state.conditions.energy.propulsors[turboprop.tag].throttle[:,0] = 1.0  
+        operating_state.conditions.energy.propulsors[turboprop.tag].throttle[:,0] = 1.0
         _,outputs,_,_           = turboprop.compute_performance(operating_state)
 
         T = outputs.thrust
         P = outputs.power.propulsive
-        
-        motor                         = compressor.motor 
-        motor.design_torque           = P[0][0] /compressor.design_angular_velocity   
+
+        motor                         = turboprop.integrated_drive_motor
+        motor.design_torque           = P[0][0] /compressor.design_angular_velocity
         motor.design_angular_velocity = compressor.design_angular_velocity
-        motor.mass_properties.mass    = compute_motor_weight(motor) 
+        motor.mass_properties.mass    = compute_motor_weight(motor)
         design_optimal_motor(motor)
     
     return      

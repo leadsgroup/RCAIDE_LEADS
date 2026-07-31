@@ -93,7 +93,9 @@ def compute_propulsion_system_weight(vehicle,ref_propulsor, settings):
     if ref_nacelle is not None:
         WEC, WSTART     = compute_misc_propulsion_system_weight(vehicle,ref_propulsor,ref_nacelle,NENG)
     WTHR            = compute_thrust_reverser_weight(ref_propulsor,NENG)
-    WPRO            = NENG * WENG +  WTANK + WLINE + WPUMP + WEC + WSTART + WTHR # Nacelle weight is not included in the propulsion system weight. it is included in the structural weight. 
+    # Tank mass is not included here: it is already captured in structural.fuel_tanks from the
+    # actual Fuel_Tank components' mass_properties.mass, so adding WTANK here would double-count it.
+    WPRO            = NENG * WENG +  WLINE + WPUMP + WEC + WSTART + WTHR # Nacelle weight is not included in the propulsion system weight. it is included in the structural weight.
 
     output                      = Data()
     output.W_prop               = WPRO

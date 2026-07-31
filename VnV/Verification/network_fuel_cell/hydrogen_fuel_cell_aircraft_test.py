@@ -169,7 +169,7 @@ def mission_setup(analyses):
     segment.altitude_end                                             = 5 
     segment.air_speed_start                                          = Vstall *1.2  
     segment.air_speed_end                                            = Vstall *1.25
-    segment.initial_battery_state_of_charge                          = 1.0
+    segment.initial_battery_conditions.state_of_charge               = 1.0
                        
     # define flight dynamics to model            
     segment.flight_dynamics.force_x                                  = True  

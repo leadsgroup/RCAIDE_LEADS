@@ -50,20 +50,22 @@ def forward_mode_model():
 
     for i in range(len(generator_type)):
         generator = design_test_generator( generator_type[i])
-        generator.inverse_calculation = False
-        
-        # set up default operating conditions 
-        operating_state = setup_operating_conditions(generator) 
-        
+        generator.reverse_mode_computation = False
+
+        # set up default operating conditions
+        distributor      = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
+        generator.assigned_distributors = [[distributor.tag]]
+        operating_state = setup_operating_conditions(generator,distributor)
+
         # Assign conditions to the Generator
-        generator_conditions = operating_state.conditions.energy.converters[generator.tag] 
-        
+        generator_conditions = operating_state.conditions.energy.converters[generator.tag]
+
         generator_conditions.inputs.omega[:, 0] = 120
-        generator_conditions.inputs.power[:, 0] = 500
+        generator_conditions.inputs.power.mechanical[:, 0] = 500
 
         generator_conditions.outputs.voltage[:, 0] = 420
         
-        Generator.compute_generator_performance(generator,operating_state.conditions)
+        Generator.compute_generator_performance(generator,operating_state)
 
         # run analysis  
         current = generator_conditions.outputs.current
@@ -90,17 +92,19 @@ def inverse_mode_model():
 
     for i in range(len(generator_type)):
         generator = design_test_generator( generator_type[i])
-        
-        generator.inverse_calculation = True
-        # set up default operating conditions 
-        operating_state = setup_operating_conditions(generator) 
-        
+
+        generator.reverse_mode_computation = True
+        # set up default operating conditions
+        distributor      = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
+        generator.assigned_distributors = [[distributor.tag]]
+        operating_state = setup_operating_conditions(generator,distributor)
+
         # Assign conditions to the Generator
         generator_conditions = operating_state.conditions.energy.converters[generator.tag]
         generator_conditions.outputs.voltage[:, 0] = 480
         generator_conditions.outputs.current[:, 0] = 70
 
-        Generator.compute_generator_performance(generator,operating_state.conditions)
+        Generator.compute_generator_performance(generator,operating_state)
 
         # run analysis 
         omega   = generator_conditions.inputs.omega
@@ -122,18 +126,20 @@ def inverse_mode_model():
 def design_test_generator(generator_type): 
     
     if generator_type == 'DC_Generator':
-        generator = RCAIDE.Library.Components.Powertrain.Converters.DC_Generator()
-    
-        generator.mass_properties.mass    = 9. * Units.kg 
-        generator.efficiency              = 0.98    
-        generator.no_load_current         = 1.0 
+        generator = RCAIDE.Library.Components.Powertrain.Converters.Generator()
+        generator.voltage_type             = 'DC'
+
+        generator.mass_properties.mass    = 9. * Units.kg
+        generator.efficiency              = 0.98
+        generator.no_load_current         = 1.0
         generator.nominal_voltage         = 400
         generator.design_torque           = 90
         generator.design_angular_velocity = 100
         generator.design_power            = generator.design_torque * generator.design_angular_velocity
-        design_optimal_generator(generator) 
+        design_optimal_generator(generator)
     elif generator_type == 'PMSM_Generator':
-        generator = RCAIDE.Library.Components.Powertrain.Converters.PMSM_Generator()
+        generator = RCAIDE.Library.Components.Powertrain.Converters.Generator()
+        generator.voltage_type               = 'AC'
         generator.speed_constant            = 0.03                        # [rpm/V]        speed constant
         generator.stator_inner_diameter     = 0.16                        # [m]            stator inner diameter
         generator.stator_outer_diameter     = 0.348                       # [m]            stator outer diameter
@@ -142,12 +148,11 @@ def design_test_generator(generator_type):
         generator.winding_factor            = 0.95                        # [-]            winding factor
 
         # Input data from Assumptions
-        generator.generator_stack_length        = 11.40                       # [m]            (It should be around 0.14 m) Generator stack length 
-        generator.number_of_turns           = 100                          # [-]            number of turns  
-        generator.length_of_path            = 0.4                         # [m]            length of the path  
+        generator.number_of_turns           = 100                          # [-]            number of turns
+        generator.length_of_path            = 0.4                         # [m]            length of the path
         generator.mu_0                      = 1.256637061e-5              # [N/A**2]       permeability of free space
-        generator.mu_r                      = 1005                        # [N/A**2]       relative permeability of the magnetic material 
-        generator.no_load_current           = 1.0 
+        generator.mu_r                      = 1005                        # [N/A**2]       relative permeability of the magnetic material
+        generator.no_load_current           = 1.0
         generator.stack_length              = 0.14
         generator.inner_diameter            = 0.16
     else:

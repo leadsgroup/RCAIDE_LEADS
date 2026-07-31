@@ -56,7 +56,7 @@ def main():
     P_truth     = 61213.88277906869
     mdot_truth  = 0.005378390955054601
     
-    P    = results.segments.cruise.state.conditions.energy.converters['internal_combustion_engine'].power[-1,0]
+    P    = results.segments.cruise.state.conditions.energy.converters['internal_combustion_engine'].power.propulsive[-1,0]
     mdot = results.segments.cruise.state.conditions.weights.vehicle.mass_rate[-1,0]     
 
     # Print the results
@@ -94,7 +94,8 @@ def ICE_CS(vehicle):
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus
     #------------------------------------------------------------------------------------------------------------------------------------  
-    fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line() 
+    fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    fuel_line.working_fluid                     = RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline()
     
     #------------------------------------------------------------------------------------------------------------------------------------  
     # uel Tank and Fuel
@@ -105,7 +106,8 @@ def ICE_CS(vehicle):
     fuel.mass_properties.mass                   = 319 *Units.lbs 
     fuel.mass_properties.center_of_gravity      =  vehicle.wings.main_wing.mass_properties.center_of_gravity 
     fuel_tank.fuel                              = fuel  
-    fuel_line.fuel_tanks.append(fuel_tank)
+    fuel_tank.assigned_distributors              = [[fuel_line.tag]]
+    net.sources.append(fuel_tank)
 
 
     #------------------------------------------------------------------------------------------------------------------------------------  
@@ -153,13 +155,13 @@ def ICE_CS(vehicle):
     
     net.propulsors.append(propulsor)
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to fuel line to network      
-    fuel_line.assigned_propulsors =  [[propulsor.tag]]
-    
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Append fuel line to fuel line to network      
-    net.fuel_lines.append(fuel_line)
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Assign propulsor to fuel line
+    propulsor.assigned_distributors =  [[fuel_line.tag]]
+
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Append fuel line to network
+    net.distributors.append(fuel_line)
     
     # add the network to the vehicle
     vehicle.append_energy_network(net)

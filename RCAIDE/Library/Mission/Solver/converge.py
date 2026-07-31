@@ -44,7 +44,23 @@ def converge(segment):
     N/A
     """ 
     numerics = segment.state.numerics
-    if numerics.mission_solver.type  == "optimize": 
+
+    # A segment can have zero unknowns (mission and network) when nothing in
+    # it needs implicit solving, e.g. a fuel-cell-only network whose current
+    # is solved internally via Newton-Raphson rather than through segment
+    # unknowns. Neither scipy solver path supports a 0-dimensional problem
+    # (SLSQP hits a LAPACK error, fsolve rejects an empty x0), so just run
+    # the segment forward once.
+    total_unknowns = segment.state.number_of_mission_unknowns
+    if segment.state.numerics.network_solver.type is None:
+        total_unknowns += segment.state.number_of_network_unknowns
+    if total_unknowns == 0:
+        segment.process.iterate(segment)
+        numerics.mission_solver.converged = True
+        segment.converged = True
+        return
+
+    if numerics.mission_solver.type  == "optimize":
         problem  = add_mission_variables(segment) 
        
        
@@ -328,11 +344,11 @@ def add_mission_variables(segment):
         for unkn in unknown_keys:
             basic_string_con[unkn] = np.tile('segment.state.unknowns.mission.'+unkn+'[', n_points)
             input_string.append(np.char.add(basic_string_con[unkn],np.array([0]).astype(str)))
-        input_string       = np.ravel(input_string)   
+        input_string       = np.ravel(input_string).astype(str)
         input_string       = np.char.add(input_string, np.tile(']',len_inputs))
-        input_aliases      = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_inputs), (-1, 2)) 
+        input_aliases      = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_inputs), (-1, 2))
         input_aliases[:,0] = input_names
-        input_aliases[:,1] = input_string    
+        input_aliases[:,1] = input_string
     else:  
         output_numbers = np.linspace(0,n_points-1,n_points,dtype=np.int16) 
         for unkn in unknown_keys:
@@ -343,9 +359,9 @@ def add_mission_variables(segment):
             for unkn in net_unknown_keys:
                 basic_string_con[unkn] = np.tile('segment.state.unknowns.network.'+unkn+'[', n_points)
                 input_string_network.append(np.char.add(basic_string_con[unkn],np.array(output_numbers).astype(str)))
-            input_string = np.hstack((np.ravel(input_string),np.ravel(input_string_network)))
+            input_string = np.hstack((np.ravel(input_string),np.ravel(input_string_network))).astype(str)
         else:
-            input_string = np.ravel(input_string)
+            input_string = np.ravel(input_string).astype(str)
         input_string       = np.char.add(input_string, np.tile(']',len_inputs))
         input_aliases      = np.reshape(np.tile(np.atleast_2d(np.array((None,None))),len_inputs), (-1, 2)) 
         input_aliases[:,0] = input_names

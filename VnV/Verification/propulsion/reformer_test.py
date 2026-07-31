@@ -43,12 +43,22 @@ def main():
     ctrl_pts = 1
 
     reformer_conditions = RCAIDE.Framework.Mission.Common.Conditions()
+    reformer_conditions.power             = Conditions()
+    reformer_conditions.power.propulsive  = np.zeros((ctrl_pts,1))
+    reformer_conditions.power.mechanical  = np.zeros((ctrl_pts,1))
+    reformer_conditions.power.electrical  = np.zeros((ctrl_pts,1))
+    reformer_conditions.power.chemical    = np.zeros((ctrl_pts,1))
+    reformer_conditions.power.pneumatic   = np.zeros((ctrl_pts,1))
+    reformer_conditions.power.hydraulic   = np.zeros((ctrl_pts,1))
+    reformer_conditions.power.thermal     = np.zeros((ctrl_pts,1))
 
-    reformer_conditions.fuel_volume_flow_rate  = np.ones((ctrl_pts,1)) * reformer.eta * 4.5e-9       # [m**3/s]        Jet-A feed rate
-    reformer_conditions.steam_volume_flow_rate = np.ones((ctrl_pts,1)) * reformer.eta * 1.6667e-8    # [m**3/s]        Deionized water feed rate
-    reformer_conditions.air_volume_flow_rate   = np.ones((ctrl_pts,1)) * reformer.eta * 1e-5         # [m**3/s]        Air feed rate
+    eta = 0.9    # [-] fraction of design feed rate
 
-    compute_reformer_performance(reformer,reformer_conditions)
+    reformer_conditions.fuel_volume_flow_rate  = np.ones((ctrl_pts,1)) * eta * 4.5e-9       # [m**3/s]        Jet-A feed rate
+    reformer_conditions.steam_volume_flow_rate = np.ones((ctrl_pts,1)) * eta * 1.6667e-8    # [m**3/s]        Deionized water feed rate
+    reformer_conditions.air_volume_flow_rate   = np.ones((ctrl_pts,1)) * eta * 1e-5         # [m**3/s]        Air feed rate
+
+    compute_reformer_performance(reformer,reformer_conditions,reformer_conditions)
 
     Q_R     =  reformer_conditions.effluent_gas_flow_rate  
     eta_ref =  reformer_conditions.reformer_efficiency 

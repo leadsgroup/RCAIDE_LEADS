@@ -185,7 +185,7 @@ def mission_setup(analyses):
     segment = Segments.Cruise.Constant_Speed_Constant_Altitude(base_segment)
     segment.tag = "cruise" 
     segment.analyses.extend( analyses.base ) 
-    segment.initial_battery_state_of_charge               = 1.0
+    segment.initial_battery_conditions.state_of_charge    = 1.0
      
     segment.altitude                                     = 30
     segment.air_speed                                    = 175.*Units['mph']   

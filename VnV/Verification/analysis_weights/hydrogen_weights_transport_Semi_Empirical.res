@@ -5,12 +5,12 @@
             "engines": 13426.90794658151,
             "thrust_reversers": 2510.8317860107427,
             "miscellaneous": 474.97535556692753,
-            "fuel_system": 51.43958998123644,
-            "fuel_tanks": 0.0,
-            "electrical_cabling": 0,
-            "thermal_management": 0,
+            "fuel_system": 0,
             "battery": 0,
-            "motors": 0
+            "motors": 0,
+            "tanks": 0.0,
+            "fuel_lines": 51.43958998123644,
+            "pumps": 0
         },
         "structural": {
             "wings": 16769.767322981264,
@@ -18,7 +18,7 @@
             "fuselage": 21837.257483913425,
             "landing_gear": 8790.392011681013,
             "nacelle": 2196.9921368320306,
-            "booms": 0,
+            "fuel_tanks": 0,
             "paint": 0,
             "total": 52608.218358777594
         },

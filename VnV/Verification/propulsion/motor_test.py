@@ -49,10 +49,12 @@ def forward_mode_model():
 
     for i in range(len(motor_type)):
         motor = design_test_motor( motor_type[i])
-        
-        # set up default operating conditions 
-        operating_state = setup_operating_conditions(motor) 
-        
+
+        # set up default operating conditions
+        distributor      = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
+        motor.assigned_distributors = [[distributor.tag]]
+        operating_state = setup_operating_conditions(motor,distributor)
+
         # Assign conditions to the motor
         motor_conditions = operating_state.conditions.energy.converters[motor.tag]
         motor_conditions.inputs.voltage[:, 0] = 120
@@ -111,16 +113,18 @@ def inverse_mode_model():
 
     for i in range(len(motor_type)):
         motor = design_test_motor( motor_type[i])
-        motor.inverse_calculation = True
-        
-        # set up default operating conditions 
-        operating_state = setup_operating_conditions(motor) 
-        
+        motor.reverse_mode_computation = True
+
+        # set up default operating conditions
+        distributor      = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
+        motor.assigned_distributors = [[distributor.tag]]
+        operating_state = setup_operating_conditions(motor,distributor)
+
         # Assign conditions to the motor
         motor_conditions = operating_state.conditions.energy.converters[motor.tag] 
         
         motor_conditions.outputs.omega[:, 0] = 63
-        motor_conditions.outputs.power[:, 0] = 8500
+        motor_conditions.outputs.power.mechanical[:, 0] = 8500
         
         Motor.compute_motor_performance(motor,operating_state.conditions)
 

@@ -185,7 +185,7 @@ def mission_setup(analyses):
     segment.altitude       = 5000  * Units.feet
     segment.air_speed      = 90 *  Units.mph
     segment.distance       = 5000  
-    segment.initial_battery_state_of_charge                          = 1.0 
+    segment.initial_battery_conditions.state_of_charge               = 1.0
                 
     # define flight dynamics to model             
     segment.flight_dynamics.force_x                                  = True  

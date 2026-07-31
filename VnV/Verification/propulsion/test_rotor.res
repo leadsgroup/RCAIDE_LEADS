@@ -62,9 +62,21 @@
             1.2
         ]
     ],
+    "orientation_euler_angles": [
+        0.0,
+        1.5707963267948966,
+        0.0
+    ],
     "xz_plane_symmetric": false,
     "xy_plane_symmetric": false,
     "yz_plane_symmetric": false,
+    "working_fluid": {},
+    "active": true,
+    "assigned_converters": null,
+    "assigned_modulators": null,
+    "assigned_distributors": null,
+    "identical_converters": true,
+    "efficiency": 1.0,
     "number_of_blades": 3,
     "tip_radius": 1.4,
     "hub_radius": 0.1,
@@ -270,6 +282,11 @@
                     0.0,
                     0.0
                 ]
+            ],
+            "orientation_euler_angles": [
+                0.0,
+                0.0,
+                0.0
             ],
             "xz_plane_symmetric": false,
             "xy_plane_symmetric": false,
@@ -13943,11 +13960,6 @@
     "profile_drag_coefficient": 0.03,
     "clockwise_rotation": true,
     "phase_offset_angle": 0.0,
-    "orientation_euler_angles": [
-        0.0,
-        1.5707963267948966,
-        0.0
-    ],
     "ducted": false,
     "sol_tolerance": 1e-08,
     "use_2d_analysis": false,
@@ -14006,6 +14018,5 @@
         "design_lift_coefficient": null,
         "design_thrust_coefficient": null,
         "design_power_coefficient": null
-    },
-    "active": true
+    }
 }

@@ -108,7 +108,7 @@ class Internal_Combustion_Engine(Propulsor):
             append_internal_combustion_engine_residual_and_unknown(self,segment)
         return    
     
-    def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):
+    def compute_performance(self,state,network=None,center_of_gravity = [[0, 0, 0]]):
         """
         Computes propulsor performance including thrust, moment, and power.
         """

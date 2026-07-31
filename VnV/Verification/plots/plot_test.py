@@ -84,15 +84,16 @@ def evtol_aircraft_geometry_test(show_figure):
 def general_aviation_aircraft_geometry_test(show_figure):
     vehicle =  Navion_vehicle_setup() 
 
-    fuel_line = vehicle.networks.fuel.fuel_lines.fuel_line
-    fuel_line.fuel_tanks.clear()
+    fuel_line = vehicle.networks.fuel.distributors.fuel_line
+    vehicle.networks.fuel.sources.clear()
 
     wing_tank = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)
     wing_tank.fuel                          = RCAIDE.Library.Attributes.Propellants.Jet_A()
     wing_tank.segments_bounding_tank        = ['root_segment', 'tip']
     wing_tank.segments_percent_chord_start  = [0.1, 0.1]
     wing_tank.segments_percent_chord_end    = [0.7, 0.7]
-    fuel_line.fuel_tanks.append(wing_tank)
+    wing_tank.assigned_distributors         = [[fuel_line.tag]]
+    vehicle.networks.fuel.sources.append(wing_tank)
     
     # plot vehicle 
     plot_3d_vehicle(vehicle,   
@@ -120,13 +121,14 @@ def conventional_turboprop_aircraft_geometry_test(show_figure):
 
     # vehicle data
     vehicle  = ATR_72_vehicle_setup()
-    fuel_line = vehicle.networks.fuel.fuel_lines.fuel_line
-    fuel_line.fuel_tanks.clear()
-    
-    fuselage_tank = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.fuselages.fuselage)  
+    fuel_line = vehicle.networks.fuel.distributors.fuel_line
+    vehicle.networks.fuel.sources.clear()
+
+    fuselage_tank = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.fuselages.fuselage)
     fuselage_tank.fuel                          = RCAIDE.Library.Attributes.Propellants.Jet_A()
-    fuselage_tank.segments_bounding_tank        = ['segment_11','segment_12' ] 
-    fuel_line.fuel_tanks.append(fuselage_tank) 
+    fuselage_tank.segments_bounding_tank        = ['segment_11','segment_12' ]
+    fuselage_tank.assigned_distributors         = [[fuel_line.tag]]
+    vehicle.networks.fuel.sources.append(fuselage_tank)
      
     plot_3d_vehicle(vehicle,
                     save_filename  = "ATR_72", 
@@ -209,9 +211,9 @@ def bwb_aircraft_geometry_test(show_figure):
     vehicle  = BWB_vehicle_setup() 
     vehicle.wings.main_wing.cabins.side_cabin.tail.fineness_ratio  = 1      
 
-    fuel_line = vehicle.networks.fuel.fuel_lines.fuel_line
-    fuel_line.fuel_tanks.clear()
-    #############################################################################################################################    
+    fuel_line = vehicle.networks.fuel.distributors.fuel_line
+    vehicle.networks.fuel.sources.clear()
+    #############################################################################################################################
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Main Wing Tanks
     #------------------------------------------------------------------------------------------------------------------------------------      
@@ -234,7 +236,8 @@ def bwb_aircraft_geometry_test(show_figure):
     fuel_tank_1.segments_percent_chord_start           = [0.1,0.1] 
     fuel_tank_1.segments_percent_chord_end             = [0.55,0.55]
     fuel_tank_1.wall_thickness                         = 2*Units.inches
-    fuel_line.fuel_tanks.append(fuel_tank_1)
+    fuel_tank_1.assigned_distributors                  = [[fuel_line.tag]]
+    vehicle.networks.fuel.sources.append(fuel_tank_1)
 
     # -------------------------------------------------------------
     # Run test only if Python version >= 3.11
@@ -260,8 +263,8 @@ def bwb_aircraft_geometry_test(show_figure):
         fuel_tank_4.transverse_tank_chord_bounds    = [0.65,0.9]
         fuel_tank_4.transverse_tank_segment_bound        = 'cabin_wall'
         fuel_tank_4.radial_offset                 = 0.2
-        
-        fuel_line.fuel_tanks.append(fuel_tank_4)
+        fuel_tank_4.assigned_distributors         = [[fuel_line.tag]]
+        vehicle.networks.fuel.sources.append(fuel_tank_4)
 
         fuel_tank   = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
         fuel_tank.tag                     = 'wing_tanks'
@@ -276,8 +279,9 @@ def bwb_aircraft_geometry_test(show_figure):
         fuel_tank.insulation.material     = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
         fuel_tank.segments_bounding_tank    = ['fuel_wall', 'wing_section_1']  
         fuel_tank.segments_percent_chord_start  = [0.2,0.2] 
-        fuel_tank.segments_percent_chord_end    = [0.6,0.6]  
-        fuel_line.fuel_tanks.append(fuel_tank) 
+        fuel_tank.segments_percent_chord_end    = [0.6,0.6]
+        fuel_tank.assigned_distributors         = [[fuel_line.tag]]
+        vehicle.networks.fuel.sources.append(fuel_tank)
 
         fuel_tank_2                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
         fuel_tank_2.tag                                    = 'aft_tank'
@@ -296,7 +300,8 @@ def bwb_aircraft_geometry_test(show_figure):
         fuel_tank_2.transverse_tank_chord_bounds             = [0.7,0.8]
         fuel_tank_2.transverse_tank_segment_bound                 = 'cabin_wall'
         fuel_tank_2.radial_offset                          = 0.1
-        fuel_line.fuel_tanks.append(fuel_tank_2)    
+        fuel_tank_2.assigned_distributors                  = [[fuel_line.tag]]
+        vehicle.networks.fuel.sources.append(fuel_tank_2)
    
     plot_3d_vehicle(vehicle, 
                     save_filename = "BWB_Additional_Tanks",  

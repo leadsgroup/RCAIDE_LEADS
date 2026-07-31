@@ -30,8 +30,8 @@ def energy(mission):
        - Pure fuel network (no electrical path)     →  phi = 0.0
        - All-electric network (no chemical path)    →  phi = 1.0
        - Hybrid with user-specified phi             →  honored as-is
-       - Only batteries as electrical sources       →  psi = 1.0
-       - Only fuel cells as electrical sources      →  psi = 0.0
+       - Only batteries as electrical sources             →  psi = 1.0
+       - Only fuel cells/generators as electrical sources →  psi = 0.0
        - Multiple same-type sources                 →  power split evenly
        - Multiple different-type electrical sources →  user must specify psi
 
@@ -78,30 +78,52 @@ def energy(mission):
             segment.state.conditions.energy.topology                            = topology
 
             # ----------------------------------------------------------------
-            # Initialize components and append operating conditions
+            # Initialize components
             # ----------------------------------------------------------------
+            # Sources before distributors: Electrical_Bus.initialize() reads
+            # source.voltage/maximum_power (e.g. Battery_Pack) to size itself, so
+            # those must already be computed by the time a distributor initializes.
             for propulsor in network.propulsors:
                 propulsor.initialize(network)
-                propulsor.append_operating_conditions(segment)
 
             for converter in network.converters:
                 converter.initialize(network)
-                converter.append_operating_conditions(segment)
 
             for modulator in network.modulators:
                 modulator.initialize(network)
-                modulator.append_operating_conditions(segment)
-                
-            for distributor in network.distributors:
-                distributor.initialize(network)
-                distributor.append_operating_conditions(segment)
 
             for source in network.sources:
                 source.initialize(network)
-                source.append_operating_conditions(segment)
+
+            for distributor in network.distributors:
+                distributor.initialize(network)
 
             for system in network.systems:
                 system.initialize(network)
+
+            # ----------------------------------------------------------------
+            # Append operating conditions
+            # ----------------------------------------------------------------
+            # Distributors before sources here: a source's own conditions can
+            # reach into a distributor's conditions while being built (e.g. a
+            # battery module's coolant-line heat-acquisition-system conditions),
+            # so the distributor side must already exist.
+            for propulsor in network.propulsors:
+                propulsor.append_operating_conditions(segment)
+
+            for converter in network.converters:
+                converter.append_operating_conditions(segment)
+
+            for modulator in network.modulators:
+                modulator.append_operating_conditions(segment)
+
+            for distributor in network.distributors:
+                distributor.append_operating_conditions(segment)
+
+            for source in network.sources:
+                source.append_operating_conditions(segment)
+
+            for system in network.systems:
                 system.append_operating_conditions(segment)
 
     return
@@ -331,12 +353,14 @@ def _resolve_hybridization(segment, topology,seg_i, verbose=False):
     - If both paths exist (hybrid), the user must specify phi on the segment.
       A default of 0.0 is used with a warning if omitted.
 
-    **Psi** (``battery_fuel_cell_power_split_ratio`` — battery vs fuel-cell split):
+    **Psi** (``battery_fuel_cell_power_split_ratio`` — battery vs other-source split):
 
     - If the user set psi on the segment, use it directly.
+    - "Other source" means a fuel cell or generator (e.g. Turboelectric_Generator) —
+      anything that dispatches off ``(1 - psi)`` of demand, same as a fuel cell.
     - If only batteries exist as electrical sources, psi = 1.0.
-    - If only fuel cells exist as electrical sources, psi = 0.0.
-    - If both batteries and fuel cells exist, the user must specify psi.
+    - If only fuel cells/generators exist as electrical sources, psi = 0.0.
+    - If both batteries and fuel cells/generators exist, the user must specify psi.
       A default of 1.0 is used with a warning if omitted.
 
     **Source power splitting**: when multiple sources of the same type feed the
@@ -363,8 +387,14 @@ def _resolve_hybridization(segment, topology,seg_i, verbose=False):
     # ------------------------------------------------------------------
     phi = segment.hybrid_power_split_ratio
 
-    has_chemical_propulsion   = len(topology.chemical_propulsors)   > 0
-    has_electrical_propulsion = len(topology.electrical_propulsors) > 0
+    has_chemical_propulsion = len(topology.chemical_propulsors) > 0
+    # A separate Electric_Rotor/Electric_Ducted_Fan propulsor is one way to add
+    # electrical propulsion, but a motor assisting a chemical propulsor's own
+    # shaft (e.g. Turbofan/Turbojet/Turboprop.integrated_drive_motor) is
+    # electrically-driven propulsion too, just without its own dedicated
+    # propulsor object -- both must count.
+    has_electrical_propulsion = (len(topology.electrical_propulsors) > 0 or
+                                  len(topology.electrical_motors)    > 0)
 
     if phi is None:
         if has_chemical_propulsion and not has_electrical_propulsion:
@@ -394,18 +424,23 @@ def _resolve_hybridization(segment, topology,seg_i, verbose=False):
     psi = segment.battery_fuel_cell_power_split_ratio
 
     if psi is None:
-        has_battery   = len(topology.batteries)  > 0
-        has_fuel_cell = len(topology.fuel_cells)  > 0
+        has_battery = len(topology.batteries) > 0
+        # Both fuel cells and generators (e.g. Turboelectric_Generator) are
+        # non-battery electrical providers that dispatch off (1 - psi) of demand
+        # (see compute_fuel_cell_performance / compute_turboelectric_generator_performance),
+        # so they're treated identically here.
+        has_other_source = len(topology.fuel_cells) > 0 or len(topology.generators) > 0
 
-        if has_battery and not has_fuel_cell:
+        if has_battery and not has_other_source:
             psi = 1.0
-        elif has_fuel_cell and not has_battery:
+        elif has_other_source and not has_battery:
             psi = 0.0
-        elif has_battery and has_fuel_cell:
+        elif has_battery and has_other_source:
             import warnings
             if verbose and seg_i == 0:
                 warnings.warn(
-                    "Network has both batteries and fuel cells but "
+                    "Network has both batteries and other electrical providers "
+                    "(fuel cells and/or generators) but "
                     "segment.battery_fuel_cell_power_split_ratio (psi) is not set. "
                     "Defaulting to psi = 1.0 (all battery). Set psi on the segment "
                     "or it will be registered as an optimization variable.",

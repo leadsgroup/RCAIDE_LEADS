@@ -455,15 +455,18 @@ def vehicle_setup(new_regression=True) :
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus Battery
     #------------------------------------------------------------------------------------------------------------------------------------ 
-    battery_module                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC() 
+    cruise_battery_pack                                               = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack()
+    battery_module                                                    = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_NMC()
     battery_module.tag                                                = 'cruise_bus_battery'
-    battery_module.electrical_configuration.series                     = 140  
-    battery_module.electrical_configuration.parallel                   = 60  
-    battery_module.geometric_configuration.normal_count               = 140  
-    battery_module.geometric_configuration.parallel_count             = 60  
+    battery_module.electrical_configuration.series                     = 140
+    battery_module.electrical_configuration.parallel                   = 60
+    battery_module.geometric_configuration.normal_count               = 140
+    battery_module.geometric_configuration.parallel_count             = 60
     for _ in range( cruise_bus.number_of_battery_modules):
-        cruise_bus.battery_modules.append(deepcopy(battery_module))    
-    cruise_bus.initialize_bus_properties()
+        cruise_battery_pack.append_module(deepcopy(battery_module))
+    cruise_battery_pack.assigned_distributors = [[cruise_bus.tag]]
+    network.sources.append(cruise_battery_pack)
+    cruise_battery_pack.initialize(network)
     
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Forward Bus Propulsors  
@@ -476,7 +479,7 @@ def vehicle_setup(new_regression=True) :
     # Electronic Speed Controller                     
     propeller_esc                                          = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller() 
     propeller_esc.efficiency                               = 0.95
-    propeller_esc.bus_voltage                              = cruise_bus.voltage
+    propeller_esc.nominal_voltage                          = cruise_battery_pack.voltage
     propeller_esc.origin                                   = [[6.583, 1.300,  1.092 ]] 
     propeller_esc.tag                                      = 'propeller_esc_1' 
     cruise_propulsor_1.electronic_speed_controller         = propeller_esc      
@@ -519,7 +522,7 @@ def vehicle_setup(new_regression=True) :
     propeller_motor.efficiency                             = 0.95
     propeller_motor.tag                                    = 'propeller_motor_1'  
     propeller_motor.origin                                 = [[6.583, 1.300,  1.092 ]] 
-    propeller_motor.nominal_voltage                        = cruise_bus.voltage  
+    propeller_motor.nominal_voltage                        = cruise_battery_pack.voltage
     propeller_motor.no_load_current                        = 0.001
     propeller_motor.wing_tag                               = 'horizontal_tail'   
     cruise_propulsor_1.motor                               = propeller_motor 
@@ -655,16 +658,19 @@ def vehicle_setup(new_regression=True) :
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus Battery
     #------------------------------------------------------------------------------------------------------------------------------------ 
-    battery_module                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC() 
+    lift_battery_pack                                                 = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack()
+    battery_module                                                    = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_NMC()
     battery_module.tag                                                = 'lift_bus_battery'
     battery_module.electrical_configuration.series                    = 140
     battery_module.origin                                             = [[4.2, 0.0, 0.0]]
-    battery_module.electrical_configuration.parallel                  = 20 
-    battery_module.geometric_configuration.normal_count              = 140   
-    battery_module.geometric_configuration.parallel_count            = 20 
+    battery_module.electrical_configuration.parallel                  = 20
+    battery_module.geometric_configuration.normal_count              = 140
+    battery_module.geometric_configuration.parallel_count            = 20
     for _ in range( lift_bus.number_of_battery_modules):
-        lift_bus.battery_modules.append(deepcopy(battery_module))
-    lift_bus.initialize_bus_properties()
+        lift_battery_pack.append_module(deepcopy(battery_module))
+    lift_battery_pack.assigned_distributors = [[lift_bus.tag]]
+    network.sources.append(lift_battery_pack)
+    lift_battery_pack.initialize(network)
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Lift Propulsors 
@@ -678,7 +684,7 @@ def vehicle_setup(new_regression=True) :
     lift_rotor_esc                                         = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller() 
     lift_rotor_esc.efficiency                              = 0.95     
     lift_rotor_esc.origin                                  = [[-0.073 ,  1.950 , 1.2]]
-    lift_rotor_esc.bus_voltage                             = lift_bus.voltage
+    lift_rotor_esc.nominal_voltage                         = lift_battery_pack.voltage
     lift_propulsor_1.electronic_speed_controller           = lift_rotor_esc 
            
     # Lift Rotor Design              
@@ -713,7 +719,7 @@ def vehicle_setup(new_regression=True) :
     #------------------------------------------------------------------------------------------------------------------------------------    
     lift_rotor_motor                                       = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     lift_rotor_motor.efficiency                            = 0.9
-    lift_rotor_motor.nominal_voltage                       = lift_bus.voltage*3/4  
+    lift_rotor_motor.nominal_voltage                       = lift_battery_pack.voltage*3/4  
     lift_rotor_motor.propeller_radius                      = lift_rotor.tip_radius 
     lift_rotor_motor.no_load_current                       = 0.01        
     lift_propulsor_1.motor                                 = lift_rotor_motor

@@ -97,8 +97,10 @@ def compute_turboelectric_generator_performance(turboelectric_generator,state,ne
     # run the generator
     _,_,_,_  = generator.compute_performance(state)
 
-    # connect properties of the generator to the turboshaft
-    turboshaft_conditions.outputs.power.mechanical  = generator_conditions.inputs.power.mechanical
+    # connect properties of the generator to the turboshaft. compute_power's reverse-mode
+    # branch reads this as its target power, then overwrites it with the (same) computed
+    # value as its normal output -- same field serves as both, like every other converter.
+    turboshaft_conditions.outputs.power.mechanical = generator_conditions.inputs.power.mechanical
 
     # run the turboshaft
     _,_,_,_ = turboshaft.compute_performance(state)

@@ -166,18 +166,47 @@ class Electrical_Bus(Distributor):
  
     def initialize(self,network):
         self.design_power   = 0.0
-        self.design_voltage = 0.0
+        # design_voltage is intentionally not reset here. Batteries and fuel cells
+        # below overwrite it with a definitive value when present, but generators
+        # (Generator/Turboelectric_Generator/integrated_drive_generator) have no
+        # inherent nominal-voltage attribute, so a generator-only bus relies on
+        # whatever design_voltage the vehicle definition set explicitly.
+
+        def assigned_here(component):
+            return component.active and component.assigned_distributors is not None and (self.tag in component.assigned_distributors[0])
+
+        def generator_design_power(generator):
+            # Generator carries design_power directly; Turboelectric_Generator wraps
+            # one (self.generator.design_power) instead of exposing it itself.
+            return getattr(generator, 'design_power', None) or getattr(getattr(generator, 'generator', None), 'design_power', 0.0) or 0.0
+
         for source in network.sources:
-            if source.active and source.assigned_distributors != None and (self.tag in source.assigned_distributors[0]):
+            if assigned_here(source):
                 if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
-                    self.design_voltage = source.voltage
-                    self.design_power  += source.maximum_power
+                    # A battery with power_split_ratio == 0 carries no power on this bus
+                    # (e.g. structural/backup-only ballast) and should not dictate bus
+                    # voltage or be assumed initialized.
+                    if source.power_split_ratio != 0.0:
+                        self.design_voltage = source.voltage
+                        self.design_power  += source.maximum_power
+
         for converter in network.converters:
-            if converter.active and converter.assigned_distributors != None and (self.tag in converter.assigned_distributors[0]):
+            if assigned_here(converter):
                 if isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack):
                     n_series = converter.electrical_configuration.series
                     self.design_voltage = converter.fuel_cell.ideal_voltage * n_series
                     self.design_power  += converter.maximum_power
+                elif isinstance(converter, (RCAIDE.Library.Components.Powertrain.Converters.Generator,
+                                            RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator)):
+                    self.design_power  += generator_design_power(converter)
+
+        # Generators integrated onto a propulsor's shaft (e.g. Turbofan/Turboprop
+        # integrated_drive_generator) are not in network.converters, so check there too.
+        for propulsor in network.propulsors:
+            idg = getattr(propulsor, 'integrated_drive_generator', None)
+            if idg is not None and assigned_here(idg):
+                self.design_power += generator_design_power(idg)
+
         size_electrical_cable(self)
         return
     

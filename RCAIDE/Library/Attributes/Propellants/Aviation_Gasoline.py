@@ -63,6 +63,7 @@ class Aviation_Gasoline(Propellant):
         self.density         = 721.0            # kg/m^3
         self.specific_energy = 43.71e6          # J/kg
         self.lower_heating_value = 43.71e6      # J/kg
+        self.kinematic_viscosity = 0.6e-6       # [m^2/s] kinematic viscosity at ~20 C
 
         self.stoichiometric_fuel_air_ratio = 0         # [-] Stoichiometric Fuel to Air ratio
         self.heat_of_vaporization          = 0         # [J/kg] Heat of vaporization at standard conditions

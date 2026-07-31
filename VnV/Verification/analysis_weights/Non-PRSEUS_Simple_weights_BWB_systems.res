@@ -6,9 +6,6 @@
             "thrust_reversers": 2540.9564269494717,
             "miscellaneous": 360.13811248553975,
             "fuel_system": 777.3716917407895,
-            "fuel_tanks": 0,
-            "electrical_cabling": 0,
-            "thermal_management": 0,
             "battery": 0,
             "motors": 0
         },
@@ -19,8 +16,7 @@
             "aft_center_body": 5240.800029214259,
             "landing_gear": 4837.204254398957,
             "nacelle": 1307.2039005662316,
-            "booms": 0,
-            "paint": 0,
+            "fuel_tanks": 0,
             "total": 57304.21093950637
         },
         "systems": {

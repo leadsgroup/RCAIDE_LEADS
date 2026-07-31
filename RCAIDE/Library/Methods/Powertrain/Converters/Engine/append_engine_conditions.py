@@ -30,10 +30,12 @@ def append_engine_conditions(engine, segment):
     """
     # unpack 
     ones_row          = segment.state.ones_row
-    segment.state.conditions.energy.converters[engine.tag]                      = Conditions() 
+    segment.state.conditions.energy.converters[engine.tag]                      = Conditions()
     segment.state.conditions.energy.converters[engine.tag].inputs               = Conditions()
     segment.state.conditions.energy.converters[engine.tag].outputs              = Conditions()
-    segment.state.conditions.energy.converters[engine.tag].torque               = 0 * ones_row(1)   
-    segment.state.conditions.energy.converters[engine.tag].omega                = engine.rated_speed * ones_row(1)   
+    segment.state.conditions.energy.converters[engine.tag].power                = Conditions()
+    segment.state.conditions.energy.converters[engine.tag].power.propulsive     = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[engine.tag].torque               = 0 * ones_row(1)
+    segment.state.conditions.energy.converters[engine.tag].omega                = engine.rated_speed * ones_row(1)
     
     return 

@@ -47,12 +47,12 @@ def compute_turbojet_performance(turbojet, state, center_of_gravity=[[0.0, 0.0, 
                 Low pressure compressor component
                     - tag : str
                         Identifier for the low pressure compressor
-                    - motor : Data, optional
-                        Electric motor component
-                    - generator : Data, optional
-                        Electric generator component
                     - design_angular_velocity : float
                         Design angular velocity [rad/s]
+            - integrated_drive_motor : Data, optional
+                Electric motor on the compressor shaft (parallel-hybrid assist)
+            - integrated_drive_generator : Data, optional
+                Electric generator on the compressor shaft (shaft power extraction)
             - high_pressure_compressor : Data
                 High pressure compressor component
                     - tag : str
@@ -361,42 +361,43 @@ def compute_turbojet_performance(turbojet, state, center_of_gravity=[[0.0, 0.0, 
     hpc_conditions.omega        = high_pressure_compressor.design_angular_velocity * turbojet_conditions.throttle
    
     # compute electrical power if generated/supplied
-    power_elec = 0*state.ones_row(1)
+    integrated_drive_motor     = turbojet.integrated_drive_motor
+    integrated_drive_generator = turbojet.integrated_drive_generator
 
     # Motor: consumes electrical from bus, delivers mechanical to compressor shaft
-    if low_pressure_compressor.motor != None and len(state.numerics.time.differentiate) > 0:
-        motor_conditions = conditions.energy.converters[low_pressure_compressor.motor.tag]
+    if integrated_drive_motor != None and len(state.numerics.time.differentiate) > 0:
+        motor_conditions = conditions.energy.converters[integrated_drive_motor.tag]
         phi = conditions.energy.hybrid_power_split_ratio
         if 'electrical_power' in state.unknowns.network:
             motor_electrical_power = state.unknowns.network['electrical_power'] * phi
         else:
             motor_electrical_power = conditions.energy.inputs.power.electrical * phi
 
-        eta_motor = low_pressure_compressor.motor.efficiency
+        eta_motor = integrated_drive_motor.efficiency
         motor_mechanical_power = motor_electrical_power * eta_motor
 
-        motor_conditions.inputs.power.electrical  = motor_electrical_power
-        motor_conditions.outputs.power.mechanical = motor_mechanical_power
-        motor_conditions.outputs.omega            = lpc_conditions.omega
-        motor_conditions.outputs.torque           = motor_mechanical_power / lpc_conditions.omega
-        power_elec = motor_electrical_power
+        turbojet_conditions.inputs.power.electrical = motor_electrical_power
+        motor_conditions.inputs.power.electrical    = motor_electrical_power
+        motor_conditions.outputs.power.mechanical   = motor_mechanical_power
+        motor_conditions.outputs.omega              = lpc_conditions.omega
+        motor_conditions.outputs.torque             = motor_mechanical_power / lpc_conditions.omega
 
     # Generator: extracts mechanical from compressor shaft, provides electrical to bus
-    if low_pressure_compressor.generator != None and len(state.numerics.time.differentiate) > 0:
-        gen_conditions = conditions.energy.converters[low_pressure_compressor.generator.tag]
+    if integrated_drive_generator != None and len(state.numerics.time.differentiate) > 0:
+        gen_conditions = conditions.energy.converters[integrated_drive_generator.tag]
         if 'electrical_power' in state.unknowns.network:
-            gen_electrical_power = state.unknowns.network['electrical_power'] * low_pressure_compressor.generator.power_split_ratio
+            gen_electrical_power = state.unknowns.network['electrical_power'] * integrated_drive_generator.power_split_ratio
         else:
-            gen_electrical_power = conditions.energy.inputs.power.electrical * low_pressure_compressor.generator.power_split_ratio
+            gen_electrical_power = conditions.energy.inputs.power.electrical * integrated_drive_generator.power_split_ratio
 
-        eta_gen = low_pressure_compressor.generator.efficiency
+        eta_gen = integrated_drive_generator.efficiency
         gen_mechanical_power = gen_electrical_power / eta_gen
 
-        gen_conditions.outputs.power.electrical  = gen_electrical_power
-        gen_conditions.inputs.power.mechanical   = gen_mechanical_power
-        gen_conditions.inputs.omega              = lpc_conditions.omega
-        gen_conditions.inputs.torque             = gen_mechanical_power / lpc_conditions.omega
-        power_elec = gen_electrical_power
+        turbojet_conditions.outputs.power.electrical = gen_electrical_power
+        gen_conditions.outputs.power.electrical      = gen_electrical_power
+        gen_conditions.inputs.power.mechanical       = gen_mechanical_power
+        gen_conditions.inputs.omega                  = lpc_conditions.omega
+        gen_conditions.inputs.torque                 = gen_mechanical_power / lpc_conditions.omega
 
 
     # store data
@@ -422,7 +423,6 @@ def compute_turbojet_performance(turbojet, state, center_of_gravity=[[0.0, 0.0, 
     turbojet_conditions.outputs.thrust                 = thrust_vector
     turbojet_conditions.outputs.moment                 = moment
     turbojet_conditions.outputs.power.propulsive       = power
-    turbojet_conditions.outputs.power.electrical       = power_elec
     turbojet_conditions.inputs.power.chemical          = mdot_fuel * combustor.fuel_data.lower_heating_value # negative because it is consumed power
 
     return turbojet_conditions.inputs ,turbojet_conditions.outputs, stored_results_flag, stored_propulsor_tag 
@@ -493,19 +493,21 @@ def reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,cente
     power                                             = conditions.energy.propulsors[turbojet.tag].power 
     conditions.energy.propulsors[turbojet.tag].moment = moment
 
-    power_elec = 0*state.ones_row(1)
-    if low_pressure_compressor.motor != None and  len(state.numerics.time.differentiate) > 0: 
-        conditions.energy.converters[low_pressure_compressor.motor.tag]  = deepcopy(conditions.energy.converters[low_pressure_compressor_0.motor.tag]) 
-        power_elec =  conditions.energy.converters[low_pressure_compressor.motor.tag].outputs.power  
-    
-    if low_pressure_compressor.generator != None and len(state.numerics.time.differentiate) > 0:  
-        conditions.energy.converters[low_pressure_compressor.generator.tag]  = deepcopy(conditions.energy.converters[low_pressure_compressor_0.generator.tag]) 
-        power_elec =  conditions.energy.converters[low_pressure_compressor.generator.tag].inputs.power
+    idm   = turbojet.integrated_drive_motor
+    idm_0 = network.propulsors[stored_propulsor_tag].integrated_drive_motor
+    if idm != None and  len(state.numerics.time.differentiate) > 0:
+        conditions.energy.converters[idm.tag] = deepcopy(conditions.energy.converters[idm_0.tag])
+        conditions.energy.propulsors[turbojet.tag].inputs.power.electrical = conditions.energy.converters[idm.tag].inputs.power.electrical
+
+    idg   = turbojet.integrated_drive_generator
+    idg_0 = network.propulsors[stored_propulsor_tag].integrated_drive_generator
+    if idg != None and len(state.numerics.time.differentiate) > 0:
+        conditions.energy.converters[idg.tag] = deepcopy(conditions.energy.converters[idg_0.tag])
+        conditions.energy.propulsors[turbojet.tag].outputs.power.electrical = conditions.energy.converters[idg.tag].outputs.power.electrical
 
     conditions.energy.propulsors[turbojet.tag].outputs.thrust           = thrust_vector
     conditions.energy.propulsors[turbojet.tag].outputs.moment           = moment
     conditions.energy.propulsors[turbojet.tag].outputs.power.propulsive = power
-    conditions.energy.propulsors[turbojet.tag].outputs.power.electrical = power_elec
-        
+
     return conditions.energy.propulsors[turbojet.tag].inputs, conditions.energy.propulsors[turbojet.tag].outputs
  

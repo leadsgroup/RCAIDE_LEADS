@@ -141,24 +141,21 @@ def compute_electric_ducted_fan_performance(propulsor, state, center_of_gravity=
     compute_current_in_from_throttle(esc,conditions)   
     
     stored_results_flag            = True
-    stored_propulsor_tag           = propulsor.tag 
-    
+    stored_propulsor_tag           = propulsor.tag
+
     # compute total forces and moments from propulsor (future work would be to add moments from motors)
-    EDF_conditions.thrust      = conditions.energy.converters[ducted_fan.tag].thrust  
-    EDF_conditions.moment      = moment
+    EDF_conditions.outputs.thrust      = conditions.energy.converters[ducted_fan.tag].thrust
+    EDF_conditions.outputs.moment      = moment
 
-    stored_results_flag            = True
-    stored_propulsor_tag           = propulsor.tag  
+    EDF_conditions.outputs.power.propulsive               = conditions.energy.converters[ducted_fan.tag].power
+    EDF_conditions.outputs.power.mechanical               = 0.0 * state.ones_row(1)
+    EDF_conditions.outputs.power.electrical               = 0.0 * state.ones_row(1)
+    EDF_conditions.outputs.power.chemical                 = 0.0 * state.ones_row(1)
+    EDF_conditions.outputs.power.pneumatic                = 0.0 * state.ones_row(1)
+    EDF_conditions.outputs.power.hydraulic                = 0.0 * state.ones_row(1)
+    EDF_conditions.outputs.power.thermal                  = 0.0 * state.ones_row(1)
 
-    EDF_conditions.power.propulsive               = conditions.energy.converters[ducted_fan.tag].power  
-    EDF_conditions.power.mechanical               = 0.0 * state.ones_row(1)
-    EDF_conditions.power.electrical               = 0.0 * state.ones_row(1)
-    EDF_conditions.power.chemical                 = 0.0 * state.ones_row(1)
-    EDF_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
-    EDF_conditions.power.hydraulic                = 0.0 * state.ones_row(1)
-    EDF_conditions.power.thermal                  = 0.0 * state.ones_row(1)
-
-    return EDF_conditions.thrust ,EDF_conditions.moment, EDF_conditions.power, stored_results_flag,stored_propulsor_tag 
+    return EDF_conditions.inputs, EDF_conditions.outputs, stored_results_flag, stored_propulsor_tag
                 
 def reuse_stored_electric_ducted_fan_data(propulsor,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one propulsor for identical propulsors
@@ -200,18 +197,16 @@ def reuse_stored_electric_ducted_fan_data(propulsor,state,network,stored_propuls
     conditions.energy.converters[ducted_fan.tag]   = deepcopy(conditions.energy.converters[ducted_fan_0.tag])
     conditions.energy.modulators[esc.tag]          = deepcopy(conditions.energy.modulators[esc_0.tag])
   
-    # compute moment 
-    thrust_vector           = conditions.energy.converters[ducted_fan.tag].thrust  
-    P_mech                  = conditions.energy.converters[ducted_fan.tag].power.mechanical 
-    P_elec                  = conditions.energy.modulators[esc.tag].inputs.power.electrical   
-    moment_vector           = 0*state.ones_row(3) 
-    moment_vector[:,0]      = ducted_fan.origin[0][0]  -  center_of_gravity[0][0] 
-    moment_vector[:,1]      = ducted_fan.origin[0][1]  -  center_of_gravity[0][1] 
+    # compute moment
+    thrust_vector           = conditions.energy.converters[ducted_fan.tag].thrust
+    moment_vector           = 0*state.ones_row(3)
+    moment_vector[:,0]      = ducted_fan.origin[0][0]  -  center_of_gravity[0][0]
+    moment_vector[:,1]      = ducted_fan.origin[0][1]  -  center_of_gravity[0][1]
     moment_vector[:,2]      = ducted_fan.origin[0][2]  -  center_of_gravity[0][2]
     moment                  =  np.cross(moment_vector, thrust_vector)
-    
-    # pack results 
-    conditions.energy.converters[ducted_fan.tag].moment = moment  
-    conditions.energy.propulsors[propulsor.tag].thrust  = thrust_vector  
-    conditions.energy.propulsors[propulsor.tag].moment  = moment      
-    return thrust_vector,moment,P_mech,P_elec
+
+    # pack results
+    conditions.energy.converters[ducted_fan.tag].moment            = moment
+    conditions.energy.propulsors[propulsor.tag].outputs.thrust     = thrust_vector
+    conditions.energy.propulsors[propulsor.tag].outputs.moment     = moment
+    return conditions.energy.propulsors[propulsor.tag].inputs, conditions.energy.propulsors[propulsor.tag].outputs

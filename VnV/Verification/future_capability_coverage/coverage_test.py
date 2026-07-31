@@ -75,7 +75,8 @@ def main():
     propellant  = RCAIDE.Library.Attributes.Propellants.Rocket_RP1()
     
     # networks
-    network =  RCAIDE.Framework.Networks.Hydrogen()
+    network =  RCAIDE.Framework.Networks.Electric()
+    network =  RCAIDE.Framework.Networks.Fuel()
     
     # booms
     boom      = RCAIDE.Library.Components.Booms.Boom()

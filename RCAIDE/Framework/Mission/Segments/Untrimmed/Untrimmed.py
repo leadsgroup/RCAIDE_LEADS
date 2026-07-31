@@ -73,8 +73,13 @@ class Untrimmed(Segment):
         self.roll_rate                               = 0.
         self.pitch_rate                              = 0.
         self.hybrid_power_split_ratio                = None
-        self.battery_fuel_cell_power_split_ratio     = None 
-        self.yaw_rate                                = 0.  
+        self.battery_fuel_cell_power_split_ratio     = None
+        self.initial_battery_conditions              = Data()
+        self.initial_battery_conditions.state_of_charge      = 1.0
+        self.initial_battery_conditions.cell_temperature     = None
+        self.initial_battery_conditions.charge_throughput    = None
+        self.initial_battery_conditions.increment_battery_age = False
+        self.yaw_rate                                = 0.
         self.state.numerics.number_of_control_points = 2     
         self.lift_coefficient                        = None
         self.state.conditions.update(Results())
@@ -116,7 +121,8 @@ class Untrimmed(Segment):
         iterate.conditions.altitude              = Common.Update.altitude
         iterate.conditions.atmosphere            = Common.Update.atmosphere
         iterate.conditions.gravity               = Common.Update.gravity
-        iterate.conditions.freestream            = Common.Update.freestream 
+        iterate.conditions.freestream            = Common.Update.freestream
+        iterate.conditions.network               = Common.Update.network
         iterate.conditions.thrust                = Common.Update.thrust
         iterate.conditions.aerodynamics          = Common.Update.aerodynamics
         iterate.conditions.stability             = Common.Update.stability

@@ -32,7 +32,7 @@ import time
 def main(): 
     ti = time.time()
     # make true only when resizing aircraft. should be left false for regression
-    update_regression_values = False  
+    update_regression_values = False
     Transport_Aircraft_Test()
     General_Aviation_Test()
     EVTOL_Aircraft_Test(update_regression_values)
@@ -55,8 +55,8 @@ def main():
 def BWB_Test():
 
     vehicle          = BWB_vehicle_setup() 
-    fuel_line        = vehicle.networks.fuel.fuel_lines.fuel_line
-    fuel_line.fuel_tanks.clear()
+    fuel_line        = vehicle.networks.fuel.distributors.fuel_line
+    vehicle.networks.fuel.sources.clear()
     
     #############################################################################################################################    
      #------------------------------------------------------------------------------------------------------------------------- 
@@ -78,7 +78,8 @@ def BWB_Test():
     fuel_tank_1.segments_percent_chord_start    = [0.2,0.2]
     fuel_tank_1.segments_percent_chord_end      = [0.6,0.6]  
     fuel_tank_1.wall_thickness                  = 2*Units.inches
-    fuel_line.fuel_tanks.append(fuel_tank_1)
+    fuel_tank_1.assigned_distributors           = [[fuel_line.tag]]
+    vehicle.networks.fuel.sources.append(fuel_tank_1)
 
 
     fuel_tank_2                               = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
@@ -98,8 +99,8 @@ def BWB_Test():
     fuel_tank_2.transverse_tank_chord_bounds  = [0.65,0.9]
     fuel_tank_2.transverse_tank_segment_bound = 'fuel_wall'
     fuel_tank_2.radial_offset                 = 0.2
-
-    fuel_line.fuel_tanks.append(fuel_tank_2)
+    fuel_tank_2.assigned_distributors         = [[fuel_line.tag]]
+    vehicle.networks.fuel.sources.append(fuel_tank_2)
    
     # define configs, analyses, and mission for the BWB test
     configs  = configs_setup(vehicle)
@@ -229,9 +230,9 @@ def EVTOL_Aircraft_Test(update_regression_values):
     print(MOI)
 
     truth_OEW_CG_mass_percentage = 86.35
-    truth_moi  = np.array([[ 9365.33138772,  -432.66324662,  -320.31323661],
-                           [ -432.66324662,  9223.12124891,   -99.75208906],
-                           [ -320.31323661,   -99.75208906, 16826.33807276]])
+    truth_moi  = np.array([[ 9071.55167022,  -527.37697854,  -944.67200273],
+                           [ -527.37697854, 10304.65806561,   -99.75208906],
+                           [ -944.67200273,   -99.75208906, 17619.47841297]])
 
     error_moi = abs((MOI - truth_moi) / truth_moi)
     assert np.all(error_moi < 5e-2),\

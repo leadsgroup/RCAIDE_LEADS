@@ -9,7 +9,7 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
  # RCAIDE imports   
 from .                     import Propulsor
-from RCAIDE.Framework.Core import Data 
+from RCAIDE.Framework.Core import Data , Units
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.design_turboprop               import design_turboprop
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.append_turboprop_conditions    import append_turboprop_conditions 
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.compute_turboprop_performance  import compute_turboprop_performance, reuse_stored_turboprop_data 
@@ -113,9 +113,11 @@ class Turboprop(Propulsor):
         self.gearbox.efficiency                         = 0.0  
         self.design_mach_number                         = None 
         self.design_freestream_velocity                 = None
-        self.compressor_nondimensional_massflow         = 0.0 
+        self.compressor_nondimensional_massflow         = 0.0
         self.reference_temperature                      = 288.15
-        self.reference_pressure                         = 1.01325*10**5   
+        self.reference_pressure                         = 1.0*Units.atmosphere
+        self.integrated_drive_generator                 = None
+        self.integrated_drive_motor                     = None
     
     def append_operating_conditions(self,segment):
         """

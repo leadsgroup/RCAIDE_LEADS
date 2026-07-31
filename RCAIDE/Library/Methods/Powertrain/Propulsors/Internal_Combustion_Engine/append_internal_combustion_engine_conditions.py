@@ -73,11 +73,11 @@ def append_internal_combustion_engine_conditions(propulsor, segment):
     # add propulsor conditions 
     segment.state.conditions.energy.propulsors[propulsor.tag]                               = Conditions()  
     segment.state.conditions.energy.propulsors[propulsor.tag].throttle                      = 0. * ones_row(1)      
-    segment.state.conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle = 0. * ones_row(1)  
-    segment.state.conditions.energy.propulsors[propulsor.tag].thrust                        = 0. * ones_row(3) 
-    segment.state.conditions.energy.propulsors[propulsor.tag].moment                        = 0. * ones_row(3)
+    segment.state.conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle = 0. * ones_row(1)
     segment.state.conditions.energy.propulsors[propulsor.tag].inputs                        = Conditions()
-    segment.state.conditions.energy.propulsors[propulsor.tag].outputs                       = Conditions() 
+    segment.state.conditions.energy.propulsors[propulsor.tag].outputs                       = Conditions()
+    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.thrust                = 0. * ones_row(3)
+    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.moment                = 0. * ones_row(3)
     segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power                  = Conditions()
     segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power                 = Conditions() 
     segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.propulsive       = 0 * ones_row(1)
@@ -95,6 +95,10 @@ def append_internal_combustion_engine_conditions(propulsor, segment):
     segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.hydraulic       = 0 * ones_row(1)
     segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.thermal         = 0 * ones_row(1)  
     segment.state.conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate           = 0. * ones_row(1)
-    segment.state.conditions.aeroacoustics[propulsor.tag]                                   = Conditions()  
-                 
-    return 
+    segment.state.conditions.aeroacoustics[propulsor.tag]                                   = Conditions()
+
+    for tag, item in propulsor.items():
+        if issubclass(type(item), RCAIDE.Library.Components.Component):
+            item.append_operating_conditions(segment)
+
+    return
