@@ -273,11 +273,9 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
     B_bound  = nodes_14c[:, 1:,  :, :].reshape(ctrl_pts, (Nr-1)*B, 3)
     rCb      = rotor.blades.bound.rCb
 
-    K_bound = np.zeros((ctrl_pts, (Nr-1)*B, (Nr-1)*B, 3))
-    for cp in range(ctrl_pts):
-        rCb_flat    = rCb[cp, :, :].reshape((Nr-1)*B)
-        K_bound[cp] = biot_savart_velocity_induction(
-            P_colloc[cp], A_bound[cp], B_bound[cp], rCb_flat, wake_inputs.vc_correction)
+    rCb_flat_all = rCb.reshape(ctrl_pts, (Nr-1)*B)
+    K_bound = biot_savart_velocity_induction(
+        P_colloc, A_bound, B_bound, rCb_flat_all, wake_inputs.vc_correction)
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Pre-compute wake influence matrix K_wake
@@ -291,10 +289,9 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
             A_wake = rotor.blades.wake.nodes_body[:, :-1, :, :].reshape(ctrl_pts, N_wake*B, 3)
             B_wake = rotor.blades.wake.nodes_body[:, 1:,  :, :].reshape(ctrl_pts, N_wake*B, 3)
             rCvf   = rotor.blades.wake.rCvf
-            for cp in range(ctrl_pts):
-                rCvf_flat   = np.repeat(rCvf[cp], B)
-                K_wake[cp]  = biot_savart_velocity_induction(
-                    P_colloc[cp], A_wake[cp], B_wake[cp], rCvf_flat, wake_inputs.vc_correction)
+            rCvf_flat_all = np.repeat(rCvf, B, axis=1)
+            K_wake = biot_savart_velocity_induction(
+                P_colloc, A_wake, B_wake, rCvf_flat_all, wake_inputs.vc_correction)
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Outer loop: CT (CT_iter=True) or single pass (CT_iter=False)
@@ -310,10 +307,9 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
             A_wake = rotor.blades.wake.nodes_body[:, :-1, :, :].reshape(ctrl_pts, N_wake*B, 3)
             B_wake = rotor.blades.wake.nodes_body[:, 1:,  :, :].reshape(ctrl_pts, N_wake*B, 3)
             rCvf   = rotor.blades.wake.rCvf
-            for cp in range(ctrl_pts):
-                rCvf_flat  = np.repeat(rCvf[cp], B)
-                K_wake[cp] = biot_savart_velocity_induction(
-                    P_colloc[cp], A_wake[cp], B_wake[cp], rCvf_flat, wake_inputs.vc_correction)
+            rCvf_flat_all = np.repeat(rCvf, B, axis=1)
+            K_wake = biot_savart_velocity_induction(
+                P_colloc, A_wake, B_wake, rCvf_flat_all, wake_inputs.vc_correction)
 
         # -- Inner Gamma_b loop --
         conv1     = False
@@ -322,13 +318,10 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
 
             # Step 4a: bound vortex induction
             Gamma_bound = Gamma_b.reshape(ctrl_pts, (Nr-1)*B)
-            v_induced_bound_body = np.zeros((ctrl_pts, (Nr-1)*B, 3))
-            for cp in range(ctrl_pts):
-                v_induced_bound_body[cp] = np.einsum('mnk,n->mk', K_bound[cp], Gamma_bound[cp])
-            v_induced_bound_body = v_induced_bound_body.reshape(ctrl_pts, Nr-1, B, 3)
+            v_induced_bound_body = np.einsum('cmnk,cn->cmk', K_bound, Gamma_bound).reshape(ctrl_pts, Nr-1, B, 3)
 
             # Step 4b: wake induction
-            v_induced_wake_body = np.zeros((ctrl_pts, (Nr-1)*B, 3))
+            v_induced_wake_body = np.zeros((ctrl_pts, Nr-1, B, 3))
             if wake_inputs.include_wake:
                 '''
                 if R_shed_near >= r_1d[-1]:
@@ -345,9 +338,7 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
                 Gamma_wake      = Gamma_wake * np.ones((ctrl_pts, N_wake, B))
                 Gamma_wake_flat = Gamma_wake.reshape(ctrl_pts, N_wake*B)
 
-                for cp in range(ctrl_pts):
-                    v_induced_wake_body[cp] = np.einsum('mnk,n->mk', K_wake[cp], Gamma_wake_flat[cp])
-                v_induced_wake_body = v_induced_wake_body.reshape(ctrl_pts, Nr-1, B, 3)
+                v_induced_wake_body = np.einsum('cmnk,cn->cmk', K_wake, Gamma_wake_flat).reshape(ctrl_pts, Nr-1, B, 3)
 
             v_induced_body = v_induced_bound_body + v_induced_wake_body
 

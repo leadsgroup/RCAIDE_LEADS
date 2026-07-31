@@ -163,14 +163,30 @@ def lifting_line_performance(rotor, conditions):
     wake_inputs.speed_of_sound      = conditions.freestream.speed_of_sound[:, :, None]    * np.ones((ctrl_pts, Nr, B))
     wake_inputs.dynamic_viscosity   = conditions.freestream.dynamic_viscosity[:, :, None] * np.ones((ctrl_pts, Nr, B))
     wake_inputs.kinematic_viscosity = wake_inputs.dynamic_viscosity/conditions.freestream.density[:, :, None]
-    wake_inputs.relax               = wake_inputs.relax_0 # / (1 + 50*mu_tot)[:, None, None]   # (ctrl_pts,1,1) -- broadcasts against Gamma_b (ctrl_pts, Nr-1, B)
+    wake_inputs.relax_Gammab        = wake_inputs.relax_0_Gammab # / (1 + 50*mu_tot)[:, None, None]   # (ctrl_pts,1,1) -- broadcasts against Gamma_b (ctrl_pts, Nr-1, B)
     wake_inputs.max_iter_Gammab     = wake_inputs.max_iter_Gammab_0 # int(wake_inputs.max_iter_Gammab_0 * (1 + 5*np.max(mu_tot)))   # sized for the worst-case (highest advance ratio) control point
+    wake_inputs.relax_CT            = wake_inputs.relax_0_CT
     wake_inputs.max_iter_CT         = wake_inputs.max_iter_CT_0 #int(wake_inputs.max_iter_CT_0    * (1 + 5*np.max(mu_tot)))   # sized for the worst-case (highest advance ratio) control point
+
+    # reusing the value of the converged CT from the previous entry if exists
+    # 1. Fetch the specific converter object to keep the code readable
+    rotor_obj = conditions.energy.converters[rotor.tag]
+
+    # 2. Safely get the attribute or None if it's missing
+    thrust_coeff = getattr(rotor_obj, "thrust_coefficient_rotor", None)
+    wake_nodes_body = getattr(rotor_obj, "wake_nodes_body", None)
+
+    # 3. Apply the value if it exists and is not None
+    if thrust_coeff is not None:
+        wake_inputs.thrust_coeff_initial_guess = thrust_coeff
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Step 2: Wake geometry
     # ------------------------------------------------------------------------------------------------------------------
     initialize_wake_geometry(rotor, wake_inputs, conditions)
+    # overwriting if already exists
+    if wake_nodes_body is not None:
+        rotor.blades.wake.nodes_body = wake_nodes_body 
 
     # ------------------------------------------------------------------------------------------------------------------
     #  Step 3: Bound vortex circulation iteration
