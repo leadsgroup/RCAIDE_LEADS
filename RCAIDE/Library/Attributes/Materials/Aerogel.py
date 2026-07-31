@@ -1,6 +1,7 @@
 # RCAIDE/Library/Attributes/Solids/Aerogel.py
 # 
 # Created: Aug 2025, S. Shekar
+# Modified: Jul, 2026, S. Sharma
 #
 #-------------------------------------------------------------------------------
 # Imports
@@ -22,7 +23,9 @@ class Aerogel(Solid):
         Material density in kg/m³ (130).
     thermal_conductivity : float
         Heat conduction coefficient in W/(m·K) (0.0113).
-  
+    specific_density : float
+        Areal mass term in kg/m² (1.1) -- see Notes.
+
     Notes
     -----
     Aerogels are ultra-lightweight materials with extremely low density and 
@@ -60,5 +63,6 @@ class Aerogel(Solid):
         * Assumes silica aerogel with typical bulk density and conductivity.
         * Mechanical strength values are not set due to brittleness of aerogels.
         """
-        self.density                    = 130 * Units['kg/(m**3)']        
+        self.density                    = 130 * Units['kg/(m**3)']
         self.thermal_conductivity       = 0.0113
+        self.specific_density           = 1.1
