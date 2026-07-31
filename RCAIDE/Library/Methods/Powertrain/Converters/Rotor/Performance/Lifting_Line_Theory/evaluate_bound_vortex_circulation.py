@@ -161,10 +161,15 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
     # relax may arrive as a scalar (flat, one value for every control point) or a
     # (ctrl_pts,)-per-point array -- normalize to (ctrl_pts,1,1) so it's always indexable by
     # valid_cp below and broadcasts against Gamma_b (ctrl_pts, Nr-1, B).
-    relax = np.asarray(wake_inputs.relax, dtype=float).reshape(-1)
-    if relax.size == 1:
-        relax = np.full(ctrl_pts, relax[0])
-    relax = relax[:, np.newaxis, np.newaxis]
+    relax_Gammab = np.asarray(wake_inputs.relax_Gammab, dtype=float).reshape(-1)
+    relax_CT     = np.asarray(wake_inputs.relax_CT, dtype=float).reshape(-1)
+    if relax_Gammab.size == 1:
+        relax_Gammab = np.full(ctrl_pts, relax_Gammab[0])
+    if relax_CT.size == 1:
+        relax_CT = np.full(ctrl_pts, relax_CT[0])
+    relax_Gammab = relax_Gammab[:, np.newaxis, np.newaxis]
+    relax_CT     = relax_CT[:, np.newaxis]
+
     mu              = wake_inputs.mu       # (ctrl_pts,) -- per-control-point edgewise advance ratio
     mu_max          = wake_inputs.mu_max   # scalar threshold
 
@@ -420,7 +425,7 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
 
             # Only update Gamma_b for valid control points -- invalid ones stay frozen at
             # their initial freestream-only guess rather than being iteratively (and pointlessly) refined.
-            Gamma_b[valid_cp] = Gamma_b[valid_cp] + relax[valid_cp]*(Gamma_b_new[valid_cp] - Gamma_b[valid_cp])
+            Gamma_b[valid_cp] = Gamma_b[valid_cp] + relax_Gammab[valid_cp]*(Gamma_b_new[valid_cp] - Gamma_b[valid_cp])
 
             if residual_Gamma_b < tol:
                 print("Gamma_b converged after", it1+1, "iterations")
@@ -450,8 +455,9 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
 
             print("CT", Ct_rotor_new)
 
+            tol_CT = wake_inputs.get('tol_CT', tol)
             residual_CT = np.max(np.abs(Ct_rotor_new - wake_inputs.thrust_coeff_initial_guess)[valid_cp]) if np.any(valid_cp) else 0.0
-            if residual_CT < (0.1*tol):
+            if residual_CT < tol_CT:
                 print("CT converged after", it+1, "outer iterations")
                 conv = True
                 break
@@ -469,7 +475,6 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
             # relaxation factor as the inner Gamma_b update for consistency.
             old_CT               = np.broadcast_to(np.asarray(wake_inputs.thrust_coeff_initial_guess, dtype=float), Ct_rotor_new.shape).copy()
             new_CT               = old_CT.copy()
-            relax_CT             = relax[:, :, 0]   # (ctrl_pts, 1)
             new_CT[valid_cp]     = old_CT[valid_cp] + relax_CT[valid_cp]*(Ct_rotor_new[valid_cp] - old_CT[valid_cp])
             wake_inputs.thrust_coeff_initial_guess = new_CT   # (ctrl_pts, 1) -- one CT per control point
 
