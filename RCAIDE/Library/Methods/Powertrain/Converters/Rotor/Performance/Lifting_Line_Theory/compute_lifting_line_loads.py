@@ -399,6 +399,7 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
                 blade_pitch_command               = pitch_c,
                 commanded_thrust_vector_angle     = commanded_TV, 
                 figure_of_merit                   = FM, 
+                wake_nodes_body                   = rotor.blades.wake.nodes_body,
         )  
 
     return 
