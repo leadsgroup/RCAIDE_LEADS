@@ -508,10 +508,10 @@ def vehicle_setup(rotor_type):
         propeller.wake_inputs = Data()
         propeller.wake_inputs.include_wake                 = True
         propeller.wake_inputs.wake_model_hov               = 1                 # 1 simple model, 2 landgrebe, 3 landgrebe KT
-        propeller.wake_inputs.wake_model_FF                = 5                 # 4 undisorted, 5 Beddoes distorted, 6 Modified Beddoes distorted
+        propeller.wake_inputs.wake_model_FF                = 4                 # 4 undisorted, 5 Beddoes distorted, 6 Modified Beddoes distorted
         propeller.wake_inputs.vc_correction                = 1                 # vortex core factor, 1 standard/Scully, 2 Rankine, 3 Vatistas, 4 Oseen
         propeller.wake_inputs.dpsi                         = np.radians(15)    # filament length [rad]
-        propeller.wake_inputs.n_turns                      = 5.0               # Number of wake turns
+        propeller.wake_inputs.n_turns                      = 3.0               # Number of wake turns
         propeller.wake_inputs.thrust_coeff_initial_guess   = 0.00654           # initial guess for CT to intialize the wake geometry
         propeller.wake_inputs.lamb_oseen_rc_0              = 0.028             # initial core radius for the wake filaments [fraction of R]
         propeller.wake_inputs.lamb_oseen_alpha             = 1.25643           # parameters for the core radius growth rate Lamb-Oseen model  
@@ -519,8 +519,10 @@ def vehicle_setup(rotor_type):
         propeller.wake_inputs.lamb_oseen_sigma             = 1.0               # ..
         propeller.wake_inputs.lamb_oseen_core_growth_delay = np.radians(30.0)  # paramter to delay the growth rate till certain wake age 
         propeller.wake_inputs.r_R_shed                     = 1.0               # location as fraction of R to shed the wake filament from               
-        propeller.wake_inputs.tol                          = 1e-3
-        propeller.wake_inputs.relax_0                      = 0.2
+        propeller.wake_inputs.tol                          = 1e-4
+        propeller.wake_inputs.tol_CT                       = 1e-4              
+        propeller.wake_inputs.relax_0_Gammab               = 0.2
+        propeller.wake_inputs.relax_0_CT                   = 1.0
         propeller.wake_inputs.max_iter_Gammab_0            = 1000
         propeller.wake_inputs.max_iter_CT_0                = 100
         propeller.wake_inputs.CT_iter                      = True
@@ -847,7 +849,7 @@ def mission_setup(analyses):
     Segments = RCAIDE.Framework.Mission.Segments  
     base_segment = Segments.Segment() 
     base_segment.state.numerics.solver.type = 'root_finder'
-    base_segment.state.numerics.number_of_control_points = 16
+    base_segment.state.numerics.number_of_control_points = 8
     vehicle        = analyses.base.vehicle
     vehicle_mass   = vehicle.mass_properties.max_takeoff
     reference_area = vehicle.reference_area 
