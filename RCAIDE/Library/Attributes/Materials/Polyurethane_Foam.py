@@ -1,6 +1,7 @@
 # RCAIDE/Library/Attributes/Solids/Polyurethane_Foam.py
 # 
 # Created: Aug 2025, S. Shekar
+# Modified: Jul, 2026, S. Sharma
 #
 #-------------------------------------------------------------------------------
 # Imports
@@ -32,7 +33,9 @@ class Polyurethane_Foam(Solid):
     tensile_strength : float
         Tensile stress limit in Pa. Typically low for foams (not set by default).  
     minimum_gage_thickness : float
-        Minimum manufacturable thickness in meters (default 0.0).  
+        Minimum manufacturable thickness in meters (default 0.0).
+    specific_density : float
+        Areal mass term in kg/m² (1.1) -- see Notes.
 
     Notes
     -----
@@ -75,9 +78,10 @@ class Polyurethane_Foam(Solid):
 
         Notes
         -----
-        * Uses typical values for rigid polyurethane foam of density ~32 kg/m³.  
-        * Mechanical strength values are not explicitly defined here but can 
-          be added for structural analysis.  
+        * Uses typical values for rigid polyurethane foam of density ~32 kg/m³.
+        * Mechanical strength values are not explicitly defined here but can
+          be added for structural analysis.
         """
-        self.density                    = 32 * Units['kg/(m**3)']        
+        self.density                    = 32 * Units['kg/(m**3)']
         self.thermal_conductivity       = 0.022
+        self.specific_density           = 1.1
