@@ -100,8 +100,11 @@ class Propulsor(Component):
         self.diameter                     = 0.0      
         self.length                       = 0.0
         self.height                       = 0.0    
-        self.working_fluid                = RCAIDE.Library.Attributes.Gases.Air() 
-    
+        self.working_fluid                = RCAIDE.Library.Attributes.Gases.Air()
+
+    def initialize(self, network):
+        return
+
     def append_segment_conditions(self, segment):
         propulsor_conditions = segment.state.conditions.energy.propulsors[self.tag]
         propulsor_conditions.inputs.power.propulsive[:,0]  = 0.0

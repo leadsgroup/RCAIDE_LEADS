@@ -66,13 +66,13 @@ def main():
                 error = Data()
                 error.thrust   = 0
             else:   
-                thurst         =  np.linalg.norm(results.segments.cruise.conditions.energy.propulsors['center_propulsor'].thrust, axis=1)  
+                thurst         =  np.linalg.norm(results.segments.cruise.conditions.energy.propulsors['center_propulsor'].outputs.thrust, axis=1)
                 error          = Data()
                 print('Thrust', thurst[0])
                 error.thrust   = np.max(np.abs(thrust_truth[i]   - thurst[0] ))        
                 
         elif ducted_fan_type[i] ==  'Rankine_Froude_Momentum_Theory':  
-            thurst         =  np.linalg.norm(results.segments.cruise.conditions.energy.propulsors['starboard_propulsor'].thrust, axis=1)  
+            thurst         =  np.linalg.norm(results.segments.cruise.conditions.energy.propulsors['starboard_propulsor'].outputs.thrust, axis=1)
             error          = Data()
             print('Thrust', thurst[0])
             error.thrust   = np.max(np.abs(thrust_truth[i]   - thurst[0] ))   

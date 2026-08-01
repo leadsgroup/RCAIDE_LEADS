@@ -10,8 +10,7 @@
 # RCAIDE imports
 from RCAIDE.Framework.Core                  import Data 
 from .Converter                             import Converter
-from RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator   import design_turboelectric_generator  
-from RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator.append_turboelectric_generator_conditions      import append_turboelectric_generator_conditions  
+from RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator.append_turboelectric_generator_conditions      import append_turboelectric_generator_conditions
 from RCAIDE.Library.Methods.Powertrain.Converters.Turboelectric_Generator.compute_turboelectric_generator_performance    import compute_turboelectric_generator_performance, reuse_stored_turboelectric_generator_data
  
 # ----------------------------------------------------------------------
@@ -65,10 +64,6 @@ class Turboelectric_Generator(Converter):
         self.power_split_ratio         = 1.0    # fraction of the electrical demand this generator supplies, for multiple identical generators sharing a bus
         self.assigned_converters       = Data()
         
-    def initialize(self, network): 
-        design_turboelectric_generator(self) 
-        return
-
     def append_operating_conditions(self,segment): 
         """
         Appends operating conditions of the segment.

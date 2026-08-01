@@ -1,11 +1,16 @@
 # RCAIDE/Library/Missions/Common/Unpack_Unknowns/orientation.py
-# 
-# 
+#
+#
 # Created:  Jul 2023, M. Clarke
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
+import numpy as np
+
 # ----------------------------------------------------------------------------------------------------------------------
 #  Unpack Unknowns
 # ----------------------------------------------------------------------------------------------------------------------
-def orientation(segment): 
+def orientation(segment):
     """
     Updates vehicle orientation states from solver unknowns
 
@@ -106,6 +111,18 @@ def orientation(segment):
     else:
         segment.state.conditions.frames.body.inertial_rotations[:,0] = -segment.bank_angle
     segment.state.conditions.frames.body.inertial_rotations[:,2] =  segment.state.conditions.frames.planet.true_heading[:,0]
+
+    # Sideslip Angle
+    if ctrls.sideslip_angle.active:
+        # beta is a free solver unknown -- solver finds the trimmed sideslip
+        segment.state.conditions.frames.wind.body_rotations[:,2] = segment.state.unknowns.mission.sideslip_angle[:,0]
+    elif segment.crosswind_speed != 0.0:
+        # beta computed kinematically from crosswind speed (crab/slip approach)
+        beta = np.arcsin(np.clip(segment.crosswind_speed / segment.air_speed, -1.0, 1.0))
+        segment.state.conditions.frames.wind.body_rotations[:,2] = beta
+    else:
+        # beta prescribed directly on the segment (legacy behaviour)
+        segment.state.conditions.frames.wind.body_rotations[:,2] = segment.sideslip_angle
 
     # Velocity Control
     if ctrls.velocity.active:

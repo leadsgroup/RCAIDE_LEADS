@@ -9,8 +9,7 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
  # RCAIDE imports
 from RCAIDE.Framework.Core     import Data
-from .                         import Propulsor 
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.design_turbofan                import design_turbofan
+from .                         import Propulsor
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.append_turbofan_conditions     import append_turbofan_conditions , append_turbofan_segment_conditions
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_turbofan_performance   import compute_turbofan_performance, reuse_stored_turbofan_data
 
@@ -182,10 +181,6 @@ class Turbofan(Propulsor):
         Appends operating conditions to the segment.
         """
         append_turbofan_conditions(self, segment)
-        return
-    
-    def initialize(self, network): 
-        design_turbofan(self)
         return
     
     def unpack_unknowns(self,segment):

@@ -8,9 +8,8 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 ## RCAIDE imports   
 from RCAIDE.Framework.Core      import Data
-from .                          import Propulsor 
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.design_turbojet                import design_turbojet
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.append_turbojet_conditions     import append_turbojet_conditions 
+from .                          import Propulsor
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.append_turbojet_conditions     import append_turbojet_conditions
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.compute_turbojet_performance   import compute_turbojet_performance, reuse_stored_turbojet_data 
  
 # ----------------------------------------------------------------------
@@ -167,10 +166,6 @@ class Turbojet(Propulsor):
     
     def append_operating_conditions(self,segment):
         append_turbojet_conditions(self,segment)
-        return
-
-    def initialize(self, network): 
-        design_turbojet(self)
         return
 
     def unpack_unknowns(self,segment):

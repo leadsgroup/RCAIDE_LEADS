@@ -121,6 +121,21 @@ def set_flight_kinematics_residuals_and_unknowns(segment):
             segment.state.unknowns_lower_bounds.mission.bank_angle =  -np.inf * ones_row(1)
             segment.state.unknowns_upper_bounds.mission.bank_angle =   np.inf * ones_row(1)
 
+    # Sideslip Angle
+    if ctrls.sideslip_angle.active:
+        segment.state.number_of_mission_unknowns  += 1
+        if ctrls.sideslip_angle.initial_guess_values !=  None:
+            segment.state.unknowns.mission.sideslip_angle = ones_row(1) * ctrls.sideslip_angle.initial_guess_values[0][0]
+        else:
+            segment.state.unknowns.mission.sideslip_angle = ones_row(1) * 0.0 * Units.degrees
+
+        if ctrls.sideslip_angle.bounds !=  None:
+            segment.state.unknowns_lower_bounds.mission.sideslip_angle = ctrls.sideslip_angle.bounds[0][0] * ones_row(1)
+            segment.state.unknowns_upper_bounds.mission.sideslip_angle = ctrls.sideslip_angle.bounds[0][1] * ones_row(1)
+        else:
+            segment.state.unknowns_lower_bounds.mission.sideslip_angle =  -np.inf * ones_row(1)
+            segment.state.unknowns_upper_bounds.mission.sideslip_angle =   np.inf * ones_row(1)
+
     # Wind Angle
     if ctrls.angle_of_attack.active:
         segment.state.number_of_mission_unknowns  += 1

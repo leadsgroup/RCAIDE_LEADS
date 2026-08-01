@@ -10,8 +10,7 @@
  # RCAIDE imports   
 from .                     import Propulsor
 from RCAIDE.Framework.Core import Data , Units
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.design_turboprop               import design_turboprop
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.append_turboprop_conditions    import append_turboprop_conditions 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.append_turboprop_conditions    import append_turboprop_conditions
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turboprop.compute_turboprop_performance  import compute_turboprop_performance, reuse_stored_turboprop_data 
  
 # python imports 
@@ -126,10 +125,6 @@ class Turboprop(Propulsor):
         append_turboprop_conditions(self,segment)
         return
     
-    def initialize(self, network): 
-        design_turboprop(self)
-        return
-
     def unpack_unknowns(self,segment):
         return 
 

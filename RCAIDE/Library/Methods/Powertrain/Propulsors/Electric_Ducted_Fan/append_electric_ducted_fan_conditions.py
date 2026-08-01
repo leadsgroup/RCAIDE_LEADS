@@ -70,6 +70,7 @@ def append_electric_ducted_fan_conditions(propulsor, segment):
     segment.state.conditions.energy.propulsors[propulsor.tag]                               = Conditions()
     segment.state.conditions.energy.propulsors[propulsor.tag].throttle                      = 0. * ones_row(1)
     segment.state.conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle = 0. * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate           = 0. * ones_row(1)
     segment.state.conditions.energy.propulsors[propulsor.tag].inputs                        = Conditions()
     segment.state.conditions.energy.propulsors[propulsor.tag].outputs                       = Conditions()
     segment.state.conditions.energy.propulsors[propulsor.tag].outputs.thrust                = 0. * ones_row(3)
