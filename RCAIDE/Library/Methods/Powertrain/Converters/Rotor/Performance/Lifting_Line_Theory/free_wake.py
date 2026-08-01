@@ -145,55 +145,41 @@ def free_wake(rotor, wake_inputs, conditions):
     A_blade_all = Bgrid_start.transpose(0, 2, 1, 3, 4).reshape(ctrl_pts, J, B*Nr_s, 3)
     B_blade_all = Bgrid_end.transpose(  0, 2, 1, 3, 4).reshape(ctrl_pts, J, B*Nr_s, 3)
 
-    # rc/Gamma for the wake- and blade-source contributions are both pass-invariant (fixed for
-    # the whole relaxation) -- precompute their concatenation once here too, so compute_V_ind
-    # only has to build the (per-call-varying) combined position arrays and can issue ONE
-    # biot_savart_velocity_induction call instead of two. Biot-Savart is purely elementwise per
-    # (field point, source filament) pair with no cross-coupling between sources, so summing two
-    # separate calls' results is mathematically identical to concatenating the sources and
-    # calling once -- this is a pure overhead reduction (halves the number of Biot-Savart
-    # dispatches per compute_V_ind call), not a numerical approximation.
-    rc_all_flat    = np.concatenate([rcvf_flat, rcb_flat], axis=-1)         # (ctrl_pts, B*N_wake+B*Nr_s)
-    Gamma_all_flat = np.concatenate([Gamma_w_flat, Gamma_b_flat], axis=-1)
-
     def compute_V_ind(field_grid, source_grid):
         """Same sourcing rule as update_free_wake_location.py -- sources for a query at column
-        j are column j of every blade's grid, matched to that query's own instant. Both ctrl_pts
-        and J are batched into a single biot_savart_velocity_induction call, using that
-        function's leading-batch-dim support: each (cp, j) batch slice only interacts with its
-        own column's sources -- same block-diagonal sourcing as the old per-cp/per-j loops, just
-        evaluated as one larger vectorized op. rcvf/rcb genuinely vary per control point (unlike
-        Gamma/rc across j, which are constant), so this relies on
-        biot_savart_velocity_induction's rc broadcasting supporting rc varying over an OUTER
-        batch dim (ctrl_pts) while being shared over an INNER one (J) -- see
-        _expand_rc_for_broadcast there.
+        j are column j of every blade's grid, matched to that query's own instant.
 
-        NOTE: this was tried once before and reverted -- at ctrl_pts=16, n_turns=5 (K_wake
-        ~1.2 GB, several same-shaped temporaries alive at once inside
-        biot_savart_velocity_induction) it was memory-bandwidth/allocation-bound rather than
-        faster. Re-enabled now that the actual problem size shrank (ctrl_pts=8, n_turns=3 ->
-        K_wake ~0.22 GB) -- re-check this math (or fall back to the per-cp-loop version, kept
-        in git history) if ctrl_pts/n_turns/dpsi grow again and this gets slow.
+        Deliberately NOT batched over ctrl_pts or J (both were tried and measured to be
+        SLOWER, not faster, despite doing the same total elementwise work with fewer Python
+        calls): biot_savart_velocity_induction runs ~25 sequential elementwise passes over
+        temporaries shaped like its (M,N) output. At real scale (ctrl_pts=8, J=24,
+        M~222, N~230) those temporaries are only ~1.2 MB per (cp,j) slice -- comfortably
+        cache-resident -- but batching either axis multiplies that working set by
+        ctrl_pts and/or J (up to ~220 MB), blowing past L2/L3 and turning every one of
+        those ~25 passes into a full RAM round-trip. Measured on the real Twin Otter case
+        (scratchpad/test_free_wake_realscale.py-style benchmark): fully unbatched here is
+        ~1.6x FASTER than batching both axes, and batching ctrl_pts alone is already
+        slower than not batching at all. Re-benchmark before re-batching this if the
+        problem size changes substantially.
         """
-        # (ctrl_pts, B, J, N_wake+1, 3) -> (ctrl_pts, J, B*(N_wake+1), 3), same B-major
-        # flattening per column as the old per-cp P = field_grid[cp,:,j,:,:].reshape(...) call.
-        P_all = field_grid.transpose(0, 2, 1, 3, 4).reshape(ctrl_pts, J, B*(N_wake+1), 3)
+        V_ind = np.zeros_like(field_grid)
+        for cp in range(ctrl_pts):
+            for j in range(J):
+                P = field_grid[cp, :, j, :, :].reshape(B*(N_wake+1), 3)
 
-        src_all   = source_grid.transpose(0, 2, 1, 3, 4)              # (ctrl_pts, J, B, N_wake+1, 3)
-        r_w_start = src_all[:, :, :, :-1, :].reshape(ctrl_pts, J, B*N_wake, 3)
-        r_w_end   = src_all[:, :, :,  1:, :].reshape(ctrl_pts, J, B*N_wake, 3)
+                wake_src  = source_grid[cp, :, j, :, :]
+                r_w_start = wake_src[:, :-1, :].reshape(B*N_wake, 3)
+                r_w_end   = wake_src[:,  1:, :].reshape(B*N_wake, 3)
+                K_wake = biot_savart_velocity_induction(
+                    P, r_w_start, r_w_end, rcvf_flat[cp], vc_correction)
+                v_wake = np.einsum('mnk,n->mk', K_wake, Gamma_w_flat[cp])
 
-        # Combined wake+blade source list -- see rc_all_flat/Gamma_all_flat's precomputation
-        # above for why this is one call instead of two.
-        A_all = np.concatenate([r_w_start, A_blade_all], axis=2)   # (ctrl_pts, J, B*N_wake+B*Nr_s, 3)
-        B_all = np.concatenate([r_w_end,   B_blade_all], axis=2)
-
-        K_all  = biot_savart_velocity_induction(
-            P_all, A_all, B_all, rc_all_flat, vc_correction)              # (ctrl_pts, J, M, N_wake_tot+N_blade_tot, 3)
-        v_flat = np.einsum('cjmnk,cn->cjmk', K_all, Gamma_all_flat)       # (ctrl_pts, J, M, 3)
-
-        v_sum = v_flat.reshape(ctrl_pts, J, B, N_wake+1, 3).transpose(0, 2, 1, 3, 4)
-        return np.where(CW[:, None, None, None, None], -v_sum, v_sum)
+                K_blade = biot_savart_velocity_induction(
+                    P, A_blade_all[cp, j], B_blade_all[cp, j], rcb_flat[cp], vc_correction)
+                v_blade = np.einsum('mnk,n->mk', K_blade, Gamma_b_flat[cp])
+                v_sum = (v_blade + v_wake).reshape(B, N_wake+1, 3)
+                V_ind[cp, :, j, :, :] = np.where(CW[cp], -v_sum, v_sum)
+        return V_ind
 
     # A single lap of the j-loop can't fully resolve the periodic seam (j=0 reading j=J-1's
     # value) when the wake-age range (nwa) exceeds the number of columns (J) -- the "freshness"
@@ -202,25 +188,38 @@ def free_wake(rotor, wake_inputs, conditions):
     # (exact one-outer-iteration convergence, machine-precision match to the closed form), and
     # via a direct comparison against the pre-fix version on real hover/FF cases: same converged
     # answer (~1e-5 of R), fewer outer iterations needed (hover 29->9, FF 15->10 at tol=1e-6).
+    # Only used by the eta1!=0 fallback loop below -- the eta1==0 fast path resolves the seam
+    # exactly in closed form regardless of pass count.
     n_inner_passes = int(np.ceil(nwa / J))
 
-    def pseudoimplicit_update(V_field):
-        """Same Eq. 3-form update as the reference version, vectorized over b and k -- only j
-        stays a Python loop, since column j depends on column j-1 (already fully computed).
-        eta1's own-column term is kept (multiplying by 0 here) so this stays correct if dpsi
-        and dzeta are ever decoupled. Repeats the j-sweep n_inner_passes times, reusing this
-        pass's own output as the next pass's input, so the periodic seam is fully resolved
-        within one call instead of leaking across multiple outer iterations.
+    # -- Closed-form fast path (eta1==0, i.e. dpsi==dzeta, always true in this codebase) --
+    # With eta1=0, r_new[j,k] = r_new[j-1,k-1] + C[j,k-1] for k=1..N_wake, with r_new[j,0] fixed
+    # (the wake-root boundary condition, never updated). This is a pure diagonal recurrence:
+    # unrolling it gives r_new[j,k] = anchor[j0] + sum_{i=1}^{k} C[(j0+i)%J, i-1], j0=(j-k)%J --
+    # computable with two fancy-index gathers + one cumsum instead of the O(n_inner_passes*J)
+    # sequential loop. Verified (scratchpad/test_diagonal_recurrence.py) to reproduce the
+    # nested-loop result exactly (to floating-point reassociation, ~1e-14) once the loop is
+    # given enough passes to itself converge -- and, for this repo's actual parameter regime
+    # (N_wake > J, e.g. N_wake=73/J=24), the documented n_inner_passes already provides enough.
+    # These index arrays depend only on J/N_wake (fixed for the whole free_wake call).
+    _j0_ar = np.arange(J)[:, None]
+    _m_ar  = np.arange(N_wake)[None, :]
+    _idx_gather1 = (_j0_ar + _m_ar + 1) % J             # (J, N_wake) -- for building G[j0,m]
+    _idx_gather2 = (np.arange(J)[:, None] - np.arange(1, N_wake+1)[None, :]) % J   # (J,N_wake)
+    _m_broadcast = np.broadcast_to(_m_ar, (J, N_wake))
 
-        The V_field-derived convection term (eta2*(2/Omega)*(V_inf + v_avg4)) depends only on
-        V_field, this call's fixed input -- never reassigned inside the loop -- so it is
-        identical on every one of the n_inner_passes passes. It's precomputed once for every J
-        column via np.roll (matching the same j-1-with-wraparound semantics the old per-j
-        negative-index access relied on) instead of being recomputed on each (pass, j) pair.
-        Only "base" (and eta1*same_j, when dpsi != dzeta) genuinely depends on the
-        still-evolving r_new and must stay inside the sequential loop.
+    def pseudoimplicit_update(V_field):
+        """Same Eq. 3-form update as the reference version. The V_field-derived convection term
+        (eta2*(2/Omega)*(V_inf + v_avg4)) depends only on V_field, this call's fixed input --
+        precomputed once for every J column via np.roll (matching the same j-1-with-wraparound
+        semantics the old per-j negative-index access relied on).
+
+        eta1==0 always in this codebase (dpsi==dzeta, hardcoded above) -- in that case the
+        (pass, j) recurrence collapses to the closed-form diagonal cumsum above, computed in one
+        shot with no Python loop. The nested-loop version is kept as an exact fallback so this
+        stays correct if dpsi and dzeta are ever decoupled (eta1!=0), which is never exercised
+        currently.
         """
-        r_new = r_wake_grid.copy()
         Omega_5 = Omega.reshape(ctrl_pts, 1, 1, 1, 1)   # broadcasts against (ctrl_pts,B,J,N_wake,3)
         V_inf_5 = V_inf[:, None, None, None, :]         # (ctrl_pts,1,1,1,3)
 
@@ -229,14 +228,22 @@ def free_wake(rotor, wake_inputs, conditions):
                           + V_field[:, :, :, :-1, :] + V_field[:, :, :, 1:, :])   # (ctrl_pts,B,J,N_wake,3)
         C_conv_all = eta2*(2.0/Omega_5)*(V_inf_5 + v_avg4_all)
 
+        if eta1 == 0.0:
+            G      = C_conv_all[:, :, _idx_gather1, _m_broadcast, :]      # (ctrl_pts,B,J,N_wake,3)
+            S_arr  = np.cumsum(G, axis=3)
+            anchor = r_wake_grid[:, :, :, 0, :]                           # (ctrl_pts,B,J,3)
+            anchor_plus_S = anchor[:, :, :, None, :] + S_arr
+            r_new_body = anchor_plus_S[:, :, _idx_gather2, _m_broadcast, :]
+            r_new = r_wake_grid.copy()
+            r_new[:, :, :, 1:, :] = r_new_body
+            return r_new
+
+        r_new = r_wake_grid.copy()
         for _pass in range(n_inner_passes):
             for j in range(J):
-                base = r_new[:, :, j-1, :-1, :]                          # (ctrl_pts,B,nwa-1,3)
-                if eta1 != 0.0:
-                    same_j = r_new[:, :, j, :-1, :] - r_new[:, :, j-1, 1:, :]
-                    r_new[:, :, j, 1:, :] = base + eta1*same_j + C_conv_all[:, :, j, :, :]
-                else:
-                    r_new[:, :, j, 1:, :] = base + C_conv_all[:, :, j, :, :]
+                base   = r_new[:, :, j-1, :-1, :]                          # (ctrl_pts,B,nwa-1,3)
+                same_j = r_new[:, :, j,   :-1, :] - r_new[:, :, j-1, 1:, :]
+                r_new[:, :, j, 1:, :] = base + eta1*same_j + C_conv_all[:, :, j, :, :]
         return r_new
 
     #-----------------------------------
