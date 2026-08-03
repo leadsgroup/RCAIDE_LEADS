@@ -113,7 +113,7 @@ def compute_jet_noise(microphone_locations, turbofan, aeroacoustic_data, segment
     Pressure_secondary     = aeroacoustic_data.fan_nozzle.exit_stagnation_pressure 
     Velocity_primary       = aeroacoustic_data.core_nozzle.exit_velocity  
     Temperature_primary    = aeroacoustic_data.core_nozzle.exit_stagnation_temperature 
-    Pressure_primary       = aeroacoustic_data.core_nozzle.exit_stagnation_pressure      
+    Pressure_primary       = aeroacoustic_data.core_nozzle.exit_stagnation_pressure    
     Velocity_aircraft      = segment.conditions.freestream.velocity
     Mach_aircraft          = segment.conditions.freestream.mach_number 
     AOA                    = segment.conditions.aerodynamics.angles.alpha / Units.deg 

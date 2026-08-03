@@ -183,11 +183,12 @@ def slat_noise(R_val, phi, theta_raw, Ls, gamma_s, sigma_s, alpha, segment, freq
     M_local = M_eff * local_accel_factor
     W_M = M_local**4.5
     
-    # Vectorized Doppler Factor (Using np.where to prevent 2D broadcast collapse)
-    doppler_factor = np.ones_like(theta)
-    doppler_factor = np.where(theta < (np.pi/2), 1.0 - M * np.cos(theta), doppler_factor)
-    doppler_factor = np.where(theta > (np.pi/2), 1.0 + M * np.cos(theta), doppler_factor)
+    # --- BUG FIX: Convective Amplification ---
+    # The cosine naturally handles the forward/aft sign flip. 
+    # Removed the piecewise logic that forced artificial symmetry.
+    doppler_factor = 1.0 - M * np.cos(theta)
     convective_amplification = doppler_factor**(-2)
+    # -----------------------------------------
     
     total_pitch = alpha + gamma_s
     cos_theta_local = (np.cos(theta) * np.cos(total_pitch) + np.sin(theta) * np.sin(phi) * np.sin(total_pitch))
@@ -352,7 +353,8 @@ def compute_fan_noise(R_val, theta_engine, turbofan, m, aeroacoustic_data, segme
         base_spl = calc_base_level(inputs)
         
         F1_half = -18 + 46.5*(M_TR - 1)/0.146 if M_TR < 1.146 else 28.5 - 12*(M_TR - 1.146)/0.854
-        F4_half = np.where(f < 0.5 * f_b, 20 * np.log10(f / (0.5 * f_b)), -20 * np.log10(f / (0.5 * f_b)))
+        ratio = np.maximum(f / (0.5 * f_b), 1e-12)
+        F4_half = np.where(f < 0.5 * f_b, 20 * np.log10(ratio), -20 * np.log10(ratio))
         spl_half = base_spl + F1_half + F2 + F3 + F4_half
 
         F1_quarter = -15 + 47.5*(M_TR - 1)/0.322 if M_TR < 1.322 else 32.5 - 9*(M_TR - 1.322)/0.678
@@ -386,7 +388,8 @@ interp_C3 = create_interpolator("table_c3")
 def compute_core_noise(R_val, theta_engine, turbofan, pr, aeroacoustic_data, segment, frequencies):
     
     distance_microphone = np.atleast_1d(R_val).reshape(-1, 1) / Units.feet
-    theta_c = np.degrees(np.atleast_1d(theta_engine).reshape(-1, 1))
+    theta_exhaust = np.pi - np.atleast_1d(theta_engine).reshape(-1, 1)
+    theta_c = np.degrees(theta_exhaust)
     freq = np.atleast_1d(frequencies).reshape(1, -1)
     
     Velocity_primary = aeroacoustic_data.propulsors[turbofan.tag].core_nozzle.exit_velocity  
