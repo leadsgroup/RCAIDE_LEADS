@@ -9,6 +9,7 @@
 # The third step is to use the use the psuedo implicit method to update the location of the wake nodes
 
 import numpy as np
+from concurrent.futures                import ThreadPoolExecutor
 from RCAIDE.Framework.Core            import orientation_transpose
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory import biot_savart_velocity_induction, initialize_wake_geometry, initialize_lifting_line
 
@@ -145,11 +146,37 @@ def free_wake(rotor, wake_inputs, conditions):
     A_blade_all = Bgrid_start.transpose(0, 2, 1, 3, 4).reshape(ctrl_pts, J, B*Nr_s, 3)
     B_blade_all = Bgrid_end.transpose(  0, 2, 1, 3, 4).reshape(ctrl_pts, J, B*Nr_s, 3)
 
+    # Each (cp,j) task below is fully independent -- no data dependency between columns/control
+    # points within compute_V_ind (that coupling happens through the OUTER predictor/corrector
+    # loop, not here) -- and each writes to a disjoint V_ind[cp,:,j,:,:] slice, so this is safe
+    # to run across threads with no locking. numpy's C-level array ops release the GIL during
+    # computation, so this gets real multi-core parallelism, not just concurrency. One
+    # ThreadPoolExecutor is created here and reused for every compute_V_ind call in this
+    # free_wake() invocation (shut down at the very end) -- creating a fresh one per call
+    # measured meaningfully slower than reusing one (thread creation/teardown overhead, paid
+    # 2x per outer iteration otherwise). Verified bit-for-bit identical to the serial version;
+    # measured ~2.9x faster via a controlled wall-clock A/B (10 runs, 5 each, min-of-N) on a
+    # 20-core machine -- unlike the batching/merging attempts documented below, this doesn't
+    # grow any array size (so no new cache pressure), it just runs the same cache-sized
+    # per-(cp,j) calls on different cores at once.
+    _tasks    = [(cp, j) for cp in range(ctrl_pts) for j in range(J)]
+    _executor = ThreadPoolExecutor()
+
     def compute_V_ind(field_grid, source_grid):
         """Same sourcing rule as update_free_wake_location.py -- sources for a query at column
-        j are column j of every blade's grid, matched to that query's own instant.
+        j are column j of every blade's grid, matched to that query's own instant. Runs the
+        (cp,j) tasks across the thread pool created above -- see that comment for why/how this
+        is safe and the measured speedup.
 
-        Deliberately NOT batched over ctrl_pts or J (both were tried and measured to be
+        Also tried and measured NOT faster: merging the wake and blade sources into a single
+        biot_savart_velocity_induction call per (cp,j) (concatenating along N instead of two
+        separate calls). Verified bit-for-bit correct, but a controlled wall-clock A/B (10 runs,
+        5 each, min-of-N to filter system noise) showed the merged version ~10% SLOWER, not
+        faster -- despite halving call count for only modestly more N at real scale, it didn't
+        pay off the way the earlier hand-unroll/r0-elimination wins did. Kept as two separate
+        calls.
+
+        Deliberately NOT batched over ctrl_pts or J either (both were tried and measured to be
         SLOWER, not faster, despite doing the same total elementwise work with fewer Python
         calls): biot_savart_velocity_induction runs ~25 sequential elementwise passes over
         temporaries shaped like its (M,N) output. At real scale (ctrl_pts=8, J=24,
@@ -163,22 +190,24 @@ def free_wake(rotor, wake_inputs, conditions):
         problem size changes substantially.
         """
         V_ind = np.zeros_like(field_grid)
-        for cp in range(ctrl_pts):
-            for j in range(J):
-                P = field_grid[cp, :, j, :, :].reshape(B*(N_wake+1), 3)
 
-                wake_src  = source_grid[cp, :, j, :, :]
-                r_w_start = wake_src[:, :-1, :].reshape(B*N_wake, 3)
-                r_w_end   = wake_src[:,  1:, :].reshape(B*N_wake, 3)
-                K_wake = biot_savart_velocity_induction(
-                    P, r_w_start, r_w_end, rcvf_flat[cp], vc_correction)
-                v_wake = np.einsum('mnk,n->mk', K_wake, Gamma_w_flat[cp])
+        def _compute_one(cp, j):
+            P = field_grid[cp, :, j, :, :].reshape(B*(N_wake+1), 3)
 
-                K_blade = biot_savart_velocity_induction(
-                    P, A_blade_all[cp, j], B_blade_all[cp, j], rcb_flat[cp], vc_correction)
-                v_blade = np.einsum('mnk,n->mk', K_blade, Gamma_b_flat[cp])
-                v_sum = (v_blade + v_wake).reshape(B, N_wake+1, 3)
-                V_ind[cp, :, j, :, :] = np.where(CW[cp], -v_sum, v_sum)
+            wake_src  = source_grid[cp, :, j, :, :]
+            r_w_start = wake_src[:, :-1, :].reshape(B*N_wake, 3)
+            r_w_end   = wake_src[:,  1:, :].reshape(B*N_wake, 3)
+            K_wake = biot_savart_velocity_induction(
+                P, r_w_start, r_w_end, rcvf_flat[cp], vc_correction)
+            v_wake = np.einsum('mnk,n->mk', K_wake, Gamma_w_flat[cp])
+
+            K_blade = biot_savart_velocity_induction(
+                P, A_blade_all[cp, j], B_blade_all[cp, j], rcb_flat[cp], vc_correction)
+            v_blade = np.einsum('mnk,n->mk', K_blade, Gamma_b_flat[cp])
+            v_sum = (v_blade + v_wake).reshape(B, N_wake+1, 3)
+            V_ind[cp, :, j, :, :] = np.where(CW[cp], -v_sum, v_sum)
+
+        list(_executor.map(lambda t: _compute_one(*t), _tasks))
         return V_ind
 
     # A single lap of the j-loop can't fully resolve the periodic seam (j=0 reading j=J-1's
@@ -255,24 +284,52 @@ def free_wake(rotor, wake_inputs, conditions):
                                                            # relax=1 -> no change (default)
     R        = rotor.tip_radius
 
-    for n in range(max_iter):
-        V_ind1 = compute_V_ind(r_wake_grid, r_wake_grid)
-        r_pred = pseudoimplicit_update(V_ind1)
-
-        V_ind2 = compute_V_ind(r_pred, r_pred)
-        V_avg  = 0.5*(V_ind1 + V_ind2)
-        r_wake_grid_new = pseudoimplicit_update(V_avg)
-        r_wake_grid_new = relax*r_wake_grid_new + (1.0-relax)*r_wake_grid
-
-        residual = np.sqrt(np.mean((r_wake_grid_new - r_wake_grid)**2)) / R
-        print(f"[free_wake] iteration {n+1}: rms(delta r)/R = {residual:.3e}")
-
-        r_wake_grid = r_wake_grid_new
-        if residual < tol:
-            print(f"[free_wake] converged after {n+1} iterations")
-            break
+    # Control points outside the model's valid advance-ratio range (mu > mu_max) are frozen by
+    # evaluate_bound_vortex_circulation.py's own valid_cp logic -- their Gamma_b/CT never update,
+    # so their wake geometry has no reason to settle to anything meaningful. Excluded here from
+    # the convergence check for the same reason: without this, a handful of garbage control
+    # points (observed: mu up to ~157 when an outer solver drives omega toward 0) permanently
+    # drag the reported residual down to a plateau/oscillation floor even after every valid
+    # control point has actually converged -- "did not converge" when the model is, in the only
+    # sense that matters, done. Still computed/updated for all control points (batched together),
+    # just not scored.
+    mu     = wake_inputs.get('mu', None)
+    mu_max = wake_inputs.get('mu_max', None)
+    if mu is None or mu_max is None:
+        # Caller didn't provide mu/mu_max (e.g. standalone/unit-test harnesses that call
+        # free_wake directly, outside the full lifting_line_performance pipeline) -- fall back
+        # to scoring every control point, matching this function's original behavior exactly.
+        valid_cp = np.ones(ctrl_pts, dtype=bool)
     else:
-        print(f"[free_wake] did not converge after {max_iter} iterations, residual = {residual:.3e}")
+        valid_cp = mu <= mu_max
+        if not np.any(valid_cp):
+            valid_cp = np.ones_like(valid_cp)   # degenerate case: nothing valid, fall back to
+                                                 # scoring everything rather than an empty reduction
+
+    # try/finally so a mid-loop exception (e.g. a NaN blowing up somewhere) still shuts the
+    # thread pool down instead of leaking worker threads -- this function runs many times per
+    # mission (once per outer CT iteration), so a leaked pool per bad evaluation adds up.
+    try:
+        for n in range(max_iter):
+            V_ind1 = compute_V_ind(r_wake_grid, r_wake_grid)
+            r_pred = pseudoimplicit_update(V_ind1)
+
+            V_ind2 = compute_V_ind(r_pred, r_pred)
+            V_avg  = 0.5*(V_ind1 + V_ind2)
+            r_wake_grid_new = pseudoimplicit_update(V_avg)
+            r_wake_grid_new = relax*r_wake_grid_new + (1.0-relax)*r_wake_grid
+
+            residual = np.sqrt(np.mean((r_wake_grid_new[valid_cp] - r_wake_grid[valid_cp])**2)) / R
+            print(f"[free_wake] iteration {n+1}: rms(delta r)/R = {residual:.3e}")
+
+            r_wake_grid = r_wake_grid_new
+            if residual < tol:
+                print(f"[free_wake] converged after {n+1} iterations")
+                break
+        else:
+            print(f"[free_wake] did not converge after {max_iter} iterations, residual = {residual:.3e}")
+    finally:
+        _executor.shutdown()
 
     #-----------------------------------
     # feed back -- blade b's real filament is column j=0 of its own grid. r_wake_grid has

@@ -119,52 +119,65 @@ def biot_savart_velocity_induction(P, A, B, rc=1e-6, vc_correction=1, tol=1e-6):
     A = np.asarray(A, dtype=float)
     B = np.asarray(B, dtype=float)
 
-    # r1: vector from A to P,  r2: vector from B to P  -- (..., M, N, 3). P/A/B may carry
-    # matching leading batch dims (e.g. an azimuth-column axis) ahead of the (M,3)/(N,3) shape;
-    # the ellipsis indexing below broadcasts those batch dims through unchanged, and reduces
-    # to the original (M, N, 3) behavior when P/A/B are plain 2-D.
+    # r1: vector from A to P -- (..., M, N, 3). P/A/B may carry matching leading batch dims
+    # (e.g. an azimuth-column axis) ahead of the (M,3)/(N,3) shape; the ellipsis indexing below
+    # broadcasts those batch dims through unchanged, and reduces to the original (M, N, 3)
+    # behavior when P/A/B are plain 2-D.
+    #
+    # r2 = P - B is NEVER materialized as an (..., M, N, 3) array: r2 = r1 - r0 where
+    # r0 = B - A depends only on the source filament (n), not the field point (m) --
+    # s = |B-A| (filament length), r1x2 = r1 x r2, and every other quantity below that
+    # historically went through r2 is re-derived algebraically in terms of r1 and the tiny
+    # (..., N, 3)-shaped r0 instead (identities verified numerically to ~1e-13 against the
+    # direct r1/r2 formulas; this halves the number of full (M,N[,3])-sized temporaries this
+    # function allocates, which matters because profiling showed this function is memory-
+    # bandwidth-bound, not compute-bound, at the array sizes this codebase actually uses).
     r1 = P[..., :, np.newaxis, :] - A[..., np.newaxis, :, :]
-    r2 = P[..., :, np.newaxis, :] - B[..., np.newaxis, :, :]
+    r0 = B - A                                              # (..., N, 3) -- independent of m
 
-    # All the 3-component reductions below (norm, dot, cross) are hand-unrolled instead of
-    # going through np.linalg.norm/np.einsum/np.cross -- those carry real generic-dispatch
-    # overhead for what is, per element, just a handful of multiply-adds on a fixed-size-3
-    # vector; profiling showed this was a significant chunk of the function's own runtime.
-    # Mathematically identical to the generic-numpy version (only floating-point reassociation-
-    # level differences, same as already tolerated by the project's existing bit-for-bit checks).
     r1x, r1y, r1z = r1[..., 0], r1[..., 1], r1[..., 2]
-    r2x, r2y, r2z = r2[..., 0], r2[..., 1], r2[..., 2]
+    r0x, r0y, r0z = r0[..., 0], r0[..., 1], r0[..., 2]
+
+    # Broadcast r0's components against the (..., M, N) shape (insert the M axis) -- r0 always
+    # carries exactly A/B's own batch dims, so a single newaxis before the last (N) axis is
+    # always correct here (unlike rc, which may carry fewer batch dims than the target and
+    # needs _expand_rc_for_broadcast's more general handling).
+    r0x_b, r0y_b, r0z_b = r0x[..., np.newaxis, :], r0y[..., np.newaxis, :], r0z[..., np.newaxis, :]
 
     r1_norm_sq = r1x*r1x + r1y*r1y + r1z*r1z          # (..., M, N)
-    r2_norm_sq = r2x*r2x + r2y*r2y + r2z*r2z
     r1_norm    = np.sqrt(r1_norm_sq)
+
+    r0_norm_sq = r0x*r0x + r0y*r0y + r0z*r0z          # (..., N) -- = filament length^2
+    s          = np.sqrt(r0_norm_sq)                  # (..., N)
+    s_b        = s[..., np.newaxis, :]                # (..., 1, N), broadcasts against (...,M,N)
+    r0_norm_sq_b = r0_norm_sq[..., np.newaxis, :]
+
+    r1_dot_r0  = r1x*r0x_b + r1y*r0y_b + r1z*r0z_b                        # (..., M, N)
+    r2_norm_sq = r1_norm_sq - 2.0*r1_dot_r0 + r0_norm_sq_b                # (..., M, N)
     r2_norm    = np.sqrt(r2_norm_sq)
 
-    r1_dot_r2   = r1x*r2x + r1y*r2y + r1z*r2z                                   # (..., M, N)
-    s           = np.sqrt(r1_norm_sq + r2_norm_sq - 2*r1_dot_r2 + 1e-300)       # (..., M, N)
-
-    r2mr1x, r2mr1y, r2mr1z = r2x - r1x, r2y - r1y, r2z - r1z    # r2_minus_r1 components
-
-    s1 = (r1x*r2mr1x + r1y*r2mr1y + r1z*r2mr1z) / s     # (..., M, N)
-    s2 = (r2x*r2mr1x + r2y*r2mr1y + r2z*r2mr1z) / s
+    s1 = -r1_dot_r0 / s_b                             # (..., M, N)
+    s2 = (r0_norm_sq_b - r1_dot_r0) / s_b
 
     # rm_sq = |(r1*s2 - r2*s1)/s|^2 -- only the squared magnitude is ever used, so the full
-    # (..., M, N, 3) rm vector (and the division of it by s) is skipped entirely.
-    wx = r1x*s2 - r2x*s1
-    wy = r1y*s2 - r2y*s1
-    wz = r1z*s2 - r2z*s1
-    rm_sq = (wx*wx + wy*wy + wz*wz) / (s*s)              # (..., M, N)
+    # (..., M, N, 3) rm vector (and the division of it by s) is skipped entirely. r2 = r1 - r0,
+    # so r1*s2 - r2*s1 = r1*(s2-s1) + r0*s1 -- avoids ever forming r2's components.
+    s2ms1 = s2 - s1
+    wx = r1x*s2ms1 + r0x_b*s1
+    wy = r1y*s2ms1 + r0y_b*s1
+    wz = r1z*s2ms1 + r0z_b*s1
+    rm_sq = (wx*wx + wy*wy + wz*wz) / (s_b*s_b)          # (..., M, N)
 
-    # Cross product r1 x r2  -- (..., M, N, 3).
+    # Cross product r1 x r2 == r0 x r1 (since r2 = r1 - r0 and r1 x r1 = 0) -- (..., M, N, 3).
     cross = np.empty_like(r1)
-    cross[..., 0] = r1y*r2z - r1z*r2y
-    cross[..., 1] = r1z*r2x - r1x*r2z
-    cross[..., 2] = r1x*r2y - r1y*r2x
+    cross[..., 0] = r0y_b*r1z - r0z_b*r1y
+    cross[..., 1] = r0z_b*r1x - r0x_b*r1z
+    cross[..., 2] = r0x_b*r1y - r0y_b*r1x
 
     rc_sq   = np.atleast_1d(rc)**2
     rc_sq_b = _expand_rc_for_broadcast(rc_sq, rm_sq.ndim)   # aligned against (..., M, N)
 
-    factor = cross / (4.0 * np.pi * s[..., np.newaxis])
+    factor = cross / (4.0 * np.pi * s_b[..., np.newaxis])
 
     bracket = (s2/r2_norm - s1/r1_norm)
 

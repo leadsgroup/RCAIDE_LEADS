@@ -416,6 +416,16 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
 
             Cl = Cl * F
 
+            # TEMPORARY diagnostic -- checking whether departure_transition_1's residual
+            # plateau coincides with blade sections entering stall (hover/cruise converge
+            # fine with this same rotor design; transition does not -- suspect the blade,
+            # tuned only at those two design points, is operating far outside its envelope
+            # here). Prints per-call, removable once the investigation concludes.
+            if np.any(valid_cp):
+                alpha_deg_valid = np.degrees(alpha[valid_cp])
+                print(f"[alpha diag] max|alpha| = {np.max(np.abs(alpha_deg_valid)):.2f} deg, "
+                      f"max Cl = {np.max(Cl[valid_cp]):.3f}, min Cl = {np.min(Cl[valid_cp]):.3f}")
+
             # Relaxed Gamma_b update
             Gamma_b_new = 0.5*W*c*Cl
 
