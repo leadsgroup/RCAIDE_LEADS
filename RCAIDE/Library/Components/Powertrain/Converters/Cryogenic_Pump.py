@@ -25,12 +25,12 @@ class Cryogenic_Pump(Pump):
         self.fuel_cell_flow_rate_multipier = 1/120e6 # Power*1/120MW = additional flow rate
 
      
-    def compute_performance(self,state,fuel_line = None,bus = None):
+    def compute_performance(self,state,network=None):
         """
-        Computes Turboelectric_Generator performance including power.
+        Computes cryogenic pump performance including shaft power and fuel consumption.
         """
-        P_mech,P_elec,stored_results_flag,stored_propulsor_tag =  compute_cryogenic_pump_performance(self,state,fuel_line, bus)
-        return P_mech,P_elec,stored_results_flag,stored_propulsor_tag 
+        inputs,outputs,stored_results_flag,stored_converter_tag =  compute_cryogenic_pump_performance(self,state,network)
+        return inputs,outputs,stored_results_flag,stored_converter_tag
     
     def append_operating_conditions(self,segment): 
         """

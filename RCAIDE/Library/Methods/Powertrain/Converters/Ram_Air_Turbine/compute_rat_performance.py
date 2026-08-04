@@ -1,15 +1,13 @@
-# RCAIDE/Methods/Library/Methods/Powertrain/Converters/compute_rat_performance.py
-# 
-# 
+# RCAIDE/Library/Methods/Powertrain/Converters/Ram_Air_Turbine/compute_rat_performance.py
+#
+#
 # Created:  Sep 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-# RCAIDE imports      
-from RCAIDE.Framework.Core import Data    
-from RCAIDE.Library.Methods.Powertrain.Converters.Turboshaft         import compute_turboshaft_performance
-from RCAIDE.Library.Methods.Powertrain.Converters.Generator          import compute_generator_performance 
+# RCAIDE imports
+from RCAIDE.Library.Methods.Powertrain.Converters.Generator          import compute_generator_performance
  
 # python imports 
 from copy import deepcopy 

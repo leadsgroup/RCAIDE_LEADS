@@ -68,14 +68,10 @@ def compute_electric_ducted_fan_performance(propulsor, state, center_of_gravity=
     
     Returns
     -------
-    thrust : numpy.ndarray
-        Thrust force vector [N]
-    moment : numpy.ndarray
-        Moment vector [N·m]
-    power : numpy.ndarray
-        Mechanical power [W]
-    power_elec : numpy.ndarray
-        Electrical power [W]
+    inputs : Data
+        Propulsor input conditions (power.electrical/mechanical/etc.)
+    outputs : Data
+        Propulsor output conditions (thrust, moment, power.propulsive, etc.)
     stored_results_flag : bool
         Flag indicating if results are stored
     stored_propulsor_tag : str

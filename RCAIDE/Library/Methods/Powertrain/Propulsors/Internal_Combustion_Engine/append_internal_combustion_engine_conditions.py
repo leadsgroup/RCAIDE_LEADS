@@ -30,11 +30,8 @@ def append_internal_combustion_engine_conditions(propulsor, segment):
                 Segment state
                     - ones_row : function
                         Function to create array of ones with specified length
-    energy_conditions : RCAIDE.Framework.Mission.Common.Conditions
-        Energy conditions container where engine conditions will be stored
-    noise_conditions : RCAIDE.Framework.Mission.Common.Conditions
-        Noise conditions container where engine noise conditions will be stored
-    
+
+
     Returns
     -------
     None

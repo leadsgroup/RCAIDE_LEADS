@@ -51,6 +51,14 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, network):
     where :math:`\\alpha = 0.05` is the relaxation factor and :math:`P_{net}` is
     the net cell power from ``evaluate_PEM``.
 
+    The power this stack must supply is its own electrical distributor's
+    total demand, split between battery/fuel-cell sources by that
+    distributor's psi and between multiple fuel-cell stacks on the same bus
+    by ``power_split_ratio``. The distributor is looked up from
+    ``fuel_cell_stack.assigned_distributors`` rather than assumed, since a
+    fuel cell stack may share the vehicle with other electrically-isolated
+    buses resolved to a different psi.
+
     **Major Assumptions**
         * Uniform temperature across all cells in the stack
         * Hydrogen supplied at constant rated pressure
@@ -91,15 +99,12 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, network):
     # ---------------------------------------------------------------------------------
     fc_conds = state.conditions.energy.converters[fuel_cell_stack.tag]
 
-    # Electrical demand this stack must meet: the network-wide electrical power
-    # requirement (solved implicitly when both a chemical and electrical path
-    # exist), split between battery/fuel-cell sources by psi and between multiple
-    # fuel-cell stacks by power_split_ratio.
-    psi = state.conditions.energy.battery_fuel_cell_power_split_ratio
-    if 'electrical_power' in state.unknowns.network:
-        total_electrical_demand = state.unknowns.network['electrical_power']
-    else:
-        total_electrical_demand = state.conditions.energy.inputs.power.electrical
+    electrical_distributor_tag = None
+    for d_tag in fuel_cell_stack.assigned_distributors[0]:
+        if network.distributors[d_tag].domain == 'electrical':
+            electrical_distributor_tag = d_tag
+    psi = state.conditions.energy.battery_fuel_cell_power_split_ratio[electrical_distributor_tag]
+    total_electrical_demand = state.conditions.energy.distributors[electrical_distributor_tag].outputs.power.electrical
     P_stack  = total_electrical_demand * fuel_cell_stack.power_split_ratio * (1. - psi)
     P_cell   = P_stack[:, 0] / n_total  # power demand per individual cell [W] 
 

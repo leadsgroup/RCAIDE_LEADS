@@ -57,7 +57,8 @@ class Fuel_Tank(Source):
         """
         Sets default values for fuel tank attributes
         """          
-        self.tag                            = 'fuel_tank'  
+        self.tag                            = 'fuel_tank'
+        self.domain                         = 'chemical'
         self.fuel                           = None
         self.secondary_mass_flow_rate       = 0.0
         self.wall_clearance                 = 0.0

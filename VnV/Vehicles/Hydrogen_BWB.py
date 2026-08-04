@@ -387,12 +387,20 @@ def vehicle_setup() :
     #------------------------------------------------------------------------------------------------------------------------- 
     #  Turbofan Network
     #-------------------------------------------------------------------------------------------------------------------------   
-    net                                         = RCAIDE.Framework.Networks.Fuel() 
+    net                                         = RCAIDE.Framework.Networks.Fuel()
+
+    #-------------------------------------------------------------------------------------------------------------------------
+    # Electrical Bus (powers the cryogenic LH2 boost pumps from the engines' IDGs)
+    #-------------------------------------------------------------------------------------------------------------------------
+    pump_bus                                    = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
+    pump_bus.tag                                = 'pump_bus'
+    pump_bus.design_voltage                     = 270.0 # V, more-electric-aircraft DC bus
 
     #------------------------------------------------------------------------------------------------------------------------- 
     # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
     fuel_line                                      = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    fuel_line.working_fluid                        = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     fuel_line.pipe.rigid_material                  = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304()
     fuel_line.pipe.flexible_material               = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304() 
     fuel_line.venting_system_length                = vehicle.wings.main_wing.chords.root/2 # Length of venting system
@@ -493,7 +501,18 @@ def vehicle_setup() :
     fan_nozzle.tag                                 = 'fan nozzle'
     fan_nozzle.polytropic_efficiency               = 0.98                   
     fan_nozzle.pressure_ratio                      = 0.995  
-    turbofan1.fan_nozzle                           = fan_nozzle     
+    turbofan1.fan_nozzle                           = fan_nozzle
+
+    # Integrated Drive Generator (IDG) -- shaft-driven off the low-pressure spool,
+    # supplies electrical power to the cryogenic LH2 pumps via pump_bus
+    idg1                                            = RCAIDE.Library.Components.Powertrain.Converters.Generator()
+    idg1.tag                                        = 'turbofan1_idg'
+    idg1.efficiency                                 = 0.95
+    idg1.voltage_type                               = 'DC'
+    idg1.nominal_voltage                            = pump_bus.design_voltage
+    idg1.power_split_ratio                          = 0.5 # shares total pump electrical demand with turbofan2's IDG
+    turbofan1.integrated_drive_generator            = idg1
+    turbofan1.design_power_offtake                  = 3E5 # W, matches pump design_power_rating
 
     # design turbofan
     design_turbofan(turbofan1)
@@ -522,10 +541,11 @@ def vehicle_setup() :
     turbofan2.tag                              = 'propulsor_2' 
     turbofan2.origin                           = [[0.8*vehicle.wings.main_wing.chords.root, -4.2, 2.25]] 
     turbofan2.nacelle.tag                      =  'propulsor_2_nacelle'
-    turbofan2.nacelle.origin                   = [[0.8*vehicle.wings.main_wing.chords.root, -4.2, 2.25]] 
-        
-    # append propulsor to distribution line 
-    net.propulsors.append(turbofan2) 
+    turbofan2.nacelle.origin                   = [[0.8*vehicle.wings.main_wing.chords.root, -4.2, 2.25]]
+    turbofan2.integrated_drive_generator.tag   = 'turbofan2_idg'
+
+    # append propulsor to distribution line
+    net.propulsors.append(turbofan2)
 
   
     #------------------------------------------------------------------------------------------------------------------------- 
@@ -616,8 +636,8 @@ def vehicle_setup() :
 
     #------------------------------------------------------------------------------------------------------------------------------------
     # Assign distributors to propulsors and converters
-    turbofan1.assigned_distributors  = [[fuel_line.tag]]
-    turbofan2.assigned_distributors  = [[fuel_line.tag]]
+    turbofan1.assigned_distributors  = [[fuel_line.tag, pump_bus.tag]]
+    turbofan2.assigned_distributors  = [[fuel_line.tag, pump_bus.tag]]
 
     ##-------------------------------------------------------------------------------------------------------------------------
     ##  Systems
@@ -667,59 +687,42 @@ def vehicle_setup() :
     #------------------------------------------------------------------------------------------------------------------------- 
     #  PUMPS      
     #------------------------------------------------------------------------------------------------------------------------- 
-    # Starboard Pump 
-    starboard_pump                                 = RCAIDE.Library.Components.Powertrain.Converters.Liquid_Hydrogen_Fuel_Cell_Pump()
-    starboard_pump.working_fluid                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()  
+    # Starboard Pump
+    starboard_pump                                 = RCAIDE.Library.Components.Powertrain.Converters.Cryogenic_Pump()
+    starboard_pump.working_fluid                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     starboard_pump.power_density                   = 15000 # W/kg
     starboard_pump.pump_efficiency                 = 0.8
     starboard_pump.turbine_efficiency              = 0.92
     starboard_pump.design_mass_flow_rate           = 1      # kg/s
     starboard_pump.distributor_split               = 0.5
-    starboard_pump.design_power_rating             = 3E5    
+    starboard_pump.design_power_rating             = 3E5
     starboard_pump.design_inlet_pressure           = 200000 # Pascals (2 bar)
-    starboard_pump.tag                             = 'starboard_engine_pump' 
-    starboard_pump.design_outlet_pressure          = 35000000 # Pascals (350 bar)    
+    starboard_pump.tag                             = 'starboard_engine_pump'
+    starboard_pump.design_outlet_pressure          = 35000000 # Pascals (350 bar)
     design_pump(starboard_pump)
     starboard_pump.origin                          = [[27 * 36  /35,1,0]] # Location checked
-    net.converters.append(starboard_pump)  
-   
-    # Port Pump 
-    port_pump                                      = deepcopy(starboard_pump) 
-    port_pump.tag                                  = 'port_engine_pump' 
-    port_pump.origin                               = [[27 * 36  /35,-1,0]] # Location checked
-    net.converters.append(port_pump)  
+    starboard_pump.assigned_distributors           = [[fuel_line.tag, pump_bus.tag]]
+    starboard_pump.identical_converters            = False # force independent compute_performance per pump
+    net.converters.append(starboard_pump)
 
-    # Reserve Pump 
+    # Port Pump
+    port_pump                                      = deepcopy(starboard_pump)
+    port_pump.tag                                  = 'port_engine_pump'
+    port_pump.origin                               = [[27 * 36  /35,-1,0]] # Location checked
+    net.converters.append(port_pump)
+
+    # Reserve Pump
     reserve_pump                                  = deepcopy(starboard_pump)
     reserve_pump.active                           = False
-    reserve_pump.tag                              = 'reserve_pump' 
+    reserve_pump.tag                              = 'reserve_pump'
     reserve_pump.origin                           = [[27 * 36  /35,0,0]] # Location checked
     reserve_pump.distributor_split                = 0
-    net.converters.append(reserve_pump)  
-
-    starboard_pump                                 = RCAIDE.Library.Components.Powertrain.Converters.Pump()
-    starboard_pump.working_fluid                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()  
-    starboard_pump.power_density                   = 15000 # W/kg
-    starboard_pump.pump_efficiency                 = 0.8
-    starboard_pump.turbine_efficiency              = 0.92
-    starboard_pump.design_mass_flow_rate           = 1      # kg/s
-    starboard_pump.distributor_split               = 0.5
-    starboard_pump.design_power_rating             = 3E5    
-    starboard_pump.design_inlet_pressure           = 200000 # Pascals (2 bar)
-    starboard_pump.tag                             = 'starboard_engine_pump' 
-    starboard_pump.design_outlet_pressure          = 35000000 # Pascals (350 bar)    
-    design_pump(starboard_pump)
-    starboard_pump.origin                          = [[27 * 36  /35,1,0]] # Location checked
-    net.converters.append(starboard_pump)  
-          
-    # Assign fuel line to converters (pumps)
-    starboard_pump.assigned_distributors = [[fuel_line.tag]]
-    port_pump.assigned_distributors      = [[fuel_line.tag]]
-    reserve_pump.assigned_distributors   = [[fuel_line.tag]]
+    net.converters.append(reserve_pump)
 
     #------------------------------------------------------------------------------------------------------------------------------------
-    # Append fuel line to network
+    # Append fuel line and pump bus to network
     net.distributors.append(fuel_line)
+    net.distributors.append(pump_bus)
 
     # Append energy network to aircraft 
     vehicle.append_energy_network(net)  
@@ -757,8 +760,8 @@ def configs_setup(vehicle):
     # ------------------------------------------------------------------ 
     config = RCAIDE.Library.Components.Configs.Config(vehicle)
     config.tag = 'idle' 
-    config.networks.fuel.propulsors['propulsor_1'].emission_indices.NOx      = 4.85 /1000      
-    config.networks.fuel.propulsors['propulsor_2'].emission_indices.NOx      = 4.85 /1000      
+    config.networks.fuel.propulsors['propulsor_1'].combustor.fuel_data.emission_indices.NOx      = 4.85 /1000
+    config.networks.fuel.propulsors['propulsor_2'].combustor.fuel_data.emission_indices.NOx      = 4.85 /1000
     configs.append(config) 
 
     # ------------------------------------------------------------------

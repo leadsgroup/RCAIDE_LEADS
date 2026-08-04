@@ -32,7 +32,14 @@ class Propulsor(Component):
         
     wing_mounted : bool
         Flag indicating if the propulsor is mounted on a wing, defaults to True
-    
+
+    domain : str
+        Primary propulsive energy domain this propulsor draws from
+        (``'chemical'`` or ``'electrical'``), self-declared by each concrete
+        subclass so topology analysis (``RCAIDE.Library.Mission.Common.
+        Pre_Process.energy.analyze_topology``) can classify propulsors
+        without a hardcoded isinstance list.
+
     Notes
     -----
     This class serves as the foundation for all propulsion system implementations 
@@ -83,11 +90,17 @@ class Propulsor(Component):
             Properties Used:
             None
         """          
-        self.tag                          = 'propulsor' 
-        self.active                       = True 
+        self.tag                          = 'propulsor'
+        self.active                       = True
         self.wing_mounted                 = True
+        self.domain                       = None
         self.nacelle                      = None
-        self.identical_propulsors         = True 
+        # Whether this propulsor's performance can be copied from another
+        # propulsor already computed on the same distributor group this
+        # mission-solver step, instead of being computed independently
+        # (see Network.evaluate()). Defaults True since most vehicles have
+        # multiple truly-identical propulsors (e.g. wing-mounted engines).
+        self.identical_propulsors         = True
         self.reverse_thrust               = False
         self.sealevel_static_thrust       = 0.0
         self.working_fluid                = RCAIDE.Library.Attributes.Gases.Air()

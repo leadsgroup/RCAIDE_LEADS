@@ -124,14 +124,10 @@ def compute_turbojet_performance(turbojet, state, center_of_gravity=[[0.0, 0.0, 
     
     Returns
     -------
-    thrust_vector : numpy.ndarray
-        Thrust force vector [N]
-    moment : numpy.ndarray
-        Moment vector [N·m]
-    power : numpy.ndarray
-        Shaft power output [W]
-    power_elec : numpy.ndarray
-        Electrical power input/output [W]
+    inputs : Data
+        Turbojet input conditions (power.electrical/mechanical/etc.)
+    outputs : Data
+        Turbojet output conditions (thrust, moment, power.propulsive, etc.)
     stored_results_flag : bool
         Flag indicating if results are stored
     stored_propulsor_tag : str

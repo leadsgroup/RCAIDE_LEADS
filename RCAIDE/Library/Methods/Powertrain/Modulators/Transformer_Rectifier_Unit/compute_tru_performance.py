@@ -1,11 +1,11 @@
-# RCAIDE/Library/Methods/Powertrain/Modulators/TRU/compute_TRU_performance.py
+# RCAIDE/Library/Methods/Powertrain/Modulators/Transformer_Rectifier_Unit/compute_tru_performance.py
 # 
 # 
 # Created:  Sep 2025, M. Guidotti
 
 import numpy as np
 
-def compute_TRU_performance(TRU, network, state):
+def compute_tru_performance(TRU, network, state):
 
     """
    

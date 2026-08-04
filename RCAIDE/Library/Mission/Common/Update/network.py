@@ -1,4 +1,4 @@
-# RCAIDE/Library/Missions/Common/Update/network.py
+# RCAIDE/Library/Mission/Common/Update/network.py
 # 
 # 
 # Created:  Sep 2025, S Shekar
@@ -10,21 +10,25 @@ from scipy.optimize import fsolve, least_squares
 #  Solve Network
 # ---------------------------------------------------------------------------------------------------------------------- 
 def network(segment):
-    """ Updates the **********
-        
+    """ Solves each vehicle network's network-level unknowns (segment.state.unknowns.network),
+        using the solver configured by segment.state.numerics.network_solver.type. If no
+        network solver is configured, network-level unknowns are instead resolved as part
+        of the outer mission-level solve, and this just evaluates the network once with the
+        values already unpacked there.
+
         Assumptions:
         N/A
-        
+
         Inputs:
-            None 
-                 
-        Outputs: 
             None
-      
+
+        Outputs:
+            None
+
         Properties Used:
         N/A
-                    
-    """  
+
+    """
     # unpack
     energy_model = segment.analyses.energy
     for network  in segment.analyses.vehicle.networks:
@@ -35,13 +39,10 @@ def network(segment):
         unknown_value  = Data()
         
         for unkn in unknown_keys:
-            unknown_value[unkn]  = segment.state.unknowns.network[unkn]  
-            full_unkn_vals[unkn] = unknown_value[unkn]         
-    
-            # segment.process.initialize.expand_state(segment)                        # NEED TO CHECK     it is not needed to expand it here, it is already expanded at this point
-            # segment.process.initialize.expand_state = RCAIDE.Library.Methods.skip    # NEED TO CHECK     
-            
-        if segment.state.numerics.network_solver.type  == 'least_squares':       
+            unknown_value[unkn]  = segment.state.unknowns.network[unkn]
+            full_unkn_vals[unkn] = unknown_value[unkn]
+
+        if segment.state.numerics.network_solver.type  == 'least_squares':
             result = least_squares(energy_model.evaluate, 
                         full_unkn_vals.pack_array(),
                         args=(segment,network),
@@ -53,13 +54,13 @@ def network(segment):
             if result.success is False:
                 print('The network solver fails with exit condition: ',result.message)
         elif segment.state.numerics.network_solver.type  == 'root_finder':
-            result,_,ier,error_message = fsolve(energy_model.evaluate, 
+            result,_,ier,error_message = fsolve(energy_model.evaluate,
                         full_unkn_vals.pack_array(),
                         args   = (segment,network),
                         xtol   = segment.state.numerics.network_solver.tolerance,
-                        maxfev = segment.state.numerics.mission_solver.max_evaluations,
-                        epsfcn = segment.state.numerics.mission_solver.step_size,
-                        full_output = 1) 
+                        maxfev = segment.state.numerics.network_solver.max_evaluations,
+                        epsfcn = segment.state.numerics.network_solver.step_size,
+                        full_output = 1)
 
             segment.state.numerics.network_solver.converged = False if ier == 0 else True
             if ier == 0:

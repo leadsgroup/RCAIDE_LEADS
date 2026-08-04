@@ -9,8 +9,8 @@
 # RCAIDE imports
 from RCAIDE.Framework.Core import Data  
 from .Modulator            import Modulator
-from RCAIDE.Library.Methods.Powertrain.Modulators.Transformer_Rectifier_Unit.append_TRU_conditions   import append_TRU_conditions 
-from RCAIDE.Library.Methods.Powertrain.Modulators.Transformer_Rectifier_Unit.compute_TRU_performance import compute_TRU_performance
+from RCAIDE.Library.Methods.Powertrain.Modulators.Transformer_Rectifier_Unit.append_tru_conditions   import append_tru_conditions 
+from RCAIDE.Library.Methods.Powertrain.Modulators.Transformer_Rectifier_Unit.compute_tru_performance import compute_tru_performance
  
 # ----------------------------------------------------------------------------------------------------------------------
 #  Transformer_Rectifier_Unit Class
@@ -70,10 +70,10 @@ class Transformer_Rectifier_Unit(Modulator):
         Updates the segment conditions with Transformer_Rectifier_Unit-specific parameters including
         power throughput and losses.
         """ 
-        append_TRU_conditions(self,segment)
+        append_tru_conditions(self,segment)
         return 
     
     def compute_performance(self, network, state):
 
-        inputs, outputs, stored_results_flag, stored_modulator_tag = compute_TRU_performance(self, network, state)
+        inputs, outputs, stored_results_flag, stored_modulator_tag = compute_tru_performance(self, network, state)
         return inputs, outputs, stored_results_flag, stored_modulator_tag

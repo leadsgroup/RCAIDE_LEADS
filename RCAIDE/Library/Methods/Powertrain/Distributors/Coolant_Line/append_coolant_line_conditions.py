@@ -1,6 +1,6 @@
 # RCAIDE/Library/Methods/Powertrain/Distributors/Coolant_Line/append_coolant_line_conditions.py
 #
-# Created: Nov 2026
+# Created: Jul 2026, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT

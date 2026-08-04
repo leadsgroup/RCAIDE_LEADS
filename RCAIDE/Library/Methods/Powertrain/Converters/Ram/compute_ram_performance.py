@@ -43,8 +43,6 @@ def compute_ram_performance(ram, conditions):
                     Specific heat at constant pressure [J/(kg·K)]
                 - gas_specific_constant : numpy.ndarray
                     Gas specific constant [J/(kg·K)]
-                - speed_of_sound : numpy.ndarray
-                    Speed of sound [m/s]
             conditions.energy.converters[ram.tag].outputs:
                 - stagnation_temperature : numpy.ndarray
                     Stagnation temperature [K]

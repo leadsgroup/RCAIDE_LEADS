@@ -77,6 +77,7 @@
     "assigned_distributors": null,
     "identical_converters": true,
     "efficiency": 1.0,
+    "provides_domain": null,
     "number_of_blades": 3,
     "tip_radius": 1.4,
     "hub_radius": 0.1,

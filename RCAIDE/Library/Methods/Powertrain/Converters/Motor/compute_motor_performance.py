@@ -24,15 +24,19 @@ def compute_motor_performance(motor,state):
     ----------
     motor : Converter
         Motor component (DC_Motor or PMSM_Motor) for which performance is being computed
-    motor_conditions : Conditions
-        Container for motor operating conditions
-    conditions : Conditions 
-        Mission segment conditions containing freestream properties
+    state : RCAIDE.Framework.Mission.Common.State
+        Mission segment state containing freestream and energy conditions
 
     Returns
     -------
-    None
-        Updates motor_conditions in-place with computed performance parameters
+    inputs : Data
+        Motor input conditions (current, voltage, power.electrical, etc.)
+    outputs : Data
+        Motor output conditions (torque, omega, power.mechanical, etc.)
+    stored_results_flag : bool
+        Flag indicating if results are stored
+    stored_converter_tag : str
+        Tag of the motor with stored results
 
     Notes
     -----

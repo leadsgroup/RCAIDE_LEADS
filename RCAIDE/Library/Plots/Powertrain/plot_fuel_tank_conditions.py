@@ -58,7 +58,7 @@ def plot_fuel_tank_conditions(results,
                     total_mass         = tank_mass + fuel_mass   
                 
                     if i ==0:                             
-                        axis_1.plot(time, total_mass, color = line_colors[i], marker = ps.markers[t_i], linewidth = ps.line_width, label = fuel_tank.tag)
+                        axis_1.plot(time, total_mass, color = line_colors[i], marker = ps.markers[t_i], linewidth = ps.line_width, label = source.tag)
                     else:
                         axis_1.plot(time, total_mass, color = line_colors[i], marker = ps.markers[t_i], linewidth = ps.line_width)
                     axis_1.set_ylabel(r'Tank+Fuel Mass [kg]') 

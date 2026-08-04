@@ -19,71 +19,73 @@ from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.compute_battery_
 # ----------------------------------------------------------------------------------------------------------------------      
 class Battery_Pack(Source):
     """
-    Base class for battery module implementations
-    
+    A pack of one or more battery modules wired together and connected to a
+    distributor (electrical bus).
+
     Attributes
     ----------
+    tag : str
+        Identifier for the pack (default: 'battery_pack')
+
+    domain : str
+        Power domain this source provides (default: 'electrical')
+
     energy_density : float
-        Energy stored per unit volume [J/m^3] (default: 0.0) 
-        
-    current_capacitor_charge : float
-        Current charge level of capacitor [C] (default: 0.0)
-        
+        Pack-level energy density [J/m^3] (default: 0.0)
+
     capacity : float
         Total energy capacity [J] (default: 0.0)
-        
-    length : float
-        Physical length of battery module [m] (default: 0.0)
-        
-    width : float
-        Physical width of battery module [m] (default: 0.0)
-        
-    height : float
-        Physical height of battery module [m] (default: 0.0)
-        
-    volume_packaging_factor : float
-        Factor accounting for packaging volume (default: 1.05)
-        
-    BMS_additional_weight_factor : float
-        Factor for battery management system weight (default: 1.42)
-        
+
+    voltage : float
+        Pack voltage [V] (default: 0.0)
+
+    modules : Container
+        Collection of `Generic_Battery_Module` instances making up this pack
+
+    identical_modules : bool
+        Whether all modules are treated as identical for solver reuse
+        purposes (default: True)
+
     orientation_euler_angles : list
-        Euler angles defining battery orientation [rad] (default: [0,0,0])
-        
-    cell : Data
-        Container for cell-specific attributes
-            - chemistry : str
-                Battery chemistry type (default: None)
-            - discharge_performance_map : Data
-                Discharge performance characteristics
-            - ragone : Data
-                Ragone plot parameters
-            
-    electrical_configuration : Data
-        Battery electrical arrangement
-            - series : int
-                Number of cells in series (default: 1)
-            - parallel : int
-                Number of parallel strings (default: 1)
-            
-    geometric_configuration : Data
-        Physical arrangement of cells
-            - normal_count : int
-                Cells in normal direction (default: 1)
-            - parallel_count : int
-                Cells in parallel direction (default: 1)
-            - normal_spacing : float
-                Spacing between normal cells [m] (default: 0.02)
-            - stacking_rows : int
-                Number of stacking rows (default: 3)
-            - parallel_spacing : float
-                Spacing between parallel cells [m] (default: 0.02)
+        Euler angles defining pack orientation [rad] (default: [0,0,0])
+
+    number_of_active_modules : int
+        Count of currently active modules (default: 0)
+
+    charging_c_rate : float
+        C-rate used when this pack is being recharged (default: 1.0)
+
+    battery_module_electric_configuration : str
+        How modules are wired together, e.g. 'Series' (default: 'Series')
+
+    maximum_energy : float
+        Maximum usable energy [J] (default: 0.0)
+
+    specific_energy : float
+        Energy per unit mass [J/kg] (default: 0.0)
+
+    maximum_power : float
+        Maximum power the pack can deliver [W] (default: 0.0)
+
+    specific_power : float
+        Power per unit mass [W/kg] (default: 0.0)
+
+    maximum_voltage : float
+        Maximum pack voltage [V] (default: 0.0)
+
+    initial_maximum_energy : float
+        Maximum energy at the start of the mission, before any degradation
+        (default: 0.0)
+
+    nominal_capacity : float
+        Nominal pack capacity (default: 0.0)
 
     Notes
     -----
-    This base class provides the framework for implementing specific battery types.
-    It includes physical, electrical, and geometric parameters needed to model
-    battery performance and integration.
+    This class provides the framework for implementing specific battery pack
+    types. Cell/module-level physical, electrical, and geometric parameters
+    live on the `Generic_Battery_Module` instances in `modules`, not on the
+    pack itself.
 
     **Definitions**
 
@@ -107,10 +109,16 @@ class Battery_Pack(Source):
         """
         
         self.tag                                   = 'battery_pack'
-        self.energy_density                        = 0.0 
+        self.domain                                = 'electrical'
+        self.energy_density                        = 0.0
         self.capacity                              = 0.0
         self.voltage                               = 0.0
         self.modules                               = Container()
+        # Reuse-eligibility flag for this pack's own modules (unpack_unknowns/
+        # pack_residuals below reuse module 0's results for the rest when
+        # True). A distinct concept from Source.identical_sources, which
+        # governs reuse between sibling sources/packs in the network, not
+        # between modules within one pack.
         self.identical_modules                     = True
         self.orientation_euler_angles              = [0.,0.,0.]
         self.number_of_active_modules              = 0
@@ -139,31 +147,23 @@ class Battery_Pack(Source):
             - Temperature distributions
             - Power demands
             - Operating conditions
-            
-        bus : Component
-            Connected electrical bus containing:
-            - Voltage requirements
-            - Power requirements
-            - Load characteristics
-            
-        coolant_lines : Component
-            Thermal management system containing:
-            - Coolant properties
-            - Flow conditions
-            - Heat exchanger parameters
-            
-        t_idx : int
-            Current time index in the simulation
-            
-        delta_t : float
-            Time step size [s]
+
+        network : RCAIDE.Framework.Networks.Network
+            The network this pack belongs to, used to resolve its assigned
+            distributor(s) and any connected thermal management components
 
         Returns
         -------
+        inputs : Data
+            Pack input conditions (e.g. power.electrical delivered to the pack)
+
+        outputs : Data
+            Pack output conditions (e.g. power.electrical drawn from the pack)
+
         stored_results_flag : bool
             Flag indicating if results were stored for future reuse
-            
-        stored_battery_tag : str
+
+        stored_source_tag : str
             Identifier for stored battery state data
 
         Notes
@@ -187,8 +187,6 @@ class Battery_Pack(Source):
         ----------
         segment : Segment
             Flight segment containing state conditions
-        bus : Component
-            Electrical bus connected to this battery
         """
         append_battery_conditions(self,segment)
         return
@@ -200,13 +198,9 @@ class Battery_Pack(Source):
     def append_segment_conditions(self,segment):
         """
         Append segment-specific battery conditions
-        
+
         Parameters
         ----------
-        bus : Component
-            Electrical bus connected to this battery
-        conditions : Data
-            Container for segment conditions
         segment : Segment
             Flight segment data
         """
@@ -228,16 +222,12 @@ class Battery_Pack(Source):
     def append_unknowns_and_residuals(self,segment):
 
         """
-        Append battery unknowns and residuals  flight segment
-        
+        Append battery unknowns and residuals for a flight segment
+
         Parameters
         ----------
         segment : Segment
             Flight segment containing state conditions
-        bus : Component
-            Electrical bus connected to this battery
-        network: 
-
         """
         for m_i, module in enumerate(self.modules):
             if module.active and (self.identical_modules == False or m_i == 0): 
@@ -285,12 +275,12 @@ class Battery_Pack(Source):
         
     def append_module(self,module):
         """
-        Adds a new segment to the boom's segment container.
+        Adds a battery module to the pack's module container.
 
         Parameters
         ----------
-        segment : Data
-            Boom segment to be added
+        module : Generic_Battery_Module
+            Battery module to be added
         """
 
         # Assert database type

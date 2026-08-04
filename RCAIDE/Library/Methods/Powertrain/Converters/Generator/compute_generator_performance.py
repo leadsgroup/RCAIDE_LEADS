@@ -22,15 +22,19 @@ def compute_generator_performance(generator,state):
     ----------
     generator : Converter
         Generator component for which performance is being computed
-    generator_conditions : Conditions
-        Container for generator operating conditions
-    conditions : Conditions 
-        Mission segment conditions containing freestream properties
+    state : RCAIDE.Framework.Mission.Common.State
+        Mission segment state containing freestream and energy conditions
 
     Returns
     -------
-    None
-        Updates generator_conditions in-place with computed performance parameters
+    inputs : Data
+        Generator input conditions (power.mechanical, etc.)
+    outputs : Data
+        Generator output conditions (current, voltage, power.electrical, etc.)
+    stored_results_flag : bool
+        Flag indicating if results are stored
+    stored_converter_tag : str
+        Tag of the generator with stored results
 
     Notes
     -----
@@ -49,8 +53,7 @@ def compute_generator_performance(generator,state):
 
     See Also
     --------
-    RCAIDE.Library.Components.Powertrain.Converters.DC_Generator
-    RCAIDE.Library.Components.Powertrain.Converters.PMSM_Generator
+    RCAIDE.Library.Components.Powertrain.Converters.Generator
     """
     
     # unpack generator conditions 
@@ -90,18 +93,17 @@ def compute_generator_performance(generator,state):
             G      = generator.gearbox.gear_ratio 
             omega  = generator_conditions.inputs.omega
             power  = generator_conditions.inputs.power.mechanical
-            Kv     = generator.speed_constant                  
-            D_in   = generator.inner_diameter         
+            D_in   = generator.inner_diameter
             kw     = generator.winding_factor     
             Res    = generator.resistance                      
             L      = generator.stack_length                    
             l      = generator.length_of_path                  
             mu_0   = generator.mu_0                            
             mu_r   = generator.mu_r   
-            Q      = power/omega                               
-            i      = np.sqrt((2*(Q/G)*l)/(D_in*mu_0*mu_r*L*kw))           
-            v      = (omega * G)/((2 * np.pi / 60)*Kv) + i*Res        
-            etam   = (1-io/i)*(1-i*Res/v) 
+            Q      = power/omega
+            i      = np.sqrt((2*(Q/G)*l)/(D_in*mu_0*mu_r*L*kw))
+            v      = generator_conditions.outputs.voltage
+            etam   = (1-io/i)*(1-i*Res/v)
             P_elec = i * v
             P_mech = Q * omega
 

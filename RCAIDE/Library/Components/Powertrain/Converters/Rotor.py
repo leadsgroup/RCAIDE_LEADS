@@ -70,7 +70,7 @@ class Rotor(Converter):
     vtk_airfoil_points : int
         Number of points for VTK airfoil visualization. Default is 40.
         
-    Airfoils : Airfoil_Container
+    airfoils : Airfoil_Container
         Container for blade airfoil definitions. Default is empty container.
         
     airfoil_polar_stations : ndarray

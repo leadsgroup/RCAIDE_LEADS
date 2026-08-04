@@ -53,6 +53,15 @@ def energy(mission):
     ``segment.state.conditions.energy.battery_fuel_cell_power_split_ratio``
     as arrays (one value per discretization point).
 
+    Notes
+    -----
+    Components are initialized sources-before-distributors, since
+    ``Electrical_Bus.initialize()`` reads a source's ``voltage``/
+    ``maximum_power`` (e.g. ``Battery_Pack``) to size itself. Operating
+    conditions are appended distributors-before-sources instead, since a
+    source's own conditions can reach into a distributor's conditions while
+    being built (e.g. a battery module's coolant-line conditions).
+
     See Also
     --------
     RCAIDE.Framework.Mission.Segments.Evaluate
@@ -70,11 +79,15 @@ def energy(mission):
             # ----------------------------------------------------------------
             # Analyze network topology and resolve hybridization
             # ----------------------------------------------------------------
-            topology = _analyze_topology(network,seg_i,verbose=verbose)
-            phi, psi = _resolve_hybridization(segment, topology, seg_i,verbose=verbose)
+            topology = analyze_topology(network,seg_i,verbose=verbose)
+            phi, psi_by_distributor = resolve_hybridization(segment, topology, seg_i,verbose=verbose)
+
+            psi_conditions = Data()
+            for dist_tag, psi_value in psi_by_distributor.items():
+                psi_conditions[dist_tag] = psi_value * segment.state.ones_row(1)
 
             segment.state.conditions.energy.hybrid_power_split_ratio            = phi * segment.state.ones_row(1)
-            segment.state.conditions.energy.battery_fuel_cell_power_split_ratio = psi * segment.state.ones_row(1)
+            segment.state.conditions.energy.battery_fuel_cell_power_split_ratio = psi_conditions
             segment.state.conditions.energy.topology                            = topology
 
             # ----------------------------------------------------------------
@@ -133,23 +146,25 @@ def energy(mission):
 #  Topology Analysis
 # ==============================================================================
 
-def _analyze_topology(network, seg_i,  verbose=False):
+def analyze_topology(network, seg_i,  verbose=False):
     """Classify all network components by energy domain and map distributor connections.
 
     Walks the network in five passes:
 
     1. **Distributors** — reads each distributor's ``domain`` attribute
        (``'electrical'``, ``'chemical'``, etc.) to build a domain lookup table.
-    2. **Propulsors** — classified as chemical (Turbofan, Turbojet, Turboprop,
-       ICE) or electrical (Electric_Rotor, Electric_Ducted_Fan) using
-       ``isinstance``. All propulsors are energy *consumers* on their assigned
-       distributors.
+    2. **Propulsors** — classified by their self-declared ``domain`` (chemical
+       or electrical). A plain propulsor is an energy *consumer* on its
+       assigned distributors; one with an integrated drive generator is also
+       a *provider* on the distributor that generator feeds.
     3. **Sources** — classified as electrical (Battery_Pack) or chemical
-       (Fuel_Tank). Sources are energy *providers* on their assigned distributors.
-    4. **Converters** — generators and fuel-cell stacks are electrical *providers*;
-       motors (DC_Motor, PMSM_Motor) are electrical *consumers*. Classification
-       also picks up converters that are sub-components of propulsors (e.g. a
-       motor on a turboprop compressor) since those are registered on the network.
+       (Fuel_Tank, by self-declared ``domain``). Sources are energy
+       *providers* on their assigned distributors.
+    4. **Converters** — classified by their self-declared ``provides_domain``:
+       generators and fuel-cell stacks are electrical *providers*; motors
+       (DC_Motor, PMSM_Motor) are electrical *consumers*. Classification also
+       picks up converters that are sub-components of propulsors (e.g. an
+       integrated drive generator) since those are not in ``network.converters``.
     5. **Systems** — all systems (avionics, environmental controls, etc.) are
        energy *consumers* on their assigned distributors.
 
@@ -174,6 +189,23 @@ def _analyze_topology(network, seg_i,  verbose=False):
         - ``generators``              : list  — Generator / Turboelectric_Generator converters
         - ``electrical_consumers``    : list  — motors and systems on electrical distributors
         - ``distributor_connections`` : dict  — {distributor_tag: {providers: [...], consumers: [...]}}
+
+    Notes
+    -----
+    Propulsors and sources self-declare their ``domain`` (see
+    ``Propulsor.__defaults__`` / ``Source.__defaults__``); providing
+    converters self-declare ``provides_domain`` (see
+    ``Converter.__defaults__``). This lets a new subclass work without
+    updating this function. Two classifications stay ``isinstance``-based on
+    purpose rather than domain: ``batteries`` (battery vs. other electrical
+    provider is psi's own definition, not a narrowing proxy) and
+    ``electrical_motors`` (specifically "motor providing propulsive assist"
+    for phi, narrower than "any non-providing converter" -- a motor driving
+    a pump should not count as electrical propulsion). A propulsor with an
+    integrated drive generator (e.g. a turbofan's IDG) is a *provider* on
+    the distributor its IDG feeds and a *consumer* on any other (e.g. the
+    fuel line it draws from) -- unlike a plain propulsor, which is always a
+    pure consumer.
     """
 
     topology = Data()
@@ -192,19 +224,8 @@ def _analyze_topology(network, seg_i,  verbose=False):
     # ------------------------------------------------------------------
     # 2. Classify propulsors
     # ------------------------------------------------------------------
-    chemical_propulsors   = []
-    electrical_propulsors = []
-
-    for propulsor in network.propulsors:
-        if isinstance(propulsor, (RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan,
-                                  RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet,
-                                  RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop,
-                                  RCAIDE.Library.Components.Powertrain.Propulsors.Internal_Combustion_Engine,
-                                  RCAIDE.Library.Components.Powertrain.Propulsors.Constant_Speed_Internal_Combustion_Engine)):
-            chemical_propulsors.append(propulsor)
-        elif isinstance(propulsor, (RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Rotor,
-                                    RCAIDE.Library.Components.Powertrain.Propulsors.Electric_Ducted_Fan)):
-            electrical_propulsors.append(propulsor)
+    chemical_propulsors   = [p for p in network.propulsors if p.domain == 'chemical']
+    electrical_propulsors = [p for p in network.propulsors if p.domain == 'electrical']
 
     topology.chemical_propulsors   = chemical_propulsors
     topology.electrical_propulsors = electrical_propulsors
@@ -212,33 +233,27 @@ def _analyze_topology(network, seg_i,  verbose=False):
     # ------------------------------------------------------------------
     # 3. Classify sources
     # ------------------------------------------------------------------
-    batteries  = []
-    fuel_tanks = []
-
-    for source in network.sources:
-        if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
-            batteries.append(source)
-        elif isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
-            fuel_tanks.append(source)
+    batteries  = [s for s in network.sources if isinstance(s, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack)]
+    fuel_tanks = [s for s in network.sources if s.domain == 'chemical']
 
     topology.batteries  = batteries
     topology.fuel_tanks = fuel_tanks
 
     # ------------------------------------------------------------------
-    # 4. Classify converters (fuel cells, generators, motors)
-    #    Also check propulsor sub-components (integrated drive generators
-    #    and motors) since those are NOT in network.converters.
+    # 4. Classify converters (fuel cells, generators, motors), plus
+    #    propulsor sub-components (integrated drive generators and
+    #    motors), since those are not in network.converters.
     # ------------------------------------------------------------------
     fuel_cells          = []
     generators          = []
     electrical_motors   = []
 
     for converter in network.converters:
-        if isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack):
-            fuel_cells.append(converter)
-        elif isinstance(converter, (RCAIDE.Library.Components.Powertrain.Converters.Generator,
-                                    RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator)):
-            generators.append(converter)
+        if converter.provides_domain == 'electrical':
+            if isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack):
+                fuel_cells.append(converter)
+            else:
+                generators.append(converter)
         elif isinstance(converter, (RCAIDE.Library.Components.Powertrain.Converters.DC_Motor,
                                     RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor)):
             electrical_motors.append(converter)
@@ -262,7 +277,7 @@ def _analyze_topology(network, seg_i,  verbose=False):
     for dist_tag in distributor_domains:
         connections[dist_tag] = Data(providers=[], consumers=[])
 
-    def _register(component, role):
+    def register(component, role):
         if component.assigned_distributors is not None:
             for dist_tag in component.assigned_distributors[0]:
                 if dist_tag in connections:
@@ -271,11 +286,8 @@ def _analyze_topology(network, seg_i,  verbose=False):
                     else:
                         connections[dist_tag].consumers.append(component)
 
-    def _register_by_domain(component, provider_domain):
-        # Registers a converter as a provider on distributors matching
-        # provider_domain (e.g. 'electrical' for a fuel cell or generator)
-        # and as a consumer on any other distributor it is assigned to
-        # (e.g. the chemical fuel line it draws fuel from).
+    def register_by_domain(component, provider_domain):
+        """Provider on distributors matching provider_domain, consumer on the rest."""
         if component.assigned_distributors is not None:
             for dist_tag in component.assigned_distributors[0]:
                 if dist_tag in connections:
@@ -285,19 +297,23 @@ def _analyze_topology(network, seg_i,  verbose=False):
                         connections[dist_tag].consumers.append(component)
 
     for source in network.sources:
-        _register(source, 'provider')
+        register(source, 'provider')
 
     for converter in fuel_cells + generators:
-        _register_by_domain(converter, 'electrical')
+        register_by_domain(converter, converter.provides_domain)
 
     for propulsor in network.propulsors:
-        _register(propulsor, 'consumer')
+        idg = getattr(propulsor, 'integrated_drive_generator', None)
+        if idg is not None:
+            register_by_domain(propulsor, idg.provides_domain)
+        else:
+            register(propulsor, 'consumer')
 
     for converter in electrical_motors:
-        _register(converter, 'consumer')
+        register(converter, 'consumer')
 
     for system in network.systems:
-        _register(system, 'consumer')
+        register(system, 'consumer')
 
     topology.distributor_connections = connections
 
@@ -340,7 +356,7 @@ def _analyze_topology(network, seg_i,  verbose=False):
 #  Hybridization Resolution
 # ==============================================================================
 
-def _resolve_hybridization(segment, topology,seg_i, verbose=False):
+def resolve_hybridization(segment, topology,seg_i, verbose=False):
     """Determine phi and psi from user input or network topology.
 
     Resolution logic:
@@ -352,15 +368,24 @@ def _resolve_hybridization(segment, topology,seg_i, verbose=False):
     - If only electrical distributors exist (no chemical path), phi = 1.0.
     - If both paths exist (hybrid), the user must specify phi on the segment.
       A default of 0.0 is used with a warning if omitted.
+    - Electrical propulsion includes both dedicated propulsors
+      (Electric_Rotor, Electric_Ducted_Fan) and a motor assisting a
+      chemical propulsor's own shaft (e.g. Turbofan.integrated_drive_motor).
 
     **Psi** (``battery_fuel_cell_power_split_ratio`` — battery vs other-source split):
 
-    - If the user set psi on the segment, use it directly.
+    - Resolved per electrical distributor from that distributor's own
+      providers (``topology.distributor_connections``), not vehicle-wide
+      existence counts -- a single vehicle-wide value cannot correctly
+      represent two buses with opposite compositions (e.g. a generator-only
+      bus needing psi=0 and an isolated battery-only bus needing psi=1).
+    - If the user set psi on the segment, it applies uniformly to every
+      electrical distributor.
     - "Other source" means a fuel cell or generator (e.g. Turboelectric_Generator) —
       anything that dispatches off ``(1 - psi)`` of demand, same as a fuel cell.
-    - If only batteries exist as electrical sources, psi = 1.0.
-    - If only fuel cells/generators exist as electrical sources, psi = 0.0.
-    - If both batteries and fuel cells/generators exist, the user must specify psi.
+    - If only batteries provide on a distributor, psi = 1.0.
+    - If only fuel cells/generators provide on a distributor, psi = 0.0.
+    - If both provide on the same distributor, the user must specify psi.
       A default of 1.0 is used with a warning if omitted.
 
     **Source power splitting**: when multiple sources of the same type feed the
@@ -372,14 +397,17 @@ def _resolve_hybridization(segment, topology,seg_i, verbose=False):
     segment : Segment
         The mission segment (carries user-specified phi/psi or None).
     topology : Data
-        Output of ``_analyze_topology``.
+        Output of ``analyze_topology``.
 
     Returns
     -------
     phi : float
         Resolved hybrid power split ratio.
-    psi : float
-        Resolved battery / fuel-cell power split ratio.
+    psi_by_distributor : dict
+        Resolved battery / fuel-cell power split ratio, keyed by electrical
+        distributor tag -- a single vehicle-wide value cannot correctly
+        represent multiple electrically-isolated buses with different
+        provider compositions.
     """
 
     # ------------------------------------------------------------------
@@ -388,11 +416,6 @@ def _resolve_hybridization(segment, topology,seg_i, verbose=False):
     phi = segment.hybrid_power_split_ratio
 
     has_chemical_propulsion = len(topology.chemical_propulsors) > 0
-    # A separate Electric_Rotor/Electric_Ducted_Fan propulsor is one way to add
-    # electrical propulsion, but a motor assisting a chemical propulsor's own
-    # shaft (e.g. Turbofan/Turbojet/Turboprop.integrated_drive_motor) is
-    # electrically-driven propulsion too, just without its own dedicated
-    # propulsor object -- both must count.
     has_electrical_propulsion = (len(topology.electrical_propulsors) > 0 or
                                   len(topology.electrical_motors)    > 0)
 
@@ -419,35 +442,42 @@ def _resolve_hybridization(segment, topology,seg_i, verbose=False):
             phi = 0.0
 
     # ------------------------------------------------------------------
-    # Resolve psi
+    # Resolve psi -- per electrical distributor (see docstring).
     # ------------------------------------------------------------------
-    psi = segment.battery_fuel_cell_power_split_ratio
+    user_psi            = segment.battery_fuel_cell_power_split_ratio
+    psi_by_distributor  = {}
 
-    if psi is None:
-        has_battery = len(topology.batteries) > 0
-        # Both fuel cells and generators (e.g. Turboelectric_Generator) are
-        # non-battery electrical providers that dispatch off (1 - psi) of demand
-        # (see compute_fuel_cell_performance / compute_turboelectric_generator_performance),
-        # so they're treated identically here.
-        has_other_source = len(topology.fuel_cells) > 0 or len(topology.generators) > 0
+    for dist_tag, domain in topology.distributor_domains.items():
+        if domain != 'electrical':
+            continue
+
+        if user_psi is not None:
+            psi_by_distributor[dist_tag] = user_psi
+            continue
+
+        providers         = topology.distributor_connections[dist_tag].providers
+        battery_providers = [p for p in providers if isinstance(p, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack)]
+        other_providers   = [p for p in providers if p not in battery_providers]
+        has_battery       = len(battery_providers) > 0
+        has_other_source  = len(other_providers)   > 0
 
         if has_battery and not has_other_source:
-            psi = 1.0
+            psi_by_distributor[dist_tag] = 1.0
         elif has_other_source and not has_battery:
-            psi = 0.0
+            psi_by_distributor[dist_tag] = 0.0
         elif has_battery and has_other_source:
             import warnings
             if verbose and seg_i == 0:
                 warnings.warn(
-                    "Network has both batteries and other electrical providers "
-                    "(fuel cells and/or generators) but "
-                    "segment.battery_fuel_cell_power_split_ratio (psi) is not set. "
-                    "Defaulting to psi = 1.0 (all battery). Set psi on the segment "
-                    "or it will be registered as an optimization variable.",
+                    f"Distributor '{dist_tag}' has both batteries and other electrical "
+                    f"providers (fuel cells and/or generators) but "
+                    f"segment.battery_fuel_cell_power_split_ratio (psi) is not set. "
+                    f"Defaulting to psi = 1.0 (all battery) for this distributor. Set psi "
+                    f"on the segment or it will be registered as an optimization variable.",
                     stacklevel=4)
-            psi = 1.0
+            psi_by_distributor[dist_tag] = 1.0
         else:
-            psi = 1.0
+            psi_by_distributor[dist_tag] = 1.0
 
     # ------------------------------------------------------------------
     # Auto-set power_split_ratio for same-type sources on a distributor
@@ -465,11 +495,12 @@ def _resolve_hybridization(segment, topology,seg_i, verbose=False):
                     for source in sources:
                         source.power_split_ratio = 1.0 / len(sources)
 
-    if verbose:
+    if verbose and seg_i == 0:
         # print segment name
         print(f'  Segment {seg_i + 1}: {segment.tag}')
         print(f'  Resolved phi = {phi}  (fuel/electric split)')
-        print(f'  Resolved psi = {psi}  (battery/fuel-cell split)')
+        for dist_tag, psi_val in psi_by_distributor.items():
+            print(f'  Resolved psi = {psi_val}  (battery/fuel-cell split, distributor: {dist_tag})')
         print('  ' + '-' * 50)
 
-    return phi, psi
+    return phi, psi_by_distributor

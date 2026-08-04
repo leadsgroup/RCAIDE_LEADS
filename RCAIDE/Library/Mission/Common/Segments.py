@@ -1,5 +1,6 @@
 import RCAIDE
 import numpy as np
+import warnings
 from tqdm import tqdm
 
 def sequential_segments(mission):
@@ -37,12 +38,6 @@ def sequential_segments(mission):
             # tag it
             segment.mission_tag = mission.tag
 
-            # the moment we see a non-converged segment, flip to red
-            if segment.state.initials != {}:
-                if not segment.state.initials.numerics.mission_solver.converged and not error_flag:
-                    pbar.colour = "red"
-                    error_flag = True
-
             # do the init/skip dance
             original_expand = segment.process.initialize.expand_state
             segment.process.initialize.expand_state(segment)
@@ -50,6 +45,20 @@ def sequential_segments(mission):
 
             segment.evaluate()
             segment.process.initialize.expand_state = original_expand
+
+            # Check this segment's own convergence immediately, not the
+            # previous segment's on the next iteration -- the old check based
+            # on segment.state.initials never caught the last segment in the
+            # mission at all, since there's no following iteration to catch it.
+            if segment.converged is False:
+                if not error_flag:
+                    pbar.colour = "red"
+                    error_flag = True
+                warnings.warn(
+                    f"Mission segment '{segment.tag}' failed to converge; "
+                    f"its results (and any downstream segments/analyses that "
+                    f"depend on them) may not be physically valid.",
+                    stacklevel=2)
             segment.state.number_of_mission_residuals = 0
             segment.state.number_of_mission_unknowns  = 0
             segment.state.number_of_network_residuals = 0

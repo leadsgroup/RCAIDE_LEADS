@@ -62,14 +62,10 @@ def compute_electric_rotor_performance(propulsor,state,network=None,center_of_gr
     
     Returns
     -------
-    thrust : numpy.ndarray
-        Thrust force vector [N]
-    moment : numpy.ndarray
-        Moment vector [N·m]
-    power : numpy.ndarray
-        Mechanical power [W]
-    power_elec : numpy.ndarray
-        Electrical power [W]
+    inputs : Data
+        Propulsor input conditions (power.electrical/mechanical/etc.)
+    outputs : Data
+        Propulsor output conditions (thrust, moment, power.propulsive, etc.)
     stored_results_flag : bool
         Flag indicating if results are stored
     stored_propulsor_tag : str

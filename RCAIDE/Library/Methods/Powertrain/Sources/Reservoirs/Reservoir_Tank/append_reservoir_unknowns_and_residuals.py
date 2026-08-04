@@ -1,6 +1,6 @@
-# RCAIDE/Library/Methods/Thermal_Management/Reservoirs/Reservoir_Tank/append_reservoir_unknowns_and_residuals.py
+# RCAIDE/Library/Methods/Powertrain/Sources/Reservoirs/Reservoir_Tank/append_reservoir_unknowns_and_residuals.py
 #
-# Created: Nov 2026
+# Created: Jul 2026, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT

@@ -15,6 +15,15 @@ from RCAIDE.Library.Components                      import Component
 class Converter(Component):
     """
     A generatic converter class object used to build all converters. Inherits from the Component class.
+
+    ``provides_domain`` is the energy domain this converter is a PROVIDER
+    of (e.g. ``'electrical'`` for a Generator/Turboelectric_Generator/fuel
+    cell), self-declared by each concrete subclass. ``None`` means it is
+    not a provider of any domain -- it is registered as a plain consumer on
+    whatever distributors it is assigned to (motors, pumps, compressors,
+    ...). This lets topology analysis
+    (``RCAIDE.Library.Mission.Common.Pre_Process.energy.analyze_topology``)
+    classify converters without a hardcoded isinstance list.
     """
 
     def __defaults__(self):
@@ -30,8 +39,11 @@ class Converter(Component):
         self.assigned_converters                = None
         self.assigned_modulators                = None
         self.assigned_distributors              = None 
-        self.identical_converters               = True 
+        # See Propulsor.identical_propulsors -- same reuse-eligibility concept,
+        # applied to converters in Network.evaluate().
+        self.identical_converters               = True
         self.efficiency                         = 1.0
+        self.provides_domain                    = None
 
     def initialize(self, network):
         return

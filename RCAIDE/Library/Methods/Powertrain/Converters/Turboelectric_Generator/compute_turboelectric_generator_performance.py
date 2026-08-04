@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Library/Methods/Powertrain/Converters/compute_turboelectric_generator_performance.py
+# RCAIDE/Library/Methods/Powertrain/Converters/Turboelectric_Generator/compute_turboelectric_generator_performance.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke
@@ -22,24 +22,23 @@ def compute_turboelectric_generator_performance(turboelectric_generator,state,ne
     
     Parameters
     ----------
-    turboelectric_generator : RCAIDE.Components.Energy.Converters.Turboelectric_Generator
+    turboelectric_generator : RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator
         The turboelectric generator component for which performance is being computed
     state : RCAIDE.Framework.Mission.Common.State
         Container for mission segment conditions
-    fuel_line : RCAIDE.Components.Energy.Distribution.Fuel_Line, optional
-        Fuel distribution system connected to the turboelectric generator
-    bus : RCAIDE.Components.Energy.Distribution.Bus, optional
-        Electrical bus connected to the generator output
-        
+    network : RCAIDE.Framework.Networks.Network, optional
+        The network this generator belongs to, used to resolve its assigned
+        distributor(s)
+
     Returns
     -------
-    P_mech : float
-        Mechanical power produced by the turboshaft engine [W]
-    P_elec : float
-        Electrical power produced by the generator [W]
+    inputs : Data
+        Generator input conditions (power.mechanical from the turboshaft, etc.)
+    outputs : Data
+        Generator output conditions (power.electrical, etc.)
     stored_results_flag : bool
         Flag indicating that results have been stored for potential reuse
-    stored_propulsor_tag : str
+    stored_converter_tag : str
         Tag identifier of the turboelectric generator with stored results
         
     Notes
@@ -50,9 +49,12 @@ def compute_turboelectric_generator_performance(turboelectric_generator,state,ne
     generator/turboshaft chain is solved backward from it to determine fuel consumption.
 
     The electrical target is computed the same way a fuel cell computes its own power share:
-    the network-wide electrical demand, split between battery/generator sources by
-    ``battery_fuel_cell_power_split_ratio`` (psi) and between multiple identical generators
-    on the same bus by this generator's own ``power_split_ratio``.
+    its own electrical distributor's total demand, split between battery/generator sources
+    by that distributor's ``battery_fuel_cell_power_split_ratio`` (psi) and between multiple
+    identical generators on the same bus by this generator's own ``power_split_ratio``. The
+    distributor is looked up from ``assigned_distributors`` rather than assumed, since this
+    generator may share the vehicle with other electrically-isolated buses resolved to a
+    different psi.
 
     **Major Assumptions**
         * The turboshaft and generator are properly connected and compatible
@@ -74,19 +76,12 @@ def compute_turboelectric_generator_performance(turboelectric_generator,state,ne
     generator.reverse_mode_computation   = turboelectric_generator.reverse_mode_computation
     turboshaft.reverse_mode_computation  = turboelectric_generator.reverse_mode_computation
 
-    # Determine what electrical distributor is connected to the electric powertrain
     for d_tag in turboelectric_generator.assigned_distributors[0]:
         if type(network.distributors[d_tag]) == RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus:
             distributor = network.distributors[d_tag]
 
-    # Electrical power this generator must supply: the network-wide electrical demand,
-    # split between battery/generator sources by psi and between multiple identical
-    # generators by power_split_ratio (mirrors compute_fuel_cell_performance's P_stack).
-    psi = state.conditions.energy.battery_fuel_cell_power_split_ratio
-    if 'electrical_power' in state.unknowns.network:
-        total_electrical_demand = state.unknowns.network['electrical_power']
-    else:
-        total_electrical_demand = state.conditions.energy.inputs.power.electrical
+    psi = state.conditions.energy.battery_fuel_cell_power_split_ratio[distributor.tag]
+    total_electrical_demand = state.conditions.energy.distributors[distributor.tag].outputs.power.electrical
     turboelectric_generator_conditions.outputs.power.electrical = total_electrical_demand * turboelectric_generator.power_split_ratio * (1. - psi)
 
     # link turboelectric generator outputs to generator outputs
@@ -153,7 +148,8 @@ def reuse_stored_turboelectric_generator_data(turboelectric_generator,state,netw
     low_pressure_turbine_0     = network.converters[stored_converter_tag][turboshaft_0.tag].low_pressure_turbine
     core_nozzle_0              = network.converters[stored_converter_tag][turboshaft_0.tag].core_nozzle
 
-    # deep copy results 
+    # deep copy results
+    conditions.energy.converters[turboelectric_generator.tag] = deepcopy(conditions.energy.converters[stored_converter_tag]        )
     conditions.energy.converters[generator.tag]             = deepcopy(conditions.energy.converters[generator_0.tag]            )
     conditions.energy.converters[turboshaft.tag]            = deepcopy(conditions.energy.converters[turboshaft_0.tag]           )
     conditions.energy.converters[ram.tag]                   = deepcopy(conditions.energy.converters[ram_0.tag]                  )

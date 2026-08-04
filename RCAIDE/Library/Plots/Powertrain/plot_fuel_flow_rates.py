@@ -77,10 +77,11 @@ def plot_fuel_flow_rates(results,
                                linewidth = ps.line_width,
                                label = label)
 
-            # ---------------- DISTRIBUTORS ----------------
-            for j, distributor in enumerate(network.distributors):
+            # ---------------- DISTRIBUTORS (fuel lines only) ----------------
+            fuel_lines = [d for d in network.distributors if isinstance(d, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line)]
+            for j, distributor in enumerate(fuel_lines):
 
-                distributor_flow_rate = results.segments[i].conditions.energy.distributors[distributor.tag].fuel_mass_flow_rate
+                distributor_flow_rate = results.segments[i].conditions.energy.distributors[distributor.tag].mass_flow_rate[:,0]
 
                 label = distributor.tag if i==0 else None
 
@@ -91,21 +92,21 @@ def plot_fuel_flow_rates(results,
                                linewidth = ps.line_width,
                                label = label)
 
-                # ---------------- CONVERTERS ----------------
-                for converter_group in distributor.assigned_converters:
-                    for m, converter_tag in enumerate(converter_group):
+                # ---------------- CONVERTERS assigned to this fuel line ----------------
+                converters_on_line = [c for c in network.converters if c.assigned_distributors != None and distributor.tag in c.assigned_distributors[0]]
+                for m, converter in enumerate(converters_on_line):
 
-                        converter_flow_rate = results.segments[i].conditions.energy.converters[converter_tag].fuel_mass_flow_rate[:,0]
+                    converter_flow_rate = results.segments[i].conditions.energy.converters[converter.tag].fuel_mass_flow_rate[:,0]
 
-                        marker_style = converter_markers[m % len(converter_markers)]
-                        label = converter_tag if i==0 and j==0 else None
+                    marker_style = converter_markers[m % len(converter_markers)]
+                    label = converter.tag if i==0 and j==0 else None
 
-                        axis_conv.plot(time,
-                                       converter_flow_rate,
-                                       color = line_colors[i],
-                                       marker = marker_style,
-                                       linewidth = ps.line_width,
-                                       label = label)
+                    axis_conv.plot(time,
+                                   converter_flow_rate,
+                                   color = line_colors[i],
+                                   marker = marker_style,
+                                   linewidth = ps.line_width,
+                                   label = label)
 
     if show_legend:
         axis_prop.legend(fontsize=ps.legend_font_size)

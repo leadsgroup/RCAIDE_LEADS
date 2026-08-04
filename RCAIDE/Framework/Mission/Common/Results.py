@@ -470,8 +470,11 @@ class Results(Conditions):
         self.energy.outputs.power.pneumatic                   = ones_1col * 0 
         self.energy.outputs.power.hydraulic                   = ones_1col * 0 
         self.energy.outputs.power.thermal                     = ones_1col * 0 
-        self.energy.hybrid_power_split_ratio                  = ones_1col * 0 
-        self.energy.battery_fuel_cell_power_split_ratio       = ones_1col * 0 
+        self.energy.hybrid_power_split_ratio                  = ones_1col * 0
+        # Keyed by electrical distributor tag once Pre_Process.energy runs
+        # (a single vehicle-wide psi can't represent multiple isolated
+        # electrical buses with different provider compositions).
+        self.energy.battery_fuel_cell_power_split_ratio       = Conditions()
         self.energy.recharging                                = False
         
         # ----------------------------------------------------------------------------------------------------------------------         

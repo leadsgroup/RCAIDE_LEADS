@@ -17,5 +17,6 @@ RCAIDE.Library.Methods.Powertrain.Converters
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-from .append_pump_conditions   import append_pump_conditions                     
+from .append_pump_conditions   import append_pump_conditions
 from .compute_pump_performance import compute_pump_performance
+from .design_pump              import design_pump

@@ -14,8 +14,7 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_pe
 from RCAIDE.Library.Components import Component
 
 # python imports 
-import numpy as np 
-import scipy.linalg as sla
+import numpy as np
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Network
@@ -121,11 +120,9 @@ class Network(Component):
         Where phi and psi are set per mission segment
     RCAIDE.Library.Mission.Common.Pre_Process.energy
         Topology analysis and phi/psi resolution
-    RCAIDE.Library.Framework.Networks.Fuel
+    RCAIDE.Framework.Networks.Fuel
         Fuel network class
-    RCAIDE.Library.Framework.Networks.Fuel_Cell
-        Fuel_Cell network class
-    RCAIDE.Library.Framework.Networks.Electric
+    RCAIDE.Framework.Networks.Electric
         All-Electric network class
     """
 
@@ -175,19 +172,35 @@ class Network(Component):
         # Propulsors
         # ----------------------------------------------------------
         stored_results_flag  = False
+        stored_propulsor_tag = None
         for propulsor in propulsors:
             if propulsor.active:
-                if propulsor.identical_propulsors == False or stored_results_flag == False: 
+                # "identical_propulsors" only makes reuse valid within a run of
+                # truly identical propulsors -- e.g. a vehicle with both cruise
+                # propellers and lift rotors has two distinct groups, and a
+                # propulsor must never reuse another group's results just
+                # because it inherited the default identical_propulsors=True.
+                # assigned_distributors differing is a reliable, always-available
+                # signal that the propulsor belongs to a different group.
+                same_group = (stored_results_flag == True and
+                              propulsor.assigned_distributors == propulsors[stored_propulsor_tag].assigned_distributors)
+                if propulsor.identical_propulsors == False or not same_group:
                     inputs, outputs, stored_results_flag, stored_propulsor_tag = propulsor.compute_performance(state,network,center_of_gravity=center_of_gravity)
                 else:
                     inputs, outputs = propulsor.reuse_stored_data(state,network,stored_propulsor_tag=stored_propulsor_tag, center_of_gravity=center_of_gravity)
 
-                if propulsor.reverse_thrust == True:
-                    total_thrust = outputs.thrust * -1
-                    total_moment = outputs.moment * -1
+                propulsor_thrust = outputs.thrust
+                propulsor_moment = outputs.moment
+                # network.reverse_thrust is the network-wide (all propulsors)
+                # flag vehicle configs commonly set; propulsor.reverse_thrust
+                # allows overriding it per propulsor. Either being True reverses
+                # this propulsor's contribution.
+                if propulsor.reverse_thrust == True or network.reverse_thrust == True:
+                    propulsor_thrust = propulsor_thrust * -1
+                    propulsor_moment = propulsor_moment * -1
 
-                total_thrust           += outputs.thrust
-                total_moment           += outputs.moment 
+                total_thrust           += propulsor_thrust
+                total_moment           += propulsor_moment
                 total_mdot             += state.conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate  
                 net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)   
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
@@ -238,14 +251,21 @@ class Network(Component):
         # ----------------------------------------------------------
         # Converters 
         # ----------------------------------------------------------                
-        stored_results_flag  = False
-        for converter in converters:   
-            if converter.active: 
-                if converter.identical_converters == False or stored_results_flag == False: 
+        stored_results_flag   = False
+        stored_converter_tag  = None
+        for converter in converters:
+            if converter.active:
+                # See the matching comment on the propulsor loop above: reuse is
+                # only valid within a run of truly identical converters sharing
+                # the same distributor group, not just "any converter computed
+                # so far in this network."
+                same_group = (stored_results_flag == True and
+                              converter.assigned_distributors == converters[stored_converter_tag].assigned_distributors)
+                if converter.identical_converters == False or not same_group:
                     converter.reverse_mode_computation = True
-                    inputs, outputs, stored_results_flag, stored_conveter_tag = converter.compute_performance(state,network)
+                    inputs, outputs, stored_results_flag, stored_converter_tag = converter.compute_performance(state,network)
                 else:
-                    inputs, outputs = converter.reuse_stored_data(state,network,stored_conveter_tag=stored_conveter_tag)  
+                    inputs, outputs = converter.reuse_stored_data(state,network,stored_conveter_tag=stored_converter_tag)
                 total_mdot             += state.conditions.energy.converters[converter.tag].fuel_mass_flow_rate
                 net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
                 net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
@@ -333,8 +353,10 @@ class Network(Component):
     def unpack_unknowns(self,segment):
         """Unpacks the unknowns set in the mission to be available for the mission.
     
-        Assumptions:
-        N/A
+        Assumptions: 
+        See the matching comment in Network.evaluate(): a propulsor
+        can only be treated as identical to the most recently
+        unpacked one if they also share the same distributor group.
         
         Source:
         N/A
@@ -348,16 +370,22 @@ class Network(Component):
         N/A
         """            
          
-        unknowns(segment)  
+        unknowns(segment)
         for network in segment.analyses.vehicle.networks:
+            reference_distributors = None
             for p_i, propulsor in enumerate(network.propulsors):
-                if propulsor.active and (propulsor.identical_propulsors == False or p_i == 0): 
-                    propulsor.unpack_unknowns(segment) 
-            for s_i, source in enumerate(network.sources):
-                if source.active and (source.identical_sources == False or s_i == 0): 
-                    source.unpack_unknowns(segment) 
+                if propulsor.active:
+                    if propulsor.identical_propulsors == False or reference_distributors is None or propulsor.assigned_distributors != reference_distributors:
+                        propulsor.unpack_unknowns(segment)
+                        reference_distributors = propulsor.assigned_distributors
+            reference_source_distributors = None
+            for source in network.sources:
+                if source.active:
+                    if source.identical_sources == False or reference_source_distributors is None or source.assigned_distributors != reference_source_distributors:
+                        source.unpack_unknowns(segment)
+                        reference_source_distributors = source.assigned_distributors
             for modulator in network.modulators:
-                modulator.unpack_unknowns(segment) 
+                modulator.unpack_unknowns(segment)
             for distributor in network.distributors:
                 distributor.unpack_unknowns(segment) 
             for system in network.systems:
@@ -386,14 +414,20 @@ class Network(Component):
            N/A
        """         
         for network in segment.analyses.vehicle.networks:
-            for p_i, propulsor in enumerate(network.propulsors):    
-                if propulsor.active and (propulsor.identical_propulsors == False or p_i == 0):
-                    propulsor.pack_residuals(segment) 
-            for s_i, source in enumerate(network.sources):
-                if source.active and (source.identical_sources == False or s_i == 0): 
-                    source.pack_residuals(segment) 
+            reference_distributors = None
+            for p_i, propulsor in enumerate(network.propulsors):
+                if propulsor.active:
+                    if propulsor.identical_propulsors == False or reference_distributors is None or propulsor.assigned_distributors != reference_distributors:
+                        propulsor.pack_residuals(segment)
+                        reference_distributors = propulsor.assigned_distributors
+            reference_source_distributors = None
+            for source in network.sources:
+                if source.active:
+                    if source.identical_sources == False or reference_source_distributors is None or source.assigned_distributors != reference_source_distributors:
+                        source.pack_residuals(segment)
+                        reference_source_distributors = source.assigned_distributors
             for modulator in network.modulators:
-                modulator.pack_residuals(segment) 
+                modulator.pack_residuals(segment)
             for distributor in network.distributors:
                 distributor.pack_residuals(segment) 
             for system in network.systems:

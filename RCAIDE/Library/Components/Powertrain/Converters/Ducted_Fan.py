@@ -134,9 +134,8 @@ class Ducted_Fan(Converter):
 
         Parameters
         ----------
-        airfoil : Data
-            Airfoil data container with aerodynamic properties for the duct section.
-            Must be of type Data().
+        airfoil : RCAIDE.Library.Components.Airfoils.Airfoil
+            Airfoil component with aerodynamic properties for the duct section.
 
         Returns
         -------
@@ -151,7 +150,7 @@ class Ducted_Fan(Converter):
         Raises
         ------
         Exception
-            If input airfoil is not of type Data()
+            If input airfoil is not of type Airfoil
         """
 
         # Assert database type

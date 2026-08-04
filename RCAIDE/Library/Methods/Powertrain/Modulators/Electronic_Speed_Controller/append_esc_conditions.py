@@ -38,21 +38,4 @@ def append_esc_conditions(esc,segment):
     
     
     
-    return 
-
-def append_esc_segment_conditions(self, segment):  
-    energy_conditions  = segment.state.conditions.energy     
-    energy_conditions.modulators[self.tag].inputs.power.propulsive[:,0]    = 0.0
-    energy_conditions.modulators[self.tag].inputs.power.mechanical[:,0]    = 0.0 
-    energy_conditions.modulators[self.tag].inputs.power.electrical[:,0]    = 0.0 
-    energy_conditions.modulators[self.tag].inputs.power.chemical[:,0]      = 0.0
-    energy_conditions.modulators[self.tag].inputs.power.pneumatic[:,0]     = 0.0 
-    energy_conditions.modulators[self.tag].inputs.power.hydraulic[:,0]     = 0.0 
-    energy_conditions.modulators[self.tag].inputs.power.thermal[:,0]       = 0.0 
-    energy_conditions.modulators[self.tag].outputs.power.propulsive[:,0]   = 0.0
-    energy_conditions.modulators[self.tag].outputs.power.mechanical[:,0]   = 0.0   
-    energy_conditions.modulators[self.tag].outputs.power.electrical[:,0]   = 0.0 
-    energy_conditions.modulators[self.tag].outputs.power.chemical[:,0]     = 0.0
-    energy_conditions.modulators[self.tag].outputs.power.pneumatic[:,0]    = 0.0   
-    energy_conditions.modulators[self.tag].outputs.power.hydraulic[:,0]    = 0.0   
-    energy_conditions.modulators[self.tag].outputs.power.thermal[:,0]      = 0.0  
+    return

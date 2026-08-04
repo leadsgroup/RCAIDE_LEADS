@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Powertrain/Converters/Ducted_Fan/compute_ducted_fan_performance.py
+# RCAIDE/Library/Methods/Powertrain/Converters/Ducted_Fan/Performance/Blade_Element_Momentum_Theory/BEMT_performance.py
 
 # 
 # Created:  Jan 2025, M. Clarke
@@ -23,23 +23,21 @@ def BEMT_performance(ducted_fan,conditions):
 
     Parameters
     ----------
-    propulsor : Converter
-        Ducted fan propulsor component containing the ducted fan
-    state : Conditions
-        Mission segment state conditions
+    ducted_fan : RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan
+        Ducted fan component to evaluate
+    conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Mission segment conditions
 
     Returns
     -------
     None
-        Updates state.conditions.energy.converters[ducted_fan.tag] with computed performance data:
+        Updates conditions.energy.converters[ducted_fan.tag] with computed performance data:
             - thrust : array(N,3)
                 Thrust vector [N]
             - power : array(N,1)
                 Power required [W]
             - torque : array(N,1)
                 Shaft torque [N-m]
-            - moment : array(N,3)
-                Moment vector [N-m]
             - efficiency : array(N,1)
                 Propulsive efficiency [-]
             - tip_mach : array(N,1)

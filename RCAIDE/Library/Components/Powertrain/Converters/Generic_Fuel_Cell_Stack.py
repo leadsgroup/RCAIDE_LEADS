@@ -49,6 +49,7 @@ class Generic_Fuel_Cell_Stack(Converter):
         None
         """           
         self.tag                                        = 'fuel_cell'
+        self.provides_domain                            = 'electrical'
         self.mass_properties.mass                       = 1.0
         self.energy_density                             = 0.0
         self.current_capacitor_charge                   = 0.0

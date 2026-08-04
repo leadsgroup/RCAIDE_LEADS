@@ -748,11 +748,8 @@ def vehicle_setup(new_regression=True) :
             lift_propulsor_1.rotor[key] = loaded_lift_propulsor.rotor[key] 
         for key,item in lift_propulsor_1.motor.items():
             lift_propulsor_1.motor[key] = loaded_lift_propulsor.motor[key]
-            
-    network.propulsors.append(lift_propulsor_1)    
-            
- 
-    # Front Rotors Locations 
+
+    # Front Rotors Locations
     origins = [[  -0.073,  1.950, 1.2], [-0.073  , -1.950  , 1.2],[ 4.440 ,  1.950 , 1.2], [ 4.440  , -1.950  , 1.2],
                [ 0.219 ,  4.891 , 1.2], [ 0.219  , - 4.891 , 1.2], [ 4.196 ,  4.891 , 1.2], [ 4.196  , - 4.891 , 1.2]]
     orientation_euler_angles = [[10.0*Units.degrees,np.pi/2.,0.],[-10.0* Units.degrees,np.pi/2.,0.], [10.0* Units.degrees,np.pi/2.,0.], [-10.0* Units.degrees,np.pi/2.,0.], 
@@ -773,6 +770,12 @@ def vehicle_setup(new_regression=True) :
         propulsor_i.nacelle.tag                           = 'lift_rotor_nacelle_' + str(i + 1)  
         propulsor_i.nacelle.origin                        = [origins[i]]    
         propulsor_i.assigned_distributors = [[lift_bus.tag]]
+        if i == 0:
+            # First lift propulsor in the network's propulsor list after the
+            # cruise propulsors: must compute its own performance rather than
+            # reusing cruise_propulsor_1's (identical_propulsors reuse is only
+            # valid within a group of truly identical propulsors).
+            propulsor_i.identical_propulsors = False
         network.propulsors.append(propulsor_i)
         assigned_propulsor_list.append(propulsor_i.tag)
 

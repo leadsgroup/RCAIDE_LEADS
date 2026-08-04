@@ -1,6 +1,6 @@
-# RCAIDE/Library/Missions/Segments/converge.py
-# 
-# 
+# RCAIDE/Library/Mission/Solver/solver.py
+#
+#
 # Created:  Jul 2023, M. Clarke  
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -147,8 +147,20 @@ def iterate_root_finder(unknowns, segment):
 
     Properties Used:
     N/A
-    """       
+    """
     if isinstance(unknowns, np.ndarray):
+        # fsolve has no native bounds support, unlike the "optimize"/SLSQP
+        # path -- without this, a proposed unknown (e.g. a [0,1] power split
+        # ratio or bounded control variable) can wander outside its declared
+        # bounds mid-iteration. Clip to the same bounds the SLSQP path
+        # enforces natively before evaluating the residual.
+        lower = segment.state.unknowns_lower_bounds.mission.pack_array()
+        upper = segment.state.unknowns_upper_bounds.mission.pack_array()
+        if segment.state.numerics.network_solver.type is None:
+            lower = np.concatenate([lower, segment.state.unknowns_lower_bounds.network.pack_array()])
+            upper = np.concatenate([upper, segment.state.unknowns_upper_bounds.network.pack_array()])
+        unknowns = np.clip(unknowns, lower, upper)
+
         mission_vec = segment.state.unknowns.mission.pack_array()
         mission_len = mission_vec.size
         segment.state.unknowns.mission.unpack_array(unknowns[:mission_len])

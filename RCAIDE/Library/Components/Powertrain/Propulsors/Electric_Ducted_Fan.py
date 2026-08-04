@@ -68,7 +68,8 @@ class Electric_Ducted_Fan(Propulsor):
     """
     def __defaults__(self):    
         # setting the default values
-        self.tag                          = 'electric_ducted_fan'    
+        self.tag                          = 'electric_ducted_fan'
+        self.domain                       = 'electrical'
         self.motor                        = None
         self.ducted_fan                   = None 
         self.electronic_speed_controller  = None

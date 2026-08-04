@@ -144,7 +144,8 @@ class Turbofan(Propulsor):
     """
     def __defaults__(self):    
         # setting the default values 
-        self.tag                                        = 'Turbofan'  
+        self.tag                                        = 'Turbofan'
+        self.domain                                     = 'chemical'
         self.nacelle                                    = None 
         self.fan                                        = None 
         self.ram                                        = None 
@@ -172,9 +173,9 @@ class Turbofan(Propulsor):
         self.reference_pressure                         = 1.01325*10**5 
         self.design_thrust                              = 0.0 
         self.design_power_offtake                       = 0.0
-        self.mass_flow_rate_design                      = 0.0
-        self.design_voltage                             = 0.0 
-        self.OpenVSP_flow_through                       = False 
+        self.design_mass_flow_rate                      = 0.0
+        self.design_voltage                             = 0.0
+        self.OpenVSP_flow_through                       = False
         
     def append_operating_conditions(self, segment):
         """

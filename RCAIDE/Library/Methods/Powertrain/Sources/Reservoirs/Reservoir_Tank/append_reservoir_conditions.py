@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Thermal_Management/Reservoirs/Reservoir_Tank/append_reservoir_conditions.py
+# RCAIDE/Library/Methods/Powertrain/Sources/Reservoirs/Reservoir_Tank/append_reservoir_conditions.py
 # 
 # Created:  Aug 2024, S. Shekar
 

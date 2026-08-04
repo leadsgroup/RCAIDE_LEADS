@@ -72,6 +72,7 @@
     "yz_plane_symmetric": false,
     "active": true,
     "wing_mounted": true,
+    "domain": "electrical",
     "nacelle": {
         "tag": "nacelle",
         "mass_properties": {
@@ -350,6 +351,7 @@
         "assigned_distributors": null,
         "identical_converters": true,
         "efficiency": 1.0,
+        "provides_domain": null,
         "number_of_blades": 3,
         "tip_radius": 1.4,
         "hub_radius": 0.1,
@@ -14372,6 +14374,7 @@
         "assigned_distributors": null,
         "identical_converters": true,
         "efficiency": 0.9,
+        "provides_domain": null,
         "diameter": 0.0,
         "length": 0.0,
         "gearbox": {

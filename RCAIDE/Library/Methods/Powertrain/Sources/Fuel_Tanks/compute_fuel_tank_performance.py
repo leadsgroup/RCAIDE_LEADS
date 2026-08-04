@@ -1,6 +1,6 @@
-# RCAIDE/Methods/Powertrain/Sources/Fuel_Tanks/compute_fuel_tank_properties.py
-# 
-# 
+# RCAIDE/Library/Methods/Powertrain/Sources/Fuel_Tanks/compute_fuel_tank_performance.py
+#
+#
 # Created:  Jul 2023, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -8,9 +8,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # RCAIDE imports
 import RCAIDE
-from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.update_moments_of_inertia import update_fuel_tank_moment_of_inertia
 
-# package imports 
+# package imports
 import numpy as np  
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHOD

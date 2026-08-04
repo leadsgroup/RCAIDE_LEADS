@@ -95,7 +95,8 @@ class Turboprop(Propulsor):
     """ 
     def __defaults__(self):    
         # setting the default values
-        self.tag                                        = 'turboprop'   
+        self.tag                                        = 'turboprop'
+        self.domain                                     = 'chemical'
         self.nacelle                                    = None 
         self.compressor                                 = None  
         self.turbine                                    = None  

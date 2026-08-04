@@ -28,18 +28,18 @@ def compute_power_from_throttle(engine,conditions):
                 Altitude below which power remains constant [m]
             - power_specific_fuel_consumption : float
                 Power specific fuel consumption [kg/(W·s)]
-    engine_conditions : RCAIDE.Framework.Mission.Common.Conditions
-        Engine operating conditions with:
-            - throttle : numpy.ndarray
-                Throttle setting [dimensionless]
-            - speed : numpy.ndarray
-                Engine angular velocity [rad/s]
     conditions : RCAIDE.Framework.Mission.Common.Conditions
         Flight conditions with:
             - freestream.altitude : numpy.ndarray
                 Current altitude [m]
             - freestream.delta_ISA : numpy.ndarray
                 Temperature offset from standard atmosphere [K]
+            - energy.converters[engine.tag] : RCAIDE.Framework.Mission.Common.Conditions
+                Engine operating conditions, with:
+                    - throttle : numpy.ndarray
+                        Throttle setting [dimensionless]
+                    - omega : numpy.ndarray
+                        Engine angular velocity [rad/s]
 
     Returns
     -------

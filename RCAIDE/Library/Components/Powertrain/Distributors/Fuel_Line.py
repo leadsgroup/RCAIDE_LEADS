@@ -28,8 +28,9 @@ class Fuel_Line(Distributor):
     fuel_tanks : Container
         Collection of fuel tanks connected to this line
         
-    assigned_propulsors : list
-        List of propulsion systems supplied by this fuel line
+    assigned_distributors : list
+        List of distributors (inherited from Distributor) that reference this
+        fuel line by tag
         
     active : bool
         Flag indicating if the fuel line is operational (default: True)

@@ -30,11 +30,8 @@ def append_electric_ducted_fan_conditions(propulsor, segment):
                 Segment state
                 - ones_row : function
                     Function to create array of ones with specified length
-    energy_conditions : RCAIDE.Framework.Mission.Common.Conditions
-        Energy conditions container where electric ducted fan conditions will be stored
-    noise_conditions : RCAIDE.Framework.Mission.Common.Conditions
-        Noise conditions container where electric ducted fan noise conditions will be stored
-    
+
+
     Returns
     -------
     None

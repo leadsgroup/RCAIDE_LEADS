@@ -1,56 +1,54 @@
-# RCAIDE/Library/Methods/Powertrain/Converters/Pump/compute_cryogenic_pump_performance.py
+# RCAIDE/Library/Methods/Powertrain/Converters/Cryogenic_Pump/compute_cryogenic_pump_performance.py
 #
-# 
+#
 # Created:  Sep. 2025, M. Guidotti
 
-def compute_cryogenic_pump_performance(pump, line, state):
+# ----------------------------------------------------------------------------------------------------------------------
+#  IMPORT
+# ----------------------------------------------------------------------------------------------------------------------
+import RCAIDE
 
-    pump_conditions = state.conditions.converters[pump.tag]
+# ----------------------------------------------------------------------------------------------------------------------
+#  compute_cryogenic_pump_performance
+# ----------------------------------------------------------------------------------------------------------------------
+def compute_cryogenic_pump_performance(pump, state, network):
+    """
+    Computes the performance of an electrically-driven cryogenic (LH2) boost pump.
 
-    # === Pump Fundamental Equations (from guiding theory) ===
-    # Eq (3.2): Volumetric flow rate from mass flow
-    Q = pump.mass_flow_rate / line.density
-    pump_conditions.outputs.volumetric_flow_rate = Q
+    The pump's shaft-power requirement is not recomputed from a fixed design
+    pressure rise -- it is read from the fuel line's own distribution-loss
+    calculation (RCAIDE.Library.Methods.Powertrain.Distributors.Fuel_Line.
+    compute_fuel_line_distribution_losses), which has already accumulated the
+    actual flow-driven hydraulic power needed by every propulsor assigned to
+    the line (propulsors are evaluated before converters, so this value is
+    populated by the time the pump runs). The pump takes its distributor_split
+    share of that demand and draws the corresponding electrical power from its
+    assigned bus (fed by the engines' integrated drive generators).
+    """
+    pump_conditions = state.conditions.energy.converters[pump.tag]
 
-    # Eq (3.3a): Hydraulic output power
-    W_out = pump.delta_pressure * Q
-    pump_conditions.outputs.hydraulic_power_out = W_out
+    # Resolve the fuel line (chemical flow this pump moves) and the electrical
+    # bus (its actual power source) from among this pump's assigned distributors
+    fuel_line = None
+    for d_tag in pump.assigned_distributors[0]:
+        distributor = network.distributors[d_tag]
+        if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
+            fuel_line = distributor
+    fuel_line_conditions = state.conditions.energy.distributors[fuel_line.tag]
 
-    # Eq (3.3b): Input mechanical power (if torque & omega available)
-    if hasattr(pump, 'torque') and hasattr(pump, 'omega'):
-        W_in = pump.torque * pump.omega
-        pump_conditions.outputs.mechanical_power_in = W_in
-    else:
-        W_in = None
+    # This pump's share of the line's already-computed flow-driven power demand
+    my_power = pump.distributor_split * fuel_line_conditions.inputs.power.hydraulic
 
-    # Eq (3.4): Ideal displacement pump flow (if displacement & omega exist)
-    if hasattr(pump, 'displacement') and hasattr(pump, 'omega'):
-        Q_disp = pump.displacement * pump.omega
-        pump_conditions.outputs.ideal_displacement_flow = Q_disp
+    # Electrical power drawn to produce that shaft work
+    total_efficiency = pump.pump_efficiency * pump.turbine_efficiency
+    electrical_power  = my_power / total_efficiency
 
-    # Eq (3.5): Torque for ideal displacement pump (if displacement exists)
-    if hasattr(pump, 'displacement'):
-        T_required = pump.displacement * pump.delta_pressure
-        pump_conditions.outputs.ideal_required_torque = T_required
+    pump_conditions.inputs.p_in             = pump.design_inlet_pressure  * state.ones_row(1)
+    pump_conditions.outputs.p_out           = pump.design_outlet_pressure * state.ones_row(1)
+    pump_conditions.outputs.power.hydraulic = my_power
+    pump_conditions.inputs.power.electrical = electrical_power
 
-    # Eq (3.6): Theoretical piston pump displacement (if n pistons & piston volume available)
-    if hasattr(pump, 'num_pistons') and hasattr(pump, 'piston_volume') and hasattr(pump, 'omega'):
-        Q_th = pump.num_pistons * pump.omega * pump.piston_volume
-        pump_conditions.outputs.theoretical_piston_flow = Q_th
+    stored_results_flag   = True
+    stored_converter_tag  = pump.tag
 
-    pump_conditions.inputs.pressure  = line.pressure
-    pump_conditions.outputs.pressure = line.pressure + pump.delta_pressure
-    pump_conditions.outputs.power    = pump.mass_flow_rate * pump.delta_pressure / (line.density * pump.efficiency)
-
-    stored_results_flag            = True
-    stored_converter_tag           = pump.tag  
-
-    pump_conditions.power.propulsive               = 0.0 * state.ones_row(1)
-    pump_conditions.power.mechanical               = 0.0 * state.ones_row(1)
-    pump_conditions.power.electrical               = pump_conditions.inputs.power 
-    pump_conditions.power.chemical                 = 0.0 * state.ones_row(1)
-    pump_conditions.power.pneumatic                = 0.0 * state.ones_row(1)
-    pump_conditions.power.hydraulic                = pump_conditions.outputs.power 
-    pump_conditions.power.thermal                  = 0.0 * state.ones_row(1)
-
-    return  pump_conditions.power, stored_results_flag, stored_converter_tag
+    return pump_conditions.inputs, pump_conditions.outputs, stored_results_flag, stored_converter_tag

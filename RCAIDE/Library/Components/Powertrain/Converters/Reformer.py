@@ -107,10 +107,18 @@ class Reformer(Converter):
         self.V_cat        = 9.653    # [cm**3]           Catalyst bed volume
 
     def append_operating_conditions(self, segment):
-        """Attach motor operating conditions to the segment's energy conditions."""
+        """Attach reformer operating conditions to the segment's energy conditions."""
         append_reformer_conditions(self, segment)
         return
-    
-    def compute_performance(self,state):
-        inputs, outputs, stored_results_flag,stored_converter_tag =  compute_reformer_performance(self,state)
-        return inputs, outputs, stored_results_flag,stored_converter_tag
+
+    def compute_performance(self,state,network=None):
+        reformer_conditions = state.conditions.energy.converters[self.tag]
+        power, stored_results_flag, stored_converter_tag = compute_reformer_performance(self, reformer_conditions, state)
+
+        # The reformer converts fuel to reformate gas; it doesn't produce or
+        # consume power on any bus, so the same (all-zero) power values are
+        # reported as both input and output -- net contribution is zero.
+        reformer_conditions.inputs.power  = power
+        reformer_conditions.outputs.power = power
+
+        return reformer_conditions.inputs, reformer_conditions.outputs, stored_results_flag, stored_converter_tag

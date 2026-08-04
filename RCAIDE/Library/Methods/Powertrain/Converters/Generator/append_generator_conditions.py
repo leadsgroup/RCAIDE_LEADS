@@ -22,9 +22,7 @@ def append_generator_conditions(generator, segment):
                 Segment state
                     - ones_row : function
                         Function to create array of ones with specified length
-    conditions : RCAIDE.Framework.Mission.Common.Conditions
-        Energy conditions container where generator conditions will be stored
-    
+
     Returns
     -------
     None

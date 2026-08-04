@@ -1,8 +1,10 @@
-# RCAIDE/Library/Methods/Powertrain/Converters/Ram/__init__.py
+# RCAIDE/Library/Methods/Powertrain/Converters/Ram_Air_Turbine/__init__.py
 
 """
-This module provides functionality for modeling ram air compression in powertrains. It includes methods for computing 
-ram compression performance and appending ram conditions to simulation results.
+This module provides functionality for modeling ram air turbines (RATs) -- emergency
+power generation devices deployed into the freestream airflow -- in powertrains. It
+includes methods for computing RAT performance and appending RAT conditions to
+simulation results.
 
 See Also
 --------

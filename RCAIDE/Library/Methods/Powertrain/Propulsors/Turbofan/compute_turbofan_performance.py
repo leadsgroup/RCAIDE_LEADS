@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Energy/Propulsors/Turbofan/compute_turbofan_performance.py
+# RCAIDE/Library/Methods/Powertrain/Propulsors/Turbofan/compute_turbofan_performance.py
 # 
 # 
 # Created:  Jul 2024, RCAIDE Team
@@ -138,14 +138,10 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     
     Returns
     -------
-    thrust_vector : numpy.ndarray
-        Thrust force vector [N]
-    moment : numpy.ndarray
-        Moment vector [N·m]
-    power : numpy.ndarray
-        Shaft power output [W]
-    power_elec : numpy.ndarray
-        Electrical power input/output [W]
+    inputs : Data
+        Turbofan input conditions (power.electrical/mechanical/etc.)
+    outputs : Data
+        Turbofan output conditions (thrust, moment, power.propulsive, etc.)
     stored_results_flag : bool
         Flag indicating if results are stored
     stored_propulsor_tag : str

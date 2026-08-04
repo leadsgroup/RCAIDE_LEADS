@@ -30,11 +30,7 @@ def append_turbojet_conditions(propulsor, segment):
                 Segment state
                     - ones_row : function
                         Function to create array of ones with specified length
-    energy_conditions : RCAIDE.Framework.Mission.Common.Conditions
-        Energy conditions container where turbojet conditions will be stored
-    noise_conditions : RCAIDE.Framework.Mission.Common.Conditions
-        Noise conditions container where turbojet noise conditions will be stored
-    
+
     Returns
     -------
     None

@@ -22,7 +22,6 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Generator.design_optimal_gener
 
 # Python package imports
 import numpy as np
-from copy import deepcopy
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Design Turbofan

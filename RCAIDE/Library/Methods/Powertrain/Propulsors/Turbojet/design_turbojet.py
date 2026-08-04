@@ -55,7 +55,7 @@ def design_turbojet(turbojet):
     -------
     None
         Updates turbojet object attributes in-place:
-            - mass_flow_rate_design : float
+            - design_mass_flow_rate : float
                 Design core mass flow rate [kg/s]
             - design_core_massflow : float
                 Core mass flow at design point [kg/s]

@@ -12,9 +12,8 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Cross_Flow_Heat_Exchanger.cros
 from RCAIDE.Framework.Optimization             import Nexus
 from RCAIDE.Framework.Optimization.Packages.scipy     import scipy_setup
 
-# Python package imports   
-import numpy as np  
-import time
+# Python package imports
+import numpy as np
 import os
 import sys
 

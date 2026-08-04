@@ -25,9 +25,10 @@ def append_inverter_conditions(inverter,segment):
     segment.state.conditions.energy.modulators[inverter.tag].inputs.power.propulsive    = 0 * ones_row(1)
     segment.state.conditions.energy.modulators[inverter.tag].inputs.power.mechanical    = 0 * ones_row(1)
     segment.state.conditions.energy.modulators[inverter.tag].inputs.power.electrical    = 0 * ones_row(1)
-    segment.state.conditions.energy.modulators[inverter.tag].inputs.power.chemical      = 0 * ones_row(1) 
+    segment.state.conditions.energy.modulators[inverter.tag].inputs.power.chemical      = 0 * ones_row(1)
+    segment.state.conditions.energy.modulators[inverter.tag].inputs.power.pneumatic     = 0 * ones_row(1)
     segment.state.conditions.energy.modulators[inverter.tag].inputs.power.hydraulic     = 0 * ones_row(1)
-    segment.state.conditions.energy.modulators[inverter.tag].inputs.power.thermal       = 0 * ones_row(1) 
+    segment.state.conditions.energy.modulators[inverter.tag].inputs.power.thermal       = 0 * ones_row(1)
     segment.state.conditions.energy.modulators[inverter.tag].outputs                    = Conditions()
     segment.state.conditions.energy.modulators[inverter.tag].outputs.Vph_rms            = 0 * ones_row(1)   
     segment.state.conditions.energy.modulators[inverter.tag].outputs.Vll_rms            = 0 * ones_row(1)
@@ -46,26 +47,9 @@ def append_inverter_conditions(inverter,segment):
     segment.state.conditions.energy.modulators[inverter.tag].outputs.power.propulsive   = 0 * ones_row(1)
     segment.state.conditions.energy.modulators[inverter.tag].outputs.power.mechanical   = 0 * ones_row(1)
     segment.state.conditions.energy.modulators[inverter.tag].outputs.power.electrical   = 0 * ones_row(1)
-    segment.state.conditions.energy.modulators[inverter.tag].outputs.power.chemical     = 0 * ones_row(1) 
+    segment.state.conditions.energy.modulators[inverter.tag].outputs.power.chemical     = 0 * ones_row(1)
+    segment.state.conditions.energy.modulators[inverter.tag].outputs.power.pneumatic    = 0 * ones_row(1)
     segment.state.conditions.energy.modulators[inverter.tag].outputs.power.hydraulic    = 0 * ones_row(1)
     segment.state.conditions.energy.modulators[inverter.tag].outputs.power.thermal      = 0 * ones_row(1)
-     
 
-    return 
-
-def append_inverter_segment_conditions(inverter, segment): 
-    energy_conditions  = segment.state.conditions.energy     
-    energy_conditions.modulators[inverter.tag].inputs.power.propulsive[:,0]    = 0.0
-    energy_conditions.modulators[inverter.tag].inputs.power.mechanical[:,0]    = 0.0 
-    energy_conditions.modulators[inverter.tag].inputs.power.electrical[:,0]    = 0.0 
-    energy_conditions.modulators[inverter.tag].inputs.power.chemical[:,0]      = 0.0
-    energy_conditions.modulators[inverter.tag].inputs.power.pneumatic[:,0]     = 0.0 
-    energy_conditions.modulators[inverter.tag].inputs.power.hydraulic[:,0]     = 0.0 
-    energy_conditions.modulators[inverter.tag].inputs.power.thermal[:,0]       = 0.0 
-    energy_conditions.modulators[inverter.tag].outputs.power.propulsive[:,0]   = 0.0
-    energy_conditions.modulators[inverter.tag].outputs.power.mechanical[:,0]   = 0.0   
-    energy_conditions.modulators[inverter.tag].outputs.power.electrical[:,0]   = 0.0 
-    energy_conditions.modulators[inverter.tag].outputs.power.chemical[:,0]     = 0.0
-    energy_conditions.modulators[inverter.tag].outputs.power.pneumatic[:,0]    = 0.0   
-    energy_conditions.modulators[inverter.tag].outputs.power.hydraulic[:,0]    = 0.0   
-    energy_conditions.modulators[inverter.tag].outputs.power.thermal[:,0]      = 0.0   
+    return

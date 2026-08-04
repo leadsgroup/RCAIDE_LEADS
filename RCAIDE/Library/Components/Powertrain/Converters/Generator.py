@@ -91,6 +91,7 @@ class Generator(Converter):
         None
         """           
         self.tag                      = 'generator'
+        self.provides_domain          = 'electrical'
         self.voltage_type             = 'DC'
         self.active                   = True
         self.reverse_mode_computation = False

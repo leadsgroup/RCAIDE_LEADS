@@ -12,11 +12,25 @@
 # compute_nmc_cell_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
 def compute_battery_performance(battery,state,network):
-    """ 
-    """  
+    """Computes battery performance for the electrical distributor it is assigned to.
+
+    Notes
+    -----
+    Looks up its own distributor's psi (rather than a vehicle-wide value)
+    since a battery may share the vehicle with other electrically-isolated
+    buses resolved to a different split. A battery is always processed
+    after everything on its bus (sources run last in
+    ``Network.evaluate()``), so that bus's demand is already fully known --
+    no solver unknown is needed, the same as ``Fuel_Tank`` reading its fuel
+    line's demand directly.
+    """
     battery_conditions = state.conditions.energy.sources[battery.tag]
-    psi                = state.conditions.energy.battery_fuel_cell_power_split_ratio  
-    phi                = state.conditions.energy.hybrid_power_split_ratio
+
+    electrical_distributor_tag = None
+    for d_tag in battery.assigned_distributors[0]:
+        if network.distributors[d_tag].domain == 'electrical':
+            electrical_distributor_tag = d_tag
+    psi = state.conditions.energy.battery_fuel_cell_power_split_ratio[electrical_distributor_tag]
     
     # Reset accumulators before summing across modules
     battery_conditions.energy[:,0]                = 0.0
@@ -37,12 +51,8 @@ def compute_battery_performance(battery,state,network):
                 battery_conditions.outputs.power.electrical             = (battery.nominal_capacity * battery.charging_c_rate* battery_voltage*battery_conditions.power_split_ratio)
                 battery_conditions[module.tag].inputs.power.electrical  = battery_conditions.outputs.power.electrical/ battery.number_of_active_modules
                 battery_conditions[module.tag].current_draw             = battery_conditions[module.tag].inputs.power.electrical  / module_voltage
-            elif 'electrical_power' in state.unknowns.network:
-                battery_conditions.outputs.power.electrical              = state.unknowns.network['electrical_power'] * battery_conditions.power_split_ratio * psi
-                battery_conditions[module.tag].outputs.power.electrical  = battery_conditions.outputs.power.electrical / battery.number_of_active_modules
-                battery_conditions[module.tag].current_draw              = battery_conditions[module.tag].outputs.power.electrical / module_voltage
             else:
-                total_electrical_demand = state.conditions.energy.inputs.power.electrical
+                total_electrical_demand = state.conditions.energy.distributors[electrical_distributor_tag].outputs.power.electrical
                 battery_conditions.outputs.power.electrical              = total_electrical_demand * battery_conditions.power_split_ratio * psi
                 battery_conditions[module.tag].outputs.power.electrical  = battery_conditions.outputs.power.electrical / battery.number_of_active_modules
                 battery_conditions[module.tag].current_draw              = battery_conditions[module.tag].outputs.power.electrical / module_voltage

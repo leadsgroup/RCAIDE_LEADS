@@ -57,7 +57,10 @@ def compute_fuel_line_distribution_losses(fuel_line,component_conditions,state,n
                 pipe_exit              
     
     # 3. Reynolds Number
-    Re = (flow_velocity * diameter) / k_viscosity
+    # Floored to avoid a 64/Re divide-by-zero (and the resulting inf*0 = nan in
+    # h_major) when flow_velocity is exactly zero, e.g. at an idle/ground segment
+    # or the solver's initial guess.
+    Re = np.maximum((flow_velocity * diameter) / k_viscosity, 1e-6)
 
     # 4. Friction Factor (f)
     f =  np.zeros_like(Re)
@@ -83,11 +86,14 @@ def compute_fuel_line_distribution_losses(fuel_line,component_conditions,state,n
     # 6. Pressure to overcome friction/gravity
     delta_p_losses  = h_total * density * g   
 
-    # 7. Total pressure pump must add to the fluid  
+    # 7. Total pressure pump must add to the fluid
     power_losses      = volumetric_flow_rate * delta_p_losses
     power_ideal_total = hydraulic_power + power_losses
-    electrical_power  = power_ideal_total / pump.efficiency 
-  
-    fuel_line_conditions.inputs.power.electrical += electrical_power # THIS REALLY SHOULD NOT BE HERE 
-    fuel_line_conditions.mass_flow_rate          += mass_flow_rate 
-    return  
+    pump_power        = power_ideal_total / pump.efficiency
+
+    # Shaft/hydraulic work the pump must supply to overcome line losses and
+    # deliver this component's share of flow -- not electrical power (this
+    # pump is not electrically driven), so it accumulates onto .hydraulic.
+    fuel_line_conditions.inputs.power.hydraulic  += pump_power
+    fuel_line_conditions.mass_flow_rate          += mass_flow_rate
+    return

@@ -36,8 +36,6 @@ def design_ducted_fan(ducted_fan, new_regression_results = False, keep_files = T
     ----------
     ducted_fan : Ducted_Fan
         Ducted fan component to be designed
-    dfdc_bin_name : str, optional
-        Name of DFDC executable, defaults to 'dfdc'
     new_regression_results : bool, optional
         Flag to generate new regression results, defaults to False
     keep_files : bool, optional

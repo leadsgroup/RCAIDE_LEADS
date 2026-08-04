@@ -73,17 +73,16 @@ def compute_turboshaft_performance(turboshaft,state, network=None):
                         Noise conditions indexed by component tag
                     - energy : dict
                         Energy conditions indexed by component tag
-    center_of_gravity : list of lists, optional
-        Center of gravity coordinates [[x, y, z]] [m]. Default: [[0.0, 0.0, 0.0]]
-    
+    network : RCAIDE.Framework.Networks.Network, optional
+        The network this turboshaft belongs to, used to resolve its assigned
+        distributor(s)
+
     Returns
     -------
-    thrust : numpy.ndarray
-        Thrust force vector [N]
-    moment : numpy.ndarray
-        Moment vector [N·m]
-    power : numpy.ndarray
-        Shaft power output [W]
+    inputs : Data
+        Turboshaft input conditions (power.electrical/mechanical/etc.)
+    outputs : Data
+        Turboshaft output conditions (thrust, moment, power.propulsive, etc.)
     stored_results_flag : bool
         Flag indicating if results are stored
     stored_propulsor_tag : str

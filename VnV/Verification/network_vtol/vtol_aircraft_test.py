@@ -91,9 +91,9 @@ def tiltrotor_transition_test(update_regression_values):
         for val in data:
             print(val)
     
-    # Truth values 
-    hover_throttle_truth    = 0.5955245683608479
-    cruise_rpm_truth        = 394.74449646470083
+    # Truth values
+    hover_throttle_truth    = 0.5939523813946584
+    cruise_rpm_truth        = 399.1981550090527
     
     # Store errors 
     error = Data() 

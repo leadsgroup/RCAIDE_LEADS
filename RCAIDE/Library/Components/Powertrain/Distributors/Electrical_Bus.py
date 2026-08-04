@@ -25,33 +25,54 @@ from RCAIDE.Library.Methods.Powertrain.Distributors.Electrical_Bus.size_electric
 class Electrical_Bus(Distributor):
     """
     Class for managing power distribution between aircraft electrical components
-    
+
     Attributes
     ----------
     tag : str
-        Identifier for the electrical bus (default: 'bus')
-        
-    battery_modules : Container
-        Collection of battery modules connected to this bus
-        
-    assigned_propulsors : list
-        List of propulsion systems powered by this bus
-        
-    avionics : Component
-        Aircraft avionics system  
-        
+        Identifier for the electrical bus (default: 'electrical_line')
+
+    domain : str
+        Power domain this distributor carries (default: 'electrical')
+
     active : bool
         Flag indicating if the bus is operational (default: True)
-        
+
+    design_power : float
+        Design power the bus is sized to carry [W] (default: 0.0), derived
+        from its assigned sources/converters/propulsors during `initialize()`
+
+    design_voltage : float
+        Design voltage of the bus [V] (default: 0.0), set from an assigned
+        battery pack's or fuel cell's voltage during `initialize()`
+
+    frequency : float
+        AC frequency, if applicable [Hz] (default: 0.0)
+
+    current_type : str
+        Type of current carried, e.g. 'DC' or 'AC' (default: 'DC')
+
     efficiency : float
-        Power distribution efficiency (default: 1.0)
-        
-    voltage : float
-        Bus voltage in volts (default: 0.0) 
-        
-    nominal_capacity : float
-        Total capacity of connected batteries (default: 0.0)
-         
+        Power distribution efficiency (default: 1)
+
+    length : float
+        Cable length [m] (default: 1)
+
+    number_of_parallel_wires : int
+        Number of parallel conductors (default: 1)
+
+    design_ambient_temperature : float
+        Ambient temperature used for cable sizing [K] (default: 273)
+
+    conductor : Component
+        Conductor properties (`radius`, `material` -- default `Copper()`,
+        `resistance`), sized by `size_electrical_cable`
+
+    insulator : Component
+        Insulator properties (`radius`, `material` -- default `Polyimide()`)
+
+    duplicate_wires : int
+        Number of duplicate cables carried for redundancy (default: 2)
+
     Notes
     -----
     The electrical bus manages power distribution between sources and consumers,
@@ -131,11 +152,9 @@ class Electrical_Bus(Distributor):
     def append_segment_conditions(self, segment):
         """
         Append segment-specific conditions to the bus
-        
+
         Parameters
         ----------
-        conditions : Data
-            Container for segment conditions
         segment : Segment
             Flight segment data
         """
@@ -147,9 +166,9 @@ class Electrical_Bus(Distributor):
         compute_electrical_bus_distribution_losses(self, component_conditions, state, network) 
         return
 
-    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
+    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]):
         """
-        Computes the moment of inertia tensor for the fuel line.
+        Computes the moment of inertia tensor for the electrical bus.
 
         Parameters
         ----------

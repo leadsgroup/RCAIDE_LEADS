@@ -129,7 +129,8 @@ class Turbojet(Propulsor):
     """ 
     def __defaults__(self):
         # setting the default values
-        self.tag                                         = 'Turbojet'  
+        self.tag                                         = 'Turbojet'
+        self.domain                                      = 'chemical'
         self.nacelle                                     = None  
         self.ram                                         = None 
         self.inlet_nozzle                                = None 

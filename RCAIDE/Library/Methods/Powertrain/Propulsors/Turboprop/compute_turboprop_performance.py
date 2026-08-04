@@ -120,14 +120,10 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     
     Returns
     -------
-    thrust_vector : numpy.ndarray
-        Thrust force vector [N]
-    moment : numpy.ndarray
-        Moment vector [N·m]
-    power : numpy.ndarray
-        Shaft power output [W]
-    power_elec : numpy.ndarray
-        Electrical power input/output [W]
+    inputs : Data
+        Turboprop input conditions (power.electrical/mechanical/etc.)
+    outputs : Data
+        Turboprop output conditions (thrust, moment, power.propulsive, etc.)
     stored_results_flag : bool
         Flag indicating if results are stored
     stored_propulsor_tag : str
