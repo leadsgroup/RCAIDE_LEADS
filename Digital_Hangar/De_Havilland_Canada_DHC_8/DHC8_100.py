@@ -703,7 +703,8 @@ def vehicle_setup():
     
     starboard_propulsor.nacelle =  nacelle
 
-    net.propulsors.append(starboard_propulsor)    
+    starboard_propulsor.assigned_distributors = [[fuel_line.tag]]
+    net.propulsors.append(starboard_propulsor)
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor: Port Propulsor
@@ -725,19 +726,17 @@ def vehicle_setup():
     inboard_tank                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)
     inboard_tank.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A()
     inboard_tank.segments_bounding_tank       = ['root', 'yehudi']
-    fuel_line.fuel_tanks.append(inboard_tank)
+    inboard_tank.assigned_distributors        = [[fuel_line.tag]]
+    net.sources.append(inboard_tank)
 
     outboard_tank                             = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)
     outboard_tank.fuel                        = RCAIDE.Library.Attributes.Propellants.Jet_A()
     outboard_tank.segments_bounding_tank      = ['yehudi', 'tip']
-    fuel_line.fuel_tanks.append(outboard_tank)
+    outboard_tank.assigned_distributors       = [[fuel_line.tag]]
+    net.sources.append(outboard_tank)
 
-    #------------------------------------------------------------------------------------------------------------------------------------
-    # Assign propulsors to fuel line
-    fuel_line.assigned_propulsors =  [[starboard_propulsor.tag, port_propulsor.tag]]
-    
-    # Append fuel line to Network      
-    net.fuel_lines.append(fuel_line)   
+    # Append fuel line to Network
+    net.distributors.append(fuel_line)
 
     # Append energy network to aircraft 
     vehicle.append_energy_network(net)    

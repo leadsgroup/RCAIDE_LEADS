@@ -95,15 +95,6 @@ class Fuel_Line(Distributor):
         self.insulation.diameters.internal        = 0.0 
         self.pump                                 = RCAIDE.Library.Components.Powertrain.Converters.Pump() 
 
-    def unpack_unknowns(self,segment):
-        return 
-
-    def pack_residuals(self,segment): 
-        return        
-
-    def append_unknowns_and_residuals(self,segment):
-        return
-    
     def append_operating_conditions(self, segment):
         """
         Append operating conditions for a flight segment

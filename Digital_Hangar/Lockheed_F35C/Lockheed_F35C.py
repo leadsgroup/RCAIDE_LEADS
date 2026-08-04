@@ -778,17 +778,16 @@ def vehicle_setup():
     nacelle_mirror.segments['segment_4'].percent_y_location = -0.00806
     ghost_propulsor.nacelle = nacelle_mirror
 
-    net.propulsors.append(ghost_propulsor) 
+    net.propulsors.append(ghost_propulsor)
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to fuel line to network   
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    fuel_line.assigned_propulsors =  [['propulsor_1']]
+    # ghost_propulsor produces no thrust and was never part of the fuel line's
+    # propulsor group in the original wiring -- only turbofan1 is assigned.
+    turbofan1.assigned_distributors = [[fuel_line.tag]]
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Append fuel line to fuel line to network  
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    net.fuel_lines.append(fuel_line)        
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Append fuel line to network
+    #------------------------------------------------------------------------------------------------------------------------------------
+    net.distributors.append(fuel_line)
 
     #------------------------------------------------------------------------------------------------------------------------- 
     # Done ! 

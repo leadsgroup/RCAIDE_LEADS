@@ -620,8 +620,9 @@ def vehicle_setup():
     nacelle.append_airfoil(nacelle_airfoil)  
     turbofan.nacelle                               = nacelle
 
-    # append propulsor to network    
-    net.propulsors.append(turbofan)  
+    # append propulsor to network
+    turbofan.assigned_distributors                 = [[fuel_line.tag]]
+    net.propulsors.append(turbofan)
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor: Port Propulsor
@@ -641,23 +642,21 @@ def vehicle_setup():
     inboard_tank.fuel                           = RCAIDE.Library.Attributes.Propellants.Jet_A()
     inboard_tank.segments_bounding_tank         = ['root','yehudi']  
     inboard_tank.segments_percent_chord_start   = [0.1 ,0.1 ]
-    inboard_tank.segments_percent_chord_end     = [0.8   ,0.7]   
-    fuel_line.fuel_tanks.append(inboard_tank)
-    
-    outboard_tank                               = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)  
-    outboard_tank.fuel                          = RCAIDE.Library.Attributes.Propellants.Jet_A()
-    outboard_tank.segments_bounding_tank        = ['yehudi', 'tip'] 
-    outboard_tank.segments_percent_chord_start  = [0.1 ,0.1 ]
-    outboard_tank.segments_percent_chord_end    = [0.7   ,0.6]   
-    fuel_line.fuel_tanks.append(outboard_tank)    
-    
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to fuel line to network      
-    fuel_line.assigned_propulsors =  [[turbofan.tag, turbofan_2.tag]]
+    inboard_tank.segments_percent_chord_end     = [0.8   ,0.7]
+    inboard_tank.assigned_distributors          = [[fuel_line.tag]]
+    net.sources.append(inboard_tank)
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Append fuel line to fuel line to network      
-    net.fuel_lines.append(fuel_line)        
+    outboard_tank                               = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)
+    outboard_tank.fuel                          = RCAIDE.Library.Attributes.Propellants.Jet_A()
+    outboard_tank.segments_bounding_tank        = ['yehudi', 'tip']
+    outboard_tank.segments_percent_chord_start  = [0.1 ,0.1 ]
+    outboard_tank.segments_percent_chord_end    = [0.7   ,0.6]
+    outboard_tank.assigned_distributors         = [[fuel_line.tag]]
+    net.sources.append(outboard_tank)
+
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Append fuel line to network
+    net.distributors.append(fuel_line)
     
     # Append energy network to aircraft 
     vehicle.append_energy_network(net)

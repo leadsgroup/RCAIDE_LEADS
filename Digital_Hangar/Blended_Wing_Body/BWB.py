@@ -550,8 +550,9 @@ def vehicle_setup():
     nacelle_airfoil.NACA_4_Series_code          = '4305'
     nacelle.append_airfoil(nacelle_airfoil) 
     turbofan1.nacelle                            = nacelle 
-    turbofan1.origin                             = [[23, 4.2, 1.75]]  
-    
+    turbofan1.origin                             = [[23, 4.2, 1.75]]
+
+    turbofan1.assigned_distributors              = [[fuel_line.tag]]
     net.propulsors.append(turbofan1)
     
     #------------------------------------------------------------------------------------------------------------------------------------  
@@ -587,15 +588,12 @@ def vehicle_setup():
     fuel_tank.segments_bounding_tank                 = ['fuel_wall','wing_section_1'] 
     fuel_tank.segments_percent_chord_start           = [0.2,0.2]
     fuel_tank.segments_percent_chord_end             = [0.425,0.425]
-    fuel_line.fuel_tanks.append(fuel_tank) 
+    fuel_tank.assigned_distributors                  = [[fuel_line.tag]]
+    net.sources.append(fuel_tank)
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to fuel line to network      
-    fuel_line.assigned_propulsors =  [['starboard_propulsor', 'port_propulsor', 'center_propulsor']]
-
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Append fuel line to fuel line to network      
-    net.fuel_lines.append(fuel_line)         
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Append fuel line to network
+    net.distributors.append(fuel_line)
 
     # Append energy network to aircraft 
     vehicle.append_energy_network(net)  

@@ -35,4 +35,13 @@ class Distributor(Component):
         return
 
     def compute_performance(self,state,network):
-        return None, None 
+        return None, None
+
+    def unpack_unknowns(self,segment):
+        return
+
+    def pack_residuals(self,segment):
+        return
+
+    def append_unknowns_and_residuals(self,segment):
+        return

@@ -390,7 +390,8 @@ def vehicle_setup():
     fuel_tank                                   = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)  
     fuel_tank.fuel                              = RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline()
     fuel_tank.segments_bounding_tank            = ['root_segment', 'tip']
-    fuel_line.fuel_tanks.append(fuel_tank)  
+    fuel_tank.assigned_distributors             = [[fuel_line.tag]]
+    net.sources.append(fuel_tank)
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------   
@@ -422,15 +423,12 @@ def vehicle_setup():
     # design propeller ICE  
     design_internal_combustion_engine(ice_prop)
     
-    net.propulsors.append(ice_prop) 
-    
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to fuel line to network      
-    fuel_line.assigned_propulsors =  [[ice_prop.tag]]
-    
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Append fuel line to fuel line to network      
-    net.fuel_lines.append(fuel_line)        
+    ice_prop.assigned_distributors           = [[fuel_line.tag]]
+    net.propulsors.append(ice_prop)
+
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Append fuel line to network
+    net.distributors.append(fuel_line)
     
     # Append energy network to aircraft 
     vehicle.append_energy_network(net)    

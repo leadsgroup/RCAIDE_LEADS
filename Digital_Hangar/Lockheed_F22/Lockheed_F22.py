@@ -799,7 +799,8 @@ def vehicle_setup():
     nacelle.append_segment(nac_segment)         
 
     turbofan1.nacelle                           = nacelle
-    
+
+    turbofan1.assigned_distributors             = [[fuel_line.tag]]
     net.propulsors.append(turbofan1)
     
     turbofan2                                                       = deepcopy(turbofan1)
@@ -813,18 +814,11 @@ def vehicle_setup():
     turbofan2.nacelle.segments.segment_3.percent_y_location        *= -1
     turbofan2.nacelle.segments.segment_4.percent_y_location        *= -1
     net.propulsors.append(turbofan2)
- 
- 
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to fuel line to network   
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    fuel_line.assigned_propulsors =  [['propulsor_1', 'propulsor_2']]
-
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Append fuel line to fuel line to network  
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    net.fuel_lines.append(fuel_line)        
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Append fuel line to network
+    #------------------------------------------------------------------------------------------------------------------------------------
+    net.distributors.append(fuel_line)
 
     #------------------------------------------------------------------------------------------------------------------------- 
     # Done ! 

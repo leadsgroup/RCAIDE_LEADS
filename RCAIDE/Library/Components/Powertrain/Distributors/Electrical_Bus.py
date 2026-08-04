@@ -128,15 +128,6 @@ class Electrical_Bus(Distributor):
         self.duplicate_wires                           = 2# Number of duplicate cables for redundancy
 
 
-    def unpack_unknowns(self,segment):
-        return 
-
-    def pack_residuals(self,segment): 
-        return        
-
-    def append_unknowns_and_residuals(self,segment):
-        return
-    
     def append_operating_conditions(self, segment):
         """
         Append operating conditions for a flight segment
