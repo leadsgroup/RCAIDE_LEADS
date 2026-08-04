@@ -41,8 +41,8 @@ def compute_jet_noise_new(microphone_locations, turbofan, aeroacoustic_data, seg
     Vs = aeroacoustic_data.fan_nozzle.exit_velocity
 
     if flag == 1:
-        Vp = Vp - 50
-        Vs = Vs - 50    
+        Vp = Vp * 0.8
+        Vs = Vs * 0.8 
     freqs = settings
     
     # Ambient properties (approximated for static standard day)

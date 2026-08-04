@@ -33,6 +33,7 @@ import numpy as np
 from copy import deepcopy
 import os
 import pandas as pd
+import scipy.ndimage as ndimage
 # local imports 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -271,7 +272,7 @@ flight_params: dict
         return ground_distance_m, slant_distance_m, elevation_angle_rad
 
     # Extract receptor arrays for fast computation
-    df = downsample_spatial_grid(df, stride_factor=4)
+    df = downsample_spatial_grid(df, stride_factor=2)
     rec_lats = df['Latitude (deg)'].values
     rec_lons = df['Longitude (deg)'].values
     rec_elevs = df['Elevation MSL (ft)'].values #USE OTHER ELEV.
@@ -286,8 +287,8 @@ flight_params: dict
     dt_array = [] # Store time steps for SEL integration
     
     # Aircraft speed from your conditions
-    U_flight = 72.0 # m/s 
-
+    U_flight = track_df['Ground Speed (kts)'].tolist()
+    U_flight = [x * 0.5144 for x in U_flight] # kts to m/s
     #init jet noise settings
     settings = Data()
     settings.center_frequencies = np.pad(frequency, (5, 0), mode='constant')
@@ -338,7 +339,7 @@ flight_params: dict
             hx, hy, hz = (dx_flight/mag_flight, dy_flight/mag_flight, dz_flight/mag_flight) if mag_flight > 0 else (1.0, 0.0, 0.0)
             
             # Calculate time delta for SEL (dt = distance / speed)
-            dt = mag_flight / U_flight if mag_flight > 0 else 1.0
+            dt = mag_flight / U_flight[index]
             dt_array.append(dt)
 
             # B. Determine Observer Vector (Aircraft -> Receptor)
@@ -346,6 +347,14 @@ flight_params: dict
             dy_obs = np.radians(rec_lats - ac_lat) * R_earth
             dz_obs = (-(rec_elevs - ac_alt) * 0.3048)
             altflight.append(round(dz_obs[0]))
+            l_seg_m = ground_dist
+
+            d_AS = ((dx_obs * dx_flight) + (dy_obs * dy_flight)) / mag_flight
+            d_AS = np.clip(d_AS, 0, mag_flight)
+            
+            # d_seg_m is your vertical AGL altitude component at CPA
+            d_seg_m = (ac_alt * 0.3048) + d_AS * (dz_flight / mag_flight) - (rec_elevs * 0.3048)
+            d_seg_m = np.maximum(d_seg_m, 0.3) # AEDT uses a minimum distance/altitude limit of 1 ft (~0.3m)
 
             # C. Dot Product to find True Polar Angle (0 = Nose, 180 = Tail)
             dot_prod = (dx_obs * hx) + (dy_obs * hy) + (dz_obs * hz)
@@ -360,11 +369,13 @@ flight_params: dict
 
             # 3. Pre-allocate array to store the final scalar noise value (OASPL) for this timestep
             total_SPL_map = np.zeros(num_receptors)
+            LADJ_dB,beta_deg = AEDT_LADJ_Attenuation(l_seg_m, d_seg_m, bank_angle_deg=0.0)
+            
 
             # 4. Loop through each receptor to run RCAIDE noise models
             for i in range(num_receptors):
                 # Extract scalar values and format as 2D arrays
-                R_val = np.array([[los_distance[i]]]) #passed in meters
+                R_val = np.array([[los_distance[i]-49]]) #passed in meters
 
                 #tp = np.array([[mag_flight[i]]])
                 
@@ -375,9 +386,9 @@ flight_params: dict
                 print('step',index,'iteration',i, 'ac_true_h')
                 
                 # --- RUN NOISE MODELS ---
-                #lg_noise = compute_landing_gear_noise(R_val, theta_raw, D, H, W, wheels, M, Weight, strut_diameter, frequency, segment)
-                #flap_noise = flap_noise_model(R_val, theta_flap, cf, thickness, deltaf, frequency, segment)
-                #slat_noise_val = slat_noise(R_val, phi, theta_flap[0][0], Ls, gamma_s, sigma_s, alpha, segment, frequency, A=1e-6)
+                lg_noise = compute_landing_gear_noise(R_val, theta_raw, D, H, W, wheels, M, Weight, strut_diameter, frequency, segment)
+                flap_noise = flap_noise_model(R_val, theta_flap, cf, thickness, deltaf, frequency, segment)
+                slat_noise_val = slat_noise(R_val, phi, theta_flap[0][0], Ls, gamma_s, sigma_s, alpha, segment, frequency, A=1e-5)
 
 
                 # Pass segment.state to match internal RCAIDE condition structure
@@ -388,16 +399,16 @@ flight_params: dict
                 mic_y = los_distance[i] * np.sin(theta_proper[i])
                 mic_locations = np.array([[mic_x, mic_y, 0.0]])
 
-                current_thrust = track_point['Noise Thrust per Engine (lbs)']
+                current_thrust = track_point['Airplane Thrust Type']
 
-                if current_thrust < 4711 or current_thrust > 4715:
+                if current_thrust == 'Reversed Thrust' or current_thrust == 'Idle Approach':
                     jet_noise = compute_jet_noise_new(mic_locations, turbofan, aero_data, segment.state, frequency,1)
                 else:
                     jet_noise = compute_jet_noise_new(mic_locations, turbofan, aero_data, segment.state, frequency,0)
                 
                 
-               # fan_noise = compute_fan_noise(R_val[0], theta_engine[0][0], turbofan, m, segment.state.conditions.aeroacoustics, segment, frequency)
-               # core_noise = compute_core_noise(R_val, theta_engine, turbofan, pr, segment.state.conditions.aeroacoustics, segment, frequency)
+                fan_noise = compute_fan_noise(R_val[0], theta_engine[0][0], turbofan, m, segment.state.conditions.aeroacoustics, segment, frequency)
+                core_noise = compute_core_noise(R_val, theta_engine, turbofan, pr, segment.state.conditions.aeroacoustics, segment, frequency)
 
                 jet_spec_dBA = jet_noise.SPL_1_3_spectrum[0][0]
                 jet_spec_raw = jet_spec_dBA
@@ -405,11 +416,11 @@ flight_params: dict
                 # Combine spectra logarithmically
                 # Ensure slicing matches the output shape of your RCAIDE models (usually [0][0] for 1st ctrl pt, 1st observer)
                 spectra = np.array([
-                    #lg_noise.Total[0], 
-                    #flap_noise[0], 
-                    #slat_noise_val[0],
-                   # fan_noise.SPL_1_3_spectrum[0][0], 
-                   # core_noise.SPL_1_3_spectrum[0][0],
+                    lg_noise.Total[0], 
+                    flap_noise[0], 
+                    slat_noise_val[0],
+                    fan_noise.SPL_1_3_spectrum[0][0], 
+                    core_noise.SPL_1_3_spectrum[0][0],
                     jet_spec_raw
                 ])
                 total_spectrum = SPL_arithmetic(spectra, sum_axis=0)
@@ -437,7 +448,7 @@ flight_params: dict
                 
                 # 4. Apply Attenuation, lower the baseline, and add the thrust spike
                 # The -18.0 shifts the massive 116 dB core down to a realistic 98 dB approach
-                attenuated_spectrum = total_spectrum - (att_dB * 1.5)
+                attenuated_spectrum = total_spectrum - (att_dB * 1.5) - LADJ_dB[i]
                 a_weighted_spectrum = A_weighting_metric(attenuated_spectrum, frequency)
 
                 # 6. Convert the A-weighted spectrum into a single scalar dBA / SEL value
@@ -448,6 +459,7 @@ flight_params: dict
             # Plotting the results for this timestep
             # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
             sim_results.append(total_SPL_map)
+
             
 
         if len(sim_results) == 28+8:
@@ -464,12 +476,10 @@ flight_params: dict
             x = rec_lons
             y = rec_lats
 
-            np.savez_compressed('b737_high_res_footprint.npz', 
+            np.savez('b737_high_res_footprint_3.npz', 
                                 longitude=x, 
                                 latitude=y, 
-                                sel_dBA=z,
-                                track_lon=positionsy,
-                                track_lat=positionsx)
+                                sel_dBA=z)
             
             # 3. Setup the plot
             fig, ax = plt.subplots(figsize=(10, 8), dpi=120)
@@ -481,12 +491,10 @@ flight_params: dict
             # 'jet' is a standard colormap for aeroacoustic footprints
             #levels = np.linspace(min(z),max(z), 50) # 40 smooth color transitions
 
-            print(tr)
-
             heatmap = ax.tricontourf(triangulation, z, levels = 40, cmap='jet', extend='both')
             plt.plot(positionsy,positionsx,'ko',markersize=1)
-            for index, (x, y) in enumerate(zip(positionsy, positionsx), start=0):
-                plt.annotate(f"{tr[index]}", (x, y), textcoords="offset points", xytext=(1, 1),fontsize=3)
+            #for index, (x, y) in enumerate(zip(positionsy, positionsx), start=0):
+                #plt.annotate(f"{tr[index]}", (x, y), textcoords="offset points", xytext=(1, 1),fontsize=3)
 
             # 5. Add colorbar and labels
             cbar = fig.colorbar(heatmap, ax=ax)
@@ -503,10 +511,12 @@ flight_params: dict
             # This approximates a Mercator projection so the map isn't stretched
             mean_lat = np.mean(y)
             ax.set_aspect(1.0 / np.cos(np.radians(mean_lat)))
+
         
             # 6. Display the plot
+            print(dt_array)
             plt.show()
-            print(np.min(los_distance))
+            
 def plot_parameters():
      
     plt.rcParams.update({'font.size': 12})
@@ -530,6 +540,77 @@ def plot_parameters():
     )   
     
     return PP  
+
+
+
+def AEDT_LADJ_Attenuation(l_seg_m, d_seg_m, bank_angle_deg=0.0):
+    """
+    Computes the AEDT Lateral Attenuation Adjustment (LA_ADJ) for a wing-mounted 
+    civil aircraft according to SAE-AIR-5662.
+    
+    Parameters:
+    - l_seg_m: numpy array of horizontal sideline distances from the segment to the receptor [meters]
+    - d_seg_m: numpy array of AGL altitudes of the aircraft at the CPA [meters]
+    - bank_angle_deg: aircraft bank angle [degrees] (default is 0.0 for straight flight)
+    
+    Returns:
+    - LA_ADJ: numpy array of the total lateral attenuation adjustment [dB]
+    """
+    
+    # 1. Geometry Processing
+    # Calculate slant range and prevent divide-by-zero errors
+    SLR_seg = np.sqrt(d_seg_m**2 + l_seg_m**2)
+    SLR_seg = np.maximum(SLR_seg, 1e-6)
+    
+    # Elevation angle (beta)
+    beta_rad = np.arcsin(d_seg_m / SLR_seg)
+    beta_deg = np.degrees(beta_rad)
+    
+    # Depression angle (phi)
+    phi_deg = bank_angle_deg + beta_deg
+    phi_rad = np.radians(phi_deg)
+    
+    # 2. Engine Installation Effect (E_WING) for Wing-Mounted Jets
+    E_WING = np.zeros_like(phi_deg)
+    
+    # Masks for valid phi ranges
+    mask_pos = (phi_deg >= 0.0) & (phi_deg <= 180.0)
+    mask_neg = (phi_deg < 0.0) & (phi_deg >= -180.0)
+    
+    # Calculate positive phi 
+    cos2_phi = np.cos(phi_rad[mask_pos])**2
+    sin2_phi = np.sin(phi_rad[mask_pos])**2
+    sin2_2phi = np.sin(2.0 * phi_rad[mask_pos])**2
+    cos2_2phi = np.cos(2.0 * phi_rad[mask_pos])**2
+    
+    num = (0.0039 * cos2_phi + sin2_phi)**0.062
+    den = (0.8786 * sin2_2phi + cos2_2phi)
+    
+    E_WING[mask_pos] = 10.0 * np.log10(num / den)
+    
+    # Calculate negative phi
+    E_WING[mask_neg] = -1.49
+    
+    # 3. Ground-to-Ground Effect (G)
+    G = np.full_like(l_seg_m, 10.86) # Default to > 914m case
+    mask_G = (l_seg_m >= 0.0) & (l_seg_m <= 914.0)
+    
+    G[mask_G] = 11.83 * (1.0 - np.exp(-0.00274 * l_seg_m[mask_G]))
+    
+    # 4. Air-to-Ground Effect (Lambda)
+    Lambda = np.zeros_like(beta_deg)
+    
+    # Enforce beta bounds (beta <= 0 is treated as 0)
+    beta_eff = np.maximum(beta_deg, 0.0)
+    
+    mask_L = (beta_eff >= 0.0) & (beta_eff <= 50.0)
+    Lambda[mask_L] = 1.137 - (0.0229 * beta_eff[mask_L]) + (9.72 * np.exp(-0.142 * beta_eff[mask_L]))
+    # For beta > 50, Lambda remains 0.0
+    
+    # 5. Overall Lateral Attenuation Adjustment (LA_ADJ)
+    LA_ADJ = -(E_WING - ((G * Lambda) / 10.86))
+    
+    return LA_ADJ, beta_deg
 
 
 def downsample_spatial_grid(df, stride_factor):
