@@ -1,23 +1,24 @@
 # RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Hydrogen/BWB/Semi_Empirical/ccompute_propulsion_system_weight.py
-# 
-# 
+#
+#
 # Created:  Sep 2024, M. Clarke
+# Modified: Jul 2026, S. Sharma
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE
-import  RCAIDE 
+import  RCAIDE
 from RCAIDE.Framework.Core    import Units ,  Data
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_distributor_center_of_gravity import compute_distributor_center_of_gravity
 
-# python imports 
+# python imports
 import  numpy as  np
 from copy import deepcopy
- 
+
 # ----------------------------------------------------------------------------------------------------------------------
-#  Propulsion Systems Weight 
+#  Propulsion Systems Weight
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_propulsion_system_weight(vehicle,ref_propulsor, settings):
     """ Calculate the weight of propulsion system, including:
@@ -41,11 +42,11 @@ def compute_propulsion_system_weight(vehicle,ref_propulsor, settings):
 
         Inputs:
             vehicle - data dictionary with vehicle properties                   [dimensionless]
-                -.design_mach_number: design mach number for cruise flight 
+                -.design_mach_number: design mach number for cruise flight
                 -.systems.accessories: type of aircraft (short-range, commuter
                                                         medium-range, long-range,
                                                         sst, cargo)
-            nacelle - data dictionary with propulsion system properties 
+            nacelle - data dictionary with propulsion system properties
                 -.diameter: diameter of nacelle                                 [meters]
                 -.length: length of complete engine assembly                    [meters]
             ref_propulsor.
@@ -65,7 +66,7 @@ def compute_propulsion_system_weight(vehicle,ref_propulsor, settings):
         Properties Used:
             N/A
     """
-     
+
     NENG   =  0
     WEC    =  0
     WNAC   =  0
@@ -77,25 +78,25 @@ def compute_propulsion_system_weight(vehicle,ref_propulsor, settings):
             if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) \
                or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet)\
                or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop):
-                ref_propulsor = propulsor  
-                NENG  += 1 
-            if propulsor.nacelle !=  None:          
-                if propulsor.nacelle !=  None:                
-                    ref_nacelle =  propulsor.nacelle   
+                ref_propulsor = propulsor
+                NENG  += 1
+            if propulsor.nacelle !=  None:
+                if propulsor.nacelle !=  None:
+                    ref_nacelle =  propulsor.nacelle
         for source in network.sources:
             if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
                 number_of_tanks +=  1
-                  
+
     if ref_nacelle is not None:
-        WNAC        = compute_nacelle_weight(ref_propulsor,ref_nacelle,NENG ) 
-    WTANK, WLINE, WPUMP = compute_fuel_system_weight(vehicle, NENG,settings)
+        WNAC        = compute_nacelle_weight(ref_propulsor,ref_nacelle,NENG )
+    WTANK, WLINE, WPUMP, WFC = compute_fuel_system_weight(vehicle, NENG,settings)
     WENG            = compute_engine_weight(vehicle,ref_propulsor)
     if ref_nacelle is not None:
-        WEC, WSTART     = compute_misc_propulsion_system_weight(vehicle,ref_propulsor,ref_nacelle,NENG)
+        WEC, WSTART = compute_misc_propulsion_system_weight(vehicle,ref_propulsor,ref_nacelle,NENG)
     WTHR            = compute_thrust_reverser_weight(ref_propulsor,NENG)
     # Tank mass is not included here: it is already captured in structural.fuel_tanks from the
     # actual Fuel_Tank components' mass_properties.mass, so adding WTANK here would double-count it.
-    WPRO            = NENG * WENG +  WLINE + WPUMP + WEC + WSTART + WTHR # Nacelle weight is not included in the propulsion system weight. it is included in the structural weight.
+    WPRO            = NENG * WENG +  WLINE + WPUMP + WFC + WEC + WSTART + WTHR # Nacelle weight is not included in the propulsion system weight. it is included in the structural weight.
 
     output                      = Data()
     output.W_prop               = WPRO
@@ -105,10 +106,11 @@ def compute_propulsion_system_weight(vehicle,ref_propulsor, settings):
     output.W_tanks              = WTANK
     output.W_fuel_lines         = WLINE
     output.W_pumps              = WPUMP
+    output.W_fuel_cells         = WFC
     output.W_nacelle            = WNAC
     output.W_engine             = WENG * NENG
-    output.number_of_engines    = NENG 
-    output.number_of_fuel_tanks = number_of_tanks  
+    output.number_of_engines    = NENG
+    output.number_of_fuel_tanks = number_of_tanks
     return output
 
 def compute_fuel_system_weight(vehicle, NENG,settings):
@@ -130,30 +132,123 @@ def compute_fuel_system_weight(vehicle, NENG,settings):
     WTANK = 0
     WLINE = 0
     WPUMP = 0
- 
+    WFC   = 0
+
     for network in vehicle.networks:
         for source in network.sources:
             if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
                 WTANK += source.tank_accesories_weight_factor * (source.insulation.mass_properties.mass + source.inner_structure.mass_properties.mass)
+
+        # Per-engine design thrust and origins on this network,
+        # used below to size each fuel line's transfer/boost pump.
+        design_thrust  = None
+        engine_origins = []
+        for propulsor in network.propulsors:
+            if 'design_thrust' in propulsor:
+                design_thrust = propulsor.design_thrust
+                engine_origins.append(propulsor.origin)
 
         for distributor in network.distributors:
             if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
                 compute_distributor_center_of_gravity(distributor, vehicle, length=0)
                 WLINE += distributor.mass_properties.mass
 
+                if design_thrust is not None and engine_origins and distributor.working_fluid is not None:
+                    size_fuel_transfer_pump(network, distributor, distributor.working_fluid,
+                                             design_thrust, engine_origins)
+
         for converter in network.converters:
             if issubclass(type(converter),RCAIDE.Library.Components.Powertrain.Converters.Pump):
                 WPUMP += converter.mass_properties.mass
+            elif issubclass(type(converter),RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack):
+                WFC += converter.mass_properties.mass
 
-    return WTANK, WLINE, WPUMP
+    return WTANK, WLINE, WPUMP, WFC
+
+
+def size_fuel_transfer_pump(network, fuel_line, fuel, design_thrust, engine_origins,
+                             delta_pressure=300e3,
+                             efficiency=0.55,
+                             reference_sfc=0.08 / 3600,
+                             reference_fuel_specific_energy=48.632e6,
+                             aft_offset=0.5):
+    """ Sizes and weighs a fuel line's transfer/boost pump and wires it into the network.
+    Called from compute_fuel_system_weight for every Fuel_Line in a network, so this must be
+    idempotent: safe to call again on the next MTOW-iteration pass without appending the pump
+    twice into network.converters.
+
+    Design shaft power is estimated at vehicle_setup() time from design_thrust.
+
+    Sizing chain (NASA SP-8107-style): fluid power Pf = mdot*dP/rho, shaft power Ps = Pf/eta.
+
+    specific_power_density (design_power / mass) is selected from the fuel's own type, not
+    passed in:
+        - Cryogenic (Liquid_Hydrogen, Liquid_Natural_Gas): 200 W/kg.
+        - All other fuels (Liquid_Petroleum_Gas, Jet_A, ...): 400 W/kg.
+    Derived from real aircraft electric fuel boost pumps -- Eaton Type 9106 (B777:
+    6.5 kg, 200V/400Hz 3-phase, 9.5A -> ~3.29 kVA apparent power -> ~506 W/kg) and Type 20004
+    (B747: 4.2 kg, 7.8A -> ~2.70 kVA -> ~643 W/kg), derated ~85% for motor efficiency (apparent
+    power overstates shaft power). The ambient-fuel figure uses that directly (400 W/kg); the
+    cryogenic figure is further halved (200 W/kg) as a reasoned penalty for the cryo-compatible 
+    double-walled/vacuum-jacketed housing and seals those ambient-temperature Jet-A pumps don't need.
+
+    Inputs:
+            network                           - the vehicle's Fuel network
+            fuel_line                         - Fuel_Line whose auto-created .pump is sized
+            fuel                              - this fuel line's Propellant
+            design_thrust                     - per-engine design thrust                         [N]
+            engine_origins                    - [origin_1, origin_2, ...] of the engines this
+                                                 line feeds, used to place the pump just aft of
+                                                 their midpoint
+            delta_pressure                    - assumed line-loss + NPSH margin                  [Pa]
+            efficiency                        - assumed overall pump efficiency                  [-]
+            reference_sfc                     - calibration point for mass flow rate estimation  [kg/N-s]
+            reference_fuel_specific_energy    - specific energy of the fuel reference_sfc was
+                                                 calibrated against, so other fuels' mass flow
+                                                 rate scales correctly through their OWN
+                                                 specific_energy (e.g. LH2 needs much less fuel
+                                                 mass per unit thrust than LNG/LPG)              [J/kg]
+            aft_offset                        - additional offset aft of the engine midpoint     [m]
+
+    Outputs:
+            pump - the sized, positioned, network-wired Pump component
+
+    Properties Used:
+            N/A
+    """
+
+    pump = fuel_line.pump
+
+    if isinstance(fuel, (RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen,
+                          RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas)):
+        specific_power_density = 200.  # W/kg -- cryogenic
+    else:
+        specific_power_density = 400.  # W/kg -- ambient-temperature
+
+    thermal_power_per_N = reference_sfc * reference_fuel_specific_energy
+    mdot                = design_thrust * thermal_power_per_N / fuel.specific_energy
+    fluid_power          = mdot * delta_pressure / fuel.density
+    pump.design_power    = fluid_power / efficiency
+    pump.mass_properties.mass = pump.design_power / specific_power_density
+
+    pump.active = False  # keep out of the (unfinished) mission-solve performance loop
+    if not any(existing is pump for existing in network.converters.values()):
+        network.converters.append(pump)
+
+    x = sum(origin[0][0] for origin in engine_origins) / len(engine_origins) + aft_offset
+    y = 0.0
+    z = sum(origin[0][2] for origin in engine_origins) / len(engine_origins)
+    pump.origin = [[x, y, z]]
+
+    return pump
 
 
 def compute_nacelle_weight(ref_propulsor,ref_nacelle,NENG):
     """ Calculates the nacelle weight based on the FLOPS method
-    
+
         Assumptions:
             1) All nacelles are identical
-            2) The number of nacelles is the same as the number of engines 
+            2) The number of nacelles is the same as the number of engines
 
         Source:
             The Flight Optimization System Weight Estimation Method
@@ -163,17 +258,17 @@ def compute_nacelle_weight(ref_propulsor,ref_nacelle,NENG):
                 -.number_of_engines: number of engines
                 -.engine_lenght: total length of engine                                  [m]
                 -.sealevel_static_thrust: sealevel static thrust of engine               [N]
-            nacelle.             
+            nacelle.
                 -.diameter: diameter of nacelle                                          [m]
             WENG    - dry engine weight                                                  [kg]
-             
-             
-        Outputs:             
+
+
+        Outputs:
             WNAC: nacelle weight                                                         [kg]
 
         Properties Used:
             N/A
-    """ 
+    """
     TNAC   = NENG + 0.5 * (NENG - 2 * np.floor(NENG / 2.))
     DNAC   = ref_nacelle.diameter / Units.ft
     XNAC   = ref_nacelle.length / Units.ft
@@ -184,7 +279,7 @@ def compute_nacelle_weight(ref_propulsor,ref_nacelle,NENG):
 
 def compute_thrust_reverser_weight(ref_propulsor,NENG):
     """ Calculates the weight of the thrust reversers of the aircraft
-    
+
         Assumptions:
 
         Source:
@@ -200,7 +295,7 @@ def compute_thrust_reverser_weight(ref_propulsor,NENG):
 
         Properties Used:
             N/A
-    """ 
+    """
     TNAC = NENG + 1. / 2 * (NENG - 2 * np.floor(NENG / 2.))
     THRUST = ref_propulsor.sealevel_static_thrust * 1 / Units.lbf
     WTHR = 0.034 * THRUST * TNAC
@@ -210,10 +305,10 @@ def compute_thrust_reverser_weight(ref_propulsor,NENG):
 def compute_misc_propulsion_system_weight(vehicle,ref_propulsor,ref_nacelle,NENG ):
     """ Calculates the miscellaneous engine weight based on the FLOPS method, electrical control system weight
         and starter engine weight
-        
+
         Assumptions:
             1) All nacelles are identical
-            2) The number of nacelles is the same as the number of engines 
+            2) The number of nacelles is the same as the number of engines
 
         Source:
             The Flight Optimization System Weight Estimation Method
@@ -224,16 +319,16 @@ def compute_misc_propulsion_system_weight(vehicle,ref_propulsor,ref_nacelle,NENG
             ref_propulsor    - data dictionary for the specific network that is being estimated [dimensionless]
                 -.number_of_engines: number of engines
                 -.sealevel_static_thrust: sealevel static thrust of engine               [N]
-            nacelle              
+            nacelle
                 -.diameter: diameter of nacelle                                          [m]
-              
-        Outputs:              
+
+        Outputs:
             WEC: electrical engine control system weight                                 [kg]
             WSTART: starter engine weight                                                [kg]
 
         Properties Used:
             N/A
-    """ 
+    """
     THRUST  = ref_propulsor.sealevel_static_thrust * 1 / Units.lbf
     WEC     = 0.26 * NENG * THRUST ** 0.5
     FNAC    = ref_nacelle.diameter / Units.ft

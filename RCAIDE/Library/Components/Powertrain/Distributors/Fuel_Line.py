@@ -1,7 +1,8 @@
 # RCAIDE/Library/Components/Powertrain/Distributors/Fuel_Line.py 
 # 
 # Created:  Jul 2023, M. Clarke 
-# Modified: Sep. 2025, M. Guidotti
+# Modified: Sep 2025, M. Guidotti
+# Modified: Jul 2026, S. Sharma
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -71,8 +72,7 @@ class Fuel_Line(Distributor):
         self.efficiency                           = 1.0
         self.valve_unit_mass                      = 3 * Units.lbs
         self.fuel_probe_unit_mass                 = 2.5 * Units.lbs
-        self.boost_pump_unit_mass                 = 12.5 * Units.lbs
-        self.venting_system_length                = 0.0 
+        self.venting_system_length                = 0.0
         self.pipe                                 = Data()
         self.pipe.surface_roughness               = 0.015
         self.pipe.rigid_material                  = RCAIDE.Library.Attributes.Materials.Aluminum()
