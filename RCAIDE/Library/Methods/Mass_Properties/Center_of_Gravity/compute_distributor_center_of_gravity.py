@@ -1,6 +1,7 @@
 # RCAIDE/Library/Methods/Mass_Properties/Center_of_Gravity/compute_distributor_center_of_gravity.py 
 # 
 # Created:  Dec 2025, M. Clarke 
+# Modified: Jul 2026, S. Sharma
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -35,11 +36,10 @@ def compute_distributor_center_of_gravity(component,vehicle, length=0):
                                           
                                           
      """
-     
+    
     redundancy_factor     = 2.0
-    valve_unit_mass       = component.valve_unit_mass                      
+    valve_unit_mass       = component.valve_unit_mass
     fuel_probe_unit_mass  = component.fuel_probe_unit_mass
-    boost_pump_unit_mass  = component.boost_pump_unit_mass 
     insulation_rm_density = component.insulation.rigid_material.density
     insulation_fm_density = component.insulation.flexible_material.density
     insulation_fm_ratio   = component.insulation.flexible_material_ratio  
@@ -99,7 +99,7 @@ def compute_distributor_center_of_gravity(component,vehicle, length=0):
         # assumulate all masses and  moments 
         total_lat_line_length  += redundancy_factor * lat_line_length 
         total_line_mass        += lat_line_insulation_mass + lat_line_pipe_mass
-        transfer_system_mass   += lat_line_insulation_mass + lat_line_pipe_mass +  valve_unit_mass +  fuel_probe_unit_mass  +  boost_pump_unit_mass
+        transfer_system_mass   += lat_line_insulation_mass + lat_line_pipe_mass +  valve_unit_mass +  fuel_probe_unit_mass
         total_line_moment      += lat_line_pipe_moment + lat_line_insulation_moment
     
     
@@ -164,8 +164,8 @@ def compute_distributor_center_of_gravity(component,vehicle, length=0):
                 transfer_system_mass   += vent_line_insulation_mass + vent_line_pipe_mass
                 total_line_moment      += vent_line_pipe_moment + vent_line_insulation_moment
                                     
-    # assumulate all masses and  moments 
-    transfer_system_mass   += valve_unit_mass +  fuel_probe_unit_mass  +  boost_pump_unit_mass
+    # assumulate all masses and  moments
+    transfer_system_mass   += valve_unit_mass +  fuel_probe_unit_mass
     
     if total_line_mass != 0.0: 
         c_g_line =  [[total_line_moment / total_line_mass, 0, 0]]

@@ -1,6 +1,7 @@
 # RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Hydrogen/Transport/Semi_Empirical/operating_empty_weight.py
 # 
-# Created: Sep 2024, M. Clarke 
+# Created: Sep 2024, M. Clarke
+# Modified: Jul 2026, S. Sharma
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Imports
@@ -146,10 +147,11 @@ def compute_operating_empty_weight(vehicle, settings=None):
     W_energy_network.W_thrust_reverser = 0 
     W_energy_network.W_engine_controls = 0 
     W_energy_network.W_starter         = 0 
-    W_energy_network.W_tanks           = 0 
-    W_energy_network.W_fuel_lines      = 0 
-    W_energy_network.W_pumps           = 0 
-    W_energy_network.W_motors          = 0 
+    W_energy_network.W_tanks           = 0
+    W_energy_network.W_fuel_lines      = 0
+    W_energy_network.W_pumps           = 0
+    W_energy_network.W_fuel_cells      = 0
+    W_energy_network.W_motors          = 0
     W_energy_network.W_nacelle         = 0 
     W_energy_network.W_battery         = 0
     W_energy_network.W_motor           = 0
@@ -170,7 +172,8 @@ def compute_operating_empty_weight(vehicle, settings=None):
         W_energy_network.W_starter          += W_propulsion.W_starter
         W_energy_network.W_tanks            += W_propulsion.W_tanks     
         W_energy_network.W_fuel_lines       += W_propulsion.W_fuel_lines
-        W_energy_network.W_pumps            += W_propulsion.W_pumps     
+        W_energy_network.W_pumps            += W_propulsion.W_pumps
+        W_energy_network.W_fuel_cells       += W_propulsion.W_fuel_cells
         W_energy_network.W_nacelle          += W_propulsion.W_nacelle
         number_of_engines                   += W_propulsion.number_of_engines
         number_of_tanks                     += W_propulsion.number_of_fuel_tanks  
@@ -210,7 +213,8 @@ def compute_operating_empty_weight(vehicle, settings=None):
     output.empty.propulsion.miscellaneous       = W_energy_network.W_engine_controls + W_energy_network.W_starter
     output.empty.propulsion.tanks               = W_energy_network.W_tanks     
     output.empty.propulsion.fuel_lines          = W_energy_network.W_fuel_lines
-    output.empty.propulsion.pumps               = W_energy_network.W_pumps    
+    output.empty.propulsion.pumps               = W_energy_network.W_pumps
+    output.empty.propulsion.fuel_cells          = W_energy_network.W_fuel_cells
 
     ##-------------------------------------------------------------------------------                 
     # Wing Weight 
