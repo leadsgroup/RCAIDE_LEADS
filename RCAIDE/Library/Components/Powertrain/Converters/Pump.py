@@ -5,7 +5,7 @@
 # ----------------------------------------------------------------------
 #  Imports
 # ----------------------------------------------------------------------
-from RCAIDE.Framework.Core import Data
+from RCAIDE.Framework.Core import Data, Units
 from RCAIDE.Library.Components.Powertrain.Converters import Converter
 from RCAIDE.Library.Methods.Powertrain.Converters.Pump.append_pump_conditions import append_pump_conditions
 from RCAIDE.Library.Methods.Powertrain.Converters.Pump.compute_pump_performance import compute_pump_performance
@@ -23,6 +23,8 @@ class Pump(Converter):
         """
         self.tag                      = 'Pump'
         self.casting_and_mount_factor = 2.0
+        self.efficiency               = 0.85
+        self.delta_pressure           = 3 * Units.bar
 
         return
     

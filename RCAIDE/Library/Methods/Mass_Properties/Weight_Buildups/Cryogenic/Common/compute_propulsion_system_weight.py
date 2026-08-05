@@ -89,7 +89,7 @@ def compute_propulsion_system_weight(vehicle,ref_propulsor, settings):
 
     if ref_nacelle is not None:
         WNAC        = compute_nacelle_weight(ref_propulsor,ref_nacelle,NENG )
-    WTANK, WLINE, WPUMP, WFC = compute_fuel_system_weight(vehicle, NENG,settings)
+    WTANK, WLINE, WPUMP, WFC = compute_fuel_system_weight(vehicle,ref_propulsor)
     WENG            = compute_engine_weight(vehicle,ref_propulsor)
     if ref_nacelle is not None:
         WEC, WSTART = compute_misc_propulsion_system_weight(vehicle,ref_propulsor,ref_nacelle,NENG)
@@ -113,7 +113,7 @@ def compute_propulsion_system_weight(vehicle,ref_propulsor, settings):
     output.number_of_fuel_tanks = number_of_tanks
     return output
 
-def compute_fuel_system_weight(vehicle, NENG,settings):
+def compute_fuel_system_weight(vehicle,ref_propulsor):
     """ Calculates the weight of the fuel system based on Wess ****update l
         Source:
             The Flight Optimization System Weight Estimation Method
@@ -141,21 +141,20 @@ def compute_fuel_system_weight(vehicle, NENG,settings):
 
         # Per-engine design thrust and origins on this network,
         # used below to size each fuel line's transfer/boost pump.
-        design_thrust  = None
-        engine_origins = []
-        for propulsor in network.propulsors:
-            if 'design_thrust' in propulsor:
-                design_thrust = propulsor.design_thrust
-                engine_origins.append(propulsor.origin)
+        # design_thrust  = None
+        # engine_origins = []
+        # for propulsor in network.propulsors:
+        #     if 'design_thrust' in propulsor:
+        #         design_thrust = propulsor.design_thrust
+        #         engine_origins.append(propulsor.origin)
 
         for distributor in network.distributors:
             if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
                 compute_distributor_center_of_gravity(distributor, vehicle, length=0)
                 WLINE += distributor.mass_properties.mass
 
-                if design_thrust is not None and engine_origins and distributor.working_fluid is not None:
-                    size_fuel_transfer_pump(network, distributor, distributor.working_fluid,
-                                             design_thrust, engine_origins)
+                #if design_thrust is not None and engine_origins and distributor.working_fluid is not None:
+                size_fuel_transfer_pumps(network, distributor,ref_propulsor)
 
         for converter in network.converters:
             if issubclass(type(converter),RCAIDE.Library.Components.Powertrain.Converters.Pump):
@@ -166,12 +165,7 @@ def compute_fuel_system_weight(vehicle, NENG,settings):
     return WTANK, WLINE, WPUMP, WFC
 
 
-def size_fuel_transfer_pump(network, fuel_line, fuel, design_thrust, engine_origins,
-                             delta_pressure=300e3,
-                             efficiency=0.55,
-                             reference_sfc=0.08 / 3600,
-                             reference_fuel_specific_energy=48.632e6,
-                             aft_offset=0.5):
+def size_fuel_transfer_pumps(network, fuel_line,ref_propulsor):
     """ Sizes and weighs a fuel line's transfer/boost pump and wires it into the network.
     Called from compute_fuel_system_weight for every Fuel_Line in a network, so this must be
     idempotent: safe to call again on the next MTOW-iteration pass without appending the pump
@@ -182,6 +176,11 @@ def size_fuel_transfer_pump(network, fuel_line, fuel, design_thrust, engine_orig
     Sizing chain (NASA SP-8107-style): fluid power Pf = mdot*dP/rho, shaft power Ps = Pf/eta.
 
     specific_power_density (design_power / mass) is selected from the fuel's own type, not
+    passed in:
+        - Cryogenic (Liquid_Hydrogen, Liquid_Natural_Gas): 200 W/kg.
+        - All other fuels (Liquid_Petroleum_Gas, Jet_A, ...): 400 W/kg.
+    Derived from real aircraft electric fuel boost pumps -- Eaton Type 9106 (B777:
+    6.5 kg, 200V/400Hz 3-phase, 9.5A -> ~3.29 kVA apparent power -> ~506 W/kg) and Type 20004   
     passed in:
         - Cryogenic (Liquid_Hydrogen, Liquid_Natural_Gas): 200 W/kg.
         - All other fuels (Liquid_Petroleum_Gas, Jet_A, ...): 400 W/kg.
@@ -216,31 +215,36 @@ def size_fuel_transfer_pump(network, fuel_line, fuel, design_thrust, engine_orig
     Properties Used:
             N/A
     """
+    reference_sfc = 0.08/3600
+    reference_fuel_specific_energy =48.632e6
 
-    pump = fuel_line.pump
+    for converter in network.converters:
+        if type(converter) is RCAIDE.Library.Components.Powertrain.Converters.Pump:
+            pump = converter
 
-    if isinstance(fuel, (RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen,
-                          RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas)):
-        specific_power_density = 200.  # W/kg -- cryogenic
-    else:
-        specific_power_density = 400.  # W/kg -- ambient-temperature
+            # check if the pump's mass is defined or not 
+            if pump.mass_properties.mass  != 0.0:
+                continue 
+            else:
+                # check to see if the pump is connected to the fuel line
+                if fuel_line.tag in pump.assigned_distributors:
+                    fuel           = fuel_line.working_fluid 
+                    delta_pressure = pump.delta_pressure
+                    efficiency     = pump.efficiency
 
-    thermal_power_per_N = reference_sfc * reference_fuel_specific_energy
-    mdot                = design_thrust * thermal_power_per_N / fuel.specific_energy
-    fluid_power          = mdot * delta_pressure / fuel.density
-    pump.design_power    = fluid_power / efficiency
-    pump.mass_properties.mass = pump.design_power / specific_power_density
+                    if isinstance(fuel, (RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen,
+                                        RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas)):
+                        specific_power_density = 200.  # W/kg -- cryogenic
+                    else:
+                        specific_power_density = 400.  # W/kg -- ambient-temperature
 
-    pump.active = False  # keep out of the (unfinished) mission-solve performance loop
-    if not any(existing is pump for existing in network.converters.values()):
-        network.converters.append(pump)
-
-    x = sum(origin[0][0] for origin in engine_origins) / len(engine_origins) + aft_offset
-    y = 0.0
-    z = sum(origin[0][2] for origin in engine_origins) / len(engine_origins)
-    pump.origin = [[x, y, z]]
-
-    return pump
+                    thermal_power_per_N  = reference_sfc * reference_fuel_specific_energy
+                    mdot                 = ref_propulsor.design_thrust * thermal_power_per_N / fuel.specific_energy
+                    fluid_power          = mdot * delta_pressure / fuel.density
+                    pump.design_power    = fluid_power / efficiency
+                    pump.mass_properties.mass = pump.design_power / specific_power_density
+                   
+    return  
 
 
 def compute_nacelle_weight(ref_propulsor,ref_nacelle,NENG):

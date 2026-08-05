@@ -6,5 +6,5 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
-from .compute_propulsion_system_weight  import compute_propulsion_system_weight, compute_fuel_system_weight, size_fuel_transfer_pump
+from .compute_propulsion_system_weight  import compute_propulsion_system_weight, compute_fuel_system_weight
 from .compute_landing_gear_weight       import compute_landing_gear_weight
