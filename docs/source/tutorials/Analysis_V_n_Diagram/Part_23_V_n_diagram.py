@@ -250,7 +250,7 @@ def vehicle_setup():
     fuselage.lengths.total                      = 326.         * Units.inches            # Length of the fuselage
     fuselage.lengths.tail                       = 161. * Units.inches  
     fuselage.lengths.cabin                      = 105. * Units.inches 
-    fuselage.volume_properties.gross_volume     = .4*fuselage.lengths.total*(np.pi/4.)*(fuselage.heights.maximum**2.)  
+    fuselage.volume_properties.gross_volume     = .4*fuselage.lengths.total*(np.pi/4.)*(fuselage.heights.maximum**2.) 
     fuselage.areas.wetted                       = 30000. * Units.inches**2. 
     fuselage.fineness.nose                      = 1.6
     fuselage.fineness.tail                      = 2.
@@ -388,8 +388,9 @@ def vehicle_setup():
     fuel_tank.origin                            = vehicle.wings.main_wing.origin  
     fuel_tank.fuel                              = RCAIDE.Library.Attributes.Propellants.Aviation_Gasoline() 
     fuel_tank.fuel.mass_properties.mass         = 319 *Units.lbs 
-    fuel_tank.mass_properties.center_of_gravity = wing.mass_properties.center_of_gravity 
-    fuel_line.fuel_tanks.append(fuel_tank)   
+    fuel_tank.mass_properties.center_of_gravity = wing.mass_properties.center_of_gravity
+    fuel_tank.assigned_distributors             = [[fuel_line.tag]]
+    net.sources.append(fuel_tank)
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor
@@ -431,15 +432,12 @@ def vehicle_setup():
     # design propeller ICE  
     design_internal_combustion_engine(ice_prop) 
     
+    ice_prop.assigned_distributors = [[fuel_line.tag]]
     net.propulsors.append(ice_prop)
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to fuel line to network      
-    fuel_line.assigned_propulsors =  [[ice_prop.tag]]
-    
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Append fuel line to fuel line to network      
-    net.fuel_lines.append(fuel_line)            
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Append fuel line to network
+    net.distributors.append(fuel_line)
 
     #------------------------------------------------------------------------------------------------------------------------------------ 
     # Avionics

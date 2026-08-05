@@ -36,7 +36,6 @@ Browse tutorials by category:
    :maxdepth: 2
 
    missions
-   optimize
    performance
    analysis
    simulation
