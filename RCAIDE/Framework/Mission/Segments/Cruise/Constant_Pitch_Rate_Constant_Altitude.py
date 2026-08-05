@@ -61,7 +61,6 @@ class Constant_Pitch_Rate_Constant_Altitude(Evaluate):
         # --------------------------------------------------------------------------------------------------------------       
         initialize                         = self.process.initialize  
         initialize.conditions              = Cruise.Constant_Pitch_Rate_Constant_Altitude.initialize_conditions  
-        iterate                            = self.process.iterate   
         
         return
 

@@ -10,5 +10,4 @@
 
 from . import Conventional
 from . import Electric
-from . import Hybrid
 from . import Cryogenic

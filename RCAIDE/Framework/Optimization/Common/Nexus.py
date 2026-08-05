@@ -316,8 +316,8 @@ class Nexus(Data):
 
         # Set the dictionary
         aliases = self.optimization_problem.aliases
-
-        self    = help_fun.set_values(self,inputs,converted_values,aliases)
+        
+        self    = help_fun.set_values(self,inputs,converted_values,aliases)     
 
     
     def constraints_individual(self,x = None):

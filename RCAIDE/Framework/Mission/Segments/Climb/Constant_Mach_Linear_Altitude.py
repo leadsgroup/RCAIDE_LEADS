@@ -59,9 +59,6 @@ class Constant_Mach_Linear_Altitude(Evaluate):
         # --------------------------------------------------------------------------------------------------------------   
         initialize                         = self.process.initialize  
         initialize.differentials_altitude  = Common.Initialize.differentials_altitude
-        initialize.conditions              = Segments.Climb.Constant_Mach_Linear_Altitude.initialize_conditions  
-        iterate                            = self.process.iterate   
-
-
+        initialize.conditions              = Segments.Climb.Constant_Mach_Linear_Altitude.initialize_conditions   
         return
 

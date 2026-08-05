@@ -57,7 +57,7 @@ class Constant_Speed_Constant_Altitude_Loiter(Evaluate):
         # -------------------------------------------------------------------------------------------------------------- 
         #  Mission specific processes 
         # --------------------------------------------------------------------------------------------------------------      
-        initialize                                 = self.process.initialize  
-        initialize.conditions                      = Segments.Cruise.Constant_Speed_Constant_Altitude_Loiter.initialize_conditions    
+        initialize                         = self.process.initialize  
+        initialize.conditions              = Segments.Cruise.Constant_Speed_Constant_Altitude_Loiter.initialize_conditions 
         return
 

@@ -10,7 +10,7 @@
 
 # RCAIDE imports
 import numpy as np
-from RCAIDE.Framework.Optimization import helper_functions as help_fun
+from RCAIDE.Framework.Optimization.Common import helper_functions as help_fun
 
 
 # ----------------------------------------------------------------------

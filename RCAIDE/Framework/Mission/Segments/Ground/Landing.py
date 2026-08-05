@@ -88,10 +88,10 @@ class Landing(Evaluate):
         # --------------------------------------------------------------------------------------------------------------
         #  Mission specific processes
         # --------------------------------------------------------------------------------------------------------------
-        initialize                         = self.process.initialize
-        initialize.conditions              = Ground.Landing.initialize_conditions
-        iterate                            = self.process.iterate
-        iterate.conditions.forces_ground   = Update.ground_forces
+        initialize                                 = self.process.initialize
+        initialize.conditions                      = Ground.Landing.initialize_conditions
+        iterate                                    = self.process.iterate
+        iterate.conditions.forces_ground           = Update.ground_forces
         iterate.unknowns.mission.mission           = Unpack_Unknowns.ground
         iterate.residuals.mission.flight_dynamics  = Residuals.flight_dynamics
 

@@ -5,18 +5,17 @@
 # ----------------------------------------------------------------------
 #  Imports
 # ----------------------------------------------------------------------
-
-import numpy as np
-from warnings import warn
+# RCAIDE imports 
 import RCAIDE
-from RCAIDE.Framework.Analyses.Atmospheric import Atmospheric
-from RCAIDE.Framework.Mission.Common.Conditions import Conditions
-from RCAIDE.Framework.Core import Units
-from RCAIDE.Framework.Core.Arrays import atleast_2d_col
+from RCAIDE.Framework.Analyses.Atmospheric      import Atmospheric
+from RCAIDE.Framework.Mission.Common.Conditions import Conditions 
+from RCAIDE.Framework.Core.Arrays               import atleast_2d_col 
+from RCAIDE.Library.Attributes.Gases            import Air
+from RCAIDE.Library.Attributes.Planets          import Earth
 
-from RCAIDE.Library.Attributes.Gases import Air
-from RCAIDE.Library.Attributes.Planets import Earth
-
+# pthon imports 
+import numpy as np
+from warnings import warn 
 
 # ----------------------------------------------------------------------
 #  Classes
@@ -50,10 +49,11 @@ class US_Standard_1976(Atmospheric):
 
         Properties Used:
         None
-        """
-
+        """      
         atmo_data = RCAIDE.Library.Attributes.Atmospheres.Earth.US_Standard_1976()
-        self.update(atmo_data)
+        self.update(atmo_data)         
+        planet = RCAIDE.Framework.Analyses.Planets.Earth()
+        self.features.planet = planet.features
     
     def compute_values(self,altitude,temperature_deviation=0.0,var_gamma=False):
 

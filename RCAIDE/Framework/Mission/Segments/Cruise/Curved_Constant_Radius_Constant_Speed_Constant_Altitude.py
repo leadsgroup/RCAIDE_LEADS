@@ -60,10 +60,10 @@ class Curved_Constant_Radius_Constant_Speed_Constant_Altitude(Evaluate):
         # -------------------------------------------------------------------------------------------------------------- 
         #  Mission specific processes 
         # -------------------------------------------------------------------------------------------------------------- 
-        initialize                                 = self.process.initialize  
-        initialize.conditions                      = Segments.Cruise.Curved_Constant_Radius_Constant_Speed_Constant_Altitude.initialize_conditions           
-        post_process                               = self.process.post_process 
-        post_process.inertial_position             = Common.Update.curvilinear_inertial_horizontal_position
+        initialize                         = self.process.initialize  
+        initialize.conditions              = Segments.Cruise.Curved_Constant_Radius_Constant_Speed_Constant_Altitude.initialize_conditions    
+        post_process                       = self.process.post_process 
+        post_process.inertial_position     = Common.Update.curvilinear_inertial_horizontal_position
  
         return
 

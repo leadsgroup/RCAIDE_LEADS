@@ -67,19 +67,19 @@ class State(Conditions):
         self.unknowns_lower_bounds.mission = Unknowns()
         
         # Network unknowns  
-        self.number_of_network_residuals = 0
-        self.number_of_network_unknowns  = 0
+        self.number_of_network_residuals   = 0
+        self.number_of_network_unknowns    = 0
         self.unknowns.network              = Unknowns()  
         self.unknowns_upper_bounds.network = Unknowns()   
         self.unknowns_lower_bounds.network = Unknowns()      
  
         # Residuals 
-        self.residuals            = Conditions()
-        self.residuals.mission    = Residuals()
-        self.residuals.network    = Residuals()
+        self.residuals                     = Conditions()
+        self.residuals.mission             = Residuals()
+        self.residuals.network             = Residuals()
              
         # Conditions
-        self.conditions           = Conditions() 
+        self.conditions                    = Conditions() 
 
         
     def expand_rows(self,rows,override=False):

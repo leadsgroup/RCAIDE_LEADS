@@ -8,8 +8,8 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
 
 # RCAIDE imports
-from RCAIDE.Framework.Core                                 import Units 
-from RCAIDE.Framework.Mission.Segments.Evaluate   import Evaluate 
+from RCAIDE.Framework.Core                       import Units 
+from RCAIDE.Framework.Mission.Segments.Evaluate  import Evaluate 
 from RCAIDE.Library.Mission                      import Common,Segments
 
 # ----------------------------------------------------------------------------------------------------------------------  
@@ -58,7 +58,6 @@ class Constant_Speed_Constant_Angle(Evaluate):
         # -------------------------------------------------------------------------------------------------------------- 
         initialize                         = self.process.initialize  
         initialize.differentials_altitude  = Common.Initialize.differentials_altitude
-        initialize.conditions              = Segments.Descent.Constant_Speed_Constant_Angle.initialize_conditions
-        iterate                            = self.process.iterate             
+        initialize.conditions              = Segments.Descent.Constant_Speed_Constant_Angle.initialize_conditions       
         return
 

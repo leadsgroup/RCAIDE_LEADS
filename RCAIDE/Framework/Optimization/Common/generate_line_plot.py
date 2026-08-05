@@ -4,7 +4,7 @@
 #  IMPORT
 # -----------------------------------------------------------------------------------------------------------------
 from RCAIDE.Framework.Core                                      import Data
-from RCAIDE.Framework.Optimization.generate_carpet_plot import _fmt, _axis_label
+from RCAIDE.Framework.Optimization.Common.generate_carpet_plot import _fmt, _axis_label
 import numpy              as np
 import matplotlib.pyplot  as plt
 

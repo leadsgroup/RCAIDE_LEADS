@@ -59,8 +59,7 @@ class Constant_Speed_Constant_Angle(Evaluate):
         # --------------------------------------------------------------------------------------------------------------   
         initialize                         = self.process.initialize  
         initialize.differentials_altitude  = Common.Initialize.differentials_altitude
-        initialize.conditions              = Segments.Climb.Constant_Speed_Constant_Angle.initialize_conditions  
-        iterate                            = self.process.iterate   
+        initialize.conditions              = Segments.Climb.Constant_Speed_Constant_Angle.initialize_conditions     
     
         return
        

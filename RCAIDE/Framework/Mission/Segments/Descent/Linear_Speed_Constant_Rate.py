@@ -57,9 +57,9 @@ class Linear_Speed_Constant_Rate(Evaluate):
         # -------------------------------------------------------------------------------------------------------------- 
         #  Mission specific processes 
         # -------------------------------------------------------------------------------------------------------------- 
-        initialize                                 = self.process.initialize  
-        initialize.differentials_altitude          = Common.Initialize.differentials_altitude
-        initialize.conditions                      = Segments.Descent.Linear_Speed_Constant_Rate.initialize_conditions     
+        initialize                         = self.process.initialize  
+        initialize.differentials_altitude  = Common.Initialize.differentials_altitude
+        initialize.conditions              = Segments.Descent.Linear_Speed_Constant_Rate.initialize_conditions  
 
         return
 
