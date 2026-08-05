@@ -78,7 +78,7 @@ def main():
     triangulation = tri.Triangulation(lon_truth, lat_truth)
     
     # Scale from -15 dB (under-prediction) to +15 dB (over-prediction)
-    levels = np.linspace(np.min(delta_sel),np.max(delta_sel), 51) 
+    levels = np.linspace(np.min(delta_sel),np.max(delta_sel), 20) 
     
     heatmap = ax.tricontourf(triangulation, delta_sel, levels=levels, cmap='coolwarm', extend='both')
     
