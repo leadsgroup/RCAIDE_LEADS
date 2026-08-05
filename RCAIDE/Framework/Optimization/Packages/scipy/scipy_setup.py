@@ -13,7 +13,7 @@
 # rcaide imports
 import numpy as np
 import scipy as sp
-from RCAIDE.Framework.Optimization.Packages.particle_swarm import particle_swarm_optimization 
+from RCAIDE.Framework.Optimization.Packages.particle_swarm import particle_swarm_optimization
 from scipy.optimize import NonlinearConstraint
 from RCAIDE.Framework.Optimization.Common import helper_functions as help_fun
 
@@ -47,7 +47,8 @@ def SciPy_Solve(problem,solver='SLSQP', sense_step = 1.4901161193847656e-08, ite
     con = problem.optimization_problem.constraints
     
     # Have the optimizer call the wrapper
-    wrapper = lambda x:SciPy_Problem(problem,x)    
+    problem.eval_count = 0
+    wrapper = lambda x:SciPy_Problem(problem,x)
     
     # Set inputsq
     nam  = inp[:,0] # Names

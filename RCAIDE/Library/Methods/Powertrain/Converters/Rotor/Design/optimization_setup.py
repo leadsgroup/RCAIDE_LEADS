@@ -113,22 +113,34 @@ def optimization_setup(rotor, number_of_stations, print_iterations):
         tm_ll_c          = rotor.optimization_parameters.tip_mach_range[0]
         tm_ul_c          = rotor.optimization_parameters.tip_mach_range[1]    
         
-    inputs = []  # parameter                  initial val    , lower bound,upper bound,scaling  , units
-    inputs.append([ 'chord_r'               ,  0.2*R    , 0.05*R     , 0.2*R     , 1.0     ,  1*Units.less])
-    inputs.append([ 'chord_p'               ,  2        , 0.25       , 2.0       , 1.0     ,  1*Units.less])
-    inputs.append([ 'chord_q'               ,  1        , 0.25       , 1.5       , 1.0     ,  1*Units.less])
-    inputs.append([ 'chord_t'               ,  0.1*R    , 0.02*R     , 0.1*R     , 1.0     ,  1*Units.less])  
-    inputs.append([ 'twist_r'               ,  np.pi/6  ,  0         , np.pi/4   , 1.0     ,  1*Units.less])
-    inputs.append([ 'twist_p'               ,  1        , 0.25       , 2.0       , 1.0     ,  1*Units.less])
-    inputs.append([ 'twist_q'               ,  0.5      , 0.25       , 1.5       , 1.0     ,  1*Units.less])
-    inputs.append([ 'twist_t'               ,  np.pi/6  , 0          , np.pi/4   , 1.0     ,  1*Units.less])  
-    inputs.append([ 'hover_tip_mach'        , tm_0_h    , tm_ll_h    , tm_ul_h   , 1.0     ,  1*Units.less])
-    inputs.append([ 'OEI_tip_mach'          , tm_0_h    , tm_ll_h    , 0.85      , 1.0     ,  1*Units.less])
-    inputs.append([ 'OEI_collective_pitch'  , 0         , -np.pi/5   , np.pi/5   , 1.0     ,  1*Units.less])
-    if nexus.prop_rotor_flag: 
-        inputs.append([ 'cruise_tip_mach'         , tm_ll_c , tm_ll_c    , tm_ul_c  , 1.0     ,  1*Units.less]) 
-        inputs.append([ 'cuise_collective_pitch'  , np.pi/8 , -np.pi/5   , np.pi/5, 1.0     ,  1*Units.less]) 
-    problem.inputs = np.array(inputs,dtype=object)   
+    # scaling = (upper bound - lower bound) for each variable -- puts every variable's bounds
+    # onto a unit-width interval in SLSQP's search space (x = value/scale), so the single global
+    # finite-difference epsilon represents a comparable fraction of each variable's own range
+    # instead of a raw physical-unit step that's meaningless relative to e.g. chord_t (~0.1 m)
+    # vs chord_p (~2, dimensionless) vs a tip Mach number (~0.1-0.85). Previously scale=1.0
+    # for every variable, i.e. no normalization was actually happening despite the mechanism
+    # existing in the framework.
+    # initial values = midpoint of each variable's own bound range -- previously several
+    # variables started exactly ON one of their own bounds (chord_r/chord_p/chord_t at their
+    # upper bound, cruise_tip_mach at its lower bound -- the one that used to get stuck there
+    # for the whole search), and OEI_tip_mach's guess (tm_0_h) was actually hover's midpoint,
+    # not its own (OEI's own upper bound, 0.85, differs from hover's tm_ul_h).
+    inputs = []  # parameter                  initial val                   , lower bound,upper bound,scaling              , units
+    inputs.append([ 'chord_r'               ,  (0.05*R + 0.2*R)/2           , 0.05*R     , 0.2*R     , 0.2*R - 0.05*R           ,  1*Units.less])
+    inputs.append([ 'chord_p'               ,  (0.25 + 2.0)/2                , 0.25       , 2.0       , 2.0 - 0.25               ,  1*Units.less])
+    inputs.append([ 'chord_q'               ,  (0.25 + 1.5)/2                , 0.25       , 1.5       , 1.5 - 0.25               ,  1*Units.less])
+    inputs.append([ 'chord_t'               ,  (0.02*R + 0.1*R)/2           , 0.02*R     , 0.1*R     , 0.1*R - 0.02*R           ,  1*Units.less])
+    inputs.append([ 'twist_r'               ,  (0 + np.pi/4)/2               ,  0         , np.pi/4   , np.pi/4 - 0              ,  1*Units.less])
+    inputs.append([ 'twist_p'               ,  (0.25 + 2.0)/2                , 0.25       , 2.0       , 2.0 - 0.25               ,  1*Units.less])
+    inputs.append([ 'twist_q'               ,  (0.25 + 1.5)/2                , 0.25       , 1.5       , 1.5 - 0.25               ,  1*Units.less])
+    inputs.append([ 'twist_t'               ,  (0 + np.pi/4)/2               , 0          , np.pi/4   , np.pi/4 - 0              ,  1*Units.less])
+    inputs.append([ 'hover_tip_mach'        , tm_0_h                        , tm_ll_h    , tm_ul_h   , tm_ul_h - tm_ll_h        ,  1*Units.less])
+    inputs.append([ 'OEI_tip_mach'          , (tm_ll_h + 0.85)/2            , tm_ll_h    , 0.85      , 0.85 - tm_ll_h           ,  1*Units.less])
+    inputs.append([ 'OEI_collective_pitch'  , (-np.pi/5 + np.pi/5)/2        , -np.pi/5   , np.pi/5   , np.pi/5 - (-np.pi/5)     ,  1*Units.less])
+    if nexus.prop_rotor_flag:
+        inputs.append([ 'cruise_tip_mach'         , (tm_ll_c + tm_ul_c)/2        , tm_ll_c , tm_ul_c    , tm_ul_c - tm_ll_c            ,  1*Units.less])
+        inputs.append([ 'cuise_collective_pitch'  , (-np.pi/5 + np.pi/5)/2       , -np.pi/5 , np.pi/5   , np.pi/5 - (-np.pi/5)           ,  1*Units.less])
+    problem.inputs = np.array(inputs,dtype=object)
 
     # -------------------------------------------------------------------
     # Objective

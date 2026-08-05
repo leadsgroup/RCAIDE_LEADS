@@ -146,15 +146,24 @@ def biot_savart_velocity_induction(P, A, B, rc=1e-6, vc_correction=1, tol=1e-6):
 
     r1_norm_sq = r1x*r1x + r1y*r1y + r1z*r1z          # (..., M, N)
     r1_norm    = np.sqrt(r1_norm_sq)
+    # Guard against exact 0/0 when P sits exactly on a filament endpoint -- s1/r1_norm below
+    # would otherwise divide by zero before the tol-based mask gets a chance to exclude that
+    # point. 1e-300 is still well below any reasonable tol, so the mask's own exclusion is
+    # unaffected -- this only silences the division itself (same pattern as the Cd/(Cl+1e-300)
+    # guard in evaluate_bound_vortex_circulation.py).
+    r1_norm    = np.where(r1_norm == 0.0, 1e-300, r1_norm)
 
-    r0_norm_sq = r0x*r0x + r0y*r0y + r0z*r0z          # (..., N) -- = filament length^2
-    s          = np.sqrt(r0_norm_sq)                  # (..., N)
-    s_b        = s[..., np.newaxis, :]                # (..., 1, N), broadcasts against (...,M,N)
+    r0_norm_sq   = r0x*r0x + r0y*r0y + r0z*r0z          # (..., N) -- = filament length^2
+    s            = np.sqrt(r0_norm_sq)                  # (..., N)
+    s_b          = s[..., np.newaxis, :]                # (..., 1, N), broadcasts against (...,M,N)
     r0_norm_sq_b = r0_norm_sq[..., np.newaxis, :]
 
     r1_dot_r0  = r1x*r0x_b + r1y*r0y_b + r1z*r0z_b                        # (..., M, N)
     r2_norm_sq = r1_norm_sq - 2.0*r1_dot_r0 + r0_norm_sq_b                # (..., M, N)
     r2_norm    = np.sqrt(r2_norm_sq)
+    # Same guard as r1_norm above -- P exactly on the filament's B endpoint would otherwise
+    # divide by zero in s2/r2_norm below, before the tol-based mask excludes that point.
+    r2_norm    = np.where(r2_norm == 0.0, 1e-300, r2_norm)
 
     s1 = -r1_dot_r0 / s_b                             # (..., M, N)
     s2 = (r0_norm_sq_b - r1_dot_r0) / s_b
@@ -176,8 +185,6 @@ def biot_savart_velocity_induction(P, A, B, rc=1e-6, vc_correction=1, tol=1e-6):
 
     rc_sq   = np.atleast_1d(rc)**2
     rc_sq_b = _expand_rc_for_broadcast(rc_sq, rm_sq.ndim)   # aligned against (..., M, N)
-
-    factor = cross / (4.0 * np.pi * s_b[..., np.newaxis])
 
     bracket = (s2/r2_norm - s1/r1_norm)
 
@@ -202,12 +209,14 @@ def biot_savart_velocity_induction(P, A, B, rc=1e-6, vc_correction=1, tol=1e-6):
         f = 1 - np.exp(-a*rm_sq/rc_sq_b)
 
     # Influence tensor  -- (..., M, N, 3)
-    scalar_coeff = f * bracket / denom          # (..., M, N) -- f, bracket, denom scalar per (...,m,n)
-    K            = factor * scalar_coeff[..., np.newaxis]
+    scalar_coeff   = f * bracket / denom          # (..., M, N) -- f, bracket, denom scalar per (...,m,n)
+    combined_coeff = scalar_coeff[..., np.newaxis] / (4.0 * np.pi * s_b[..., np.newaxis])
 
     # Mask: skip contribution if P is on or near A, on or near B,
     # or if P is collinear with the segment (cross product near zero)
     mask = (r1_norm < tol) | (r2_norm < tol) | (rm_sq < tol)
-    K[mask] = 0.0
+    combined_coeff[mask] = 0.0
 
-    return K
+    cross *= combined_coeff[..., np.newaxis]
+
+    return cross

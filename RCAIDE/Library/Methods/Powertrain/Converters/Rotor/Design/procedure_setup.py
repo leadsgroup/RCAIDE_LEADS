@@ -431,8 +431,17 @@ def post_process(nexus):
     print_iter                      = nexus.print_iterations  
     mean_CL_hover                   = nexus.results.hover.mean_CL
     omega_hover                     = nexus.results.hover.omega
-    FM_hover                        = np.nan_to_num(nexus.results.hover.figure_of_merit)  
-    
+    FM_hover                        = np.nan_to_num(nexus.results.hover.figure_of_merit)
+    # cruise.efficiency is the same Ct-based formula family as figure_of_merit -- undefined
+    # (NaN) whenever this design/collective/tip-speed combination puts cruise in a windmilling
+    # (negative-thrust) state, which the unbounded 13-variable search can and does reach even
+    # at the initial guess. SLSQP's finite-difference Jacobian and BFGS Hessian have no NaN
+    # guard anywhere (verified against scipy's _slsqp_py.py/_numdiff.py) -- a single NaN here
+    # silently corrupts that iteration's search direction and, since BFGS is stateful, every
+    # iteration after it. nan_to_num->0 matches FM_hover's treatment: 0 is the correct "worst
+    # case" for a maximized efficiency term.
+    cruise_efficiency               = np.nan_to_num(nexus.results.cruise.efficiency)
+
     # q to p ratios 
     summary                                 = nexus.summary 
     summary.max_sectional_cl_hover          = nexus.results.hover.max_sectional_cl
@@ -443,34 +452,46 @@ def post_process(nexus):
     summary.blade_twist_constraint          = rotor.twist_distribution [0] - rotor.twist_distribution [-1] 
     summary.OEI_hover_thrust_power_residual = abs(nexus.results.oei.thrust - rotor.oei.design_thrust) / nexus.results.oei.thrust
             
-    # thrust/power residuals  
+    # thrust/power residuals
+    # These feed directly into SLSQP as inequality constraints (<1E-3) -- unlike FM/efficiency,
+    # "bigger" means "more violated" here, so a NaN/Inf reading (thrust or power computed from a
+    # degenerate/windmilling rotor state) must map to a large FINITE value, not 0 (which would
+    # look like the constraint is satisfied and pull the search toward the bad region) and not
+    # raw inf (which risks its own numerical issues in the QP subproblem/BFGS update).
     if rotor.hover.design_thrust == None:
         summary.hover_thrust_power_residual = abs(nexus.results.hover.power - rotor.hover.design_power) / rotor.hover.design_power
-    else: 
-        summary.hover_thrust_power_residual = abs(nexus.results.hover.thrust - rotor.hover.design_thrust) /rotor.hover.design_thrust 
+    else:
+        summary.hover_thrust_power_residual = abs(nexus.results.hover.thrust - rotor.hover.design_thrust) /rotor.hover.design_thrust
+    summary.hover_thrust_power_residual = np.nan_to_num(summary.hover_thrust_power_residual, nan=1E2, posinf=1E2, neginf=1E2)
 
     # oei
     if rotor.oei.design_thrust == None:
         summary.oei_thrust_power_residual =  abs(nexus.results.oei.power - rotor.oei.design_power) / rotor.oei.design_power
-    else: 
-        summary.oei_thrust_power_residual = abs(nexus.results.oei.thrust - rotor.oei.design_thrust) /rotor.oei.design_thrust 
-    
-        
-    if nexus.prop_rotor_flag: 
+    else:
+        summary.oei_thrust_power_residual = abs(nexus.results.oei.thrust - rotor.oei.design_thrust) /rotor.oei.design_thrust
+    summary.oei_thrust_power_residual = np.nan_to_num(summary.oei_thrust_power_residual, nan=1E2, posinf=1E2, neginf=1E2)
+
+
+    if nexus.prop_rotor_flag:
         if rotor.cruise.design_thrust == None:
-            summary.cruise_thrust_power_residual = abs(nexus.results.cruise.power - rotor.cruise.design_power) /rotor.cruise.design_power 
-        else: 
-            summary.cruise_thrust_power_residual =  abs(nexus.results.cruise.thrust - rotor.cruise.design_thrust) /rotor.cruise.design_thrust    
-            
+            summary.cruise_thrust_power_residual = abs(nexus.results.cruise.power - rotor.cruise.design_power) /rotor.cruise.design_power
+        else:
+            summary.cruise_thrust_power_residual =  abs(nexus.results.cruise.thrust - rotor.cruise.design_thrust) /rotor.cruise.design_thrust
+        summary.cruise_thrust_power_residual = np.nan_to_num(summary.cruise_thrust_power_residual, nan=1E2, posinf=1E2, neginf=1E2)
+
     # -------------------------------------------------------
     # OBJECTIVE FUNCTION
-    # -------------------------------------------------------   
-    performance_objective  = ((ideal_FoM - FM_hover)/ideal_FoM)*beta +  ((ideal_efficiency - nexus.results.cruise.efficiency)/ideal_efficiency)*(1-beta) 
-    
-    acoustic_objective     = ((nexus.results.hover.mean_SPL  - ideal_SPL)/ideal_SPL)*gamma  + ((nexus.results.cruise.mean_SPL - ideal_SPL)/ideal_SPL)*(1-gamma) 
- 
-    summary.objective      = (performance_objective*alpha + acoustic_objective*(1-alpha))  
-    
+    # -------------------------------------------------------
+    performance_objective  = ((ideal_FoM - FM_hover)/ideal_FoM)*beta +  ((ideal_efficiency - cruise_efficiency)/ideal_efficiency)*(1-beta)
+
+    acoustic_objective     = ((nexus.results.hover.mean_SPL  - ideal_SPL)/ideal_SPL)*gamma  + ((nexus.results.cruise.mean_SPL - ideal_SPL)/ideal_SPL)*(1-gamma)
+
+    summary.objective      = (performance_objective*alpha + acoustic_objective*(1-alpha))
+    # Final catch-all: if any other NaN/Inf slipped through (e.g. from mean_SPL under an equally
+    # degenerate acoustic evaluation), don't let it reach SLSQP's Jacobian/BFGS update -- map to
+    # a large finite value since the objective is minimized.
+    summary.objective       = np.nan_to_num(summary.objective, nan=1E2, posinf=1E2, neginf=1E2)
+
 
     if nexus.prop_rotor_flag:  
         rotor_cru  = nexus.vehicle_configurations.cruise.networks.electric.propulsors.electric_rotor.rotor         

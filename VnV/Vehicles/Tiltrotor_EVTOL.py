@@ -437,10 +437,13 @@ def vehicle_setup(redesign_rotors=True, design_iterations=200) :
     prop_rotor.append_airfoil(airfoil)
     prop_rotor.airfoil_polar_stations             = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
-    # Lifting-line fidelity -- mirrors Electric_Twin_Otter.py's validated LL configuration.
+    # This is the MISSION fidelity -- the rotor design optimizer always runs at BEMT regardless
+    # of this setting (see the redesign_rotors branch below), since it needs many cheap
+    # evaluations, not the expensive free-wake solve. This value only controls how the resulting
+    # blade is analyzed during the mission itself.
     # radius_distribution must be set explicitly before design_electric_rotor(), since
     # initialize_lifting_line() needs it upfront (BEMT can auto-generate it, LL cannot).
-    prop_rotor.fidelity                                = 'Lifting_Line_Theory'
+    prop_rotor.fidelity                                = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'#'Lifting_Line_Theory'
     prop_rotor.rc                                      = 0.05
     prop_rotor.variable_pitch                          = True
     prop_rotor.radius_distribution                     = np.linspace(prop_rotor.hub_radius, prop_rotor.tip_radius, len(prop_rotor.airfoil_polar_stations))
@@ -450,24 +453,33 @@ def vehicle_setup(redesign_rotors=True, design_iterations=200) :
     prop_rotor.wake_inputs.wake_model_hov               = 1                 # 1 simple model, 2 landgrebe, 3 landgrebe KT
     prop_rotor.wake_inputs.wake_model_FF                = 5                 # 4 undistorted, 5 Beddoes distorted, 6 Modified Beddoes distorted
     prop_rotor.wake_inputs.vc_correction                = 1                 # vortex core factor, 1 standard/Scully, 2 Rankine, 3 Vatistas, 4 Oseen
-    prop_rotor.wake_inputs.dpsi                         = np.radians(15)    # filament length [rad]
-    prop_rotor.wake_inputs.n_turns                      = 5.0               # Number of wake turns
+    prop_rotor.wake_inputs.dpsi                         = np.radians(30.0)    # filament length [rad]
+    prop_rotor.wake_inputs.n_turns                      = 3.0               # Number of wake turns
     prop_rotor.wake_inputs.thrust_coeff_initial_guess   = 0.00654           # initial guess for CT to intialize the wake geometry
     prop_rotor.wake_inputs.lamb_oseen_rc_0              = 0.028             # initial core radius for the wake filaments [fraction of R]
     prop_rotor.wake_inputs.lamb_oseen_alpha             = 1.25643           # parameters for the core radius growth rate Lamb-Oseen model
-    prop_rotor.wake_inputs.lamb_oseen_delta             = 120000
+    prop_rotor.wake_inputs.lamb_oseen_delta             = 100000
     prop_rotor.wake_inputs.lamb_oseen_sigma             = 1.0
     prop_rotor.wake_inputs.lamb_oseen_core_growth_delay = np.radians(30.0)  # delay the growth rate till certain wake age
     prop_rotor.wake_inputs.r_R_shed                     = 1.0               # location as fraction of R to shed the wake filament from
+    # Keep well below the outer mission solver's finite-difference step_size (1e-3, see
+    # departure_transition_1's segment.state.numerics.solver.step_size) -- otherwise the outer
+    # Jacobian estimate measures inner-solve noise instead of true sensitivity.
     prop_rotor.wake_inputs.tol                          = 1e-3
-    prop_rotor.wake_inputs.relax_0                      = 0.5
-    prop_rotor.wake_inputs.max_iter_Gammab_0            = 500
-    prop_rotor.wake_inputs.max_iter_CT_0                = 10
+    prop_rotor.wake_inputs.tol_CT                       = 1e-3
+    prop_rotor.wake_inputs.relax_0_Gammab               = 0.2
+    prop_rotor.wake_inputs.relax_0_CT                   = 0.2
+    prop_rotor.wake_inputs.max_iter_Gammab_0            = 1000
+    prop_rotor.wake_inputs.max_iter_CT_0                = 100
     prop_rotor.wake_inputs.CT_iter                      = True
-    prop_rotor.wake_inputs.aerofoil_aero                = 2                 # 1 simplified aerofoil aero, 2 detailed panel aerofoil aero
-    prop_rotor.wake_inputs.mu_max                       = 1.0               # edgewise advance ratio above which a control point is treated as out of the model's valid range
-    prop_rotor.wake_inputs.mu_edgewise_threshold        = 1e-2              # in-plane advance ratio at/above which a control point uses the forward-flight wake model instead of hover
-
+    prop_rotor.wake_inputs.aerofoil_aero                = 2                # 1 simplified aerofoil aero, detailed panel aerofoil aero
+    prop_rotor.wake_inputs.mu_max                       = 1.0
+    prop_rotor.wake_inputs.mu_edgewise_threshold        = 1e-3 # in-plane advance ratio at/above which a control point uses the forward-flight wake model instead of hover
+    prop_rotor.wake_inputs.free_wake                    = True
+    prop_rotor.wake_inputs.free_wake_max_iter           = 40    
+    prop_rotor.wake_inputs.free_wake_tol                = 1e-4
+    prop_rotor.wake_inputs.free_wake_relax              = 0.7
+    
     propulsor.rotor = prop_rotor
 
     #------------------------------------------------------------------------------------------------------------------------------------               
@@ -554,15 +566,40 @@ def vehicle_setup(redesign_rotors=True, design_iterations=200) :
     propulsor.nacelle                 = nacelle  
             
     if redesign_rotors:
+        # The optimizer always runs at BEMT -- it needs many cheap evaluations, not the
+        # expensive free-wake solve. Mission fidelity (line 443) is restored on the saved rotor
+        # right after, so the .res file reflects the BEMT-optimized geometry analyzed at
+        # whatever fidelity the mission actually wants.
+        mission_fidelity            = propulsor.rotor.fidelity
+        propulsor.rotor.fidelity    = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'
         design_electric_rotor(propulsor, iterations=design_iterations, print_iterations=True)
+        propulsor.rotor.fidelity    = mission_fidelity
         save_propulsor(propulsor, os.path.join(local_path, 'tilt_rotor_propulsor.res'))
     else:
-        regression_prop_rotor_propulsor = deepcopy(propulsor)        
-        design_electric_rotor(regression_prop_rotor_propulsor, iterations=2, print_iterations=True)
-        loaded_propulsor = load_propulsor(os.path.join(local_path, 'tilt_rotor_propulsor.res'))  
-        for key,item in propulsor.rotor.items(): 
-            propulsor.rotor[key] = loaded_propulsor.rotor[key] 
-               
+        # NOTE: this used to also run design_electric_rotor(..., iterations=2) on a deepcopy
+        # before loading -- that result (regression_prop_rotor_propulsor) was never referenced
+        # again; every key below gets overwritten from the loaded file regardless. Removed as
+        # dead computation -- it was a real (if short) multi-point hover/OEI/cruise optimization
+        # for no purpose, which is why this "fast" path wasn't actually fast.
+        # wake_inputs, like fidelity, is a mission-time analysis choice, not a saved design
+        # property -- captured here (before the blind-overwrite loop below) so it can be
+        # restored afterward instead of silently reverting to whatever was frozen into the
+        # .res file when it was last saved (this was discarding wake_inputs edits -- e.g.
+        # free_wake_tol, tol, tol_CT -- made in this file while using the fast-load path).
+        fresh_wake_inputs = propulsor.rotor.wake_inputs
+        # fidelity is likewise a mission-time analysis choice, not a saved design property --
+        # captured here so whatever's set above (line 443) survives the load, instead of being
+        # silently overwritten by whatever fidelity happened to be active when the .res file
+        # was last saved (e.g. BEMT, used for the fast design-optimization pass).
+        fresh_fidelity = propulsor.rotor.fidelity
+
+        loaded_propulsor = load_propulsor(os.path.join(local_path, 'tilt_rotor_propulsor.res'))
+        for key,item in propulsor.rotor.items():
+            propulsor.rotor[key] = loaded_propulsor.rotor[key]
+
+        propulsor.rotor.wake_inputs = fresh_wake_inputs
+        propulsor.rotor.fidelity    = fresh_fidelity
+
         propulsor.rotor.airfoils.airfoil.coordinate_file  =  local_path + 'Airfoils' + separator + 'NACA_4412.txt'
         propulsor.rotor.airfoils.airfoil.polar_files      = [local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_50000.txt' ,
                                                              local_path + 'Airfoils' + separator + 'Polars' + separator + 'NACA_4412_polar_Re_100000.txt' ,
@@ -719,14 +756,15 @@ def configs_setup(vehicle):
     
 
     # ------------------------------------------------------------------
-    # High Speed Transition 
+    # High Speed Transition
     # ------------------------------------------------------------------
-    config                                            = RCAIDE.Library.Components.Configs.Config(vehicle) 
-    config.tag                                        = 'high_speed_transition'  
-    for network in  config.networks:  
+    config                                            = RCAIDE.Library.Components.Configs.Config(vehicle)
+    vector_angle                                      = 5.0  * Units.degrees
+    config.tag                                        = 'high_speed_transition'
+    for network in  config.networks:
         for propulsor in  network.propulsors:
-            propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]  
-    configs.append(config)       
+            propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]
+    configs.append(config)
 
  
     # ------------------------------------------------------------------
