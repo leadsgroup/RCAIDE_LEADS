@@ -81,8 +81,7 @@ def compute_propulsion_system_weight(vehicle,ref_propulsor, settings):
                 ref_propulsor = propulsor
                 NENG  += 1
             if propulsor.nacelle !=  None:
-                if propulsor.nacelle !=  None:
-                    ref_nacelle =  propulsor.nacelle
+                ref_nacelle =  propulsor.nacelle
         for source in network.sources:
             if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
                 number_of_tanks +=  1
@@ -94,8 +93,6 @@ def compute_propulsion_system_weight(vehicle,ref_propulsor, settings):
     if ref_nacelle is not None:
         WEC, WSTART = compute_misc_propulsion_system_weight(vehicle,ref_propulsor,ref_nacelle,NENG)
     WTHR            = compute_thrust_reverser_weight(ref_propulsor,NENG)
-    # Tank mass is not included here: it is already captured in structural.fuel_tanks from the
-    # actual Fuel_Tank components' mass_properties.mass, so adding WTANK here would double-count it.
     WPRO            = NENG * WENG +  WLINE + WPUMP + WFC + WEC + WSTART + WTHR # Nacelle weight is not included in the propulsion system weight. it is included in the structural weight.
 
     output                      = Data()
@@ -139,22 +136,11 @@ def compute_fuel_system_weight(vehicle,ref_propulsor):
             if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
                 WTANK += source.tank_accesories_weight_factor * (source.insulation.mass_properties.mass + source.inner_structure.mass_properties.mass)
 
-        # Per-engine design thrust and origins on this network,
-        # used below to size each fuel line's transfer/boost pump.
-        # design_thrust  = None
-        # engine_origins = []
-        # for propulsor in network.propulsors:
-        #     if 'design_thrust' in propulsor:
-        #         design_thrust = propulsor.design_thrust
-        #         engine_origins.append(propulsor.origin)
-
         for distributor in network.distributors:
             if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
                 compute_distributor_center_of_gravity(distributor, vehicle, length=0)
                 WLINE += distributor.mass_properties.mass
-
-                #if design_thrust is not None and engine_origins and distributor.working_fluid is not None:
-                size_fuel_transfer_pumps(network, distributor,ref_propulsor)
+                compute_transfer_pump_weight(network, distributor,ref_propulsor)
 
         for converter in network.converters:
             if issubclass(type(converter),RCAIDE.Library.Components.Powertrain.Converters.Pump):
@@ -165,7 +151,7 @@ def compute_fuel_system_weight(vehicle,ref_propulsor):
     return WTANK, WLINE, WPUMP, WFC
 
 
-def size_fuel_transfer_pumps(network, fuel_line,ref_propulsor):
+def compute_transfer_pump_weight(network, fuel_line,ref_propulsor):
     """ Sizes and weighs a fuel line's transfer/boost pump and wires it into the network.
     Called from compute_fuel_system_weight for every Fuel_Line in a network, so this must be
     idempotent: safe to call again on the next MTOW-iteration pass without appending the pump
@@ -180,15 +166,10 @@ def size_fuel_transfer_pumps(network, fuel_line,ref_propulsor):
         - Cryogenic (Liquid_Hydrogen, Liquid_Natural_Gas): 200 W/kg.
         - All other fuels (Liquid_Petroleum_Gas, Jet_A, ...): 400 W/kg.
     Derived from real aircraft electric fuel boost pumps -- Eaton Type 9106 (B777:
-    6.5 kg, 200V/400Hz 3-phase, 9.5A -> ~3.29 kVA apparent power -> ~506 W/kg) and Type 20004   
-    passed in:
-        - Cryogenic (Liquid_Hydrogen, Liquid_Natural_Gas): 200 W/kg.
-        - All other fuels (Liquid_Petroleum_Gas, Jet_A, ...): 400 W/kg.
-    Derived from real aircraft electric fuel boost pumps -- Eaton Type 9106 (B777:
     6.5 kg, 200V/400Hz 3-phase, 9.5A -> ~3.29 kVA apparent power -> ~506 W/kg) and Type 20004
     (B747: 4.2 kg, 7.8A -> ~2.70 kVA -> ~643 W/kg), derated ~85% for motor efficiency (apparent
     power overstates shaft power). The ambient-fuel figure uses that directly (400 W/kg); the
-    cryogenic figure is further halved (200 W/kg) as a reasoned penalty for the cryo-compatible 
+    cryogenic figure is further halved (200 W/kg) as a reasoned penalty for the cryo-compatible
     double-walled/vacuum-jacketed housing and seals those ambient-temperature Jet-A pumps don't need.
 
     Inputs:

@@ -149,6 +149,9 @@ def compute_operating_empty_weight(vehicle,settings=None):
     output.empty.propulsion.thrust_reversers    = 0
     output.empty.propulsion.miscellaneous       = 0
     output.empty.propulsion.fuel_system         = 0
+    output.empty.propulsion.fuel_tanks          = 0
+    output.empty.propulsion.electrical_cabling  = 0
+    output.empty.propulsion.thermal_management  = 0
 
     W_energy_network                   = Data()
     W_energy_network.total             = 0
@@ -184,6 +187,7 @@ def compute_operating_empty_weight(vehicle,settings=None):
                                             W_energy_network.W_engine_controls) / number_of_engines
             propulsor.nacelle.mass_properties.mass = W_energy_network.W_nacelle / number_of_engines
     
+        # Electric-Powered Propulsors
         for source in network.sources:
             if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
                 W_energy_network_total  += source.mass_properties.mass * Units.kg
@@ -215,8 +219,11 @@ def compute_operating_empty_weight(vehicle,settings=None):
     output.empty.propulsion.thrust_reversers    = W_energy_network.W_thrust_reverser
     output.empty.propulsion.miscellaneous       = W_energy_network.W_engine_controls + W_energy_network.W_starter
     output.empty.propulsion.fuel_system         = W_energy_network.W_fuel_system
+    output.empty.propulsion.fuel_tanks          = 0
+    output.empty.propulsion.electrical_cabling  = 0
+    output.empty.propulsion.thermal_management  = 0
 
-    ##-------------------------------------------------------------------------------                 
+    ##-------------------------------------------------------------------------------
     # Wing Weight 
     ##-------------------------------------------------------------------------------     
     num_main_wings     = 0
@@ -267,12 +274,6 @@ def compute_operating_empty_weight(vehicle,settings=None):
     ##-------------------------------------------------------------------------------                 
     # Accumulate Structural Weight
     ##-------------------------------------------------------------------------------   
-    W_fuel_tanks = 0
-    for network in vehicle.networks:
-        for source in network.sources:
-            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
-                W_fuel_tanks += source.mass_properties.mass
-
     output.empty.structural                       = Data()
     output.empty.structural.wings                 = W_main_wing
     output.empty.structural.empennage             = W_tail_horizontal + W_tail_vertical
@@ -280,9 +281,10 @@ def compute_operating_empty_weight(vehicle,settings=None):
     output.empty.structural.aft_center_body       = W_aft_center_body
     output.empty.structural.landing_gear          = landing_gear.main + landing_gear.nose
     output.empty.structural.nacelle               = W_energy_network.W_nacelle
-    output.empty.structural.fuel_tanks            = W_fuel_tanks
+    output.empty.structural.booms                 = 0
+    output.empty.structural.paint                 = 0
     output.empty.structural.total = output.empty.structural.wings + output.empty.structural.center_body + output.empty.structural.aft_center_body + output.empty.structural.landing_gear\
-                                    + output.empty.structural.nacelle + output.empty.structural.empennage + output.empty.structural.fuel_tanks
+                                    + output.empty.structural.nacelle + output.empty.structural.empennage
     
     ##-------------------------------------------------------------------------------                 
     # Accumulate Systems Weight
@@ -316,11 +318,13 @@ def compute_operating_empty_weight(vehicle,settings=None):
     # Assign landing gear weights to landing gear components 
     #-------------------------------------------------------------------------------
     # Assign landing gear weights to landing gear components 
+    num_main_gears = sum(1 for LG in vehicle.landing_gears if isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear))
+    num_nose_gears = sum(1 for LG in vehicle.landing_gears if isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear))
     for LG in vehicle.landing_gears:
-        if isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear): 
-            LG.mass_properties.mass = landing_gear.main 
-        elif isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear):  
-            LG.mass_properties.mass = landing_gear.nose   
+        if isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear):
+            LG.mass_properties.mass = landing_gear.main / max(num_main_gears, 1)
+        elif isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear):
+            LG.mass_properties.mass = landing_gear.nose / max(num_nose_gears, 1)
 
     return output
 

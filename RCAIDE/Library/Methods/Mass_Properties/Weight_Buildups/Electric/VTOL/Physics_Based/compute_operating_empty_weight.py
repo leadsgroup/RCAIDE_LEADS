@@ -153,8 +153,10 @@ def compute_operating_empty_weight(vehicle,settings = None):
             for source in network.sources:
                 if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
                     weight.battery += source.mass_properties.mass * Units.kg
-                elif isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Cells.Fuel_Cell_Stack):
-                    weight.fuel_cell += source.mass_properties.mass * Units.kg
+
+            for converter in network.converters:
+                if isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack):
+                    weight.fuel_cell += converter.mass_properties.mass * Units.kg
 
                 # Servo, Hub and BRS Weights
                 lift_rotor_hub_weight   = 4.   * Units.kg

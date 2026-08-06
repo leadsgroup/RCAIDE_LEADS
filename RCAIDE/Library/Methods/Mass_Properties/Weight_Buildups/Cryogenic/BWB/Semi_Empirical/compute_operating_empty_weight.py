@@ -142,9 +142,10 @@ def compute_operating_empty_weight(vehicle,settings=None):
     output.empty.propulsion.thrust_reversers    = 0
     output.empty.propulsion.miscellaneous       = 0
 
-    output.empty.propulsion.tanks          = 0
-    output.empty.propulsion.pumps          = 0
-    output.empty.propulsion.fuel_lines     = 0
+    output.empty.propulsion.fuel_system    = 0
+    output.empty.propulsion.fuel_tanks     = 0
+    output.empty.propulsion.electrical_cabling  = 0
+    output.empty.propulsion.thermal_management  = 0
 
     W_energy_network                   = Data()
     W_energy_network.total             = 0
@@ -152,10 +153,11 @@ def compute_operating_empty_weight(vehicle,settings=None):
     W_energy_network.W_thrust_reverser = 0 
     W_energy_network.W_engine_controls = 0 
     W_energy_network.W_starter         = 0 
-    W_energy_network.W_tanks           = 0 
-    W_energy_network.W_fuel_lines      = 0 
-    W_energy_network.W_pumps           = 0 
-    W_energy_network.W_motors          = 0 
+    W_energy_network.W_tanks           = 0
+    W_energy_network.W_fuel_lines      = 0
+    W_energy_network.W_pumps           = 0
+    W_energy_network.W_fuel_cells      = 0
+    W_energy_network.W_motors          = 0
     W_energy_network.W_nacelle         = 0 
     W_energy_network.W_battery         = 0
     W_energy_network.W_motor           = 0
@@ -173,9 +175,10 @@ def compute_operating_empty_weight(vehicle,settings=None):
         W_energy_network.W_thrust_reverser  += W_propulsion.W_thrust_reverser
         W_energy_network.W_engine_controls  += W_propulsion.W_engine_controls
         W_energy_network.W_starter          += W_propulsion.W_starter
-        W_energy_network.W_tanks            += W_propulsion.W_tanks     
+        W_energy_network.W_tanks            += W_propulsion.W_tanks
         W_energy_network.W_fuel_lines       += W_propulsion.W_fuel_lines
-        W_energy_network.W_pumps            += W_propulsion.W_pumps     
+        W_energy_network.W_pumps            += W_propulsion.W_pumps
+        W_energy_network.W_fuel_cells       += W_propulsion.W_fuel_cells
         W_energy_network.W_nacelle          += W_propulsion.W_nacelle
         number_of_engines                   += W_propulsion.number_of_engines
         number_of_tanks                     += W_propulsion.number_of_fuel_tanks  
@@ -186,7 +189,7 @@ def compute_operating_empty_weight(vehicle,settings=None):
         for source in network.sources:
             if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
                 W_energy_network_total  += source.mass_properties.mass * Units.kg
-                W_energy_network.W_battery = source.mass_properties.mass * Units.kg
+                W_energy_network.W_battery += source.mass_properties.mass * Units.kg
 
         for propulsor in network.propulsors:
             if 'motor' in propulsor:
@@ -213,9 +216,13 @@ def compute_operating_empty_weight(vehicle,settings=None):
     output.empty.propulsion.engines             = W_energy_network.W_engine
     output.empty.propulsion.thrust_reversers    = W_energy_network.W_thrust_reverser
     output.empty.propulsion.miscellaneous       = W_energy_network.W_engine_controls + W_energy_network.W_starter
-    output.empty.propulsion.tanks              = W_energy_network.W_tanks     
+    output.empty.propulsion.fuel_system        = W_energy_network.W_fuel_lines + W_energy_network.W_pumps
+    output.empty.propulsion.fuel_tanks         = W_energy_network.W_tanks
+    output.empty.propulsion.electrical_cabling = 0
+    output.empty.propulsion.thermal_management = 0
     output.empty.propulsion.fuel_lines         = W_energy_network.W_fuel_lines
-    output.empty.propulsion.pumps              = W_energy_network.W_pumps     
+    output.empty.propulsion.pumps              = W_energy_network.W_pumps
+    output.empty.propulsion.fuel_cells         = W_energy_network.W_fuel_cells
 
     ##-------------------------------------------------------------------------------                 
     # Wing Weight 
@@ -265,21 +272,17 @@ def compute_operating_empty_weight(vehicle,settings=None):
     # Landing Gear Weight
     ##------------------------------------------------------------------------------- 
     landing_gear = compute_landing_gear_weight(vehicle) # This is a specific Hydrogen Landing Gear class that considers Max Landing Weight to be MTOW
+    num_main_gears = sum(1 for LG in vehicle.landing_gears if isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear))
+    num_nose_gears = sum(1 for LG in vehicle.landing_gears if isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear))
     for LG in vehicle.landing_gears:
-        if isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear): 
-            LG.mass_properties.mass = landing_gear.main 
-        elif isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear):  
-            LG.mass_properties.mass = landing_gear.nose    
- 
-    ##-------------------------------------------------------------------------------                 
+        if isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear):
+            LG.mass_properties.mass = landing_gear.main / max(num_main_gears, 1)
+        elif isinstance(LG, RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear):
+            LG.mass_properties.mass = landing_gear.nose / max(num_nose_gears, 1)
+
+    ##-------------------------------------------------------------------------------
     # Accumulate Structural Weight
     ##-------------------------------------------------------------------------------   
-    W_fuel_tanks = 0
-    for network in vehicle.networks:
-        for source in network.sources:
-            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
-                W_fuel_tanks += source.mass_properties.mass
-
     output.empty.structural                       = Data()
     output.empty.structural.wings                 = W_main_wing
     output.empty.structural.empennage             = W_tail_horizontal + W_tail_vertical
@@ -287,9 +290,10 @@ def compute_operating_empty_weight(vehicle,settings=None):
     output.empty.structural.aft_center_body       = W_aft_center_body
     output.empty.structural.landing_gear          = landing_gear.main + landing_gear.nose
     output.empty.structural.nacelle               = W_energy_network.W_nacelle
-    output.empty.structural.fuel_tanks            = W_fuel_tanks
+    output.empty.structural.booms                 = 0
+    output.empty.structural.paint                 = 0
     output.empty.structural.total = output.empty.structural.wings + output.empty.structural.center_body + output.empty.structural.aft_center_body + output.empty.structural.landing_gear\
-                                    + output.empty.structural.nacelle + output.empty.structural.empennage + output.empty.structural.fuel_tanks
+                                    + output.empty.structural.nacelle + output.empty.structural.empennage
     
     ##-------------------------------------------------------------------------------                 
     # Accumulate Systems Weight
