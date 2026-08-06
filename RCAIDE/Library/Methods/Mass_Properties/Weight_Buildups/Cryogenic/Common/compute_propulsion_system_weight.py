@@ -213,8 +213,7 @@ def compute_transfer_pump_weight(network, fuel_line,ref_propulsor):
                     delta_pressure = pump.delta_pressure
                     efficiency     = pump.efficiency
 
-                    if isinstance(fuel, (RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen,
-                                        RCAIDE.Library.Attributes.Propellants.Liquid_Natural_Gas)):
+                    if fuel.cryogenic:
                         specific_power_density = 200.  # W/kg -- cryogenic
                     else:
                         specific_power_density = 400.  # W/kg -- ambient-temperature

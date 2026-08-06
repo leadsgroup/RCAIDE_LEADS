@@ -16,7 +16,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_omega_and_Q_from_Cp_and_V
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_motor_performance(motor,state):
+def compute_motor_performance(motor,conditions):
     """
     Computes motor performance characteristics including electrical, mechanical and thermal parameters.
 
@@ -24,8 +24,8 @@ def compute_motor_performance(motor,state):
     ----------
     motor : Converter
         Motor component (DC_Motor or PMSM_Motor) for which performance is being computed
-    state : RCAIDE.Framework.Mission.Common.State
-        Mission segment state containing freestream and energy conditions
+    conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Mission segment conditions containing freestream and energy conditions
 
     Returns
     -------
@@ -72,7 +72,7 @@ def compute_motor_performance(motor,state):
     RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor
     """           
     # Unpack
-    motor_conditions = state.energy.converters[motor.tag]
+    motor_conditions = conditions.energy.converters[motor.tag]
     
     if isinstance(motor, RCAIDE.Library.Components.Powertrain.Converters.PMSM_Motor):
         if motor.reverse_mode_computation == False:

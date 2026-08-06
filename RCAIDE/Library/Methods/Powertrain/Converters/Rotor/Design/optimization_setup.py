@@ -10,7 +10,7 @@
 # RCAIDE Imports  
 import RCAIDE 
 from RCAIDE.Framework.Core                                                                    import Units, Data   
-from RCAIDE.Framework.Optimization                                                     import Nexus       
+from RCAIDE.Framework.Optimization.Common                                                     import Nexus       
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.blade_geometry_setup    import blade_geometry_setup
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Design.procedure_setup         import procedure_setup
 
@@ -36,7 +36,7 @@ def optimization_setup(rotor, number_of_stations, print_iterations):
     
     Returns
     -------
-    nexus : RCAIDE.Framework.Optimization.Nexus
+    nexus : RCAIDE.Framework.Optimization.Common.Nexus
         RCAIDE's optimization framework object with the following attributes:
             - optimization_problem : Data
                 Optimization problem definition

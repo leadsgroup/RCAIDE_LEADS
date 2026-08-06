@@ -1,16 +1,37 @@
 # RCAIDE/Library/Methods/Powertrain/Converters/Pump/append_pump_conditions.py
 # 
-# Created:  Sep. 2025, M. Guidotti
+# Created:  Sep. 2025, M. Clarke
 
 from RCAIDE.Framework.Mission.Common     import   Conditions
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_pump_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_pump_conditions(pump,segment): 
+def append_pump_conditions(pump,segment):
 
     """
-    
+    Initializes empty condition containers for pump analysis in the propulsion system.
+
+    Parameters
+    ----------
+    pump : Pump
+        The pump component being analyzed
+    segment : Segment
+        The mission segment being analyzed
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    This function creates empty Conditions containers that will be populated
+    during pump performance calculations with input/output mechanical, pneumatic,
+    and hydraulic power states.
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Converters.Pump.compute_pump_performance
     """
 
     ones_row                                                       = segment.state.ones_row 

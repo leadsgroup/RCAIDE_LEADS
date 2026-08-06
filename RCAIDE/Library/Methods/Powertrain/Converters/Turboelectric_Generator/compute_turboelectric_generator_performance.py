@@ -19,13 +19,14 @@ import numpy as np
 def compute_turboelectric_generator_performance(turboelectric_generator,state,network=None):
     """
     Computes the performance of a turboelectric generator system.
-    
+
     Parameters
     ----------
     turboelectric_generator : RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator
         The turboelectric generator component for which performance is being computed
     state : RCAIDE.Framework.Mission.Common.State
-        Container for mission segment conditions
+        Mission segment state. Full state (not just conditions) is required because this
+        function calls the generator's and turboshaft's own ``compute_performance(state)``
     network : RCAIDE.Framework.Networks.Network, optional
         The network this generator belongs to, used to resolve its assigned
         distributor(s)
@@ -105,7 +106,7 @@ def compute_turboelectric_generator_performance(turboelectric_generator,state,ne
     stored_converter_tag           = turboelectric_generator.tag 
     return  turboelectric_generator_conditions.inputs,  turboelectric_generator_conditions.outputs, stored_results_flag, stored_converter_tag
 
-def reuse_stored_turboelectric_generator_data(turboelectric_generator,state,network,stored_converter_tag):
+def reuse_stored_turboelectric_generator_data(turboelectric_generator,conditions,network,stored_converter_tag):
     '''Reuses results from one turboelectric_generator for identical propulsors
     
     Assumptions: 
@@ -127,7 +128,6 @@ def reuse_stored_turboelectric_generator_data(turboelectric_generator,state,netw
     N.A.        
     '''
  
-    conditions                  = state.conditions 
     generator                   = turboelectric_generator.generator
     turboshaft                  = turboelectric_generator.turboshaft
     ram                         = turboelectric_generator.turboshaft.ram 

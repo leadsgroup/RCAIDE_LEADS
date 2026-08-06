@@ -1,63 +1,83 @@
-# RCAIDE/Library/Methods/Powertrain/Converters/Ram/append_ram_conditions.py
-# 
-# Created:  Jun 2024, M. Clarke  
+# RCAIDE/Library/Methods/Powertrain/Converters/Reformer/append_reformer_conditions.py
+#
+# Created:  Jan 2025, M. Clarke, M. Guidotti
 
 from RCAIDE.Framework.Mission.Common     import   Conditions
 
-# ---------------------------------------------------------------------------------------------------------------------- 
-#  append_ram_conditions
-# ----------------------------------------------------------------------------------------------------------------------    
+# ----------------------------------------------------------------------------------------------------------------------
+#  append_reformer_conditions
+# ----------------------------------------------------------------------------------------------------------------------
 def append_reformer_conditions(reformer, segment):
     """
-    Initializes ram air converter operating conditions for a mission segment.
-    
+    Initializes reformer operating conditions for a mission segment.
+
     Parameters
     ----------
-    ram : RCAIDE.Library.Components.Converters.Ram
-        Ram air converter component with the following attributes:
+    reformer : RCAIDE.Library.Components.Powertrain.Converters.Reformer
+        Reformer component with the following attributes:
             - tag : str
-                Identifier for the ram air converter
+                Identifier for the reformer
     segment : RCAIDE.Framework.Mission.Segments.Segment
         Mission segment with the following attributes:
             - state : Data
                 Segment state
                     - ones_row : function
                         Function to create array of ones with specified length
-    
+
     Returns
     -------
     None
-    
+
     Notes
     -----
-    This function initializes the necessary data structures for storing ram air converter
-    operating conditions during a mission segment. It creates empty containers for
-    input and output conditions that will be populated during the mission analysis.
-    
-    The function initializes the following in segment.state.conditions.energy.converters[ram.tag]:
-        - inputs : Conditions
-            Input conditions container (empty)
-        - outputs : Conditions
-            Output conditions container (empty)
-    
-    The ram air converter is a component that captures the energy of the incoming airflow
-    and converts it to a form usable by the propulsion system. It typically represents
-    the inlet of a gas turbine engine or other air-breathing propulsion system.
-    
+    This function initializes the necessary data structures for storing reformer
+    operating conditions during a mission segment. It creates zero-initialized
+    input/output power containers, plus the fuel, steam, and air feed rates that
+    compute_reformer_performance requires -- these are set to their real values
+    each iteration either by a standalone forward-mode evaluation, or by the
+    enclosing Reformer_Fuel_Cell composite when the reformer is used to supply
+    hydrogen to a fuel cell.
+
+    The function initializes the following in segment.state.conditions.energy.converters[reformer.tag]:
+        - inputs.power, outputs.power : Conditions
+            Zero-initialized power channels (propulsive, mechanical, electrical,
+            chemical, pneumatic, hydraulic, thermal). inputs.power.chemical is
+            the Jet-A chemical power drawn in; outputs.power.chemical is the
+            hydrogen-rich reformate chemical power produced -- these differ by
+            the reformer's conversion losses, so they are tracked separately
+            rather than shared between inputs and outputs.
+        - fuel_volume_flow_rate, steam_volume_flow_rate, air_volume_flow_rate : ndarray
+            Zero-initialized feed rates [m**3/s]
+        - hydrogen_mass_flow_rate : ndarray
+            Zero-initialized hydrogen production rate [kg/s]
+
     See Also
     --------
-    RCAIDE.Library.Methods.Powertrain.Converters.Ram.compute_ram_performance
+    RCAIDE.Library.Methods.Powertrain.Converters.Reformer.compute_reformer_performance
     """
-    ones_row                                                                               = segment.state.ones_row
+    ones_row                                                                              = segment.state.ones_row
     segment.state.conditions.energy.converters[reformer.tag]                              = Conditions()
     segment.state.conditions.energy.converters[reformer.tag].inputs                       = Conditions()
     segment.state.conditions.energy.converters[reformer.tag].outputs                      = Conditions()
-    segment.state.conditions.energy.converters[reformer.tag].power                        = Conditions()
-    segment.state.conditions.energy.converters[reformer.tag].power.propulsive              = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[reformer.tag].power.mechanical              = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[reformer.tag].power.electrical              = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[reformer.tag].power.chemical                = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[reformer.tag].power.pneumatic               = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[reformer.tag].power.hydraulic               = 0. * ones_row(1)
-    segment.state.conditions.energy.converters[reformer.tag].power.thermal                 = 0. * ones_row(1)
-    return 
+    segment.state.conditions.energy.converters[reformer.tag].inputs.power                 = Conditions()
+    segment.state.conditions.energy.converters[reformer.tag].outputs.power                = Conditions()
+    segment.state.conditions.energy.converters[reformer.tag].inputs.power.propulsive      = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[reformer.tag].inputs.power.mechanical      = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[reformer.tag].inputs.power.electrical      = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[reformer.tag].inputs.power.chemical        = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[reformer.tag].inputs.power.pneumatic       = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[reformer.tag].inputs.power.hydraulic       = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[reformer.tag].inputs.power.thermal         = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[reformer.tag].outputs.power.propulsive     = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[reformer.tag].outputs.power.mechanical     = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[reformer.tag].outputs.power.electrical     = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[reformer.tag].outputs.power.chemical       = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[reformer.tag].outputs.power.pneumatic      = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[reformer.tag].outputs.power.hydraulic      = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[reformer.tag].outputs.power.thermal        = 0. * ones_row(1)
+
+    segment.state.conditions.energy.converters[reformer.tag].fuel_volume_flow_rate   = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[reformer.tag].steam_volume_flow_rate  = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[reformer.tag].air_volume_flow_rate    = 0. * ones_row(1)
+    segment.state.conditions.energy.converters[reformer.tag].hydrogen_mass_flow_rate = 0. * ones_row(1)
+    return

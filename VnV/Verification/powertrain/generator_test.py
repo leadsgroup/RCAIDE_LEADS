@@ -65,7 +65,7 @@ def forward_mode_model():
 
         generator_conditions.outputs.voltage[:, 0] = 420
         
-        Generator.compute_generator_performance(generator,operating_state)
+        Generator.compute_generator_performance(generator,operating_state.conditions)
 
         # run analysis  
         current = generator_conditions.outputs.current
@@ -104,7 +104,7 @@ def inverse_mode_model():
         generator_conditions.outputs.voltage[:, 0] = 480
         generator_conditions.outputs.current[:, 0] = 70
 
-        Generator.compute_generator_performance(generator,operating_state)
+        Generator.compute_generator_performance(generator,operating_state.conditions)
 
         # run analysis 
         omega   = generator_conditions.inputs.omega

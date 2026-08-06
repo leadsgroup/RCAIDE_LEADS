@@ -13,24 +13,61 @@ from scipy.optimize import fsolve
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_fuel_line_distribution_losses
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_fuel_line_distribution_losses(fuel_line,component_conditions,state,network): 
+def compute_fuel_line_distribution_losses(fuel_line,component_conditions,state):
+    """
+    Computes the pipe-friction and minor losses of a fuel line and accumulates the
+    resulting ideal hydraulic power demand onto the fuel line's conditions.
 
-    # unpack working fluid properties 
-    working_fluid   = fuel_line.working_fluid  
+    Parameters
+    ----------
+    fuel_line : RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line
+        The fuel line whose losses are being computed
+    component_conditions : Conditions
+        Conditions of the propulsor, source, or converter assigned to this fuel
+        line for which this call is computing a fuel flow contribution (this
+        function is called once per assigned component, so it runs multiple
+        times per fuel line per iteration)
+    state : RCAIDE.Framework.Mission.Common.State
+        Mission segment state
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    Head loss is computed from Darcy-Weisbach pipe friction (via the
+    Colebrook-White equation, solved implicitly for Re >= 2300) plus minor
+    losses from bends and fittings. The resulting ideal hydraulic power is
+    accumulated, un-derated by any pump efficiency, onto
+    ``fuel_line.inputs.power.hydraulic``.
+
+    A connected pump converter (RCAIDE.Library.Components.Powertrain.Converters.Pump
+    and its subclasses, e.g. Cryogenic_Pump) applies its own efficiency when it
+    later pulls its ``distributor_split`` share of this demand -- see
+    compute_cryogenic_pump_performance. If no pump converter is assigned to this
+    fuel line, Fuel_Line.compute_performance() charges the network directly for
+    this amount instead, so it is not silently dropped from the power budget.
+
+    See Also
+    --------
+    RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line.compute_performance
+    RCAIDE.Library.Methods.Powertrain.Converters.Cryogenic_Pump.compute_cryogenic_pump_performance
+    """
+
+    # unpack working fluid properties
+    working_fluid   = fuel_line.working_fluid
     density         = working_fluid.density
-    k_viscosity     = working_fluid.kinematic_viscosity 
+    k_viscosity     = working_fluid.kinematic_viscosity
 
     # Extract current conditions for the fuel line
-    fuel_line_conditions    = state.conditions.energy.distributors[fuel_line.tag]   
+    fuel_line_conditions    = state.conditions.energy.distributors[fuel_line.tag]
 
     chemical_power      = abs(component_conditions.outputs.power.chemical - component_conditions.inputs.power.chemical)
     hydraulic_power     = abs(component_conditions.outputs.power.hydraulic - component_conditions.inputs.power.hydraulic)
-    mass_flow_rate      = chemical_power /working_fluid.lower_heating_value  
-    
-    # unpack pump  
-    pump = fuel_line.pump   
+    mass_flow_rate      = chemical_power /working_fluid.lower_heating_value
 
-    # unpack fuel line properties  
+    # unpack fuel line properties
     length                 = fuel_line.length
     diameter               = fuel_line.pipe.diameters.internal
     surface_roughness      = fuel_line.pipe.surface_roughness 
@@ -39,7 +76,7 @@ def compute_fuel_line_distribution_losses(fuel_line,component_conditions,state,n
     pipe_entrance_rounded  = fuel_line.pipe.k_factors.pipe_entrance_rounded
     pipe_exit              = fuel_line.pipe.k_factors.pipe_exit
   
-    # Determine head loss due to pope friction and minor losses, then compute the required pump performance to overcome these losses and deliver the required flow rate to the engine.
+    # Determine head loss due to pipe friction and minor losses, then compute the required pump performance to overcome these losses and deliver the required flow rate to the engine.
     # 1. Initialization
     volumetric_flow_rate = mass_flow_rate / density  # m^3/s 
     e                    = surface_roughness / 1000   # m
@@ -86,14 +123,11 @@ def compute_fuel_line_distribution_losses(fuel_line,component_conditions,state,n
     # 6. Pressure to overcome friction/gravity
     delta_p_losses  = h_total * density * g   
 
-    # 7. Total pressure pump must add to the fluid
+    # 7. Ideal hydraulic power a pump must add to the fluid to overcome line
+    # losses and deliver this component's share of flow. 
     power_losses      = volumetric_flow_rate * delta_p_losses
     power_ideal_total = hydraulic_power + power_losses
-    pump_power        = power_ideal_total / pump.efficiency
 
-    # Shaft/hydraulic work the pump must supply to overcome line losses and
-    # deliver this component's share of flow -- not electrical power (this
-    # pump is not electrically driven), so it accumulates onto .hydraulic.
-    fuel_line_conditions.inputs.power.hydraulic  += pump_power
+    fuel_line_conditions.inputs.power.hydraulic  += power_ideal_total
     fuel_line_conditions.mass_flow_rate          += mass_flow_rate
     return

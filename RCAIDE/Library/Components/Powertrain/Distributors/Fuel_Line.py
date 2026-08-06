@@ -92,8 +92,7 @@ class Fuel_Line(Distributor):
         self.insulation.flexible_material_ratio   = 0.25
         self.insulation.diameters                 = Data()
         self.insulation.diameters.external        = 0.0
-        self.insulation.diameters.internal        = 0.0 
-        self.pump                                 = RCAIDE.Library.Components.Powertrain.Converters.Pump() 
+        self.insulation.diameters.internal        = 0.0
 
     def append_operating_conditions(self, segment):
         """
@@ -108,9 +107,58 @@ class Fuel_Line(Distributor):
         return
     
     def compute_distribution_losses(self, component_conditions, state, network):
-        compute_fuel_line_distribution_losses(self, component_conditions, state, network) 
+        compute_fuel_line_distribution_losses(self, component_conditions, state)
         return
-        
+
+    def compute_performance(self, state, network):
+        fuel_line_conditions = state.conditions.energy.distributors[self.tag]
+
+        # A fuel line can have zero, one, or several pump converters assigned
+        # to it (RCAIDE.Library.Components.Powertrain.Converters.Pump and its
+        # subclasses, e.g. Cryogenic_Pump). If at least one is connected, it
+        # already charges the network for its share of this line's hydraulic
+        # power demand (see compute_cryogenic_pump_performance), so this
+        # method must not also charge it here or the demand would be double
+        # counted.
+        has_pump = False
+        for converter in network.converters:
+            if issubclass(type(converter), RCAIDE.Library.Components.Powertrain.Converters.Pump):
+                if converter.assigned_distributors is not None and self.tag in converter.assigned_distributors[0]:
+                    has_pump = True
+                    break
+
+        inputs  = Data()
+        outputs = Data()
+        inputs.power  = Data()
+        outputs.power = Data()
+
+        inputs.power.mechanical  = fuel_line_conditions.inputs.power.mechanical
+        inputs.power.electrical  = fuel_line_conditions.inputs.power.electrical
+        inputs.power.chemical    = fuel_line_conditions.inputs.power.chemical
+        inputs.power.thermal     = fuel_line_conditions.inputs.power.thermal
+
+        outputs.power.mechanical = fuel_line_conditions.outputs.power.mechanical
+        outputs.power.electrical = fuel_line_conditions.outputs.power.electrical
+        outputs.power.chemical   = fuel_line_conditions.outputs.power.chemical
+        outputs.power.thermal    = fuel_line_conditions.outputs.power.thermal
+
+        if has_pump:
+            inputs.power.hydraulic  = 0. * state.ones_row(1)
+            outputs.power.hydraulic = 0. * state.ones_row(1)
+        else:
+            if self.working_fluid is not None and self.working_fluid.cryogenic:
+                print('Warning: ' + self.tag + ' carries a cryogenic fluid but has no connected pump '
+                      'converter; its line losses are being charged directly to the network instead '
+                      'of a specific pump.')
+            # No dedicated pump to own this draw -- charge the network
+            # directly for the hydraulic power already accumulated in
+            # compute_fuel_line_distribution_losses, so it isn't silently
+            # dropped from the vehicle's power budget.
+            inputs.power.hydraulic  = fuel_line_conditions.inputs.power.hydraulic
+            outputs.power.hydraulic = 0. * state.ones_row(1)
+
+        return inputs, outputs
+
     def append_segment_conditions(self, segment):
         """
         Append segment-specific conditions to the bus

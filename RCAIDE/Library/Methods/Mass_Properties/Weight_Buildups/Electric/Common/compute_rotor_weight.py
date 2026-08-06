@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Weights/Physics_Based_Buildups/Common
+# RCAIDE/Library/Methods/Mass_Properties/Weight_Buildups/Electric/Common/compute_rotor_weight.py
 # Created:  Jun 2017, J. Smart
 # Modified: Apr 2018, J. Smart
 #           Mar 2020, M. Clarke

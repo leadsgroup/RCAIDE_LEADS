@@ -76,8 +76,9 @@ class Liquid_Hydrogen(Propellant):
             http://arc.uta.edu/publications/td_files/Kristen%20Roberts%20MS.pdf 
         """ 
         
-        self.tag                           = 'Liquid_H2' 
-        self.reactant                      = 'O2' 
+        self.tag                           = 'Liquid_H2'
+        self.cryogenic                     = True
+        self.reactant                      = 'O2'
         self.density                       = 70.85                            # [kg/m^3]
         self.specific_energy               = 120e6  # [J/kg] Considering the lower heating value https://ntrs.nasa.gov/api/citations/20020085127/downloads/20020085127.pdf
         self.lower_heating_value           = 120e6                              # J/kg

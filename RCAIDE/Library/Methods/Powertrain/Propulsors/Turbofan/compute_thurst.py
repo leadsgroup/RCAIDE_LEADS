@@ -174,12 +174,12 @@ def compute_thrust(turbofan,conditions):
     P_core_nozzle               = turbofan_conditions.core_nozzle_static_pressure
     V_core_nozzle               = turbofan_conditions.core_nozzle_exit_velocity
     core_area_ratio             = turbofan_conditions.core_nozzle_area_ratio                   
-    bypass_ratio                = turbofan_conditions.bypass_ratio
+    bypass_ratio                = turbofan_conditions.bypass_ratio  
 
     # Compute  non dimensional thrust
     fan_thrust_nondim   = flow_through_fan*(gamma*M0*M0*(V_fan_nozzle/u0-1.) + fan_area_ratio*(P_fan_nozzle/p0-1.)) # AE 283 Aircraft Propulsion Eqn. 2.44
     core_thrust_nondim  = flow_through_core*(gamma*M0*M0*(V_core_nozzle/u0-1.) + core_area_ratio*(P_core_nozzle/p0-1.)) # AE 283 Aircraft Propulsion Eqn. 2.44
-
+ 
     # Computing Specifc Thrust
     Fsp_c = 1./(gamma*M0)*core_thrust_nondim  # AE 283 Aircraft Propulsion Eqn. 2.44
     Fsp_f = 1./(gamma*M0)*fan_thrust_nondim   # AE 283 Aircraft Propulsion Eqn. 2.44
@@ -190,13 +190,12 @@ def compute_thrust(turbofan,conditions):
 
     # Compute TSFC
     TSFC  = f*g/(Fsp*a0*(1.+bypass_ratio))*(1.-SFC_adjustment) * Units.hour # 1/s is converted to 1/hr here
-
+ 
     # Compute core mass flow
     mdot_core  = mdhc*np.sqrt(Tref/total_temperature_reference)*(total_pressure_reference/Pref)
 
     # Compute dimensional thrust
-    FD2   = Fsp*a0*(1.+bypass_ratio)*mdot_core*turbofan_conditions.throttle
-
+    FD2   = Fsp*a0*(1.+bypass_ratio)*mdot_core*turbofan_conditions.throttle  
     FD2_f = Fsp_f*a0*(1.+bypass_ratio)*mdot_core*turbofan_conditions.throttle
     FD2_c = Fsp_c*a0*(1.+bypass_ratio)*mdot_core*turbofan_conditions.throttle
 

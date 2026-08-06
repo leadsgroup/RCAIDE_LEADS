@@ -9,7 +9,7 @@
 from RCAIDE.Framework.Core                            import Units, Data   
 from RCAIDE.Library.Methods.Powertrain.Converters.Cross_Flow_Heat_Exchanger.cross_flow_heat_exchanger_sizing_setup import cross_flow_heat_exchanger_sizing_setup 
 from RCAIDE.Library.Methods.Powertrain.Converters.Cross_Flow_Heat_Exchanger.cross_flow_heat_exchanger_geometry_setup import cross_flow_heat_exchanger_geometry_setup
-from RCAIDE.Framework.Optimization             import Nexus
+from RCAIDE.Framework.Optimization.Common       import Nexus
 from RCAIDE.Framework.Optimization.Packages.scipy     import scipy_setup
 
 # Python package imports

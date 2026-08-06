@@ -6,6 +6,9 @@
             "thrust_reversers": 0,
             "miscellaneous": 0,
             "fuel_system": 0,
+            "fuel_tanks": 0,
+            "electrical_cabling": 0,
+            "thermal_management": 0,
             "battery": 6870.527999999999,
             "motors": 409.1225625328257,
             "propellers": 264.56439864515227
@@ -16,6 +19,7 @@
             "fuselage": 3008.797854616903,
             "landing_gear": 1083.424066454701,
             "nacelle": 0,
+            "booms": 0,
             "paint": 0,
             "total": 6515.64029906806
         },
@@ -45,5 +49,6 @@
         "passenger_service": 0.0,
         "total": 344.7302012
     },
-    "zero_fuel_weight": 24070.78275631817
+    "zero_fuel_weight": 24070.78275631817,
+    "max_takeoff": 23000
 }

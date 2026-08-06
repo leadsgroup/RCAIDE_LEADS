@@ -40,8 +40,8 @@ from .Propeller                                  import Propeller
 from .Proton_Exchange_Membrane_Fuel_Cell         import Proton_Exchange_Membrane_Fuel_Cell
 from .Supersonic_Nozzle                          import Supersonic_Nozzle
 from .Reformer                                   import Reformer
+from .Reformer_Fuel_Cell                         import Reformer_Fuel_Cell
 from .Turbine                                    import Turbine
 from .Turboelectric_Generator                    import Turboelectric_Generator
-from .Turboshaft                                 import Turboshaft
 from .Turboshaft                                 import Turboshaft
 

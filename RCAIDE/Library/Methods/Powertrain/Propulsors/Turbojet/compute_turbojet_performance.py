@@ -348,7 +348,7 @@ def compute_turbojet_performance(turbojet, state, center_of_gravity=[[0.0, 0.0, 
     h_0                                            = turbojet.working_fluid.compute_cp(T,P) * T 
     h_t4                                           = combustor_conditions.outputs.stagnation_enthalpy
     h_t3                                           = hpc_conditions.outputs.stagnation_enthalpy 
-    turbojet_conditions.overall_efficiency         = thrust_vector* U0 / (mdot_fuel * fuel_enthalpy)  
+    turbojet_conditions.overall_efficiency         = turbojet_conditions.thrust[:, 0]* U0 / (mdot_fuel * fuel_enthalpy)  
     turbojet_conditions.thermal_efficiency         = 1 - ((mdot_air_core +  mdot_fuel)*(h_e_c -  h_0) + mdot_fuel *h_0)/((mdot_air_core +  mdot_fuel)*h_t4 - mdot_air_core *h_t3)  
  
 

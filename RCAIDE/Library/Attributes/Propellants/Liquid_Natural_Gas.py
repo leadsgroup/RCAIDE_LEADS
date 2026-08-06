@@ -32,8 +32,14 @@ class Liquid_Natural_Gas(Propellant):
         Lower heating value (LHV) specific energy content in J/kg (48.632e6)
     energy_density : float
         Energy density in J/m³ (22200.0e6)
+    molecular_weight : float
+        Molecular weight in g/mol (16.04, pure methane approximation)
+    hydrogen_mass_fraction : float
+        Mass fraction of hydrogen content (0.251)
+    carbon_mass_fraction : float
+        Mass fraction of carbon content (0.749)
     stoichiometric_fuel_air_ratio : float
-        Stoichiometric fuel-to-air ratio [-] (0, placeholder)
+        Stoichiometric fuel-to-air ratio [-] (1/17.2, methane combustion)
     heat_of_vaporization : float
         Heat of vaporization at standard conditions in J/kg (0, placeholder)
     temperature : float
@@ -130,14 +136,18 @@ class Liquid_Natural_Gas(Propellant):
             Lower_and_Higher_Heating_Values_of_Gas_Liquid_and_Solid_Fuels.pdf
         """
         self.tag             = 'Liquid_Natural_Gas'
+        self.cryogenic       = True
         self.reactant        = 'O2'
         self.density         = 414.2       # [kg/m^3]  saturated liquid at ~111 K
         self.specific_energy = 48.632e6    # [J/kg]    lower heating value (LHV) 
         self.energy_density  = 22200.0e6   # [J/m^3]
         self.gravimetric_efficiency = 0.7
         self.lower_heating_value    = 45e6
-        
-        self.stoichiometric_fuel_air_ratio = 0   # [-]    stoichiometric fuel-to-air ratio (placeholder)
+        self.molecular_weight       = 16.04   # [g/mol] pure methane (CH4) approximation
+        self.hydrogen_mass_fraction = 0.251   # [-]    mass fraction of hydrogen content (CH4)
+        self.carbon_mass_fraction   = 0.749   # [-]    mass fraction of carbon content (CH4)
+
+        self.stoichiometric_fuel_air_ratio = 1/17.2   # [-]    stoichiometric fuel-to-air ratio for methane combustion
         self.heat_of_vaporization          = 0   # [J/kg] heat of vaporization at standard conditions (placeholder)
         self.temperature                   = 0   # [K]    fuel temperature (placeholder)
         self.pressure                      = 0   # [Pa]   fuel pressure (placeholder)

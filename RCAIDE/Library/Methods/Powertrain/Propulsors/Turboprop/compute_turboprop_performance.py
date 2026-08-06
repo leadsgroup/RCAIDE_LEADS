@@ -290,7 +290,7 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     h_0                                            = turboprop.working_fluid.compute_cp(T,P) * T 
     h_t4                                           = combustor_conditions.outputs.stagnation_enthalpy
     h_t3                                           = compressor_conditions.outputs.stagnation_enthalpy 
-    turboprop_conditions.overall_efficiency        = thrust_vector* U0 / (mdot_fuel * fuel_enthalpy)  
+    turboprop_conditions.overall_efficiency        = turboprop_conditions.thrust[:, 0]* U0 / (mdot_fuel * fuel_enthalpy)  
     turboprop_conditions.thermal_efficiency        = 1 - ((mdot_air_core +  mdot_fuel)*(h_e_c -  h_0) + mdot_fuel *h_0)/((mdot_air_core +  mdot_fuel)*h_t4 - mdot_air_core *h_t3)   
     compressor_conditions.omega                    = compressor.design_angular_velocity * turboprop_conditions.throttle 
     

@@ -130,7 +130,7 @@ def turboshaft_engine_Boeing_502_14(altitude,mach):
     turboshaft_conditions = operating_state.conditions.energy.converters[turboshaft.tag]    
     turboshaft_conditions.throttle[:,0] = 1.0
     
-    compute_turboshaft_performance(turboshaft,operating_state)  
+    compute_turboshaft_performance(turboshaft,operating_state.conditions)
     
     power                = turboshaft_conditions.outputs.power.mechanical[0][0]
     thermal_efficiency   = turboshaft_conditions.thermal_efficiency[0][0]

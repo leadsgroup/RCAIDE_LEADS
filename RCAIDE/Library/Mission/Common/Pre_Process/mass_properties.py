@@ -186,11 +186,12 @@ def mass_properties_preprocess_routine(segment, i = 0):
  
 
         if (analyses.vehicle.mass_properties.fuel  == 0 or analyses.vehicle.mass_properties.fuel is None) and weights_analysis.propulsion_architecture != 'Electric':
-            analyses.vehicle.mass_properties.fuel     = analyses.vehicle.mass_properties.max_takeoff- (analyses.vehicle.mass_properties.operating_empty + analyses.vehicle.mass_properties.payload)
+            ('Fuel Weight for the mission is not defned. Filling up the airplace till max takeoff weight')     
+            analyses.vehicle.mass_properties.fuel     = analyses.vehicle.mass_properties.max_takeoff- (analyses.vehicle.mass_properties.operating_empty + analyses.vehicle.mass_properties.payload) 
 
-        # Compute takeoff weight and max zero fuel weight
+        # Compute takeoff weight and max zero fuel weight 
         if analyses.vehicle.mass_properties.takeoff == None:
-            analyses.vehicle.mass_properties.takeoff = analyses.vehicle.mass_properties.operating_empty  + analyses.vehicle.mass_properties.payload+ analyses.vehicle.mass_properties.fuel
+            analyses.vehicle.mass_properties.takeoff = analyses.vehicle.mass_properties.operating_empty  + analyses.vehicle.mass_properties.payload+ analyses.vehicle.mass_properties.fuel    
        
         analyses.vehicle.mass_properties.max_zero_fuel = analyses.vehicle.mass_properties.operating_empty\
                                                                     + analyses.vehicle.mass_properties.max_payload 
@@ -249,7 +250,6 @@ def mass_properties_preprocess_routine(segment, i = 0):
                 moment_of_inertia_df.to_excel(writer,sheet_name="Moment of Inertia",index=False)
             print(f"MOI breakdown written to Excel:\n  {excel_filename}") 
  
-    return 
 
 def iterate_max_fuel_and_max_zero_fuel(analyses, max_iterations=100):
     # Inital guess for max fuel and max zero fuel based on regressional analysis which use max takeoff weight of the aircraft

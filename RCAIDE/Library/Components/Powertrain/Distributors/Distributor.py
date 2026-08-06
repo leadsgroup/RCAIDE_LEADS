@@ -56,7 +56,26 @@ class Distributor(Component):
         return
 
     def compute_performance(self,state,network):
-        return None, None
+        distributor_conditions = state.conditions.energy.distributors[self.tag]
+
+        inputs  = Data()
+        outputs = Data()
+        inputs.power  = Data()
+        outputs.power = Data()
+
+        inputs.power.mechanical  = distributor_conditions.inputs.power.mechanical
+        inputs.power.electrical  = distributor_conditions.inputs.power.electrical
+        inputs.power.chemical    = distributor_conditions.inputs.power.chemical
+        inputs.power.hydraulic   = distributor_conditions.inputs.power.hydraulic
+        inputs.power.thermal     = distributor_conditions.inputs.power.thermal
+
+        outputs.power.mechanical = distributor_conditions.outputs.power.mechanical
+        outputs.power.electrical = distributor_conditions.outputs.power.electrical
+        outputs.power.chemical   = distributor_conditions.outputs.power.chemical
+        outputs.power.hydraulic  = distributor_conditions.outputs.power.hydraulic
+        outputs.power.thermal    = distributor_conditions.outputs.power.thermal
+
+        return inputs, outputs
 
     def unpack_unknowns(self,segment):
         return

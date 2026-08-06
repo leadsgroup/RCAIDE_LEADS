@@ -70,10 +70,8 @@ def main():
     propellant  = RCAIDE.Library.Attributes.Propellants.Butanol()
     propellant  = RCAIDE.Library.Attributes.Propellants.Liquid_Petroleum_Gas()
     propellant  = RCAIDE.Library.Attributes.Propellants.Jet_A1()    
-    propellant  = RCAIDE.Library.Attributes.Propellants.JP7()  
-    propellant  = RCAIDE.Library.Attributes.Propellants.Rocket_LH2()  
-    propellant  = RCAIDE.Library.Attributes.Propellants.Rocket_RP1()
-    
+    propellant  = RCAIDE.Library.Attributes.Propellants.JP7()
+
     # networks
     network =  RCAIDE.Framework.Networks.Electric()
     network =  RCAIDE.Framework.Networks.Fuel()

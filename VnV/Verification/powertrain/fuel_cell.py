@@ -1,4 +1,4 @@
-# Regression/scripts/network_isolated_battery_cell/cell_test.py
+# VnV/Verification/powertrain/fuel_cell.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke 

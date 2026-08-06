@@ -32,6 +32,7 @@ from . import Rotor
 from . import Generator
 from . import Turbine
 from . import Reformer
+from . import Reformer_Fuel_Cell
 from . import Turboshaft
 from . import Turboelectric_Generator
 from . import Liquid_Cooled_Wavy_Channel

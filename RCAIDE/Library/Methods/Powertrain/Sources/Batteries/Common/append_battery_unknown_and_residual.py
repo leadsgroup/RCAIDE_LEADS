@@ -15,8 +15,44 @@ import numpy as np
 #  append_battery_unknown_and_residual
 # ----------------------------------------------------------------------------------------------------------------------
 def append_battery_unknown_and_residual(module, battery,segment):
-     
-    ones_row  = segment.state.ones_row 
+    """
+    Appends the cell temperature and state-of-charge unknowns and residuals for a
+    battery module to be solved by the mission solver.
+
+    Parameters
+    ----------
+    module : RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Module
+        Battery module for which unknowns and residuals are being appended
+    battery : RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack
+        Battery pack the module belongs to
+    segment : RCAIDE.Framework.Mission.Segments.Segment
+        Mission segment with the following attributes:
+            - initial_battery_conditions : Data
+                Initial cell_temperature and state_of_charge, if specified for this
+                segment (e.g. by a prior segment's final state); otherwise the
+                unknowns are seeded from ambient temperature and zero, respectively
+            - state : Data
+                Segment state
+                    - ones_row : function
+                        Function to create array of ones with specified length
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    This function adds two unknowns (cell temperature, state of charge) and two
+    matching residuals per battery module, each unbounded (+/- inf), for the
+    mission solver to drive to zero. It increments
+    segment.state.number_of_network_unknowns and number_of_network_residuals by 2
+    each to match.
+
+    See Also
+    --------
+    RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.compute_battery_performance
+    """
+    ones_row  = segment.state.ones_row
     segment.state.number_of_network_unknowns  += 2 
     segment.state.number_of_network_residuals += 2
     

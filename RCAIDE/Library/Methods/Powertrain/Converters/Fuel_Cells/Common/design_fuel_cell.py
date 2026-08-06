@@ -162,18 +162,17 @@ def design_fuel_cell(fuel_cell_stack):
         fuel_cell_stack.append_operating_conditions(segment)
 
         # compute fuel cell performance
-        t_idx                                                                    =  0
         fuel_cell_stack_conditions                                               = segment.state.conditions.energy.converters[fuel_cell_stack.tag]
-        fuel_cell_stack_conditions.stagnation_temperature[t_idx, 0]              = atmo_data.temperature[0, 0]
-        fuel_cell_stack_conditions.stagnation_pressure[t_idx, 0]                 = atmo_data.pressure[0, 0]
-        fuel_cell_stack_conditions.pressure_drop[t_idx, 0]                       = fuel_cell.rated_p_drop_fc
-        fuel_cell_stack_conditions.stack_temperature[t_idx, 0]                   = fuel_cell.stack_temperature
-        rated_current_density, rated_power_density                               = evaluate_max_gross_power(fuel_cell_stack,fuel_cell_stack_conditions,t_idx)
+        fuel_cell_stack_conditions.stagnation_temperature[0, 0]                  = atmo_data.temperature[0, 0]
+        fuel_cell_stack_conditions.stagnation_pressure[0, 0]                     = atmo_data.pressure[0, 0]
+        fuel_cell_stack_conditions.pressure_drop[0, 0]                           = fuel_cell.rated_p_drop_fc
+        fuel_cell_stack_conditions.stack_temperature[0, 0]                       = fuel_cell.stack_temperature
+        rated_current_density, rated_power_density                               = evaluate_max_gross_power(fuel_cell_stack,fuel_cell_stack_conditions,0)
         set_rated_current_density(fuel_cell_stack, rated_current_density, rated_power_density)
 
-        fuel_cell_stack_conditions.current_density[t_idx] = rated_current_density
+        fuel_cell_stack_conditions.current_density[0] = rated_current_density
         m_dot_H2, V_fuel_cell, P_fuel_cell, _, _, _, _, _,_  =  evaluate_PEM(fuel_cell_stack,fuel_cell_stack_conditions)
-        m_dot_H2, V_fuel_cell, P_fuel_cell = m_dot_H2[t_idx], V_fuel_cell[t_idx], P_fuel_cell[t_idx]
+        m_dot_H2, V_fuel_cell, P_fuel_cell = m_dot_H2[0], V_fuel_cell[0], P_fuel_cell[0]
 
         # store properties
         area_square_meters                          = fuel_cell.interface_area * 0.0001

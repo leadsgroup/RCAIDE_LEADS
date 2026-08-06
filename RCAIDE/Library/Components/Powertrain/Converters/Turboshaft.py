@@ -145,9 +145,9 @@ class Turboshaft(Converter):
         Computes turboshaft performance including thrust, moment, and power.
         """
      
-        inputs, outputs, stored_results_flag, stored_converter  =  compute_turboshaft_performance(self,state,network)
-        return inputs, outputs, stored_results_flag, stored_converter    
-    
+        inputs, outputs, stored_results_flag, stored_converter  =  compute_turboshaft_performance(self,state.conditions,network)
+        return inputs, outputs, stored_results_flag, stored_converter
+
     def reuse_stored_data(turboshaft,state,network,stored_converter = None):
-        inputs, outputs  = reuse_stored_turboshaft_data(turboshaft,state,network,stored_converter)
+        inputs, outputs  = reuse_stored_turboshaft_data(turboshaft,state.conditions,network,stored_converter)
         return inputs, outputs 

@@ -122,5 +122,5 @@ class Generator(Converter):
     
     def compute_performance(self,state,network=None):
 
-        inputs, outputs, stored_results_flag,stored_converter_tag =  compute_generator_performance(self,state)
+        inputs, outputs, stored_results_flag,stored_converter_tag =  compute_generator_performance(self,state.conditions)
         return inputs, outputs, stored_results_flag,stored_converter_tag

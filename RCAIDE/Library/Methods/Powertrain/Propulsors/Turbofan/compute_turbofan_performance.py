@@ -441,7 +441,7 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     h_0                                            = turbofan.working_fluid.compute_cp(T,P) * T 
     h_t4                                           = combustor_conditions.outputs.stagnation_enthalpy
     h_t3                                           = hpc_conditions.outputs.stagnation_enthalpy 
-    turbofan_conditions.overall_efficiency         = thrust_vector* U0 / (mdot_fuel * fuel_enthalpy)  
+    turbofan_conditions.overall_efficiency         = turbofan_conditions.thrust[:, 0]* U0 / (mdot_fuel * fuel_enthalpy)  
     turbofan_conditions.thermal_efficiency         = 1 - ((mdot_air_core +  mdot_fuel)*(h_e_c -  h_0) + mdot_air_fan*(h_e_f - h_0) + mdot_fuel *h_0)/((mdot_air_core +  mdot_fuel)*h_t4 - mdot_air_core *h_t3)  
      
     # volumetric flow rate

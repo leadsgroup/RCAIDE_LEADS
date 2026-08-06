@@ -25,8 +25,8 @@ def compute_wake_induced_velocity(rotor, rotor_conditions, evaluation_points, ct
                 Tip radius of the rotor [m]
             - origin : array_like
                 Origin coordinates of the rotor [m, m, m]
-            - clockwise_rotation : bool
-                Whether the rotor rotates clockwise
+            - rotation : int
+                Rotation direction (1 for CCW, -1 for CW)
     rotor_conditions : Data
         Rotor operating conditions with:
             - disc_radial_distribution : array_like

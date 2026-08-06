@@ -316,7 +316,11 @@ class Network(Component):
         # coolant loop by the battery modules it cools) are already computed.
         for distributor in distributors:
             if distributor.active:
-                distributor.compute_performance(state,network)
+                inputs, outputs = distributor.compute_performance(state,network)
+                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
+                net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
+                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
+                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)
 
         # Final aggregation for system level performance
         conditions.energy.total_force_vector       = total_thrust

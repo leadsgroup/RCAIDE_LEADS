@@ -27,5 +27,3 @@ from .plot_propulsor_throttles                  import plot_propulsor_throttles
 from .plot_fuel_flow_rates                      import plot_fuel_flow_rates
 from .plot_fuel_tank_conditions                 import plot_fuel_tank_conditions
 from .plot_powertrain_conditions                import plot_powertrain_conditions
-from .plot_powertrain_diagram                   import plot_powertrain_diagram
-from .plot_liquid_hydrogen_tank_properties      import plot_liquid_hydrogen_tank_properties 

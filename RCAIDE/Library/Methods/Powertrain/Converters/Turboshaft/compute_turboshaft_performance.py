@@ -21,7 +21,7 @@ from copy import deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_turboshaft_performance
 # ---------------------------------------------------------------------------------------------------------------------- 
-def compute_turboshaft_performance(turboshaft,state, network=None): 
+def compute_turboshaft_performance(turboshaft,conditions, network=None):
     """ 
     Computes the perfomrance of a turboshaft
     
@@ -61,18 +61,16 @@ def compute_turboshaft_performance(turboshaft,state, network=None):
                 Core nozzle component
                     - tag : str
                         Identifier for the core nozzle
-    state : RCAIDE.Framework.Mission.Common.State
-        State object containing:
-            - conditions : Data
-                Flight conditions
-                    - freestream : Data
-                        Freestream properties
-                            - density : numpy.ndarray
-                                Air density [kg/m³]
-                    - noise : dict
-                        Noise conditions indexed by component tag
-                    - energy : dict
-                        Energy conditions indexed by component tag
+    conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Flight conditions
+            - freestream : Data
+                Freestream properties
+                    - density : numpy.ndarray
+                        Air density [kg/m³]
+            - noise : dict
+                Noise conditions indexed by component tag
+            - energy : dict
+                Energy conditions indexed by component tag
     network : RCAIDE.Framework.Networks.Network, optional
         The network this turboshaft belongs to, used to resolve its assigned
         distributor(s)
@@ -119,7 +117,6 @@ def compute_turboshaft_performance(turboshaft,state, network=None):
     --------
     RCAIDE.Library.Methods.Powertrain.Converters.Turboshaft.compute_power
     """
-    conditions                = state.conditions  
     ram                       = turboshaft.ram
     inlet_nozzle              = turboshaft.inlet_nozzle
     compressor                = turboshaft.compressor
@@ -245,7 +242,7 @@ def compute_turboshaft_performance(turboshaft,state, network=None):
 
     return turboshaft_conditions.inputs ,turboshaft_conditions.outputs,stored_results_flag,stored_propulsor_tag
 
-def reuse_stored_turboshaft_data(turboshaft,state,network,stored_converter_tag):
+def reuse_stored_turboshaft_data(turboshaft,conditions,network,stored_converter_tag):
     '''Reuses results from one turboshaft for identical propulsors
     
     Assumptions: 
@@ -266,7 +263,6 @@ def reuse_stored_turboshaft_data(turboshaft,state,network,stored_converter_tag):
     Properties Used: 
     N.A.        
     ''' 
-    conditions                  = state.conditions  
     turboshaft                  = turboshaft.turboshaft
     ram                         = turboshaft.ram
     inlet_nozzle                = turboshaft.inlet_nozzle 

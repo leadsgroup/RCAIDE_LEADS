@@ -14,7 +14,7 @@ import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_omega_and_Q_from_Cp_and_V
 # ----------------------------------------------------------------------------------------------------------------------    
-def compute_generator_performance(generator,state):
+def compute_generator_performance(generator,conditions):
     """
     Computes generator performance characteristics including electrical, mechanical and thermal parameters.
 
@@ -22,8 +22,8 @@ def compute_generator_performance(generator,state):
     ----------
     generator : Converter
         Generator component for which performance is being computed
-    state : RCAIDE.Framework.Mission.Common.State
-        Mission segment state containing freestream and energy conditions
+    conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Mission segment conditions containing freestream and energy conditions
 
     Returns
     -------
@@ -56,8 +56,8 @@ def compute_generator_performance(generator,state):
     RCAIDE.Library.Components.Powertrain.Converters.Generator
     """
     
-    # unpack generator conditions 
-    generator_conditions = state.conditions.energy.converters[generator.tag]  
+    # unpack generator conditions
+    generator_conditions = conditions.energy.converters[generator.tag]
     if generator.voltage_type == 'DC':   
         if generator.reverse_mode_computation == False:
             P_mech          = generator_conditions.inputs.power.mechanical

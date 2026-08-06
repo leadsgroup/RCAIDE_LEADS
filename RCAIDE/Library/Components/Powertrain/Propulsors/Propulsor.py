@@ -94,12 +94,7 @@ class Propulsor(Component):
         self.active                       = True
         self.wing_mounted                 = True
         self.domain                       = None
-        self.nacelle                      = None
-        # Whether this propulsor's performance can be copied from another
-        # propulsor already computed on the same distributor group this
-        # mission-solver step, instead of being computed independently
-        # (see Network.evaluate()). Defaults True since most vehicles have
-        # multiple truly-identical propulsors (e.g. wing-mounted engines).
+        self.nacelle                      = None 
         self.identical_propulsors         = True
         self.reverse_thrust               = False
         self.sealevel_static_thrust       = 0.0

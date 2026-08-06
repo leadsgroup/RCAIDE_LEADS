@@ -29,6 +29,12 @@ class Liquid_Petroleum_Gas(Propellant):
         Specific energy content in J/kg (43.1e6)
     energy_density : float
         Energy density in J/m³ (21949.1e6)
+    molecular_weight : float
+        Molecular weight in g/mol (49.7, 60/40 propane/butane mass blend)
+    hydrogen_mass_fraction : float
+        Mass fraction of hydrogen content (0.179)
+    carbon_mass_fraction : float
+        Mass fraction of carbon content (0.821)
     use_high_fidelity_kinetics_model : bool
         Flag for using detailed chemical kinetics (False)
     fuel_surrogate_chemical_properties : dict
@@ -108,8 +114,11 @@ class Liquid_Petroleum_Gas(Propellant):
         self.energy_density                = 21949.1e6                  # J/m^3
         self.gravimetric_efficiency        = 0.7
         self.lower_heating_value           = 48.6e6                     # J/kg
-        
-        self.stoichiometric_fuel_air_ratio = 0         # [-] Stoichiometric Fuel to Air ratio
+        self.molecular_weight              = 49.7      # [g/mol] 60/40 propane/butane mass blend
+        self.hydrogen_mass_fraction        = 0.179     # [-] mass fraction of hydrogen content
+        self.carbon_mass_fraction          = 0.821     # [-] mass fraction of carbon content
+
+        self.stoichiometric_fuel_air_ratio = 1/15.6    # [-] Stoichiometric Fuel to Air ratio, 60/40 propane/butane blend
         self.heat_of_vaporization          = 0         # [J/kg] Heat of vaporization at standard conditions
         self.temperature                   = 0         # [K] Temperature of fuel
         self.pressure                      = 0         # [Pa] Pressure of fuel
