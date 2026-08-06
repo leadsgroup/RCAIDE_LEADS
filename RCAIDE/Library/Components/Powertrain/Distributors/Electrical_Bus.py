@@ -170,32 +170,40 @@ class Electrical_Bus(Distributor):
         --------
         RCAIDE.Library.Methods.weights.vehicle.moments_of_inertia.compute_fuselage_moment_of_inertia
             Implementation of the moment of inertia calculation
-        """
-        # _ , _ = compute_distributor_moment_of_inertia(self,center_of_gravity= center_of_gravity)  
+        """ 
         return
  
     def initialize(self,network):
-        self.design_power   = 0.0
-        # design_voltage is intentionally not reset here. Batteries and fuel cells
-        # below overwrite it with a definitive value when present, but generators
-        # (Generator/Turboelectric_Generator/integrated_drive_generator) have no
-        # inherent nominal-voltage attribute, so a generator-only bus relies on
-        # whatever design_voltage the vehicle definition set explicitly.
+        """
+        Computes the bus's design voltage and power from its assigned sources,
+        converters, and propulsor-integrated generators, then sizes its cable.
+
+        Batteries and fuel cells set `design_voltage` directly, since they define
+        the bus's electrical potential. Generators only add to `design_power`,
+        since their output voltage follows the bus rather than setting it -- so a
+        generator-only bus keeps whatever `design_voltage` the vehicle definition
+        set explicitly.
+
+        Parameters
+        ----------
+        network : Network
+            Energy network this bus belongs to, used to find the sources,
+            converters, and propulsors assigned to it.
+        """
+        self.design_power = 0.0
 
         def assigned_here(component):
             return component.active and component.assigned_distributors is not None and (self.tag in component.assigned_distributors[0])
 
         def generator_design_power(generator):
-            # Generator carries design_power directly; Turboelectric_Generator wraps
-            # one (self.generator.design_power) instead of exposing it itself.
+            # Turboelectric_Generator wraps a Generator (.generator.design_power)
+            # instead of exposing design_power directly.
             return getattr(generator, 'design_power', None) or getattr(getattr(generator, 'generator', None), 'design_power', 0.0) or 0.0
 
         for source in network.sources:
             if assigned_here(source):
                 if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
-                    # A battery with power_split_ratio == 0 carries no power on this bus
-                    # (e.g. structural/backup-only ballast) and should not dictate bus
-                    # voltage or be assumed initialized.
+                    # power_split_ratio == 0 means backup/ballast only -- shouldn't set bus voltage.
                     if source.power_split_ratio != 0.0:
                         self.design_voltage = source.voltage
                         self.design_power  += source.maximum_power
@@ -210,8 +218,8 @@ class Electrical_Bus(Distributor):
                                             RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator)):
                     self.design_power  += generator_design_power(converter)
 
-        # Generators integrated onto a propulsor's shaft (e.g. Turbofan/Turboprop
-        # integrated_drive_generator) are not in network.converters, so check there too.
+        # Propulsor-integrated generators (e.g. Turbofan/Turboprop integrated_drive_generator)
+        # aren't in network.converters, so check them separately.
         for propulsor in network.propulsors:
             idg = getattr(propulsor, 'integrated_drive_generator', None)
             if idg is not None and assigned_here(idg):
@@ -228,6 +236,5 @@ class Electrical_Bus(Distributor):
         --------
         RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_fuselage_center_of_gravity
             Implementation of the moment of inertia calculation
-        """
-        # _  = compute_distributor_center_of_gravity(self,vehicle) 
+        """ 
         return 

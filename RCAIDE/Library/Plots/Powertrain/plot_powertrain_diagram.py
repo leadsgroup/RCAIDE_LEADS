@@ -169,16 +169,6 @@ def plot_powertrain_diagram(results,
                             y_sup  = crec.outputs.power.electrical[:npts, 0] / 1e6
                             y_draw = crec.inputs .power.electrical[:npts, 0] / 1e6
 
-                        # --- TRU special case: AC side = draw only, DC side = supply only ---
-                        if group_name == "modulators":
-                            if isinstance(comp, RCAIDE.Library.Components.Powertrain.Modulators.Transformer_Rectifier_Unit):
-                                if distributor.type == 'AC':
-                                    y_draw = crec.inputs.power.electrical[:npts, 0] / 1e6
-                                    y_sup  = np.zeros_like(y_draw)
-                                elif distributor.type == 'DC':
-                                    y_sup  = crec.outputs.power.electrical[:npts, 0] / 1e6
-                                    y_draw = np.zeros_like(y_sup)
-
                         eps = 1e-6
                         mask_supply = y_sup  > eps
                         mask_draw   = y_draw > eps

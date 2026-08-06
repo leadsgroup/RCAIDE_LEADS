@@ -1,8 +1,6 @@
-# RCAIDE/Energy/Networks/Electric.py
+# RCAIDE/Energy/Networks/Fuel_Cell.py
 # 
-# Created:  Jul 2023, M. Clarke
-# Modified: Sep 2024, S. Shekar
-#           Jan 2025, M. Clarke
+# Created: Apr 2025, M. Clarke
   
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -11,10 +9,10 @@
 from .Network import Network 
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  Electric
+#  Fuel_Cell
 # ----------------------------------------------------------------------------------------------------------------------  
-class Electric(Network):
-    """ Electric Network Class - Derivative of the hybrid energy network class
+class Fuel_Cell(Network):
+    """ Fuel Cell Network Class - Derivative of the hybrid energy network class
                                
     Attributes
     ----------
@@ -25,13 +23,11 @@ class Electric(Network):
     --------
     RCAIDE.Library.Framework.Networks.Fuel
         Fuel network class 
+    RCAIDE.Library.Framework.Networks.Electric
+        Electric network class 
     RCAIDE.Library.Framework.Networks.Hybrid
         Hybrid network class  
-    RCAIDE.Library.Framework.Networks.Hydrogen
-        Hydrogen network class
-    RCAIDE.Library.Framework.Networks.Fuel_Cell
-        Fuel Cell network class
-    """
+    """      
     def __defaults__(self):
         """ This sets the default values for the network to function.
 
@@ -42,4 +38,4 @@ class Electric(Network):
             N/A 
         """         
 
-        self.tag                          = 'electric' 
+        self.tag                          = 'fuel_cell' 

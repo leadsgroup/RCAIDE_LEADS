@@ -37,7 +37,6 @@ from .Rotor                                      import Rotor
 from .PMSM_Motor                                 import PMSM_Motor 
 from .Prop_Rotor                                 import Prop_Rotor
 from .Propeller                                  import Propeller
-from .Puller_Fan                                 import Puller_Fan
 from .Proton_Exchange_Membrane_Fuel_Cell         import Proton_Exchange_Membrane_Fuel_Cell
 from .Supersonic_Nozzle                          import Supersonic_Nozzle
 from .Reformer                                   import Reformer

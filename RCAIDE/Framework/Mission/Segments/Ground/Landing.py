@@ -93,8 +93,6 @@ class Landing(Evaluate):
         iterate                                    = self.process.iterate
         iterate.conditions.forces_ground           = Update.ground_forces
         iterate.unknowns.mission.mission           = Unpack_Unknowns.ground
-        iterate.residuals.mission.flight_dynamics  = Residuals.flight_dynamics
-
-        self.state.numerics.mission_solver.type = "root_finder"
+        iterate.residuals.mission.flight_dynamics  = Residuals.flight_dynamics 
 
         return

@@ -39,8 +39,6 @@ class Converter(Component):
         self.assigned_converters                = None
         self.assigned_modulators                = None
         self.assigned_distributors              = None 
-        # See Propulsor.identical_propulsors -- same reuse-eligibility concept,
-        # applied to converters in Network.evaluate().
         self.identical_converters               = True
         self.efficiency                         = 1.0
         self.provides_domain                    = None

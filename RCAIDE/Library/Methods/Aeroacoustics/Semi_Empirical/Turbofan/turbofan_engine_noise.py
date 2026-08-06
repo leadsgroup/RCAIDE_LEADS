@@ -107,7 +107,7 @@ def turbofan_engine_noise(microphone_locations, turbofan, aeroacoustic_data, seg
     RCAIDE.Library.Methods.Aeroacoustics.Common.SPL_arithmetic
     """
     # unpack   
-    N1                     = aeroacoustic_data.low_pressure_spool.angular_velocity / Units.rpm
+    N1                     = aeroacoustic_data.fan.angular_velocity / Units.rpm
     Velocity_secondary     = aeroacoustic_data.fan_nozzle.exit_velocity   
     Temperature_secondary  = aeroacoustic_data.fan_nozzle.exit_stagnation_temperature 
     Pressure_secondary     = aeroacoustic_data.fan_nozzle.exit_stagnation_pressure 

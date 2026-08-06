@@ -120,7 +120,7 @@ class Evaluate(Segment):
         iterate.conditions.atmosphere            = Common.Update.atmosphere
         iterate.conditions.gravity               = Common.Update.gravity
         iterate.conditions.freestream            = Common.Update.freestream
-        iterate.conditions.network              = Common.Update.network
+        iterate.conditions.network               = Common.Update.network
         iterate.conditions.thrust                = Common.Update.thrust
         iterate.conditions.aerodynamics          = Common.Update.aerodynamics
         iterate.conditions.weights               = Common.Update.weights

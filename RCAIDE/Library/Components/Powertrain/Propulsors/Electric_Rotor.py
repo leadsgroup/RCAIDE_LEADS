@@ -39,9 +39,6 @@ class Electric_Rotor(Propulsor):
         
     electronic_speed_controller : None or ESC
         The electronic speed controller that regulates power to the motor
-        
-    active_crypgenic_tanks_tanks : None or list
-        Collection of active cryogenoc tanks. Default is None.
     
     Notes
     -----
@@ -80,7 +77,6 @@ class Electric_Rotor(Propulsor):
         # setting the default values
         self.tag                           = 'electric_rotor'
         self.domain                        = 'electrical'
-        self.active_crypgenic_tanks_tanks  = None        
 
     def append_operating_conditions(self,segment):
         """
