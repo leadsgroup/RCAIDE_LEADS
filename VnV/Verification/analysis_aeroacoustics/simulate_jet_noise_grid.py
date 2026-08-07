@@ -50,64 +50,141 @@ if vehicles_path not in sys.path:
 #   Main
 # ---------------------------------------------------------------------- 
 def main():  
-    # define plotting parameters 
-    PP = plot_parameters()  
+    # define plotting parameters
+    df = pd.read_csv("/Users/siripunn/Desktop/LEADS_WORK/LEADS_Research/RCAIDE_LEADS/VnV/Verification/analysis_aeroacoustics/b737_sim_track_interpolated.csv")
 
-    # landing gear noise validation
-    simulate_vehicle_noise_grid(PP) 
+    lat_array = df['Latitude (deg)'].to_numpy()
+    lon_array = df['Longitude (deg)'].to_numpy()
+    elevation_msl_array = df['Altitude MSL (ft)'].to_numpy()
+    ground_speed_kts_array = df['Ground Speed (kts)'].to_numpy()
+    ground_tr = df['Airplane Thrust Type'].to_numpy()
+
+    PP = plot_parameters()  
+    vehicle = None
+    path = Data(latitude = lat_array, longitude = lon_array, altitude_MSL_ft = elevation_msl_array, ground_speed_kts = ground_speed_kts_array, thrust_reverse = ground_tr )
+    frequency_range = None
+    grid_location = [[-88.018902,41.894352],[-87.797397,42.059475]] #[[bottomleft_corner_lon, bottomleft_corner_lat],[topright_corner_lon, topright_corner_lat]]
+    grid_dimensions = [120,120] #x,y
+    receptor_alt_MSL = 680 #[ft]
+    sim_result = simulate_vehicle_noise_grid(vehicle,path,frequency_range,grid_location,grid_dimensions,receptor_alt_MSL,fast = True,plot = True) 
+    sound_exposure_level = sim_result.SEL
+    grid = sim_result.lat_lon
+    return
     
-    return  
     
-    
-# ------------------------------------------------------------------ 
+# ------------------------------------------------------------------
 # Harmonic Noise Validation
 # ------------------------------------------------------------------  
-def simulate_vehicle_noise_grid(PP): 
+def simulate_vehicle_noise_grid(vehicle,path,frequency_range,grid_location,grid_dimensions,receptor_alt_MSL,fast = True,plot = True): 
+    '''
+    This function calls RCAIDE noise models for individual aircraft components, calculates the total SEL, and plots heatmap of noise over a flight path.
     
-    #define params for landing gear model
-    D = 1.016 #m
-    H = 1.2 #m
-    wheels= 2
-    Weight = 68038.8555 #kg
-    strut_diameter=0.11811#m
-    theta =(np.pi)/2 #deg 
+    Parameters
+    ----------
+    vehicle : RCAIDE geometry file
+        Essential Aircraft Geometry for Model
+    path : Data
+        vehicle path file containing:
+        - latitude
+        - longitude
+        - altitude_MSL_ft [ft]
+        - ground_speed_kts_array [kts]
+        - ground_tr (list of 'Reversed Thrust' labels)
+    frequency_range : numpy array
+        frequency range you want to sum up the noise dB over
+    grid_location : numpy array
+        Geographic coordinates of grid corners
+    grid_dimensions : numpy array
+        number of receptors in grid array
+    receptor_alt_MSL : numpy array [ft].
+        altitude of the receptors in MSL
+    fast : bool
+        opt to not simulate noise components domated by jet and slat noise
+    plot : bool
+        opt to plot the heatmap in addition to returning simulated data
+    downsample : bool
+        downsample the grid size to decrease computation
+    
+    Returns
+    -------
+    total_sel : Data
+        contains the SEL level for each receptor in grid
+            - lat_lon : numpy array
+                receptor grid in geographic coordinates
+            - SEL : numpy array [dB]
+                sel levels, A-weighted at indexed geographic coordinates
+    
+    Notes
+    -----
+    The function assumes standard atmospheric attenuation rates from SAE-AIR-1845 
 
-    frequency = frequency = np.array([
+    **Definitions**
+
+    'SEL'
+        Sound Exposure Level, the total acoustic energy of a noise event 
+        normalized to a duration of 1 second.
+
+    References
+    ----------
+    [1] SAE ARP876D: Gas Turbine Jet Exhaust Noise Prediction (original)
+    [2] de Almeida, Odenir. "Semi-empirical methods for coaxial jet noise prediction." (2008). (adapted)
+    [3] Yueping Guo. "A Semi-Empirical Model for Aircraft Landing Gear Noise Prediction." (2012)
+    [4] Yueping Guo. "Aircraft Flap Side Edge Noise Modeling and Prediction" (2012)
+    [5] Yueping Guo. "Aircraft Slat Noise Modeling and Prediction" (2010)
+    [6] Enhanced Core Noise Modeling for Turbofan Engines (NASA)
+    [7] Enhanced Fan Noise Modeling for Turbofan Engines (NASA) 
+    '''
+
+    if frequency_range == None:
+        #use in-built frequency spectrum
+        frequency = np.array([
         50.0, 63.0, 80.0, 100.0, 125.0, 160.0, 200.0, 250.0, 
         315.0, 400.0, 500.0, 630.0, 800.0, 1000.0, 1250.0, 1600.0, 
         2000.0, 2500.0, 3150.0, 4000.0, 5000.0, 6300.0, 8000.0, 10000.0
     ])
 
-    W = 0.3556#m
-    
-    #define params for flap model
-    thickness = 0.1#m
-    cf = 0.9#m
-    deltaf = np.radians(37.5)
-
-    #define params for slat model
-    phi= 0
-    Ls = 0.08128
-    gamma_s = np.radians(20)
-    sigma_s =  np.radians(25)
-    alpha =  np.radians(10)
-
-    #define param for core noise model
-    pr = 13.1
-    m = None # predefined mass flow rate
-    
+    if vehicle == None:
+        #default to typical 737-800 parameters
+        #define params for landing gear model
+        D = 1.016 #m
+        H = 1.2 #m
+        wheels = 2
+        Weight = 68038.8555 #kg
+        strut_diameter = 0.11811 #m
+        theta = (np.pi)/2 #deg 
 
 
-    # define operating conditions                                            
-    a                       = 343.376
-    T                       = 288.16889478  
-    density                 = 1.2250	
-    dynamic_viscosity       = 1.81E-5   
-    ctrl_pts                = 1
-    AoA                     = 4
-    U = 103 #aircraft velocity
-    M = 0.2 #mach number
-    frequency_flp = np.logspace(1, 4, 100)
+
+        W = 0.3556#m
+        
+        #define params for flap model
+        thickness = 0.1 #m
+        cf = 0.9 #m
+        deltaf = np.radians(37.5)
+
+        #define params for slat model
+        phi = 0
+        Ls = 0.08128
+        gamma_s = np.radians(20)
+        sigma_s = np.radians(25)
+        alpha = np.radians(10)
+
+        #define param for core noise model
+        pr = 13.1
+        m = None # predefined mass flow rate
+        
+
+
+        # define operating conditions                                            
+        a                       = 343.376
+        T                       = 288.16889478  
+        density                 = 1.2250	
+        dynamic_viscosity       = 1.81E-5   
+        ctrl_pts                = 1
+        AoA                     = 4
+        U = 103 # aircraft velocity
+        M = 0.2 # mach number
+        frequency_flp = np.logspace(1, 4, 100)
 
     #------------------------------------------------------------------------------------------------------------------------------------
     # Propulsor: Starboard Propulsor
@@ -132,7 +209,7 @@ def simulate_vehicle_noise_grid(PP):
     ram.tag                                     = 'ram'
     turbofan.ram                                = ram
 
-    #combustor
+    # combustor
     combustor                                         = RCAIDE.Library.Components.Powertrain.Converters.Combustor()
     combustor.tag                                     = 'combustor'
     combustor.number_of_fuel_nozzle                   = 18
@@ -186,7 +263,7 @@ def simulate_vehicle_noise_grid(PP):
     segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.exit_stagnation_temperature = 440
     segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.exit_stagnation_pressure = 152*1000
 
-    turbofan.origin = np.array([[0.0, 0.0, 1.5]]) # Engine height assumed 1.0m
+    turbofan.origin = np.array([[0.0, 0.0, 1.5]])
     turbofan.length = 97*Units.inches
     turbofan.diameter = 70*Units.inches
     turbofan.plug_diameter = 60*Units.inches
@@ -217,16 +294,29 @@ def simulate_vehicle_noise_grid(PP):
     # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     # Read Path Data and Receptor Data (Using Relative Paths)
     # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------  
-
-    df = pd.read_csv('/Users/siripunn/Desktop/LEADS_WORK/LEADS_Research/RCAIDE_LEADS/VnV/Verification/analysis_aeroacoustics/b737_sim_noise_SEL_N_TR (1).csv')
-    track_df = pd.read_csv('/Users/siripunn/Desktop/LEADS_WORK/LEADS_Research/RCAIDE_LEADS/VnV/Verification/analysis_aeroacoustics/new_track.csv')
+    def calc_grid(num_x, num_y, geo_coords):
+        """
+        Generates a grid of coordinates inside a bounding box based on the number of points.
+        """
+        lon_min, lat_min = geo_coords[0]
+        lon_max, lat_max = geo_coords[1]
+        
+        # Generate evenly spaced arrays based on the number of requested points
+        lons = np.linspace(lon_min, lon_max, num_x)
+        lats = np.linspace(lat_min, lat_max, num_y)
+        
+        # Create a 2D meshgrid
+        lon_grid, lat_grid = np.meshgrid(lons, lats)
+        
+        # Flatten the arrays to return [all_lons, all_lats]
+        return [lon_grid.flatten(), lat_grid.flatten()]
 
     # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     # Vectorized Distance & Angle Calculator
     # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
     def calc_3d_dist_vectorized(ac_lat, ac_lon, ac_alt_ft, rec_lats, rec_lons, rec_elevs_ft):
         R_earth = 6371000.0  # Earth's radius in meters
-        ft_to_meters = 0.3048
+        ft_to_meters = Units.feet
 
         lat1, lon1 = np.radians(ac_lat), np.radians(ac_lon)
         lat2, lon2 = np.radians(rec_lats), np.radians(rec_lons)
@@ -245,11 +335,12 @@ def simulate_vehicle_noise_grid(PP):
         return ground_distance_m, slant_distance_m, elevation_angle_rad
 
     # Extract receptor arrays for fast computation
-    df = downsample_spatial_grid(df, stride_factor=2)
-    rec_lats = df['Latitude (deg)'].values
-    rec_lons = df['Longitude (deg)'].values
-    rec_elevs = df['Elevation MSL (ft)'].values
-    num_receptors = len(df)
+    rec_grid = calc_grid(grid_dimensions[0], grid_dimensions[1], grid_location)
+    #df = downsample_spatial_grid(df, stride_factor=2)
+    rec_lats = rec_grid[1]
+    rec_lons = rec_grid[0]
+    rec_elevs = np.full(len(rec_lats),receptor_alt_MSL) #assume flat grid
+    num_receptors = len(rec_lats)
 
     # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     # Run Simulation Loop
@@ -260,48 +351,48 @@ def simulate_vehicle_noise_grid(PP):
     dt_array = [] # Store time steps for SEL integration
     
     # Aircraft speed from your conditions
-    U_flight = track_df['Ground Speed (kts)'].tolist()
+    U_flight = path.ground_speed_kts
     U_flight = [x * 0.5144 for x in U_flight] # kts to m/s
     settings = Data() # initialize inputs for Jet Noise Model
     settings.center_frequencies = np.pad(frequency, (5, 0), mode='constant')
     altflight = []
     tr=[]
-    for index, track_point in track_df.head(50).iterrows(): 
-        ac_lat = track_point['Latitude (deg)']
-        ac_lon = track_point['Longitude (deg)']
-        ac_alt = track_point['Altitude MSL (ft)']
-        trp = track_point['Noise Thrust per Engine (lbs)']
+    ac_lat = path.latitude #degrees
+    ac_lon = path.longitude #degrees
+    ac_alt = path.altitude_MSL_ft
 
-        if index > 10:
+    for index in range(0,len(ac_lat)):
+        if grid_location[0][1] < ac_lat[index] < grid_location[1][1] and grid_location[0][0] < ac_lon[index] < grid_location[1][0]+0.05:
+        #if the aircraft crosses into the grid, begin simulations for the receptors
+        #of not, skip to save computation time
             
-            if index > 17:
-                positionsx.append(ac_lat)
-                positionsy.append(ac_lon)
-                tr.append(round(trp))
+            #trp = None
+            if index > 22:
+
+                positionsx.append(ac_lat[index])
+                positionsy.append(ac_lon[index])
+            #tr.append(round(trp))
 
             # 1. Calculate distances
             ground_dist, los_distance, angle_to_ground = calc_3d_dist_vectorized(
-                ac_lat, ac_lon, ac_alt, rec_lats, rec_lons, rec_elevs
+                ac_lat[index], ac_lon[index], ac_alt[index], rec_lats, rec_lons, rec_elevs
             )
             
             # 2. Proper 3D Polar Angle and dt calculation
             R_earth = 6371000.0
             
-            if index > 0 and index < len(track_df)+1:
+            if index > 0 and index < len(ac_alt)+1:
                 # Use current minus previous for forward motion vector
-                curr_pt = track_df.iloc[index]
-                prev_pt = track_df.iloc[index - 1]
                 
-                dx_flight = np.radians(curr_pt['Longitude (deg)'] - prev_pt['Longitude (deg)']) * R_earth * np.cos(np.radians(ac_lat))
-                dy_flight = np.radians(curr_pt['Latitude (deg)'] - prev_pt['Latitude (deg)']) * R_earth
-                dz_flight = (curr_pt['Altitude MSL (ft)'] - prev_pt['Altitude MSL (ft)']) * Units.feet
+                dx_flight = np.radians(ac_lon[index] - ac_lon[index-1]) * R_earth * np.cos(np.radians(ac_lat[index]))
+                dy_flight = np.radians(ac_lat[index] - ac_lat[index-1]) * R_earth
+                dz_flight = (ac_alt[index] - ac_alt[index-1]) * Units.feet
             else:
-                # Fallback for index == 0: look ahead to index + 1 instead of pointing backward (-1.0)
-                if index + 1 < len(track_df):
-                    next_pt = track_df.iloc[index + 1]
-                    dx_flight = np.radians(next_pt['Longitude (deg)'] - ac_lon) * R_earth * np.cos(np.radians(ac_lat))
-                    dy_flight = np.radians(next_pt['Latitude (deg)'] - ac_lat) * R_earth
-                    dz_flight = (next_pt['Altitude MSL (ft)'] - ac_alt) * Units.feet
+                # Fallback for index == 0: look ahead to index + 1 instead of pointing backward (-1.0) CHECK THIS
+                if index + 1 < len(ac_alt):
+                    dx_flight = np.radians(ac_lon[index+1] - ac_lon[index]) * R_earth * np.cos(np.radians(ac_lat[index]))
+                    dy_flight = np.radians(ac_lat[index+1] - ac_lat[index]) * R_earth
+                    dz_flight = (ac_alt[index+1] - ac_alt [index]) * Units.feet
                 else:
                     dx_flight, dy_flight, dz_flight = 1.0, 0.0, 0.0
                 
@@ -315,9 +406,9 @@ def simulate_vehicle_noise_grid(PP):
             dt_array.append(dt)
 
             # B. Determine Observer Vector (Aircraft -> Receptor)
-            dx_obs = np.radians(rec_lons - ac_lon) * R_earth * np.cos(np.radians(ac_lat))
-            dy_obs = np.radians(rec_lats - ac_lat) * R_earth
-            dz_obs = (-(rec_elevs - ac_alt) * Units.feet)
+            dx_obs = np.radians(rec_lons - ac_lon[index]) * R_earth * np.cos(np.radians(ac_lat[index]))
+            dy_obs = np.radians(rec_lats - ac_lat[index]) * R_earth
+            dz_obs = (-(rec_elevs - ac_alt[index]) * Units.feet)
             altflight.append(round(dz_obs[0]))
             l_seg_m = ground_dist
 
@@ -325,7 +416,7 @@ def simulate_vehicle_noise_grid(PP):
             d_AS = np.clip(d_AS, 0, mag_flight)
             
             # d_seg_m is your vertical AGL altitude component at CPA
-            d_seg_m = (ac_alt * Units.feet) + d_AS * (dz_flight / mag_flight) - (rec_elevs * Units.feet)
+            d_seg_m = (ac_alt[index] * Units.feet) + d_AS * (dz_flight / mag_flight) - (rec_elevs * Units.feet)
             d_seg_m = np.maximum(d_seg_m, Units.feet) # AEDT uses a minimum distance/altitude limit of 1 ft (~0.3m)
 
             # C. Dot Product to find True Polar Angle (0 = Nose, 180 = Tail)
@@ -353,13 +444,7 @@ def simulate_vehicle_noise_grid(PP):
                 theta_raw = np.array([[theta_raw_arr[i]]])
                 theta_flap = np.array([[tf[i]]])
                 theta_engine = np.array([[te[i]]])
-                print('step',index,'iteration',i, 'ac_true_h', dz_obs[0])
-                
-                # --- RUN NOISE MODELS ---
-                #lg_noise = compute_landing_gear_noise(R_val, theta_raw, D, H, W, wheels, M, Weight, strut_diameter, frequency, segment)
-                #flap_noise = flap_noise_model(R_val, theta_flap, cf, thickness, deltaf, frequency, segment)
-                slat_noise_val = slat_noise(R_val, phi, theta_flap[0][0], Ls, gamma_s, sigma_s, alpha, segment, frequency, A=1e-5)
-
+                print('computing noise step',index)
                 # Pass segment.state to match internal RCAIDE condition structure
                 aero_data = segment.state.conditions.aeroacoustics.propulsors[turbofan.tag]
                 
@@ -368,31 +453,53 @@ def simulate_vehicle_noise_grid(PP):
                 mic_y = los_distance[i] * np.sin(theta_proper[i])
                 mic_locations = np.array([[mic_x, mic_y, 0.0]])
 
-                current_thrust = track_point['Airplane Thrust Type']
+                if fast == True:
+                
+                # --- RUN NOISE MODELS ---
+                    slat_noise_val = slat_noise(R_val, phi, theta_flap[0][0], Ls, gamma_s, sigma_s, alpha, segment, frequency, A=1e-5)
 
-                if current_thrust == 'Reversed Thrust' or current_thrust == 'Idle Approach':
-                    jet_noise = compute_jet_noise_new(mic_locations, turbofan, aero_data, segment.state, frequency,1)
+                    if path.thrust_reverse[index] == 'Reversed Thrust' or path.thrust_reverse[index] == 'Idle Approach':
+                        jet_noise = compute_jet_noise_new(mic_locations, turbofan, aero_data, segment.state, frequency,1)
+                    else:
+                        jet_noise = compute_jet_noise_new(mic_locations, turbofan, aero_data, segment.state, frequency,0)
+
+                    jet_spec_dBA = jet_noise.SPL_1_3_spectrum[0][0]
+                    jet_spec_raw = jet_spec_dBA
+                    
+                    # Combine spectra logarithmically
+                    spectra = np.array([
+                        slat_noise_val[0],
+                        jet_spec_raw
+                    ])
+                    total_spectrum = SPL_arithmetic(spectra, sum_axis=0)
+
                 else:
-                    jet_noise = compute_jet_noise_new(mic_locations, turbofan, aero_data, segment.state, frequency,0)
+                    lg_noise = compute_landing_gear_noise(R_val, theta_raw, D, H, W, wheels, M, Weight, strut_diameter, frequency, segment)
+                    flap_noise = flap_noise_model(R_val, theta_flap, cf, thickness, deltaf, frequency, segment)
+                    slat_noise_val = slat_noise(R_val, phi, theta_flap[0][0], Ls, gamma_s, sigma_s, alpha, segment, frequency, A=1e-5)
+                    
+                    if path.thrust_reverse[index] == 'Reversed Thrust' or path.thrust_reverse[index] == 'Idle Approach':
+                        jet_noise = compute_jet_noise_new(mic_locations, turbofan, aero_data, segment.state, frequency,1)
+                    else:
+                        jet_noise = compute_jet_noise_new(mic_locations, turbofan, aero_data, segment.state, frequency,0)
 
-                #Run turbofan models
-                
-                #fan_noise = compute_fan_noise(R_val[0], theta_engine[0][0], turbofan, m, segment.state.conditions.aeroacoustics, segment, frequency)
-                #core_noise = compute_core_noise(R_val, theta_engine, turbofan, pr, segment.state.conditions.aeroacoustics, segment, frequency)
-
-                jet_spec_dBA = jet_noise.SPL_1_3_spectrum[0][0]
-                jet_spec_raw = jet_spec_dBA
-                
-                # Combine spectra logarithmically
-                spectra = np.array([
-                    #lg_noise.Total[0], 
-                    #flap_noise[0], 
-                    slat_noise_val[0],
-                    #fan_noise.SPL_1_3_spectrum[0][0], 
-                    #core_noise.SPL_1_3_spectrum[0][0],
-                    jet_spec_raw
-                ])
-                total_spectrum = SPL_arithmetic(spectra, sum_axis=0)
+                    #Run turbofan models
+                    fan_noise = compute_fan_noise(R_val[0], theta_engine[0][0], turbofan, m, segment.state.conditions.aeroacoustics, segment, frequency)
+                    core_noise = compute_core_noise(R_val, theta_engine, turbofan, pr, segment.state.conditions.aeroacoustics, segment, frequency)
+                    
+                    jet_spec_dBA = jet_noise.SPL_1_3_spectrum[0][0]
+                    jet_spec_raw = jet_spec_dBA
+                    
+                    # Combine spectra logarithmically
+                    spectra = np.array([
+                        lg_noise.Total[0], 
+                        flap_noise[0], 
+                        slat_noise_val[0],
+                        fan_noise.SPL_1_3_spectrum[0][0], 
+                        core_noise.SPL_1_3_spectrum[0][0],
+                        jet_spec_raw
+                    ])
+                    total_spectrum = SPL_arithmetic(spectra, sum_axis=0)
                 
                 # 2. Package the scalar distance into an array to satisfy RCAIDE's len(dist) check
                 dist_array = np.array([los_distance[i]])
@@ -414,59 +521,63 @@ def simulate_vehicle_noise_grid(PP):
             # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
             sim_results.append(total_SPL_map)
 
+    if len(sim_results) == 0:
+            print("Warning: The track data did not intersect the requested grid boundaries.")
+            return None
+    sim_results_arr = np.array(sim_results)
+    dt_arr = np.array(dt_array).reshape(-1, 1)        
+    energy_integral = np.sum((10**(sim_results_arr / 10.0)) * dt_arr, axis=0)
+    z = 10 * np.log10(energy_integral)
+
+    x = rec_lons
+    y = rec_lats
+
+    np.savez('b737_high_res_footprint_3.npz', 
+                        longitude=x, 
+                        latitude=y, 
+                        sel_dBA=z)
+
+    if plot == True:
+        import matplotlib.tri as tri
         
-        if len(sim_results) == 28+10:
-            print(positionsx,positionsy)
-            import matplotlib.tri as tri
-            sim_results_arr = np.array(sim_results)
-            dt_arr = np.array(dt_array).reshape(-1, 1)        
-            energy_integral = np.sum((10**(sim_results_arr / 10.0)) * dt_arr, axis=0)
-            z = 10 * np.log10(energy_integral)
-
-            x = rec_lons
-            y = rec_lats
-
-            np.savez('b737_high_res_footprint_3.npz', 
-                                longitude=x, 
-                                latitude=y, 
-                                sel_dBA=z)
-            
-            # 3. Setup the plot
-            fig, ax = plt.subplots(figsize=(10, 8), dpi=120)
+        # 3. Setup the plot
+        fig, ax = plt.subplots(figsize=(10, 8), dpi=120)
+    
+        # 4. Create an unstructured triangulation grid and plot the heatmap
+        triangulation = tri.Triangulation(x, y)
         
-            # 4. Create an unstructured triangulation grid and plot the heatmap
-            triangulation = tri.Triangulation(x, y)
-            
-            # Generate the contour
-            levels = np.linspace(42,120, 40) # 40 colors
+        # Generate the contour
+        levels = np.linspace(42,120, 40) # 40 colors
 
-            heatmap = ax.tricontourf(triangulation, np.clip(z,20,120), levels = levels, cmap='jet', extend='both')
-            plt.plot(positionsy,positionsx,'ko',markersize=1)
+        heatmap = ax.tricontourf(triangulation, z, levels = levels, cmap='jet', extend='both')
+        plt.plot(positionsy,positionsx,'ko',markersize=1)
 
-            #uncomment to annotate flight path.
+        #uncomment to annotate flight path.
 
-            #for index, (x, y) in enumerate(zip(positionsy, positionsx), start=0):
-                #plt.annotate(f"{tr[index]}", (x, y), textcoords="offset points", xytext=(1, 1),fontsize=3)
+        #for index, (x, y) in enumerate(zip(positionsy, positionsx), start=0):
+            #plt.annotate(f"{tr[index]}", (x, y), textcoords="offset points", xytext=(1, 1),fontsize=3)
 
-            # 5. Add colorbar and labels
-            cbar = fig.colorbar(heatmap, ax=ax)
-            cbar.set_label(f'Level (Exposure) - SEL', fontsize=12, fontweight='bold')
+        # 5. Add colorbar and labels
+        cbar = fig.colorbar(heatmap, ax=ax)
+        cbar.set_label(f'Level (Exposure) - SEL', fontsize=12, fontweight='bold')
+    
+        ax.set_title('B737 Simulated Noise Footprint', fontsize=14, fontweight='bold', pad=15)
+        ax.set_xlabel('Longitude', fontsize=12)
+        ax.set_ylabel('Latitude', fontsize=12)
         
-            ax.set_title('B737 Simulated Noise Footprint', fontsize=14, fontweight='bold', pad=15)
-            ax.set_xlabel('Longitude', fontsize=12)
-            ax.set_ylabel('Latitude', fontsize=12)
-            
-            # Format axes with a subtle grid
-            ax.grid(True, linestyle='--', alpha=0.5, color='gray')
-            
-            # Keep the geographic spatial scales proportional based on the center latitude
-            mean_lat = np.mean(y)
-            ax.set_aspect(1.0 / np.cos(np.radians(mean_lat)))
-
+        # Format axes with a subtle grid
+        ax.grid(True, linestyle='--', alpha=0.5, color='gray')
         
-            # 6. Display the plot
-            print(dt_array)
-            plt.show()
+        # Keep the geographic spatial scales proportional based on the center latitude
+        mean_lat = np.mean(y)
+        ax.set_aspect(1.0 / np.cos(np.radians(mean_lat)))
+
+    
+        # 6. Display the plot
+        plt.show()
+        return Data(lat_lon = [x,y], SEL = z)
+
+    return Data(lat_lon = [x,y], SEL = z)
             
 def plot_parameters():
      
@@ -586,8 +697,6 @@ def downsample_spatial_grid(df, stride_factor):
         unique_lats = np.sort(df['Latitude'].unique())
         unique_lons = np.sort(df['Longitude'].unique())
         
-        print(f"Original Grid Resolution: {len(unique_lats)} lats x {len(unique_lons)} lons ({len(df)} total points)")
-        
         # Downsample unique coordinates by the stride factor
         ds_lats = unique_lats[::stride_factor]
         ds_lons = unique_lons[::stride_factor]
@@ -595,7 +704,6 @@ def downsample_spatial_grid(df, stride_factor):
         # Filter the dataframe to only include these downsampled coordinates
         df_downsampled = df[df['Latitude'].isin(ds_lats) & df['Longitude'].isin(ds_lons)].reset_index(drop=True)
         
-        print(f"Downsampled Grid Resolution: {len(ds_lats)} lats x {len(ds_lons)} lons ({len(df_downsampled)} total points)")
         return df_downsampled
     else:
         # Fallback: simple row slicing if columns aren't standard
