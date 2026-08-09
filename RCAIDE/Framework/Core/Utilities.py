@@ -29,6 +29,16 @@ def interp2d(x,y,xp,yp,zp,fill_value= None):
     Returns:
         1D array `z` satisfying `z[i] = f(x[i], y[i])`.
     """ 
+    # Clip the QUERY coordinates to the table's own range before interpolating, not just the
+    # bracketing index -- clamping only the index (as before) still lets x/y sit outside the
+    # bracket, so the weights below keep growing past [0,1] and the result silently
+    # extrapolates without limit instead of clamping, contradicting this function's own
+    # documented behavior above. Clipping x/y here makes the same interpolation formula land
+    # exactly on the boundary value once the query is at or past the table's edge.
+    x_orig, y_orig = x, y
+    x = np.clip(x, xp[0], xp[-1])
+    y = np.clip(y, yp[0], yp[-1])
+
     ix = np.clip(np.searchsorted(xp, x, side="right"), 1, len(xp) - 1)
     iy = np.clip(np.searchsorted(yp, y, side="right"), 1, len(yp) - 1)
 
@@ -51,7 +61,7 @@ def interp2d(x,y,xp,yp,zp,fill_value= None):
 
     if fill_value is not None:
         oob = np.logical_or(
-            x < xp[0], np.logical_or(x > xp[-1], np.logical_or(y < yp[0], y > yp[-1]))
+            x_orig < xp[0], np.logical_or(x_orig > xp[-1], np.logical_or(y_orig < yp[0], y_orig > yp[-1]))
         )
         z = np.where(oob, fill_value, z)
 

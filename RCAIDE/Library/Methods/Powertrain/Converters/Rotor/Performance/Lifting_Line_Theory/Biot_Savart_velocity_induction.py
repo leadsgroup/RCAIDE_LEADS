@@ -217,6 +217,6 @@ def biot_savart_velocity_induction(P, A, B, rc=1e-6, vc_correction=1, tol=1e-6):
     mask = (r1_norm < tol) | (r2_norm < tol) | (rm_sq < tol)
     combined_coeff[mask] = 0.0
 
-    cross *= combined_coeff[..., np.newaxis]
+    cross *= combined_coeff
 
     return cross

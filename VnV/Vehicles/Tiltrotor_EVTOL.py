@@ -443,7 +443,7 @@ def vehicle_setup(redesign_rotors=True, design_iterations=200) :
     # blade is analyzed during the mission itself.
     # radius_distribution must be set explicitly before design_electric_rotor(), since
     # initialize_lifting_line() needs it upfront (BEMT can auto-generate it, LL cannot).
-    prop_rotor.fidelity                                = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'#'Lifting_Line_Theory'
+    prop_rotor.fidelity                                = 'Lifting_Line_Theory'#'Blade_Element_Momentum_Theory_Helmholtz_Wake'
     prop_rotor.rc                                      = 0.05
     prop_rotor.variable_pitch                          = True
     prop_rotor.radius_distribution                     = np.linspace(prop_rotor.hub_radius, prop_rotor.tip_radius, len(prop_rotor.airfoil_polar_stations))
@@ -453,7 +453,7 @@ def vehicle_setup(redesign_rotors=True, design_iterations=200) :
     prop_rotor.wake_inputs.wake_model_hov               = 1                 # 1 simple model, 2 landgrebe, 3 landgrebe KT
     prop_rotor.wake_inputs.wake_model_FF                = 5                 # 4 undistorted, 5 Beddoes distorted, 6 Modified Beddoes distorted
     prop_rotor.wake_inputs.vc_correction                = 1                 # vortex core factor, 1 standard/Scully, 2 Rankine, 3 Vatistas, 4 Oseen
-    prop_rotor.wake_inputs.dpsi                         = np.radians(30.0)    # filament length [rad]
+    prop_rotor.wake_inputs.dpsi                         = np.radians(15.0)    # filament length [rad]
     prop_rotor.wake_inputs.n_turns                      = 3.0               # Number of wake turns
     prop_rotor.wake_inputs.thrust_coeff_initial_guess   = 0.00654           # initial guess for CT to intialize the wake geometry
     prop_rotor.wake_inputs.lamb_oseen_rc_0              = 0.028             # initial core radius for the wake filaments [fraction of R]
@@ -571,7 +571,7 @@ def vehicle_setup(redesign_rotors=True, design_iterations=200) :
         # right after, so the .res file reflects the BEMT-optimized geometry analyzed at
         # whatever fidelity the mission actually wants.
         mission_fidelity            = propulsor.rotor.fidelity
-        propulsor.rotor.fidelity    = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'
+        propulsor.rotor.fidelity    = 'Lifting_Line_Theory'
         design_electric_rotor(propulsor, iterations=design_iterations, print_iterations=True)
         propulsor.rotor.fidelity    = mission_fidelity
         save_propulsor(propulsor, os.path.join(local_path, 'tilt_rotor_propulsor.res'))
@@ -739,9 +739,27 @@ def configs_setup(vehicle):
     for network in  config.networks:  
         for propulsor in  network.propulsors:
             propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]  
+            propulsor.rotor.blade_pitch_command      = propulsor.rotor.cruise.design_blade_pitch_command * 0.3
     configs.append(config)
     
 
+    # ------------------------------------------------------------------
+    # Low-Medium Speed Transition
+    # ------------------------------------------------------------------
+    config                                            = RCAIDE.Library.Components.Configs.Config(vehicle)
+    config.tag                                        = 'low_medium_speed_transition'
+    vector_angle                                      = 40.0  * Units.degrees
+    for network in  config.networks:
+        for propulsor in  network.propulsors:
+            propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]
+            # 0.25, matching transition_setting_1 (85 deg) and low_speed_transition (70 deg) --
+            # at any partial tilt, the rotor sees edgewise cross-flow (advancing/retreating blade
+            # asymmetry); a uniform pitch offset this large pushes the retreating side into stall,
+            # which both narrows the feasible throttle/thrust_vector_angle trim region and makes
+            # the local Cl/Cd response too nonlinear for SLSQP's finite-difference Jacobian near
+            # the trim point ("positive directional derivative for linesearch").
+            propulsor.rotor.blade_pitch_command      = propulsor.rotor.cruise.design_blade_pitch_command * 0.35
+    configs.append(config)
 
     # ------------------------------------------------------------------
     # Medium Speed Transition 
@@ -752,6 +770,7 @@ def configs_setup(vehicle):
     for network in  config.networks:  
         for propulsor in  network.propulsors:
             propulsor.rotor.orientation_euler_angles =  [0, vector_angle, 0]  
+            propulsor.rotor.blade_pitch_command      = propulsor.rotor.cruise.design_blade_pitch_command * 0.4
     configs.append(config)
     
 
