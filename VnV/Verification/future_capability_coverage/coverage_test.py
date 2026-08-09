@@ -73,9 +73,13 @@ def main():
     propellant  = RCAIDE.Library.Attributes.Propellants.JP7()
 
     # networks
-    network =  RCAIDE.Framework.Networks.Electric()
-    network =  RCAIDE.Framework.Networks.Fuel()
-    
+    network =  RCAIDE.Framework.Networks.Hydrogen()
+
+    # powertrain base classes
+    distributor        = RCAIDE.Library.Components.Powertrain.Distributors.Distributor()
+    modulator           = RCAIDE.Library.Components.Powertrain.Modulators.Modulator()
+    source              = RCAIDE.Library.Components.Powertrain.Sources.Source()
+
     # booms
     boom      = RCAIDE.Library.Components.Booms.Boom()
     segment_1 = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()

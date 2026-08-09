@@ -74,9 +74,10 @@ class Set_Speed_Set_Altitude_No_Propulsion(Evaluate):
         iterate.initials.energy                     = skip
         iterate.unknowns.mission.controls           = Common.Unpack_Unknowns.control_surfaces
         iterate.unknowns.mission.mission            = Common.Unpack_Unknowns.orientation
-        iterate.conditions.planet_position          = skip    
+        iterate.conditions.planet_position          = skip
         iterate.conditions.acceleration             = skip
-        iterate.conditions.angular_acceleration     = skip  
+        iterate.conditions.angular_acceleration     = skip
+        iterate.residuals.flight_dynamics           = Common.Residuals.flight_dynamics
         post_process                                = self.process.post_process
         post_process.inertial_position              = skip
         

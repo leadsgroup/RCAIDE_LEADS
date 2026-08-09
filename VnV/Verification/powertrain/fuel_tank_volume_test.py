@@ -43,6 +43,7 @@ def main():
     ti = time.time()
     integral_fuel_tank_volume_test()
     non_integral_tank_test()
+    pressurized_tank_test()
     # -------------------------------------------------------------
     # Run test only if Python version >= 3.11
     # Shapely < 2.1 (and Python < 3.11) may not include functions
@@ -203,6 +204,65 @@ def non_integral_tank_test():
         print('  Skipping wing-mounted and transverse Non_Integral_Tank tests: shapely requires Python >= 3.11')
 
     print('  PASSED')
+
+
+def pressurized_tank_test():
+    print('\n----- Pressurized Tank Test -----')
+
+    vehicle   = B737_vehicle_setup()
+    fuel_line = vehicle.networks.fuel.distributors.fuel_line
+    vehicle.networks.fuel.sources.clear()
+
+    # ---- Standalone cylindrical LPG tank ----
+    # Parameters match the regional-jet LPG configuration in RESEARCH/12_PtX_Boeing/Task_4/
+    # Regional_Aircraft_Cryo.py: LPG is stored as a pressurized liquid near ISA standard-day
+    # temperature, with design_pressure set by the max expected hot-day vapor pressure.
+    tank                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Pressurized_Tank()
+    tank.tag                    = 'lpg_pressurized_tank'
+    tank.fuel                   = RCAIDE.Library.Attributes.Propellants.Liquid_Petroleum_Gas()
+    tank.design_inlet_temperature = 288    # K, ISA standard-day delivery temperature
+    tank.design_pressure        = 1.5e6    # Pa, 15 bar max operating pressure
+    tank.design_altitude        = 35000 * Units.ft
+    tank.ullage_volume_fraction = 0.07
+    tank.diameters.external     = 2.25
+    tank.lengths.external       = 3.5
+    tank.assigned_distributors  = [[fuel_line.tag]]
+    vehicle.networks.fuel.sources.append(tank)
+
+    tank.compute_volume(vehicle.wings, vehicle.fuselages, vehicle.networks.fuel.sources)
+    assert tank.volume_properties.net_volume > 0, \
+        f'Pressurized_Tank net volume should be > 0, got {tank.volume_properties.net_volume}'
+    assert tank.wall_thickness > 0, \
+        f'Pressurized_Tank wall thickness should be sized > 0, got {tank.wall_thickness}'
+
+    tank.compute_moments_of_inertia(vehicle)
+    tank.compute_center_of_gravity(vehicle)
+
+    # ---- Standalone prismatic LPG tank ----
+    prismatic_tank                       = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Pressurized_Tank()
+    prismatic_tank.tag                   = 'lpg_prismatic_tank'
+    prismatic_tank.geometry_type         = 'prismatic'
+    prismatic_tank.fuel                  = RCAIDE.Library.Attributes.Propellants.Liquid_Petroleum_Gas()
+    prismatic_tank.design_inlet_temperature = 288
+    prismatic_tank.design_pressure       = 1.5e6
+    prismatic_tank.design_altitude       = 35000 * Units.ft
+    prismatic_tank.ullage_volume_fraction = 0.07
+    prismatic_tank.lengths.external      = 1.0
+    prismatic_tank.widths.external       = 0.8
+    prismatic_tank.heights.external      = 0.6
+    prismatic_tank.wall_thickness        = 5 * Units.mm
+    prismatic_tank.assigned_distributors = [[fuel_line.tag]]
+    vehicle.networks.fuel.sources.append(prismatic_tank)
+
+    prismatic_tank.compute_volume(vehicle.wings, vehicle.fuselages, vehicle.networks.fuel.sources)
+    assert prismatic_tank.volume_properties.net_volume > 0, \
+        f'Prismatic Pressurized_Tank net volume should be > 0, got {prismatic_tank.volume_properties.net_volume}'
+
+    prismatic_tank.compute_moments_of_inertia(vehicle)
+    prismatic_tank.compute_center_of_gravity(vehicle)
+
+    print('  PASSED')
+    return
 
 
 def non_conformal_lh2_fuel_tank_volume_test():

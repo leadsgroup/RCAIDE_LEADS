@@ -296,6 +296,15 @@ def analyze_topology(network, seg_i,  verbose=False):
                     else:
                         connections[dist_tag].consumers.append(component)
 
+    def register_consumer_by_domain(component, consumer_domain):
+        """Consumer only on distributors matching consumer_domain, ignored elsewhere --
+        e.g. a pump is physically placed along a fuel line (for sizing/lookup purposes)
+        but only electrically consumes from the bus that powers it."""
+        if component.assigned_distributors is not None:
+            for dist_tag in component.assigned_distributors[0]:
+                if dist_tag in connections and distributor_domains[dist_tag] == consumer_domain:
+                    connections[dist_tag].consumers.append(component)
+
     for source in network.sources:
         register(source, 'provider')
 
@@ -311,6 +320,17 @@ def analyze_topology(network, seg_i,  verbose=False):
 
     for converter in electrical_motors:
         register(converter, 'consumer')
+
+    # Any other converter (e.g. a fuel-line transfer pump) that isn't a power
+    # provider draws electrical power to operate without providing anything
+    # itself -- register it as an electrical consumer. Using
+    # register_consumer_by_domain (not register) so a pump's fuel-line
+    # membership -- present purely for physical/sizing purposes -- doesn't
+    # get misread as it being a chemical consumer of that fuel line.
+    other_converters = [c for c in network.converters
+                         if c not in fuel_cells and c not in generators and c not in electrical_motors]
+    for converter in other_converters:
+        register_consumer_by_domain(converter, 'electrical')
 
     for system in network.systems:
         register(system, 'consumer')

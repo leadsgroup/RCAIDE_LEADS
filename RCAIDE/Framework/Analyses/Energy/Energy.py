@@ -7,7 +7,6 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
 # RCAIDE imports
-import RCAIDE
 from RCAIDE.Framework.Core     import Data
 from RCAIDE.Framework.Analyses import Analysis 
 import numpy as np
@@ -59,10 +58,8 @@ class Energy(Analysis):
 
         network.evaluate(state, vehicle)
 
-        if type(segment) != RCAIDE.Framework.Mission.Segments.Ground.Battery_Recharge:
-            if 'electrical_power' in state.unknowns.network:
-                state.residuals.network['electrical_power'] = state.conditions.energy.net_electrical_power
-         
+        if 'electrical_power' in state.unknowns.network:
+            state.residuals.network['electrical_power'] = state.conditions.energy.net_electrical_power
 
         # Unpack Residuals
         residual_keys = list(state.residuals.network.keys())

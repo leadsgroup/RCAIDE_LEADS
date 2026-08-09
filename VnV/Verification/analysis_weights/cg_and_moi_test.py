@@ -229,10 +229,10 @@ def EVTOL_Aircraft_Test(update_regression_values):
     print('EVTOL Moment of Inertia')
     print(MOI)
 
-    truth_OEW_CG_mass_percentage = 86.35
-    truth_moi  = np.array([[ 9071.55167022,  -527.37697854,  -944.67200273],
-                           [ -527.37697854, 10304.65806561,   -99.75208906],
-                           [ -944.67200273,   -99.75208906, 17619.47841297]])
+    truth_OEW_CG_mass_percentage = 86.08
+    truth_moi  = np.array([[ 9010.39229324,  -563.89801682,  -926.2111993 ],
+                           [ -563.89801682, 10052.15660705,   -82.83881005],
+                           [ -926.2111993 ,   -82.83881005, 17343.21296395]])
 
     error_moi = abs((MOI - truth_moi) / truth_moi)
     assert np.all(error_moi < 5e-2),\

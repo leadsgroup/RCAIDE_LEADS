@@ -805,7 +805,7 @@ def mission_setup(analyses):
   
     Segments = RCAIDE.Framework.Mission.Segments 
     base_segment = Segments.Segment()
-    base_segment.state.numerics.solver.type = 'root_finder'
+    base_segment.state.numerics.mission_solver.type = 'root_finder'
 
     # ------------------------------------------------------------------    
     #   Cruise Segment 

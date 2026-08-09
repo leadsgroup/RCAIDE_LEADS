@@ -827,7 +827,6 @@
     "diameter": 0.0,
     "length": 0.0,
     "height": 0.0,
-    "active_crypgenic_tanks_tanks": null,
     "electronic_speed_controller": {
         "tag": "prop_rotor_esc_1",
         "mass_properties": {

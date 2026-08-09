@@ -25,7 +25,7 @@ def compute_systems_power_draw(system, state, vehicle):
     outputs : Conditions
         Output power conditions for the system.
     """
-    system_conditions                              = state.conditions.energy.systems[system.tag]
+    system_conditions                               = state.conditions.energy.systems[system.tag]
     system_conditions.inputs.power.electrical[:,0]  = system.power_draw
     system_conditions.outputs.power.electrical[:,0] = 0.0
 

@@ -75,6 +75,8 @@ def geometry(mission):
                 network.reverse_thrust = vehicle_0.networks[network.tag].reverse_thrust
                 for source in network.sources:
                     source.active = vehicle_0.networks[network.tag].sources[source.tag].active
+                for system in network.systems:
+                    system.power_draw = vehicle_0.networks[network.tag].systems[system.tag].power_draw
                 for propulsor in network.propulsors:
                     propulsor_0              =  vehicle_0.networks[network.tag].propulsors[propulsor.tag]
                     propulsor.active         = propulsor_0.active

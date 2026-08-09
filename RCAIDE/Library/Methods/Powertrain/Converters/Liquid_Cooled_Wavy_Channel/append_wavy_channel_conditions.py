@@ -42,13 +42,13 @@ def append_wavy_channel_conditions(wavy_channel,segment,coolant_line):
      atmo_data    = atmosphere.compute_values(altitude = alt,temperature_deviation=temp_dev)
      
      
-     ones_row                                                                                        = segment.state.ones_row
-     segment.state.conditions.energy.distributors[coolant_line.tag][wavy_channel.tag]                            = Conditions()
-     segment.state.conditions.energy.distributors[coolant_line.tag][wavy_channel.tag].heat_removed               = 0 * ones_row(1)
-     segment.state.conditions.energy.distributors[coolant_line.tag][wavy_channel.tag].outlet_coolant_temperature = atmo_data.temperature[0,0]  * ones_row(1)
-     segment.state.conditions.energy.distributors[coolant_line.tag][wavy_channel.tag].coolant_mass_flow_rate     = 0 * ones_row(1)
-     segment.state.conditions.energy.distributors[coolant_line.tag][wavy_channel.tag].effectiveness              = 0 * ones_row(1)
-     segment.state.conditions.energy.distributors[coolant_line.tag][wavy_channel.tag].power                      = 0 * ones_row(1)
+     ones_row                                                                                    = segment.state.ones_row
+     segment.state.conditions.energy.distributors[coolant_line][wavy_channel.tag]                            = Conditions()
+     segment.state.conditions.energy.distributors[coolant_line][wavy_channel.tag].heat_removed               = 0 * ones_row(1)
+     segment.state.conditions.energy.distributors[coolant_line][wavy_channel.tag].outlet_coolant_temperature = atmo_data.temperature[0,0]  * ones_row(1)
+     segment.state.conditions.energy.distributors[coolant_line][wavy_channel.tag].coolant_mass_flow_rate     = 0 * ones_row(1)
+     segment.state.conditions.energy.distributors[coolant_line][wavy_channel.tag].effectiveness              = 0 * ones_row(1)
+     segment.state.conditions.energy.distributors[coolant_line][wavy_channel.tag].power                      = 0 * ones_row(1)
      
      return
 
@@ -72,9 +72,9 @@ def append_wavy_channel_segment_conditions(wavy_channel,segment,coolant_line):
          None
      """     
 
-     wavy_channel_conditions = segment.state.conditions.energy.distributors[coolant_line.tag][wavy_channel.tag]
-     if segment.state.initials:  
-          wavy_channel_initials                                    = segment.state.initials.conditions.energy.distributors[coolant_line.tag][wavy_channel.tag]
+     wavy_channel_conditions = segment.state.conditions.energy.distributors[coolant_line][wavy_channel.tag]
+     if segment.state.initials:
+          wavy_channel_initials                                    = segment.state.initials.conditions.energy.distributors[coolant_line][wavy_channel.tag]
           wavy_channel_conditions.outlet_coolant_temperature[:,0] = wavy_channel_initials.outlet_coolant_temperature[-1,0]
           wavy_channel_conditions.power[:,0]                      = wavy_channel_initials.power[-1,0] 
           wavy_channel_conditions.coolant_mass_flow_rate[:,0]     = wavy_channel_initials.coolant_mass_flow_rate[-1,0]     

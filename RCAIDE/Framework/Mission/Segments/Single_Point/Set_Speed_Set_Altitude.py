@@ -77,6 +77,7 @@ class Set_Speed_Set_Altitude(Evaluate):
         iterate.conditions.angular_acceleration   = skip
         iterate.unknowns.mission.controls         = Common.Unpack_Unknowns.control_surfaces
         iterate.unknowns.mission.mission          = Common.Unpack_Unknowns.orientation
+        iterate.residuals.flight_dynamics         = Common.Residuals.flight_dynamics
         post_process                              = self.process.post_process
         post_process.inertial_position            = skip
                 

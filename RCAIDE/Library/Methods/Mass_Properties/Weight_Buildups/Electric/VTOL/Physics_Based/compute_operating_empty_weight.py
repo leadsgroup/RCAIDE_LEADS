@@ -158,17 +158,17 @@ def compute_operating_empty_weight(vehicle,settings = None):
                 if isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack):
                     weight.fuel_cell += converter.mass_properties.mass * Units.kg
 
-                # Servo, Hub and BRS Weights
-                lift_rotor_hub_weight   = 4.   * Units.kg
-                prop_hub_weight         = 4.   * Units.kg
-                lift_rotor_BRS_weight   = 16.  * Units.kg
+            # Servo, Hub and BRS Weights
+            lift_rotor_hub_weight   = 4.   * Units.kg
+            prop_hub_weight         = 4.   * Units.kg
+            lift_rotor_BRS_weight   = 16.  * Units.kg
 
-                # Rotor Weight
-                number_of_propellers    = 0.0
-                number_of_lift_rotors   = 0.0
-                total_number_of_rotors  = 0.0
-                lift_rotor_servo_weight = 0.0
-    
+            # Rotor Weight
+            number_of_propellers    = 0.0
+            number_of_lift_rotors   = 0.0
+            total_number_of_rotors  = 0.0
+            lift_rotor_servo_weight = 0.0
+
             #-------------------------------------------------------------------------------
             # Propulsors
             #-------------------------------------------------------------------------------

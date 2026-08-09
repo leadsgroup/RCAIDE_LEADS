@@ -572,9 +572,10 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------- 
     # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
-    fuel_line                                      = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
-    
-    #------------------------------------------------------------------------------------------------------------------------------------  
+    fuel_line                                      = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    fuel_line.working_fluid                        = RCAIDE.Library.Attributes.Propellants.Jet_A1()
+
+    #------------------------------------------------------------------------------------------------------------------------------------
     # Propulsor: Starboard Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------         
     turbofan                                       = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan() 
@@ -931,10 +932,11 @@ def mission_setup(analyses):
     mission.tag = 'the_mission'
 
     Segments = RCAIDE.Framework.Mission.Segments 
-    base_segment = Segments.Segment() 
-    base_segment.state.numerics.solver.type = 'root_finder'
+    base_segment = Segments.Segment()
+    base_segment.state.numerics.mission_solver.type = 'root_finder'
+    base_segment.state.numerics.mission_solver.max_evaluations = 800
 
-    # ------------------------------------------------------------------------------------------------------------------------------------ 
+    # ------------------------------------------------------------------------------------------------------------------------------------
     #   Takeoff 
     # ------------------------------------------------------------------------------------------------------------------------------------ 
 

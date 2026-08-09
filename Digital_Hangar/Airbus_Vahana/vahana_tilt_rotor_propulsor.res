@@ -193,7 +193,6 @@
     "diameter": 0.0,
     "length": 0.0,
     "height": 0.0,
-    "active_crypgenic_tanks_tanks": null,
     "electronic_speed_controller": {
         "tag": "esc_1",
         "mass_properties": {
@@ -566,7 +565,7 @@
                 "xz_plane_symmetric": false,
                 "xy_plane_symmetric": false,
                 "yz_plane_symmetric": false,
-                "coordinate_file": "Digital_Hangar/Airfoils_and_Polars/NACA_4412.txt",
+                "coordinate_file": "/Users/matthewclarke/Documents/LEADS/CODES/RCAIDE_LEADS/Digital_Hangar/Airfoils_and_Polars/NACA_4412.txt",
                 "geometry": {
                     "thickness_to_chord": 0.12019145780605714,
                     "max_thickness": 0.12019145780605714,
@@ -1488,14 +1487,14 @@
                     ]
                 },
                 "polar_files": [
-                    "Digital_Hangar/Airfoils_and_Polars/Polars/NACA_4412_polar_Re_50000.txt",
-                    "Digital_Hangar/Airfoils_and_Polars/Polars/NACA_4412_polar_Re_100000.txt",
-                    "Digital_Hangar/Airfoils_and_Polars/Polars/NACA_4412_polar_Re_200000.txt",
-                    "Digital_Hangar/Airfoils_and_Polars/Polars/NACA_4412_polar_Re_500000.txt",
-                    "Digital_Hangar/Airfoils_and_Polars/Polars/NACA_4412_polar_Re_1000000.txt",
-                    "Digital_Hangar/Airfoils_and_Polars/Polars/NACA_4412_polar_Re_3500000.txt",
-                    "Digital_Hangar/Airfoils_and_Polars/Polars/NACA_4412_polar_Re_5000000.txt",
-                    "Digital_Hangar/Airfoils_and_Polars/Polars/NACA_4412_polar_Re_7500000.txt"
+                    "/Users/matthewclarke/Documents/LEADS/CODES/RCAIDE_LEADS/Digital_Hangar/Airfoils_and_Polars/Polars/NACA_4412_polar_Re_50000.txt",
+                    "/Users/matthewclarke/Documents/LEADS/CODES/RCAIDE_LEADS/Digital_Hangar/Airfoils_and_Polars/Polars/NACA_4412_polar_Re_100000.txt",
+                    "/Users/matthewclarke/Documents/LEADS/CODES/RCAIDE_LEADS/Digital_Hangar/Airfoils_and_Polars/Polars/NACA_4412_polar_Re_200000.txt",
+                    "/Users/matthewclarke/Documents/LEADS/CODES/RCAIDE_LEADS/Digital_Hangar/Airfoils_and_Polars/Polars/NACA_4412_polar_Re_500000.txt",
+                    "/Users/matthewclarke/Documents/LEADS/CODES/RCAIDE_LEADS/Digital_Hangar/Airfoils_and_Polars/Polars/NACA_4412_polar_Re_1000000.txt",
+                    "/Users/matthewclarke/Documents/LEADS/CODES/RCAIDE_LEADS/Digital_Hangar/Airfoils_and_Polars/Polars/NACA_4412_polar_Re_3500000.txt",
+                    "/Users/matthewclarke/Documents/LEADS/CODES/RCAIDE_LEADS/Digital_Hangar/Airfoils_and_Polars/Polars/NACA_4412_polar_Re_5000000.txt",
+                    "/Users/matthewclarke/Documents/LEADS/CODES/RCAIDE_LEADS/Digital_Hangar/Airfoils_and_Polars/Polars/NACA_4412_polar_Re_7500000.txt"
                 ],
                 "polars": {
                     "aoa_from_polar": [

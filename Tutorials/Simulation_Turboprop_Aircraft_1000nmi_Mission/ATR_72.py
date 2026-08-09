@@ -565,9 +565,10 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------- 
     # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
-    fuel_line                                       = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
- 
-    #------------------------------------------------------------------------------------------------------------------------------------  
+    fuel_line                                       = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    fuel_line.working_fluid                         = RCAIDE.Library.Attributes.Propellants.Jet_A()
+
+    #------------------------------------------------------------------------------------------------------------------------------------
     # Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------    
     starboard_propulsor                              = RCAIDE.Library.Components.Powertrain.Propulsors.Turboprop()        
@@ -883,7 +884,7 @@ def mission_setup(analyses):
     # unpack Segments module
     Segments = RCAIDE.Framework.Mission.Segments  
     base_segment = Segments.Segment() 
-    base_segment.state.numerics.solver.type                      = "root_finder"
+    base_segment.state.numerics.mission_solver.type                      = "root_finder"
       
     # ------------------------------------------------------------------
     #   Takeoff

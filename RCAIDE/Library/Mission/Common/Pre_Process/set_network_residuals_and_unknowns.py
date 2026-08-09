@@ -24,6 +24,12 @@ def set_network_residuals_and_unknowns(mission):
 
     Electrical distributors with consumers but no providers are parasitic
     loads that cannot be balanced -- a warning is issued, no unknown added.
+
+    The initial guess prefers a propulsor's own ``design_power_offtake`` over
+    summed system ``power_draw`` (usually zero, since most systems only
+    populate it dynamically at evaluation time). It's the max across
+    propulsors, not a sum -- ``design_power_offtake`` is the shared target
+    each IDG's own ``power_split_ratio`` divides, not a per-propulsor share.
     """
 
     for segment in mission.segments:
@@ -56,20 +62,30 @@ def set_network_residuals_and_unknowns(mission):
                         has_electrical_power_circularity = True
 
             if has_electrical_power_circularity:
-                # Estimate initial electrical power from system loads
+                # see docstring for the max-not-sum / design_power_offtake rationale
                 initial_electrical_power = 0.0
                 for network in segment.analyses.vehicle.networks:
-                    for system in network.systems:
-                        if system.active and hasattr(system, 'power_draw'):
-                            initial_electrical_power += system.power_draw
+                    for propulsor in network.propulsors:
+                        if getattr(propulsor, 'integrated_drive_generator', None) is not None or \
+                           getattr(propulsor, 'integrated_drive_motor', None) is not None:
+                            initial_electrical_power = max(initial_electrical_power, getattr(propulsor, 'design_power_offtake', 0.0))
+
+                if initial_electrical_power == 0.0:
+                    for network in segment.analyses.vehicle.networks:
+                        for system in network.systems:
+                            if system.active and hasattr(system, 'power_draw'):
+                                initial_electrical_power += system.power_draw
 
                 if initial_electrical_power == 0.0:
                     initial_electrical_power = 1000.0
 
+                # power magnitude, never negative; finite upper bound avoids runaway steps
+                upper_electrical_power = max(initial_electrical_power, 1000.0) * 100.
+
                 segment.state.unknowns.network['electrical_power']              = initial_electrical_power * ones_row(1)
                 segment.state.residuals.network['electrical_power']             = 0.     * ones_row(1)
-                segment.state.unknowns_upper_bounds.network['electrical_power'] =  np.inf * ones_row(1)
-                segment.state.unknowns_lower_bounds.network['electrical_power'] = -np.inf * ones_row(1)
+                segment.state.unknowns_upper_bounds.network['electrical_power'] = upper_electrical_power * ones_row(1)
+                segment.state.unknowns_lower_bounds.network['electrical_power'] = 0.     * ones_row(1)
                 segment.state.number_of_network_unknowns  += 1
                 segment.state.number_of_network_residuals += 1
 

@@ -220,8 +220,6 @@ def compute_operating_empty_weight(vehicle,settings=None):
     output.empty.propulsion.fuel_tanks         = W_energy_network.W_tanks
     output.empty.propulsion.electrical_cabling = 0
     output.empty.propulsion.thermal_management = 0
-    output.empty.propulsion.fuel_lines         = W_energy_network.W_fuel_lines
-    output.empty.propulsion.pumps              = W_energy_network.W_pumps
     output.empty.propulsion.fuel_cells         = W_energy_network.W_fuel_cells
 
     ##-------------------------------------------------------------------------------                 

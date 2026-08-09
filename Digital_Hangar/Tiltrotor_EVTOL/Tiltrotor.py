@@ -21,7 +21,7 @@ import os
 def main():
     
     # Step 1: design a vehicle
-    redesign_rotors = True
+    redesign_rotors = False
     vehicle  = vehicle_setup(redesign_rotors)
 
     try:

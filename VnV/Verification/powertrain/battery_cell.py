@@ -12,7 +12,9 @@ from RCAIDE.Framework.Core                                            import Uni
 from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common       import size_module_from_energy_and_power, find_mass_gain_rate, find_total_mass_gain, find_ragone_properties
 from RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Aluminum_Air import * 
 from RCAIDE.Framework.Mission.Common                                  import Conditions
-from RCAIDE.Library.Plots                                             import * 
+from RCAIDE.Library.Plots                                             import *
+from RCAIDE.Input_Output                                              import load as load_results
+from RCAIDE.Input_Output                                              import save as save_results
 
 # package imports  
 import numpy as np
@@ -37,22 +39,24 @@ import time
 #  REGRESSION
 # ----------------------------------------------------------------------------------------------------------------------  
 
-def main(): 
+def main():
     ti = time.time()
-    Ereq                           = 3000*Units.Wh  
-    Preq                           = 2000.  
+    Ereq                           = 3000*Units.Wh
+    Preq                           = 2000.
+    # make true only when regenerating truth values, should be left false for regression
+    update_regression_values       = False
 
-    # Lithium Air Battery Test 
+    # Lithium Air Battery Test
     lithium_air_battery_test(Ereq,Preq)
-    
-    # Aluminum Air Battery Test 
+
+    # Aluminum Air Battery Test
     aluminum_air_battery_test(Ereq,Preq)
-    
-    # Lithium Sulfur Test 
+
+    # Lithium Sulfur Test
     lithium_sulphur_battery_test(Ereq,Preq)
-        
+
     # Lithium-Ion Test
-    lithium_ion_battery_test()
+    lithium_ion_battery_test(update_regression_values)
 
     elapsed_time = time.time() - ti
     elapsed_time_min = elapsed_time / 60
@@ -83,16 +87,14 @@ def lithium_sulphur_battery_test(Ereq,Preq):
     return 
 
 
-def lithium_ion_battery_test():    
-    
+def lithium_ion_battery_test(update_regression_values=False):
+
     # Operating conditions for battery p
-    curr                  = [1.5,3]  
-    C_rat                 = [0.5,1]  
-    marker_size           = 5 
-    mAh                   = np.array([3800,2600]) 
-    V_ul_true             = np.array([[3.175511494116564, 3.14117403134389],[3.175511494116564,3.14117403134389]])
-    bat_temp_true         =  np.array([[309.51628620872344,304.7562500891714], [309.51628620872344,304.7552852790537]])
-    # PLot parameters 
+    curr                  = [1.5,3]
+    C_rat                 = [0.5,1]
+    marker_size           = 5
+    mAh                   = np.array([3800,2600])
+    # PLot parameters
     marker                = ['s' ,'o' ,'P']
     linestyles            = ['-','--',':']
     linecolors            = cm.inferno(np.linspace(0.2,0.8,3))     
@@ -128,23 +130,45 @@ def lithium_ion_battery_test():
             # mission analysis 
             results = missions.base_mission.evaluate()  
             
-            # Voltage Cell Regression
-            V_ul        = results.segments[0].conditions.energy.sources['battery_pack'][battery_chemistry[i]].cell.voltage_under_load[2][0]
-            print('Under load voltage: ' + str(V_ul))
-            V_ul_diff   = np.abs(V_ul - V_ul_true[j,i])
-            print('Under load voltage difference')
-            print(V_ul_diff) 
-            assert np.abs((V_ul_diff)/V_ul_true[j,i]) < 1e-6  
-           
-            # Temperature Regression
-            bat_temp        = results.segments[1].conditions.energy.sources['battery_pack'][battery_chemistry[i]].cell.temperature[2][0]
-            print('Cell temperature: ' + str(bat_temp))
-            bat_temp_diff   = np.abs(bat_temp  - bat_temp_true[j,i]) 
-            print('cell temperature difference')
-            print(bat_temp_diff)
-            assert np.abs((bat_temp_diff)/bat_temp_true[j,i]) < 1e-6
-       
-            for segment in results.segments.values(): 
+            # Voltage/Temperature Regression -- checked over the full time history of
+            # every segment (Recharge, Discharge_1, Discharge_2), not just a single
+            # sample point, so a bug affecting only part of a segment's evolution
+            # (e.g. a discharge segment that starts correctly but stalls partway
+            # through) can't slip past the check.
+            regression_data = Data()
+            for tag in ['recharge', 'discharge_1', 'discharge_2']:
+                segment = results.segments[tag]
+                regression_data[tag] = Data(
+                    voltage_under_load = segment.conditions.energy.sources['battery_pack'].voltage_under_load[:,0],
+                    cell_temperature   = segment.conditions.energy.sources['battery_pack'][battery_chemistry[i]].cell.temperature[:,0],
+                )
+
+            res_path = os.path.join(base_dir, f'battery_cell_{battery_chemistry[i]}_{electrical_config[j]}.res')
+            if update_regression_values:
+                save_results(regression_data, res_path)
+            truth_data = load_results(res_path)
+
+            for tag in ['recharge', 'discharge_1', 'discharge_2']:
+                for field in ['voltage_under_load', 'cell_temperature']:
+                    computed = regression_data[tag][field]
+                    truth    = np.array(truth_data[tag][field])
+                    error    = np.max(np.abs((computed - truth) / truth))
+                    print(f'{tag} {field} max relative error: {error}')
+                    assert error < 1e-6, f'{tag} {field} regression failed (max relative error {error})'
+
+            # Sanity check: discharge segments must actually discharge the battery.
+            # A vehicle-config plumbing bug can silently leave a discharge segment
+            # evaluating with a zero (or otherwise wrong) power draw, in which case
+            # it converges trivially with state_of_charge ~constant instead of
+            # decreasing -- the V_ul/bat_temp regressions above are read from the
+            # Recharge/Discharge_1 endpoints and are not sensitive enough to always
+            # catch that on their own.
+            for discharge_tag in ['discharge_1', 'discharge_2']:
+                soc = results.segments[discharge_tag].conditions.energy.sources['battery_pack'][battery_chemistry[i]].cell.state_of_charge[:,0]
+                soc_drop = soc[0] - soc[-1]
+                assert soc_drop > 0.05, f'{discharge_tag} state_of_charge barely changed ({soc[0]} -> {soc[-1]}); battery is not actually discharging'
+
+            for segment in results.segments.values():
                 volts         = segment.conditions.energy.sources['battery_pack'].voltage_under_load[:,0]
                 SOC           = segment.conditions.energy.sources['battery_pack'][battery_chemistry[i]].cell.state_of_charge[:,0]
                 cell_temp     = segment.conditions.energy.sources['battery_pack'][battery_chemistry[i]].cell.temperature[:,0]

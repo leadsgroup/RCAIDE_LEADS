@@ -42,8 +42,7 @@ def main():
     ti = time.time()
     
     propeller_test()
-    rotor_test(new_regression=True)
-    
+    rotor_test(new_regression=False) 
 
     elapsed_time = time.time() - ti
     elapsed_time_min = elapsed_time / 60

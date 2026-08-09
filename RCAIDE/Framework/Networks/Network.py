@@ -14,7 +14,8 @@ from RCAIDE.Library.Methods.Powertrain.Converters.Generator.compute_generator_pe
 from RCAIDE.Library.Components import Component
 
 # python imports 
-import numpy as np
+import numpy as np 
+import scipy.linalg as sla
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Network
@@ -120,9 +121,11 @@ class Network(Component):
         Where phi and psi are set per mission segment
     RCAIDE.Library.Mission.Common.Pre_Process.energy
         Topology analysis and phi/psi resolution
-    RCAIDE.Framework.Networks.Fuel
+    RCAIDE.Library.Framework.Networks.Fuel
         Fuel network class
-    RCAIDE.Framework.Networks.Electric
+    RCAIDE.Library.Framework.Networks.Fuel_Cell
+        Fuel_Cell network class
+    RCAIDE.Library.Framework.Networks.Electric
         All-Electric network class
     """
 
@@ -316,11 +319,7 @@ class Network(Component):
         # coolant loop by the battery modules it cools) are already computed.
         for distributor in distributors:
             if distributor.active:
-                inputs, outputs = distributor.compute_performance(state,network)
-                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
-                net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
-                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
-                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)
+                distributor.compute_performance(state,network)
 
         # Final aggregation for system level performance
         conditions.energy.total_force_vector       = total_thrust
@@ -358,9 +357,9 @@ class Network(Component):
         """Unpacks the unknowns set in the mission to be available for the mission.
     
         Assumptions: 
-        See the matching comment in Network.evaluate(): a propulsor
-        can only be treated as identical to the most recently
-        unpacked one if they also share the same distributor group.
+                    # See the matching comment in Network.evaluate(): a propulsor
+                    # can only be treated as identical to the most recently
+                    # unpacked one if they also share the same distributor group.
         
         Source:
         N/A

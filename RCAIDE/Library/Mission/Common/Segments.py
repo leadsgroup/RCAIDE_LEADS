@@ -36,7 +36,10 @@ def sequential_segments(mission):
     rather than checking the previous segment's convergence via
     ``segment.state.initials`` on the following iteration -- that older
     approach never caught the last segment in the mission, since there is no
-    following iteration to catch it on.
+    following iteration to catch it on. The check reads
+    ``segment.state.numerics.mission_solver.converged``, which always exists
+    (defaulting to ``None``), rather than ``segment.converged``, which segment
+    types with no iterative solver step never set.
     """
     print(r"""
           +----------------------------------------------------+
@@ -74,7 +77,7 @@ def sequential_segments(mission):
             segment.evaluate()
             segment.process.initialize.expand_state = original_expand
 
-            if segment.converged is False:
+            if segment.state.numerics.mission_solver.converged is False:
                 if not error_flag:
                     pbar.colour = "red"
                     error_flag = True

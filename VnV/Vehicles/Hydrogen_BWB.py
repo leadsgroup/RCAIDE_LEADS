@@ -7,8 +7,9 @@
 # RCAIDE imports 
 import RCAIDE
 from RCAIDE.Framework.Core import Units, Data       
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan      import design_turbofan    
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan      import design_turbofan
 from RCAIDE.Library.Methods.Powertrain.Converters.Pump          import design_pump
+from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common import design_fuel_cell
 from RCAIDE.Library.Plots                                       import *     
  
 # python imports 
@@ -392,9 +393,15 @@ def vehicle_setup() :
     #-------------------------------------------------------------------------------------------------------------------------
     # Electrical Bus (powers the cryogenic LH2 boost pumps from the engines' IDGs)
     #-------------------------------------------------------------------------------------------------------------------------
-    pump_bus                                    = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
-    pump_bus.tag                                = 'pump_bus'
-    pump_bus.design_voltage                     = 270.0 # V, more-electric-aircraft DC bus
+    electrical_line                                    = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
+    electrical_line.tag                                = 'electrical_line'
+    electrical_line.design_voltage                     = 270.0 # V, more-electric-aircraft DC bus
+
+    #-------------------------------------------------------------------------------------------------------------------------
+    # Systems Bus (avionics/flight controls/hydraulics/ECS/instruments, powered by fuel_cell_apu_*)
+    #-------------------------------------------------------------------------------------------------------------------------
+    systems_bus                                        = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
+    systems_bus.tag                                     = 'systems_bus'
 
     #------------------------------------------------------------------------------------------------------------------------- 
     # Fuel Distribution Line 
@@ -504,12 +511,12 @@ def vehicle_setup() :
     turbofan1.fan_nozzle                           = fan_nozzle
 
     # Integrated Drive Generator (IDG) -- shaft-driven off the low-pressure spool,
-    # supplies electrical power to the cryogenic LH2 pumps via pump_bus
+    # supplies electrical power to the cryogenic LH2 pumps via electrical_line
     idg1                                            = RCAIDE.Library.Components.Powertrain.Converters.Generator()
     idg1.tag                                        = 'turbofan1_idg'
     idg1.efficiency                                 = 0.95
     idg1.voltage_type                               = 'DC'
-    idg1.nominal_voltage                            = pump_bus.design_voltage
+    idg1.nominal_voltage                            = electrical_line.design_voltage
     idg1.power_split_ratio                          = 0.5 # shares total pump electrical demand with turbofan2's IDG
     turbofan1.integrated_drive_generator            = idg1
     turbofan1.design_power_offtake                  = 3E5 # W, matches pump design_power_rating
@@ -636,53 +643,66 @@ def vehicle_setup() :
 
     #------------------------------------------------------------------------------------------------------------------------------------
     # Assign distributors to propulsors and converters
-    turbofan1.assigned_distributors  = [[fuel_line.tag, pump_bus.tag]]
-    turbofan2.assigned_distributors  = [[fuel_line.tag, pump_bus.tag]]
+    turbofan1.assigned_distributors  = [[fuel_line.tag, electrical_line.tag]]
+    turbofan2.assigned_distributors  = [[fuel_line.tag, electrical_line.tag]]
 
     ##-------------------------------------------------------------------------------------------------------------------------
-    ##  Systems
-    ##-------------------------------------------------------------------------------------------------------------------------   
+    ##  Systems (powered from systems_bus)
+    ##-------------------------------------------------------------------------------------------------------------------------
     avionics =  RCAIDE.Library.Components.Powertrain.Systems.Avionics()
     avionics.origin                   = [[1,0,0]]
+    avionics.assigned_distributors     = [[systems_bus.tag]]
     net.systems.append(avionics)
 
     flight_controls =  RCAIDE.Library.Components.Powertrain.Systems.Flight_Controls()
     flight_controls.origin            = [[0.5 * vehicle.wings.main_wing.chords.root,0,0]]
+    flight_controls.assigned_distributors = [[systems_bus.tag]]
     net.systems.append(flight_controls)
-
-    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
-    auxillary_power_unit.tag= 'fuel_cell_apu_0'
-    auxillary_power_unit.mass_properties.mass = 235.8
-    auxillary_power_unit.origin       = [[0.76 * vehicle.wings.main_wing.chords.root,0,0]]
-    net.systems.append(auxillary_power_unit)
-
-    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
-    auxillary_power_unit.tag= 'fuel_cell_apu_1'
-    auxillary_power_unit.mass_properties.mass = 235.8
-    auxillary_power_unit.origin       = [[0.76 * vehicle.wings.main_wing.chords.root,-2,0]]
-    net.systems.append(auxillary_power_unit)
-
-    auxillary_power_unit =  RCAIDE.Library.Components.Powertrain.Systems.Auxiliary_Power_Unit()
-    auxillary_power_unit.origin       = [[0.76 * vehicle.wings.main_wing.chords.root,2,0]]
-    auxillary_power_unit.mass_properties.mass = 235.8
-    auxillary_power_unit.tag= 'fuel_cell_apu_2'
-    net.systems.append(auxillary_power_unit)
 
     electrical =  RCAIDE.Library.Components.Powertrain.Systems.Electrical()
     electrical.origin                 = [[0.2 * vehicle.wings.main_wing.chords.root,0,0]]
+    electrical.assigned_distributors  = [[systems_bus.tag]]
     net.systems.append(electrical)
 
     hydraulics =  RCAIDE.Library.Components.Powertrain.Systems.Hydraulics()
     hydraulics.origin                 = [[0.70 * vehicle.wings.main_wing.chords.root,0,0]]
+    hydraulics.assigned_distributors  = [[systems_bus.tag]]
     net.systems.append(hydraulics)
 
     environmental_controls =  RCAIDE.Library.Components.Powertrain.Systems.Environmental_Controls()
     environmental_controls.origin     = [[0.2 * vehicle.wings.main_wing.chords.root,0,0]]
+    environmental_controls.assigned_distributors = [[systems_bus.tag]]
     net.systems.append(environmental_controls)
 
     instruments =  RCAIDE.Library.Components.Powertrain.Systems.Instruments()
     instruments.origin                = [[1,0,0]]
-    net.systems.append(instruments)    
+    instruments.assigned_distributors = [[systems_bus.tag]]
+    net.systems.append(instruments)
+
+    ##-------------------------------------------------------------------------------------------------------------------------
+    ##  Fuel Cell APUs (providers on systems_bus, fed from the shared fuel_line)
+    ##-------------------------------------------------------------------------------------------------------------------------
+    # Systems components can only be consumers, so these are converters instead.
+    # Sized to ~324 kW combined to cover hydraulic + environmental_controls.
+    fuel_cell_apu_origins = [
+        [0.76 * vehicle.wings.main_wing.chords.root, 0, 0],
+        [0.76 * vehicle.wings.main_wing.chords.root, -2, 0],
+        [0.76 * vehicle.wings.main_wing.chords.root, 2, 0],
+    ]
+    for i, origin in enumerate(fuel_cell_apu_origins):
+        fuel_cell_apu                                        = RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack()
+        fuel_cell_apu.tag                                    = f'fuel_cell_apu_{i}'
+        fuel_cell_apu.origin                                 = [origin]
+        fuel_cell_apu.power_split_ratio                      = 1.0/len(fuel_cell_apu_origins)
+        fuel_cell_apu.electrical_configuration.series        = 325
+        fuel_cell_apu.electrical_configuration.parallel      = 1
+        fuel_cell_apu.geometric_configuration.normal_count   = 325
+        fuel_cell_apu.geometric_configuration.parallel_count = 1
+        design_fuel_cell(fuel_cell_apu)
+        fuel_cell_apu.assigned_distributors                  = [[fuel_line.tag, systems_bus.tag]]
+        net.converters.append(fuel_cell_apu)
+
+    systems_bus.design_voltage = fuel_cell_apu.voltage
 
     #------------------------------------------------------------------------------------------------------------------------- 
     #  PUMPS      
@@ -701,7 +721,7 @@ def vehicle_setup() :
     starboard_pump.design_outlet_pressure          = 35000000 # Pascals (350 bar)
     design_pump(starboard_pump)
     starboard_pump.origin                          = [[27 * 36  /35,1,0]] # Location checked
-    starboard_pump.assigned_distributors           = [[fuel_line.tag, pump_bus.tag]]
+    starboard_pump.assigned_distributors           = [[fuel_line.tag, electrical_line.tag]]
     starboard_pump.identical_converters            = False # force independent compute_performance per pump
     net.converters.append(starboard_pump)
 
@@ -720,9 +740,10 @@ def vehicle_setup() :
     net.converters.append(reserve_pump)
 
     #------------------------------------------------------------------------------------------------------------------------------------
-    # Append fuel line and pump bus to network
+    # Append fuel line and electrical buses to network
     net.distributors.append(fuel_line)
-    net.distributors.append(pump_bus)
+    net.distributors.append(electrical_line)
+    net.distributors.append(systems_bus)
 
     # Append energy network to aircraft 
     vehicle.append_energy_network(net)  

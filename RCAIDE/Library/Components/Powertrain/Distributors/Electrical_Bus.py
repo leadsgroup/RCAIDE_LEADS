@@ -184,6 +184,12 @@ class Electrical_Bus(Distributor):
         generator-only bus keeps whatever `design_voltage` the vehicle definition
         set explicitly.
 
+        An IDG/IDM's wiring is read from its parent propulsor (matching
+        analyze_topology's convention), not its own assigned_distributors, which
+        is always None. Multiple IDGs on one bus carry the same shared target in
+        their own design_power (not a per-engine portion), so they're combined
+        with max(), not summed.
+
         Parameters
         ----------
         network : Network
@@ -218,12 +224,11 @@ class Electrical_Bus(Distributor):
                                             RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator)):
                     self.design_power  += generator_design_power(converter)
 
-        # Propulsor-integrated generators (e.g. Turbofan/Turboprop integrated_drive_generator)
-        # aren't in network.converters, so check them separately.
+        # Propulsor-integrated generators aren't in network.converters, so check separately.
         for propulsor in network.propulsors:
             idg = getattr(propulsor, 'integrated_drive_generator', None)
-            if idg is not None and assigned_here(idg):
-                self.design_power += generator_design_power(idg)
+            if idg is not None and assigned_here(propulsor):
+                self.design_power = max(self.design_power, generator_design_power(idg))
 
         size_electrical_cable(self)
         return

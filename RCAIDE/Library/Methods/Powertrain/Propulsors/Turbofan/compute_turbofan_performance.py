@@ -456,6 +456,10 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
     hpc_conditions.omega        = high_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle 
   
     # store data
+    fan_res         = Data(
+                angular_velocity   = fan.angular_velocity
+    )
+
     core_nozzle_res = Data(
                 exit_static_temperature             = core_nozzle_conditions.outputs.static_temperature,
                 exit_static_pressure                = core_nozzle_conditions.outputs.static_pressure,
@@ -472,13 +476,9 @@ def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[
                 exit_velocity                       = fan_nozzle_conditions.outputs.velocity
                 )
                 
-    lpc_res = Data(
-                angular_velocity    = fan_conditions.omega, 
-            )
-    
     noise_conditions.fan_nozzle                      = fan_nozzle_res
-    noise_conditions.core_nozzle                     = core_nozzle_res  
-    noise_conditions.low_pressure_spool              = lpc_res
+    noise_conditions.core_nozzle                     = core_nozzle_res
+    noise_conditions.fan                             = fan_res
     stored_results_flag                              = True
     stored_propulsor_tag                             = turbofan.tag  
     

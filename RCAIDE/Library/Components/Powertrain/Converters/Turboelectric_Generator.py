@@ -61,7 +61,7 @@ class Turboelectric_Generator(Converter):
         self.generator                 = None
         self.gearbox                   = Data()
         self.gearbox.gear_ratio        = None
-        self.reverse_mode_computation       = False
+        self.reverse_mode_computation  = False
         self.power_split_ratio         = 1.0    # fraction of the electrical demand this generator supplies, for multiple identical generators sharing a bus
         self.assigned_converters       = Data()
         

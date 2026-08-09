@@ -12,15 +12,14 @@ from RCAIDE.Framework.Optimization.Packages.scipy import scipy_setup
 from RCAIDE.Framework.Optimization.Common  import Nexus
 from RCAIDE.Framework.Analyses.Process            import Process
 
-import scipy 
+import scipy
 import scipy.optimize
-import numpy as np 
-import sys 
-import os 
-
+import numpy as np
+import sys
+import os
 
 # ----------------------------------------------------------------------------------------------------------------------
-# converge root
+# converge 
 # ---------------------------------------------------------------------------------------------------------------------- 
 def converge(segment):
     """Interfaces the mission a root finder algorithm.
@@ -98,14 +97,26 @@ def converge(segment):
                                  ' to be equal to the number of residuals (equations) to use fsolve or switch RCAIDE solver type to "optimize" when defining the segment.'+ \
                                  '\n i.e. numerics.mission_solver.type  = "optimize" ') 
         else:
-            unknowns,infodict,ier,error_message = scipy.optimize.fsolve(iterate_root_finder,
-                                                 unknowns,
-                                                 args   = segment,
+            # scale unknowns/residuals to O(1) before fsolve -- see _magnitude_scale
+            unknown_scale  = _magnitude_scale(unknowns)
+            residual_scale = _magnitude_scale(iterate_root_finder(unknowns, segment))
+
+            def scaled_iterate(x_scaled):
+                return iterate_root_finder(x_scaled * unknown_scale, segment) / residual_scale
+
+            x_scaled,infodict,ier,error_message = scipy.optimize.fsolve(scaled_iterate,
+                                                 unknowns / unknown_scale,
                                                  xtol   = numerics.mission_solver.tolerance,
                                                  maxfev = numerics.mission_solver.max_evaluations,
                                                  epsfcn = numerics.mission_solver.step_size,
                                                  full_output = 1)
-        
+
+            # fsolve's internal trial/Jacobian-probe calls mutate segment.state as a
+            # side effect (via iterate_root_finder), so the last call it happened to
+            # make -- not necessarily the returned root -- is what's left in state.
+            # Re-run at the actual solution to make state consistent with it.
+            scaled_iterate(x_scaled)
+
         if ier !=1:
             mission_converge = False
         else:
@@ -124,7 +135,21 @@ def converge(segment):
         segment.converged = True
                                 
     return
-    
+
+# ----------------------------------------------------------------------------------------------------------------------
+# scaling helper
+# ----------------------------------------------------------------------------------------------------------------------
+def _magnitude_scale(values):
+    """Power-of-10 scale so values/scale lands near O(1) (e.g. 1e5 -> scale=1e5).
+    Unscaled, unknowns/residuals of very different physical magnitude sharing
+    one solver tolerance/step size leave the small ones effectively degenerate,
+    and a Newton step can overshoot by orders of magnitude. Zero entries fall
+    back to scale=1. Mirrors the unknown scaling in add_mission_variables.
+    """
+    factor = np.ceil(np.log10(np.abs(values)))
+    factor[~np.isfinite(factor)] = 0
+    return 10.0 ** factor
+
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  Helper Functions
 # ---------------------------------------------------------------------------------------------------------------------- 
@@ -209,12 +234,16 @@ def add_mission_variables(segment):
         None
     """             
     # -------------------------------------------------------------------------------------------
-    # Step 1: Optimization framework 
+    # Step 1: Optimization framework
     # -------------------------------------------------------------------------------------------
     nexus                        = Nexus()
-    optimization_problem         = Data() 
-    
-    
+    optimization_problem         = Data()
+
+    # Expand state arrays to the segment's control-point count now (rather than
+    # at the original "Step 6" location) so the residual evaluation used below
+    # for constraint scaling sees correctly-sized arrays.
+    segment.process.initialize.expand_state(segment)
+
     ground_seg_flag =  (type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Landing) or\
                        (type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Takeoff) or \
                        (type(segment) == RCAIDE.Framework.Mission.Segments.Ground.Ground)  
@@ -308,25 +337,29 @@ def add_mission_variables(segment):
     new_inputs[:,5]     = units 
     optimization_problem.inputs = np.array(new_inputs,dtype=object)
 
-    # -------------------------------------------------------------------------------------------            
-    # Construct constraints nexus format: Create the equality constraints to the beginning of the
-    # constraints all equality constraints are 0, scale 1, and unitless 
-    # -------------------------------------------------------------------------------------------      
-    new_con = np.reshape(np.tile(np.atleast_2d(np.array([None,None,None,None,None])),len_residuals), (-1, 5))   
+    # -------------------------------------------------------------------------------------------
+    # Construct constraints nexus format: equality constraints, scaled per-residual (see _magnitude_scale)
+    # -------------------------------------------------------------------------------------------
+    segment.process.iterate(segment)
+    initial_residuals = segment.state.residuals.mission.pack_array()
+    if segment.state.numerics.network_solver.type is None and not single_pt_seg:
+        initial_residuals = np.concatenate([initial_residuals, segment.state.residuals.network.pack_array()])
+    residual_scale = _magnitude_scale(initial_residuals)
+
+    new_con = np.reshape(np.tile(np.atleast_2d(np.array([None,None,None,None,None])),len_residuals), (-1, 5))
     con_len_strings = np.tile('Residual_', len_residuals)
     con_numbers     = np.linspace(1,len_residuals,len_residuals,dtype=np.int16)
     con_names       = np.char.add(con_len_strings,np.array(con_numbers).astype(str))
     equals          = np.broadcast_to('=',(len_residuals,))
     zeros           = np.zeros(len_residuals)
-    ones            = np.ones(len_residuals)
-    
+
     # Step 3.2 Add in the new constraints
     new_con[:,0]    = con_names
     new_con[:,1]    = equals
-    new_con[:,2]    = zeros  
-    new_con[:,3]    = ones
+    new_con[:,2]    = zeros
+    new_con[:,3]    = residual_scale
     new_con[:,4]    = 1*Units.less
-    optimization_problem.constraints =  np.array(new_con,dtype=object)            
+    optimization_problem.constraints =  np.array(new_con,dtype=object)
 
     # -------------------------------------------------------------------------------------------      
     # Construct Aliases nexus format 
@@ -447,11 +480,8 @@ def add_mission_variables(segment):
     else:
         raise Exception('undefined objective function')
     
-    # append aliases 
-    optimization_problem.aliases = aliases        
-    
-    # Step 6: Expand Rows
-    segment.process.initialize.expand_state(segment)
+    # append aliases
+    optimization_problem.aliases = aliases
 
     # Step 7: Append segment
     nexus.segment = segment
