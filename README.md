@@ -270,6 +270,20 @@ RCAIDE is available on GNU/Linux, MacOS, and Windows. We strongly recommend inst
 * Using pip: `pip install RCAIDE-LEADS`
 * Using conda: coming soon
 
+> **pip version requirement:** pip 26 or newer is required. Run `pip install --upgrade pip` before installing RCAIDE to avoid a `ModuleNotFoundError: No module named 'RCAIDE.Input_Output'` error.
+
+### Installing the RCAIDE GUI
+
+The RCAIDE desktop GUI must be installed in the **same Python environment** as RCAIDE:
+
+```bash
+# Activate your RCAIDE environment first, then:
+pip install RCAIDE-GUI
+rcaide-gui
+```
+
+If RCAIDE and RCAIDE-GUI are in different environments, the GUI will fail to start and images will not load. See the [full installation guide](https://www.docs.rcaide.leadsresearchgroup.com/install.html) for details.
+
 ## Tutorials
 [See Tutorials here](https://docs.rcaide.leadsresearchgroup.com/tutorials.html)
 

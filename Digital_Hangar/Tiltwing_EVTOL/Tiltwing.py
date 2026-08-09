@@ -60,36 +60,6 @@ def vehicle_setup(redesign_rotors = False):
     vehicle.number_of_passengers                = 1
 
     #------------------------------------------------------------------------------------------------------------------------------------
-    # ##################################################### Landing Gear ################################################################    
-    #------------------------------------------------------------------------------------------------------------------------------------ 
-    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
-    main_gear.tire_diameter                  = 6  *  Units.inches 
-    main_gear.rim_diameter                   = 3  *  Units.inches 
-    main_gear.tire_width                     = 6  *  Units.inches 
-    main_gear.strut_length                   = 12  * Units.ft 
-    main_gear.wheels                         = 1   
-    main_gear.number_of_gear_types_in_tandem = 1
-    main_gear.number_of_wheels_in_gear_type  = 1
-    main_gear.origin                         = [[4.0,0, 0]]
-    main_gear.fairing                        = True
-    main_gear.xz_plane_symmetric             = True
-    main_gear.gear_extended                  = True
-    vehicle.append_component(main_gear)  
-
-    nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
-    nose_gear.tire_diameter                  =  5 *  Units.inches   
-    nose_gear.rim_diameter                   =  3 *  Units.inches 
-    nose_gear.tire_width                     =  5 *  Units.inches 
-    nose_gear.strut_length                   =  6.* Units.ft 
-    nose_gear.wheels                         = 1
-    nose_gear.origin                         = [[0.5,0, 0]]
-    nose_gear.fairing                        = True 
-    nose_gear.gear_extended                  = True
-    nose_gear.number_of_gear_types_in_tandem = 1
-    nose_gear.number_of_wheels_in_gear_type  = 1    
-    vehicle.append_component(nose_gear)    
-
-    #------------------------------------------------------------------------------------------------------------------------------------
     # ######################################################## Wings ####################################################################  
     #------------------------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------
