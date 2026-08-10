@@ -112,7 +112,9 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, network):
     psi = state.conditions.energy.battery_fuel_cell_power_split_ratio[electrical_distributor_tag]
     total_electrical_demand = state.conditions.energy.distributors[electrical_distributor_tag].outputs.power.electrical
     P_stack                     = total_electrical_demand * fuel_cell_stack.power_split_ratio * (1. - psi)
-    n_ctrl_pts                  = state.numerics.number_of_control_points
+    # P_stack's own row count (not state.numerics.number_of_control_points) since single-point
+    # evaluation contexts (e.g. estimate_take_off_field_length) can size it differently.
+    n_ctrl_pts                  = P_stack.shape[0]
 
     for t_idx in range(n_ctrl_pts):
         P_cell = P_stack[t_idx, 0] / n_total

@@ -146,6 +146,7 @@ class Liquid_Natural_Gas(Propellant):
         self.molecular_weight       = 16.04   # [g/mol] pure methane (CH4) approximation
         self.hydrogen_mass_fraction = 0.251   # [-]    mass fraction of hydrogen content (CH4)
         self.carbon_mass_fraction   = 0.749   # [-]    mass fraction of carbon content (CH4)
+        self.kinematic_viscosity    = 1.9e-7  # [m^2/s] kinematic viscosity of liquid methane near its normal boiling point (~111 K)
 
         self.stoichiometric_fuel_air_ratio = 1/17.2   # [-]    stoichiometric fuel-to-air ratio for methane combustion
         self.heat_of_vaporization          = 0   # [J/kg] heat of vaporization at standard conditions (placeholder)

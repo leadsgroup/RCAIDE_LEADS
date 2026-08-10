@@ -117,6 +117,7 @@ class Liquid_Petroleum_Gas(Propellant):
         self.molecular_weight              = 49.7      # [g/mol] 60/40 propane/butane mass blend
         self.hydrogen_mass_fraction        = 0.179     # [-] mass fraction of hydrogen content
         self.carbon_mass_fraction          = 0.821     # [-] mass fraction of carbon content
+        self.kinematic_viscosity           = 2.0e-7    # [m^2/s] kinematic viscosity of liquid propane/butane blend at ~20 C
 
         self.stoichiometric_fuel_air_ratio = 1/15.6    # [-] Stoichiometric Fuel to Air ratio, 60/40 propane/butane blend
         self.heat_of_vaporization          = 0         # [J/kg] Heat of vaporization at standard conditions

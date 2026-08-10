@@ -147,6 +147,14 @@ def compute_fuel_system_weight(vehicle,ref_propulsor):
                 WPUMP += converter.mass_properties.mass
             elif issubclass(type(converter),RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack):
                 WFC += converter.mass_properties.mass
+            elif issubclass(type(converter),RCAIDE.Library.Components.Powertrain.Converters.Reformer_Fuel_Cell):
+                # Reformer_Fuel_Cell wraps a fuel cell rather than subclassing it, so it isn't
+                # caught by the Generic_Fuel_Cell_Stack check above; the reformer itself has no
+                # mass model yet and contributes 0.
+                if converter.fuel_cell is not None:
+                    WFC += converter.fuel_cell.mass_properties.mass
+                if converter.reformer is not None:
+                    WFC += converter.reformer.mass_properties.mass
 
     return WTANK, WLINE, WPUMP, WFC
 
