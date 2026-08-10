@@ -370,20 +370,22 @@ def payload_range_mission_setup(analyses):
     # ------------------------------------------------------------------
 
     segment = Segments.Descent.Constant_Speed_Constant_Rate(base_segment)
-    segment.tag  = "approach" 
-    segment.analyses.extend( analyses.landing ) 
+    segment.tag  = "approach"
+    segment.analyses.extend( analyses.landing )
     segment.altitude_end                                             = 2000 * Units.ft
     segment.air_speed                                                = 225.0 * Units['knots']
-    segment.descent_rate                                             = 650  * Units['fpm']  
-             
-    # define flight dynamics to model              
-    segment.flight_dynamics.force_x                                  = True
-    segment.flight_dynamics.force_z                                  = True     
+    segment.descent_rate                                             = 650  * Units['fpm']
 
-    # define flight controls 
-    segment.assigned_control_variables.throttle.active               = True           
-    segment.assigned_control_variables.throttle.assigned_propulsors  = [['propulsor_1','propulsor_2']] 
-    segment.assigned_control_variables.pitch_angle.active             = True                
+    # define flight dynamics to model
+    segment.flight_dynamics.force_x                                  = True
+    segment.flight_dynamics.force_z                                  = True
+
+    # define flight controls
+    segment.assigned_control_variables.throttle.active               = True
+    segment.assigned_control_variables.throttle.assigned_propulsors  = [['propulsor_1','propulsor_2']]
+    segment.assigned_control_variables.throttle.initial_guess_values  = [[0.2]]
+    segment.assigned_control_variables.pitch_angle.active             = True
+    segment.assigned_control_variables.pitch_angle.initial_guess_values = [[2.0 * Units.deg]]
 
     mission.append_segment(segment)
 

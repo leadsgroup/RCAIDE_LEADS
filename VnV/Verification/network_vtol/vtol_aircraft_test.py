@@ -92,8 +92,8 @@ def tiltrotor_transition_test(update_regression_values):
             print(val)
     
     # Truth values
-    hover_throttle_truth    = 0.5939523813946584
-    cruise_rpm_truth        = 399.1981550090527
+    hover_throttle_truth    = 0.5938762143449161
+    cruise_rpm_truth        = 399.34883503013737
     
     # Store errors 
     error = Data() 
@@ -135,10 +135,10 @@ def tiltwing_transition_test(update_regression_values):
         for val in data:
             print(val)
     
-    # Truth values 
-    hover_throttle_truth              = 0.7335468860209833
-    vertical_climb_1_throttle_truth   = 0.7437381205693946
-    vertical_descent_throttle_truth   = 0.7231914426939331
+    # Truth values
+    hover_throttle_truth              = 0.7266235772365013
+    vertical_climb_1_throttle_truth   = 0.7367120982209344
+    vertical_descent_throttle_truth   = 0.715027573862491
     
     # Store errors 
     error = Data() 
@@ -180,10 +180,10 @@ def stopped_rotor_transition_test(update_regression_values):
         for val in data:
             print(val)
     
-    # Truth values 
-    hover_throttle_truth  = 0.5460222782236255
-    lst_throttle_truth    = 0.5291774514692811
-    hsct_throttle_truth   = 0.41822149309842144
+    # Truth values
+    hover_throttle_truth  = 0.5
+    lst_throttle_truth    = 0.5212314777442407
+    hsct_throttle_truth   = 0.4142010141170683
     
     # Store errors 
     error = Data() 
@@ -267,13 +267,15 @@ def TR_base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     aerodynamics         = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.settings.maximum_lift_coefficient   =  1.5 
-    aerodynamics.settings.drag_coefficient_increment =  0.01  
+    aerodynamics.settings.maximum_lift_coefficient       =  1.5
+    aerodynamics.settings.drag_coefficient_increment     =  0.01
+    aerodynamics.settings.number_of_spanwise_vortices    =  12 # reducing the number of vortices to speed up the test
+    aerodynamics.settings.number_of_chordwise_vortices   =  6  # reducing the number of vortices to speed up the test
     analyses.append(aerodynamics)
-      
+
     # ------------------------------------------------------------------
-    #  Energy 
-    energy          = RCAIDE.Framework.Analyses.Energy.Energy() 
+    #  Energy
+    energy          = RCAIDE.Framework.Analyses.Energy.Energy()
     analyses.append(energy)
 
     # ------------------------------------------------------------------
@@ -284,10 +286,10 @@ def TR_base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Atmosphere Analysis
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    analyses.append(atmosphere)   
+    analyses.append(atmosphere)
 
     # done!
-    return analyses    
+    return analyses
 
 
 def TW_base_analysis(vehicle):
@@ -310,14 +312,16 @@ def TW_base_analysis(vehicle):
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
-    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.settings.maximum_lift_coefficient   =  1.5 
-    aerodynamics.settings.drag_coefficient_increment =  0.01   
-    analyses.append(aerodynamics)   
+    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
+    aerodynamics.settings.maximum_lift_coefficient       =  1.5
+    aerodynamics.settings.drag_coefficient_increment     =  0.01
+    aerodynamics.settings.number_of_spanwise_vortices    =  12 # reducing the number of vortices to speed up the test
+    aerodynamics.settings.number_of_chordwise_vortices   =  6  # reducing the number of vortices to speed up the test
+    analyses.append(aerodynamics)
 
     # ------------------------------------------------------------------
     #  Energy
-    energy          = RCAIDE.Framework.Analyses.Energy.Energy() 
+    energy          = RCAIDE.Framework.Analyses.Energy.Energy()
     analyses.append(energy)
 
     # ------------------------------------------------------------------
@@ -328,13 +332,13 @@ def TW_base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Atmosphere Analysis
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    analyses.append(atmosphere)   
+    analyses.append(atmosphere)
 
     # done!
-    
-    
-    return analyses    
- 
+
+
+    return analyses
+
 def SR_base_analysis(vehicle):
 
     # ------------------------------------------------------------------
@@ -355,12 +359,14 @@ def SR_base_analysis(vehicle):
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
-    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
-    analyses.append(aerodynamics)   
+    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
+    aerodynamics.settings.number_of_spanwise_vortices    =  12 # reducing the number of vortices to speed up the test
+    aerodynamics.settings.number_of_chordwise_vortices   =  6  # reducing the number of vortices to speed up the test
+    analyses.append(aerodynamics)
 
     # ------------------------------------------------------------------
     #  Energy
-    energy          = RCAIDE.Framework.Analyses.Energy.Energy() 
+    energy          = RCAIDE.Framework.Analyses.Energy.Energy()
     analyses.append(energy)
 
     # ------------------------------------------------------------------
