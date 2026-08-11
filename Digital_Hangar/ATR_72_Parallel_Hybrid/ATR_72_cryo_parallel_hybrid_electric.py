@@ -589,6 +589,7 @@ def vehicle_setup():
     # Fuel Distribution Line
     #-------------------------------------------------------------------------------------------------------------------------
     fuel_line                                       = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    fuel_line.working_fluid                         = RCAIDE.Library.Attributes.Propellants.Jet_A()
     fuel_line.pipe.rigid_material                  = RCAIDE.Library.Attributes.Materials.Aluminum()
     fuel_line.pipe.flexible_material               = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304()
     fuel_line.pipe.flexible_material_ratio         = 0.25
@@ -604,6 +605,7 @@ def vehicle_setup():
     fuel_line.insulation.diameters.internal        = 0.0
 
     cryo_fuel_line                                  = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    cryo_fuel_line.working_fluid                        = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     cryo_fuel_line.tag                                  = 'cryo_fuel_line'
     cryo_fuel_line.pipe.rigid_material                  = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304()
     cryo_fuel_line.pipe.flexible_material               = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304()
