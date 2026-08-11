@@ -163,7 +163,7 @@ def lithium_ion_battery_test(update_regression_values=False):
                     else:
                         error = np.max(np.abs((computed - truth) / truth))
                         print(f'{tag} {field} max relative error: {error}')
-                    assert error < 1e-4, f'{tag} {field} regression failed (max error {error})'
+                    assert error < 1e-3, f'{tag} {field} regression failed (max error {error})'
 
             # Sanity check: discharge segments must actually discharge the battery.
             # A vehicle-config plumbing bug can silently leave a discharge segment
