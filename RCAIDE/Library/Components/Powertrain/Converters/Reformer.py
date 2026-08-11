@@ -100,7 +100,7 @@ class Reformer(Converter):
         self.design_steam_to_fuel_volumetric_ratio    = 3.7037  # [-] design Q_S / Q_F
         self.design_air_to_fuel_volumetric_ratio      = 2222.2  # [-] design Q_A / Q_F
         self.design_power                             = None
-        self.power_density                            = None
+        self.specific_power                           = None
 
     def append_operating_conditions(self, segment):
         """Attach reformer operating conditions to the segment's energy conditions."""

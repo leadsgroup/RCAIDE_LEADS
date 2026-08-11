@@ -144,6 +144,7 @@ def design_fuel_cell(fuel_cell_stack):
         fuel_cell_stack.voltage                = V_fuel_cell  * series_e
         fuel_cell_stack.maximum_voltage        = V_fuel_cell  * series_e
         fuel_cell_stack.maximum_power          = P_fuel_cell * series_e
+        fuel_cell_stack.design_power           = fuel_cell_stack.maximum_power
         fuel_cell_stack.maximum_current        = fuel_cell_stack.maximum_power / fuel_cell_stack.maximum_voltage
         fuel_cell_stack.maximum_fuel_mass_flow_rate = mdot_H2 * n_total
 
@@ -184,6 +185,7 @@ def design_fuel_cell(fuel_cell_stack):
         fuel_cell_stack.voltage                     = V_fuel_cell  * series_e
         fuel_cell_stack.maximum_voltage             = V_fuel_cell  * series_e
         fuel_cell_stack.maximum_power               = P_fuel_cell * n_total
+        fuel_cell_stack.design_power                = fuel_cell_stack.maximum_power
         fuel_cell_stack.maximum_current             = fuel_cell_stack.maximum_power / fuel_cell_stack.maximum_voltage
         fuel_cell_stack.maximum_fuel_mass_flow_rate = m_dot_H2 * n_total
 

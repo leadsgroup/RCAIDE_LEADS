@@ -57,7 +57,7 @@ class Generic_Fuel_Cell_Stack(Converter):
         self.power_split_ratio                          = 1.0    # fraction of the electrical demand this stack supplies, for multiple stacks sharing a bus
         self.electrical_efficiency                      = 1.0    # DC-DC/inverter efficiency between the stack and the bus
         self.design_power                               = None
-        self.power_density                              = None
+        self.specific_power                             = None
             
         self.length                                     = 0.0
         self.width                                      = 0.0
