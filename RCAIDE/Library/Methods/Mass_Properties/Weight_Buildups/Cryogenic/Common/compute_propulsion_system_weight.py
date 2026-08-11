@@ -146,14 +146,20 @@ def compute_fuel_system_weight(vehicle,ref_propulsor):
             if issubclass(type(converter),RCAIDE.Library.Components.Powertrain.Converters.Pump):
                 WPUMP += converter.mass_properties.mass
             elif issubclass(type(converter),RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack):
+                if converter.mass_properties.mass == 0:
+                    converter.mass_properties.mass = converter.power_density * converter.design_power
                 WFC += converter.mass_properties.mass
             elif issubclass(type(converter),RCAIDE.Library.Components.Powertrain.Converters.Reformer_Fuel_Cell):
                 # Reformer_Fuel_Cell wraps a fuel cell rather than subclassing it, so it isn't
                 # caught by the Generic_Fuel_Cell_Stack check above; the reformer itself has no
                 # mass model yet and contributes 0.
                 if converter.fuel_cell is not None:
+                    if converter.fuel_cell.mass_properties.mass == 0:
+                        converter.fuel_cell.mass_properties.mass = converter.fuel_cell.power_density * converter.fuel_cell.design_power
                     WFC += converter.fuel_cell.mass_properties.mass
                 if converter.reformer is not None:
+                    if converter.reformer.mass_properties.mass == 0:
+                        converter.reformer.mass_properties.mass = converter.reformer.power_density * converter.reformer.design_power
                     WFC += converter.reformer.mass_properties.mass
 
     return WTANK, WLINE, WPUMP, WFC
@@ -221,10 +227,10 @@ def compute_transfer_pump_weight(network, fuel_line,ref_propulsor):
                     delta_pressure = pump.delta_pressure
                     efficiency     = pump.efficiency
 
-                    if fuel.cryogenic:
-                        specific_power_density = 200.  # W/kg -- cryogenic
+                    if pump.specific_power_density != None:
+                        specific_power_density = pump.specific_power_density
                     else:
-                        specific_power_density = 400.  # W/kg -- ambient-temperature
+                        specific_power_density = 15000 # W/kg
 
                     thermal_power_per_N  = reference_sfc * reference_fuel_specific_energy
                     mdot                 = ref_propulsor.design_thrust * thermal_power_per_N / fuel.specific_energy

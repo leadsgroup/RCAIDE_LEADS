@@ -20,9 +20,10 @@ class Cryogenic_Pump(Pump):
         """
         Sets default values for the system attributes.
         """         
-        self.tag                     = 'lh2_pump'
+        self.tag                     = 'cryogenic_pump'
         self.fuel_cell_efficiency    = .7
         self.fuel_cell_flow_rate_multipier = 1/120e6 # Power*1/120MW = additional flow rate
+        self.specific_power_density   = None
 
      
     def compute_performance(self,state,network=None):
@@ -32,16 +33,16 @@ class Cryogenic_Pump(Pump):
         inputs,outputs,stored_results_flag,stored_converter_tag =  compute_cryogenic_pump_performance(self,state,network)
         return inputs,outputs,stored_results_flag,stored_converter_tag
     
-    def append_operating_conditions(self,segment): 
+    def append_operating_conditions(self,segment,network=None): 
         """
-        Adds operating conditions for the avionics system to a mission segment.
+        Adds operating conditions for the cryogenic pump to a mission segment.
 
         Parameters
         ----------
         segment : Data
             Mission segment to which conditions are being added
-        bus : Data
-            Electrical bus supplying power to the avionics
+        network : Data, optional
+            Network supplying the cryogenic pump
         """
-        append_cryogenic_pump_conditions(self,segment) 
+        append_cryogenic_pump_conditions(self,segment,network=network) 
         return 
