@@ -168,38 +168,25 @@ def compute_transfer_pump_weight(network, fuel_line,ref_propulsor):
     idempotent: safe to call again on the next MTOW-iteration pass without appending the pump
     twice into network.converters.
 
-    Design shaft power is estimated at vehicle_setup() time from design_thrust.
+    Design point mostly comes from the pump's own attributes (set at vehicle_setup() time) --
+    this is the same formula formerly in the standalone design_pump(), merged in here since
+    design_pump() only ever ran once, up front, and this function's own mass==0 guard meant its
+    result was silently overridden by design_pump()'s whenever both ran. Mass flow is the
+    exception: rather than an explicit pump.design_mass_flow_rate, it's still estimated from the
+    reference engine's thrust via a reference SFC, as this function did before the merge.
 
     Sizing chain (NASA SP-8107-style): fluid power Pf = mdot*dP/rho, shaft power Ps = Pf/eta.
 
-    specific_power_density (design_power / mass) is selected from the fuel's own type, not
-    passed in:
-        - Cryogenic (Liquid_Hydrogen, Liquid_Natural_Gas): 200 W/kg.
-        - All other fuels (Liquid_Petroleum_Gas, Jet_A, ...): 400 W/kg.
-    Derived from real aircraft electric fuel boost pumps -- Eaton Type 9106 (B777:
-    6.5 kg, 200V/400Hz 3-phase, 9.5A -> ~3.29 kVA apparent power -> ~506 W/kg) and Type 20004
-    (B747: 4.2 kg, 7.8A -> ~2.70 kVA -> ~643 W/kg), derated ~85% for motor efficiency (apparent
-    power overstates shaft power). The ambient-fuel figure uses that directly (400 W/kg); the
-    cryogenic figure is further halved (200 W/kg) as a reasoned penalty for the cryo-compatible
-    double-walled/vacuum-jacketed housing and seals those ambient-temperature Jet-A pumps don't need.
+    power_density (design_power / mass, before the casting_and_mount_factor margin) is a
+    per-vehicle input, not derived -- set pump.power_density explicitly; falls back to
+    15000 W/kg (a generic electric pump figure) if unset. See git history for the previous
+    fuel-type-keyed (200/400 W/kg) SFC-derived default this replaced.
 
     Inputs:
             network                           - the vehicle's Fuel network
             fuel_line                         - Fuel_Line whose auto-created .pump is sized
-            fuel                              - this fuel line's Propellant
-            design_thrust                     - per-engine design thrust                         [N]
-            engine_origins                    - [origin_1, origin_2, ...] of the engines this
-                                                 line feeds, used to place the pump just aft of
-                                                 their midpoint
-            delta_pressure                    - assumed line-loss + NPSH margin                  [Pa]
-            efficiency                        - assumed overall pump efficiency                  [-]
-            reference_sfc                     - calibration point for mass flow rate estimation  [kg/N-s]
-            reference_fuel_specific_energy    - specific energy of the fuel reference_sfc was
-                                                 calibrated against, so other fuels' mass flow
-                                                 rate scales correctly through their OWN
-                                                 specific_energy (e.g. LH2 needs much less fuel
-                                                 mass per unit thrust than LNG/LPG)              [J/kg]
-            aft_offset                        - additional offset aft of the engine midpoint     [m]
+            ref_propulsor                     - reference engine whose sealevel_static_thrust
+                                                 drives the reference-SFC mass-flow estimate
 
     Outputs:
             pump - the sized, positioned, network-wired Pump component
@@ -208,35 +195,45 @@ def compute_transfer_pump_weight(network, fuel_line,ref_propulsor):
             N/A
     """
     reference_sfc = 0.08/3600
-    reference_fuel_specific_energy =48.632e6
+    reference_fuel_specific_energy = 48.632e6
 
     for converter in network.converters:
         if type(converter) is RCAIDE.Library.Components.Powertrain.Converters.Cryogenic_Pump:
             pump = converter
 
-            # check if the pump's mass is defined or not 
-            if pump.mass_properties.mass  == 0.0:
-                 
-            # check to see if the pump is connected to the fuel line
+            # check if the pump's mass is defined or not
+            if pump.mass_properties.mass == 0.0:
+
+                # check to see if the pump is connected to the fuel line
                 if fuel_line.tag in pump.assigned_distributors[0]:
-                    fuel            = fuel_line.working_fluid 
-                    inlet_pressure  = pump.design_inlet_pressure
-                    outlet_pressure = pump.design_outlet_pressure
-                    delta_pressure  = outlet_pressure - inlet_pressure
-                    efficiency      = pump.efficiency
+                    fuel = pump.working_fluid
 
-                    if pump.specific_power_density != None:
-                        specific_power_density = pump.specific_power_density
+                    # pressure rise
+                    pressure_rise = pump.design_outlet_pressure - pump.design_inlet_pressure
+
+                    # mass flow, estimated from reference engine thrust via reference SFC
+                    thermal_power_per_N = reference_sfc * reference_fuel_specific_energy
+                    m_dot               = ref_propulsor.sealevel_static_thrust * thermal_power_per_N / fuel.specific_energy
+
+                    # volumetric flow rate
+                    Q = m_dot / fuel.density
+
+                    # hydraulic power
+                    hydraulic_power = Q * pressure_rise
+
+                    # shaft power
+                    total_efficiency = pump.efficiency * pump.turbine_efficiency
+                    shaft_power      = hydraulic_power / total_efficiency
+
+                    if pump.power_density != None:
+                        power_density = pump.power_density
                     else:
-                        specific_power_density = 15000 # W/kg
+                        power_density = 15000 # W/kg
 
-                    thermal_power_per_N  = reference_sfc * reference_fuel_specific_energy
-                    mdot                 = ref_propulsor.sealevel_static_thrust * thermal_power_per_N / fuel.specific_energy
-                    fluid_power          = mdot * delta_pressure / fuel.density
-                    pump.design_power    = fluid_power / efficiency
-                    pump.mass_properties.mass = pump.design_power / specific_power_density
-                   
-    return  
+                    pump.design_power         = shaft_power
+                    pump.mass_properties.mass = (shaft_power / power_density) * pump.casting_and_mount_factor
+
+    return
 
 
 def compute_nacelle_weight(ref_propulsor,ref_nacelle,NENG):

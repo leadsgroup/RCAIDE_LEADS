@@ -8,7 +8,6 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units, Data       
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan      import design_turbofan
-from RCAIDE.Library.Methods.Powertrain.Converters.Pump          import design_pump
 from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common import design_fuel_cell
 from RCAIDE.Library.Plots                                       import *     
  
@@ -519,7 +518,7 @@ def vehicle_setup() :
     idg1.nominal_voltage                            = electrical_line.design_voltage
     idg1.power_split_ratio                          = 0.5 # shares total pump electrical demand with turbofan2's IDG
     turbofan1.integrated_drive_generator            = idg1
-    turbofan1.design_power_offtake                  = 3E5 # W, matches pump design_power_rating
+    turbofan1.design_power_offtake                  = 3E5 # W
 
     # design turbofan
     design_turbofan(turbofan1)
@@ -711,15 +710,12 @@ def vehicle_setup() :
     starboard_pump                                 = RCAIDE.Library.Components.Powertrain.Converters.Cryogenic_Pump()
     starboard_pump.working_fluid                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     starboard_pump.power_density                   = 15000 # W/kg
-    starboard_pump.pump_efficiency                 = 0.8
+    starboard_pump.efficiency                      = 0.8
     starboard_pump.turbine_efficiency              = 0.92
-    starboard_pump.design_mass_flow_rate           = 1      # kg/s
     starboard_pump.distributor_split               = 0.5
-    starboard_pump.design_power_rating             = 3E5
     starboard_pump.design_inlet_pressure           = 200000 # Pascals (2 bar)
     starboard_pump.tag                             = 'starboard_engine_pump'
     starboard_pump.design_outlet_pressure          = 35000000 # Pascals (350 bar)
-    design_pump(starboard_pump)
     starboard_pump.origin                          = [[27 * 36  /35,1,0]] # Location checked
     starboard_pump.assigned_distributors           = [[fuel_line.tag, electrical_line.tag]]
     starboard_pump.identical_converters            = False # force independent compute_performance per pump

@@ -23,9 +23,11 @@ class Cryogenic_Pump(Pump):
         Sets default values for the system attributes.
         """         
         self.tag                           = 'cryogenic_pump'
-        self.specific_power_density        = None
         self.design_inlet_pressure         = 2 * Units.bar
         self.design_outlet_pressure        = 350 * Units.bar
+        self.power_density                 = None
+        self.turbine_efficiency            = None
+        self.distributor_split             = None
 
      
     def compute_performance(self,state,network=None):

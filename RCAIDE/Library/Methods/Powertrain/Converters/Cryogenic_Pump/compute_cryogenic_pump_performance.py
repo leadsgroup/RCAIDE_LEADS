@@ -40,7 +40,7 @@ def compute_cryogenic_pump_performance(pump, state, network):
     my_power = pump.distributor_split * fuel_line_conditions.inputs.power.hydraulic
 
     # Electrical power drawn to produce that shaft work
-    total_efficiency = pump.pump_efficiency * pump.turbine_efficiency
+    total_efficiency = pump.efficiency * pump.turbine_efficiency
     electrical_power  = my_power / total_efficiency
 
     pump_conditions.inputs.p_in             = pump.design_inlet_pressure  * state.ones_row(1)
