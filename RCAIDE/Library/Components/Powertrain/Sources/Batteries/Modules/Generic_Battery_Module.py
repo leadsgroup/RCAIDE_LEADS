@@ -126,8 +126,8 @@ class Generic_Battery_Module(Source):
         self.cell.ragone.i                                     = 0.0 
  
         self.electrical_configuration                          = Data()
-        self.electrical_configuration.series                   = 1
-        self.electrical_configuration.parallel                 = 1   
+        self.electrical_configuration.series                   = None
+        self.electrical_configuration.parallel                 = None   
 
         self.geometric_configuration                          = Data() 
         self.geometric_configuration.normal_count             = 1
