@@ -185,7 +185,8 @@ def compute_transfer_pump_weight(network, fuel_line,ref_propulsor):
     Inputs:
             network                           - the vehicle's Fuel network
             fuel_line                         - Fuel_Line whose auto-created .pump is sized
-            ref_propulsor                     - reference engine whose sealevel_static_thrust
+            ref_propulsor                     - reference engine whose design_thrust (per-engine
+                                                 cruise design point, not sealevel_static_thrust)
                                                  drives the reference-SFC mass-flow estimate
 
     Outputs:
@@ -213,7 +214,7 @@ def compute_transfer_pump_weight(network, fuel_line,ref_propulsor):
 
                     # mass flow, estimated from reference engine thrust via reference SFC
                     thermal_power_per_N = reference_sfc * reference_fuel_specific_energy
-                    m_dot               = ref_propulsor.sealevel_static_thrust * thermal_power_per_N / fuel.specific_energy
+                    m_dot               = ref_propulsor.design_thrust * thermal_power_per_N / fuel.specific_energy
 
                     # volumetric flow rate
                     Q = m_dot / fuel.density
