@@ -6,6 +6,8 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------   
 # RCAIDE imports  
+from RCAIDE.Framework.Core.Units import Units
+
 from .Pump  import Pump
 from RCAIDE.Library.Methods.Powertrain.Converters.Cryogenic_Pump import compute_cryogenic_pump_performance, append_cryogenic_pump_conditions
 
@@ -20,10 +22,10 @@ class Cryogenic_Pump(Pump):
         """
         Sets default values for the system attributes.
         """         
-        self.tag                     = 'cryogenic_pump'
-        self.fuel_cell_efficiency    = .7
-        self.fuel_cell_flow_rate_multipier = 1/120e6 # Power*1/120MW = additional flow rate
-        self.specific_power_density   = None
+        self.tag                           = 'cryogenic_pump'
+        self.specific_power_density        = None
+        self.design_inlet_pressure         = 2 * Units.bar
+        self.design_outlet_pressure        = 350 * Units.bar
 
      
     def compute_performance(self,state,network=None):
@@ -44,5 +46,5 @@ class Cryogenic_Pump(Pump):
         network : Data, optional
             Network supplying the cryogenic pump
         """
-        append_cryogenic_pump_conditions(self,segment,network=network) 
+        append_cryogenic_pump_conditions(self,segment)
         return 

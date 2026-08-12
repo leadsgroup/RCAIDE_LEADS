@@ -22,9 +22,11 @@ class Pump(Converter):
         
         """
         self.tag                      = 'Pump'
+        self.specific_power_density   = None  # W/kg
         self.casting_and_mount_factor = 2.0
         self.efficiency               = 0.85
-        self.delta_pressure           = 3 * Units.bar
+        self.design_inlet_pressure    = 0
+        self.design_outlet_pressure   = 3 * Units.bar
 
         return
     

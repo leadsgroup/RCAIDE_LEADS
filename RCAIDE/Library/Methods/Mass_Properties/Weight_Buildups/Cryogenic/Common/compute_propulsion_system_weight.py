@@ -211,18 +211,19 @@ def compute_transfer_pump_weight(network, fuel_line,ref_propulsor):
     reference_fuel_specific_energy =48.632e6
 
     for converter in network.converters:
-        if type(converter) is RCAIDE.Library.Components.Powertrain.Converters.Pump:
+        if type(converter) is RCAIDE.Library.Components.Powertrain.Converters.Cryogenic_Pump:
             pump = converter
 
             # check if the pump's mass is defined or not 
-            if pump.mass_properties.mass  != 0.0:
-                continue 
-            else:
-                # check to see if the pump is connected to the fuel line
-                if fuel_line.tag in pump.assigned_distributors:
-                    fuel           = fuel_line.working_fluid 
-                    delta_pressure = pump.delta_pressure
-                    efficiency     = pump.efficiency
+            if pump.mass_properties.mass  == 0.0:
+                 
+            # check to see if the pump is connected to the fuel line
+                if fuel_line.tag in pump.assigned_distributors[0]:
+                    fuel            = fuel_line.working_fluid 
+                    inlet_pressure  = pump.design_inlet_pressure
+                    outlet_pressure = pump.design_outlet_pressure
+                    delta_pressure  = outlet_pressure - inlet_pressure
+                    efficiency      = pump.efficiency
 
                     if pump.specific_power_density != None:
                         specific_power_density = pump.specific_power_density
@@ -230,7 +231,7 @@ def compute_transfer_pump_weight(network, fuel_line,ref_propulsor):
                         specific_power_density = 15000 # W/kg
 
                     thermal_power_per_N  = reference_sfc * reference_fuel_specific_energy
-                    mdot                 = ref_propulsor.design_thrust * thermal_power_per_N / fuel.specific_energy
+                    mdot                 = ref_propulsor.sealevel_static_thrust * thermal_power_per_N / fuel.specific_energy
                     fluid_power          = mdot * delta_pressure / fuel.density
                     pump.design_power    = fluid_power / efficiency
                     pump.mass_properties.mass = pump.design_power / specific_power_density
