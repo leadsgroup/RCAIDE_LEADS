@@ -51,15 +51,27 @@ def set_network_residuals_and_unknowns(mission):
                             f"These loads will not be accounted for in the power balance.",
                             stacklevel=2)
 
-            # Electrical power unknown -- only needed when a propulsor's
-            # integrated drive generator/motor requires the network's
-            # electrical power before the network itself has been evaluated.
+            # Electrical power unknown -- only needed when a propulsor's IDG/IDM
+            # requires the network's electrical power before the network itself
+            # has been evaluated. No unknown needed if a Battery_Pack on the same
+            # bus already self-balances demand (see compute_battery_performance).
+            def _bus_has_self_balancing_battery(network, bus_tag):
+                for source in network.sources:
+                    if source.active and source.assigned_distributors is not None and bus_tag in source.assigned_distributors[0]:
+                        if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack) and source.power_split_ratio != 0.0:
+                            return True
+                return False
+
             has_electrical_power_circularity = False
             for network in segment.analyses.vehicle.networks:
                 for propulsor in network.propulsors:
-                    if getattr(propulsor, 'integrated_drive_generator', None) is not None or \
-                       getattr(propulsor, 'integrated_drive_motor', None) is not None:
-                        has_electrical_power_circularity = True
+                    idg = getattr(propulsor, 'integrated_drive_generator', None)
+                    idm = getattr(propulsor, 'integrated_drive_motor', None)
+                    idg_or_idm = idg or idm
+                    if idg_or_idm is not None:
+                        bus_tags = idg_or_idm.assigned_distributors[0] if idg_or_idm.assigned_distributors is not None else []
+                        if not any(_bus_has_self_balancing_battery(network, bus_tag) for bus_tag in bus_tags):
+                            has_electrical_power_circularity = True
 
             if has_electrical_power_circularity:
                 # see docstring for the max-not-sum / design_power_offtake rationale

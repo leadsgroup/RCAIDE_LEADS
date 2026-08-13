@@ -269,8 +269,6 @@ class Network(Component):
                 if converter.assigned_distributors != None:
                     for distributor_tag in converter.assigned_distributors[0]:
                         distributor = network.distributors[distributor_tag]
-                        # A pump consumes/splits fuel-line demand rather than adding to it;
-                        # calling this for a pump re-adds its own output onto the accumulator.
                         if not isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Pump):
                             distributor.compute_distribution_losses(state.conditions.energy.converters[converter.tag],state,network)
 
@@ -292,7 +290,6 @@ class Network(Component):
                 if source.assigned_distributors != None:
                     for distributor_tag in source.assigned_distributors[0]:
                         distributor = network.distributors[distributor_tag]
-
                         state.conditions.energy.distributors[distributor_tag].outputs.power[distributor.domain]   += inputs.power[distributor.domain]
                         state.conditions.energy.distributors[distributor_tag].inputs.power[distributor.domain]    += outputs.power[distributor.domain]
 

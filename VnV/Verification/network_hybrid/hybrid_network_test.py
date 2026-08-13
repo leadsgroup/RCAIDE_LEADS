@@ -40,7 +40,7 @@ import time
 def main():
     
     solver_type      = "optimize"
-    solver_objective = None  
+    solver_objective = "energy"
     conventional     = True
     all_electric     = True
     series_hybrid    = True

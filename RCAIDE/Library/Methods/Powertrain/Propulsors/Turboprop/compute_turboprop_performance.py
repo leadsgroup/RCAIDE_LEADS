@@ -295,7 +295,8 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     compressor_conditions.omega                    = compressor.design_angular_velocity * turboprop_conditions.throttle 
     
     # compute electrical power if generated/supplied
-    power_elec = 0*state.ones_row(1)
+    power_elec_in  = 0*state.ones_row(1) # drawn from the bus (motor)
+    power_elec_out = 0*state.ones_row(1) # supplied to the bus (generator)
 
     # Motor: consumes electrical from bus, delivers mechanical to compressor shaft
     if turboprop.integrated_drive_motor != None and len(state.numerics.time.differentiate) > 0:
@@ -313,7 +314,7 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
         motor_conditions.outputs.power.mechanical = motor_mechanical_power
         motor_conditions.outputs.omega            = compressor_conditions.omega
         motor_conditions.outputs.torque           = motor_mechanical_power / compressor_conditions.omega
-        power_elec = motor_electrical_power
+        power_elec_in = motor_electrical_power
 
     # Generator: extracts mechanical from compressor shaft, provides electrical to bus
     if turboprop.integrated_drive_generator != None and len(state.numerics.time.differentiate) > 0:
@@ -330,7 +331,7 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
         gen_conditions.inputs.power.mechanical   = gen_mechanical_power
         gen_conditions.inputs.omega              = compressor_conditions.omega
         gen_conditions.inputs.torque             = gen_mechanical_power / compressor_conditions.omega
-        power_elec = gen_electrical_power
+        power_elec_out = gen_electrical_power
             
     # Store data
     core_nozzle_res = Data(
@@ -351,7 +352,8 @@ def compute_turboprop_performance(turboprop, state, center_of_gravity=[[0.0, 0.0
     turboprop_conditions.outputs.thrust                 = thrust_vector
     turboprop_conditions.outputs.moment                 = moment
     turboprop_conditions.outputs.power.propulsive       = power
-    turboprop_conditions.outputs.power.electrical       = power_elec
+    turboprop_conditions.outputs.power.electrical       = power_elec_out
+    turboprop_conditions.inputs.power.electrical        = power_elec_in
     turboprop_conditions.inputs.power.chemical          = mdot_fuel * combustor.fuel_data.lower_heating_value # negative because it is consumed power
 
     return turboprop_conditions.inputs ,turboprop_conditions.outputs, stored_results_flag,stored_propulsor_tag 
@@ -417,20 +419,22 @@ def reuse_stored_turboprop_data(turboprop,state,network,stored_propulsor_tag,cen
     power                                              = conditions.energy.propulsors[turboprop.tag].outputs.power.propulsive
     conditions.energy.propulsors[turboprop.tag].moment = moment
     
-    power_elec = 0*state.ones_row(1)
+    power_elec_in  = 0*state.ones_row(1) # drawn from the bus (motor)
+    power_elec_out = 0*state.ones_row(1) # supplied to the bus (generator)
     idm   = turboprop.integrated_drive_motor
     idm_0 = network.propulsors[stored_propulsor_tag].integrated_drive_motor
     if idm != None and  len(state.numerics.time.differentiate) > 0:
         conditions.energy.converters[idm.tag]  = deepcopy(conditions.energy.converters[idm_0.tag])
-        power_elec =  conditions.energy.converters[idm.tag].inputs.power.electrical
+        power_elec_in =  conditions.energy.converters[idm.tag].inputs.power.electrical
 
     idg   = turboprop.integrated_drive_generator
     idg_0 = network.propulsors[stored_propulsor_tag].integrated_drive_generator
     if idg != None and len(state.numerics.time.differentiate) > 0:
         conditions.energy.converters[idg.tag]  = deepcopy(conditions.energy.converters[idg_0.tag])
-        power_elec =  conditions.energy.converters[idg.tag].outputs.power.electrical
+        power_elec_out =  conditions.energy.converters[idg.tag].outputs.power.electrical
 
-    conditions.energy.propulsors[turboprop.tag].outputs.power.electrical  = power_elec 
+    conditions.energy.propulsors[turboprop.tag].outputs.power.electrical  = power_elec_out
+    conditions.energy.propulsors[turboprop.tag].inputs.power.electrical   = power_elec_in
     conditions.energy.propulsors[turboprop.tag].outputs.moment            = moment
     conditions.energy.propulsors[turboprop.tag].outputs.thrust            = thrust_vector  
 

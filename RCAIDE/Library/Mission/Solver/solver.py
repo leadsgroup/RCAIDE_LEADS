@@ -139,15 +139,23 @@ def converge(segment):
 # ----------------------------------------------------------------------------------------------------------------------
 # scaling helper
 # ----------------------------------------------------------------------------------------------------------------------
-def _magnitude_scale(values):
+def _magnitude_scale(values, floor_exponent=-6):
     """Power-of-10 scale so values/scale lands near O(1) (e.g. 1e5 -> scale=1e5).
     Unscaled, unknowns/residuals of very different physical magnitude sharing
     one solver tolerance/step size leave the small ones effectively degenerate,
     and a Newton step can overshoot by orders of magnitude. Zero entries fall
     back to scale=1. Mirrors the unknown scaling in add_mission_variables.
+
+    floor_exponent bounds how small a scale can get (default 1e-6, matching the
+    typical solver tolerance): a value that's already near machine noise (e.g.
+    ~1e-12, from a residual whose initial guess happens to be almost exact)
+    would otherwise get an equally tiny scale, making that noise look like an
+    O(1) constraint the solver must chase to the same relative precision as
+    everything else -- preventing real convergence indefinitely.
     """
     factor = np.ceil(np.log10(np.abs(values)))
     factor[~np.isfinite(factor)] = 0
+    factor = np.maximum(factor, floor_exponent)
     return 10.0 ** factor
 
 # ---------------------------------------------------------------------------------------------------------------------- 

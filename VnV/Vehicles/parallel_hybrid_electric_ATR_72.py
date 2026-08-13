@@ -498,6 +498,7 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------
     avionics                     = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
     avionics.power_draw          = 30. # Watts
+    avionics.assigned_distributors = [[bus.tag]]
     net.systems.append(avionics)
 
     # append bus
@@ -673,11 +674,12 @@ def vehicle_setup():
 
     # The compressor's motor-assist power is computed inline inside
     # compute_turboprop_performance (via hybrid_power_split_ratio), so the motor is
-    # not separately registered as a network converter -- doing both would double-count
-    # its power draw in the network's power balance. assigned_distributors is still
-    # set (on the motor, to the bus) purely so the topology analyzer can see the bus
-    # is actually consumed by something and auto-resolve phi/psi correctly.
-    starboard_propulsor.assigned_distributors    = [[fuel_line.tag]]
+    # not separately registered as a network converter. The propulsor itself must still
+    # be assigned to the bus (not just fuel_line) so its electrical draw is routed onto
+    # the bus's demand accumulator -- otherwise the battery (which reads that accumulator
+    # to size its own output) never sees the motor's draw at all. This does not double
+    # count net_electrical_power, which accumulates once per propulsor unconditionally.
+    starboard_propulsor.assigned_distributors    = [[fuel_line.tag, bus.tag]]
     starboard_propulsor.integrated_drive_motor.assigned_distributors = [[bus.tag]]
 
     #------------------------------------------------------------------------------------------------------------------------------------  
@@ -696,7 +698,7 @@ def vehicle_setup():
     # append propulsor to distribution line
     net.propulsors.append(port_propulsor)
 
-    port_propulsor.assigned_distributors = [[fuel_line.tag]]
+    port_propulsor.assigned_distributors = [[fuel_line.tag, bus.tag]]
 
     #------------------------------------------------------------------------------------------------------------------------- 
     #  Energy Source: Fuel Tank
