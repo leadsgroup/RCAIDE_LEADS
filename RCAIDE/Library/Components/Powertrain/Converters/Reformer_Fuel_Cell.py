@@ -83,6 +83,11 @@ class Reformer_Fuel_Cell(Converter):
         Generic_Fuel_Cell_Stack.initialize()), so vehicle scripts only need to set
         reformer_fuel_cell.design_voltage/design_power -- no explicit design_fuel_cell()
         call needed.
+
+        design_power is also mirrored onto reformer.design_power -- the reformer must
+        be sized to process fuel at the same power level the fuel cell it feeds
+        delivers (see compute_fuel_system_weight, which sizes reformer mass from
+        reformer.design_power / reformer.specific_power).
         """
         if self.fuel_cell is not None:
             if self.design_voltage is not None:
@@ -90,6 +95,8 @@ class Reformer_Fuel_Cell(Converter):
             if self.design_power is not None:
                 self.fuel_cell.design_power = self.design_power
             self.fuel_cell.initialize(network)
+        if self.reformer is not None and self.design_power is not None:
+            self.reformer.design_power = self.design_power
         return
 
     def append_operating_conditions(self,segment):

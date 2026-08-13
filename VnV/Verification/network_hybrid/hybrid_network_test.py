@@ -65,9 +65,10 @@ def main():
         missions = missions_setup(analyses,solver_type,solver_objective)  
         conventional_results  = missions.base_mission.evaluate()
 
-        cruise_CL        = conventional_results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0]   
-        print("Conventional ATR 72 Cruise CL: " + str(cruise_CL)) 
-        error.conventional_cruise_CL = np.max(np.abs( convetional_cruise_CL_truth  - cruise_CL  )/ convetional_cruise_CL_truth )  
+        assert conventional_results.segments.cruise.state.numerics.mission_solver.converged, "Conventional mission did not converge"
+        cruise_CL        = conventional_results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0]
+        print("Conventional ATR 72 Cruise CL: " + str(cruise_CL))
+        error.conventional_cruise_CL = np.max(np.abs( convetional_cruise_CL_truth  - cruise_CL  )/ convetional_cruise_CL_truth )
         
         plot_data.append(conventional_results)
         powertrain_labels.append("Conventional")
@@ -80,9 +81,10 @@ def main():
         missions = missions_setup(analyses,solver_type,solver_objective)  
         electric_results  = missions.base_mission.evaluate()
 
-        cruise_CL        = electric_results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0]   
-        print("Electric ATR 72 Cruise CL: " + str(cruise_CL))   
-        error.electric_cruise_CL = np.max(np.abs( electric_cruise_CL_truth  - cruise_CL  )/ electric_cruise_CL_truth )  
+        assert electric_results.segments.cruise.state.numerics.mission_solver.converged, "All-Electric mission did not converge"
+        cruise_CL        = electric_results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0]
+        print("Electric ATR 72 Cruise CL: " + str(cruise_CL))
+        error.electric_cruise_CL = np.max(np.abs( electric_cruise_CL_truth  - cruise_CL  )/ electric_cruise_CL_truth )
         
         plot_data.append(electric_results)
         powertrain_labels.append("All-Electric")
@@ -94,9 +96,10 @@ def main():
         missions = missions_setup(analyses,solver_type,solver_objective)  
         series_hybrid_results  = missions.base_mission.evaluate()
     
+        assert series_hybrid_results.segments.cruise.state.numerics.mission_solver.converged, "Series Hybrid mission did not converge"
         cruise_CL        = series_hybrid_results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0]
         print("Series Hybrid ATR 72 Cruise CL: " + str(cruise_CL))
-        error.series_hybrid_cruise_CL= np.max(np.abs( series_hybrid_cruise_CL_truth  - cruise_CL  )/ series_hybrid_cruise_CL_truth )  
+        error.series_hybrid_cruise_CL= np.max(np.abs( series_hybrid_cruise_CL_truth  - cruise_CL  )/ series_hybrid_cruise_CL_truth )
         
         plot_data.append(series_hybrid_results)
         powertrain_labels.append("Series Hybrid")
@@ -108,6 +111,7 @@ def main():
         missions = missions_setup(analyses,solver_type,solver_objective)  
         parallel_hybrid_results  = missions.base_mission.evaluate() 
     
+        assert parallel_hybrid_results.segments.cruise.state.numerics.mission_solver.converged, "Parallel Hybrid mission did not converge"
         cruise_CL        = parallel_hybrid_results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[2][0]
         print("Parallel Hybrid ATR 72 Cruise CL: " + str(cruise_CL))
         error.parallel_hybrid_cruise_CL = np.max(np.abs( parallel_hybrid_cruise_CL_truth  - cruise_CL  )/ parallel_hybrid_cruise_CL_truth )

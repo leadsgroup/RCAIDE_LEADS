@@ -292,7 +292,6 @@ class Network(Component):
                 if source.assigned_distributors != None:
                     for distributor_tag in source.assigned_distributors[0]:
                         distributor = network.distributors[distributor_tag]
-                        distributor.compute_distribution_losses(state.conditions.energy.sources[source.tag],state,network)
 
                         state.conditions.energy.distributors[distributor_tag].outputs.power[distributor.domain]   += inputs.power[distributor.domain]
                         state.conditions.energy.distributors[distributor_tag].inputs.power[distributor.domain]    += outputs.power[distributor.domain]
