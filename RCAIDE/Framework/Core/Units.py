@@ -234,7 +234,7 @@ class _Units:
         "watt_hour":        3600.0,      # 1 Wh = 3600 J
         "Wh":               3600.0,
         "kilowatt_hour":    3.6e6,       # 1 kWh = 3.6e6 J
-        "kwh":              3.6e6,
+        "kWh":              3.6e6,
         "btu":              1055.06,     # 1 BTU ~ 1055.06 J
         "watt": 1.0, "W": 1.0,
 

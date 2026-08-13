@@ -157,15 +157,14 @@ class Network(Component):
         conditions        = state.conditions
         propulsors        = network.propulsors
         converters        = network.converters  
+        nacelles          = network.nacelles
         distributors      = network.distributors
-        modulators        = network.modulators
         sources           = network.sources
         systems           = network.systems
 
         total_thrust            = 0. * state.ones_row(3)
         total_moment            = 0. * state.ones_row(3)
         total_mdot              = 0. * state.ones_row(1)
-        total_propulsive_power  = 0. * state.ones_row(1)
         net_chemical_power      = 0. * state.ones_row(1) 
         net_electrical_power    = 0. * state.ones_row(1)
         net_thermal_power       = 0. * state.ones_row(1)
@@ -177,14 +176,7 @@ class Network(Component):
         stored_results_flag  = False
         stored_propulsor_tag = None
         for propulsor in propulsors:
-            if propulsor.active:
-                # "identical_propulsors" only makes reuse valid within a run of
-                # truly identical propulsors -- e.g. a vehicle with both cruise
-                # propellers and lift rotors has two distinct groups, and a
-                # propulsor must never reuse another group's results just
-                # because it inherited the default identical_propulsors=True.
-                # assigned_distributors differing is a reliable, always-available
-                # signal that the propulsor belongs to a different group.
+            if propulsor.active: 
                 same_group = (stored_results_flag == True and
                               propulsor.assigned_distributors == propulsors[stored_propulsor_tag].assigned_distributors)
                 if propulsor.identical_propulsors == False or not same_group:
@@ -193,11 +185,7 @@ class Network(Component):
                     inputs, outputs = propulsor.reuse_stored_data(state,network,stored_propulsor_tag=stored_propulsor_tag, center_of_gravity=center_of_gravity)
 
                 propulsor_thrust = outputs.thrust
-                propulsor_moment = outputs.moment
-                # network.reverse_thrust is the network-wide (all propulsors)
-                # flag vehicle configs commonly set; propulsor.reverse_thrust
-                # allows overriding it per propulsor. Either being True reverses
-                # this propulsor's contribution.
+                propulsor_moment = outputs.moment 
                 if propulsor.reverse_thrust == True or network.reverse_thrust == True:
                     propulsor_thrust = propulsor_thrust * -1
                     propulsor_moment = propulsor_moment * -1
@@ -258,10 +246,6 @@ class Network(Component):
         stored_converter_tag  = None
         for converter in converters:
             if converter.active:
-                # See the matching comment on the propulsor loop above: reuse is
-                # only valid within a run of truly identical converters sharing
-                # the same distributor group, not just "any converter computed
-                # so far in this network."
                 same_group = (stored_results_flag == True and
                               converter.assigned_distributors == converters[stored_converter_tag].assigned_distributors)
                 if converter.identical_converters == False or not same_group:
@@ -285,7 +269,10 @@ class Network(Component):
                 if converter.assigned_distributors != None:
                     for distributor_tag in converter.assigned_distributors[0]:
                         distributor = network.distributors[distributor_tag]
-                        distributor.compute_distribution_losses(state.conditions.energy.converters[converter.tag],state,network)
+                        # A pump consumes/splits fuel-line demand rather than adding to it;
+                        # calling this for a pump re-adds its own output onto the accumulator.
+                        if not isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Pump):
+                            distributor.compute_distribution_losses(state.conditions.energy.converters[converter.tag],state,network)
 
                         state.conditions.energy.distributors[distributor_tag].outputs.power[distributor.domain]   += inputs.power[distributor.domain]
                         state.conditions.energy.distributors[distributor_tag].inputs.power[distributor.domain]    += outputs.power[distributor.domain]
@@ -313,13 +300,14 @@ class Network(Component):
 
         # ----------------------------------------------------------
         # Distributors
-        # ----------------------------------------------------------
-        # Runs after sources so that any per-source condition values a
-        # distributor's own performance depends on (e.g. heat delivered to a
-        # coolant loop by the battery modules it cools) are already computed.
+        # ---------------------------------------------------------- 
         for distributor in distributors:
             if distributor.active:
-                distributor.compute_performance(state,network)
+                inputs, outputs         = distributor.compute_performance(state,network)
+                net_electrical_power   += (outputs.power.electrical - inputs.power.electrical)
+                net_thermal_power      += (outputs.power.thermal - inputs.power.thermal)
+                net_hydraulic_power    += (outputs.power.hydraulic - inputs.power.hydraulic)
+                net_chemical_power     += (outputs.power.chemical - inputs.power.chemical)
 
         # Final aggregation for system level performance
         conditions.energy.total_force_vector       = total_thrust

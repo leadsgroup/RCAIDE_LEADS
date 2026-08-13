@@ -57,6 +57,7 @@ class Turboelectric_Generator(Converter):
         # setting the default values
         self.tag                       = 'turboelectric_generator'
         self.provides_domain           = 'electrical'
+        self.identical_converters      = True
         self.turboshaft                = None
         self.generator                 = None
         self.gearbox                   = Data()

@@ -50,12 +50,14 @@ class Generic_Fuel_Cell_Stack(Converter):
         """           
         self.tag                                        = 'fuel_cell'
         self.provides_domain                            = 'electrical'
+        self.identical_converters                       = True
         self.mass_properties.mass                       = 1.0
         self.energy_density                             = 0.0
         self.current_capacitor_charge                   = 0.0
         self.capacity                                   = 0.0
         self.power_split_ratio                          = 1.0    # fraction of the electrical demand this stack supplies, for multiple stacks sharing a bus
         self.electrical_efficiency                      = 1.0    # DC-DC/inverter efficiency between the stack and the bus
+        self.design_voltage                             = None
         self.design_power                               = None
         self.specific_power                             = None
             
@@ -102,7 +104,20 @@ class Generic_Fuel_Cell_Stack(Converter):
         self.geometric_configuration.stacking_rows     = 3
         self.geometric_configuration.parallel_spacing  = 0.02     
           
-    def compute_performance(self,state,network):  
+    def initialize(self, network):
+        """
+        Sizes this stack via design_fuel_cell(). Runs automatically once per mission
+        (RCAIDE.Library.Mission.Common.Pre_Process.energy calls initialize() on every
+        converter before the mission's weight buildup runs), so vehicle scripts don't
+        need to call design_fuel_cell() themselves -- matching how Battery_Pack.initialize()
+        already auto-sizes battery packs. A deferred import avoids a circular import,
+        since design_fuel_cell references this class by its RCAIDE.Library.Components path.
+        """
+        from RCAIDE.Library.Methods.Powertrain.Converters.Fuel_Cells.Common.design_fuel_cell import design_fuel_cell
+        design_fuel_cell(self)
+        return
+
+    def compute_performance(self,state,network):
         """Computes the state of the NMC battery cell.
            
         Assumptions:

@@ -7,7 +7,9 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
-from RCAIDE.Framework.Core import Units 
+from RCAIDE.Framework.Core import Units
+from .size_module_from_energy_and_power import size_module_from_energy_and_power
+from .size_module_from_mass             import size_module_from_mass
 import  numpy as  np
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -81,7 +83,18 @@ def compute_battery_properties(battery,network):
     The electrical properties are calculated based on the series-parallel configuration
     of cells, with series connections increasing voltage and parallel connections
     increasing capacity.
-    
+
+    If a module's electrical_configuration.series/parallel is left unset (None), its cell
+    counts are instead sized from the pack's design_voltage/design_power/design_capacity,
+    divided down across battery.modules. Voltage is the only quantity that depends on wiring
+    mode: it divides across modules wired in series (the same current I flows through every
+    module, so each only contributes a fraction V_pack/N of the pack voltage) and is shared
+    by modules wired in parallel (each branch sees the full pack voltage, currents sum
+    instead). Power and energy/capacity (P = V*I) always divide by module count either way --
+    in series each module's fractional voltage share carries the same current; in parallel
+    each module's fractional current share carries the same voltage -- either way each module
+    ends up responsible for 1/N of the pack's power and energy.
+
     **Major Assumptions**
         * Total battery module pack mass can be modeled with a build-up factor for battery module casing,
           internal wires, thermal management system and battery module management system.
@@ -99,9 +112,25 @@ def compute_battery_properties(battery,network):
     battery.initial_maximum_energy  = 0.0
     battery.nominal_capacity        = 0.0
 
+    n_modules = len(battery.modules)
+
     for battery_module in battery.modules:
+        if battery_module.electrical_configuration.series is None or battery_module.electrical_configuration.parallel is None:
+            # size this module from the pack design point -- see function docstring Notes
+            if battery.battery_module_electric_configuration == 'Series':
+                module_voltage = battery.design_voltage / n_modules
+            else:
+                module_voltage = battery.design_voltage
+
+            module_power    = battery.design_power / n_modules
+            module_capacity = battery.design_capacity / n_modules if battery.design_capacity is not None else None
+
+            battery_module.maximum_voltage = module_voltage
+            size_module_from_energy_and_power(battery_module, module_capacity, module_power)
+            size_module_from_mass(battery_module)
+
         series_e           = battery_module.electrical_configuration.series
-        parallel_e         = battery_module.electrical_configuration.parallel 
+        parallel_e         = battery_module.electrical_configuration.parallel
         normal_count       = battery_module.geometric_configuration.normal_count  
         parallel_count     = battery_module.geometric_configuration.parallel_count
         stacking_rows      = battery_module.geometric_configuration.stacking_rows
@@ -148,7 +177,7 @@ def compute_battery_properties(battery,network):
         battery_module.mass_properties.mass           = total_battery_assemply_mass*weight_factor  
         battery_module.specific_energy                = (amp_hour_rating*battery_module.cell.maximum_voltage)/battery_module.cell.mass  * Units.Wh/Units.kg
         battery_module.maximum_energy                 = total_battery_assemply_mass*battery_module.specific_energy    
-        battery_module.specific_power                 = battery_module.specific_energy/battery_module.cell.nominal_capacity 
+        battery_module.specific_power                 = battery_module.cell.specific_power
         battery_module.maximum_power                  = battery_module.specific_power*battery_module.mass_properties.mass  
         battery_module.maximum_voltage                = battery_module.cell.maximum_voltage  * series_e   
         battery_module.initial_maximum_energy         = battery_module.maximum_energy      

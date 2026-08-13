@@ -114,12 +114,11 @@ class Fuel_Line(Distributor):
         fuel_line_conditions = state.conditions.energy.distributors[self.tag]
 
         # A fuel line can have zero, one, or several pump converters assigned
-        # to it (RCAIDE.Library.Components.Powertrain.Converters.Pump and its
-        # subclasses, e.g. Cryogenic_Pump). If at least one is connected, it
-        # already charges the network for its share of this line's hydraulic
-        # power demand (see compute_cryogenic_pump_performance), so this
-        # method must not also charge it here or the demand would be double
-        # counted.
+        # to it (RCAIDE.Library.Components.Powertrain.Converters.Pump). If at
+        # least one is connected, it already charges the network for its share
+        # of this line's hydraulic power demand (see compute_pump_performance),
+        # so this method must not also charge it here or the demand would be
+        # double counted.
         has_pump = False
         for converter in network.converters:
             if issubclass(type(converter), RCAIDE.Library.Components.Powertrain.Converters.Pump):

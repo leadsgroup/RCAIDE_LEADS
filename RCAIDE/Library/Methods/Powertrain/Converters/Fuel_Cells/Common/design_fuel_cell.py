@@ -78,6 +78,27 @@ def design_fuel_cell(fuel_cell_stack):
     """
 
 
+    fuel_cell = fuel_cell_stack.fuel_cell
+
+    if type(fuel_cell_stack) == RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack:
+        lb                                     = 0.0001/(Units.cm**2.)    #lower bound on fuel cell current density
+        ub                                     = 1.2/(Units.cm**2.)
+        sign                                   = -1. # used to minimize -power
+        maximum_current_density                = sp.optimize.fminbound(compute_power, lb, ub, args=(fuel_cell, sign))
+        P_fuel_cell                            = compute_power(maximum_current_density,fuel_cell)      # single-cell power at its max-power point [W]
+        V_fuel_cell                            = compute_voltage(fuel_cell,maximum_current_density)    # single-cell voltage at that point [V]
+
+        if fuel_cell_stack.design_voltage is not None and fuel_cell_stack.design_power is not None:
+            # size this stack from its design point -- see docstring Notes. Only triggers
+            # when both are explicitly set, so stacks that hand-set series/parallel directly
+            # (the class default is 1x1, not None) are unaffected.
+            n_series   = int(np.ceil(fuel_cell_stack.design_voltage / V_fuel_cell))
+            n_parallel = int(np.ceil(fuel_cell_stack.design_power / (n_series * P_fuel_cell)))
+            fuel_cell_stack.electrical_configuration.series        = n_series
+            fuel_cell_stack.electrical_configuration.parallel      = n_parallel
+            fuel_cell_stack.geometric_configuration.normal_count   = n_series
+            fuel_cell_stack.geometric_configuration.parallel_count = n_parallel
+
     series_e           = fuel_cell_stack.electrical_configuration.series
     parallel_e         = fuel_cell_stack.electrical_configuration.parallel
     n_total            = parallel_e *series_e
@@ -121,15 +142,9 @@ def design_fuel_cell(fuel_cell_stack):
     fuel_cell_stack.length = length
     fuel_cell_stack.width  = width
     fuel_cell_stack.height = height
-    fuel_cell              = fuel_cell_stack.fuel_cell
 
     if type(fuel_cell_stack) == RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack:
-        lb                                     = 0.0001/(Units.cm**2.)    #lower bound on fuel cell current density
-        ub                                     = 1.2/(Units.cm**2.)
-        sign                                   = -1. # used to minimize -power
-        maximum_current_density                = sp.optimize.fminbound(compute_power, lb, ub, args=(fuel_cell, sign))
-        P_fuel_cell                            = compute_power(maximum_current_density,fuel_cell)
-        V_fuel_cell                            = compute_voltage(fuel_cell,maximum_current_density)  # useful voltage vector
+        # P_fuel_cell, V_fuel_cell, maximum_current_density already found above
         efficiency                             = np.divide(V_fuel_cell, fuel_cell.ideal_voltage)
         mdot_H2                                = np.divide(P_fuel_cell,np.multiply(fuel_cell.propellant.specific_energy,efficiency))
 
@@ -143,7 +158,7 @@ def design_fuel_cell(fuel_cell_stack):
         fuel_cell_stack.mass_properties.mass   = n_total*fuel_cell.mass
         fuel_cell_stack.voltage                = V_fuel_cell  * series_e
         fuel_cell_stack.maximum_voltage        = V_fuel_cell  * series_e
-        fuel_cell_stack.maximum_power          = P_fuel_cell * series_e
+        fuel_cell_stack.maximum_power          = P_fuel_cell * n_total
         fuel_cell_stack.design_power           = fuel_cell_stack.maximum_power
         fuel_cell_stack.maximum_current        = fuel_cell_stack.maximum_power / fuel_cell_stack.maximum_voltage
         fuel_cell_stack.maximum_fuel_mass_flow_rate = mdot_H2 * n_total

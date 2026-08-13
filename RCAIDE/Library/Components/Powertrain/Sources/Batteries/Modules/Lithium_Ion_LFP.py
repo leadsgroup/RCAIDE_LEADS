@@ -130,7 +130,7 @@ class Lithium_Ion_LFP(Generic_Battery_Module):
          
         self.cell.watt_hour_rating            = self.cell.nominal_capacity  * self.cell.nominal_voltage   # [Watt-hours]      
         self.cell.specific_energy             = self.cell.watt_hour_rating*Units.Wh/self.cell.mass        # [J/kg]
-        self.cell.specific_power              = self.maximum_power /self.cell.mass                        # [W/kg]   
+        self.cell.specific_power              = 1500.                                                      # [W/kg] LFP typically supports higher continuous discharge power than NMC at similar mass
         self.cell.resistance                  = 0.022                                                     # [Ohms]
                                                                                                             
         self.cell.specific_heat_capacity      = 1115                                                      # [J/kgK]                                                     

@@ -162,7 +162,7 @@ class Lithium_Ion_NMC(Generic_Battery_Module):
         
         self.cell.watt_hour_rating            = self.cell.nominal_capacity  * self.cell.nominal_voltage                          # [Watt-hours]      
         self.cell.specific_energy             = self.cell.watt_hour_rating*Units.Wh/self.cell.mass                               # [J/kg]
-        self.cell.specific_power              = self.maximum_power /self.cell.mass                                               # [W/kg] 
+        self.cell.specific_power              = 1000.                                                                             # [W/kg] approximate continuous-discharge rating for an automotive-grade 18650 NMC cell
         self.cell.resistance                  = 0.025                                                                            # [Ohms] 
                                                             
         self.cell.specific_heat_capacity      = 1108                                                                             # [J/kgK]    

@@ -199,7 +199,7 @@ def compute_transfer_pump_weight(network, fuel_line,ref_propulsor):
     reference_fuel_specific_energy = 48.632e6
 
     for converter in network.converters:
-        if type(converter) is RCAIDE.Library.Components.Powertrain.Converters.Cryogenic_Pump:
+        if type(converter) is RCAIDE.Library.Components.Powertrain.Converters.Pump:
             pump = converter
 
             # check if the pump's mass is defined or not
@@ -224,12 +224,8 @@ def compute_transfer_pump_weight(network, fuel_line,ref_propulsor):
 
                     # shaft power
                     total_efficiency = pump.efficiency * pump.turbine_efficiency
-                    shaft_power      = hydraulic_power / total_efficiency
-
-                    if pump.power_density != None:
-                        power_density = pump.power_density
-                    else:
-                        power_density = 15000 # W/kg
+                    shaft_power      = hydraulic_power / total_efficiency 
+                    power_density    = pump.power_density 
 
                     pump.design_power         = shaft_power
                     pump.mass_properties.mass = (shaft_power / power_density) * pump.casting_and_mount_factor

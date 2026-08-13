@@ -80,6 +80,18 @@ class Battery_Pack(Source):
     nominal_capacity : float
         Nominal pack capacity (default: 0.0)
 
+    design_voltage : float
+        Target pack voltage [V] used to size each module's cell series/parallel
+        configuration when a module's electrical_configuration is left unset
+        (default: None)
+
+    design_power : float
+        Target pack power [W] used the same way as design_voltage (default: None)
+
+    design_capacity : float
+        Target pack energy capacity [J] used the same way as design_voltage
+        (default: None)
+
     Notes
     -----
     This class provides the framework for implementing specific battery pack
@@ -113,12 +125,7 @@ class Battery_Pack(Source):
         self.energy_density                        = 0.0
         self.capacity                              = 0.0
         self.voltage                               = 0.0
-        self.modules                               = Container()
-        # Reuse-eligibility flag for this pack's own modules (unpack_unknowns/
-        # pack_residuals below reuse module 0's results for the rest when
-        # True). A distinct concept from Source.identical_sources, which
-        # governs reuse between sibling sources/packs in the network, not
-        # between modules within one pack.
+        self.modules                               = Container() 
         self.identical_modules                     = True
         self.orientation_euler_angles              = [0.,0.,0.]
         self.number_of_active_modules              = 0
@@ -130,7 +137,10 @@ class Battery_Pack(Source):
         self.specific_power                        = 0.0
         self.maximum_voltage                       = 0.0
         self.initial_maximum_energy                = 0.0
-        self.nominal_capacity                      = 0.0 
+        self.nominal_capacity                      = 0.0
+        self.design_voltage                        = None
+        self.design_power                          = None
+        self.design_capacity                       = None
     
     def compute_performance(self,state,network): 
         """

@@ -108,6 +108,7 @@ class Turboshaft(Converter):
         self.high_pressure_turbine                       = None
         self.core_nozzle                                 = None 
         self.active                                      = True
+        self.identical_converters                        = True
         self.length                                      = 0.0
         self.diamter                                     = 0.0
         self.design_isa_deviation                        = 0.0
@@ -121,7 +122,7 @@ class Turboshaft(Converter):
         self.conversion_efficiency                       = 0.5
         self.compressor_nondimensional_massflow          = 0.0
         self.design_angular_velocity                     = 0.0
-        self.reverse_mode_computation                         = False
+        self.reverse_mode_computation                    = False
         self.assigned_converters                         = Data() 
 
     def append_operating_conditions(self,segment): 

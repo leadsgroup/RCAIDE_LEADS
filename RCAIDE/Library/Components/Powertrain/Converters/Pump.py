@@ -26,6 +26,9 @@ class Pump(Converter):
         self.efficiency               = 0.85
         self.design_inlet_pressure    = 0
         self.design_outlet_pressure   = 3 * Units.bar
+        self.power_density            = 15000
+        self.turbine_efficiency       = 0.9
+        self.distributor_split        = None
 
         return
     

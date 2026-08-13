@@ -368,11 +368,14 @@ def vehicle_setup(fuel_cell_model= 'PEM'):
         fuel_cell_stack.geometric_configuration.parallel_count      = 7
     if fuel_cell_model == 'Larminie':
         fuel_cell_stack   = RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack()
-        fuel_cell_stack.electrical_configuration.series             = 1020
-        fuel_cell_stack.electrical_configuration.parallel           = 1
-        fuel_cell_stack.geometric_configuration.normal_count       = 1020
-        fuel_cell_stack.geometric_configuration.parallel_count     = 1
- 
+        # Design point matches the previous hand-picked 1020x1 cell count (~509 V, ~339 kW)
+        # -- same stack, just sized from a target instead of a guessed cell count.
+        fuel_cell_stack.design_voltage    = 509.0
+        fuel_cell_stack.design_power      = 339E3
+
+    # explicit call still needed here (not just belt-and-suspenders): bus_nominal_voltage
+    # below reads fuel_cell_stack.voltage immediately, before Pre_Process.energy's automatic
+    # initialize() pass (which also calls design_fuel_cell()) ever runs.
     design_fuel_cell(fuel_cell_stack)
 
     # linked to both the fuel line (hydrogen supply) and the electrical bus (power extraction)

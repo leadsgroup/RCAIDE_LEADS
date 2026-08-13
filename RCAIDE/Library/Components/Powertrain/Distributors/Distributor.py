@@ -56,24 +56,35 @@ class Distributor(Component):
         return
 
     def compute_performance(self,state,network):
-        distributor_conditions = state.conditions.energy.distributors[self.tag]
+        """Default distributor contribution to the network power balance.
+
+        A generic distributor (e.g. an electrical bus) has no power of its
+        own beyond what its assigned components already report through
+        compute_distribution_losses() during the propulsor/system/converter/
+        source loops -- that power is already counted once there. Returning
+        zero here avoids double-counting it a second time when Network.py
+        folds this return into net_*_power. Subclasses with genuine
+        additional physics not captured elsewhere (e.g. Fuel_Line's no-pump
+        fallback) override this with real, non-double-counted values.
+        """
+        ones_row = state.ones_row
 
         inputs  = Data()
         outputs = Data()
         inputs.power  = Data()
         outputs.power = Data()
 
-        inputs.power.mechanical  = distributor_conditions.inputs.power.mechanical
-        inputs.power.electrical  = distributor_conditions.inputs.power.electrical
-        inputs.power.chemical    = distributor_conditions.inputs.power.chemical
-        inputs.power.hydraulic   = distributor_conditions.inputs.power.hydraulic
-        inputs.power.thermal     = distributor_conditions.inputs.power.thermal
+        inputs.power.mechanical  = 0. * ones_row(1)
+        inputs.power.electrical  = 0. * ones_row(1)
+        inputs.power.chemical    = 0. * ones_row(1)
+        inputs.power.hydraulic   = 0. * ones_row(1)
+        inputs.power.thermal     = 0. * ones_row(1)
 
-        outputs.power.mechanical = distributor_conditions.outputs.power.mechanical
-        outputs.power.electrical = distributor_conditions.outputs.power.electrical
-        outputs.power.chemical   = distributor_conditions.outputs.power.chemical
-        outputs.power.hydraulic  = distributor_conditions.outputs.power.hydraulic
-        outputs.power.thermal    = distributor_conditions.outputs.power.thermal
+        outputs.power.mechanical = 0. * ones_row(1)
+        outputs.power.electrical = 0. * ones_row(1)
+        outputs.power.chemical   = 0. * ones_row(1)
+        outputs.power.hydraulic  = 0. * ones_row(1)
+        outputs.power.thermal    = 0. * ones_row(1)
 
         return inputs, outputs
 

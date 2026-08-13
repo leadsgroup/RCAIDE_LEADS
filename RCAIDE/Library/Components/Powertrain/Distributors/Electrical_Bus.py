@@ -112,20 +112,20 @@ class Electrical_Bus(Distributor):
         self.efficiency                                = 1
         self.length                                    = 1
         self.number_of_parallel_wires                  = 1
-        self.design_ambient_temperature                = 273 # kelvin
-        self.maximum_insulator_electric_field          = 0 # NEED TO CHECK 
-        self.maximum_operating_temperature             = 0 # NEED TO CHECK 
-        self.maximum_current                           = 0 # NEED TO CHECK
-        self.maximum_temperature                       = 423 # NEED TO CHECK
-        self.environmental_external_thermal_resistance = 1 # CHECK  IEC 60287-2-1 Section 4.2.1.1. (T4)
+        self.design_ambient_temperature                = 273  
+        self.maximum_insulator_electric_field          = 0  
+        self.maximum_operating_temperature             = 0 
+        self.maximum_current                           = 0  
+        self.maximum_temperature                       = 423  
+        self.environmental_external_thermal_resistance = 1  
         self.conductor                                 = Component()
         self.conductor.radius                          = None
-        self.conductor.material                        = Copper()  # Default conductor material
+        self.conductor.material                        = Copper()  
         self.conductor.resistance                      = None
         self.insulator                                 = Component()
         self.insulator.radius                          = None
-        self.insulator.material                        = Polyimide()  # Default insulator material 
-        self.duplicate_wires                           = 2# Number of duplicate cables for redundancy
+        self.insulator.material                        = Polyimide()  
+        self.duplicate_wires                           = 2 
 
 
     def append_operating_conditions(self, segment):
@@ -178,7 +178,8 @@ class Electrical_Bus(Distributor):
         Computes the bus's design voltage and power from its assigned sources,
         converters, and propulsor-integrated generators, then sizes its cable.
 
-        Batteries and fuel cells set `design_voltage` directly, since they define
+        Batteries and fuel cells (bare Generic_Fuel_Cell_Stack, or one wrapped in a
+        Reformer_Fuel_Cell composite) set `design_voltage` directly, since they define
         the bus's electrical potential. Generators only add to `design_power`,
         since their output voltage follows the bus rather than setting it -- so a
         generator-only bus keeps whatever `design_voltage` the vehicle definition
@@ -201,25 +202,26 @@ class Electrical_Bus(Distributor):
         def assigned_here(component):
             return component.active and component.assigned_distributors is not None and (self.tag in component.assigned_distributors[0])
 
-        def generator_design_power(generator):
-            # Turboelectric_Generator wraps a Generator (.generator.design_power)
-            # instead of exposing design_power directly.
+        def generator_design_power(generator): 
             return getattr(generator, 'design_power', None) or getattr(getattr(generator, 'generator', None), 'design_power', 0.0) or 0.0
 
         for source in network.sources:
             if assigned_here(source):
-                if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
-                    # power_split_ratio == 0 means backup/ballast only -- shouldn't set bus voltage.
+                if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack): 
                     if source.power_split_ratio != 0.0:
                         self.design_voltage = source.voltage
                         self.design_power  += source.maximum_power
 
         for converter in network.converters:
             if assigned_here(converter):
-                if isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack):
-                    n_series = converter.electrical_configuration.series
-                    self.design_voltage = converter.fuel_cell.ideal_voltage * n_series
+                if isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack): 
+                    self.design_voltage = converter.voltage
                     self.design_power  += converter.maximum_power
+                elif isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Reformer_Fuel_Cell): 
+                    stack = converter.fuel_cell
+                    if stack is not None and isinstance(stack, RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack):
+                        self.design_voltage = stack.voltage
+                        self.design_power  += stack.maximum_power
                 elif isinstance(converter, (RCAIDE.Library.Components.Powertrain.Converters.Generator,
                                             RCAIDE.Library.Components.Powertrain.Converters.Turboelectric_Generator)):
                     self.design_power  += generator_design_power(converter)

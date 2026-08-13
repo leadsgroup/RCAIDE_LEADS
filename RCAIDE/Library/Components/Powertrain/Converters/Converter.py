@@ -39,7 +39,7 @@ class Converter(Component):
         self.assigned_converters                = None
         self.assigned_modulators                = None
         self.assigned_distributors              = None 
-        self.identical_converters               = True
+        self.identical_converters               = False
         self.efficiency                         = 1.0
         self.provides_domain                    = None
 
@@ -62,3 +62,24 @@ class Converter(Component):
         converter_conditions.outputs.power.pneumatic[:,0]  = 0.0
         converter_conditions.outputs.power.hydraulic[:,0]  = 0.0
         converter_conditions.outputs.power.thermal[:,0]    = 0.0
+
+    def reuse_stored_data(self, state, network, stored_conveter_tag):
+        """Copies another identical converter's inputs/outputs onto this one.
+
+        Generic fallback for identical_converters=True: subclasses with internal
+        sub-component conditions to propagate (e.g. Turboshaft, Turboelectric_Generator)
+        override this with their own version; this one is sufficient for converters
+        whose conditions are just the standard inputs/outputs.power.* fields.
+        """
+        stored_conditions = state.conditions.energy.converters[stored_conveter_tag]
+        converter_conditions = state.conditions.energy.converters[self.tag]
+
+        for power_type in stored_conditions.inputs.power.keys():
+            converter_conditions.inputs.power[power_type][:,0]  = stored_conditions.inputs.power[power_type][:,0]
+        for power_type in stored_conditions.outputs.power.keys():
+            converter_conditions.outputs.power[power_type][:,0] = stored_conditions.outputs.power[power_type][:,0]
+
+        if 'fuel_mass_flow_rate' in stored_conditions:
+            converter_conditions.fuel_mass_flow_rate[:,0] = stored_conditions.fuel_mass_flow_rate[:,0]
+
+        return converter_conditions.inputs, converter_conditions.outputs

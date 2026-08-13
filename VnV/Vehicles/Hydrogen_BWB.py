@@ -707,7 +707,7 @@ def vehicle_setup() :
     #  PUMPS      
     #------------------------------------------------------------------------------------------------------------------------- 
     # Starboard Pump
-    starboard_pump                                 = RCAIDE.Library.Components.Powertrain.Converters.Cryogenic_Pump()
+    starboard_pump                                 = RCAIDE.Library.Components.Powertrain.Converters.Pump()
     starboard_pump.working_fluid                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
     starboard_pump.power_density                   = 15000 # W/kg
     starboard_pump.efficiency                      = 0.8

@@ -36,6 +36,14 @@ class Reformer_Fuel_Cell(Converter):
         Fraction of the network's electrical demand this unit supplies. Default is 1.0;
         set to e.g. 0.5 on each of two identical units sharing a bus.
 
+    design_voltage : float
+        Target stack voltage [V]. Mirrored onto fuel_cell.design_voltage and used to
+        size fuel_cell automatically -- see initialize() (default: None)
+
+    design_power : float
+        Target stack power [W], mirrored onto fuel_cell.design_power the same way
+        (default: None)
+
     Notes
     -----
     Modeled on Turboelectric_Generator: the composite is assigned to both a fuel
@@ -47,11 +55,10 @@ class Reformer_Fuel_Cell(Converter):
     ``reformer_fuel_cell.reformer.working_fluid = RCAIDE.Library.Attributes.Propellants.Jet_A()``)
     to the hydrocarbon fuel drawn from that fuel distributor.
 
-    ``identical_converters`` defaults to False here (unlike the base Converter default
-    of True) since a reformer/fuel-cell unit is more often a single bespoke
-    installation than one of several identical units sharing a bus; set it to True
-    (matching Turboelectric_Generator) if a vehicle has multiple identical units and a
-    ``reuse_stored_data`` implementation is added.
+    ``identical_converters`` is not set here, so it stays at the base Converter default
+    of False -- correct for now since no ``reuse_stored_data`` is implemented. Set it to
+    True (matching Turboelectric_Generator) only once a ``reuse_stored_data`` implementation
+    is added, if a vehicle ever has multiple identical units sharing a bus.
 
     See Also
     --------
@@ -65,8 +72,25 @@ class Reformer_Fuel_Cell(Converter):
         self.provides_domain           = 'electrical'
         self.reformer                  = None
         self.fuel_cell                 = None
-        self.identical_converters      = False
         self.power_split_ratio         = 1.0    # fraction of the electrical demand this unit supplies, for multiple identical units sharing a bus
+        self.design_voltage            = None
+        self.design_power              = None
+
+    def initialize(self, network):
+        """
+        Mirrors design_voltage/design_power onto fuel_cell and sizes it via
+        design_fuel_cell(). Runs automatically once per mission (see
+        Generic_Fuel_Cell_Stack.initialize()), so vehicle scripts only need to set
+        reformer_fuel_cell.design_voltage/design_power -- no explicit design_fuel_cell()
+        call needed.
+        """
+        if self.fuel_cell is not None:
+            if self.design_voltage is not None:
+                self.fuel_cell.design_voltage = self.design_voltage
+            if self.design_power is not None:
+                self.fuel_cell.design_power = self.design_power
+            self.fuel_cell.initialize(network)
+        return
 
     def append_operating_conditions(self,segment):
         """

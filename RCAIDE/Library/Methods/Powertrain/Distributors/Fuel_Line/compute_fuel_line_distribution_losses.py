@@ -42,17 +42,16 @@ def compute_fuel_line_distribution_losses(fuel_line,component_conditions,state):
     accumulated, un-derated by any pump efficiency, onto
     ``fuel_line.inputs.power.hydraulic``.
 
-    A connected pump converter (RCAIDE.Library.Components.Powertrain.Converters.Pump
-    and its subclasses, e.g. Cryogenic_Pump) applies its own efficiency when it
-    later pulls its ``distributor_split`` share of this demand -- see
-    compute_cryogenic_pump_performance. If no pump converter is assigned to this
-    fuel line, Fuel_Line.compute_performance() charges the network directly for
+    A connected pump converter (RCAIDE.Library.Components.Powertrain.Converters.Pump)
+    applies its own efficiency when it later pulls its ``distributor_split`` share of
+    this demand -- see compute_pump_performance. If no pump converter is assigned to
+    this fuel line, Fuel_Line.compute_performance() charges the network directly for
     this amount instead, so it is not silently dropped from the power budget.
 
     See Also
     --------
     RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line.compute_performance
-    RCAIDE.Library.Methods.Powertrain.Converters.Cryogenic_Pump.compute_cryogenic_pump_performance
+    RCAIDE.Library.Methods.Powertrain.Converters.Pump.compute_pump_performance
     """
 
     # unpack working fluid properties
