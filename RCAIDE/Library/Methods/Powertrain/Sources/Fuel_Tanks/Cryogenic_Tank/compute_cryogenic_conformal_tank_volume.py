@@ -58,10 +58,15 @@ def compute_cryogenic_conformal_tank_volume(fuel_tank, _):
     hw_ratio      = fuel_tank.heights.external / fuel_tank.widths.external
 
     # Net pressure differential for structural sizing
-    P_sat      = fuel_tank.fuel.cryogen_properties(T_inlet, "Pressure (MPa)") * Units.MPa
+    P_sat      = fuel_tank.fuel.cryogen_properties(T_inlet, "Pressure (MPa)", phase='liquid') * Units.MPa
     P_internal = fuel_tank.pressure_factor * P_sat
     P_external = fuel_tank.design_external_pressure
     P_net      = P_internal - P_external
+
+    # Operating (rated) pressure target for the in-flight boil-off model --
+    # distinct from P_internal above, which is the structural proof/burst
+    # pressure used only to size wall thickness with margin.
+    fuel_tank.design_pressure = P_sat + fuel_tank.pressure_margin
 
     # Atmospheric temperature at design altitude
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()

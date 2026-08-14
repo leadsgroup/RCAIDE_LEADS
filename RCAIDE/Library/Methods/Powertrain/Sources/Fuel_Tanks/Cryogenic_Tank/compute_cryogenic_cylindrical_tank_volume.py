@@ -8,9 +8,9 @@
 # ----------------------------------------------------------------------------------------------------------------------
 import RCAIDE
 from RCAIDE.Framework.Core import Units
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_tank_heat_leak import compute_cryogenic_tank_heat_leak, _find_root
 
 import numpy as np
-from scipy.optimize import minimize_scalar, brentq
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Cryogenic Cylindrical Tank Volume
@@ -72,9 +72,14 @@ def compute_cryogenic_cylindrical_tank_volume(fuel_tank, fuel_tanks=None):
     PI_Q          = 1.5  # heat-flow multiplier for thermal sizing margin
 
     # Internal and external design pressures
-    P_sat      = fuel_tank.fuel.cryogen_properties(T_inlet, "Pressure (MPa)") * Units.MPa
+    P_sat      = fuel_tank.fuel.cryogen_properties(T_inlet, "Pressure (MPa)", phase='liquid') * Units.MPa
     P_internal = fuel_tank.pressure_factor * P_sat
     P_external = fuel_tank.design_external_pressure
+
+    # Operating (rated) pressure target for the in-flight boil-off model --
+    # distinct from P_internal above, which is the structural proof/burst
+    # pressure used only to size wall thickness with margin.
+    fuel_tank.design_pressure = P_sat + fuel_tank.pressure_margin
 
     # Atmospheric conditions at design altitude (computed once, passed to inner solvers)
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
@@ -90,8 +95,6 @@ def compute_cryogenic_cylindrical_tank_volume(fuel_tank, fuel_tanks=None):
     nu       = mu / rho                    # kinematic viscosity [m²/s]
     alpha_th = k_air / (rho * Cp_air)      # thermal diffusivity [m²/s]
     Pr       = nu / alpha_th               # Prandtl number
-    Te_lo    = min(T_inlet, Ta)            # lower bound for surface temperature solve
-    Te_hi    = max(T_inlet, Ta)            # upper bound for surface temperature solve
 
     # ------------------------------------------------------------------
     #  Step 1: Solve wall thickness ratio ro/ri (loop-invariant)
@@ -108,7 +111,7 @@ def compute_cryogenic_cylindrical_tank_volume(fuel_tank, fuel_tanks=None):
     V_outer_true = np.pi * R_true**2 * L_true + (4 / 3) * np.pi * R_true**3
 
     # Pack thermal constants into a tuple for the inner solvers
-    therm = (Ta, T_inlet, Qo, PI_Q, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, Te_lo, Te_hi)
+    therm = (Ta, T_inlet, Qo, PI_Q, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr)
 
     # ------------------------------------------------------------------
     #  Step 2: Solve for fuel volume
@@ -245,93 +248,19 @@ def _volume_residual(V_guess, ullage_frac, aspect_ratio, ro_ri, L_true, V_outer_
 # ----------------------------------------------------------------------------------------------------------------------
 #  Insulation residual: (heat flux through insulation) - (allowable heat leak)
 #
-#  For a given insulation thickness, solves for the equilibrium surface temperature
-#  (inner solve via _heat_balance), then compares the resulting conductive heat flux
-#  through the wall to the maximum allowable heat leak Qo.
+#  For a given insulation thickness, solves for the equilibrium surface temperature and
+#  resulting heat leak via the shared Churchill/conduction-network model (also used at
+#  runtime by compute_cryogenic_tank_performance.py), then compares the conductive heat
+#  flux through the wall to the maximum allowable heat leak Qo.
 # ----------------------------------------------------------------------------------------------------------------------
 def _insulation_residual(t_ins, therm, fuel_tank, r_o, r_i, l_i):
-    Ta, Ti, Qo, PI_Q, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, Te_lo, Te_hi = therm
-    ht_args = (t_ins, Ta, Ti, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, fuel_tank, r_o, r_i, l_i)
+    Ta, Ti, Qo, PI_Q, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr = therm
 
-    # Solve for equilibrium outer surface temperature Te
-    if abs(Te_hi - Te_lo) < 1e-9:
-        _heat_balance(Te_lo, *ht_args)
-    else:
-        _find_root(_heat_balance, Te_lo, Te_hi, args=ht_args, xtol=1e-9)
+    _, Qc = compute_cryogenic_tank_heat_leak(t_ins, Ta, Ti, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, r_o, r_i, l_i)
 
     # Compare conductive heat flux (per unit inner surface area) to allowable
-    Qc      = fuel_tank.insulation_wall_conductive_heat_transfer
     A_inner = 2 * np.pi * r_i * l_i + 4 * np.pi * r_i**2
     return PI_Q * Qc / A_inner - Qo
-
-
-# ----------------------------------------------------------------------------------------------------------------------
-#  Heat balance at the insulation outer surface
-#
-#  At steady state the heat arriving at the outer surface (convection + radiation
-#  from the warm ambient) must equal the heat conducted inward through the wall
-#  and insulation layers to the cold cryogen:
-#
-#      Q_convection + Q_radiation - Q_conduction = 0
-#
-#  The root of this equation gives the equilibrium surface temperature Te.
-#
-#  Convection correlations:
-#    - Cylinder: Churchill & Chu (1975) for natural convection on a horizontal cylinder
-#    - Sphere:   Churchill (1983) for natural convection on a sphere
-#
-#  Conduction uses concentric-cylinder and concentric-sphere resistance networks
-#  through two layers: structural wall (k_mat) and insulation (k_ins_mat).
-#
-#  The total conductive heat Qc is stored on fuel_tank as a side-channel for
-#  _insulation_residual to read, since brentq only accepts a single return value.
-# ----------------------------------------------------------------------------------------------------------------------
-def _heat_balance(Te, t_ins, Ta, Ti, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, fuel_tank, ro, ri, li):
-    g     = 9.81
-    D_out = 2 * (ro + t_ins)                                          # outer diameter including insulation
-    Ra    = (g / Ta) * (Ta - Te) * D_out**3 / (alpha_th * nu)         # Rayleigh number
-
-    # ---- Cylindrical section ----
-    Nu_cyl = (0.60 + 0.387 * Ra**(1 / 6) / (1 + (0.559 / Pr)**(9 / 16))**(8 / 27))**2
-    h_cyl  = Nu_cyl * k_air / D_out
-    A_cyl  = np.pi * D_out * li                                       # lateral surface area
-    Qv_cyl = h_cyl * A_cyl * (Ta - Te)                                # convective heat gain
-    Qr_cyl = 5.67e-8 * 0.03 * A_cyl * (Ta**4 - Te**4)                # radiative heat gain (emissivity = 0.03)
-    Qc_cyl = (Te - Ti) / (np.log(ro / ri)         / (2 * np.pi * li * k_mat) +       # conduction: structural wall
-                           np.log((ro + t_ins) / ro) / (2 * np.pi * li * k_ins_mat))  # conduction: insulation layer
-
-    # ---- Spherical end caps (two hemispheres = one sphere) ----
-    Nu_sph = 2 + 0.589 * Ra**(1 / 4) / (1 + (0.469 / Pr)**(9 / 16))**(4 / 9)
-    h_sph  = Nu_sph * k_air / D_out
-    A_sph  = np.pi * D_out**2                                         # surface area of full sphere
-    Qv_sph = h_sph * A_sph * (Ta - Te)
-    Qr_sph = 5.67e-8 * 0.03 * A_sph * (Ta**4 - Te**4)
-    Qc_sph = (Te - Ti) / ((ro - ri) / (4 * np.pi * k_mat * ri * ro) +                # conduction: structural wall
-                           t_ins     / (4 * np.pi * k_ins_mat * ro * (ro + t_ins)))    # conduction: insulation layer
-
-    # Store total conduction for _insulation_residual to read
-    Qc = Qc_cyl + Qc_sph
-    fuel_tank.insulation_wall_conductive_heat_transfer = Qc
-
-    # Residual: external heat in minus internal conduction out
-    return (Qv_cyl + Qv_sph) + (Qr_cyl + Qr_sph) - Qc
-
-
-# ----------------------------------------------------------------------------------------------------------------------
-#  Bounded 1D root finder
-#
-#  Tries brentq first (fast, guaranteed convergence when a sign change exists).
-#  Falls back to minimizing f(x)² with minimize_scalar when brentq fails
-#  (no sign change in the bracket, e.g. the root is a tangent zero).
-# ----------------------------------------------------------------------------------------------------------------------
-def _find_root(func, a, b, args=(), xtol=1e-9):
-    try:
-        return brentq(func, a, b, xtol=xtol, args=args)
-    except ValueError:
-        res = minimize_scalar(lambda x: func(x, *args)**2,
-                              bounds=(a, b), method="bounded",
-                              options={"xatol": xtol})
-        return float(res.x)
 
 
 # ----------------------------------------------------------------------------------------------------------------------

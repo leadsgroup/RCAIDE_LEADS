@@ -6,11 +6,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-# RCAIDE imports
-import RCAIDE
-
 # package imports
-import numpy as np  
+import numpy as np
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHOD
 # ----------------------------------------------------------------------------------------------------------------------  
@@ -52,12 +49,10 @@ def compute_fuel_tank_performance(tank,state,distributor):
     multiple tanks on the same distributor by ``power_split_ratio``. Remaining fuel
     mass is then integrated over the mission using ``state.numerics.time.integrate``.
 
-    For Cryogenic_Tank tanks (regardless of which cryogenic propellant they hold --
-    e.g. Liquid_Hydrogen or Liquid_Natural_Gas), a boil-off mass flow rate is also
-    added to account for heat leak into the tank. This boil-off calculation is
-    currently a placeholder: convective/radiative heat transfer coefficients and the
-    latent heat of vaporization are hardcoded to 0, so ``m_dot_boil_off`` always
-    evaluates to 0 until these are implemented.
+    Cryogenic_Tank overrides ``compute_performance`` entirely (see
+    ``compute_cryogenic_tank_performance``) rather than going through this function,
+    since its boil-off physics are solved as implicit mission unknowns rather than by
+    explicit forward integration.
 
     See Also
     --------
@@ -69,24 +64,10 @@ def compute_fuel_tank_performance(tank,state,distributor):
      
     tank_conditions     = state.conditions.energy.sources[tank.tag] 
              
-    chemical_power      = tank_conditions.power_split_ratio * state.conditions.energy.distributors[tank.assigned_distributors[0][0]].outputs.power.chemical  
+    chemical_power      = tank_conditions.power_split_ratio * state.conditions.energy.distributors[tank.assigned_distributors[0][0]].outputs.power.chemical
     fuel_mass_flow_rate = chemical_power / tank.fuel.lower_heating_value
-    
-    if isinstance(tank, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank):
-        # Cryogenic boil-off mass flow rate from heat leak into the tank. Not yet
-        # implemented -- h (convection coefficient), epsilon (emissivity), sigma
-        # (Stefan-Boltzmann constant), and h_fg (latent heat of vaporization) are
-        # not yet sourced from the tank/fuel, so boil-off is fixed at 0. Intended
-        # physics, to be implemented in a future PR:
-        #   T_amb        = state.conditions.freestream.temperature
-        #   T_s          = tank_conditions.surface_temperature
-        #   Q_convection = h * (T_amb - T_s)
-        #   Q_radiation  = epsilon * sigma * (T_amb**4 - T_s**4)
-        #   m_dot_boil_off = (Q_convection + Q_radiation) / h_fg
-        m_dot_boil_off = 0
-        tank_conditions.boil_off_flow_rate = m_dot_boil_off
-     
-    m_0_fuel                               = state.conditions.weights.components.mass[fuel.tag][0,0]  
+
+    m_0_fuel                               = state.conditions.weights.components.mass[fuel.tag][0,0]
     total_mass_flow_rate                   = fuel_mass_flow_rate + tank_conditions.boil_off_flow_rate +  tank_conditions.secondary_mass_flow_rate             
     tank_conditions.mass_flow_rate         = total_mass_flow_rate
     tank_conditions.outputs.power.chemical = total_mass_flow_rate * tank.fuel.lower_heating_value

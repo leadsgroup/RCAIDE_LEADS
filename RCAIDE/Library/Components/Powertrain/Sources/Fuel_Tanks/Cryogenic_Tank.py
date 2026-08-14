@@ -18,6 +18,11 @@ from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.comp
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_wing_transverse_non_integral_tank_volume  import compute_wing_transverse_non_integral_tank_volume
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_cylindrical_tank_volume            import compute_cryogenic_cylindrical_tank_volume
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_conformal_tank_volume         import compute_cryogenic_conformal_tank_volume
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_tank_performance               import compute_cryogenic_tank_performance
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.append_cryogenic_tank_unknown_and_residual       import append_cryogenic_tank_unknown_and_residual
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.append_cryogenic_tank_conditions                 import append_cryogenic_tank_conditions
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions                                     import append_fuel_tank_conditions
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.compute_fuel_tank_performance                                   import compute_fuel_tank_performance
 from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_cylinder_center_of_gravity
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_rounded_end_cylinder_moment_of_inertia, compute_cuboid_moment_of_inertia
 
@@ -50,6 +55,50 @@ class Cryogenic_Tank(Non_Integral_Tank):
         Structural factor of safety (default: 1.6).
     pressure_factor : float
         Internal pressure multiplier for sizing (default: 5).
+    boil_off_model : str
+        'quasi_steady' (default) solves the full 6-state implicit two-phase
+        boil-off model (ullage/liquid mass, temperature, volume) as
+        mission-level unknowns -- physically detailed (pressure/temperature
+        evolution, active-heater/vent response, fill-level-dependent wetted
+        area), but adds real coupling to the shared mission-level solve; a
+        vehicle with several tanks can strain solver robustness. 'none'
+        falls back to the plain (non-cryogenic) fuel tank behavior -- no
+        boil-off physics at all, matching ``develop``/``network_refactor``:
+        fuel burns down at the engine's offtake rate only, no unknowns, no
+        per-point coupling. Named to match the quasi-steady two-phase
+        thermodynamic model of the underlying report's Section V.B, rather
+        than as a bare "detailed/not detailed" toggle, so that a future
+        additional model doesn't have to be shoehorned into a boolean.
+    heater_direct_boiloff_fraction : float
+        Fraction of the pressure-builder heater's power that goes directly to
+        flash-boiling liquid at the interface, with the remainder instead
+        raising the bulk liquid temperature (default: 0.1). Matches Adler &
+        Martins (2025) eta_h, Eq. 13/17/24, tuned against real LH2 ground-test
+        data (Section 4.2: "the vast majority of the heat from the heater
+        goes into the liquid... we select a value of 0.1"). Validated for
+        LH2 only; unvalidated for LNG, used here as the best available
+        anchor.
+    pressure_margin : float
+        Operating ullage pressure margin above the saturation pressure at
+        ``design_inlet_temperature`` [Pa] (default: 2 bar = 2e5 Pa). Sets
+        ``design_pressure = P_sat(design_inlet_temperature) + pressure_margin``,
+        the in-flight runtime target the detailed boil-off model regulates
+        the ullage to. This is the operating rated pressure, matching the
+        AST paper's Eq. 4 (``P_rated = P_sat + ΔP``, sampled 2-6 bar in their
+        Table 5) -- NOT ``pressure_factor``, which is a separate structural
+        proof/burst multiplier (~5x) used only to size wall thickness with
+        margin, never an operating setpoint.
+    pressure_regulation_time_constant : float
+        Characteristic response time [s] of the tank's heater/vent regulation
+        system correcting a ullage pressure deviation from ``design_pressure``
+        (default: 60 s). Drives the regulation flow explicitly, m_dot_reg =
+        V_g/(R_specific*T_g*tau) * (design_pressure - P) -- a finite-gain
+        feedback law, not an exact/instantaneous constraint, matching the
+        finite authority of a real heater (c.f. Adler & Martins (2025)'s own
+        heater thermal-inertia constant C_h, Eq. 33-34) rather than assuming
+        infinite regulation authority. Smaller values regulate pressure more
+        tightly at the cost of a stiffer system; not yet validated against
+        real hardware response times.
     """
 
     def __defaults__(self):
@@ -67,6 +116,11 @@ class Cryogenic_Tank(Non_Integral_Tank):
         self.tank_accesories_weight_factor  = 1.5
         self.safety_factor                  = 1.6
         self.pressure_factor                = 5
+        self.boil_off_model                 = 'quasi_steady'
+        self.heater_direct_boiloff_fraction = 0.1
+        self.pressure_margin                = 2 * Units.bar
+        self.design_pressure                = None  # set from pressure_margin during design-time sizing
+        self.pressure_regulation_time_constant = 60.0
 
     def compute_volume(self, wings, fuselages, fuel_tanks):
         """Computes the net fuel volume and cryogenic structure/insulation sizing.
@@ -152,3 +206,24 @@ class Cryogenic_Tank(Non_Integral_Tank):
             length = self.lengths.external + self.diameters.external
             _ = compute_cylinder_center_of_gravity(self, length)
         return
+
+    def append_operating_conditions(self, segment):
+        if self.boil_off_model == 'quasi_steady':
+            append_cryogenic_tank_conditions(self, segment)
+        else:
+            # Exactly the 'none' behavior: no boil-off physics at all
+            # (boil_off_flow_rate stays at append_fuel_tank_conditions' own
+            # default of 0), not a simplified estimate.
+            append_fuel_tank_conditions(self, segment)
+        return
+
+    def append_unknowns_and_residuals(self, segment):
+        if self.boil_off_model == 'quasi_steady':
+            append_cryogenic_tank_unknown_and_residual(self, segment)
+        return
+
+    def compute_performance(self, state, network):
+        if self.boil_off_model == 'quasi_steady':
+            return compute_cryogenic_tank_performance(self, state, network)
+        else:
+            return compute_fuel_tank_performance(self, state, network)
