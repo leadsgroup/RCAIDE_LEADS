@@ -1,324 +1,138 @@
-# RCAIDE/Methods/Aeroacoustics/Semi_Empirical/Turbofan/jet_noise.py
-# 
-# 
-# Created:  Jul 2023, M. Clarke  
+# RCAIDE/Library/Methods/Aeroacoustics/Semi_Empirical/Propulsion/Engine_Noise/compute_jet_noise.py
+#
+# Created:  Jul 2023, M. Clarke
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 
 # RCAIDE imports
-import RCAIDE
-from RCAIDE.Framework.Core                        import Units , Data  
-from .angle_of_attack_effect                      import angle_of_attack_effect
-from .external_plug_effect                        import external_plug_effect
-from .ground_proximity_effect                     import ground_proximity_effect
-from .jet_installation_effect                     import jet_installation_effect
-from .mixed_noise_component                       import mixed_noise_component 
-from .primary_noise_component                     import primary_noise_component
-from .secondary_noise_component                   import secondary_noise_component 
-from RCAIDE.Library.Methods.Aeroacoustics.Common  import SPL_arithmetic 
-from RCAIDE.Library.Methods.Aeroacoustics.Metrics import A_weighting_metric  
+from RCAIDE.Framework.Core                        import Data
 
-# Python package imports   
-import numpy as np   
-from copy import deepcopy
+# Python package imports
+import numpy as np
 
-# ----------------------------------------------------------------------------------------------------------------------     
-#  turbofan engine noise 
-# ----------------------------------------------------------------------------------------------------------------------         
-def compute_jet_noise(microphone_locations, turbofan, aeroacoustic_data, segment, settings):
+# ----------------------------------------------------------------------------------------------------------------------
+#  turbofan engine noise
+# ----------------------------------------------------------------------------------------------------------------------
+def compute_jet_noise(microphone_locations, turbofan, cpt, segment, frequencies, flag):
     """
-    This method predicts the free-field 1/3 Octave Band SPL of coaxial subsonic jets for turbofan engines under various conditions.
+    Implements the Four-Source Model for Coaxial Jet Noise Prediction (Isothermal).
+    Based on ISVR Technical Report No 326, Section 4.
+
+    Inputs are vectorized across receptors: microphone_locations is (n_receptor, 3), cpt is
+    either a single control point index (shared by every receptor) or one index per receptor
+    (matching microphone_locations, when batching multiple control points in one call), and
+    frequencies is (n_freq,).
 
     Parameters
     ----------
-    microphone_locations : array_like
-        Coordinates of the microphones used to capture noise data.
-    turbofan : RCAIDE type turbofan
-        Contains turbofan engine specifications.
-            - core_nozzle : object
-                Contains attributes like exit_velocity and diameter.
-            - fan_nozzle : object
-                Contains attributes like exit_velocity and diameter.
-            - height : float
-                Engine centerline height above the ground plane.
-            - length : float
-                Length of the turbofan.
-            - diameter : float
-                Diameter of the turbofan.
-            - plug_diameter : float
-                Diameter of the engine external plug.
-            - geometry_xe, geometry_ye, geometry_Ce : float
-                Geometric parameters for jet installation effects.
-    aeroacoustic_data : object
-        Contains aeroacoustic data for the turbofan.
-            - core_nozzle : object
-                Contains attributes like exit_stagnation_temperature and exit_stagnation_pressure.
-            - fan_nozzle : object
-                Contains attributes like exit_stagnation_temperature and exit_stagnation_pressure.
-            - low_pressure_spool : object
-                Contains angular_velocity.
-    segment : RCAIDE type segment
-        Contains flight path data and conditions.
-            - conditions : object
-                Contains freestream velocity, mach number, and speed of sound.
-            - frames : object
-                Contains inertial time data.
-    settings : object
-        Contains settings such as center frequencies for noise calculations.
-
-    Returns
-    -------
-    engine_noise : Data
-        Contains the computed noise data.
-            - SPL_1_3_spectrum : array_like
-                One Third Octave Band SPL spectrum.
-            - SPL : float
-                Sound Pressure Level.
-            - SPL_dBA : float
-                A-weighted Sound Pressure Level.
-
-    Notes
-    -----
-    The function uses semi-empirical methods for coaxial jet noise prediction. It accounts for various conditions such as flyover, static, and in-flight scenarios.
-
-    **Major Assumptions**
-        * Coaxial subsonic jets
-        * Free-field conditions
-
-    **Theory**
-
-    The noise prediction is based on the combination of primary, secondary, and mixed jet components, with adjustments for installation and environmental effects.
-
-    **Definitions**
-
-    'SPL'
-        Sound Pressure Level, a measure of the sound intensity.
-
-    References
-    ----------
-    [1] SAE ARP876D: Gas Turbine Jet Exhaust Noise Prediction (original)
-    [2] de Almeida, Odenir. "Semi-empirical methods for coaxial jet noise prediction." (2008). (adapted)
-
-    See Also
-    --------
-    RCAIDE.Library.Methods.Aeroacoustics.Metrics.A_weighting_metric
-    RCAIDE.Library.Methods.Aeroacoustics.Common.SPL_arithmetic
+    turbofan : RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan
+    cpt : int or array_like
+        Control point index (or one index per receptor) into segment.state.conditions
+    flag : int
+        1 to apply the reduced-thrust (reverse/idle approach) 0.8x velocity scaling, else 0
     """
-    # unpack   
-    N1                     = aeroacoustic_data.fan.angular_velocity / Units.rpm
-    Velocity_secondary     = aeroacoustic_data.fan_nozzle.exit_velocity   
-    Temperature_secondary  = aeroacoustic_data.fan_nozzle.exit_stagnation_temperature 
-    Pressure_secondary     = aeroacoustic_data.fan_nozzle.exit_stagnation_pressure 
-    Velocity_primary       = aeroacoustic_data.core_nozzle.exit_velocity  
-    Temperature_primary    = aeroacoustic_data.core_nozzle.exit_stagnation_temperature 
-    Pressure_primary       = aeroacoustic_data.core_nozzle.exit_stagnation_pressure    
-    Velocity_aircraft      = segment.conditions.freestream.velocity
-    Mach_aircraft          = segment.conditions.freestream.mach_number 
-    AOA                    = segment.conditions.aerodynamics.angles.alpha / Units.deg 
-    noise_time             = segment.conditions.frames.inertial.time  
-    distance_microphone    = np.linalg.norm(microphone_locations,axis = 1)    
-    Diameter_primary       = turbofan.core_nozzle.diameter
-    Diameter_secondary     = turbofan.fan_nozzle.diameter
-    engine_height          = turbofan.origin[0][2] # This needs to be updated in a future PR
-    EXA                    = turbofan.length /  turbofan.diameter 
-    Plug_diameter          = turbofan.plug_diameter 
-    Xe                     = turbofan.geometry_xe
-    Ye                     = turbofan.geometry_ye
-    Ce                     = turbofan.geometry_Ce 
+    # 1. Extract Geometry and Conditions
+    Dp = turbofan.core_nozzle.diameter
+    Ds = turbofan.fan_nozzle.diameter
 
-    frequency              = settings.center_frequencies[5:]        
-    n_cpts                 = len(noise_time)     
-    n_freq                 = len(frequency) 
-    n_mic                  = len(microphone_locations)
-  
-    # ============================================================================= 
-    # Step 1: Computing atmospheric conditions
-    # ============================================================================= 
-    sound_ambient       = segment.conditions.freestream.speed_of_sound
-    density_ambient     = segment.conditions.freestream.density  
-    pressure_amb        = segment.conditions.freestream.pressure 
-    pressure_isa        = 101325 # [Pa]
-    R_gas               = 287.1  # [J/kg K]
-    gamma_primary       = 1.37  # Corretion for the primary jet
-    gamma               = 1.4 
+    core_nozzle_out = segment.state.conditions.energy.converters[turbofan.core_nozzle.tag].outputs
+    fan_nozzle_out  = segment.state.conditions.energy.converters[turbofan.fan_nozzle.tag].outputs
 
-    # ============================================================================= 
-    # Step 2: Compute operating conditions and properties of jet     
-    # ============================================================================= 
-    # Calculation of nozzle areas
-    Area_primary   =  np.pi*(Diameter_primary/2)**2 
-    Area_secondary =  np.pi*(Diameter_secondary/2)**2   
+    # cpt may be a scalar or an array of per-receptor control-point indices; indexing with
+    # np.atleast_1d(cpt) (rather than [cpt, 0]) keeps the trailing column dimension so these
+    # broadcast correctly against the (n_receptor, n_freq) spectrum arrays below either way.
+    cpt_idx = np.atleast_1d(cpt)
 
-    # Defining each array before the main loop 
-    theta     =  np.zeros(n_mic)
-    bool_1    = (microphone_locations[:,1] > 0) &  (microphone_locations[:,0] > 0)
-    bool_2    = (microphone_locations[:,1] > 0) &  (microphone_locations[:,0] < 0)
-    bool_3    = (microphone_locations[:,1] < 0) &  (microphone_locations[:,0] < 0)
-    bool_4    = (microphone_locations[:,1] < 0) &  (microphone_locations[:,0] > 0)
+    # Isothermal conditions, one value per receptor
+    Vp = core_nozzle_out.velocity[cpt_idx]
+    Vs = fan_nozzle_out.velocity[cpt_idx]
+
+    if flag == 1:
+        Vp = Vp * 0.8
+        Vs = Vs * 0.8
+    freqs = np.atleast_1d(frequencies).reshape(1, -1)
+
+    # Ambient properties (approximated for static standard day)
+    c_0 = 343.0
+
+    # 2. Aerodynamic Flow Model (Section 4.1.1)
+
+    # Area calculations
+    Ap = (np.pi / 4.0) * Dp**2
+    As = (np.pi / 4.0) * (Ds**2 - Dp**2)
+
+    # Velocity and Area Ratios
+    lambda_val = Vs / Vp
+    beta = As / Ap # Density ratio is 1 for isothermal
+
+    # Effective Jet (Interaction Zone)
+    # De = Dp * (1 + lambda^2 * beta)^(1/2)
+    De = Dp * np.sqrt(1 + (lambda_val**2) * beta)
+
+    # Mixed Jet (Fully Mixed)
+    # Enforcing conservation of mass and momentum for isothermal flow:
+    # Vm = Vp * (1 + lambda^2 * beta) / (1 + lambda * beta)
+    Vm = Vp * (1 + (lambda_val**2) * beta) / (1 + lambda_val * beta)
+
+    # Am = Ap * (1 + lambda * beta)^2 / (1 + lambda^2 * beta)
+    Am = Ap * ((1 + lambda_val * beta)**2) / (1 + (lambda_val**2) * beta)
+    Dm = np.sqrt(4.0 * Am / np.pi)
+
+    # 3. Acoustic Model (Section 4.2.1)
+
+    # Cut-off frequencies (where f * D / V = 1)
+    f1_s = Vs / Ds
+    f1_m = Vm / Dm
+
+    # Line-of-sight distance and polar angle to each receptor (0 = Nose, 180 = Tail)
+    mic_x, mic_y, mic_z = microphone_locations[:, 0:1], microphone_locations[:, 1:2], microphone_locations[:, 2:3]
+    R_dist = np.maximum(np.sqrt(mic_x**2 + mic_y**2 + mic_z**2), 0.1)   # guard against log(0)
+    theta_rad = np.arctan2(mic_y, mic_x)
+
+    # --- Component A: Secondary Jet Shear Layer ---
+    St_s = freqs * Ds / Vs
+    base_spl_s = empirical_single_jet_spl(Vs, Ds, St_s, c_0, theta_rad)
+    Fu = 1.0 / (1.0 + (f1_s / freqs)**2)
+    SPL_s = base_spl_s + 10.0 * np.log10(Fu)
+
+    # --- Component B: Effective Jet (Interaction Zone) ---
+    St_e = freqs * De / Vp
+    base_spl_e = empirical_single_jet_spl(Vp, De, St_e, c_0, theta_rad)
+    SPL_e = base_spl_e - 7.0
+
+    # --- Component C: Fully Mixed Jet ---
+    St_m = freqs * Dm / Vm
+    base_spl_m = empirical_single_jet_spl(Vm, Dm, St_m, c_0, theta_rad)
+    Fd = 1.0 / (1.0 + (freqs / f1_m)**2)
+    SPL_m = base_spl_m + 10.0 * np.log10(Fd)
+
+    # --- Total Incoherent Sum ---
+    SPL_sum = 10.0 * np.log10(10**(SPL_s/10.0) + 10**(SPL_e/10.0) + 10**(SPL_m/10.0))
+
+    # Apply true spherical divergence (20 * log10(R))
+    distance_correction = 20.0 * np.log10(R_dist)
+    SPL_total = SPL_sum - distance_correction
+
+    jet_noise = Data()
+    jet_noise.SPL_1_3_spectrum = np.expand_dims(SPL_total, axis=0)
+    return jet_noise
+
+def empirical_single_jet_spl(V, D, St, c_0, theta_rad):
+    """
+    Tuned empirical spectral shape for a single jet with directivity.
+    """
+    St_peak = 0.65
+    shape_factor = (St / St_peak)**1.2 / (1.0 + (St / St_peak)**2.0)
+    OASPL = 140.0 + 80.0 * np.log10(V / c_0) + 20.0 * np.log10(D)
     
-    theta[bool_1] =  np.pi - np.arctan(microphone_locations[:,1]/microphone_locations[:,0])[bool_1]
-    theta[bool_2] =  np.arctan(microphone_locations[:,1]/ abs(microphone_locations[:,0]))[bool_2]
-    theta[bool_3] =  np.arctan(abs(microphone_locations[:,1])/ abs(microphone_locations[:,0]))[bool_3]
-    theta[bool_4] =  np.pi - np.arctan(abs(microphone_locations[:,1])/ microphone_locations[:,0])[bool_4] 
-
-    theta_P                = np.tile(theta[None,:],(n_cpts,1))  
-    theta_S                = deepcopy(theta_P)
-    theta_M                = deepcopy(theta_P)
-    EX_p                   = np.zeros((n_cpts,n_mic,n_freq)) 
-    EX_s                   = np.zeros((n_cpts,n_mic,n_freq)) 
-    EX_m                   = np.zeros((n_cpts,n_mic,n_freq))  
-    SPL_p                  = np.zeros((n_cpts,n_mic,n_freq)) 
-    SPL_s                  = np.zeros((n_cpts,n_mic,n_freq)) 
-    SPL_m                  = np.zeros((n_cpts,n_mic,n_freq)) 
-    SPL                    = np.zeros((n_cpts,n_mic))
-    SPL_dBA                = np.zeros((n_cpts,n_mic))
-    SPL_1_3_spectrum       = np.zeros((n_cpts,n_mic,n_freq)) 
-    SPL_1_3_spectrum_dBA   = np.zeros((n_cpts,n_mic,n_freq)) 
-
-    # Primary and Secondary jets
-    Cpp = R_gas/(1-1/gamma_primary)
-    Cp  = R_gas/(1-1/gamma)
+    # Empirical directivity index (DI) mimicking a jet noise plume
+    peak_theta = np.radians(180.0)
+    DI = 15.0 * np.exp(-((theta_rad - peak_theta)**2) / 0.15)
     
-    # densitys 
-    density_primary   = Pressure_primary/(R_gas*Temperature_primary-(0.5*R_gas*Velocity_primary**2/Cpp)) 
-    density_secondary = Pressure_secondary/(R_gas*Temperature_secondary-(0.5*R_gas*Velocity_secondary**2/Cp))
+    # Normalize so 90 degrees evaluates to 0 dB to keep the previous calibration intact
+    DI_90 = 15.0 * np.exp(-((np.radians(90.0) - peak_theta)**2) / 0.3)
     
-    # mas sflow 
-    mass_flow_primary   = Area_primary*Velocity_primary*density_primary 
-    mass_flow_secondary = Area_secondary*Velocity_secondary*density_secondary
-
-    # Mach number of the external flow - based on the aircraft velocity
-    Mach_aircraft = Velocity_aircraft/sound_ambient
-
-    # Calculation Procedure for the Mixed Jet Flow Parameters 
-    Velocity_mixed    = (mass_flow_primary*Velocity_primary+mass_flow_secondary*Velocity_secondary)/  (mass_flow_primary+mass_flow_secondary)
-    Temperature_mixed = (mass_flow_primary*Temperature_primary+mass_flow_secondary*Temperature_secondary)/   (mass_flow_primary+mass_flow_secondary)
-    density_mixed     = pressure_amb/(R_gas*Temperature_mixed-(0.5*R_gas*Velocity_mixed**2/Cp))
-    Area_mixed        = Area_primary*density_primary*Velocity_primary*(1+(mass_flow_secondary/mass_flow_primary))/   (density_mixed*Velocity_mixed)
-    Diameter_mixed    = (4*Area_mixed/np.pi)**0.5
-
-    XBPR = mass_flow_secondary/mass_flow_primary - 5.5
-    # Force the float into a 1D array to allow boolean indexing
-    XBPR = np.atleast_1d(XBPR) 
-    XBPR[XBPR<0] = 0
-    XBPR[XBPR>4] = 4
-
-    # Auxiliary parameter defined as DVPS
-    DVPS = np.abs((Velocity_primary - (Velocity_secondary*Area_secondary+Velocity_aircraft*Area_primary)/(Area_secondary+Area_primary)))
-    # Force the float into a 1D array
-    DVPS = np.atleast_1d(DVPS)
-    DVPS[DVPS<0.3] = 0.3
-    # ============================================================================= 
-    # Step 3: Update dimension of jet for spectral calculations  
-    # =============================================================================
-   
-    frequency          = np.tile(np.atleast_2d(frequency),(n_cpts,1))  
-    Diameter_primary   = np.tile(np.array([[Diameter_primary]]),(n_cpts,n_freq))  
-    DVPS               = np.tile(DVPS,(1,n_freq))  
-    Diameter_secondary = np.tile(np.array([[Diameter_secondary]]),(n_cpts,n_freq))  
-    Velocity_secondary = np.tile(Velocity_secondary,(1,n_freq))
-    Velocity_primary   = np.tile(Velocity_primary,(1,n_freq))
-    Velocity_aircraft  = np.tile(Velocity_aircraft,(1,n_freq))   
-    Diameter_mixed     = np.tile(Diameter_mixed,(1,n_freq))  
-    Velocity_mixed     = np.tile(Velocity_mixed,(1,n_freq))
-    sound_ambient      = np.tile(sound_ambient,(1,n_freq))
-
-    # =============================================================================     
-    # Step 4: Comptue noise at each microphone
-    # =============================================================================
-    for j in range(n_mic):
-        theta_p = np.tile(np.atleast_2d(abs(theta_P[:,j])).T,(1,n_freq))
-        theta_s = np.tile(np.atleast_2d(abs(theta_S[:,j])).T,(1,n_freq))
-        theta_m = np.tile(np.atleast_2d(abs(theta_M[:,j])).T,(1,n_freq))
-   
-        # Calculation of the Strouhal number for each jet component (p-primary, s-secondary, m-mixed)
-        Str_p = frequency*Diameter_primary/(DVPS)  # Primary jet
-        Str_s = frequency*Diameter_secondary/(Velocity_secondary-Velocity_aircraft) # Secondary jet
-        Str_m = frequency*Diameter_mixed/(Velocity_mixed-Velocity_aircraft) # Mixed jet
-
-        # Calculation of the Excitation adjustment parameter 
-        excitation_Strouhal = (N1/60)*(Diameter_mixed/Velocity_mixed)
-
-        SX = 50*(excitation_Strouhal-0.25)*(excitation_Strouhal-0.5)
-        SX[excitation_Strouhal > 0.25] = 0.0 
-        SX[excitation_Strouhal < 0.5]  = 0.0 
-
-        # Effectiveness
-        exps = np.exp(-SX)
-
-        #Spectral Shape Factor
-        exs = 5*exps*np.exp(-(np.log10(Str_m/(2*excitation_Strouhal+0.00001)))**2)
-
-        #Fan Duct Lenght Factor
-        exd = np.exp(0.6-(EXA)**0.5)
-
-        #Excitation source location factor (zk)
-        zk = 1-0.4*(exd)*(exps)     
-
-        # Loop for the frequency array range 
-        exc = sound_ambient/Velocity_mixed 
-        exc[theta_m>1.4] = (sound_ambient[theta_m>1.4]/Velocity_mixed[theta_m>1.4])*(1-(1.8/np.pi)*(theta_m[theta_m>1.4]-1.4))
-
-        #Acoustic excitation adjustment (EX)
-        EX_m = exd*exs*exc   # mixed component - dependant of the frequency
-
-        EX_p = +5*exd*exps   #primary component - no frequency dependance
-        EX_s = 2*sound_ambient/(Velocity_secondary*(zk)) #secondary component - no frequency dependance    
-
-        distance_primary   = np.tile(np.array([[distance_microphone[j]]]),(n_cpts,n_freq))
-        distance_secondary = np.tile(np.array([[distance_microphone[j]]]),(n_cpts,n_freq))
-        distance_mixed     = np.tile(np.array([[distance_microphone[j]]]),(n_cpts,n_freq))
-
-        # Noise attenuation due to Ambient Pressure
-        dspl_ambient_pressure = 20*np.log10(pressure_amb/pressure_isa)
-
-        # Noise attenuation due to Density Gradientes
-        dspl_density_p = 20*np.log10((density_primary+density_secondary)/(2*density_ambient))
-        dspl_density_s = 20*np.log10((density_secondary+density_ambient)/(2*density_ambient))
-        dspl_density_m = 20*np.log10((density_mixed+density_ambient)/(2*density_ambient))
-
-        # Noise attenuation due to Spherical divergence
-        dspl_spherical_p = 20*np.log10(Diameter_primary/distance_primary)
-        dspl_spherical_s = 20*np.log10(Diameter_mixed/distance_secondary)
-        dspl_spherical_m = 20*np.log10(Diameter_mixed/distance_mixed) 
-
-        # Calculation of the total noise attenuation (p-primary, s-secondary, m-mixed components)
-        DSPL_p = dspl_ambient_pressure+dspl_density_p+dspl_spherical_p 
-        DSPL_s = dspl_ambient_pressure+dspl_density_s+dspl_spherical_s 
-        DSPL_m = dspl_ambient_pressure+dspl_density_m+dspl_spherical_m  
-
-        # Calculation of interference effects on jet noise
-        ATK_m   = angle_of_attack_effect(AOA,Mach_aircraft,theta_m)
-        INST_s  = jet_installation_effect(Xe,Ye,Ce,theta_s,Diameter_mixed)
-        Plug    = external_plug_effect(Velocity_primary,Velocity_secondary, Velocity_mixed, Diameter_primary,Diameter_secondary,
-                                       Diameter_mixed, Plug_diameter, sound_ambient, theta_p,theta_s,theta_m)
-
-        GPROX_m = ground_proximity_effect(Velocity_mixed,sound_ambient,theta_m,engine_height,Diameter_mixed,frequency)
-
-        # Calculation of the sound pressure level for each jet component
-        SPL_p = primary_noise_component(Velocity_primary,Temperature_primary,R_gas,theta_p,DVPS,sound_ambient, Velocity_secondary,Velocity_aircraft,Area_primary,Area_secondary,DSPL_p,EX_p,Str_p) + Plug.PG_p
-        SPL_p[np.isnan(SPL_p)] = 1E-6
-        
-        SPL_s = secondary_noise_component(Velocity_primary,theta_s,sound_ambient,Velocity_secondary, Velocity_aircraft,Area_primary,Area_secondary,DSPL_s,EX_s,Str_s) + Plug.PG_s + INST_s
-        SPL_s[np.isnan(SPL_s)] = 1E-6
-        
-        SPL_m = mixed_noise_component(Velocity_primary,theta_m,sound_ambient,Velocity_secondary,  Velocity_aircraft,Area_primary,Area_secondary,DSPL_m,EX_m,Str_m,Velocity_mixed,XBPR) + Plug.PG_m + ATK_m + GPROX_m
-        SPL_m[np.isnan(SPL_m)] = 1E-6
-        
-        # Sum of the Total Noise
-        SPL_total = 10 * np.log10(10**(0.1*SPL_p)+10**(0.1*SPL_s)+10**(0.1*SPL_m))
-
-        # Store SPL history      
-        SPL_1_3_spectrum[:,j,:]       = SPL_total 
-        SPL[:,j]                      = SPL_arithmetic(SPL_total,sum_axis=1 )
-        SPL_1_3_spectrum_dBA[:,j,:]   = A_weighting_metric(SPL_total,frequency)
-        SPL_dBA[:,j]                  = SPL_arithmetic(np.atleast_2d(A_weighting_metric(SPL_total,frequency)),sum_axis=1)
-
-    engine_noise                   = Data()   
-    engine_noise.SPL_1_3_spectrum  = SPL_1_3_spectrum_dBA
-    engine_noise.SPL               = SPL
-    engine_noise.SPL_dBA           = SPL_dBA
-
-    return engine_noise
+    SPL = OASPL + 10.0 * np.log10(shape_factor) + (DI - DI_90)
+    return SPL

@@ -1,556 +1,302 @@
 # empirical_jet_noise_test.py
 #
-# Created: Jan 2024, M. Clarke 
+# Created: Jan 2024, M. Clarke
+# Modified: Aug 2026, P. Siripun
 
-""" setup file for empirical jet noise base on SAE standards 
+""" Validation/demo for the semi-empirical airframe + engine noise footprint model.
+
+Builds a representative 737-class vehicle and flies it down a synthetic straight-in 3 degree
+glideslope approach, then calls RCAIDE.Framework.Analyses.Aeroacoustics.Semi_Empirical directly
+(the same analysis a real mission would use) to compute the noise footprint over a ground
+receptor grid, and integrates it into a Sound Exposure Level (SEL) map.
 """
- 
+
 # ----------------------------------------------------------------------
 #   Imports
 # ----------------------------------------------------------------------
-
 import RCAIDE
-from RCAIDE.Framework.Core import Units, Data   
-from RCAIDE.Library.Plots import *  
-from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Airframe.landing_gear_noise_model import compute_landing_gear_noise
-from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Airframe.flap_noise_model import flap_noise_model
-from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Airframe.slat_noise_model import slat_noise
-from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Propulsion.Engine_Noise.compute_fan_noise import compute_fan_noise
-from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Propulsion.Engine_Noise.compute_core_noise import compute_core_noise
-from RCAIDE.Framework.Mission.Common                                              import Results  
-from RCAIDE.Framework.Mission.Segments.Segment                                    import Segment 
-from RCAIDE.Framework.Mission.Common                                              import Conditions 
-from RCAIDE.Library.Methods.Aeroacoustics.Common   import SPL_arithmetic 
-from RCAIDE.Library.Plots import * 
- 
-# Python Imports  
-import sys
-import matplotlib.pyplot as plt 
-import numpy as np     
-from copy import deepcopy
-import os
+from RCAIDE.Framework.Core import Units, Data
+from RCAIDE.Framework.Mission.Common import Results
+from RCAIDE.Framework.Mission.Segments.Segment import Segment
+from RCAIDE.Library.Methods.Geometry.Planform.wing_planform import wing_planform
 
-# local imports 
-base_dir = os.path.dirname(os.path.abspath(__file__))
-
-vehicles_path = os.path.abspath(
-    os.path.join(base_dir, "..", "..", "Vehicles")
-)
-
-if vehicles_path not in sys.path:
-    sys.path.insert(0, vehicles_path)
+import matplotlib.pyplot as plt
+import matplotlib.tri as tri
+import numpy as np
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
- 
-# ----------------------------------------------------------------------
-#   Main
-# ---------------------------------------------------------------------- 
-def main():  
-    # define plotting parameters 
-    PP = plot_parameters()  
+def main():
+    vehicle = vehicle_setup()
+    segment, ctrl_pts = approach_segment_setup(vehicle)
 
-    # landing gear noise validation
-    Landing_Gear_Validation(PP) 
-    
-    return  
-    
-    
-# ------------------------------------------------------------------ 
-# Harmonic Noise Validation
-# ------------------------------------------------------------------  
-def Landing_Gear_Validation(PP): 
-    
-    # define aircraft properties 
-    '''gear_params: dict
-    - num_wheels (Nw): Number of wheels
-    - wheel_diam (d): Wheel diameter [inches]
-    - wheel_width (w): Wheel width [inches]
-    - strut_lengths (L_j): List of lengths of struts [inches]
-    - strut_dims (dim_j): List of diameters/widths of struts [inches]
-    - aircraft_weight (W_ac): Max Takeoff Weight [lbs]
-    - track_angle (gamma): Wheel track alignment angle [degrees]
-    
-flight_params: dict
-    - M_flight: Flight Mach number
-    - theta: Emission angle [degrees] (90 is overhead)
-    - R: Distance to observer [ft]
-    - c0: Speed of sound [ft/s] (default 1116)
-    - rho0: Air density [slugs/ft^3] (default 0.00237)'''
+    aeroacoustics_analysis = RCAIDE.Framework.Analyses.Aeroacoustics.Semi_Empirical()
+    receptor_grid_setup(aeroacoustics_analysis, x_range=(-500., 3500.), y_range=(-800., 800.), resolution=50)
 
-    #define params for landing gear model
-    D = 1.016 #m
-    H = 8.0518 #m
-    wheels= 2
-    Weight = 68038.8555 #kg
-    strut_diameter=0.11811#m
-    theta =(np.pi)/2 #deg 
-    frequency = np.logspace(1.5, 4.5, 100)
-    W = 0.3556#m
-    
-    #define params for flap model
-    thickness = 0.1#m
-    cf = 0.9#m
-    deltaf = np.radians(37.5)
+    aeroacoustics_analysis.evaluate_aeroacoustics(segment, vehicle)
 
-    #define params for slat model
-    phi= 0
-    Ls = 0.08128
-    gamma_s = np.radians(20)
-    sigma_s =  np.radians(25)
-    alpha =  np.radians(10)
+    footprint = compute_sound_exposure_level(aeroacoustics_analysis, segment)
+    plot_footprint(aeroacoustics_analysis, footprint)
 
-    #define param for core noise model
-    pr = 13.1
-    
-
-
- # define operating conditions                                            
-    a                       = 343.376
-    T                       = 288.16889478  
-    density                 = 1.2250	
-    dynamic_viscosity       = 1.81E-5   
-    ctrl_pts                = 1
-    AoA                     = 4
-    U = 103 #aircraft velocity
-    M = 0.2 #mach number
-    frequency_flp = np.logspace(1, 4, 100)
-
-    #------------------------------------------------------------------------------------------------------------------------------------
-    # Propulsor: Starboard Propulsor
-    #------------------------------------------------------------------------------------------------------------------------------------
-    turbofan                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan()
-    turbofan.tag                                = 'starboard_propulsor'
-    turbofan.bypass_ratio                       = 5.4
-    turbofan.design_altitude                    = 35000.0*Units.ft
-    turbofan.design_mach_number                 = 0.78
-    turbofan.design_thrust                      = 35000.0* Units.N             
-
-    # fan
-    fan                                         = RCAIDE.Library.Components.Powertrain.Converters.Fan()
-    fan.tag                                     = 'fan'
-    fan.polytropic_efficiency                   = 0.93
-    fan.pressure_ratio                          = 1.7
-    turbofan.fan                                = fan
-
-    # working fluid
-    turbofan.working_fluid                      = RCAIDE.Library.Attributes.Gases.Air()
-    ram                                         = RCAIDE.Library.Components.Powertrain.Converters.Ram()
-    ram.tag                                     = 'ram'
-    turbofan.ram                                = ram
-
-    #combustor
-    combustor                                         = RCAIDE.Library.Components.Powertrain.Converters.Combustor()
-    combustor.tag                                     = 'combustor'
-    combustor.number_of_fuel_nozzle                   = 18
-    combustor.diameter                                = 0.6858
-    turbofan.combustor                                = combustor
-
-    # core nozzle
-    core_nozzle                                    = RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle()   
-    core_nozzle.tag                                = 'core nozzle'
-    core_nozzle.polytropic_efficiency              = 0.98                    
-    core_nozzle.pressure_ratio                     = 0.995 
-    core_nozzle.diameter                           = 0.38118288
-    turbofan.core_nozzle                           = core_nozzle
-             
-    # fan nozzle             
-    fan_nozzle                                     = RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle()   
-    fan_nozzle.tag                                 = 'fan nozzle'
-    fan_nozzle.polytropic_efficiency               = 0.98                    
-    fan_nozzle.pressure_ratio                      = 0.995
-    turbofan.fan_nozzle                            = fan_nozzle 
-
-    m = None #mass flow rate
-
-
-    # define microphone locations
-    microphone_locations = np.zeros((1,3))   
-    microphone_locations = np.array([[80,80,80]])
-    print('setting distance:', np.linalg.norm(microphone_locations, axis=1))
-
-    # define segment 
-    segment                                                = Segment()  
-    conditions                                             = Results()  
-    conditions.aerodynamics.angles.alpha                   = alpha
-    conditions.freestream.density                          = np.ones((ctrl_pts,1)) * density
-    conditions.freestream.dynamic_viscosity                = np.ones((ctrl_pts,1)) * dynamic_viscosity   
-    conditions.freestream.speed_of_sound                   = np.ones((ctrl_pts,1)) * a 
-    conditions.freestream.temperature                      = np.ones((ctrl_pts,1)) * T
-    conditions.freestream.pressure                         = 97717 #pa at 300m
-    conditions.freestream.velocity                         = 85 
-    conditions.frames.inertial.velocity_vector             = np.array([[U, 0. ,0.]]) 
-    conditions.freestream.mach_number                      = np.atleast_2d(np.linalg.norm(conditions.frames.inertial.velocity_vector,axis = 1)).T/ a
-    conditions.frames.planet.true_course                   = np.zeros((ctrl_pts,3,3)) 
-    conditions.frames.planet.true_course[:,2,2]            = 1 
-    conditions.frames.wind.transform_to_inertial           = np.zeros((ctrl_pts,3,3))    
-    conditions.frames.body.transform_to_inertial           = np.zeros((ctrl_pts,3,3))
-    conditions.frames.body.transform_to_inertial[:,0,0]    = np.cos(AoA)
-    conditions.frames.body.transform_to_inertial[:,0,2]    = np.sin(AoA)
-    conditions.frames.body.transform_to_inertial[:,1,1]    = 1
-    conditions.frames.body.transform_to_inertial[:,2,0]    = -np.sin(AoA)
-    conditions.frames.body.transform_to_inertial[:,2,2]    = np.cos(AoA)     
-
-    segment.state.conditions                               = conditions 
-
-
-    turbofan.append_operating_conditions(segment, segment.state.conditions.energy,segment.state.conditions.aeroacoustics)
- 
-    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.angular_velocity = 4200
-    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.exit_velocity = 350 * Units.mph
-    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.exit_stagnation_temperature = 440
-    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.exit_stagnation_pressure = 152*1000
-    
-    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.number_of_blades = 22
-    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.diameter = 70*Units.inches
-
-    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.static_temperature_output = T + (80/1.8)
-    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.static_temperature_input  = T
-
-    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan_nozzle.exit_velocity = 280.0
-    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan_nozzle.exit_stagnation_temperature = 340.0
-    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan_nozzle.exit_stagnation_pressure = 2611.8 
-
-    # Core Nozzle (Primary) Parameters - Realistic for CFM56
-    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].core_nozzle.exit_velocity = 400.0
-    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].core_nozzle.exit_stagnation_temperature = 800.0
-    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].core_nozzle.exit_stagnation_pressure = 165000.0
-        
-    segment.state.conditions.energy.converters['combustor'].inputs.static_temperature = 622.7
-    segment.state.conditions.energy.converters['combustor'].outputs.static_temperature = 1000
-    
-      
-    segment.state.conditions.expand_rows(ctrl_pts)   
-           
-    # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    # Get Raw Validation Data
-    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
-    import csv
-    def read_noise_data(file_path):
-        frequency_hz = []
-        total_SPL = []
-        
-        with open(file_path, mode='r') as file:
-            reader = csv.reader(file)
-            
-            # Skip the header row ("Frequency (Hz),Total SPL (dB)")
-            next(reader)
-            
-            # Extract and convert the data
-            for row in reader:
-                if row: # Check to ensure the row isn't empty
-                    frequency_hz.append(float(row[0]))
-                    total_SPL.append(float(row[1]))
-                    
-        return frequency_hz, total_SPL
-    # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    # Run simulation  
-    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     
-    R_val = np.array([[3200]])
-    theta_raw = np.array([[1.55]])
-    theta_flap = np.array([[1.55]])
-    theta_engine = np.array([[1.55]])
-
-    lg_noise1 = compute_landing_gear_noise(R_val, theta_raw, D, H, W, wheels, M, Weight, strut_diameter, frequency, segment)
-    validation_lg = read_noise_data('/Users/siripunn/Desktop/LEADS_WORK/RESEARCH/05_Aeroacoustics/Boeing_Method/LG_Noise/b737_gear_noise_data.csv')
-    # plt.figure(figsize=(10, 6))
-    # plt.semilogx(results['Freq'], results['Total'], 'k-', linewidth=2, label='Total Noise')
-    # plt.semilogx(results['Freq'], results['Low'], 'r--', label='Low Freq (Wheels)')
-    # plt.semilogx(results['Freq'], results['Mid'], 'g--', label='Mid Freq (Struts)')
-    # plt.semilogx(results['Freq'], results['High'], 'b--', label='High Freq (Details)')
-    # plt.xlabel('Frequency (Hz)')
-    # plt.ylabel('SPL (dB)')
-    # plt.title(f'Landing Gear Noise Prediction (M={0.2}, $\\theta=90^\circ$)')
-    # plt.legend()
-    # plt.grid(True, which="both", alpha=0.5)
-    # plt.show()
-    
-    flap_noise1 = flap_noise_model(R_val, theta_flap, cf, thickness, deltaf, frequency, segment)
-    validation_flap = read_noise_data('/Users/siripunn/Desktop/LEADS_WORK/RESEARCH/05_Aeroacoustics/Boeing_Method/Flap_Side_Edge_Noise/b737_flap_noise_data.csv')
-    # print(comp_li)
-    # fig, ax = plt.subplots(figsize=(8, 5))
-    # ax.plot(frequency_flp,comp_li[0],label='HF Curve')
-    # # Logarithmic X-axis
-    # ax.set_xscale('log')
-
-    # plt.ylabel('SPL dB')
-    # plt.xlabel('Freq. Hz')
-    # plt.ylim([-85,0])
-    # plt.tight_layout()
-    # plt.legend()
-    # plt.show()
-
-    slat_noise1 = slat_noise(R_val, phi, theta_flap[0][0], Ls, gamma_s, sigma_s, alpha, segment, frequency, A=1e-5)
-    #validation_slat = read_noise_data('/Users/siripunn/Desktop/LEADS_WORK/RESEARCH/05_Aeroacoustics/Boeing_Method/Core Noise/b737_core_noise_data.csv')
-    # print(slat_noise1)
-    # fig, ax = plt.subplots(figsize=(8, 5))
-    # ax.plot(frequency_flp,slat_noise1[0],label='HF Curve')
-    # # # Logarithmic X-axis
-    # ax.set_xscale('log')
-    # plt.xlim([10**2,10**4])
-
-    # plt.legend()
-    # plt.show()
-
-
-    fan_noise1 = compute_fan_noise(R_val[0], theta_engine[0][0], turbofan, m, segment.state.conditions.aeroacoustics, segment, frequency)
-    validation_fan = read_noise_data('/Users/siripunn/Desktop/LEADS_WORK/RESEARCH/05_Aeroacoustics/Boeing_Method/Fan Noise/b737_fan_noise_data.csv/b737_fan_noise_data.csv')
-    core_noise1 = compute_core_noise(R_val, theta_engine, turbofan, pr, segment.state.conditions.aeroacoustics, segment, frequency)
-    validation_core = read_noise_data('/Users/siripunn/Desktop/LEADS_WORK/RESEARCH/05_Aeroacoustics/Boeing_Method/Core Noise/b737_core_noise_data.csv')
-    # print(core_noise1.SPL_1_3_spectrum)
-    # fig, ax = plt.subplots(figsize=(8, 5))
-    # ax.plot(frequency,core_noise1.SPL_1_3_spectrum[0][0],label='HF Curve')
-    # ax.set_xscale('log')
-
-    #flap slat noise is current neg. db
-    SPL_total = np.concatenate((lg_noise1.Total,flap_noise1[0],slat_noise1[0],fan_noise1.SPL_1_3_spectrum[0][0],core_noise1.SPL_1_3_spectrum[0][0]), axis=0)
-    twodim = np.atleast_2d(SPL_total)
-    total_SPL_classic = SPL_arithmetic(np.array([lg_noise1.Total,flap_noise1[0],slat_noise1[0],fan_noise1.SPL_1_3_spectrum[0][0],core_noise1.SPL_1_3_spectrum[0][0]]),sum_axis = 0)
-    fig, ax = plt.subplots(figsize=(8, 5))
-    #ax.plot(validation_lg[0],validation_lg[1], 'bo')
-    #ax.plot(validation_flap[0],validation_flap[1],'bo')
-    #ax.plot(validation_fan[0],validation_fan[1],'bo')
-    #ax.plot(validation_core[0],validation_core[1],'bo')
-    ax.plot(frequency,total_SPL_classic,label='Total Noise')
-    ax.plot(frequency,core_noise1.SPL_1_3_spectrum[0][0],label='Core Noise')
-    ax.plot(frequency,fan_noise1.SPL_1_3_spectrum[0][0],label='Fan Noise')
-    ax.plot(frequency,slat_noise1[0],label='Slat Noise')
-    ax.plot(frequency,flap_noise1[0],label='Flap Noise')
-    ax.plot(frequency,lg_noise1.Total,label='Landing Gear Noise')
-    ax.set_xscale('log')
-    plt.legend()
     return
 
-def plot_parameters():
-     
-    plt.rcParams.update({'font.size': 12})
-    plt.rcParams['axes.linewidth'] = 1. 
- 
-    PP = Data(  
-        fig_size_width  = 14 ,
-        fig_size_height = 9 ,       
-        lw  = 1,                             # line_width               
-        m   = 5,                             # markersize               
-        lf  = 10,                            # legend_font_size         
-        Slc = ['black','green','yellow'],       # line_colors        
-        Slm = ['^','o','s'],                 # line_markers       
-        Sls = '-',                           # line_styles        
-        Elc = ['darkred','red','tomato'],    # Experimental_line_colors 
-        Elm = ['s'],                         # Experimental_line_markers
-        Els = '',                            # Experimental_line_styles 
-        Rlc = ['darkblue','blue','cyan'],    # Ref_Code_line_colors     
-        Rlm = ['o'],                         # Ref_Code_line_markers    
-        Rls = ':',                           # Ref_Code_line_styles     
-    )   
-    
-    return PP  
- 
-if __name__ == '__main__': 
-    main()  
-    plt.show()   
-    
-   
 
-#     # vehicle data
-#     vehicle                           = vehicle_setup()
-#     vehicle.wings.main_wing.control_surfaces.flap.configuration_type = 'triple_slotted'  
-#     vehicle.wings.main_wing.high_lift = True
-    
-#     # Set up configs
-#     configs           = configs_setup(vehicle) 
-#     analyses          = analyses_setup(configs)  
-#     mission           = baseline_mission_setup(analyses)
-#     basline_missions  = baseline_missions_setup(mission)     
-#     baseline_results  = basline_missions.base_mission.evaluate()
-     
-#     _   = post_process_noise_data(baseline_results,compute_PNL=True )      
-     
-#     # SPL of rotor check during hover 
-#     E190_SPL        = np.max(baseline_results.segments.takeoff.conditions.aeroacoustics.hemisphere_SPL_dBA)
-#     E190_SPL_true   = 124.19217253485145 # this value is high because its of a hemisphere of radius 20
-#     E190_diff_SPL   = np.abs(E190_SPL - E190_SPL_true)
-#     print('SPL difference: ',E190_diff_SPL)
-#     assert np.abs((E190_SPL - E190_SPL_true)/E190_SPL_true) < 1e-3 
-#     return
+# ----------------------------------------------------------------------
+#   Vehicle
+# ----------------------------------------------------------------------
+def vehicle_setup():
+    vehicle = RCAIDE.Vehicle()
+    vehicle.tag = 'b737_800'
+    vehicle.mass_properties.max_takeoff = 68038.8555  # kg
 
-# def base_analysis(vehicle):
+    # ------------------------------------------------------------------
+    #  Landing Gear
+    # ------------------------------------------------------------------
+    main_gear                  = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
+    main_gear.tire_diameter    = 1.016   # m
+    main_gear.tire_width       = 0.3556  # m
+    main_gear.strut_length     = 1.2     # m
+    main_gear.strut_diameter   = 0.11811 # m
+    main_gear.wheels           = 2
+    main_gear.units            = 2       # left and right main gear legs
+    main_gear.gear_extended    = True
+    vehicle.append_component(main_gear)
 
-#     # ------------------------------------------------------------------
+    # ------------------------------------------------------------------
+    #  Wing, with a deployed flap and slat
+    # ------------------------------------------------------------------
+    wing                       = RCAIDE.Library.Components.Wings.Main_Wing()
+    wing.tag                   = 'main_wing'
+    wing.areas.reference       = 124.6                      # m^2
+    wing.aspect_ratio          = 34.32**2 / 124.6            # gives ~34.32 m span
+    wing.taper                 = 0.2
+    wing.thickness_to_chord    = 0.11
+    wing.sweeps.leading_edge   = 25. * Units.degrees
 
-#     #   Initialize the Analyses
-#     # ------------------------------------------------------------------     
-#     analyses = RCAIDE.Framework.Analyses.Vehicle() 
-#     analyses.vehicle = vehicle
+    # derives chords.root/tip (and other planform quantities) from the geometry above --
+    # required before compute_chord_length_from_span_location can be used on this wing
+    wing_planform(wing)
 
-#     #  Geometry
-#     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
-#     analyses.append(geometry) 
+    flap                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Flap()
+    flap.span_fraction_start   = 0.15
+    flap.span_fraction_end     = 0.6
+    flap.chord_fraction        = 0.25
+    flap.deflection            = 37.5 * Units.degrees
+    wing.append_control_surface(flap)
 
-#     #  Geometry
-#     weights = RCAIDE.Framework.Analyses.Weights.Conventional_Transport() 
-#     analyses.append(weights)    
- 
-#     #  Aerodynamics Analysis 
-#     aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()     
-#     analyses.append(aerodynamics)
+    slat                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Slat()
+    slat.span_fraction_start   = 0.1
+    slat.span_fraction_end     = 0.85
+    slat.chord_fraction        = 0.12
+    slat.deflection            = 20. * Units.degrees
+    wing.append_control_surface(slat)
 
-#     # ------------------------------------------------------------------
-#     #  Noise Analysis
-#     # ------------------------------------------------------------------
-#     aeroacoustics = RCAIDE.Framework.Analyses.Aeroacoustics.Semi_Empirical()   
-#     analyses.append(aeroacoustics)
+    vehicle.append_component(wing)
 
-#     # ------------------------------------------------------------------
-#     #  Energy
-#     # ------------------------------------------------------------------
-#     energy= RCAIDE.Framework.Analyses.Energy.Energy() 
-#     analyses.append(energy)
+    # ------------------------------------------------------------------
+    #  Propulsor: Starboard Turbofan
+    # ------------------------------------------------------------------
+    turbofan                       = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan()
+    turbofan.tag                   = 'starboard_propulsor'
+    turbofan.bypass_ratio          = 5.4
+    turbofan.design_altitude       = 35000.0 * Units.ft
+    turbofan.design_mach_number    = 0.78
+    turbofan.design_thrust         = 35000.0 * Units.N
+    turbofan.origin                = np.array([[0.0, 0.0, 1.5]])  # core 1.5 m off the ground
+    turbofan.length                = 97 * Units.inches
+    turbofan.diameter              = 70 * Units.inches
+    turbofan.plug_diameter         = 60 * Units.inches
+    turbofan.geometry_xe           = 1.0
+    turbofan.geometry_ye           = 1.0
+    turbofan.geometry_Ce           = 1.0
+    turbofan.working_fluid         = RCAIDE.Library.Attributes.Gases.Air()
 
-#     # ------------------------------------------------------------------
-#     #  Planet Analysis
-#     # ------------------------------------------------------------------
-#     planet = RCAIDE.Framework.Analyses.Planets.Earth()
-#     analyses.append(planet)
+    ram                             = RCAIDE.Library.Components.Powertrain.Converters.Ram()
+    ram.tag                         = 'ram'
+    turbofan.ram                    = ram
 
-#     # ------------------------------------------------------------------
-#     #  Atmosphere Analysis
-#     # ------------------------------------------------------------------
-#     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-#     analyses.append(atmosphere)   
- 
-#     return analyses   
-# # ----------------------------------------------------------------------
-# #   Define the Vehicle Analyses
-# # ----------------------------------------------------------------------
+    fan                             = RCAIDE.Library.Components.Powertrain.Converters.Fan()
+    fan.tag                         = 'fan'
+    fan.polytropic_efficiency       = 0.93
+    fan.pressure_ratio              = 1.7
+    fan.angular_velocity            = 4200 * Units.rpm
+    fan.number_of_blades            = 22
+    turbofan.fan                    = fan
 
-# def analyses_setup(configs):
+    low_pressure_compressor                    = RCAIDE.Library.Components.Powertrain.Converters.Compressor()
+    low_pressure_compressor.tag                = 'low_pressure_compressor'
+    low_pressure_compressor.pressure_ratio     = 1.5
+    turbofan.low_pressure_compressor           = low_pressure_compressor
 
-#     analyses = RCAIDE.Framework.Analyses.Analysis.Container()
+    high_pressure_compressor                   = RCAIDE.Library.Components.Powertrain.Converters.Compressor()
+    high_pressure_compressor.tag               = 'high_pressure_compressor'
+    high_pressure_compressor.pressure_ratio    = 5.137
+    turbofan.high_pressure_compressor          = high_pressure_compressor
 
-#     # build a base analysis for each config
-#     for tag,config in configs.items():
-#         analysis = base_analysis(config)
-#         analyses[tag] = analysis
+    combustor                       = RCAIDE.Library.Components.Powertrain.Converters.Combustor()
+    combustor.tag                   = 'combustor'
+    combustor.number_of_fuel_nozzle = 18
+    combustor.diameter              = 0.6858
+    turbofan.combustor               = combustor
 
-#     return analyses 
- 
+    core_nozzle                     = RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle()
+    core_nozzle.tag                 = 'core_nozzle'
+    core_nozzle.polytropic_efficiency = 0.98
+    core_nozzle.pressure_ratio      = 0.995
+    core_nozzle.diameter            = 0.38118288
+    turbofan.core_nozzle            = core_nozzle
 
-# def baseline_mission_setup(analyses): 
-#     # ------------------------------------------------------------------
-#     #   Initialize the Mission
-#     # ------------------------------------------------------------------ 
-#     mission      = RCAIDE.Framework.Mission.Sequential_Segments()
-#     mission.tag  = 'base_mission' 
-#     Segments     = RCAIDE.Framework.Mission.Segments 
-#     base_segment = Segments.Segment() 
-#     base_segment.state.numerics.number_of_control_points    = 3
+    fan_nozzle                      = RCAIDE.Library.Components.Powertrain.Converters.Expansion_Nozzle()
+    fan_nozzle.tag                  = 'fan_nozzle'
+    fan_nozzle.polytropic_efficiency = 0.98
+    fan_nozzle.pressure_ratio       = 0.995
+    fan_nozzle.diameter             = 1.5
+    turbofan.fan_nozzle             = fan_nozzle
 
-#     # -------------------   -----------------------------------------------
-#     #   Mission for Landing Noise
-#     # ------------------------------------------------------------------     
-#     segment                                               = Segments.Descent.Constant_Speed_Constant_Angle(base_segment)
-#     segment.tag                                           = "descent"
-#     segment.analyses.extend(analyses.base )   
-#     segment.altitude_start                                = 120.5
-#     segment.altitude_end                                  = 0.
-#     segment.air_speed                                     = 67. * Units['m/s']
-#     segment.descent_angle                                 = 3.0   * Units.degrees   
-    
-#     # define flight dynamics to model 
-#     segment.flight_dynamics.force_x                       = True  
-#     segment.flight_dynamics.force_z                       = True     
-    
-#     # define flight controls 
-#     segment.assigned_control_variables.throttle.active               = True           
-#     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']] 
-#     segment.assigned_control_variables.pitch_angle.active             = True                
-    
-#     mission.append_segment(segment) 
+    network = RCAIDE.Framework.Networks.Fuel()
+    network.propulsors.append(turbofan)
+    vehicle.append_energy_network(network)
 
-#     # ------------------------------------------------------------------
-#     #   First Climb Segment: constant Mach, constant segment angle 
-#     # ------------------------------------------------------------------  
-#     segment                                                   = Segments.Climb.Constant_Throttle_Constant_Speed(base_segment)
-#     segment.tag                                               = "takeoff"    
-#     segment.analyses.extend(analyses.takeoff )     
-#     segment.altitude_start                                    = 0 *  Units.meter
-#     segment.altitude_end                                      = 304.8 * Units.meter
-#     segment.air_speed                                         = 100* Units['m/s']
-#     segment.throttle                                          = 1.
-    
-#     # define flight dynamics to model 
-#     segment.flight_dynamics.force_x                           = True  
-#     segment.flight_dynamics.force_z                           = True     
-    
-#     # define flight controls 
-#     segment.assigned_control_variables.angle_of_attack.active                 = True     
-#     segment.assigned_control_variables.angle_of_attack.initial_guess_values   = [[ 1.0 * Units.deg]] 
-#     segment.assigned_control_variables.pitch_angle.active                 = True        
-#     segment.assigned_control_variables.pitch_angle.initial_guess_values   = [[ 5.0 * Units.deg]]
-     
-#     mission.append_segment(segment)
+    return vehicle
 
-#     # ------------------------------------------------------------------
-#     # Cutback Segment: Constant speed, constant segment angle
-#     # ------------------------------------------------------------------
-#     segment                                              = Segments.Climb.Constant_Speed_Constant_Angle(base_segment)
-#     segment.tag                                          = "cutback"
-#     segment.analyses.extend(analyses.cutback )
-#     segment.air_speed                                    = 100 * Units['m/s']
-#     segment.altitude_end                                 = 1. * Units.km
-#     segment.climb_angle                                  = 5  * Units.degrees
 
-#     # define flight dynamics to model
-#     segment.flight_dynamics.force_x                      = True
-#     segment.flight_dynamics.force_z                      = True
+# ----------------------------------------------------------------------
+#   Synthetic Approach Segment
+# ----------------------------------------------------------------------
+def approach_segment_setup(vehicle):
+    """Straight-in, constant-speed, constant 3 degree glideslope approach, descending from
+    300 m to 10 m AGL, in the local flat-earth frame that Semi_Empirical operates in
+    (conditions.frames.inertial.position_vector, z negative-up)."""
 
-#     # define flight controls
-#     segment.assigned_control_variables.throttle.active               = True
-#     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]
-#     segment.assigned_control_variables.pitch_angle.active             = True
+    ctrl_pts        = 100
+    glide_slope     = 3.0 * Units.degrees
+    speed           = 70.0            # m/s, constant approach speed
+    altitude_start  = 300.0           # m AGL
+    altitude_end    = 10.0            # m AGL
+    alpha           = 4.0 * Units.degrees
 
-#     mission.append_segment(segment)
+    horizontal_speed = speed * np.cos(glide_slope)
+    descent_rate      = speed * np.sin(glide_slope)
+    duration          = (altitude_start - altitude_end) / descent_rate
 
-#     # ------------------------------------------------------------------
-#     #   First Climb Segment: constant Mach, constant segment angle 
-#     # ------------------------------------------------------------------      
-#     segment = Segments.Climb.Constant_Speed_Constant_Rate(base_segment)
-#     segment.tag = "climb_1" 
-#     segment.analyses.extend( analyses.cruise )   
-#     segment.altitude_start                                = 1. * Units.km    
-#     segment.altitude_end                                  = 2.0   * Units.km
-#     segment.air_speed                                     = 125.0 * Units['m/s']
-#     segment.climb_rate                                    = 6.0   * Units['m/s']  
-    
-#     # define flight dynamics to model 
-#     segment.flight_dynamics.force_x                       = True  
-#     segment.flight_dynamics.force_z                       = True     
-    
-#     # define flight controls 
-#     segment.assigned_control_variables.throttle.active               = True           
-#     segment.assigned_control_variables.throttle.assigned_propulsors  = [['starboard_propulsor','port_propulsor']]  
-#     segment.assigned_control_variables.pitch_angle.active             = True                 
-       
-#     mission.append_segment(segment) 
+    t = np.linspace(0.0, duration, ctrl_pts)
+    x = (altitude_start / np.tan(glide_slope)) - horizontal_speed * t   # along-track, threshold at x=0
+    z = -(altitude_start - descent_rate * t)                            # z negative-up
 
-#     return mission 
-  
+    position_vector = np.zeros((ctrl_pts, 3))
+    position_vector[:, 0] = x
+    position_vector[:, 2] = z
 
-# def baseline_missions_setup(base_mission):
+    velocity_vector = np.tile(np.array([-horizontal_speed, 0.0, -descent_rate]), (ctrl_pts, 1))
 
-#     # the mission container
-#     missions     = RCAIDE.Framework.Mission.Missions() 
+    # --- standard low-altitude atmosphere, build at 1 control point, then broadcast ---
+    density, dynamic_viscosity, a, T, P = 1.225, 1.79e-5, 340.3, 288.15, 101325.0
 
-#     # ------------------------------------------------------------------
-#     #   Base Mission
-#     # ------------------------------------------------------------------ 
-#     base_mission.tag  = 'base_mission'
-#     missions.append(base_mission)
- 
-#     return missions   
+    conditions = Results()
+    conditions.aerodynamics.angles.alpha         = np.ones((1, 1)) * alpha
+    conditions.freestream.density                = np.ones((1, 1)) * density
+    conditions.freestream.dynamic_viscosity       = np.ones((1, 1)) * dynamic_viscosity
+    conditions.freestream.speed_of_sound          = np.ones((1, 1)) * a
+    conditions.freestream.temperature             = np.ones((1, 1)) * T
+    conditions.freestream.pressure                = np.ones((1, 1)) * P
+    conditions.freestream.velocity                = np.ones((1, 1)) * speed
+    conditions.freestream.mach_number             = np.ones((1, 1)) * speed / a
+    conditions.frames.inertial.velocity_vector    = velocity_vector[0:1]
 
-# if __name__ == '__main__': 
-#     main()
-#     plt.show()
+    segment              = Segment()
+    segment.state.conditions = conditions
+    segment.state.numerics.number_of_control_points = 1
+
+    turbofan = vehicle.networks.fuel.propulsors.starboard_propulsor
+    turbofan.append_operating_conditions(segment, conditions.energy, conditions.aeroacoustics)
+
+    # illustrative turbofan cycle exit conditions (representative of a CFM56-class engine at
+    # approach power) -- populated directly since this script doesn't run the full cycle solve
+    converters = conditions.energy.converters
+    converters[turbofan.fan.tag].inputs.static_temperature    = np.ones((1, 1)) * T
+    converters[turbofan.fan.tag].outputs.static_temperature   = np.ones((1, 1)) * (T + 80/1.8)
+    converters[turbofan.fan_nozzle.tag].outputs.velocity                = np.ones((1, 1)) * 280.0
+    converters[turbofan.fan_nozzle.tag].outputs.stagnation_temperature  = np.ones((1, 1)) * 340.0
+    converters[turbofan.fan_nozzle.tag].outputs.stagnation_pressure     = np.ones((1, 1)) * 2611.8
+    converters[turbofan.core_nozzle.tag].outputs.velocity               = np.ones((1, 1)) * 400.0
+    converters[turbofan.core_nozzle.tag].outputs.stagnation_temperature = np.ones((1, 1)) * 800.0
+    converters[turbofan.core_nozzle.tag].outputs.stagnation_pressure    = np.ones((1, 1)) * 165000.0
+    converters['combustor'].inputs.static_temperature  = np.ones((1, 1)) * 622.7
+    converters['combustor'].outputs.static_temperature = np.ones((1, 1)) * 1000.0
+
+    conditions.expand_rows(ctrl_pts)
+    segment.state.numerics.number_of_control_points = ctrl_pts
+
+    # overwrite with the real per-control-point trajectory (expand_rows only tiled the
+    # single-point placeholder above)
+    conditions.frames.inertial.position_vector = position_vector
+    conditions.frames.inertial.velocity_vector = velocity_vector
+    conditions.frames.inertial.time            = t.reshape(-1, 1)
+
+    return segment, ctrl_pts
+
+
+# ----------------------------------------------------------------------
+#   Ground Receptor Grid
+# ----------------------------------------------------------------------
+def receptor_grid_setup(aeroacoustics_analysis, x_range, y_range, resolution):
+    settings = aeroacoustics_analysis.settings
+    settings.microphone_min_x, settings.microphone_max_x = x_range
+    settings.microphone_min_y, settings.microphone_max_y = y_range
+    settings.microphone_x_resolution = resolution
+    settings.microphone_y_resolution = resolution
+    settings.noise_receptor_search_radius = 2500.
+    return
+
+
+# ----------------------------------------------------------------------
+#   Sound Exposure Level
+# ----------------------------------------------------------------------
+def compute_sound_exposure_level(aeroacoustics_analysis, segment):
+    """Integrates the per-control-point A-weighted hemisphere SPL time history into SEL at
+    each ground receptor.
+
+    References
+    ----------
+    SAE ARP876D: Gas Turbine Jet Exhaust Noise Prediction
+    """
+    conditions = segment.state.conditions
+    SPL_dBA    = conditions.aeroacoustics.hemisphere_SPL_dBA   # (ctrl_pts, n_receptor)
+    time       = conditions.frames.inertial.time[:, 0]
+
+    dt = np.gradient(time)
+    energy_integral = np.sum((10**(SPL_dBA / 10.0)) * dt[:, None], axis=0)
+    SEL = 10 * np.log10(np.maximum(energy_integral, 1e-30))
+
+    from RCAIDE.Library.Methods.Aeroacoustics.Common.generate_zero_elevation_microphone_locations import generate_zero_elevation_microphone_locations
+    receptor_locations = generate_zero_elevation_microphone_locations(aeroacoustics_analysis.settings)
+
+    return Data(x=receptor_locations[:, 0], y=receptor_locations[:, 1], SEL=SEL)
+
+
+# ----------------------------------------------------------------------
+#   Plotting
+# ----------------------------------------------------------------------
+def plot_footprint(aeroacoustics_analysis, footprint):
+    fig, ax = plt.subplots(figsize=(10, 8), dpi=120)
+
+    triangulation = tri.Triangulation(footprint.x, footprint.y)
+    levels = np.linspace(np.percentile(footprint.SEL, 5), np.percentile(footprint.SEL, 99.5), 40)
+    heatmap = ax.tricontourf(triangulation, footprint.SEL, levels=levels, cmap='jet', extend='both')
+
+    cbar = fig.colorbar(heatmap, ax=ax)
+    cbar.set_label('Sound Exposure Level, SEL [dBA]', fontsize=12, fontweight='bold')
+
+    ax.set_title('Simulated Approach Noise Footprint', fontsize=14, fontweight='bold', pad=15)
+    ax.set_xlabel('Along-track distance [m]', fontsize=12)
+    ax.set_ylabel('Cross-track distance [m]', fontsize=12)
+    ax.grid(True, linestyle='--', alpha=0.5, color='gray')
+    ax.set_aspect('equal')
+
+    return fig
+
+
+if __name__ == '__main__':
+    main()
+    plt.show()

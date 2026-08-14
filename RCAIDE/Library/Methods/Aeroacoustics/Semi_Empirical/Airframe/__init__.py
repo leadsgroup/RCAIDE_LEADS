@@ -1,5 +1,5 @@
-# RCAIDE/Methods/Aeroacoustics/Semi_Empirical/Airframe/__init__.py
-# 
+# RCAIDE/Library/Methods/Aeroacoustics/Semi_Empirical/Airframe/__init__.py
+#
 
 """ RCAIDE Package Setup
 """
@@ -7,5 +7,6 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-from .OLD.landing_gear_noise       import landing_gear_noise
-from .OLD.trailing_edge_flap_noise import trailing_edge_flap_noise
+from .landing_gear_noise_model import compute_landing_gear_noise
+from .flap_noise_model         import flap_noise_model
+from .slat_noise_model         import slat_noise

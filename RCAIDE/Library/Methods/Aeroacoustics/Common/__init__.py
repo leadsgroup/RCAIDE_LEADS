@@ -17,5 +17,6 @@ from .compute_noise_source_coordinates                   import compute_rotor_po
 from .generate_zero_elevation_microphone_locations       import generate_zero_elevation_microphone_locations
 from .generate_terrain_microphone_locations              import generate_terrain_microphone_locations
 from .generate_hemisphere_microphone_locations           import generate_hemisphere_microphone_locations
-from .compute_relative_noise_evaluation_locations        import compute_relative_noise_evaluation_locations 
+from .compute_relative_noise_evaluation_locations        import compute_relative_noise_evaluation_locations
+from .compute_lateral_attenuation                        import compute_lateral_attenuation
 from .post_process_noise_data                            import post_process_noise_data

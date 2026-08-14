@@ -31,7 +31,10 @@ class Fan(Converter):
         
     angular_velocity : float
         Rotational speed of the fan [rad/s]. Default is 0.0.
-    
+
+    number_of_blades : int
+        Number of fan blades. Default is 0.
+
 
     Notes
     -----
@@ -87,8 +90,9 @@ class Fan(Converter):
         self.polytropic_efficiency          = 1.0
         self.mechanical_efficiency          = 1.0
         self.pressure_ratio                 = 1.0 
-        self.angular_velocity               = 0.0 
+        self.angular_velocity               = 0.0
         self.design_angular_velocity        = 3000 *  Units.rpm
+        self.number_of_blades               = 0
 
 
 
