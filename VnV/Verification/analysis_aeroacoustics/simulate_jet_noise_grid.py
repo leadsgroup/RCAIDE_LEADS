@@ -53,11 +53,36 @@ def main():
     # define plotting parameters
     df = pd.read_csv("/Users/siripunn/Desktop/LEADS_WORK/LEADS_Research/RCAIDE_LEADS/VnV/Verification/analysis_aeroacoustics/b737_sim_track_interpolated.csv")
 
-    lat_array = df['Latitude (deg)'].to_numpy()
-    lon_array = df['Longitude (deg)'].to_numpy()
-    elevation_msl_array = df['Altitude MSL (ft)'].to_numpy()
-    ground_speed_kts_array = df['Ground Speed (kts)'].to_numpy()
+
+
+    def interpolate_path(original_list):
+        new_length = 100
+
+        old_indices = np.arange(len(original_list))
+        new_indices = np.linspace(0, len(original_list) - 1, new_length)
+        
+        # Perform linear interpolation
+        interpolated_np = np.interp(new_indices, old_indices, original_list)
+        interpolated_list = interpolated_np.tolist()
+        return interpolated_list
+
+    lat_array = interpolate_path(df['Latitude (deg)'].to_numpy())
+    lon_array = interpolate_path(df['Longitude (deg)'].to_numpy())
+    elevation_msl_array = interpolate_path(df['Altitude MSL (ft)'].to_numpy())
+    ground_speed_kts_array = interpolate_path(df['Ground Speed (kts)'].to_numpy())
     ground_tr = df['Airplane Thrust Type'].to_numpy()
+
+    ground_tr = []
+
+    for i in elevation_msl_array:
+        if i - 680 < 25:
+            ground_tr.append('Reversed Thrust')
+        else:
+            ground_tr.append(None)
+            
+    print(ground_tr)
+ 
+
 
     PP = plot_parameters()  
     vehicle = None
@@ -146,35 +171,29 @@ def simulate_vehicle_noise_grid(vehicle,path,frequency_range,grid_location,grid_
     if vehicle == None:
         #default to typical 737-800 parameters
         #define params for landing gear model
-        D = 1.016 #m
-        H = 1.2 #m
-        wheels = 2
-        Weight = 68038.8555 #kg
+        D = 1.016 #m - Wheel Diameter
+        H = 1.2 #m - Strut Length
+        wheels = 2 # number of wheels
+        Weight = 68038.8555 #kg Aircraft total weight
         strut_diameter = 0.11811 #m
-        theta = (np.pi)/2 #deg 
-
-
-
-        W = 0.3556#m
+        W = 0.3556#m Wheel Width (tyre front)
         
         #define params for flap model
-        thickness = 0.1 #m
-        cf = 0.9 #m
-        deltaf = np.radians(37.5)
+        thickness = 0.1 #m flap thickness (average, at the side edge)
+        cf = 0.9 #m Flap Chord Length
+        deltaf = np.radians(37.5) # Flap Deployment Angle
 
         #define params for slat model
-        phi = 0
-        Ls = 0.08128
-        gamma_s = np.radians(20)
-        sigma_s = np.radians(25)
-        alpha = np.radians(10)
+        phi = 0 #Radians Azimuthal Angle (bankangle = 0 during approach assumptions)
+        Ls = 0.08128 #Slat Chord Length
+        gamma_s = np.radians(20) # Slat Deployment Angle
+        sigma_s = np.radians(25) # Slat Sweep Angle
+        alpha = np.radians(10) # Aircraft wing angle of attack
 
         #define param for core noise model
         pr = 13.1
         m = None # predefined mass flow rate
         
-
-
         # define operating conditions                                            
         a                       = 343.376
         T                       = 288.16889478  
@@ -184,7 +203,6 @@ def simulate_vehicle_noise_grid(vehicle,path,frequency_range,grid_location,grid_
         AoA                     = 4
         U = 103 # aircraft velocity
         M = 0.2 # mach number
-        frequency_flp = np.logspace(1, 4, 100)
 
     #------------------------------------------------------------------------------------------------------------------------------------
     # Propulsor: Starboard Propulsor
@@ -258,16 +276,16 @@ def simulate_vehicle_noise_grid(vehicle,path,frequency_range,grid_location,grid_
 
     turbofan.append_operating_conditions(segment, segment.state.conditions.energy,segment.state.conditions.aeroacoustics)
  
-    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.angular_velocity = 4200
-    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.exit_velocity = 350 * Units.mph
-    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.exit_stagnation_temperature = 440
-    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.exit_stagnation_pressure = 152*1000
+    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.angular_velocity = 4200 # rpm
+    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.exit_velocity = 350 * Units.mph # m/s to mph
+    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.exit_stagnation_temperature = 440 # deg C
+    segment.state.conditions.aeroacoustics.propulsors[turbofan.tag].fan.exit_stagnation_pressure = 152*1000 #Pa
 
-    turbofan.origin = np.array([[0.0, 0.0, 1.5]])
+    turbofan.origin = np.array([[0.0, 0.0, 1.5]]) # Core 1.5 m off the ground
     turbofan.length = 97*Units.inches
     turbofan.diameter = 70*Units.inches
     turbofan.plug_diameter = 60*Units.inches
-    turbofan.geometry_xe = 1.0
+    turbofan.geometry_xe = 1.0 #constants, no need to change
     turbofan.geometry_ye = 1.0
     turbofan.geometry_Ce = 1.0
     
@@ -508,7 +526,7 @@ def simulate_vehicle_noise_grid(vehicle,path,frequency_range,grid_location,grid_
                 att_dB = atmospheric_attenuation(dist_array, frequency)[0]
                 
                 # subtract attenuation factors
-                attenuated_spectrum = total_spectrum - (att_dB * 1.1) - LADJ_dB[i] #1.1 squeeze multiplier
+                attenuated_spectrum = total_spectrum - (att_dB) - LADJ_dB[i] #1.1 squeeze multiplier
                 # 4. Apply A-weighting filter to the spectrum
                 a_weighted_spectrum = A_weighting_metric(attenuated_spectrum, frequency)
 
@@ -532,7 +550,7 @@ def simulate_vehicle_noise_grid(vehicle,path,frequency_range,grid_location,grid_
     x = rec_lons
     y = rec_lats
 
-    np.savez('b737_high_res_footprint_3.npz', 
+    np.savez('b737_high_res_footprint_4.npz', 
                         longitude=x, 
                         latitude=y, 
                         sel_dBA=z)

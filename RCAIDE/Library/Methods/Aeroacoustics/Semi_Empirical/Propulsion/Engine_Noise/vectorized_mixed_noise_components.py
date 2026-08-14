@@ -326,8 +326,6 @@ def compute_fan_noise(R_val, theta_engine, turbofan, m, aeroacoustic_data, segme
             # CORRECTED: Calculate the annular area by subtracting the core nozzle area
             Diameter_primary = turbofan.core_nozzle.diameter
             Area_secondary = (np.pi / 4.0) * (Diameter_secondary**2 - Diameter_primary**2)
-            
-            # Removed the arbitrary `m - 600` hack
             m = (Area_secondary * Velocity_secondary * density_secondary) / Units.lbs
 
     fan_inputs = Data(
