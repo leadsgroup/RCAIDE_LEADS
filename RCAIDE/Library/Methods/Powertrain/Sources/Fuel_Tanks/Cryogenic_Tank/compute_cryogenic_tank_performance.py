@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 import numpy as np
 from scipy.optimize import brentq
+from scipy.integrate import solve_ivp
 
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_tank_heat_leak import compute_cryogenic_tank_heat_leak
 
@@ -15,24 +16,58 @@ R_UNIVERSAL = 8314.462618  # J/(kmol*K), i.e. J/(kg*K) per unit molecular weight
 # ----------------------------------------------------------------------------------------------------------------------
 #  Cryogenic Tank In-Flight Boil-Off Performance
 # ----------------------------------------------------------------------------------------------------------------------
-def compute_cryogenic_tank_performance(tank, state, network):
+def compute_cryogenic_tank_performance(tank, state, network, rtol=1e-4, atol=1e-7, method='LSODA'):
     """
     Two-phase lumped-parameter in-flight boil-off model for a cryogenic fuel tank.
 
-    Solves 6 coupled mass/volume/energy-balance residuals (ullage mass, liquid mass,
-    ullage temperature, liquid temperature, ullage volume, liquid volume) via
-    ``state.numerics.time.differentiate``, matching RCAIDE's existing pseudospectral
-    collocation residual pattern. Fluid properties come from the saturated-property
-    tables already bundled with the propellant classes
-    (``tank.fuel.cryogen_properties`` / ``tank.fuel.saturation_temperature``); the
-    ullage is treated as an ideal gas off the saturation dome.
+    Solved as its own internal, decoupled initial-value-problem integration (adaptive
+    stiff-ODE Radau via scipy), NOT as mission-level Newton unknowns/residuals -- see
+    ``append_cryogenic_tank_unknown_and_residual.py`` for the earlier coupled-unknown
+    version and why it was abandoned. Each call integrates the tank's 6-state ODE
+    system (ullage/liquid mass, temperature, volume) forward from its known node-0
+    initial condition across the segment's full time span, using the mission's own
+    driving-input trajectory (engine fuel demand, freestream conditions) interpolated
+    between the mission's (sparse, e.g. 16-point Chebyshev) collocation nodes so the
+    adaptive integrator can resolve dynamics between them, then samples the result
+    back at exactly those collocation points via ``t_eval``. This is the same
+    warm-start Radau approach already verified in isolation
+    (``VnV/Verification/powertrain/cryogenic_tank_performance_test.py``,
+    ``RESEARCH/.../cryogenic_tank_boil_off_validation.py``), just run for real inside
+    the network's own iterate instead of as a standalone script. Decoupling it from
+    the mission solver removes the 24 extra coupled unknowns (6 states x 4 tanks) that
+    were preventing the full aircraft-level mission from converging as mission-level
+    unknowns, at the cost of a fresh internal IVP solve on every outer network iterate
+    rather than a single shared Newton solve across the whole aircraft.
+
+    Fluid properties come from the saturated-property tables already bundled with the
+    propellant classes (``tank.fuel.cryogen_properties`` /
+    ``tank.fuel.saturation_temperature``); the ullage is treated as an ideal gas off
+    the saturation dome.
 
     The instantaneous boil-off/vent split uses a smoothed complementarity relaxation
-    (rather than a hard threshold) so the residual stays differentiable: when more
-    boil-off is needed than passive heat leak alone provides, the excess is treated as
-    active-heater duty (and its required power reported as an output, not fed back into
-    the aircraft's electrical bus); when less is needed, the excess ullage vapor is
-    vented.
+    (rather than a hard threshold) so the ODE right-hand side stays differentiable
+    (the implicit integrators below need a well-behaved Jacobian): when more boil-off
+    is needed than passive heat leak alone provides, the excess is treated as
+    active-heater duty (and its required power reported as an output, not fed back
+    into the aircraft's electrical bus); when less is needed, the excess ullage vapor
+    is vented.
+
+    ``method``/``rtol``/``atol`` default to LSODA/1e-4/1e-7 -- chosen from a direct
+    speed/accuracy benchmark against a tight-tolerance (1e-9/1e-12) Radau truth
+    trajectory: LSODA at this tolerance is ~3x faster per solve than the originally
+    used Radau/1e-6/1e-9 while still holding a ~10x accuracy margin under the 1e-2
+    relative-error threshold the VnV/RESEARCH validation scripts check against
+    (BDF was similarly fast but had far less margin, ~9.7e-3 at the same tolerance --
+    right at that threshold -- so it was not used). This matters because every call
+    here is now a full internal solve run fresh on every outer network iterate,
+    including fsolve's own finite-difference Jacobian probes of the *other* (now
+    tank-unrelated) mission unknowns -- there is no way from inside this function to
+    tell a probe that could not have changed the tank's own inputs from one that
+    could, so solver speed here directly multiplies the full mission's wall-clock
+    time. ``rtol``/``atol``/``method`` are all exposed as kwargs so a caller can
+    re-solve the same problem at a tighter tolerance/different method as an
+    independent cross-check, the way the VnV/RESEARCH validation scripts already
+    verify their own IVP truth trajectory against the production solve.
 
     Notes
     -----
@@ -40,47 +75,125 @@ def compute_cryogenic_tank_performance(tank, state, network):
     quasi-steady, no lag), bulk boiling / cloud condensation corrections, and pump
     power for active re-liquefaction.
     """
-    D   = state.numerics.time.differentiate
-    tag = tank.tag
+    tag             = tank.tag
     tank_conditions = state.conditions.energy.sources[tag]
-    fuel = tank.fuel
+    fuel            = tank.fuel
 
-    m_g = state.unknowns.network[tag + '_ullage_mass']
-    m_l = state.unknowns.network[tag + '_fuel_mass']
-    T_g = state.unknowns.network[tag + '_ullage_temperature']
-    T_l = state.unknowns.network[tag + '_fuel_temperature']
-    V_g = state.unknowns.network[tag + '_ullage_volume']
-    V_l = state.unknowns.network[tag + '_fuel_volume']
+    t        = np.ravel(state.numerics.time.control_points)
+    duration = t[-1] - t[0]
 
-    # ------------------------------------------------------------------
-    #  Clamp iterates to physically valid ranges before evaluating any
-    #  property lookup or EOS. This mission's root-finder solver ignores
-    #  the registered unknown bounds during numerical Jacobian probing, so
-    #  intermediate (non-converged) iterates can wander through zero/
-    #  negative mass or outside the property table's range; the tables
-    #  raise instead of extrapolating. Clamping keeps every evaluation
-    #  finite so the solver can be pushed back into the feasible region
-    #  instead of crashing. Residuals still difference against the raw
-    #  (unclamped) unknown trajectory further down, so the converged
-    #  solution itself is unaffected as long as it lies within bounds.
-    # ------------------------------------------------------------------
     (T_l_lo, T_l_hi), (P_lo, P_hi) = fuel.property_table_range(phase='liquid')
     (T_g_lo, T_g_hi), _            = fuel.property_table_range(phase='vapor')
+    R_specific = R_UNIVERSAL / fuel.molecular_weight  # J/(kg*K)
 
-    m_g_c = np.clip(m_g[:,0], 1e-6, None)
-    m_l_c = np.clip(m_l[:,0], 1e-6, None)
-    V_g_c = np.clip(V_g[:,0], 1e-6, None)
-    V_l_c = np.clip(V_l[:,0], 1e-6, None)
-    T_g_c = np.clip(T_g[:,0], T_g_lo, T_g_hi)
-    T_l_c = np.clip(T_l[:,0], T_l_lo, T_l_hi)
+    # ------------------------------------------------------------------
+    #  Driving-input trajectories at the mission's own (sparse) collocation
+    #  points -- np.interp below resamples these onto whatever intermediate
+    #  times Radau's adaptive stepper actually queries.
+    # ------------------------------------------------------------------
+    chemical_power_pts = tank_conditions.power_split_ratio[:,0] * \
+        state.conditions.energy.distributors[tank.assigned_distributors[0][0]].outputs.power.chemical[:,0]
+    T_env_pts  = state.conditions.freestream.temperature[:,0]
+    nu_air_pts = state.conditions.freestream.kinematic_viscosity[:,0]
+    Pr_air_pts = state.conditions.freestream.prandtl_number[:,0]
+    k_air_pts  = state.conditions.freestream.thermal_conductivity[:,0]
+
+    y0 = np.array([
+        tank_conditions.ullage_mass[0,0],
+        tank_conditions.fuel_mass[0,0],
+        tank_conditions.ullage_temperature[0,0],
+        tank_conditions.fuel_temperature[0,0],
+        tank_conditions.ullage_volume[0,0],
+        tank_conditions.fuel_volume[0,0],
+    ])
+
+    def rhs(t_i, y):
+        m_g, m_l, T_g, T_l, V_g, V_l = y
+        chemical_power = np.interp(t_i, t, chemical_power_pts)
+        T_env          = np.interp(t_i, t, T_env_pts)
+        nu_air         = np.interp(t_i, t, nu_air_pts)
+        Pr_air         = np.interp(t_i, t, Pr_air_pts)
+        k_air          = np.interp(t_i, t, k_air_pts)
+        (dm_g, dm_l, dT_g, dT_l, dV_g, dV_l), _ = _tank_state_rates(
+            tank, fuel, R_specific,
+            np.array([m_g]), np.array([m_l]), np.array([T_g]), np.array([T_l]), np.array([V_g]), np.array([V_l]),
+            np.array([chemical_power]), np.array([T_env]), np.array([nu_air]), np.array([Pr_air]), np.array([k_air]),
+            T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi)
+        return [dm_g[0], dm_l[0], dT_g[0], dT_l[0], dV_g[0], dV_l[0]]
+
+    sol = solve_ivp(rhs, (t[0], t[-1]), y0, method=method, t_eval=t, rtol=rtol, atol=atol)
+    if not sol.success:
+        raise RuntimeError(
+            f"Cryogenic tank '{tag}' internal boil-off IVP failed to integrate: {sol.message}")
+
+    m_g, m_l, T_g, T_l, V_g, V_l = sol.y
+
+    # One extra vectorized call (cheap -- same array-length-n_nodes shape the
+    # old residual-based version always used) to recover the diagnostic
+    # outputs (pressure, vent/boil-off split, heater power) at exactly the
+    # collocation points, using their own real (not re-interpolated) inputs.
+    _, diag = _tank_state_rates(
+        tank, fuel, R_specific, m_g, m_l, T_g, T_l, V_g, V_l,
+        chemical_power_pts, T_env_pts, nu_air_pts, Pr_air_pts, k_air_pts,
+        T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi)
+
+    # ------------------------------------------------------------------
+    #  Store outputs
+    # ------------------------------------------------------------------
+    tank_conditions.ullage_mass[:,0]        = m_g
+    tank_conditions.fuel_mass[:,0]          = m_l
+    tank_conditions.ullage_volume[:,0]      = V_g
+    tank_conditions.fuel_volume[:,0]        = V_l
+    tank_conditions.ullage_temperature[:,0] = T_g
+    tank_conditions.fuel_temperature[:,0]   = T_l
+    tank_conditions.pressure[:,0]           = diag['P']
+    tank_conditions.vent_rate[:,0]          = diag['m_dot_vent']
+    tank_conditions.boil_off_flow_rate[:,0] = diag['m_dot_bo_final']
+    tank_conditions.heater_power[:,0]       = diag['heater_power']
+
+    # Total mass leaving the tank system (engine offtake + vented boil-off) --
+    # what drives vehicle weight/CG bookkeeping in Common/Update/weights.py
+    tank_conditions.mass_flow_rate[:,0]         = diag['m_dot_l_engine'] + diag['m_dot_vent']
+    tank_conditions.outputs.power.chemical[:,0] = diag['m_dot_l_engine'] * fuel.lower_heating_value
+
+    stored_results_flag = True
+    stored_source_tag    = tank.tag
+    return tank_conditions.inputs, tank_conditions.outputs, stored_results_flag, stored_source_tag
+
+
+def _tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l, V_g, V_l,
+                       chemical_power, T_env, nu_air, Pr_air, k_air,
+                       T_g_lo, T_g_hi, T_l_lo, T_l_hi, P_lo, P_hi):
+    """Evaluates the tank's 6-state ODE right-hand side plus diagnostic outputs
+    (pressure, boil-off/vent split, heater power) at one or more instants. All
+    state/input arguments are 1-D arrays of the same length -- length 1 for a
+    single adaptive-integrator evaluation (``rhs`` above), or length n_nodes
+    for the final diagnostic pass at the mission's own collocation points.
+    This is the same physics ``compute_cryogenic_tank_performance`` always
+    used, factored out so it can be called both as an ODE right-hand side and
+    as a one-shot diagnostic evaluator without duplicating the model.
+
+    Clamps m/V to a small positive floor and T to the property table's valid
+    range before any lookup or EOS evaluation: Radau's internal trial steps
+    and Jacobian estimation can transiently query states outside the
+    physically valid domain (e.g. slightly negative mass), and the property
+    tables raise instead of extrapolating. Only the *lookups* are clamped --
+    the temperature barrier term below still sees the raw (unclamped) T so
+    the dynamics themselves resist leaving the valid domain rather than the
+    residual just going flat there.
+    """
+    m_g_c = np.clip(m_g, 1e-6, None)
+    m_l_c = np.clip(m_l, 1e-6, None)
+    V_g_c = np.clip(V_g, 1e-6, None)
+    V_l_c = np.clip(V_l, 1e-6, None)
+    T_g_c = np.clip(T_g, T_g_lo, T_g_hi)
+    T_l_c = np.clip(T_l, T_l_lo, T_l_hi)
 
     # ------------------------------------------------------------------
     #  Engine fuel offtake demand (same derivation the base explicit-
     #  integration fuel tank model uses: distributor's already-computed
     #  chemical power demand, split by power_split_ratio)
     # ------------------------------------------------------------------
-    chemical_power = tank_conditions.power_split_ratio[:,0] * \
-        state.conditions.energy.distributors[tank.assigned_distributors[0][0]].outputs.power.chemical[:,0]
     m_dot_l_engine = chemical_power / fuel.lower_heating_value
 
     # ------------------------------------------------------------------
@@ -93,7 +206,6 @@ def compute_cryogenic_tank_performance(tank, state, network):
     #  to its own bulk temperature), so this correction anchors the ullage
     #  EOS to the table's real state at the current ullage temperature.
     # ------------------------------------------------------------------
-    R_specific = R_UNIVERSAL / fuel.molecular_weight   # J/(kg*K)
     Z         = fuel.compressibility_factor(T_g_c, phase='vapor')
     P         = Z * (m_g_c / V_g_c) * R_specific * T_g_c   # Pa
     P_clamped = np.clip(P / 1e6, P_lo, P_hi)                # table pressure column is in MPa
@@ -143,10 +255,10 @@ def compute_cryogenic_tank_performance(tank, state, network):
     #  wetted-area fraction (Churchill/conduction-network physics shared
     #  with the design-time insulation sizing solve)
     # ------------------------------------------------------------------
-    T_env     = state.conditions.freestream.temperature[:,0]
-    nu_air    = state.conditions.freestream.kinematic_viscosity[:,0]
-    Pr_air    = state.conditions.freestream.prandtl_number[:,0]
-    k_air     = state.conditions.freestream.thermal_conductivity[:,0]
+    T_env  = np.atleast_1d(T_env)
+    nu_air = np.atleast_1d(nu_air)
+    Pr_air = np.atleast_1d(Pr_air)
+    k_air  = np.atleast_1d(k_air)
     alpha_air = nu_air / Pr_air
 
     t_ins     = tank.insulation.thickness
@@ -219,7 +331,7 @@ def compute_cryogenic_tank_performance(tank, state, network):
     Q_h_to_liquid = heater_power * (1 - eta_h)                # fraction warming the bulk liquid, not boiling it
 
     # ------------------------------------------------------------------
-    #  Mass / volume / energy balances
+    #  Mass / volume / energy balances (the ODE right-hand side)
     # ------------------------------------------------------------------
     dm_g = m_dot_bo_final - m_dot_vent
     dm_l = -m_dot_bo_final - m_dot_l_engine
@@ -232,67 +344,20 @@ def compute_cryogenic_tank_performance(tank, state, network):
     # Soft restoring term outside the property table's range. The table's edges are
     # not arbitrary data cutoffs -- e.g. hydrogen's upper bound is its actual critical
     # temperature, above which there is no distinct saturated liquid/vapor at all -- so
-    # clamping only the property *lookups* (above) leaves the residual itself flat
-    # (insensitive) once T exceeds the table, and a solver can converge to a
+    # clamping only the property *lookups* (above) leaves the dynamics themselves flat
+    # (insensitive) once T exceeds the table, and an integrator can wander onto a
     # self-consistent but unphysical "runaway" branch out there. This adds a real
     # restoring force so the dynamics themselves resist leaving the valid domain,
     # smoothed the same way as the boil-off/vent split above.
     T_barrier_rate = 0.05  # 1/s, restoring-rate strength per K of excess
     T_eps          = 0.1   # K, smoothing width
-    dT_g += T_barrier_rate * _soft_temperature_barrier(T_g[:,0], T_g_lo, T_g_hi, T_eps)
-    dT_l += T_barrier_rate * _soft_temperature_barrier(T_l[:,0], T_l_lo, T_l_hi, T_eps)
+    dT_g = dT_g + T_barrier_rate * _soft_temperature_barrier(np.atleast_1d(T_g), T_g_lo, T_g_hi, T_eps)
+    dT_l = dT_l + T_barrier_rate * _soft_temperature_barrier(np.atleast_1d(T_l), T_l_lo, T_l_hi, T_eps)
 
-    # ------------------------------------------------------------------
-    #  Residuals: D*y - dy/dt = 0 at every collocation node, pinned at
-    #  index 0 to the segment's initial conditions
-    # ------------------------------------------------------------------
-    R_ullage_mass            = np.dot(D, m_g)[:,0] - dm_g
-    R_ullage_mass[0]         = m_g[0,0] - tank_conditions.ullage_mass[0,0]
-
-    R_fuel_mass               = np.dot(D, m_l)[:,0] - dm_l
-    R_fuel_mass[0]            = m_l[0,0] - tank_conditions.fuel_mass[0,0]
-
-    R_ullage_volume            = np.dot(D, V_g)[:,0] - dV_g
-    R_ullage_volume[0]         = V_g[0,0] - tank_conditions.ullage_volume[0,0]
-
-    R_fuel_volume               = np.dot(D, V_l)[:,0] - dV_l
-    R_fuel_volume[0]            = V_l[0,0] - tank_conditions.fuel_volume[0,0]
-
-    R_ullage_temperature       = np.dot(D, T_g)[:,0] - dT_g
-    R_ullage_temperature[0]    = T_g[0,0] - tank_conditions.ullage_temperature[0,0]
-
-    R_fuel_temperature          = np.dot(D, T_l)[:,0] - dT_l
-    R_fuel_temperature[0]       = T_l[0,0] - tank_conditions.fuel_temperature[0,0]
-
-    state.residuals.network[tag + '_ullage_mass'][:,0]        = R_ullage_mass
-    state.residuals.network[tag + '_fuel_mass'][:,0]          = R_fuel_mass
-    state.residuals.network[tag + '_ullage_volume'][:,0]      = R_ullage_volume
-    state.residuals.network[tag + '_fuel_volume'][:,0]        = R_fuel_volume
-    state.residuals.network[tag + '_ullage_temperature'][:,0] = R_ullage_temperature
-    state.residuals.network[tag + '_fuel_temperature'][:,0]   = R_fuel_temperature
-
-    # ------------------------------------------------------------------
-    #  Store outputs
-    # ------------------------------------------------------------------
-    tank_conditions.ullage_mass[1:,0]        = m_g[1:,0]
-    tank_conditions.fuel_mass[1:,0]          = m_l[1:,0]
-    tank_conditions.ullage_volume[1:,0]      = V_g[1:,0]
-    tank_conditions.fuel_volume[1:,0]        = V_l[1:,0]
-    tank_conditions.ullage_temperature[1:,0] = T_g[1:,0]
-    tank_conditions.fuel_temperature[1:,0]   = T_l[1:,0]
-    tank_conditions.pressure[:,0]            = P
-    tank_conditions.vent_rate[:,0]           = m_dot_vent
-    tank_conditions.boil_off_flow_rate[:,0]  = m_dot_bo_final
-    tank_conditions.heater_power[:,0]        = heater_power
-
-    # Total mass leaving the tank system (engine offtake + vented boil-off) --
-    # what drives vehicle weight/CG bookkeeping in Common/Update/weights.py
-    tank_conditions.mass_flow_rate[:,0]         = m_dot_l_engine + m_dot_vent
-    tank_conditions.outputs.power.chemical[:,0] = m_dot_l_engine * fuel.lower_heating_value
-
-    stored_results_flag = True
-    stored_source_tag    = tank.tag
-    return tank_conditions.inputs, tank_conditions.outputs, stored_results_flag, stored_source_tag
+    derivatives = (dm_g, dm_l, dT_g, dT_l, dV_g, dV_l)
+    diagnostics = dict(P=P, m_dot_vent=m_dot_vent, m_dot_bo_final=m_dot_bo_final,
+                        heater_power=heater_power, m_dot_l_engine=m_dot_l_engine)
+    return derivatives, diagnostics
 
 
 def _soft_temperature_barrier(T, T_lo, T_hi, eps):

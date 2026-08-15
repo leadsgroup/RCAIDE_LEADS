@@ -13,20 +13,18 @@ from RCAIDE.Library.Methods.Utilities.Chebyshev.chebyshev_data import chebyshev_
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_rounded_end_cylindrical_tank_volume import compute_rounded_end_cylindrical_tank_volume
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_cylindrical_tank_volume import compute_cryogenic_cylindrical_tank_volume
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.append_cryogenic_tank_conditions import append_cryogenic_tank_conditions
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.append_cryogenic_tank_unknown_and_residual import append_cryogenic_tank_unknown_and_residual
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_tank_performance import compute_cryogenic_tank_performance
-from RCAIDE.Library.Mission.Solver.solver import _magnitude_scale
 
 import numpy as np
-from scipy.optimize import fsolve
-from scipy.integrate import solve_ivp
 
 # ----------------------------------------------------------------------------------------------------------------------
-#  Test harness: builds a single Cryogenic_Tank and drives its residual function
-#  directly (fsolve on the 6-state boil-off system alone) at a fixed cruise
-#  altitude and fixed engine fuel demand -- isolated from the full mission
-#  solver, aerodynamic surrogates, and other tank instances, so failures here
-#  are unambiguously in the tank physics rather than aircraft-level coupling.
+#  Test harness: builds a single Cryogenic_Tank and calls its performance function
+#  directly at a fixed cruise altitude and fixed engine fuel demand -- isolated from
+#  the full mission solver, aerodynamic surrogates, and other tank instances, so
+#  failures here are unambiguously in the tank physics rather than aircraft-level
+#  coupling. compute_cryogenic_tank_performance solves the tank's own 6-state
+#  boil-off IVP internally (adaptive Radau) and populates tank_conditions directly --
+#  there is no outer residual/unknown machinery left to drive here.
 # ----------------------------------------------------------------------------------------------------------------------
 def build_tank(fuel, design_inlet_temperature, diameter, length):
     tank                            = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank()
@@ -82,103 +80,28 @@ def build_state(n_nodes, duration, chemical_power_demand, cruise_altitude):
     return state
 
 
-def run_case(fuel, design_inlet_temperature, chemical_power_demand, label, n_nodes=8,
-             diameter=2.0, length=6.0, duration_hr=2.0, check_truth=False):
+def build_case(fuel, design_inlet_temperature, chemical_power_demand, n_nodes, diameter, length, duration_hr):
     duration = duration_hr * 3600.0
-
-    tank    = build_tank(fuel, design_inlet_temperature, diameter=diameter, length=length)
-    state   = build_state(n_nodes, duration, chemical_power_demand, cruise_altitude=35000. * Units.ft)
+    tank     = build_tank(fuel, design_inlet_temperature, diameter=diameter, length=length)
+    state    = build_state(n_nodes, duration, chemical_power_demand, cruise_altitude=35000. * Units.ft)
 
     segment       = Data()
     segment.state = state
-
     append_cryogenic_tank_conditions(tank, segment)
-    append_cryogenic_tank_unknown_and_residual(tank, segment)
 
-    keys = [tank.tag + suffix for suffix in
-            ('_ullage_mass', '_fuel_mass', '_ullage_temperature', '_fuel_temperature', '_ullage_volume', '_fuel_volume')]
+    return tank, state
 
-    x_flat = np.concatenate([state.unknowns.network[k][:,0] for k in keys])
 
-    def residual_fn(x):
-        for i, k in enumerate(keys):
-            state.unknowns.network[k][:,0] = x[i*n_nodes:(i+1)*n_nodes]
-        compute_cryogenic_tank_performance(tank, state, network=None)
-        return np.concatenate([state.residuals.network[k][:,0] for k in keys])
+def run_case(fuel, design_inlet_temperature, chemical_power_demand, label, n_nodes=8,
+             diameter=2.0, length=6.0, duration_hr=2.0, check_truth=False):
+    tank, state = build_case(fuel, design_inlet_temperature, chemical_power_demand,
+                              n_nodes, diameter, length, duration_hr)
 
-    # Adaptive-step (stiff) ODE warm start: a flat (steady-state) initial guess is
-    # degenerate for the Chebyshev differentiation matrix (D @ constant = 0), so its
-    # residual at every non-pinned node collapses to a single rate, -dy/dt(y0) -- which
-    # lets any uniform state be read as an ODE right-hand side via the same trick. The
-    # early transient here is stiff (ullage mass starts tiny, ~0.5 kg, so 1/m_g in the
-    # ullage energy balance is large and rate-of-change accelerates fast within the
-    # first Chebyshev interval); a fixed-step explicit-Euler march badly overshoots it,
-    # so use solve_ivp's implicit stiff integrator (Radau) evaluated at the exact
-    # collocation times instead -- standard collocation warm-start practice for a
-    # system whose transient shape isn't known a priori.
-    t = np.ravel(state.numerics.time.control_points)
-    y0 = x_flat[::n_nodes].copy()  # one value per key, at node 0
-
-    def rate_fn(ti, y):
-        r_uniform = residual_fn(np.repeat(y, n_nodes))
-        return -r_uniform[1::n_nodes]
-
-    sol = solve_ivp(rate_fn, (t[0], t[-1]), y0, method='Radau', t_eval=t, rtol=1e-6, atol=1e-9)
-    x0  = sol.y.flatten()
-
-    # Mirror the production mission solver's scaling (RCAIDE.Library.Mission.Solver.solver.converge):
-    # unknowns/residuals of very different physical magnitude (masses ~100s kg, volumes ~1-10 m^3,
-    # temperatures ~20K) sharing one solver tolerance otherwise leaves the small ones degenerate.
-    unknown_scale  = _magnitude_scale(x0)
-    residual_scale = _magnitude_scale(residual_fn(x0))
-
-    def scaled_residual_fn(x_scaled):
-        return residual_fn(x_scaled * unknown_scale) / residual_scale
-
-    x_scaled_sol, info, ier, msg = fsolve(scaled_residual_fn, x0 / unknown_scale, full_output=True, xtol=1e-10)
-
-    # Re-scale and restart from the first pass's result -- re-centering the
-    # scale/warm-start on wherever fsolve actually got to often escapes a
-    # shallow stall that the original (cruder) linear warm-start couldn't see.
-    for _ in range(3):
-        x_sol = x_scaled_sol * unknown_scale
-        if np.max(np.abs(residual_fn(x_sol))) < 1e-6:
-            break
-        unknown_scale  = _magnitude_scale(x_sol)
-        residual_scale = _magnitude_scale(residual_fn(x_sol))
-        x_scaled_sol, info, ier, msg = fsolve(scaled_residual_fn, x_sol / unknown_scale, full_output=True, xtol=1e-10)
-
-    x_sol = x_scaled_sol * unknown_scale
-
-    residual_norm = np.max(np.abs(residual_fn(x_sol)))
-    converged     = (ier == 1) and (residual_norm < 1e-6)
-
-    # Truth value: an independent adaptive IVP integration (not the collocation
-    # method under test), evaluated at the same collocation times. This is the same
-    # cross-validation methodology the source paper describes --
-    # 2026_AST_Cryogenic_BWB_Sensitivity_Analysis, Section V.C (p.12): "This method
-    # was validated internally against a conventional IVP solver for a
-    # representative single-tank case ... with the two solution methods showing
-    # close agreement in both temperature and mass trajectories." The paper does not
-    # publish the numeric trajectory itself, so this regenerates an equivalent truth
-    # trajectory for this specific test case rather than citing its numbers. Only
-    # run for one representative case (check_truth=True) -- each IVP step re-solves
-    # the per-node heat-leak brentq roots, making this too slow to run on every case.
-    if check_truth:
-        y0_truth  = x_flat[::n_nodes].copy()
-        sol_truth = solve_ivp(rate_fn, (t[0], t[-1]), y0_truth, method='Radau', t_eval=t, rtol=1e-6, atol=1e-8)
-        assert sol_truth.success, f"{label}: IVP truth integration failed ({sol_truth.message})"
-        x_truth   = sol_truth.y.flatten()
-
-    residual_fn(x_sol)  # restore state to the collocation solution for the checks below
-
-    print(f"\n----- {label} -----")
-    print(f"  fsolve status: {msg.strip()} (ier={ier})")
-    print(f"  max |residual|: {residual_norm:.3e}")
+    compute_cryogenic_tank_performance(tank, state, network=None)
 
     tank_conditions = state.conditions.energy.sources[tank.tag]
-    m_g = state.unknowns.network[tank.tag + '_ullage_mass'][:,0]
-    m_l = state.unknowns.network[tank.tag + '_fuel_mass'][:,0]
+    m_g = tank_conditions.ullage_mass[:,0]
+    m_l = tank_conditions.fuel_mass[:,0]
     total_mass_0 = m_g[0] + m_l[0]
     total_mass_f = m_g[-1] + m_l[-1]
 
@@ -188,6 +111,7 @@ def run_case(fuel, design_inlet_temperature, chemical_power_demand, label, n_nod
     expected_mass_loss   = np.dot(I, m_dot_total_out)[-1]
     actual_mass_loss     = total_mass_0 - total_mass_f
 
+    print(f"\n----- {label} -----")
     print(f"  Initial total mass (liquid+ullage): {total_mass_0:.4f} kg")
     print(f"  Final total mass (liquid+ullage):   {total_mass_f:.4f} kg")
     print(f"  Expected mass loss (engine + vent): {expected_mass_loss:.4f} kg")
@@ -196,19 +120,35 @@ def run_case(fuel, design_inlet_temperature, chemical_power_demand, label, n_nod
     print(f"  Heater power range:  [{tank_conditions.heater_power[:,0].min():.3e}, {tank_conditions.heater_power[:,0].max():.3e}] W")
     print(f"  Pressure range:      [{tank_conditions.pressure[:,0].min():.3e}, {tank_conditions.pressure[:,0].max():.3e}] Pa")
 
-    if check_truth:
-        # Per-state agreement against the independent IVP truth trajectory (relative,
-        # with a small absolute floor since ullage mass/volume start near zero)
-        rel_errors = np.abs(x_sol - x_truth) / (np.abs(x_truth) + 1e-6)
-        max_rel_error = rel_errors.max()
-        print(f"  Max relative error vs. IVP truth trajectory: {max_rel_error:.3e}")
-
-    assert converged, f"{label}: tank residual system failed to converge (max|R|={residual_norm:.3e})"
     mass_error = abs(actual_mass_loss - expected_mass_loss)
     assert mass_error < 1e-3, f"{label}: mass conservation violated by {mass_error:.3e} kg"
     assert np.all(m_g > 0) and np.all(m_l > 0), f"{label}: non-physical negative mass in solution"
+
     if check_truth:
-        assert max_rel_error < 1e-2, f"{label}: collocation solution disagrees with IVP truth trajectory by {max_rel_error:.3e} (relative)"
+        # Independent cross-check: re-solve the identical problem at a much tighter
+        # IVP tolerance (fresh tank/state, since compute_cryogenic_tank_performance
+        # writes its result into tank_conditions in place) and compare trajectories.
+        # Explicitly pinned to Radau (rather than leaving method at its own default)
+        # so this is a genuinely independent cross-check -- a different integrator
+        # AND a much tighter tolerance than the production default (LSODA/1e-4/1e-7,
+        # chosen for speed -- see compute_cryogenic_tank_performance's docstring),
+        # not just the same method re-run tighter. This verifies the production
+        # default is actually converged, not just that the integrator reports
+        # success -- the same role the old collocation-vs-IVP cross-check served
+        # before the tank was decoupled from the mission solver's Newton unknowns.
+        tank_tight, state_tight = build_case(fuel, design_inlet_temperature, chemical_power_demand,
+                                              n_nodes, diameter, length, duration_hr)
+        compute_cryogenic_tank_performance(tank_tight, state_tight, network=None,
+                                            rtol=1e-9, atol=1e-12, method='Radau')
+        tc_tight = state_tight.conditions.energy.sources[tank_tight.tag]
+
+        keys = ('ullage_mass', 'fuel_mass', 'ullage_temperature', 'fuel_temperature', 'ullage_volume', 'fuel_volume')
+        x_sol   = np.concatenate([tank_conditions[k][:,0] for k in keys])
+        x_truth = np.concatenate([tc_tight[k][:,0]        for k in keys])
+        rel_errors    = np.abs(x_sol - x_truth) / (np.abs(x_truth) + 1e-6)
+        max_rel_error = rel_errors.max()
+        print(f"  Max relative error vs. tight-tolerance IVP truth trajectory: {max_rel_error:.3e}")
+        assert max_rel_error < 1e-2, f"{label}: default-tolerance solution disagrees with tight-tolerance truth trajectory by {max_rel_error:.3e} (relative)"
 
     return tank, state
 
