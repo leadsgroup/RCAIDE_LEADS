@@ -39,6 +39,8 @@ def vehicle_setup(current,C_rat,cell_chemistry,electrical_config):
         battery = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_NMC()
     elif cell_chemistry == 'lithium_ion_lfp':
         battery = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_LFP()
+    battery.electrical_configuration.series   = 1
+    battery.electrical_configuration.parallel = 1
     battery_pack.append_module(battery)
     battery_pack.assigned_distributors = [[bus.tag]]
     net.sources.append(battery_pack)
