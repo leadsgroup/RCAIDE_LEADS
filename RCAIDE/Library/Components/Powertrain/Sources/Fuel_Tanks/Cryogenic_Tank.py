@@ -52,9 +52,13 @@ class Cryogenic_Tank(Non_Integral_Tank):
     ullage_volume_fraction : float
         Fraction of internal volume reserved for ullage (default: 0.07).
     safety_factor : float
-        Structural factor of safety (default: 1.6).
-    pressure_factor : float
-        Internal pressure multiplier for sizing (default: 5).
+        Structural factor of safety (default: 1.6). Sole structural safety
+        margin on the yield criterion (``sigma_vm <= sigma_y/safety_factor``);
+        no separate burst/proof pressure factor is applied on top of it -- an
+        earlier fixed ``pressure_factor`` (~5x) multiplier stacked
+        multiplicatively on the same yield check as this factor, was never
+        itself sampled/varied, and had no distinct ultimate-strength criterion
+        to justify as a separate margin, so it was removed as redundant.
     boil_off_model : str
         'quasi_steady' (default) solves the full 6-state implicit two-phase
         boil-off model (ullage/liquid mass, temperature, volume) as
@@ -81,13 +85,13 @@ class Cryogenic_Tank(Non_Integral_Tank):
     pressure_margin : float
         Operating ullage pressure margin above the saturation pressure at
         ``design_inlet_temperature`` [Pa] (default: 2 bar = 2e5 Pa). Sets
-        ``design_pressure = P_sat(design_inlet_temperature) + pressure_margin``,
-        the in-flight runtime target the detailed boil-off model regulates
-        the ullage to. This is the operating rated pressure, matching the
-        AST paper's Eq. 4 (``P_rated = P_sat + ΔP``, sampled 2-6 bar in their
-        Table 5) -- NOT ``pressure_factor``, which is a separate structural
-        proof/burst multiplier (~5x) used only to size wall thickness with
-        margin, never an operating setpoint.
+        ``design_pressure = P_rated = P_sat(design_inlet_temperature) +
+        pressure_margin``, matching the AST paper's Eq. 4 (sampled 2-6 bar in
+        their Table 5). This is both the in-flight runtime target the
+        detailed boil-off model regulates the ullage to, AND the internal
+        design pressure (``P_internal = P_rated``) fed directly into the
+        structural wall-thickness sizing -- the only additional structural
+        margin beyond the physical rated pressure is ``safety_factor``.
     pressure_regulation_time_constant : float
         Characteristic response time [s] of the tank's heater/vent regulation
         system correcting a ullage pressure deviation from ``design_pressure``
@@ -115,7 +119,6 @@ class Cryogenic_Tank(Non_Integral_Tank):
         self.design_external_pressure       = 0
         self.tank_accesories_weight_factor  = 1.5
         self.safety_factor                  = 1.6
-        self.pressure_factor                = 5
         self.boil_off_model                 = 'quasi_steady'
         self.heater_direct_boiloff_fraction = 0.1
         self.pressure_margin                = 2 * Units.bar

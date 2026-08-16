@@ -71,15 +71,18 @@ def compute_cryogenic_cylindrical_tank_volume(fuel_tank, fuel_tanks=None):
     sigma_allow   = fuel_tank.inner_structure.material.yield_tensile_strength / safety_factor
     PI_Q          = 1.5  # heat-flow multiplier for thermal sizing margin
 
-    # Internal and external design pressures
+    # Internal and external design pressures. P_internal is the physical
+    # rated pressure itself -- no separate burst/proof multiplier is applied
+    # on top of it; safety_factor (via sigma_allow above) is the sole
+    # structural margin.
     P_sat      = fuel_tank.fuel.cryogen_properties(T_inlet, "Pressure (MPa)", phase='liquid') * Units.MPa
-    P_internal = fuel_tank.pressure_factor * P_sat
+    P_rated    = P_sat + fuel_tank.pressure_margin
+    P_internal = P_rated
     P_external = fuel_tank.design_external_pressure
 
     # Operating (rated) pressure target for the in-flight boil-off model --
-    # distinct from P_internal above, which is the structural proof/burst
-    # pressure used only to size wall thickness with margin.
-    fuel_tank.design_pressure = P_sat + fuel_tank.pressure_margin
+    # the same P_rated used as the structural design pressure above.
+    fuel_tank.design_pressure = P_rated
 
     # Atmospheric conditions at design altitude (computed once, passed to inner solvers)
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()

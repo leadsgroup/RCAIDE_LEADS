@@ -9,7 +9,7 @@ import numpy as np
 from scipy.optimize import brentq
 from scipy.integrate import solve_ivp
 
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_tank_heat_leak import compute_cryogenic_tank_heat_leak
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank.compute_cryogenic_tank_heat_leak import compute_cryogenic_tank_heat_leak, compute_cryogenic_tank_heat_leak_cuboid
 
 R_UNIVERSAL = 8314.462618  # J/(kmol*K), i.e. J/(kg*K) per unit molecular weight in g/mol
 
@@ -279,16 +279,20 @@ def _tank_state_rates(tank, fuel, R_specific, m_g, m_l, T_g, T_l, V_g, V_l,
             _, Q_env_gas[i] = compute_cryogenic_tank_heat_leak(
                 t_ins, T_env[i], T_g_c[i], k_mat, k_ins_mat, k_air[i], nu_air[i], alpha_air[i], Pr_air[i], ro, ri, li)
     else:
-        # Conformal/prismatic tanks are sized with a simple 1D-conduction insulation
-        # model (compute_cryogenic_conformal_tank_volume.py), not the Churchill outer
-        # convection/radiation correlation -- mirrored here for consistency rather
-        # than forcing a cylindrical model onto box geometry.
-        l_i = tank.inner_structure.lengths.internal
-        w_i = tank.inner_structure.widths.internal
-        h_i = tank.inner_structure.heights.internal
-        A_box = 2 * (l_i * w_i + l_i * h_i + w_i * h_i)
-        Q_env_liq = k_ins_mat * A_box * (T_env - T_l_c) / t_ins
-        Q_env_gas = k_ins_mat * A_box * (T_env - T_g_c) / t_ins
+        # Conformal/prismatic tanks: same outer convection/radiation-vs-conduction
+        # heat-leak model as the cylindrical case, using flat-plate free-convection
+        # correlations per face orientation instead of cylinder/sphere correlations
+        # (compute_cryogenic_tank_heat_leak_cuboid) -- shared with the design-time
+        # insulation sizing solve (compute_cryogenic_conformal_tank_volume.py).
+        l_o = tank.inner_structure.lengths.external
+        w_o = tank.inner_structure.widths.external
+        h_o = tank.inner_structure.heights.external
+        th  = tank.inner_structure.thickness
+        for i in range(n_nodes):
+            _, Q_env_liq[i] = compute_cryogenic_tank_heat_leak_cuboid(
+                t_ins, T_env[i], T_l_c[i], k_mat, k_ins_mat, k_air[i], nu_air[i], alpha_air[i], Pr_air[i], l_o, w_o, h_o, th)
+            _, Q_env_gas[i] = compute_cryogenic_tank_heat_leak_cuboid(
+                t_ins, T_env[i], T_g_c[i], k_mat, k_ins_mat, k_air[i], nu_air[i], alpha_air[i], Pr_air[i], l_o, w_o, h_o, th)
 
     Q_e_l = Q_env_liq * A_wet_frac
     Q_e_g = Q_env_gas * (1 - A_wet_frac)

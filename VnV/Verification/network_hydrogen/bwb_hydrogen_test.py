@@ -51,7 +51,9 @@ def main():
     
     # Step 5 execute flight profile
     results = missions.base_mission.evaluate()
-    CL_truth = 0.472316256360454
+    CL_truth = 0.4664293  # updated Aug 2026: burst-factor fix, richer conformal insulation model, and
+                          # new Heater electrical load all shift converged weight/CG/trim CL versus the
+                          # prior truth value (0.472316256360454)
     CL    = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[0, 0]
 
     abs_error = np.abs((CL - CL_truth))

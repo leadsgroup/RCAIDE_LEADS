@@ -106,6 +106,118 @@ def _heat_balance_residual(Te, t_ins, Ta, Ti, k_mat, k_ins_mat, k_air, nu, alpha
 
 
 # ----------------------------------------------------------------------------------------------------------------------
+#  Cryogenic Tank Environmental Heat Leak (Prismatic/Cuboid)
+# ----------------------------------------------------------------------------------------------------------------------
+def compute_cryogenic_tank_heat_leak_cuboid(t_ins, T_env, T_cold, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, l_o, w_o, h_o, th):
+    """
+    Heat leak through a prismatic (cuboid) tank's structural wall + insulation,
+    from natural convection/radiation at the six outer faces balanced against
+    planar conduction through the wall and insulation to the cryogen.
+
+    Companion to ``compute_cryogenic_tank_heat_leak`` (cylindrical case): same
+    equilibrium-outer-surface-temperature solution strategy, but with flat-plate
+    free-convection correlations per face orientation instead of the
+    cylinder/sphere correlations, and planar (not concentric-shell) conduction
+    resistance. ``heights.external`` is taken as the vertical (gravity-aligned)
+    dimension. Shared by the design-time insulation-thickness solve
+    (``compute_cryogenic_conformal_tank_volume.py``) and the runtime in-flight
+    boil-off model (``compute_cryogenic_tank_performance.py``), the same way
+    ``compute_cryogenic_tank_heat_leak`` is shared for the cylindrical case.
+
+    Parameters
+    ----------
+    t_ins : float
+        Insulation thickness [m].
+    T_env : float
+        Ambient (hot-side) temperature [K].
+    T_cold : float
+        Cryogen (cold-side) temperature [K].
+    k_mat, k_ins_mat : float
+        Structural wall / insulation thermal conductivity [W/m-K].
+    k_air, nu, alpha_th, Pr : float
+        Ambient air thermal conductivity [W/m-K], kinematic viscosity [m^2/s],
+        thermal diffusivity [m^2/s], and Prandtl number.
+    l_o, w_o, h_o : float
+        Structural wall outer length, width, height [m] (pre-insulation).
+    th : float
+        Structural wall thickness [m].
+
+    Returns
+    -------
+    Te : float
+        Equilibrium insulation outer-surface temperature [K].
+    Q : float
+        Total heat leak into the tank [W].
+
+    Notes
+    -----
+    * Convection correlations (Incropera & DeWitt / Bergman et al. free
+      convection): Churchill-Chu for the four vertical side faces (same
+      correlation already used for the cylindrical case's mid-section, applied
+      here with the tank height as the characteristic length); the horizontal
+      top/bottom faces use the up/down-facing cold-plate correlations, since a
+      cold surface facing up (stably stratified) transfers markedly less heat
+      than one facing down (buoyancy-favorable) at the same Rayleigh number.
+    * Conduction uses a single planar wall/insulation resistance network,
+      referenced to the structural (pre-insulation) outer surface area.
+    """
+    if abs(T_env - T_cold) < 1e-9:
+        Te = T_cold
+    else:
+        lo, hi = (T_cold, T_env) if T_env > T_cold else (T_env, T_cold)
+        args = (t_ins, T_env, T_cold, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, l_o, w_o, h_o, th)
+        Te = _find_root(lambda x, *a: _heat_balance_residual_cuboid(x, *a)[0], lo, hi, args=args)
+
+    _, Q = _heat_balance_residual_cuboid(Te, t_ins, T_env, T_cold, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, l_o, w_o, h_o, th)
+    return Te, Q
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+#  Heat balance at the insulation outer surface (cuboid case)
+# ----------------------------------------------------------------------------------------------------------------------
+def _heat_balance_residual_cuboid(Te, t_ins, Ta, Ti, k_mat, k_ins_mat, k_air, nu, alpha_th, Pr, l_o, w_o, h_o, th):
+    g    = 9.81
+    l_oo = l_o + 2 * t_ins
+    w_oo = w_o + 2 * t_ins
+    h_oo = h_o + 2 * t_ins
+
+    # ---- Vertical side faces (2 x l_oo*h_oo, 2 x w_oo*h_oo), Churchill-Chu ----
+    Ra_v    = (g / Ta) * (Ta - Te) * h_oo**3 / (alpha_th * nu)
+    Nu_v    = (0.60 + 0.387 * Ra_v**(1 / 6) / (1 + (0.559 / Pr)**(9 / 16))**(8 / 27))**2
+    h_v     = Nu_v * k_air / h_oo
+    A_side  = 2 * l_oo * h_oo + 2 * w_oo * h_oo
+    Qv_side = h_v * A_side * (Ta - Te)
+    Qr_side = 5.67e-8 * 0.03 * A_side * (Ta**4 - Te**4)
+
+    # ---- Horizontal top/bottom faces ----
+    A_horiz = l_oo * w_oo
+    L_c     = A_horiz / (2 * (l_oo + w_oo))                          # A/P characteristic length
+    Ra_h    = (g / Ta) * (Ta - Te) * L_c**3 / (alpha_th * nu)
+
+    # Bottom face: cold surface facing down (buoyancy-favorable, same
+    # correlation family as a hot plate facing up)
+    Nu_bot  = 0.54 * Ra_h**(1 / 4) if Ra_h <= 1e7 else 0.15 * Ra_h**(1 / 3)
+    h_bot   = Nu_bot * k_air / L_c
+    Qv_bot  = h_bot * A_horiz * (Ta - Te)
+    Qr_bot  = 5.67e-8 * 0.03 * A_horiz * (Ta**4 - Te**4)
+
+    # Top face: cold surface facing up (stably stratified, same correlation
+    # family as a hot plate facing down)
+    Nu_top  = 0.27 * Ra_h**(1 / 4)
+    h_top   = Nu_top * k_air / L_c
+    Qv_top  = h_top * A_horiz * (Ta - Te)
+    Qr_top  = 5.67e-8 * 0.03 * A_horiz * (Ta**4 - Te**4)
+
+    # ---- Conduction through wall + insulation (planar, area-referenced to
+    #      the structural outer surface) ----
+    A_ref = 2 * (l_o * w_o + l_o * h_o + w_o * h_o)
+    Qc    = (Te - Ti) * A_ref / (th / k_mat + t_ins / k_ins_mat)
+
+    residual = (Qv_side + Qv_bot + Qv_top) + (Qr_side + Qr_bot + Qr_top) - Qc
+    return residual, Qc
+
+
+# ----------------------------------------------------------------------------------------------------------------------
 #  Bounded 1D root finder
 #
 #  Tries brentq first (fast, guaranteed convergence when a sign change exists).
