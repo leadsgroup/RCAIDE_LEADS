@@ -1178,7 +1178,7 @@
                 "xz_plane_symmetric": false,
                 "xy_plane_symmetric": false,
                 "yz_plane_symmetric": false,
-                "coordinate_file": "C:\\Users\\hussi\\Documents\\LEADS\\RCAIDE_LEADS\\VnV\\Vehicles\\Airfoils\\NACA_4412.txt",
+                "coordinate_file": "c:\\Users\\hussi\\Documents\\LEADS\\RCAIDE_LEADS\\VnV\\Vehicles\\Airfoils\\NACA_4412.txt",
                 "geometry": {
                     "thickness_to_chord": 0.12019145780605714,
                     "max_thickness": 0.12019145780605714,
@@ -2100,14 +2100,14 @@
                     ]
                 },
                 "polar_files": [
-                    "C:\\Users\\hussi\\Documents\\LEADS\\RCAIDE_LEADS\\VnV\\Vehicles\\Airfoils\\Polars\\NACA_4412_polar_Re_50000.txt",
-                    "C:\\Users\\hussi\\Documents\\LEADS\\RCAIDE_LEADS\\VnV\\Vehicles\\Airfoils\\Polars\\NACA_4412_polar_Re_100000.txt",
-                    "C:\\Users\\hussi\\Documents\\LEADS\\RCAIDE_LEADS\\VnV\\Vehicles\\Airfoils\\Polars\\NACA_4412_polar_Re_200000.txt",
-                    "C:\\Users\\hussi\\Documents\\LEADS\\RCAIDE_LEADS\\VnV\\Vehicles\\Airfoils\\Polars\\NACA_4412_polar_Re_500000.txt",
-                    "C:\\Users\\hussi\\Documents\\LEADS\\RCAIDE_LEADS\\VnV\\Vehicles\\Airfoils\\Polars\\NACA_4412_polar_Re_1000000.txt",
-                    "C:\\Users\\hussi\\Documents\\LEADS\\RCAIDE_LEADS\\VnV\\Vehicles\\Airfoils\\Polars\\NACA_4412_polar_Re_3500000.txt",
-                    "C:\\Users\\hussi\\Documents\\LEADS\\RCAIDE_LEADS\\VnV\\Vehicles\\Airfoils\\Polars\\NACA_4412_polar_Re_5000000.txt",
-                    "C:\\Users\\hussi\\Documents\\LEADS\\RCAIDE_LEADS\\VnV\\Vehicles\\Airfoils\\Polars\\NACA_4412_polar_Re_7500000.txt"
+                    "c:\\Users\\hussi\\Documents\\LEADS\\RCAIDE_LEADS\\VnV\\Vehicles\\Airfoils\\Polars\\NACA_4412_polar_Re_50000.txt",
+                    "c:\\Users\\hussi\\Documents\\LEADS\\RCAIDE_LEADS\\VnV\\Vehicles\\Airfoils\\Polars\\NACA_4412_polar_Re_100000.txt",
+                    "c:\\Users\\hussi\\Documents\\LEADS\\RCAIDE_LEADS\\VnV\\Vehicles\\Airfoils\\Polars\\NACA_4412_polar_Re_200000.txt",
+                    "c:\\Users\\hussi\\Documents\\LEADS\\RCAIDE_LEADS\\VnV\\Vehicles\\Airfoils\\Polars\\NACA_4412_polar_Re_500000.txt",
+                    "c:\\Users\\hussi\\Documents\\LEADS\\RCAIDE_LEADS\\VnV\\Vehicles\\Airfoils\\Polars\\NACA_4412_polar_Re_1000000.txt",
+                    "c:\\Users\\hussi\\Documents\\LEADS\\RCAIDE_LEADS\\VnV\\Vehicles\\Airfoils\\Polars\\NACA_4412_polar_Re_3500000.txt",
+                    "c:\\Users\\hussi\\Documents\\LEADS\\RCAIDE_LEADS\\VnV\\Vehicles\\Airfoils\\Polars\\NACA_4412_polar_Re_5000000.txt",
+                    "c:\\Users\\hussi\\Documents\\LEADS\\RCAIDE_LEADS\\VnV\\Vehicles\\Airfoils\\Polars\\NACA_4412_polar_Re_7500000.txt"
                 ],
                 "polars": {
                     "aoa_from_polar": [
@@ -14826,7 +14826,7 @@
             0,
             0
         ],
-        "fidelity": "Lifting_Line_Theory",
+        "fidelity": "Blade_Element_Momentum_Theory_Helmholtz_Wake",
         "cruise": {
             "design_thrust": 1500,
             "design_torque": 1688.1999476007388,
@@ -14920,7 +14920,7 @@
         "wake_inputs": {
             "include_wake": true,
             "wake_model_hov": 1,
-            "wake_model_FF": 5,
+            "wake_model_FF": 4,
             "vc_correction": 1,
             "dpsi": 0.5235987755982988,
             "n_turns": 3.0,
@@ -14933,15 +14933,15 @@
             "r_R_shed": 1.0,
             "tol": 0.001,
             "tol_CT": 0.001,
-            "relax_0_Gammab": 0.2,
+            "relax_0_Gammab": 0.1,
             "relax_0_CT": 0.2,
             "max_iter_Gammab_0": 1000,
             "max_iter_CT_0": 100,
             "CT_iter": true,
             "aerofoil_aero": 2,
-            "mu_max": 1.0,
+            "mu_max": 10.0,
             "mu_edgewise_threshold": 0.001,
-            "free_wake": true,
+            "free_wake": false,
             "free_wake_max_iter": 40,
             "free_wake_tol": 0.0001,
             "free_wake_relax": 0.7

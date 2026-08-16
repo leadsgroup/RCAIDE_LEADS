@@ -7,9 +7,9 @@
 # ---------------------------------------------------------------------------------------------------------------------- 
  # RCAIDE imports
 import RCAIDE
-from RCAIDE.Framework.Core                              import Data , Units, orientation_product, orientation_transpose  
+from RCAIDE.Framework.Core                              import Data , Units, orientation_product, orientation_transpose
 # package imports
-import  numpy as  np 
+import  numpy as  np
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  compute_lifting_line_loads
@@ -234,6 +234,20 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     blade_dT_dr              = rho[:, :, None]*(Gamma*(Wt-epsilon*Wa))
     blade_dQ_dr              = rho[:, :, None]*(Gamma*(Wa+epsilon*Wt)*r_3d)
 
+    # Zero out control points outside the model's valid edgewise-advance-ratio range (mirrors
+    # the mu_max skip in evaluate_bound_vortex_circulation.py). Gamma is frozen there for these
+    # control points, but Cl/Cd/Wa/Wt (used just above) are NOT -- they're whatever the last
+    # inner iteration computed under a physically invalid (mu>>1, near-zero-omega) condition,
+    # which can be wildly wrong (observed: Ct ~ 1e4 instead of O(0.1), enough to make SLSQP's
+    # constraint Jacobian singular). BEMT has no equivalent guard because its formulation
+    # doesn't hit this failure mode -- this is LL-specific, not over-protection relative to it.
+    valid_cp = (wake_inputs.mu <= wake_inputs.mu_max)   # (ctrl_pts,)
+    if np.any(~valid_cp):
+        blade_T_distribution[~valid_cp] = 0.
+        blade_Q_distribution[~valid_cp] = 0.
+        blade_dT_dr[~valid_cp]          = 0.
+        blade_dQ_dr[~valid_cp]          = 0.
+
     blade_T_distribution_2d = blade_T_distribution
     blade_Q_distribution_2d = blade_Q_distribution
     blade_dT_dr_2d          = blade_dT_dr
@@ -256,6 +270,12 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     # compute the hub force / rotor drag distribution along the blade
     dL_2d = 0.5*rho[:, :, None]*c_mid*Cl*W**2*deltar_3d
     dD_2d = 0.5*rho[:, :, None]*c_mid*Cd*W**2*deltar_3d
+
+    # Same mu_max gating as the thrust/torque distributions above -- Cl/Cd/W are unfrozen for
+    # invalid control points and can be wildly wrong there.
+    if np.any(~valid_cp):
+        dL_2d[~valid_cp] = 0.
+        dD_2d[~valid_cp] = 0.
 
     rotor_drag_distribution = np.sum(dL_2d*np.sin(psi[None,:,:]) + dD_2d*np.cos(psi[None,:,:]), axis=2)
     
@@ -295,6 +315,11 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     Cq_rotor[omega==0.0]           = 0.
     etap[omega==0.0]               = 0.
 
+    # Invalid (mu > mu_max) control points now have thrust=power=0 from the zeroing above --
+    # etap/FM divide by power, so those would otherwise be 0/0 = NaN instead of finite garbage.
+    etap[~valid_cp]                 = 0.
+    FM[~valid_cp]                   = 0.
+
     thrust[eta[:,0]  <=0.0]        = 0.
     power[eta[:,0]   <=0.0]        = 0.
     torque[eta[:,0]  <=0.0]        = 0.  
@@ -314,6 +339,7 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
     mu                    = wake_inputs.mu
     mu_edgewise_threshold = wake_inputs.get('mu_edgewise_threshold', 1e-2)
     hover_mask            = mu < mu_edgewise_threshold
+    '''
     if np.any(hover_mask):
         print("FM: ", FM[hover_mask], ", Ct_sigma: ", Ct_sigma[hover_mask])
     if np.any(~hover_mask):
@@ -322,7 +348,8 @@ def compute_lifting_line_loads(rotor, wake_inputs, conditions):
         ft2_per_m2  = 10.76391041670972
         print("power loading [lbf/hp]:   ", power_loading[~hover_mask] * (W_per_hp / N_per_lbf),
               "disc loading  [lbf/ft^2]: ", disc_loading[~hover_mask] / N_per_lbf / ft2_per_m2)
-
+    '''
+    
     advance_ratio                   = V/(n*D) 
     advance_ratio[omega==0.0]       = 0.
     advance_ratio_rotor             = np.sqrt(V_thrust[:,1,None]**2+V_thrust[:,2,None]**2)/(omega*R)

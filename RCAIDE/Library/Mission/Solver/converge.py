@@ -347,8 +347,9 @@ def iterate_optimizer(nexus):
         segment.state.unknowns = unknowns
         
     segment.process.iterate(segment)
-    
-    residuals = segment.state.residuals.pack_array()    
+
+    residuals = segment.state.residuals.pack_array()
+    print("residuals:", residuals, file=sys.__stdout__, flush=True)
     nexus.residuals =  residuals
     return nexus
 

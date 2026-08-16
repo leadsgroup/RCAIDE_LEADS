@@ -6,6 +6,7 @@
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
 import numpy as np
+import sys
 from RCAIDE.Framework.Core                           import Data, orientation_product, orientation_transpose
 from RCAIDE.Library.Methods.Aerodynamics.Common.Lift  import compute_airfoil_aerodynamics
 from RCAIDE.Library.Methods.Powertrain.Converters.Rotor.Performance.Lifting_Line_Theory import biot_savart_velocity_induction, initialize_wake_geometry, free_wake
@@ -430,6 +431,9 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
 
             residual_Gamma_b = np.max(np.abs(Gamma_b_new - Gamma_b)[valid_cp]) if np.any(valid_cp) else 0.0
 
+            if it1 % 200 == 0:
+                print(f"Gamma_b inner iter {it1}: residual={residual_Gamma_b}", file=sys.__stdout__, flush=True)
+
             # Only update Gamma_b for valid control points -- invalid ones stay frozen at
             # their initial freestream-only guess rather than being iteratively (and pointlessly) refined.
             Gamma_b[valid_cp] = Gamma_b[valid_cp] + relax_Gammab[valid_cp]*(Gamma_b_new[valid_cp] - Gamma_b[valid_cp])
@@ -460,7 +464,7 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
                       f"at outer iteration {it+1}. Stopping.")
                 break
 
-            print("CT", Ct_rotor_new)
+            #print("CT", Ct_rotor_new)
 
             tol_CT = wake_inputs.get('tol_CT', tol)
             residual_CT = np.max(np.abs(Ct_rotor_new - wake_inputs.thrust_coeff_initial_guess)[valid_cp]) if np.any(valid_cp) else 0.0

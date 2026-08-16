@@ -443,7 +443,7 @@ def vehicle_setup(redesign_rotors=True, design_iterations=200) :
     # blade is analyzed during the mission itself.
     # radius_distribution must be set explicitly before design_electric_rotor(), since
     # initialize_lifting_line() needs it upfront (BEMT can auto-generate it, LL cannot).
-    prop_rotor.fidelity                                = 'Lifting_Line_Theory'#'Blade_Element_Momentum_Theory_Helmholtz_Wake'
+    prop_rotor.fidelity                                = 'Lifting_Line_Theory'#'Lifting_Line_Theory'
     prop_rotor.rc                                      = 0.05
     prop_rotor.variable_pitch                          = True
     prop_rotor.radius_distribution                     = np.linspace(prop_rotor.hub_radius, prop_rotor.tip_radius, len(prop_rotor.airfoil_polar_stations))
@@ -451,9 +451,9 @@ def vehicle_setup(redesign_rotors=True, design_iterations=200) :
     prop_rotor.wake_inputs = Data()
     prop_rotor.wake_inputs.include_wake                 = True
     prop_rotor.wake_inputs.wake_model_hov               = 1                 # 1 simple model, 2 landgrebe, 3 landgrebe KT
-    prop_rotor.wake_inputs.wake_model_FF                = 5                 # 4 undistorted, 5 Beddoes distorted, 6 Modified Beddoes distorted
+    prop_rotor.wake_inputs.wake_model_FF                = 4                 # 4 undistorted, 5 Beddoes distorted, 6 Modified Beddoes distorted
     prop_rotor.wake_inputs.vc_correction                = 1                 # vortex core factor, 1 standard/Scully, 2 Rankine, 3 Vatistas, 4 Oseen
-    prop_rotor.wake_inputs.dpsi                         = np.radians(15.0)    # filament length [rad]
+    prop_rotor.wake_inputs.dpsi                         = np.radians(30.0)    # filament length [rad]
     prop_rotor.wake_inputs.n_turns                      = 3.0               # Number of wake turns
     prop_rotor.wake_inputs.thrust_coeff_initial_guess   = 0.00654           # initial guess for CT to intialize the wake geometry
     prop_rotor.wake_inputs.lamb_oseen_rc_0              = 0.028             # initial core radius for the wake filaments [fraction of R]
@@ -462,24 +462,26 @@ def vehicle_setup(redesign_rotors=True, design_iterations=200) :
     prop_rotor.wake_inputs.lamb_oseen_sigma             = 1.0
     prop_rotor.wake_inputs.lamb_oseen_core_growth_delay = np.radians(30.0)  # delay the growth rate till certain wake age
     prop_rotor.wake_inputs.r_R_shed                     = 1.0               # location as fraction of R to shed the wake filament from
-    # Keep well below the outer mission solver's finite-difference step_size (1e-3, see
-    # departure_transition_1's segment.state.numerics.solver.step_size) -- otherwise the outer
-    # Jacobian estimate measures inner-solve noise instead of true sensitivity.
     prop_rotor.wake_inputs.tol                          = 1e-3
     prop_rotor.wake_inputs.tol_CT                       = 1e-3
-    prop_rotor.wake_inputs.relax_0_Gammab               = 0.2
+    # Was 0.2 -- descent_2 control points 1-4 were oscillating (residual flat around ~5, not
+    # decreasing) rather than diverging or slowly converging, the classic signature of a
+    # relaxation factor too large for the local sensitivity of the Gamma_b fixed-point map at
+    # this flow condition. Lowered to damp the overshoot; costs more iterations per point but
+    # there's room in the 5000-iteration cap.
+    prop_rotor.wake_inputs.relax_0_Gammab               = 0.1
     prop_rotor.wake_inputs.relax_0_CT                   = 0.2
     prop_rotor.wake_inputs.max_iter_Gammab_0            = 1000
     prop_rotor.wake_inputs.max_iter_CT_0                = 100
     prop_rotor.wake_inputs.CT_iter                      = True
     prop_rotor.wake_inputs.aerofoil_aero                = 2                # 1 simplified aerofoil aero, detailed panel aerofoil aero
-    prop_rotor.wake_inputs.mu_max                       = 1.0
+    prop_rotor.wake_inputs.mu_max                       = 10.0
     prop_rotor.wake_inputs.mu_edgewise_threshold        = 1e-3 # in-plane advance ratio at/above which a control point uses the forward-flight wake model instead of hover
-    prop_rotor.wake_inputs.free_wake                    = True
+    prop_rotor.wake_inputs.free_wake                    = False
     prop_rotor.wake_inputs.free_wake_max_iter           = 40    
     prop_rotor.wake_inputs.free_wake_tol                = 1e-4
     prop_rotor.wake_inputs.free_wake_relax              = 0.7
-    
+
     propulsor.rotor = prop_rotor
 
     #------------------------------------------------------------------------------------------------------------------------------------               
@@ -571,7 +573,7 @@ def vehicle_setup(redesign_rotors=True, design_iterations=200) :
         # right after, so the .res file reflects the BEMT-optimized geometry analyzed at
         # whatever fidelity the mission actually wants.
         mission_fidelity            = propulsor.rotor.fidelity
-        propulsor.rotor.fidelity    = 'Lifting_Line_Theory'
+        propulsor.rotor.fidelity    = 'Blade_Element_Momentum_Theory_Helmholtz_Wake'
         design_electric_rotor(propulsor, iterations=design_iterations, print_iterations=True)
         propulsor.rotor.fidelity    = mission_fidelity
         save_propulsor(propulsor, os.path.join(local_path, 'tilt_rotor_propulsor.res'))
