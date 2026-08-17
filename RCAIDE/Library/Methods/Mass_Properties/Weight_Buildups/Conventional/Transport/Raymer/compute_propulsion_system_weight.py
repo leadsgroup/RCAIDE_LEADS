@@ -120,8 +120,9 @@ def compute_propulsion_system_weight(vehicle,network, settings):
     number_of_tanks =  0
     ref_nacelle     = None
     for network in  vehicle.networks:
-        for fuel_line in network.fuel_lines:
-            for _ in fuel_line.fuel_tanks:
+
+        for source in  network.sources: 
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
                 number_of_tanks +=  1
         for propulsor in network.propulsors:
             if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or  isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet): 
@@ -243,10 +244,10 @@ def compute_fuel_system_weight(vehicle, NENG,settings):
     """
     Nt = 0
     Vt = 0
-    for network in vehicle.networks:
-        for fuel_line in network.fuel_lines:
-            for fuel_tank in fuel_line.fuel_tanks:
+    for network in vehicle.networks: 
+        for source in  network.sources: 
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
                 Nt +=1
-                Vt += fuel_tank.volume_properties.net_volume / Units["gallon"]
+                Vt += source.volume_properties.net_volume / Units["gallon"]
     WFSYS = 2.405 * Vt**0.606 * 0.5 * Nt**0.5 
     return WFSYS * Units.lbs

@@ -25,6 +25,6 @@ class Environmental_Controls(Systems):
         self.tag        = 'environmental_controls' 
         self.cabin_compressor_efficiency   = 0.85  
 
-    def compute_performance(self,vehicle, state, bus):
-        compute_ecs_power_draw(self, vehicle, state, bus)
-        return
+    def compute_performance(self, state, vehicle):
+        inputs, outputs = compute_ecs_power_draw(self, state, vehicle)
+        return inputs, outputs, False, None

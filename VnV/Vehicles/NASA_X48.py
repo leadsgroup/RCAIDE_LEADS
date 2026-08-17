@@ -195,14 +195,17 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     #------------------------------------------------------------------------------------------------------------------------------------           
     # Battery
     #------------------------------------------------------------------------------------------------------------------------------------  
-    bat                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_LFP() 
+    battery_pack                                            = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack()
+    bat                                                    = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_LFP()
     bat.tag                                                = 'li_ion_battery'
-    bat.electrical_configuration.series                    = 40  
-    bat.electrical_configuration.parallel                  = 10 
-    bat.geometric_configuration.normal_count              = 40  
+    bat.electrical_configuration.series                    = 40
+    bat.electrical_configuration.parallel                  = 10
+    bat.geometric_configuration.normal_count              = 40
     bat.geometric_configuration.parallel_count            = 10
-    bus.battery_modules.append(bat)      
-    bus.initialize_bus_properties()
+    battery_pack.append_module(bat)
+    battery_pack.assigned_distributors = [[bus.tag]]
+    net.sources.append(battery_pack)
+    battery_pack.initialize(net)
     
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Starboard Propulsor
@@ -215,7 +218,7 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     esc                                           = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller()
     esc.tag                                       = 'esc_1'
     esc.efficiency                                = 0.95 
-    esc.bus_voltage                               = bus.voltage   
+    esc.nominal_voltage                           = battery_pack.voltage
     center_propulsor.electronic_speed_controller  = esc   
         
 
@@ -257,7 +260,7 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     motor                                         = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     motor.efficiency                              = 0.98
     motor.origin                                  = [[2.,  0, 0.95]]
-    motor.nominal_voltage                         = bus.voltage 
+    motor.nominal_voltage                         = battery_pack.voltage
     motor.no_load_current                         = 0.001
     center_propulsor.motor                        = motor  
 
@@ -313,11 +316,11 @@ def vehicle_setup(regression_flag, ducted_fan_type):
     net.systems.append(avionics)   
 
     #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to bus       
-    bus.assigned_propulsors =  [[center_propulsor.tag, starboard_propulsor.tag, port_propulsor.tag]]
-
-    # append bus   
-    net.busses.append(bus)
+    # Assign distributors to propulsors and append bus
+    center_propulsor.assigned_distributors    = [[bus.tag]]
+    starboard_propulsor.assigned_distributors = [[bus.tag]]
+    port_propulsor.assigned_distributors      = [[bus.tag]]
+    net.distributors.append(bus)
     
     vehicle.append_energy_network(net)
 

@@ -40,7 +40,7 @@ import time
 def main():  
     ti = time.time()
  
-    mdot_H2_true         = [0.01783053350249817, 0.017434650919374024]
+    mdot_H2_true         = [0.005477741107824451, 0.02009195547232711]
     fuel_cell_models     = ['PEM', 'Larminie']
     
     for i in range(2): 
@@ -63,7 +63,7 @@ def main():
         results = missions.base_mission.evaluate()  
         
         # Voltage Cell Regression
-        mdot_H2        = results.segments[0].conditions.energy.busses['bus'].fuel_tanks['non_integral_tank'].mass_flow_rate[0,0] + results.segments[0].conditions.energy.busses['bus'].fuel_tanks['integral_tank'].mass_flow_rate[0,0] 
+        mdot_H2        = results.segments[0].conditions.energy.sources['non_integral_tank'].mass_flow_rate[0,0] + results.segments[0].conditions.energy.sources['integral_tank'].mass_flow_rate[0,0]
         print('Mass Flow Rate: ' + str(mdot_H2))
         mdot_H2_diff   = np.abs(mdot_H2 - mdot_H2_true[i]) 
         print(mdot_H2_diff) 
@@ -169,7 +169,7 @@ def mission_setup(analyses):
     segment.altitude_end                                             = 5 
     segment.air_speed_start                                          = Vstall *1.2  
     segment.air_speed_end                                            = Vstall *1.25
-    segment.initial_battery_state_of_charge                          = 1.0
+    segment.initial_battery_conditions.state_of_charge               = 1.0
                        
     # define flight dynamics to model            
     segment.flight_dynamics.force_x                                  = True  

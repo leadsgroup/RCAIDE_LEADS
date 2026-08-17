@@ -86,7 +86,7 @@ class Weights(Analysis):
         self.settings.update_fuel_mass                              = True
         self.settings.write_mass_properties                         = False
         self.settings.iterate_mtow                                  = False
-        self.settings.mtow_capacity_fraction                        = 0.0
+        self.settings.mtow_capacity_fraction                        = None
     
         self.settings.weight_correction_factors                     = Data()
         self.settings.weight_correction_factors.empty               = Data()

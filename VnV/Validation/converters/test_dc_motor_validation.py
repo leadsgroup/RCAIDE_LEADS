@@ -44,9 +44,12 @@ def main():
     motor.design_torque                 = 0.081  # [Nm]           design torque
     motor.design_current                = 3.3    # [A]            design current
 
+    distributor      = RCAIDE.Library.Components.Powertrain.Distributors.Electrical_Bus()
+    motor.assigned_distributors = [[distributor.tag]]
+
     for i in range(len(motor_current)):
-        # set up default operating conditions 
-        operating_state  = setup_operating_conditions(motor) 
+        # set up default operating conditions
+        operating_state  = setup_operating_conditions(motor,distributor)
         
         # Assign conditions to the motor
         motor_conditions = operating_state.conditions.energy.converters[motor.tag]

@@ -37,23 +37,29 @@ def compute_rounded_end_cylindrical_tank_volume(fuel_tank):
     R_o    = D / 2
     L_cyl  = L_total - D
 
-    # inner dimensions
-    R_i      = R_o - t
-    L_cyl_i  = L_cyl - 2 * t
-
     # outer volume (cylinder + sphere)
     V_o_cyl = np.pi * R_o**2 * L_cyl
     V_o_sph = 4 / 3 * np.pi * R_o**3
+
+    fuel_tank.volume_properties.gross_volume         = V_o_cyl + V_o_sph
+    fuel_tank.fuel.mass_properties.center_of_gravity = [[L_total / 2, 0, 0]]
+    fuel_tank.mass_properties.center_of_gravity      = [[L_total / 2, 0, 0]]
+    fuel_tank.fuel.origin                            = fuel_tank.origin
+
+    if t is None:
+        # wall thickness not yet known (e.g. cryogenic tank sized in a subsequent call);
+        # inner volume and MOI will be set by the cryogenic sizing routine
+        return
+
+    # inner dimensions
+    R_i     = R_o - t
+    L_cyl_i = L_cyl - 2 * t
 
     # inner volume (cylinder + sphere)
     V_i_cyl = np.pi * R_i**2 * L_cyl_i
     V_i_sph = 4 / 3 * np.pi * R_i**3
 
-    fuel_tank.volume_properties.net_volume           = V_i_cyl + V_i_sph
-    fuel_tank.volume_properties.gross_volume         = V_o_cyl + V_o_sph
-    fuel_tank.fuel.mass_properties.center_of_gravity = [[L_total / 2, 0, 0]]
-    fuel_tank.mass_properties.center_of_gravity      = [[L_total / 2, 0, 0]]
-    fuel_tank.fuel.origin                            = fuel_tank.origin
+    fuel_tank.volume_properties.net_volume = V_i_cyl + V_i_sph
 
     fuel_tank.fuel.mass_properties.moments_of_inertia.non_dimensional_tensor = compute_rounded_end_cylinder_non_dimensional_moi(R_i, L_cyl_i)
 

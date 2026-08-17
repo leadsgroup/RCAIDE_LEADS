@@ -1,4 +1,4 @@
-# RCAIDE/Library/Methods/Powertrain/Converters/Ducted_Fan/Performance/RFMT_performance.py
+# RCAIDE/Library/Methods/Powertrain/Converters/Ducted_Fan/Performance/Rankine_Froude_Momentum_Theory/RFMT_performance.py
 
 # 
 # Created:  Jan 2025, M. Clarke
@@ -22,33 +22,27 @@ def RFMT_performance(ducted_fan,conditions):
 
     Parameters
     ----------
-    propulsor : Converter
-        Ducted fan propulsor component containing the ducted fan
-    state : Conditions
-        Mission segment state conditions 
+    ducted_fan : RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan
+        Ducted fan component to evaluate
+    conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Mission segment conditions
 
     Returns
     -------
     None
-        Updates state.conditions.energy.converters[ducted_fan.tag] with computed performance data:
+        Updates conditions.energy.converters[ducted_fan.tag] with computed performance data:
             - thrust : array(N,3)
                 Thrust vector [N]
             - power : array(N,1)
                 Power required [W]
             - torque : array(N,1)
                 Shaft torque [N-m]
-            - moment : array(N,3)
-                Moment vector [N-m]
             - efficiency : array(N,1)
                 Propulsive efficiency [-]
-            - tip_mach : array(N,1)
-                Blade tip Mach number [-]
             - thrust_coefficient : array(N,1)
                 Non-dimensional thrust coefficient [-]
             - power_coefficient : array(N,1)
                 Non-dimensional power coefficient [-]
-            - figure_of_merit : array(N,1)
-                Hovering figure of merit [-] (BEMT only)
 
     Notes
     ----- 
@@ -105,19 +99,40 @@ def RFMT_performance(ducted_fan,conditions):
 
 def compute_ducted_fan_efficiency(ducted_fan, V, omega):
     """
-    Calculate propeller efficiency based on propeller type and velocity.
-    
+    Evaluates the ducted fan's Rankine-Froude performance polynomials at the given
+    operating point.
+
     Parameters
     ----------
-    propeller_type : str
-        Type of propeller ('constant_speed' or 'fixed_pitch')
-    u0 : float
-        Current velocity
-        
+    ducted_fan : RCAIDE.Library.Components.Powertrain.Converters.Ducted_Fan
+        Ducted fan component with the following attributes:
+            - tip_radius : float
+                Rotor tip radius [m]
+            - Cp_polynomial_coefficients : list
+                Power coefficient polynomial coefficients [-, -, -]
+            - Ct_polynomial_coefficients : list
+                Thrust coefficient polynomial coefficients [-, -, -]
+            - etap_polynomial_coefficients : list
+                Propulsive efficiency polynomial coefficients [-, -, -]
+    V : numpy.ndarray
+        Freestream velocity in the rotor frame [m/s]
+    omega : numpy.ndarray
+        Rotor angular velocity [rad/s]
+
     Returns
     -------
-    float
-        Calculated propeller efficiency
+    n : numpy.ndarray
+        Rotor rotational speed [rev/s]
+    D : float
+        Rotor diameter [m]
+    J : numpy.ndarray
+        Advance ratio [-]
+    Cp : numpy.ndarray
+        Power coefficient [-]
+    Ct : numpy.ndarray
+        Thrust coefficient [-]
+    eta_p : numpy.ndarray
+        Propulsive efficiency [-]
     """
 
     n = omega/(2*np.pi)

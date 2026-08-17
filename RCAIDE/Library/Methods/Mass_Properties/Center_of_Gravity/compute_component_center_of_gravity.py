@@ -39,7 +39,7 @@ def compute_component_center_of_gravity(centre_of_gravity_df,component,vehicle,t
     if isinstance(component,Component):
         component.compute_center_of_gravity(vehicle)
         update_mass_and_moment(total_mass,total_moment,component,segment,verbose,include_payload,include_fuel,centre_of_gravity_df)
-        is_cryo_tank = isinstance(component, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank)
+        is_cryo_tank = isinstance(component, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank) or  isinstance(component, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Pressurized_Tank)
         for key in component.keys():
             item = component[key]
             if isinstance(item,Component.Container):

@@ -51,17 +51,20 @@ def main():
     
     # Step 5 execute flight profile
     results = missions.base_mission.evaluate()
-    CL_truth = 0.4214239243140679
+    CL_truth = 0.472316256360454
     CL    = results.segments.cruise.conditions.aerodynamics.coefficients.lift.total[0, 0]
 
-    abs_error = np.abs((CL - CL_truth)) 
+    abs_error = np.abs((CL - CL_truth))
     assert abs_error <= 1e-3, ( # a larger tolerence is needed here because we iterate on MTOW and slight variations are expected
         f"CL absolute error too large: {abs_error:.6e} (CL={CL:.6e}, CL_truth={CL_truth:.6e})"
     )
 
+    verify_powertrain(results)
+
     plot_aircraft_cg_weight_bubbles(results,vehicle,show_figure=False)
     plot_fuel_flow_rates(results)
     plot_fuel_tank_conditions(results)
+    plot_powertrain_conditions(results)
 
     for filename in (
         "bwb_hydrogen_test_geometry_description.xlsx",
@@ -75,6 +78,67 @@ def main():
     elapsed_time = time.time() - ti
     elapsed_time_min = elapsed_time / 60
     print('Elapsed time (min): ', elapsed_time_min)
+    return
+
+def verify_powertrain(results):
+    """Checks conservation across the two electrical buses and the shared fuel line.
+
+    This vehicle splits electrical power across two independent buses --
+    electrical_line (turbofan IDGs -> cryogenic pumps) and systems_bus
+    (fuel cells -> avionics/hydraulics/ECS/etc.) -- plus a single fuel_line
+    shared by both turbofans and the fuel-cell APUs. CL alone can't catch a
+    bus left unbalanced (e.g. a generator silently supplying near-zero power
+    while its consumers still draw load), so check power/mass conservation
+    on each line directly.
+    """
+    energy = results.segments.cruise.conditions.energy
+
+    net_electrical_power = energy.net_electrical_power
+    assert np.max(np.abs(net_electrical_power)) <= 1.0, (
+        f"Vehicle-wide electrical power balance not closed: max |net_electrical_power| = "
+        f"{np.max(np.abs(net_electrical_power)):.6e} W"
+    )
+
+    for bus_tag in ('electrical_line', 'systems_bus'):
+        bus = energy.distributors[bus_tag]
+        supplied = bus.inputs.power.electrical
+        demanded = bus.outputs.power.electrical
+        cable_loss = supplied - demanded
+        assert np.all(cable_loss >= -1e-6), (
+            f"{bus_tag}: cable loss went negative (supply < demand), min = {np.min(cable_loss):.6e} W"
+        )
+        loss_fraction = cable_loss / np.maximum(demanded, 1.0)
+        assert np.max(loss_fraction) <= 0.02, (
+            f"{bus_tag}: cable loss fraction too large, max = {np.max(loss_fraction):.4%}"
+        )
+
+    idg_1 = energy.converters['turbofan1_idg'].outputs.power.electrical
+    idg_2 = energy.converters['turbofan2_idg'].outputs.power.electrical
+    assert np.allclose(idg_1, idg_2, rtol=1e-6), (
+        "turbofan1_idg and turbofan2_idg should split electrical_line's demand "
+        f"evenly (power_split_ratio=0.5 each): {idg_1[-1, 0]:.6e} W vs {idg_2[-1, 0]:.6e} W"
+    )
+
+    fuel_consumers = ['propulsor_1', 'propulsor_2', 'fuel_cell_apu_0', 'fuel_cell_apu_1', 'fuel_cell_apu_2']
+    fuel_line_mdot = sum(
+        energy.propulsors[tag].fuel_mass_flow_rate if tag in energy.propulsors else energy.converters[tag].fuel_mass_flow_rate
+        for tag in fuel_consumers
+    )
+    total_mdot = results.segments.cruise.conditions.weights.vehicle.mass_rate
+    assert np.allclose(fuel_line_mdot, total_mdot, rtol=1e-6), (
+        f"fuel_line consumers' fuel_mass_flow_rate ({fuel_line_mdot[-1, 0]:.6e} kg/s) doesn't match "
+        f"the vehicle's total mass burn rate ({total_mdot[-1, 0]:.6e} kg/s)"
+    )
+
+    electrical_converters = [
+        'turbofan1_idg', 'turbofan2_idg', 'fuel_cell_apu_0', 'fuel_cell_apu_1', 'fuel_cell_apu_2',
+        'starboard_engine_pump', 'port_engine_pump', 'reserve_pump',
+    ]
+    for tag in electrical_converters:
+        converter = energy.converters[tag]
+        assert np.all(np.isfinite(converter.outputs.power.electrical)), f"NaN/inf in {tag}.outputs.power.electrical"
+        assert np.all(np.isfinite(converter.inputs.power.electrical)), f"NaN/inf in {tag}.inputs.power.electrical"
+
     return
 
 # ----------------------------------------------------------------------
@@ -192,7 +256,8 @@ def mission_setup(analyses):
   
     Segments = RCAIDE.Framework.Mission.Segments 
     base_segment = Segments.Segment()
-    base_segment.state.numerics.solver.type = 'root_finder'
+    base_segment.state.numerics.mission_solver.type = 'root_finder'
+    base_segment.state.numerics.mission_solver.max_evaluations = 800 # default 200 is too few for this many unknowns
 
     # ------------------------------------------------------------------    
     #   Cruise Segment: Constant Speed Constant Altitude

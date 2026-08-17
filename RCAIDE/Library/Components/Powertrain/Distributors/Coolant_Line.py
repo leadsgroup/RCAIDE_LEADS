@@ -1,22 +1,22 @@
 # RCAIDE/Library/Components/Powertrain/Distributors/Coolant_Line.py 
 # 
 # Created:  Aug 2024, S. Shekar
+# Modified: Oct 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
 # RCAIDE imports
 import RCAIDE
+from .Distributor                                             import Distributor
+from RCAIDE.Library.Components.Component                      import Container
 from RCAIDE.Framework.Core                                    import Data
-from RCAIDE.Library.Components                                import Component
-from RCAIDE.Library.Components.Component                      import Container    
-from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia.compute_distributor_moment_of_inertia import compute_distributor_moment_of_inertia 
-from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity.compute_distributor_center_of_gravity import compute_distributor_center_of_gravity 
+from RCAIDE.Library.Methods.Powertrain.Distributors.Coolant_Line import append_coolant_line_conditions, append_coolant_line_segment_conditions
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  Coolant Line
 # ---------------------------------------------------------------------------------------------------------------------- 
-class Coolant_Line(Component):
+class Coolant_Line(Distributor):
     """
     Class for modeling coolant distribution lines in thermal management systems
     
@@ -41,10 +41,7 @@ class Coolant_Line(Component):
         Distribution efficiency of the coolant line (default: 1.0)
         
     battery_modules : Container, optional
-        Collection of battery cooling systems, created when batteries are present
-        
-    identical_battery_modules : bool, optional
-        Flag indicating if all battery modules use identical cooling systems
+        Collection of battery cooling systems, created when batteries are present 
 
     Notes
     -----
@@ -76,8 +73,9 @@ class Coolant_Line(Component):
         
         Source:
             None
-        """          
-        self.tag                                  = 'coolant_line' 
+        """           
+        self.tag                                  = 'coolant_line'
+        self.domain                               = 'thermal'
         self.heat_exchangers                      = Container()
         self.reservoirs                           = Container()
         self.connector_weight_factor              = 1.1  
@@ -97,9 +95,8 @@ class Coolant_Line(Component):
         self.insulation.diameters.internal        = 0.0
         self.fuel_probe_unit_mass                 = 0.0
         self.valve_unit_mass                      = 0.0      
-        self.boost_pump_unit_mass                 = 0.0
+        self.boost_pump_unit_mass                 = 0.0 
 
-                    
     def __init__ (self, distributor=None):
         """
         Initialize coolant line and set up containers for thermal management components
@@ -117,44 +114,80 @@ class Coolant_Line(Component):
         When a distributor with battery modules is provided, the method creates
         containers to store the cooling system components for each battery.
         """               
-        self.active                        = True 
+        self.active                        = True
         self.efficiency                    = 1.0
-        if distributor is not None:
-            for item in distributor:
-                self.identical_battery_modules  =  item.identical_battery_modules
-                if 'battery_modules' in item:
-                    if not hasattr(self, 'battery_modules'):
-                        self.battery_modules = Container()
-                    for battery in item.battery_modules:
-                        self.battery_modules[battery.tag] = Container() 
-                        
 
-    def compute_moments_of_inertia(self,vehicle,center_of_gravity=[[0, 0, 0]]): 
+    def unpack_unknowns(self,segment):
+        for reservoir in self.reservoirs:
+            reservoir.unpack_unknowns(self,segment)
+        return
+
+    def pack_residuals(self,segment):
+        for reservoir in self.reservoirs:
+            reservoir.pack_residuals(self,segment)
+        return
+
+    def append_unknowns_and_residuals(self,segment):
+        for reservoir in self.reservoirs:
+            reservoir.append_unknowns_and_residuals(self,segment)
+        return
+
+    def append_operating_conditions(self, segment):
         """
-        Computes the moment of inertia tensor for the fuel line.
+        Append operating conditions for a flight segment
 
         Parameters
         ----------
-        center_of_gravity : list, optional
-            Reference point coordinates for moment calculation, defaults to [[0, 0, 0]] 
-
-        See Also
-        --------
-        RCAIDE.Library.Methods.weights.vehicle.moments_of_inertia.compute_fuselage_moment_of_inertia
-            Implementation of the moment of inertia calculation
+        segment : Segment
+            Flight segment containing operating conditions
         """
-        _ , _ = compute_distributor_moment_of_inertia(self,center_of_gravity= center_of_gravity) 
+        append_coolant_line_conditions(self, segment)
+        for reservoir in self.reservoirs:
+            reservoir.append_operating_conditions(segment, self)
+        for heat_exchanger in self.heat_exchangers:
+            heat_exchanger.append_operating_conditions(segment, self)
         return
-    
 
-    def compute_center_of_gravity(self,vehicle): 
+    def append_segment_conditions(self, segment):
         """
-        Computes the center of gravity for the distributor. 
+        Append segment-specific conditions to the coolant line
 
-        See Also
-        --------
-        RCAIDE.Library.Methods.weights.vehicle.center_of_gravity.compute_fuselage_center_of_gravity
-            Implementation of the moment of inertia calculation
+        Parameters
+        ----------
+        segment : Segment
+            Flight segment data
         """
-        _  = compute_distributor_center_of_gravity(self,vehicle) 
-        return                        
+        append_coolant_line_segment_conditions(self, segment)
+        for reservoir in self.reservoirs:
+            reservoir.append_segment_conditions(segment, self)
+        for heat_exchanger in self.heat_exchangers:
+            heat_exchanger.append_segment_conditions(segment, self)
+        return
+
+    def compute_distribution_losses(self, component_conditions, state, network):
+        return
+
+    def compute_performance(self, state, network):
+
+        for reservoir in self.reservoirs:
+            reservoir.compute_performance(self, state, network)
+
+        inputs = Data()
+        outputs = Data()
+        inputs.power  = Data()
+        outputs.power = Data()
+
+        inputs.power.mechanical  = state.conditions.energy.distributors[self.tag].inputs.power.mechanical
+        inputs.power.electrical  = state.conditions.energy.distributors[self.tag].inputs.power.electrical
+        inputs.power.chemical    = state.conditions.energy.distributors[self.tag].inputs.power.chemical
+        inputs.power.hydraulic   = state.conditions.energy.distributors[self.tag].inputs.power.hydraulic
+        inputs.power.thermal     = state.conditions.energy.distributors[self.tag].inputs.power.thermal
+
+        outputs.power.mechanical = state.conditions.energy.distributors[self.tag].outputs.power.mechanical
+        outputs.power.electrical = state.conditions.energy.distributors[self.tag].outputs.power.electrical
+        outputs.power.chemical   = state.conditions.energy.distributors[self.tag].outputs.power.chemical
+        outputs.power.hydraulic  = state.conditions.energy.distributors[self.tag].outputs.power.hydraulic
+        outputs.power.thermal    = state.conditions.energy.distributors[self.tag].outputs.power.thermal
+
+        return inputs, outputs
+

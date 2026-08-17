@@ -1,51 +1,57 @@
 # RCAIDE/Library/Methods/Powertrain/Converters/Pump/compute_pump_performance.py
-
-# 
-# Created:  Jan 2026, M. Clarke 
+#
+#
+# Created:  Sep. 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-# RCAIDE imports
-import  RCAIDE
-from RCAIDE.Framework.Core import  Units
+import RCAIDE
 
-# package imports 
-import numpy as np
- 
 # ----------------------------------------------------------------------------------------------------------------------
 #  compute_pump_performance
-# ----------------------------------------------------------------------------------------------------------------------   
-def compute_pump_performance(pump,state,fuel_line,bus):
-    """Computes the performance of the pump""" 
+# ----------------------------------------------------------------------------------------------------------------------
+def compute_pump_performance(pump, state, network):
+    """
+    Computes the performance of an electrically-driven boost pump.
 
-    # Unpack
+    The pump's shaft-power requirement is not recomputed from a fixed design
+    pressure rise -- it is read from the fuel line's own distribution-loss
+    calculation (RCAIDE.Library.Methods.Powertrain.Distributors.Fuel_Line.
+    compute_fuel_line_distribution_losses), which has already accumulated the
+    actual flow-driven hydraulic power needed by every propulsor assigned to
+    the line (propulsors are evaluated before converters, so this value is
+    populated by the time the pump runs). The pump takes its distributor_split
+    share of that demand, converts it to shaft power via pump.efficiency, then
+    to electrical power via pump.turbine_efficiency, and draws that from its
+    assigned bus (fed by the engines' integrated drive generators).
+    """
     pump_conditions = state.conditions.energy.converters[pump.tag]
-    
-    # mass flow 
-    m_dot  = state.conditions.energy.fuel_lines[fuel_line.tag].fuel_mass_flow_rate * pump.distributor_split
 
-    # compute delta P
-    pressure_rise = pump.design_outlet_pressure - pump.design_inlet_pressure     
+    # Resolve the fuel line (chemical flow this pump moves) and the electrical
+    # bus (its actual power source) from among this pump's assigned distributors
+    fuel_line = None
+    for d_tag in pump.assigned_distributors[0]:
+        distributor = network.distributors[d_tag]
+        if isinstance(distributor, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line):
+            fuel_line = distributor
+    fuel_line_conditions = state.conditions.energy.distributors[fuel_line.tag]
 
-    # volumetric flow rate
-    Q  = m_dot /pump.working_fluid.density
-    
-    # mass of pump 
-    total_efficiency =  pump.pump_efficiency * pump.turbine_efficiency    
+    # This pump's share of the line's already-computed flow-driven power demand
+    hydraulic_power = pump.distributor_split * fuel_line_conditions.inputs.power.hydraulic
 
-    # hydraulic power
-    hydraulic_power  =  Q * pressure_rise     
-    
-    # shaft power 
-    shaft_power      =  hydraulic_power /total_efficiency 
-     
-    pump_conditions.inputs.power  = shaft_power     # shaft power 
-    pump_conditions.outputs.power = hydraulic_power # hydraulic power
-    
-    # compute additional mdot required to produce power assuming it comes
-    m_dot_increment = shaft_power / pump.working_fluid.specific_energy
-    
-    pump_conditions.fuel_mass_flow_rate = m_dot_increment
-    
-    return 0,shaft_power,None,None
+    # hydraulic -> shaft, via pump efficiency
+    shaft_power      = hydraulic_power / pump.efficiency
+    # shaft -> electrical, via motor/drive efficiency
+    electrical_power = shaft_power / pump.turbine_efficiency
+
+    pump_conditions.inputs.p_in              = pump.design_inlet_pressure  * state.ones_row(1)
+    pump_conditions.outputs.p_out            = pump.design_outlet_pressure * state.ones_row(1)
+    pump_conditions.outputs.power.hydraulic  = hydraulic_power
+    pump_conditions.outputs.power.mechanical = shaft_power
+    pump_conditions.inputs.power.electrical  = electrical_power
+
+    stored_results_flag   = True
+    stored_converter_tag  = pump.tag
+
+    return pump_conditions.inputs, pump_conditions.outputs, stored_results_flag, stored_converter_tag

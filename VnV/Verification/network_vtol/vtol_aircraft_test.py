@@ -91,9 +91,9 @@ def tiltrotor_transition_test(update_regression_values):
         for val in data:
             print(val)
     
-    # Truth values 
-    hover_throttle_truth    = 0.5955245683608479
-    cruise_rpm_truth        = 394.74449646470083
+    # Truth values
+    hover_throttle_truth    = 0.5938762143449161
+    cruise_rpm_truth        = 399.34883503013737
     
     # Store errors 
     error = Data() 
@@ -135,10 +135,10 @@ def tiltwing_transition_test(update_regression_values):
         for val in data:
             print(val)
     
-    # Truth values 
-    hover_throttle_truth              = 0.7335468860209833
-    vertical_climb_1_throttle_truth   = 0.7437381205693946
-    vertical_descent_throttle_truth   = 0.7231914426939331
+    # Truth values
+    hover_throttle_truth              = 0.7266235772365013
+    vertical_climb_1_throttle_truth   = 0.7367120982209344
+    vertical_descent_throttle_truth   = 0.715027573862491
     
     # Store errors 
     error = Data() 
@@ -180,10 +180,10 @@ def stopped_rotor_transition_test(update_regression_values):
         for val in data:
             print(val)
     
-    # Truth values 
-    hover_throttle_truth  = 0.5460222782236255
-    lst_throttle_truth    = 0.5291774514692811
-    hsct_throttle_truth   = 0.41822149309842144
+    # Truth values
+    hover_throttle_truth  = 0.576543563164849
+    lst_throttle_truth    = 0.5212314777442407
+    hsct_throttle_truth   = 0.4142010141170683
     
     # Store errors 
     error = Data() 
@@ -267,13 +267,15 @@ def TR_base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
     aerodynamics         = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
-    aerodynamics.settings.maximum_lift_coefficient   =  1.5 
-    aerodynamics.settings.drag_coefficient_increment =  0.01  
+    aerodynamics.settings.maximum_lift_coefficient       =  1.5
+    aerodynamics.settings.drag_coefficient_increment     =  0.01
+    aerodynamics.settings.number_of_spanwise_vortices    =  12 # reducing the number of vortices to speed up the test
+    aerodynamics.settings.number_of_chordwise_vortices   =  6  # reducing the number of vortices to speed up the test
     analyses.append(aerodynamics)
-      
+
     # ------------------------------------------------------------------
-    #  Energy 
-    energy          = RCAIDE.Framework.Analyses.Energy.Energy() 
+    #  Energy
+    energy          = RCAIDE.Framework.Analyses.Energy.Energy()
     analyses.append(energy)
 
     # ------------------------------------------------------------------
@@ -284,10 +286,10 @@ def TR_base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Atmosphere Analysis
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    analyses.append(atmosphere)   
+    analyses.append(atmosphere)
 
     # done!
-    return analyses    
+    return analyses
 
 
 def TW_base_analysis(vehicle):
@@ -310,14 +312,16 @@ def TW_base_analysis(vehicle):
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
-    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method() 
-    aerodynamics.settings.maximum_lift_coefficient   =  1.5 
-    aerodynamics.settings.drag_coefficient_increment =  0.01   
-    analyses.append(aerodynamics)   
+    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
+    aerodynamics.settings.maximum_lift_coefficient       =  1.5
+    aerodynamics.settings.drag_coefficient_increment     =  0.01
+    aerodynamics.settings.number_of_spanwise_vortices    =  12 # reducing the number of vortices to speed up the test
+    aerodynamics.settings.number_of_chordwise_vortices   =  6  # reducing the number of vortices to speed up the test
+    analyses.append(aerodynamics)
 
     # ------------------------------------------------------------------
     #  Energy
-    energy          = RCAIDE.Framework.Analyses.Energy.Energy() 
+    energy          = RCAIDE.Framework.Analyses.Energy.Energy()
     analyses.append(energy)
 
     # ------------------------------------------------------------------
@@ -328,13 +332,13 @@ def TW_base_analysis(vehicle):
     # ------------------------------------------------------------------
     #  Atmosphere Analysis
     atmosphere = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
-    analyses.append(atmosphere)   
+    analyses.append(atmosphere)
 
     # done!
-    
-    
-    return analyses    
- 
+
+
+    return analyses
+
 def SR_base_analysis(vehicle):
 
     # ------------------------------------------------------------------
@@ -355,12 +359,14 @@ def SR_base_analysis(vehicle):
 
     # ------------------------------------------------------------------
     #  Aerodynamics Analysis
-    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()  
-    analyses.append(aerodynamics)   
+    aerodynamics          = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
+    aerodynamics.settings.number_of_spanwise_vortices    =  12 # reducing the number of vortices to speed up the test
+    aerodynamics.settings.number_of_chordwise_vortices   =  6  # reducing the number of vortices to speed up the test
+    analyses.append(aerodynamics)
 
     # ------------------------------------------------------------------
     #  Energy
-    energy          = RCAIDE.Framework.Analyses.Energy.Energy() 
+    energy          = RCAIDE.Framework.Analyses.Energy.Energy()
     analyses.append(energy)
 
     # ------------------------------------------------------------------
@@ -391,7 +397,7 @@ def TR_mission_setup(analyses):
     # unpack Segments module
     Segments = RCAIDE.Framework.Mission.Segments  
     base_segment = Segments.Segment() 
-    base_segment.state.numerics.solver.type = 'optimize' 
+    base_segment.state.numerics.mission_solver.type = 'optimize'
 
     
     # ------------------------------------------------------------------
@@ -403,9 +409,9 @@ def TR_mission_setup(analyses):
     segment.altitude_start                             = 0.0  * Units.ft  
     segment.altitude_end                               = 50.  * Units.ft   
     segment.climb_rate                                 = 300. * Units['ft/min'] 
-    segment.initial_battery_state_of_charge            = 1.0 
+    segment.initial_battery_conditions.state_of_charge = 1.0
     segment.true_course                                = 0   * Units.degree  
-    segment.state.numerics.solver.type = 'root_finder' 
+    segment.state.numerics.mission_solver.type = 'root_finder' 
 
     # define flight dynamics to model  
     segment.flight_dynamics.force_z                    = True 
@@ -430,10 +436,10 @@ def TR_mission_setup(analyses):
     segment.acceleration                                  = 0.2
     
     
-    segment.state.numerics.solver.type                    = 'optimize' 
-    segment.state.numerics.solver.step_size               = 1E-3 
-    segment.state.numerics.solver.tolerance_solution      = 1E-2 
-    segment.state.numerics.solver.objective               = None 
+    segment.state.numerics.mission_solver.type                    = 'optimize' 
+    segment.state.numerics.mission_solver.step_size               = 1E-3 
+    segment.state.numerics.mission_solver.tolerance                = 1E-2
+    segment.state.numerics.mission_solver.objective               = None 
     
     # define flight dynamics to model 
     segment.flight_dynamics.force_x                       = True  
@@ -500,7 +506,7 @@ def TW_mission_setup(analyses ):
     segment.altitude_start                                           = 0  * Units.ft  
     segment.altitude_end                                             = 100.  * Units.ft   
     segment.climb_rate                                               = 300. * Units['ft/min']  
-    segment.initial_battery_state_of_charge                          = 1.0 
+    segment.initial_battery_conditions.state_of_charge               = 1.0
 
     # define flight dynamics to model  
     segment.flight_dynamics.force_z                                  = True 
@@ -520,7 +526,7 @@ def TW_mission_setup(analyses ):
     segment.tag                                                      = "Hover"   
     segment.analyses.extend(analyses.vertical_climb)
 
-    segment.state.numerics.solver.type                               = "root_finder"    
+    segment.state.numerics.mission_solver.type                               = "root_finder"    
     segment.altitude                                                 = 100.0  * Units.ft   
                         
     # define flight dynamics to model              
@@ -577,9 +583,9 @@ def SR_mission_setup(analyses,vehicle):
     segment.analyses.extend( analyses.vertical_flight )  
     segment.altitude_start                                = 0.0  * Units.ft  
     segment.altitude_end                                  = 200.  * Units.ft   
-    segment.initial_battery_state_of_charge               = 1.0 
+    segment.initial_battery_conditions.state_of_charge    = 1.0 
     segment.climb_rate                                    = 500. * Units['ft/min']   
-    segment.state.numerics.solver.type                    = "root_finder"
+    segment.state.numerics.mission_solver.type                    = "root_finder"
             
     # define flight dynamics to model  
     segment.flight_dynamics.force_z                       = True     
@@ -604,7 +610,7 @@ def SR_mission_setup(analyses,vehicle):
     segment.acceleration                                  = 1.5
     segment.pitch_initial                                 = 0.0 * Units.degrees
     segment.pitch_final                                   = 2.  * Units.degrees 
-    segment.state.numerics.solver.type                    = "root_finder"
+    segment.state.numerics.mission_solver.type                    = "root_finder"
 
     # define flight dynamics to model 
     segment.flight_dynamics.force_x                       = True  

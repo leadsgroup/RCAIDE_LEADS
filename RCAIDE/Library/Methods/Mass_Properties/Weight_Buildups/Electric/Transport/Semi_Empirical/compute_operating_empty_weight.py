@@ -166,11 +166,10 @@ def compute_operating_empty_weight(vehicle, settings=None):
     for network in vehicle.networks: 
         W_energy_network_total   = 0 
     
-        # Electric-Powered Propulsors
-        for bus in network.busses:
-            for battery in bus.battery_modules:
-                W_energy_network_total  += battery.mass_properties.mass * Units.kg
-                W_energy_network.W_battery += battery.mass_properties.mass * Units.kg
+        for source in network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
+                W_energy_network_total  += source.mass_properties.mass * Units.kg
+                W_energy_network.W_battery += source.mass_properties.mass * Units.kg
 
         for propulsor in network.propulsors:
             if 'motor' in propulsor:                           
@@ -215,15 +214,18 @@ def compute_operating_empty_weight(vehicle, settings=None):
     #-------------------------------------------------------------------------------
     # Thermal Management System Weight
     #-------------------------------------------------------------------------------
-    tms_weight = 0.0 
-    for coolant_line in network.coolant_lines:
+    tms_weight = 0.0
+    coolant_lines = [d for d in network.distributors if isinstance(d, RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line)]
+    for coolant_line in coolant_lines:
         W_energy_network.W_TMS.battery_module = Data()  # Add container for battery module
-        for i, battery_module in enumerate(coolant_line.battery_modules):
-            module_key = f'module_{i+1}'  # Create unique key for each module
-            W_energy_network.W_TMS.battery_module[module_key] = 0.0  # Initialize weight
-            for HAS in battery_module:
-                W_energy_network.W_TMS.battery_module[module_key] = HAS.mass_properties.mass
-                tms_weight +=  HAS.mass_properties.mass
+        for source in network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
+                for i, battery_module in enumerate(source.modules):
+                    HAS = battery_module.heat_acquisition_system
+                    if HAS is not None and battery_module.assigned_distributors is not None and coolant_line.tag in battery_module.assigned_distributors[0]:
+                        module_key = f'module_{i+1}'  # Create unique key for each module
+                        W_energy_network.W_TMS.battery_module[module_key] = HAS.mass_properties.mass
+                        tms_weight +=  HAS.mass_properties.mass
 
         for tag, item in coolant_line.items():
             if tag == 'heat_exchangers':

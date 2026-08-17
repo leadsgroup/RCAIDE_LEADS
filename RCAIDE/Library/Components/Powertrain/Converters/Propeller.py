@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Propulsors/Converters/Propeller.py
+# RCAIDE/Library/Components/Powertrain/Converters/Propeller.py
 # 
 # 
 # Created:  Mar 2024, M. Clarke 

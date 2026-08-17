@@ -25,16 +25,10 @@ def thrust(segment):
                     
     """ 
 
-    # unpack
-    energy_model = segment.analyses.energy
-
-    # evaluate
-    energy_model.evaluate(segment.state, segment.analyses.vehicle)    
-
     # pack conditions
     conditions = segment.state.conditions
-    conditions.frames.body.thrust_force_vector       = conditions.energy.thrust_force_vector
-    conditions.frames.body.thrust_moment_vector      = conditions.energy.thrust_moment_vector 
+    conditions.frames.body.total_force_vector       = conditions.energy.total_force_vector
+    conditions.frames.body.total_moment_vector      = conditions.energy.total_moment_vector 
     
     if type(segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude or\
         type(segment) == RCAIDE.Framework.Mission.Segments.Single_Point.Set_Speed_Set_Altitude_AVL_Trimmed or \

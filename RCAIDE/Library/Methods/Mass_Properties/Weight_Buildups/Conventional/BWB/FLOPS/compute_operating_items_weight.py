@@ -76,9 +76,9 @@ def compute_operating_items_weight(vehicle):
     
     number_of_tanks = 0  
     for network in  vehicle.networks:
-        for fuel_line in network.fuel_lines:
-            for fuel_tank in fuel_line.fuel_tanks:
-                if fuel_tank.xz_plane_symmetric:
+        for source in  network.sources: 
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
+                if source.xz_plane_symmetric:
                     number_of_tanks += 2
                 else:
                     number_of_tanks += 1

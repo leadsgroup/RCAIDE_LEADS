@@ -3,6 +3,10 @@
 # 
 # Created:  Jul 2024, M. Clarke 
 # Modified: Aug 2025, S. Shekar 
+# ---------------------------------------------------------------------------------------
+# Imports
+# ---------------------------------------------------------------------------------------
+import RCAIDE
 
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_fuel_volume 
@@ -67,31 +71,23 @@ def compute_fuel_volume(vehicle, compute_fuel_volume = True, update_max_fuel = F
     fuselages         = vehicle.fuselages 
     total_fuel_volume = 0    
     for network in vehicle.networks: 
-        for fuel_line in network.fuel_lines:
-            fuel_tanks = fuel_line.fuel_tanks
-            for fuel_tank in fuel_tanks: 
+         for source in  network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                fuel_tank =  source     
                 fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag 
                 if compute_fuel_volume:
-                    fuel_tank.compute_volume(wings, fuselages, fuel_tanks)
-                total_fuel_volume += fuel_tank.volume_properties.net_volume
-
-        for bus in network.busses:
-            fuel_tanks = bus.fuel_tanks
-            for fuel_tank in fuel_tanks:
-                fuel_tank.fuel.tag = fuel_tank.tag + '_' + fuel_tank.fuel.tag
-                if compute_fuel_volume:
-                    fuel_tank.compute_volume(wings, fuselages, fuel_tanks)
-                total_fuel_volume += fuel_tank.volume_properties.net_volume
+                    fuel_tank.compute_volume(wings, fuselages,  network.sources)
+                total_fuel_volume += fuel_tank.volume_properties.net_volume 
     
     if compute_fuel_volume:
         vehicle.volume_properties.max_fuel = total_fuel_volume
 
     if update_max_fuel:
         total_fuel_mass = sum(
-            ft.volume_properties.net_volume * ft.fuel.density
+            source.volume_properties.net_volume * source.fuel.density
             for network in vehicle.networks
-            for distributor in list(network.fuel_lines) + list(network.busses)
-            for ft in distributor.fuel_tanks
+            for source in network.sources
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank)
         )
         vehicle.mass_properties.max_fuel = total_fuel_mass
 

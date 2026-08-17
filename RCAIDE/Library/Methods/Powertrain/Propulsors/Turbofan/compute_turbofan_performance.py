@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Energy/Propulsors/Turbofan/compute_turbofan_performance.py
+# RCAIDE/Library/Methods/Powertrain/Propulsors/Turbofan/compute_turbofan_performance.py
 # 
 # 
 # Created:  Jul 2024, RCAIDE Team
@@ -6,7 +6,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-# RCAIDE imports  
+# RCAIDE imports
+import RCAIDE
 from RCAIDE.Framework.Core import Data   
 from RCAIDE.Library.Methods.Powertrain.Converters.Ram                  import compute_ram_performance
 from RCAIDE.Library.Methods.Powertrain.Converters.Combustor            import compute_combustor_performance
@@ -23,7 +24,7 @@ from copy import  deepcopy
 # ----------------------------------------------------------------------------------------------------------------------
 # compute_performance
 # ----------------------------------------------------------------------------------------------------------------------   
-def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 0.0]]):
+def compute_turbofan_performance(turbofan,state,network=None,center_of_gravity=[[0.0, 0.0, 0.0]]):
     """
     Computes the performance of a turbofan engine by analyzing the thermodynamic cycle.
     
@@ -53,12 +54,12 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
                 Low pressure compressor component
                     - tag : str
                         Identifier for the low pressure compressor
-                    - motor : Data, optional
-                        Electric motor component
-                    - generator : Data, optional
-                        Electric generator component
                     - design_angular_velocity : float
                         Design angular velocity [rad/s]
+            - integrated_drive_motor : Data, optional
+                Electric motor on the compressor shaft (parallel-hybrid assist)
+            - integrated_drive_generator : Data, optional
+                Electric generator on the compressor shaft (shaft power extraction)
             - high_pressure_compressor : Data
                 High pressure compressor component
                     - tag : str
@@ -137,14 +138,10 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     
     Returns
     -------
-    thrust_vector : numpy.ndarray
-        Thrust force vector [N]
-    moment : numpy.ndarray
-        Moment vector [N·m]
-    power : numpy.ndarray
-        Shaft power output [W]
-    power_elec : numpy.ndarray
-        Electrical power input/output [W]
+    inputs : Data
+        Turbofan input conditions (power.electrical/mechanical/etc.)
+    outputs : Data
+        Turbofan output conditions (thrust, moment, power.propulsive, etc.)
     stored_results_flag : bool
         Flag indicating if results are stored
     stored_propulsor_tag : str
@@ -199,11 +196,14 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     low_pressure_compressor   = turbofan.low_pressure_compressor
     high_pressure_compressor  = turbofan.high_pressure_compressor
     combustor                 = turbofan.combustor
+    integrated_drive_generator= turbofan.integrated_drive_generator 
+    integrated_drive_motor    = turbofan.integrated_drive_motor
     high_pressure_turbine     = turbofan.high_pressure_turbine
     low_pressure_turbine      = turbofan.low_pressure_turbine
     core_nozzle               = turbofan.core_nozzle
     fan_nozzle                = turbofan.fan_nozzle 
     bypass_ratio              = turbofan.bypass_ratio 
+    fuel                      = combustor.fuel_data
     
     # unpack component conditions 
     ram_conditions          = conditions.energy.converters[ram.tag]    
@@ -216,8 +216,66 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     hpt_conditions          = conditions.energy.converters[high_pressure_turbine.tag]
     core_nozzle_conditions  = conditions.energy.converters[core_nozzle.tag]
     fan_nozzle_conditions   = conditions.energy.converters[fan_nozzle.tag]    
-
  
+    # ----------------------------------------------------------------------------
+    # Compute Externally Supplied/Delivered Shaft Power from Electric Motors or Generators
+    # ----------------------------------------------------------------------------
+    external_shaft_work       =  0*state.ones_row(1)
+    lpc_conditions.omega      = low_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle
+
+    # Motor: consumes electrical power from the bus, delivers mechanical power to the shaft
+    if integrated_drive_motor != None and len(state.numerics.time.differentiate) > 0:
+        motor_conditions = conditions.energy.converters[integrated_drive_motor.tag]
+
+        # Determine the electrical power the motor consumes
+        # phi controls what fraction of propulsive power comes from the motor
+        phi = state.conditions.energy.hybrid_power_split_ratio
+        if 'electrical_power' in state.unknowns.network:
+            motor_electrical_power = state.unknowns.network['electrical_power'] * phi
+        else:
+            motor_electrical_power = state.conditions.energy.inputs.power.electrical * phi
+
+        # Mechanical power delivered to shaft = electrical input * motor efficiency
+        eta_motor = integrated_drive_motor.efficiency
+        motor_mechanical_power = motor_electrical_power * eta_motor
+
+        turbofan_conditions.inputs.power.electrical        = motor_electrical_power
+        motor_conditions.inputs.power.electrical           = motor_electrical_power
+        motor_conditions.outputs.power.mechanical          = motor_mechanical_power
+        motor_conditions.outputs.efficiency                = eta_motor * state.ones_row(1)
+        motor_conditions.outputs.omega                     = lpc_conditions.omega
+        motor_conditions.outputs.torque                    = motor_mechanical_power / lpc_conditions.omega
+
+        # Motor delivers power to shaft (negative = reduces turbine burden)
+        external_shaft_work -= motor_mechanical_power
+            
+    if integrated_drive_generator != None and len(state.numerics.time.differentiate) > 0:
+        IDG_conditions = conditions.energy.converters[integrated_drive_generator.tag]
+
+        # Determine the electrical power the generator must produce
+        if 'electrical_power' in state.unknowns.network:
+            generator_electrical_power = state.unknowns.network['electrical_power'] * integrated_drive_generator.power_split_ratio
+        else:
+            generator_electrical_power = state.conditions.energy.inputs.power.electrical * integrated_drive_generator.power_split_ratio
+
+        # Mechanical power extracted from shaft = electrical power / generator efficiency
+        eta_gen = integrated_drive_generator.efficiency
+        generator_mechanical_power = generator_electrical_power / eta_gen
+
+        turbofan_conditions.outputs.power.electrical      = generator_electrical_power
+        IDG_conditions.outputs.power.electrical            = generator_electrical_power
+        IDG_conditions.inputs.power.mechanical             = generator_mechanical_power
+        IDG_conditions.outputs.efficiency                  = eta_gen * state.ones_row(1)
+        IDG_conditions.inputs.omega                        = lpc_conditions.omega
+        IDG_conditions.inputs.torque                       = generator_mechanical_power / lpc_conditions.omega
+
+        # Generator extracts mechanical power from the shaft (positive = more turbine work needed)
+        external_shaft_work += generator_mechanical_power
+
+    # ----------------------------------------------------------------------------
+    # Compute Turbofan Performance
+    # ----------------------------------------------------------------------------
+
     # Set the working fluid to determine the fluid properties
     ram.working_fluid = turbofan.working_fluid
 
@@ -283,7 +341,7 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     combustor.working_fluid                                           = high_pressure_compressor.working_fluid     
         
     # Flow through the high pressor compressor 
-    compute_combustor_performance(combustor,conditions)
+    compute_combustor_performance(combustor,conditions) 
 
     # Link the high pressure turbine to the combustor
     hpt_conditions.inputs.stagnation_temperature    = combustor_conditions.outputs.stagnation_temperature
@@ -294,23 +352,24 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     hpt_conditions.inputs.mach_number               = combustor_conditions.outputs.mach_number  
     hpt_conditions.inputs.compressor                = hpc_conditions.outputs 
     hpt_conditions.inputs.bypass_ratio              = 0.0 #set to zero to ensure that fan not linked here 
+    hpt_conditions.inputs.external_shaft.work_done  = external_shaft_work 
     high_pressure_turbine.working_fluid             = combustor.working_fluid 
         
     # Flow through the high pressure turbine
-    compute_turbine_performance(high_pressure_turbine,conditions) 
-        
+    compute_turbine_performance(high_pressure_turbine,conditions)
+
     # Link the low pressure turbine to the high pressure turbine
     lpt_conditions.inputs.stagnation_temperature     = hpt_conditions.outputs.stagnation_temperature
     lpt_conditions.inputs.stagnation_pressure        = hpt_conditions.outputs.stagnation_pressure
     lpt_conditions.inputs.static_temperature         = hpt_conditions.outputs.static_temperature
-    lpt_conditions.inputs.static_pressure            = hpt_conditions.outputs.static_pressure  
-    lpt_conditions.inputs.mach_number                = hpt_conditions.outputs.mach_number   
-    lpt_conditions.inputs.velocity                   = hpt_conditions.outputs.velocity    
-    lpt_conditions.inputs.compressor                 = lpc_conditions.outputs 
-    lpt_conditions.inputs.fuel_to_air_ratio          = combustor_conditions.outputs.fuel_to_air_ratio 
-    lpt_conditions.inputs.fan                        = fan_conditions.outputs  
+    lpt_conditions.inputs.static_pressure            = hpt_conditions.outputs.static_pressure
+    lpt_conditions.inputs.mach_number                = hpt_conditions.outputs.mach_number
+    lpt_conditions.inputs.velocity                   = hpt_conditions.outputs.velocity
+    lpt_conditions.inputs.compressor                 = lpc_conditions.outputs
+    lpt_conditions.inputs.fuel_to_air_ratio          = combustor_conditions.outputs.fuel_to_air_ratio
+    lpt_conditions.inputs.fan                        = fan_conditions.outputs
     lpt_conditions.inputs.bypass_ratio               = bypass_ratio
-    low_pressure_turbine.working_fluid               = high_pressure_turbine.working_fluid  
+    low_pressure_turbine.working_fluid               = high_pressure_turbine.working_fluid
 
     # Flow through the low pressure turbine
     compute_turbine_performance(low_pressure_turbine,conditions)
@@ -353,7 +412,7 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     turbofan_conditions.total_temperature_reference              = lpc_conditions.outputs.stagnation_temperature
     turbofan_conditions.total_pressure_reference                 = lpc_conditions.outputs.stagnation_pressure 
     turbofan_conditions.bypass_ratio                             = bypass_ratio
-    turbofan_conditions.flow_through_core                        = 1./(1.+bypass_ratio) #scaled constant to turn on core thrust computation
+    turbofan_conditions.flow_through_core                        = 1./(1.+bypass_ratio) # scaled constant to turn on core thrust computation
     turbofan_conditions.flow_through_fan                         = bypass_ratio/(1.+bypass_ratio) #scaled constant to turn on fan thrust computation        
 
     # Compute the thrust
@@ -361,15 +420,17 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
 
     # Compute forces and moments
     moment_vector              = 0*state.ones_row(3)
+    thrust_vector              = 0*state.ones_row(3)
+    thrust_vector[:,0]         =  turbofan_conditions.thrust[:,0]
     center_of_gravity = [[0.0, 0.0,0.0]] 
     moment_vector[:,0]         =  turbofan.origin[0][0] -   center_of_gravity[0][0]
     moment_vector[:,1]         =  turbofan.origin[0][1]  -  center_of_gravity[0][1] 
     moment_vector[:,2]         =  turbofan.origin[0][2]  -  center_of_gravity[0][2]
-    M                          =  np.cross(moment_vector, turbofan_conditions.thrust)   
+    M                          =  np.cross(moment_vector, thrust_vector)   
     moment                     = M 
-    power                      = turbofan_conditions.power 
+    power                      = turbofan_conditions.outputs.power.propulsive
     turbofan_conditions.moment = moment 
-        
+
     # compute efficiencies 
     mdot_air_core                                  = turbofan_conditions.core_mass_flow_rate
     mdot_air_fan                                   = bypass_ratio *  mdot_air_core  
@@ -383,33 +444,22 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
     turbofan_conditions.overall_efficiency         = turbofan_conditions.thrust[:, 0]* U0 / (mdot_fuel * fuel_enthalpy)  
     turbofan_conditions.thermal_efficiency         = 1 - ((mdot_air_core +  mdot_fuel)*(h_e_c -  h_0) + mdot_air_fan*(h_e_f - h_0) + mdot_fuel *h_0)/((mdot_air_core +  mdot_fuel)*h_t4 - mdot_air_core *h_t3)  
      
+    # volumetric flow rate
+    Q  = mdot_fuel /fuel.density 
+
+    # haydraulic power o fuel flow
+    power_hydraulic  = Q * hpc_conditions.outputs.stagnation_pressure  
+        
     # compute shaft RPMs 
     fan_conditions.omega        = fan.design_angular_velocity * turbofan_conditions.throttle
     lpc_conditions.omega        = low_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle
-    hpc_conditions.omega        = high_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle
-    
-    # compute electrical power if generated/supplied  
-    power_elec = 0*state.ones_row(1)
-    if low_pressure_compressor.motor != None and  len(state.numerics.time.differentiate) > 0: 
-        compressor_motor_conditions                 = conditions.energy.converters[low_pressure_compressor.motor.tag] 
-        compressor_motor_conditions.outputs.power   = power *conditions.energy.hybrid_power_split_ratio   
-        compressor_motor_conditions.outputs.omega   = lpc_conditions.omega
-        compressor_motor_conditions.outputs.torque  = compressor_motor_conditions.outputs.power / compressor_motor_conditions.outputs.omega   
-        power_elec =  compressor_motor_conditions.outputs.power  
-    
-    if low_pressure_compressor.generator != None and len(state.numerics.time.differentiate) > 0: 
-        compressor_generator_conditions                = conditions.energy.converters[low_pressure_compressor.generator.tag] 
-        compressor_generator_conditions.inputs.power   = power *conditions.energy.hybrid_power_split_ratio  
-        compressor_generator_conditions.inputs.omega   = lpc_conditions.omega
-        compressor_generator_conditions.outputs.torque = compressor_generator_conditions.outputs.power / compressor_generator_conditions.outputs.omega  
-        power_elec =  compressor_generator_conditions.inputs.power  
-    
+    hpc_conditions.omega        = high_pressure_compressor.design_angular_velocity * turbofan_conditions.throttle 
   
     # store data
     fan_res         = Data(
-                    angular_velocity   = fan.angular_velocity
+                angular_velocity   = fan.angular_velocity
     )
-    
+
     core_nozzle_res = Data(
                 exit_static_temperature             = core_nozzle_conditions.outputs.static_temperature,
                 exit_static_pressure                = core_nozzle_conditions.outputs.static_pressure,
@@ -426,18 +476,20 @@ def compute_turbofan_performance(turbofan, state, center_of_gravity=[[0.0, 0.0, 
                 exit_velocity                       = fan_nozzle_conditions.outputs.velocity
                 )
                 
-    lpc_res = Data(
-                angular_velocity    = fan_conditions.omega, 
-            )
-
-    noise_conditions.fan_nozzle             = fan_nozzle_res
-    noise_conditions.core_nozzle            = core_nozzle_res 
-    noise_conditions.fan                    = fan_res  
-    noise_conditions.low_pressure_spool     = lpc_res
-    stored_results_flag                     = True
-    stored_propulsor_tag                    = turbofan.tag 
+    noise_conditions.fan_nozzle                      = fan_nozzle_res
+    noise_conditions.core_nozzle                     = core_nozzle_res
+    noise_conditions.fan                             = fan_res
+    stored_results_flag                              = True
+    stored_propulsor_tag                             = turbofan.tag  
     
-    return turbofan_conditions.thrust,moment,power,power_elec,stored_results_flag,stored_propulsor_tag 
+    turbofan_conditions.outputs.thrust               = thrust_vector
+    turbofan_conditions.outputs.moment               = moment
+    turbofan_conditions.outputs.power.propulsive     = power 
+    turbofan_conditions.inputs.power.hydraulic       = power_hydraulic  
+    turbofan_conditions.inputs.power.chemical        = mdot_fuel * combustor.fuel_data.lower_heating_value 
+    turbofan_conditions.fuel_mass_flow_rate          = mdot_fuel  
+
+    return turbofan_conditions.inputs ,turbofan_conditions.outputs, stored_results_flag, stored_propulsor_tag 
     
 def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,center_of_gravity= [[0.0, 0.0,0.0]]):
     '''Reuses results from one turbofan for identical turbofans
@@ -502,22 +554,29 @@ def reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,cente
     # compute moment  
     moment_vector      = 0*state.ones_row(3)
     thrust_vector      = 0*state.ones_row(3)
-    thrust_vector[:,0] = conditions.energy.propulsors[turbofan.tag].thrust[:,0] 
+    thrust_vector[:,0] = conditions.energy.propulsors[turbofan.tag].outputs.thrust[:,0] 
     moment_vector[:,0] = turbofan.origin[0][0] -   center_of_gravity[0][0] 
     moment_vector[:,1] = turbofan.origin[0][1]  -  center_of_gravity[0][1] 
     moment_vector[:,2] = turbofan.origin[0][2]  -  center_of_gravity[0][2]
     moment             = np.cross(moment_vector,thrust_vector)    
-  
-    power                                             = conditions.energy.propulsors[turbofan.tag].power 
-    conditions.energy.propulsors[turbofan.tag].moment = moment
+   
+    conditions.energy.propulsors[turbofan.tag].outputs.moment = moment
+    conditions.energy.propulsors[turbofan.tag].fuel_mass_flow_rate = conditions.energy.propulsors[stored_propulsor_tag].fuel_mass_flow_rate    
+    conditions.energy.propulsors[turbofan.tag].outputs.power.propulsive   = conditions.energy.propulsors[stored_propulsor_tag].outputs.power.propulsive
+    conditions.energy.propulsors[turbofan.tag].inputs.power.chemical      = conditions.energy.propulsors[stored_propulsor_tag].inputs.power.chemical    
     
-    power_elec = 0*state.ones_row(1)
-    if low_pressure_compressor.motor != None and  len(state.numerics.time.differentiate) > 0: 
-        conditions.energy.converters[low_pressure_compressor.motor.tag]  = deepcopy(conditions.energy.converters[low_pressure_compressor_0.motor.tag]) 
-        power_elec =  conditions.energy.converters[low_pressure_compressor.motor.tag].outputs.power  
     
-    if low_pressure_compressor.generator != None and len(state.numerics.time.differentiate) > 0:  
-        conditions.energy.converters[low_pressure_compressor.generator.tag]  = deepcopy(conditions.energy.converters[low_pressure_compressor_0.generator.tag]) 
-        power_elec =  conditions.energy.converters[low_pressure_compressor.generator.tag].inputs.power
-        
-    return thrust_vector,moment,power, power_elec
+    idm   = turbofan.integrated_drive_motor
+    idm_0 = network.propulsors[stored_propulsor_tag].integrated_drive_motor
+    if idm != None and  len(state.numerics.time.differentiate) > 0:
+        conditions.energy.converters[idm.tag] = deepcopy(conditions.energy.converters[idm_0.tag])
+        conditions.energy.propulsors[turbofan.tag].inputs.power.electrical = conditions.energy.converters[idm.tag].inputs.power.electrical
+
+    idg   = turbofan.integrated_drive_generator
+    idg_0 = network.propulsors[stored_propulsor_tag].integrated_drive_generator
+    if idg != None and len(state.numerics.time.differentiate) > 0:
+        conditions.energy.converters[idg.tag] = deepcopy(conditions.energy.converters[idg_0.tag])
+        conditions.energy.propulsors[turbofan.tag].outputs.power.electrical = conditions.energy.converters[idg.tag].outputs.power.electrical
+
+
+    return conditions.energy.propulsors[turbofan.tag].inputs, conditions.energy.propulsors[turbofan.tag].outputs

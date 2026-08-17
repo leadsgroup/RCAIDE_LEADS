@@ -13,8 +13,7 @@ Date   : Feb 18th, 2026
 # ---------------------------------------------------------------------- 
 import RCAIDE
 from RCAIDE.Framework.Core import Units , Data   
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan         import design_turbofan 
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan         import design_turbofan 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan         import design_turbofan  
 from RCAIDE.Library.Methods.Performance                            import aircraft_aerodynamic_analysis 
 from RCAIDE.Library.Plots                                          import *
 
@@ -34,8 +33,8 @@ def main():
     vehicle  = vehicle_setup()    
     configs  = configs_setup(vehicle) 
     analyses = analyses_setup(configs)  
-    
-    angle_of_attack_range                 = np.atleast_2d(np.linspace(-5, 15, 21)).T*Units.degrees   
+ 
+    angle_of_attack_range                 = np.atleast_2d(np.linspace(-5, 15, 5)).T*Units.degrees   
     Mach_number_range                     = np.ones_like(angle_of_attack_range) * 0.78 
     temperatures                          = np.ones_like(angle_of_attack_range) * 340
     non_dimensional_reynolds_numbers      = np.ones_like(angle_of_attack_range) * 1E7 
@@ -47,10 +46,12 @@ def main():
                                                                           mach_numbers                     = Mach_number_range)
  
 
-    # plot results 
-    plot_aircraft_aerodynamics(results, save_filename = "B737_Aircraft_Aerodynamic_Analysis")    
-      
-    return   
+    # plot results
+    plot_aircraft_aerodynamics(results, save_filename = "B737_Aircraft_Aerodynamic_Analysis")
+    plot_pressure_coefficient_distribution(results)
+    plot_3d_vehicle_vlm_panelization(results.vortex_distribution)
+
+    return
  
  
 def vehicle_setup(): 
@@ -161,7 +162,7 @@ def vehicle_setup():
     wing.vertical                         = False
     wing.xz_plane_symmetric               = True
     wing.twists.root                      = 2.5 * Units.degrees 
-    wing.twists.tip                       = 3.5  * Units.degrees  
+    wing.twists.tip                       = 3.5  * Units.degrees
     
 
     # Wing Segments
@@ -576,7 +577,8 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------- 
     # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
-    fuel_line                                      = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
+    fuel_line                                      = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    fuel_line.working_fluid                        = RCAIDE.Library.Attributes.Propellants.Jet_A1()
     
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor: Starboard Propulsor
@@ -688,41 +690,41 @@ def vehicle_setup():
     nacelle.append_airfoil(nacelle_airfoil)  
     turbofan.nacelle                            = nacelle
 
-    # append propulsor to network    
-    net.propulsors.append(turbofan)  
-
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    # Propulsor: Port Propulsor
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    turbofan_2                                  = deepcopy(turbofan) 
-    turbofan_2.tag                              = 'port_propulsor' 
-    turbofan_2.origin                           = [[13.72,-4.38,-1.1]] 
-    turbofan_2.nacelle.tag                      = 'port_nacelle'    
-    turbofan_2.nacelle.origin                   = [[13.5,-4.38,-1.5]]
-         
     # append propulsor to network
-    net.propulsors.append(turbofan_2)
-  
-    #------------------------------------------------------------------------------------------------------------------------- 
-    #  Energy Source: Fuel Tank
-    #-------------------------------------------------------------------------------------------------------------------------  
-    inboard_tank                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)  
-    inboard_tank.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A()
-    inboard_tank.segments_bounding_tank       = ['root','yehudi']   
-    fuel_line.fuel_tanks.append(inboard_tank)
-    
-    outboard_tank                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)  
-    outboard_tank.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A()
-    outboard_tank.segments_bounding_tank       = ['yehudi', 'section_2']  
-    fuel_line.fuel_tanks.append(outboard_tank)    
-    
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to fuel line to network      
-    fuel_line.assigned_propulsors =  [[turbofan.tag, turbofan_2.tag]]   
+    turbofan.assigned_distributors              = [[fuel_line.tag]]
+    net.propulsors.append(turbofan)
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Append fuel line to fuel line to network      
-    net.fuel_lines.append(fuel_line)        
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Propulsor: Port Propulsor
+    #------------------------------------------------------------------------------------------------------------------------------------
+    turbofan_2                                  = deepcopy(turbofan)
+    turbofan_2.tag                              = 'port_propulsor'
+    turbofan_2.origin                           = [[13.72,-4.38,-1.1]]
+    turbofan_2.nacelle.tag                      = 'port_nacelle'
+    turbofan_2.nacelle.origin                   = [[13.5,-4.38,-1.5]]
+
+    # append propulsor to network
+    turbofan_2.assigned_distributors            = [[fuel_line.tag]]
+    net.propulsors.append(turbofan_2)
+
+    #-------------------------------------------------------------------------------------------------------------------------
+    #  Energy Source: Fuel Tank
+    #-------------------------------------------------------------------------------------------------------------------------
+    inboard_tank                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)
+    inboard_tank.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A()
+    inboard_tank.segments_bounding_tank       = ['root','yehudi']
+    inboard_tank.assigned_distributors        = [[fuel_line.tag]]
+    net.sources.append(inboard_tank)
+
+    outboard_tank                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)
+    outboard_tank.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A()
+    outboard_tank.segments_bounding_tank       = ['yehudi', 'section_2']
+    outboard_tank.assigned_distributors        = [[fuel_line.tag]]
+    net.sources.append(outboard_tank)
+
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Append fuel line to fuel line to network
+    net.distributors.append(fuel_line)
     
     # Append energy network to aircraft 
     vehicle.append_energy_network(net)
@@ -886,7 +888,8 @@ def base_analysis(vehicle):
     geometry = RCAIDE.Framework.Analyses.Geometry.Geometry() 
     analyses.append(geometry)
   
-    aerodynamics   = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()     
+    aerodynamics = RCAIDE.Framework.Analyses.Aerodynamics.Vortex_Lattice_Method()
+    aerodynamics.settings.use_surrogate = False
     analyses.append(aerodynamics)
     
     return analyses 

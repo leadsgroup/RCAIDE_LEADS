@@ -1,16 +1,17 @@
 {
     "empty": {
         "propulsion": {
-            "total": 16464.154678140418,
+            "total": 16435.80515501542,
             "engines": 13426.90794658151,
             "thrust_reversers": 2510.8317860107427,
             "miscellaneous": 474.97535556692753,
-            "fuel_system": 51.43958998123644,
+            "fuel_system": 23.090066856236437,
             "fuel_tanks": 0.0,
             "electrical_cabling": 0,
             "thermal_management": 0,
             "battery": 0,
-            "motors": 0
+            "motors": 0,
+            "fuel_cells": 0
         },
         "structural": {
             "wings": 16769.767322981264,
@@ -33,7 +34,7 @@
             "instruments": 416.6793566290362,
             "total": 15740.921214270395
         },
-        "total": 86107.47719960299
+        "total": 86079.12767647799
     },
     "payload": {
         "total": 25310.454246,
@@ -48,6 +49,6 @@
         "passenger_service": 0.0,
         "total": 1294.1829484145924
     },
-    "zero_fuel_weight": 111417.931445603,
+    "zero_fuel_weight": 111389.58192247798,
     "max_takeoff": 227930
 }

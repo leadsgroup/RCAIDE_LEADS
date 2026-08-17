@@ -22,7 +22,7 @@ def moments(segment):
         Inputs:
             segment.state.conditions.:
                 frames.wind.force_vector          [N] 
-                frames.body.thrust_force_vector        [N]
+                frames.body.total_force_vector        [N]
                 frames.inertial.gravity_force_vector   [N]
         Outputs:
             segment.conditions
@@ -37,7 +37,7 @@ def moments(segment):
     # unpack
     conditions    = segment.state.conditions  
     M_aero_w      = conditions.frames.wind.moment_vector
-    M_thrust_b    = conditions.frames.body.thrust_moment_vector
+    M_thrust_b    = conditions.frames.body.total_moment_vector
     
     # unpack transformation matrices
     T_wind2inertial = conditions.frames.wind.transform_to_inertial 

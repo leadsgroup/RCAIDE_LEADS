@@ -79,7 +79,11 @@ RCAIDE has seen widespread adoption across industry, government, and academia, p
 </p>
 
 <p align="center">
-  <a href="https://pepy.tech/projects/rcaide-leads">View live download statistics →</a>
+  <img src="docs/source/_static/rcaide_downloads_over_time.png" width="80%" alt="Cumulative RCAIDE-LEADS PyPI downloads over time">
+</p>
+
+<p align="center">
+  <img src="docs/source/_static/rcaide_leads_downloads_map.png" width="100%" alt="RCAIDE-LEADS PyPI downloads by country">
 </p>
 
 ## Code Architecture

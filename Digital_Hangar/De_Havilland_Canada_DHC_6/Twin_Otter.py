@@ -475,8 +475,9 @@ def vehicle_setup():
     #-------------------------------------------------------------------------------------------------------------------------
     # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
-    fuel_line                                       = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
- 
+    fuel_line                                       = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    fuel_line.working_fluid                         = RCAIDE.Library.Attributes.Propellants.Jet_A1()
+
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------    
@@ -640,9 +641,10 @@ def vehicle_setup():
     nac_segment.width              = 0.0  
     nacelle.append_segment(nac_segment) 
     
-    starboard_propulsor.nacelle = nacelle      
- 
-    net.propulsors.append(starboard_propulsor) 
+    starboard_propulsor.nacelle = nacelle
+
+    starboard_propulsor.assigned_distributors = [[fuel_line.tag]]
+    net.propulsors.append(starboard_propulsor)
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor: Port Propulsor
@@ -667,14 +669,13 @@ def vehicle_setup():
     fuel_tank.fuel                                        = RCAIDE.Library.Attributes.Propellants.Jet_A1()    
     fuel_tank.fuel.mass_properties.mass                   = 0  
     fuel_tank.fuel.mass_properties.center_of_gravity      = wing.mass_properties.center_of_gravity
-    fuel_tank.internal_volume                             = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density   
-    fuel_line.fuel_tanks.append(fuel_tank) 
+    fuel_tank.internal_volume                             = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density
+    fuel_tank.assigned_distributors                       = [[fuel_line.tag]]
+    net.sources.append(fuel_tank)
 
-    fuel_line.assigned_propulsors =  [[starboard_propulsor.tag, port_propulsor.tag]]
-
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Append fuel line to network      
-    net.fuel_lines.append(fuel_line)        
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Append fuel line to network
+    net.distributors.append(fuel_line)
     
     # Append energy network to aircraft 
     vehicle.append_energy_network(net)    

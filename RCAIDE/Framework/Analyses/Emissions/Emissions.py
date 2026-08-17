@@ -30,7 +30,7 @@ class Emissions(Analysis):
         self.settings = Data() 
     
         
-    def evaluate(self,state):
+    def evaluate(self,state,vehicle):
         """The default evaluate function.
 
         Assumptions:

@@ -27,7 +27,7 @@ import numpy                                                                as n
 # ----------------------------------------------------------------------------------------------------------------------  
 #  Design Turboshaft
 # ----------------------------------------------------------------------------------------------------------------------   
-def design_turboprop(turboprop):  
+def design_turboprop(turboprop):
     """
     Sizes a turboprop engine based on design point conditions and computes its performance characteristics.
 
@@ -142,17 +142,21 @@ def design_turboprop(turboprop):
         conditions.freestream.speed_of_sound              = np.atleast_1d(a)
         conditions.freestream.velocity                    = np.atleast_1d(a*turboprop.design_mach_number)
           
-    segment                                               = RCAIDE.Framework.Mission.Segments.Segment()  
-    segment.state.conditions                              = conditions 
-    turboprop.append_operating_conditions(segment,conditions.energy,conditions.aeroacoustics)       
-         
-    ram                                                   = turboprop.ram
-    inlet_nozzle                                          = turboprop.inlet_nozzle
-    compressor                                            = turboprop.compressor
-    combustor                                             = turboprop.combustor
-    high_pressure_turbine                                 = turboprop.high_pressure_turbine
-    low_pressure_turbine                                  = turboprop.low_pressure_turbine
-    core_nozzle                                           = turboprop.core_nozzle  
+    # create dummy distributor for setup_operating_conditions
+    fuel_line                                             = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+
+    segment                                               = RCAIDE.Framework.Mission.Segments.Segment()
+    segment.state.conditions                              = conditions
+    turboprop.append_operating_conditions(segment)
+
+    ram                     = turboprop.ram
+    inlet_nozzle            = turboprop.inlet_nozzle
+    compressor              = turboprop.compressor
+    combustor               = turboprop.combustor
+    high_pressure_turbine   = turboprop.high_pressure_turbine
+    low_pressure_turbine    = turboprop.low_pressure_turbine
+    core_nozzle             = turboprop.core_nozzle
+    
 
     # unpack component conditions
     turboprop_conditions                                  = conditions.energy.propulsors[turboprop.tag]
@@ -254,11 +258,11 @@ def design_turboprop(turboprop):
     # Step 26: Static Sea Level Thrust   
     atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
     V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
-    operating_state       = setup_operating_conditions(turboprop,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)  
-    operating_state.conditions.energy.propulsors[turboprop.tag].throttle[:,0] = 1.0  
-    sls_T,_,sls_P,_,_,_                           = turboprop.compute_performance(operating_state) 
-    turboprop.sealevel_static_thrust              = sls_T[0][0]
-    turboprop.sealevel_static_power               = sls_P[0][0]
+    operating_state       = setup_operating_conditions(turboprop,fuel_line,velocity_range=np.array([V]), altitude = 0, angle_of_attack=0, temperature_deviation=0)
+    operating_state.conditions.energy.propulsors[turboprop.tag].throttle[:,0] = 1.0
+    _,sls_outputs,_,_                                 = turboprop.compute_performance(operating_state)
+    turboprop.sealevel_static_thrust                  = sls_outputs.thrust[0][0]
+    turboprop.sealevel_static_power                   = sls_outputs.power.propulsive[0][0]
     
     turboprop.design_thrust_specific_fuel_consumption = turboprop_conditions.thrust_specific_fuel_consumption  
     turboprop.design_non_dimensional_thrust           = turboprop_conditions.non_dimensional_thrust            
@@ -269,16 +273,19 @@ def design_turboprop(turboprop):
     turboprop.design_thermal_efficiency               = turboprop_conditions.thermal_efficiency                
     turboprop.design_propulsive_efficiency            = turboprop_conditions.propulsive_efficiency
     
-    if compressor.motor != None: 
+    if turboprop.integrated_drive_motor != None:
         V                     = turboprop.design_freestream_velocity
-        operating_state       = setup_operating_conditions(turboprop,velocity_range=np.array([V]), altitude = turboprop.design_altitude, angle_of_attack=0, temperature_deviation=0)  
-        operating_state.conditions.energy.propulsors[turboprop.tag].throttle[:,0] = 1.0  
-        T,_,P,_,_,_           = turboprop.compute_performance(operating_state)
-        
-        motor                         = compressor.motor 
-        motor.design_torque           = P[0][0] /compressor.design_angular_velocity   
+        operating_state       = setup_operating_conditions(turboprop,fuel_line,velocity_range=np.array([V]), altitude = turboprop.design_altitude, angle_of_attack=0, temperature_deviation=0)
+        operating_state.conditions.energy.propulsors[turboprop.tag].throttle[:,0] = 1.0
+        _,outputs,_,_           = turboprop.compute_performance(operating_state)
+
+        T = outputs.thrust
+        P = outputs.power.propulsive
+
+        motor                         = turboprop.integrated_drive_motor
+        motor.design_torque           = P[0][0] /compressor.design_angular_velocity
         motor.design_angular_velocity = compressor.design_angular_velocity
-        motor.mass_properties.mass    = compute_motor_weight(motor) 
+        motor.mass_properties.mass    = compute_motor_weight(motor)
         design_optimal_motor(motor)
     
     return      

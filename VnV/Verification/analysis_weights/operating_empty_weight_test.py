@@ -134,9 +134,9 @@ def Transport_Hydrogen_Test(update_regression_values, show_figure):
     vehicle = hydrogen_transport_setup()
     for propulsor in vehicle.networks.fuel.propulsors:
         propulsor.combustor.fuel_data =  RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen() 
-    for fuel_line in vehicle.networks.fuel.fuel_lines:
-        for fuel_tank in fuel_line.fuel_tanks:
-            fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()   
+    for fuel_tank in vehicle.networks.fuel.sources:
+        if isinstance(fuel_tank, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+            fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
             fuel_tank.gravimetric_efficiency            = 0.5
 
     for method_type in method_types:
@@ -292,7 +292,7 @@ def General_Aviation_Test(update_regression_values, show_figure):
         jet_cessna_172.networks.fuel.propulsors.pop('ice_propeller')
         turbine = Jet_engine()
         jet_cessna_172.networks.fuel.propulsors.append(turbine)
-        jet_cessna_172.networks.fuel.fuel_lines['fuel_line'].assigned_propulsors = [[turbine.tag]]
+        turbine.assigned_distributors = [[jet_cessna_172.networks.fuel.distributors.fuel_line.tag]]
         vehicle = jet_cessna_172
         weight_analysis.method = method_type 
         weight_analysis.settings.advanced_composites = False
@@ -338,20 +338,21 @@ def BWB_Hydrogen_Aircraft_Test(update_regression_values,show_figure):
             vehicle  = bwb_setup()
             for propulsor in vehicle.networks.fuel.propulsors:
                 propulsor.combustor.fuel_data =  RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen() 
-            for fuel_line in vehicle.networks.fuel.fuel_lines:
-                fuel_line.fuel_tanks.clear()
-                fuel_tank                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
-                fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
-                fuel_tank.design_inlet_temperature               = 20
-                fuel_tank.design_altitude                        = 30000 * Units.ft
-                fuel_tank.design_heat_flux                       = 20
-                fuel_tank.design_total_heat_transfer             = 2000
-                fuel_tank.ullage_volume_fraction                 = 0.07
-                fuel_tank.gravimetric_efficiency                  = 0.5
-                fuel_tank.inner_structure.material                = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
-                fuel_tank.insulation.material                     = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
-                fuel_tank.segments_bounding_tank                = ['fuel_wall', 'wing_section_1']
-                fuel_line.fuel_tanks.append(fuel_tank)
+            fuel_line = vehicle.networks.fuel.distributors.fuel_line
+            vehicle.networks.fuel.sources.clear()
+            fuel_tank                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
+            fuel_tank.fuel                                   = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
+            fuel_tank.design_inlet_temperature               = 20
+            fuel_tank.design_altitude                        = 30000 * Units.ft
+            fuel_tank.design_heat_flux                       = 20
+            fuel_tank.design_total_heat_transfer             = 2000
+            fuel_tank.ullage_volume_fraction                 = 0.07
+            fuel_tank.gravimetric_efficiency                  = 0.5
+            fuel_tank.inner_structure.material                = RCAIDE.Library.Attributes.Materials.Aluminum_2219()
+            fuel_tank.insulation.material                     = RCAIDE.Library.Attributes.Materials.Vacuum_Cellular_Multilayer_Insulation()
+            fuel_tank.segments_bounding_tank                = ['fuel_wall', 'wing_section_1']
+            fuel_tank.assigned_distributors                 = [[fuel_line.tag]]
+            vehicle.networks.fuel.sources.append(fuel_tank)
 
 
             if cabin_type == 'PERSUS':

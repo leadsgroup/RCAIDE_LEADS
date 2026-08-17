@@ -3,9 +3,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-
 # RCAIDE imports     
-
+import RCAIDE
 # package imports
 import numpy   as np 
 
@@ -64,9 +63,9 @@ def update_moments_of_inertia(state,vehicle):
     N              = state.numerics.number_of_control_points
     
     for network in vehicle.networks:
-        for fuel_line in network.fuel_lines: 
-            for fuel_tank in fuel_line.fuel_tanks:
-                update_fuel_tank_moment_of_inertia(fuel_tank,state) 
+        for source in  network.sources: 
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank): 
+                update_fuel_tank_moment_of_inertia(source,state) 
             
     # --------------------------------------------------------------------------     
     # update aircraft MOI

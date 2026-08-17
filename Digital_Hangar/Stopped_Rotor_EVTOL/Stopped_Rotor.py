@@ -444,21 +444,24 @@ def vehicle_setup(redesign_rotors = False):
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus Battery
     #------------------------------------------------------------------------------------------------------------------------------------ 
-    battery_module                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC() 
+    cruise_battery_pack                                               = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack()
+    battery_module                                                    = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_NMC()
     battery_module.tag                                                = 'cruise_bus_battery'
     battery_module.origin                                             = [[2.5, 0,  0.]]
-    battery_module.electrical_configuration.series                    = 140  
-    battery_module.electrical_configuration.parallel                  = 30  
+    battery_module.electrical_configuration.series                    = 140
+    battery_module.electrical_configuration.parallel                  = 30
     battery_module.geometric_configuration.normal_count              = 210
     battery_module.geometric_configuration.parallel_count            = 20
-     
+
     modules_origins = [[0.25 , 0.0, 0.0],[1.5 , 0.0, 0.0]]  # large prop-rotor modules are beneath floor
     for m_i in range(cruise_bus.number_of_battery_modules):
         module =  deepcopy(battery_module)
-        module.tag = 'nmc_module_' + str(m_i+1) 
+        module.tag = 'nmc_module_' + str(m_i+1)
         module.origin = [modules_origins[m_i]]
-        cruise_bus.battery_modules.append(module) 
-    cruise_bus.initialize_bus_properties()
+        cruise_battery_pack.append_module(module)
+    cruise_battery_pack.assigned_distributors = [[cruise_bus.tag]]
+    network.sources.append(cruise_battery_pack)
+    cruise_battery_pack.initialize(network)
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Forward Bus Propulsors  
@@ -471,7 +474,7 @@ def vehicle_setup(redesign_rotors = False):
     # Electronic Speed Controller                     
     propeller_esc                                          = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller() 
     propeller_esc.efficiency                               = 0.95
-    propeller_esc.bus_voltage                              = cruise_bus.voltage
+    propeller_esc.nominal_voltage                          = cruise_battery_pack.voltage
     propeller_esc.origin                                   = [[6.583, 1.300,  1.092 ]] 
     propeller_esc.tag                                      = 'propeller_esc_1' 
     cruise_propulsor_1.electronic_speed_controller         = propeller_esc      
@@ -514,7 +517,7 @@ def vehicle_setup(redesign_rotors = False):
     propeller_motor.efficiency                             = 0.95
     propeller_motor.tag                                    = 'propeller_motor_1'  
     propeller_motor.origin                                 = [[6.583, 1.300,  1.092 ]] 
-    propeller_motor.nominal_voltage                        = cruise_bus.voltage  
+    propeller_motor.nominal_voltage                        = cruise_battery_pack.voltage  
     propeller_motor.no_load_current                        = 0.001
     propeller_motor.wing_tag                               = 'horizontal_tail'   
     cruise_propulsor_1.motor                               = propeller_motor 
@@ -622,8 +625,10 @@ def vehicle_setup(redesign_rotors = False):
             
             
     
+    cruise_propulsor_1.assigned_distributors = [[cruise_bus.tag]]
     network.propulsors.append(cruise_propulsor_1)
-      
+
+
     # make and append copy of forward propulsor (efficient coding)    
     cruise_propulsor_2                             = deepcopy(cruise_propulsor_1)
     cruise_propulsor_2.tag                         = 'cruise_propulsor_2' 
@@ -632,8 +637,7 @@ def vehicle_setup(redesign_rotors = False):
     propeller_nacelle_2.tag                        = 'propeller_nacelle_2' 
     propeller_nacelle_2.origin                     = [[5.583, - 1.300,     1.092]]
     cruise_propulsor_2.nacelle                     = propeller_nacelle_2
-    network.propulsors.append(cruise_propulsor_2) 
-    cruise_bus.assigned_propulsors = [['cruise_propulsor_1','cruise_propulsor_2' ]]
+    network.propulsors.append(cruise_propulsor_2)
         
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Additional Bus Loads
@@ -641,12 +645,12 @@ def vehicle_setup(redesign_rotors = False):
     
     # Avionics   
     avionics                       = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
-    avionics.power_draw            = 10. # Watts  
+    avionics.power_draw            = 10. # Watts
     avionics.mass_properties.mass  = 1.0 * Units.kg
-    cruise_bus.avionics            = avionics    
+    cruise_bus.avionics            = avionics
 
     # append forward bus
-    network.busses.append(cruise_bus)    
+    network.distributors.append(cruise_bus)
     
         
     #==================================================================================================================================== 
@@ -659,20 +663,23 @@ def vehicle_setup(redesign_rotors = False):
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus Battery
     #------------------------------------------------------------------------------------------------------------------------------------ 
-    battery_module                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC() 
+    lift_battery_pack                                                 = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack()
+    battery_module                                                    = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_NMC()
     battery_module.tag                                                = 'lift_bus_battery'
-    battery_module.electrical_configuration.series                    = 140   
-    battery_module.electrical_configuration.parallel                  = 10  
-    battery_module.geometric_configuration.normal_count              = 140 
+    battery_module.electrical_configuration.series                    = 140
+    battery_module.electrical_configuration.parallel                  = 10
+    battery_module.geometric_configuration.normal_count              = 140
     battery_module.geometric_configuration.parallel_count            = 10
 
     modules_origins = [[3.5, 0.0, 0.5],[3.5, 0.0, 0.5 ]]  # rear modules are stacked inside cabin
     for m_i in range(lift_bus.number_of_battery_modules):
         module =  deepcopy(battery_module)
-        module.tag = 'nmc_module_' + str(m_i+1) 
+        module.tag = 'nmc_module_' + str(m_i+1)
         module.origin = [modules_origins[m_i]]
-        lift_bus.battery_modules.append(module) 
-    lift_bus.initialize_bus_properties() 
+        lift_battery_pack.append_module(module)
+    lift_battery_pack.assigned_distributors = [[lift_bus.tag]]
+    network.sources.append(lift_battery_pack)
+    lift_battery_pack.initialize(network)
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Lift Propulsors 
@@ -686,7 +693,7 @@ def vehicle_setup(redesign_rotors = False):
     lift_rotor_esc                                         = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller() 
     lift_rotor_esc.efficiency                              = 0.95     
     lift_rotor_esc.origin                                  = [[-0.073 ,  1.950 , 1.2]]
-    lift_rotor_esc.bus_voltage                             = lift_bus.voltage
+    lift_rotor_esc.nominal_voltage                          = lift_battery_pack.voltage
     lift_propulsor_1.electronic_speed_controller           = lift_rotor_esc 
            
     # Lift Rotor Design              
@@ -721,7 +728,7 @@ def vehicle_setup(redesign_rotors = False):
     #------------------------------------------------------------------------------------------------------------------------------------    
     lift_rotor_motor                                       = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     lift_rotor_motor.efficiency                            = 0.9
-    lift_rotor_motor.nominal_voltage                       = lift_bus.voltage*3/4  
+    lift_rotor_motor.nominal_voltage                       = lift_battery_pack.voltage*3/4  
     lift_rotor_motor.propeller_radius                      = lift_rotor.tip_radius 
     lift_rotor_motor.no_load_current                       = 0.01        
     lift_propulsor_1.motor                                 = lift_rotor_motor
@@ -770,22 +777,20 @@ def vehicle_setup(redesign_rotors = False):
                                 [10.0* Units.degrees,np.pi/2.,0.], [-10.0* Units.degrees,np.pi/2.,0.], [10.0* Units.degrees,np.pi/2.,0.], [-10.0* Units.degrees,np.pi/2.,0.]] # vector of angles defining default orientation of rotor
     
     
-    assigned_propulsor_list = []        
-    for i in range(len(origins)): 
+    for i in range(len(origins)):
         propulsor_i                                       = deepcopy(lift_propulsor_1)
         propulsor_i.tag                                   = 'lift_propulsor_' + str(i + 1)
-        propulsor_i.rotor.tag                             = 'lift_rotor_' + str(i + 1) 
-        propulsor_i.rotor.origin                          = [origins[i]] 
+        propulsor_i.rotor.tag                             = 'lift_rotor_' + str(i + 1)
+        propulsor_i.rotor.origin                          = [origins[i]]
         propulsor_i.rotor.orientation_euler_angles         = orientation_euler_angles[i]
-        propulsor_i.motor.tag                             = 'lift_rotor_motor_' + str(i + 1)   
-        propulsor_i.motor.origin                          = [origins[i]]  
-        propulsor_i.electronic_speed_controller.tag       = 'lift_rotor_esc_' + str(i + 1)  
-        propulsor_i.electronic_speed_controller.origin    = [origins[i]]  
-        propulsor_i.nacelle.tag                           = 'lift_rotor_nacelle_' + str(i + 1)  
-        propulsor_i.nacelle.origin                        = [origins[i]]    
-        network.propulsors.append(propulsor_i)  
-        assigned_propulsor_list.append(propulsor_i.tag) 
-    lift_bus.assigned_propulsors = [assigned_propulsor_list]
+        propulsor_i.motor.tag                             = 'lift_rotor_motor_' + str(i + 1)
+        propulsor_i.motor.origin                          = [origins[i]]
+        propulsor_i.electronic_speed_controller.tag       = 'lift_rotor_esc_' + str(i + 1)
+        propulsor_i.electronic_speed_controller.origin    = [origins[i]]
+        propulsor_i.nacelle.tag                           = 'lift_rotor_nacelle_' + str(i + 1)
+        propulsor_i.nacelle.origin                        = [origins[i]]
+        propulsor_i.assigned_distributors                 = [[lift_bus.tag]]
+        network.propulsors.append(propulsor_i)
   
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Additional Bus Loads
@@ -818,7 +823,7 @@ def vehicle_setup(redesign_rotors = False):
     network.systems.append(furnishings) 
    
    
-    network.busses.append(lift_bus)       
+    network.distributors.append(lift_bus)
         
     # append energy network 
     vehicle.append_energy_network(network)  

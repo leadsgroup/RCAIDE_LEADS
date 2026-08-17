@@ -150,25 +150,25 @@ def compute_operating_empty_weight(vehicle,settings = None):
             #-------------------------------------------------------------------------------
             # Powertain 
             #-------------------------------------------------------------------------------            
-            for bus in network.busses: 
+            for source in network.sources:
+                if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
+                    weight.battery += source.mass_properties.mass * Units.kg
 
-                for modules in bus.battery_modules:
-                    weight.battery += modules.mass_properties.mass * Units.kg
+            for converter in network.converters:
+                if isinstance(converter, RCAIDE.Library.Components.Powertrain.Converters.Generic_Fuel_Cell_Stack):
+                    weight.fuel_cell += converter.mass_properties.mass * Units.kg
 
-                for fuel_cell in bus.fuel_cell_stacks:
-                    weight.fuel_cell += fuel_cell.mass_properties.mass * Units.kg
+            # Servo, Hub and BRS Weights
+            lift_rotor_hub_weight   = 4.   * Units.kg
+            prop_hub_weight         = 4.   * Units.kg
+            lift_rotor_BRS_weight   = 16.  * Units.kg
 
-                # Servo, Hub and BRS Weights
-                lift_rotor_hub_weight   = 4.   * Units.kg
-                prop_hub_weight         = 4.   * Units.kg
-                lift_rotor_BRS_weight   = 16.  * Units.kg
+            # Rotor Weight
+            number_of_propellers    = 0.0
+            number_of_lift_rotors   = 0.0
+            total_number_of_rotors  = 0.0
+            lift_rotor_servo_weight = 0.0
 
-                # Rotor Weight
-                number_of_propellers    = 0.0
-                number_of_lift_rotors   = 0.0
-                total_number_of_rotors  = 0.0
-                lift_rotor_servo_weight = 0.0
-    
             #-------------------------------------------------------------------------------
             # Propulsors
             #-------------------------------------------------------------------------------
@@ -221,23 +221,28 @@ def compute_operating_empty_weight(vehicle,settings = None):
             if number_of_lift_rotors == 1: # this assumes that the vehicle is an electric helicopter with a tail rotor
                 maxLiftOmega   = maxVTip/rTip_ref
                 maxLiftTorque  = maxLiftPower / maxLiftOmega
-                for bus in network.busses:
-                    tailrotor = next(iter(bus.lift_rotors))
-                    weight.tail_rotor  = EVTOL_Common.compute_rotor_weight(tailrotor, 1.5*maxLiftTorque/(1.25*rTip_ref))*0.2 * Units.kg
-                    weight.rotors     += weight.tail_rotor
+                for propulsor in network.propulsors:
+                    if isinstance(propulsor.rotor, RCAIDE.Library.Components.Powertrain.Converters.Lift_Rotor):
+                        tailrotor = propulsor.rotor
+                        weight.tail_rotor  = EVTOL_Common.compute_rotor_weight(tailrotor, 1.5*maxLiftTorque/(1.25*rTip_ref))*0.2 * Units.kg
+                        weight.rotors     += weight.tail_rotor
+                        break
 
             #-------------------------------------------------------------------------------
             # Thermal Management System Weight
             #-------------------------------------------------------------------------------
-            tms_weight = 0.0 
-            for coolant_line in network.coolant_lines:
+            tms_weight = 0.0
+            coolant_lines = [d for d in network.distributors if isinstance(d, RCAIDE.Library.Components.Powertrain.Distributors.Coolant_Line)]
+            for coolant_line in coolant_lines:
                 weight.thermal_management_system.battery_module = Data()  # Add container for battery module
-                for i, battery_module in enumerate(coolant_line.battery_modules):
-                    module_key = f'module_{i+1}'  # Create unique key for each module
-                    weight.thermal_management_system.battery_module[module_key] = 0.0  # Initialize weight
-                    for HAS in battery_module:
-                        weight.thermal_management_system.battery_module[module_key] = HAS.mass_properties.mass
-                        tms_weight +=  HAS.mass_properties.mass
+                for source in network.sources:
+                    if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
+                        for i, battery_module in enumerate(source.modules):
+                            HAS = battery_module.heat_acquisition_system
+                            if HAS is not None and battery_module.assigned_distributors is not None and coolant_line.tag in battery_module.assigned_distributors[0]:
+                                module_key = f'module_{i+1}'  # Create unique key for each module
+                                weight.thermal_management_system.battery_module[module_key] = HAS.mass_properties.mass
+                                tms_weight +=  HAS.mass_properties.mass
 
                 for tag, item in coolant_line.items():
                     if tag == 'heat_exchangers':

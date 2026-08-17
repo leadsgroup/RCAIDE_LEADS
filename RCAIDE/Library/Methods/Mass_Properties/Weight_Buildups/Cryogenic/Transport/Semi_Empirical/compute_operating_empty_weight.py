@@ -153,10 +153,11 @@ def compute_operating_empty_weight(vehicle, settings=None):
     W_energy_network.W_thrust_reverser = 0 
     W_energy_network.W_engine_controls = 0 
     W_energy_network.W_starter         = 0 
-    W_energy_network.W_tanks           = 0 
-    W_energy_network.W_fuel_lines      = 0 
-    W_energy_network.W_pumps           = 0 
-    W_energy_network.W_motors          = 0 
+    W_energy_network.W_tanks           = 0
+    W_energy_network.W_fuel_lines      = 0
+    W_energy_network.W_pumps           = 0
+    W_energy_network.W_fuel_cells      = 0
+    W_energy_network.W_motors          = 0
     W_energy_network.W_nacelle         = 0 
     W_energy_network.W_battery         = 0
     W_energy_network.W_motor           = 0
@@ -175,9 +176,10 @@ def compute_operating_empty_weight(vehicle, settings=None):
         W_energy_network.W_thrust_reverser  += W_propulsion.W_thrust_reverser
         W_energy_network.W_engine_controls  += W_propulsion.W_engine_controls
         W_energy_network.W_starter          += W_propulsion.W_starter
-        W_energy_network.W_tanks            += W_propulsion.W_tanks     
+        W_energy_network.W_tanks            += W_propulsion.W_tanks
         W_energy_network.W_fuel_lines       += W_propulsion.W_fuel_lines
-        W_energy_network.W_pumps            += W_propulsion.W_pumps     
+        W_energy_network.W_pumps            += W_propulsion.W_pumps
+        W_energy_network.W_fuel_cells       += W_propulsion.W_fuel_cells
         W_energy_network.W_nacelle          += W_propulsion.W_nacelle
         number_of_engines                   += W_propulsion.number_of_engines
         number_of_tanks                     += W_propulsion.number_of_fuel_tanks  
@@ -185,11 +187,10 @@ def compute_operating_empty_weight(vehicle, settings=None):
             propulsor.mass_properties.mass = (W_energy_network.W_engine +W_energy_network.W_thrust_reverser+W_energy_network.W_starter + W_energy_network.W_engine_controls) / number_of_engines
             propulsor.nacelle.mass_properties.mass = W_energy_network.W_nacelle / number_of_engines 
         
-        # Electric-Powered Propulsors
-        for bus in network.busses:
-            for battery in bus.battery_modules:
-                W_energy_network_total  += battery.mass_properties.mass * Units.kg
-                W_energy_network.W_battery += battery.mass_properties.mass * Units.kg
+        for source in network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack):
+                W_energy_network_total  += source.mass_properties.mass * Units.kg
+                W_energy_network.W_battery += source.mass_properties.mass * Units.kg
 
         for propulsor in network.propulsors:
             if 'motor' in propulsor:
@@ -220,6 +221,7 @@ def compute_operating_empty_weight(vehicle, settings=None):
     output.empty.propulsion.fuel_tanks          = W_energy_network.W_tanks
     output.empty.propulsion.electrical_cabling  = 0
     output.empty.propulsion.thermal_management  = 0
+    output.empty.propulsion.fuel_cells          = W_energy_network.W_fuel_cells
 
     ##-------------------------------------------------------------------------------                 
     # Wing Weight 

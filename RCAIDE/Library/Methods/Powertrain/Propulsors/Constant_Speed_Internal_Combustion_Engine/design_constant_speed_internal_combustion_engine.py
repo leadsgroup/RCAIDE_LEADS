@@ -76,13 +76,14 @@ def design_constant_speed_internal_combustion_engine(ICE_CS, number_of_stations=
     # Step 1 Design the Propeller  
     design_propeller(ICE_CS.propeller,number_of_stations = 20) 
      
-    # Static Sea Level Thrust   
-    atmosphere            = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976() 
-    atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)   
-    V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01 
-    operating_state       = setup_operating_conditions(ICE_CS,velocity_range=np.array([V]) , altitude = 0, angle_of_attack=0,temperature_deviation=0)  
-    operating_state.conditions.energy.propulsors[ICE_CS.tag].throttle[:,0] = 1.0  
-    sls_T,_,sls_P,_,_,_               = ICE_CS.compute_performance(operating_state) 
-    ICE_CS.sealevel_static_thrust        = sls_T[0][0]
-    ICE_CS.sealevel_static_power         = sls_P[0][0]
-    return 
+    # Static Sea Level Thrust
+    atmosphere            = RCAIDE.Framework.Analyses.Atmospheric.US_Standard_1976()
+    atmo_data_sea_level   = atmosphere.compute_values(0.0,0.0)
+    V                     = atmo_data_sea_level.speed_of_sound[0][0]*0.01
+    fuel_line             = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    operating_state       = setup_operating_conditions(ICE_CS,fuel_line,velocity_range=np.array([V]) , altitude = 0, angle_of_attack=0,temperature_deviation=0)
+    operating_state.conditions.energy.propulsors[ICE_CS.tag].throttle[:,0] = 1.0
+    _,sls_outputs,_,_                    = ICE_CS.compute_performance(operating_state)
+    ICE_CS.sealevel_static_thrust        = sls_outputs.thrust[0][0]
+    ICE_CS.sealevel_static_power         = sls_outputs.power.propulsive[0][0]
+    return

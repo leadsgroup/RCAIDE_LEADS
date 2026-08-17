@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Propulsors/Turbojet.py  
+# RCAIDE/Library/Components/Powertrain/Propulsors/Turbojet.py  
 #
 #
 # Created:  Mar 2024, M. Clarke
@@ -9,12 +9,8 @@
 ## RCAIDE imports   
 from RCAIDE.Framework.Core      import Data
 from .                          import Propulsor
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.append_turbojet_conditions     import append_turbojet_conditions 
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.compute_turbojet_performance   import compute_turbojet_performance, reuse_stored_turbojet_data
-from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia                             import compute_cylinder_moment_of_inertia 
- 
-# python imports 
-import numpy as np
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.append_turbojet_conditions     import append_turbojet_conditions
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbojet.compute_turbojet_performance   import compute_turbojet_performance, reuse_stored_turbojet_data 
  
 # ----------------------------------------------------------------------
 #  Turbojet Propulsor
@@ -133,7 +129,8 @@ class Turbojet(Propulsor):
     """ 
     def __defaults__(self):
         # setting the default values
-        self.tag                                         = 'Turbojet'  
+        self.tag                                         = 'Turbojet'
+        self.domain                                      = 'chemical'
         self.nacelle                                     = None  
         self.ram                                         = None 
         self.inlet_nozzle                                = None 
@@ -154,7 +151,9 @@ class Turbojet(Propulsor):
         self.specific_fuel_consumption_reduction_factor  = 0.0  
         self.compressor_nondimensional_massflow          = 0.0
         self.reference_temperature                       = 288.15
-        self.reference_pressure                          = 1.01325*10**5 
+        self.reference_pressure                          = 1.01325*10**5
+        self.integrated_drive_generator                  = None
+        self.integrated_drive_motor                      = None 
         self.design_thrust                               = 0.0
         self.design_mass_flow_rate                       = 0.0 
         self.OpenVSP_flow_through                        = False
@@ -165,25 +164,24 @@ class Turbojet(Propulsor):
         self.areas.maximum                               = 0.0
         self.areas.exit                                  = 0.0
         self.areas.inflow                                = 0.0 
-
-
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
-        append_turbojet_conditions(self,segment,energy_conditions,noise_conditions)
+    
+    def append_operating_conditions(self,segment):
+        append_turbojet_conditions(self,segment)
         return
 
-    def unpack_propulsor_unknowns(self,segment):   
+    def unpack_unknowns(self,segment):
         return 
 
-    def pack_propulsor_residuals(self,segment): 
+    def pack_residuals(self,segment): 
         return        
 
-    def append_propulsor_unknowns_and_residuals(self,segment): 
+    def append_unknowns_and_residuals(self,segment):
         return
     
-    def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):
-        thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag =  compute_turbojet_performance(self,state,center_of_gravity)
-        return thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag
+    def compute_performance(self,state,network=None,center_of_gravity = [[0, 0, 0]]):
+        inputs, outputs, stored_results_flag, stored_propulsor_tag =  compute_turbojet_performance(self,state,center_of_gravity)
+        return inputs, outputs, stored_results_flag, stored_propulsor_tag
     
     def reuse_stored_data(turbojet,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
-        thrust,moment,power_mech,power_elec  = reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,center_of_gravity)
-        return thrust,moment,power_mech,power_elec
+        inputs, outputs = reuse_stored_turbojet_data(turbojet,state,network,stored_propulsor_tag,center_of_gravity)
+        return inputs, outputs

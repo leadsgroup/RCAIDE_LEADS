@@ -62,12 +62,12 @@ def append_internal_combustion_engine_residual_and_unknown(propulsor, segment):
     RCAIDE.Library.Methods.Powertrain.Propulsors.Internal_Combustion_Engine.compute_internal_combustion_engine_performance
     """
     
-    ones_row    = segment.state.ones_row                   
-    propeller   = propulsor.propeller 
-    segment.state.unknowns[propulsor.tag  + '_propeller_omega'] = ones_row(1) * propeller.cruise.design_angular_velocity   
+    ones_row    = segment.state.ones_row
+    propeller   = propulsor.propeller
+    segment.state.unknowns.network[propulsor.tag  + '_propeller_omega'] = ones_row(1) * propeller.cruise.design_angular_velocity
     segment.state.residuals.network[ propulsor.tag + '_rotor_engine_torque'] = 0. * ones_row(1)
-    segment.state.numerics.solver.upper_bounds[propulsor.tag + '_propeller_omega'] =   np.inf* ones_row(1) 
-    segment.state.numerics.solver.lower_bounds[propulsor.tag + '_propeller_omega'] = - np.inf* ones_row(1)
-    segment.state.number_of_unknowns  += 1
-    segment.state.number_of_residuals += 1
-    return 
+    segment.state.unknowns_upper_bounds.network[propulsor.tag + '_propeller_omega'] =   np.inf* ones_row(1)
+    segment.state.unknowns_lower_bounds.network[propulsor.tag + '_propeller_omega'] = - np.inf* ones_row(1)
+    segment.state.number_of_network_unknowns  += 1
+    segment.state.number_of_network_residuals += 1
+    return

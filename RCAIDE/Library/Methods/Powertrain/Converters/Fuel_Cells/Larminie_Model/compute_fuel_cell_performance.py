@@ -14,7 +14,7 @@ import scipy as sp
 # ----------------------------------------------------------------------
 #  Larminie Model to Compute Fuel Cell Performance
 # ---------------------------------------------------------------------- 
-def compute_fuel_cell_performance(fuel_cell_stack, state, bus, coolant_lines, t_idx, delta_t):
+def compute_fuel_cell_performance(fuel_cell_stack, state, network):
     """
     Computes the performance of a fuel cell stack using the Larminie-Dicks model.
     
@@ -49,7 +49,15 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, bus, coolant_lines, t_
     
     The function handles both series and parallel electrical configurations for
     connecting the fuel cell stack to the electric bus.
-    
+
+    The power this stack must supply is its own electrical distributor's
+    total demand, split between battery/fuel-cell sources by that
+    distributor's psi and between multiple fuel-cell stacks on the same bus
+    by ``power_split_ratio``. The distributor is looked up from
+    ``fuel_cell_stack.assigned_distributors`` rather than assumed, since a
+    fuel cell stack may share the vehicle with other electrically-isolated
+    buses resolved to a different psi.
+
     **Major Assumptions**
         * Uniform temperature distribution across all cells
         * No transient effects (steady-state operation at each time step)
@@ -87,53 +95,58 @@ def compute_fuel_cell_performance(fuel_cell_stack, state, bus, coolant_lines, t_
     # ---------------------------------------------------------------------------------    
     # fuel cell stack properties 
     # --------------------------------------------------------------------------------- 
-    fuel_cell         = fuel_cell_stack.fuel_cell 
+    fuel_cell         = fuel_cell_stack.fuel_cell
     n_series          = fuel_cell_stack.electrical_configuration.series
-    n_parallel        = fuel_cell_stack.electrical_configuration.parallel 
-    bus_config        = bus.fuel_cell_stack_electric_configuration
-    n_total           = n_series*n_parallel  
-        
-    # ---------------------------------------------------------------------------------
-    # Compute Bus electrical properties   
-    # ---------------------------------------------------------------------------------
-    bus_conditions              = state.conditions.energy.busses[bus.tag]
-    fuel_cell_stack_conditions  = bus_conditions.fuel_cell_stacks[fuel_cell_stack.tag]
-    phi                         = state.conditions.energy.hybrid_power_split_ratio 
-    P_bus                       = bus_conditions.power_draw*phi     
-    P_stack                     = P_bus[t_idx] /len(bus.fuel_cell_stacks) 
-    P_cell                      = P_stack/ n_total  
+    n_parallel        = fuel_cell_stack.electrical_configuration.parallel
+    n_total           = n_series*n_parallel
 
     # ---------------------------------------------------------------------------------
-    # Compute fuel cell performance  
+    # Compute fuel cell stack conditions
     # ---------------------------------------------------------------------------------
-    lb                          = 0.0001/(Units.cm**2.)    # lower bound on fuel cell current density 
-    ub                          = 1.2/(Units.cm**2.)       # upper bound on fuel cell current density
-    current_density             = sp.optimize.fminbound(compute_power_difference, lb, ub, args=(fuel_cell,P_cell)) 
-    V_fuel_cell                 = compute_voltage(fuel_cell,current_density)    
-    efficiency                  = np.divide(V_fuel_cell, fuel_cell.ideal_voltage)
-    mdot_cell                   = np.divide(P_cell,np.multiply(fuel_cell.propellant.specific_energy,efficiency)) 
-    
-    I_cell = P_cell / V_fuel_cell
-    I_stack = I_cell * n_parallel
-    if bus_config == 'Series':
-        bus_conditions.current_draw[t_idx] = I_stack  
-    elif bus_config  == 'Parallel': 
-        bus_conditions.current_draw[t_idx] = I_stack * len(bus.fuel_cell_stacks)  
-    
-    fuel_cell_stack_conditions.power[t_idx]                                = P_stack
-    fuel_cell_stack_conditions.current[t_idx]                              = I_stack
-    fuel_cell_stack_conditions.voltage_open_circuit[t_idx]                 = V_fuel_cell *  n_series # assumes no losses
-    fuel_cell_stack_conditions.voltage_under_load[t_idx]                   = V_fuel_cell *  n_series
-    fuel_cell_stack_conditions.fuel_cell.voltage_open_circuit[t_idx]       = V_fuel_cell   # assumes no losses
-    fuel_cell_stack_conditions.fuel_cell.voltage_under_load[t_idx]         = V_fuel_cell
-    fuel_cell_stack_conditions.fuel_cell.power[t_idx]                      = P_cell
-    fuel_cell_stack_conditions.fuel_cell.current[t_idx]                    = P_cell / V_fuel_cell 
-    fuel_cell_stack_conditions.fuel_cell.inlet_H2_mass_flow_rate[t_idx]    = mdot_cell  
-    fuel_cell_stack_conditions.H2_mass_flow_rate[t_idx]                    = mdot_cell * n_total
-    
-    stored_results_flag            = True
-    stored_fuel_cell_stack_tag     = fuel_cell_stack.tag  
+    fuel_cell_stack_conditions  = state.conditions.energy.converters[fuel_cell_stack.tag]
 
-    return  stored_results_flag, stored_fuel_cell_stack_tag
+    electrical_distributor_tag = None
+    for d_tag in fuel_cell_stack.assigned_distributors[0]:
+        if network.distributors[d_tag].domain == 'electrical':
+            electrical_distributor_tag = d_tag
+    psi = state.conditions.energy.battery_fuel_cell_power_split_ratio[electrical_distributor_tag]
+    total_electrical_demand = state.conditions.energy.distributors[electrical_distributor_tag].outputs.power.electrical
+    P_stack                     = total_electrical_demand * fuel_cell_stack.power_split_ratio * (1. - psi)
+    # P_stack's own row count (not state.numerics.number_of_control_points) since single-point
+    # evaluation contexts (e.g. estimate_take_off_field_length) can size it differently.
+    n_ctrl_pts                  = P_stack.shape[0]
+
+    for t_idx in range(n_ctrl_pts):
+        P_cell = P_stack[t_idx, 0] / n_total
+
+        # ---------------------------------------------------------------------------------
+        # Compute fuel cell performance
+        # ---------------------------------------------------------------------------------
+        lb                          = 0.0001/(Units.cm**2.)
+        ub                          = 1.2/(Units.cm**2.)
+        current_density             = sp.optimize.fminbound(compute_power_difference, lb, ub, args=(fuel_cell,P_cell))
+        V_fuel_cell                 = compute_voltage(fuel_cell,current_density)
+        efficiency                  = np.divide(V_fuel_cell, fuel_cell.ideal_voltage)
+        mdot_cell                   = np.divide(P_cell,np.multiply(fuel_cell.propellant.specific_energy,efficiency))
+
+        I_cell  = P_cell / V_fuel_cell
+        I_stack = I_cell * n_parallel
+
+        fuel_cell_stack_conditions.power[t_idx]                                = P_stack[t_idx, 0]
+        fuel_cell_stack_conditions.current[t_idx]                              = I_stack
+        fuel_cell_stack_conditions.voltage_open_circuit[t_idx]                 = V_fuel_cell *  n_series
+        fuel_cell_stack_conditions.voltage_under_load[t_idx]                   = V_fuel_cell *  n_series
+        fuel_cell_stack_conditions.H2_mass_flow_rate[t_idx]                    = mdot_cell * n_total
+
+    stored_results_flag                                               = True
+    stored_converter_tag                                              = fuel_cell_stack.tag
+    fuel_cell_stack_conditions.outputs.power.electrical               = fuel_cell_stack_conditions.power * fuel_cell_stack.electrical_efficiency
+
+    # Chemical (hydrogen) power draw, fed to the fuel line so assigned fuel tanks
+    # can compute their own mass depletion.
+    fuel_cell_stack_conditions.inputs.power.chemical = fuel_cell_stack_conditions.H2_mass_flow_rate * fuel_cell.propellant.specific_energy
+    fuel_cell_stack_conditions.fuel_mass_flow_rate    = fuel_cell_stack_conditions.H2_mass_flow_rate
+
+    return  fuel_cell_stack_conditions.inputs, fuel_cell_stack_conditions.outputs, stored_results_flag, stored_converter_tag
 
 

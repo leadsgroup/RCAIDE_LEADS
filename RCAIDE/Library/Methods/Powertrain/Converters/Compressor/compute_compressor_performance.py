@@ -131,11 +131,9 @@ def compute_compressor_performance(compressor, conditions):
     
     # Compute the work done by the compressor (normalized by mass flow i.e. J/(kg/s)
     work_done = ht_out - ht_in
-    
-    phi       =  conditions.energy.hybrid_power_split_ratio 
 
-    # Pack results  
-    compressor_conditions.outputs.work_done               = (1-phi)*work_done
+    # Pack results
+    compressor_conditions.outputs.work_done               = work_done
     compressor_conditions.outputs.stagnation_temperature  = Tt_out
     compressor_conditions.outputs.stagnation_pressure     = Pt_out
     compressor_conditions.outputs.stagnation_enthalpy     = ht_out

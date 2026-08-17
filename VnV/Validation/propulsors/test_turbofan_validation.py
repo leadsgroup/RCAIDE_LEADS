@@ -78,11 +78,11 @@ def main():
     segment.state.conditions.energy[fuel_line.tag]    = Conditions()
     segment.state.conditions.aeroacoustics[fuel_line.tag]     = Conditions()
 
-    turbofan.append_operating_conditions(segment,segment.state.conditions.energy,segment.state.conditions.aeroacoustics)
+    turbofan.append_operating_conditions(segment)
 
-    for tag, item in turbofan.items(): 
+    for tag, item in turbofan.items():
         if issubclass(type(item), RCAIDE.Library.Components.Component):
-            item.append_operating_conditions(segment,segment.state.conditions.energy)
+            item.append_operating_conditions(segment)
 
     # set throttle
     segment.state.conditions.energy.propulsors[turbofan.tag].throttle[:,0] = 1  
