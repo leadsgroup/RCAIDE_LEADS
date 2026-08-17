@@ -412,6 +412,19 @@ def evaluate_bound_vortex_circulation(rotor, wake_inputs, conditions):
                 Rp_Rinf  = (Tp_Tinf**2.5)*(Tp+110.4)/(T+110.4)
                 Cd       = ((1/Tp_Tinf)*(1/Rp_Rinf)**0.2)*Cdval
 
+            # Reverse-flow region (near the blade root on the retreating side at high mu,
+            # r < mu*R): Wt<0 there, where the standard alpha = beta - arctan2(Wa,Wt) formula
+            # and forward-flow polar convention are physically invalid -- not a numerical edge
+            # case, a genuinely different aerodynamic regime this method doesn't model. Left
+            # unmasked, a real tabulated polar (aerofoil_aero=2) can return sharply different Cl
+            # values as a corrupted alpha wanders across the table, and that propagates through
+            # every other station via Biot-Savart coupling. Zeroing lift/drag here (low dynamic
+            # pressure, small contribution to net thrust/torque) is a standard engineering
+            # approximation for this region, not a numerical hack.
+            reverse_flow        = Wt < 0
+            Cl[reverse_flow]    = 0.
+            Cd[reverse_flow]    = 0.
+
             # Prandtl tip loss
             lamdaw, F, _ = compute_lifting_line_inflow_and_tip_loss(r, R, Wa, Wt,  B)
 
