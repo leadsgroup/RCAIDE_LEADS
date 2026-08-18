@@ -18,21 +18,18 @@ from RCAIDE.Framework.Core import Units, Data
 from RCAIDE.Framework.Mission.Common import Results
 from RCAIDE.Framework.Mission.Segments.Segment import Segment
 from RCAIDE.Library.Methods.Geometry.Planform.wing_planform import wing_planform
-from RCAIDE.Framework.Analyses.Geodesics.Geodesics import Calculate_Distance
 
 import matplotlib.pyplot as plt
 import matplotlib.tri as tri
 import numpy as np
 import pandas as pd
-import os
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 def main():
     # --- Load and Interpolate CSV Data ---
-    csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "b737_sim_track_interpolated_pun_original.csv")
-    df = pd.read_csv(csv_path)
+    df = pd.read_csv("/Users/siripunn/Desktop/LEADS_WORK/LEADS_Research/RCAIDE_LEADS/VnV/Verification/analysis_aeroacoustics/b737_sim_track_interpolated_pun_original.csv")
 
     def interpolate_path(original_list):
         new_length = 100
@@ -40,7 +37,6 @@ def main():
         new_indices = np.linspace(0, len(original_list) - 1, new_length)
         interpolated_np = np.interp(new_indices, old_indices, original_list)
         return interpolated_np.tolist()
-    #new version
 
     lat_array              = interpolate_path(df['Latitude (deg)'].to_numpy())
     lon_array              = interpolate_path(df['Longitude (deg)'].to_numpy())
@@ -49,14 +45,25 @@ def main():
 
     # --- Setup Vehicle and Path ---
     vehicle = vehicle_setup()
-    segment, ctrl_pts, receptor_x_range, receptor_y_range = approach_segment_setup(vehicle, lat_array, lon_array, elevation_msl_array, ground_speed_kts_array)
+    segment, ctrl_pts = approach_segment_setup(vehicle, lat_array, lon_array, elevation_msl_array, ground_speed_kts_array)
 
     # --- Setup Analysis and Receptor Grid ---
     aeroacoustics_analysis = RCAIDE.Framework.Analyses.Aeroacoustics.Semi_Empirical()
+    
+    # Map original lat/lon bounding box to the local flat-earth Cartesian grid
+    R_earth = 6371000.0
+    lon0_rad = np.radians(lon_array[0])
+    lat0_rad = np.radians(lat_array[0])
+    
+    grid_location = [[-88.018902, 41.894352], [-87.797397, 42.059475]]
+    x_min = (np.radians(grid_location[0][0]) - lon0_rad) * R_earth * np.cos(lat0_rad)
+    x_max = (np.radians(grid_location[1][0]) - lon0_rad) * R_earth * np.cos(lat0_rad)
 
-    # Receptor grid is derived from the aircraft's own ground track (see approach_segment_setup)
-    # so it starts where the aircraft starts and covers the full approach through touchdown.
-    receptor_grid_setup(aeroacoustics_analysis, x_range=receptor_x_range, y_range=receptor_y_range, resolution=150)
+    # 2. In approach_segment_setup() (approx. line 181)
+    y_min = (np.radians(grid_location[0][1]) - lat0_rad) * R_earth
+    y_max = (np.radians(grid_location[1][1]) - lat0_rad) * R_earth
+
+    receptor_grid_setup(aeroacoustics_analysis, x_range=(x_min, x_max), y_range=(y_min, y_max), resolution=150)
 
     # --- Execute ---
     aeroacoustics_analysis.evaluate_aeroacoustics(segment, vehicle)
@@ -193,33 +200,16 @@ def approach_segment_setup(vehicle, lat_array, lon_array, elevation_msl_array, g
     exact aerodynamic/engine states matching the original simulation."""
     
     ctrl_pts = len(lat_array)
-
-    # 1. Geographic to Cartesian Projection, using RCAIDE's own WGS-84 geodesic distance
-    # calculator (RCAIDE.Framework.Analyses.Geodesics.Geodesics.Calculate_Distance) rather than
-    # a flat-earth/spherical approximation. x is the east-west distance from the aircraft's t=0
-    # position (holding latitude fixed at lat0), y is the north-south distance (holding longitude
-    # fixed at lon0); each is an exact ellipsoidal geodesic distance, signed by direction.
-    lat0 = lat_array[0]
-    lon0 = lon_array[0]
-
-    x_path = np.zeros(ctrl_pts)
-    y_path = np.zeros(ctrl_pts)
-    for i in range(ctrl_pts):
-        east_km  = Calculate_Distance((lat0, lon0), (lat0, lon_array[i]))
-        north_km = Calculate_Distance((lat0, lon0), (lat_array[i], lon0))
-        x_path[i] = np.sign(lon_array[i] - lon0) * east_km  * 1000.
-        y_path[i] = np.sign(lat_array[i] - lat0) * north_km * 1000.
-
-    # Receptor grid bounds, derived from the ground track itself: the near edge sits exactly
-    # at the aircraft's t=0 ground position (x_path[0]/y_path[0] == 0,0 by construction), so the
-    # initial slant distance to the nearest receptor is set by the aircraft's starting altitude
-    # (~1824 m / 5984 ft AGL here) rather than an arbitrary horizontal offset, and that distance
-    # shrinks monotonically as the aircraft descends along the track toward touchdown.
-    end_margin          = 2000.  # meters, extra coverage past the far end of the track
-    lateral_half_width  = 5000.  # meters
-    receptor_x_range    = (x_path.max(), x_path.min() - end_margin) if x_path[0] >= x_path[-1] \
-                           else (x_path.min(), x_path.max() + end_margin)
-    receptor_y_range    = (y_path.mean() - lateral_half_width, y_path.mean() + lateral_half_width)
+    R_earth  = 6371000.0
+    
+    # 1. Geographic to Cartesian Projection (matches original distance vectors)
+    lon_rad  = np.radians(lon_array)
+    lat_rad  = np.radians(lat_array)
+    lon0_rad = lon_rad[0]
+    lat0_rad = lat_rad[0]
+    
+    x_path = (lon_rad - lon0_rad) * R_earth * np.cos(lat0_rad)
+    y_path = (lat_rad - lat0_rad) * R_earth
     
     # Z is negative-up. Receptor altitude is 680 ft MSL
     z_path = - (np.array(elevation_msl_array) - 680.0) * Units.ft
@@ -326,7 +316,7 @@ def approach_segment_setup(vehicle, lat_array, lon_array, elevation_msl_array, g
     conditions.freestream.velocity             = ground_speeds.reshape(-1, 1)
     conditions.freestream.mach_number          = (ground_speeds / a).reshape(-1, 1)
 
-    return segment, ctrl_pts, receptor_x_range, receptor_y_range
+    return segment, ctrl_pts
 
 
 # ----------------------------------------------------------------------
@@ -394,11 +384,11 @@ def plot_footprint(aeroacoustics_analysis, footprint, lat_array, lon_array):
     ax.set_xlabel('Longitude', fontsize=12)
     ax.set_ylabel('Latitude', fontsize=12)
     
-    ax.grid(True, linestyle='--', alpha=0.5, color='gray') 
+    ax.grid(True, linestyle='--', alpha=0.5, color='gray')
     
     # Maintain accurate geographic proportions on the plot
     mean_lat = np.mean(footprint_lat)
-    #ax.set_aspect(1.0 / np.clip(np.cos(np.radians(mean_lat)),-0.99,0.99))
+    ax.set_aspect(1.0 / np.clip(np.cos(np.radians(mean_lat)),-0.99,0.99))
 
     return fig
 

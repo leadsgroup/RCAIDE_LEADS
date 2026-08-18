@@ -33,13 +33,15 @@ def compute_lateral_attenuation(l_seg_m, d_seg_m, bank_angle_deg=0.0):
     ----------
     SAE-AIR-5662: Method for Predicting Lateral Attenuation of Airplane Noise
     """
-    l_seg_m = np.asarray(l_seg_m, dtype=float)
+    l_seg_m = np.asarray(l_seg_m,dtype=float)
     d_seg_m = np.asarray(d_seg_m, dtype=float)
-    
     # 1. FIX: Use arctan2 to robustly compute elevation angle without SLR singularities
     # np.arctan2 flawlessly handles all edge cases, including d_seg_m=0 and l_seg_m=0
-    beta_rad = np.clip(np.arctan2(d_seg_m, l_seg_m),-3,3)
-    beta_deg = np.degrees(beta_rad)
+    beta_rad = np.arctan2(d_seg_m, l_seg_m)
+    beta_deg = np.rad2deg(beta_rad)
+    print(beta_deg.max(),beta_deg.min()) 
+
+
 
     # 2. FIX: Wrap phi_deg to strictly fall within (-180, 180] 
     # This prevents floating-point gaps at boundary masks and handles extreme banks
@@ -69,16 +71,18 @@ def compute_lateral_attenuation(l_seg_m, d_seg_m, bank_angle_deg=0.0):
     # Ground-to-ground effect (G)
     G = np.full_like(l_seg_m, 10.86)
     mask_G = (l_seg_m >= 0) & (l_seg_m <= 914.0)
-    G[mask_G] = 11.83 * (1.0 - np.exp(-0.00274 * l_seg_m[mask_G]))
+    G[mask_G] = 11.83 * (1.0 - np.exp(-0.00274 * l_seg_m[mask_G])) #contrbutes due to exp
 
     # Air-to-ground effect (Lambda)
     Lambda = np.zeros_like(beta_deg)
     beta_eff = np.maximum(beta_deg, 0.0)
     mask_L = (beta_eff >= 0.0) & (beta_eff <= 50.0)
-    Lambda[mask_L] = 1.137 - (0.0229 * beta_eff[mask_L]) + (9.72 * np.exp(-0.142 * beta_eff[mask_L]))
+    Lambda[mask_L] = 1.137 - (0.0229 * beta_eff[mask_L]) + (9.72 * np.exp(-0.142 * beta_eff[mask_L])) #contributes
     # For beta > 50, Lambda remains 0.0
 
     # Total lateral attenuation adjustment
     LA_ADJ = -(E_WING - ((G * Lambda) / 10.86))
+
+    print(LA_ADJ.shape,beta_deg.shape)
 
     return LA_ADJ, beta_deg

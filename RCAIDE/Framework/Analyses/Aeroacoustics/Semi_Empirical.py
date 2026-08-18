@@ -1,4 +1,4 @@
-# RCAIDE/Framework/Analyses/Aeroacoustics/Semi_Empirical.py
+ # RCAIDE/Framework/Analyses/Aeroacoustics/Semi_Empirical.py
 #
 # Created:  Jul 2023, M. Clarke
 # Modified: Aug 2026, P. Siripun
@@ -128,15 +128,37 @@ class Semi_Empirical(Aeroacoustics):
 
             R_nearby = R[nearby]
             rel_unit = relative_position[nearby] / R_nearby[:, None]
-
-            # polar emission angle from the nose (0) to the tail (180), matching the
-            # noise models' convention
+            '''# polar emission angle from the nose (0) to the tail (180), matching the
+                        # noise models' convention
+                        theta = np.arccos(np.clip(rel_unit @ heading, -0.999, 0.999))
+            
+                        # sideline distance / AGL altitude split, for lateral attenuation
+                        # --- START l_seg FIX ---
+                        # 1. Get the pure 2D ground track velocity and its speed
+                        v_2d       = aircraft_velocity[cpt, 0:2]
+                        v_2d_speed = np.linalg.norm(v_2d)
+            
+                        if v_2d_speed > 1e-3:
+                            # 2. Create a proper 2D unit vector for the ground track
+                            track_dir_2d = v_2d / v_2d_speed
+                            
+                            # 3. Calculate perpendicular sideline distance via 2D cross product: |rx*ty - ry*tx|
+                            # This guarantees numerical stability, even directly on the flight path
+                            rx, ry = relative_position[nearby, 0], relative_position[nearby, 1]
+                            tx, ty = track_dir_2d[0], track_dir_2d[1]
+                            l_seg  = np.abs(rx * ty - ry * tx)
+                        else:
+                            # Hover/Vertical flight fallback: sideline distance is the 2D distance to the receptor
+                            l_seg = np.linalg.norm(relative_position[nearby, 0:2], axis=1)
+                        # --- END l_seg FIX ---'''
             theta = np.arccos(np.clip(rel_unit @ heading, -0.999, 0.999))
 
-            # sideline distance / AGL altitude split, for lateral attenuation
-            along_track = relative_position[nearby, 0:2] @ heading[0:2]
-            l_seg       = np.sqrt(np.maximum(R_nearby**2 - along_track**2 - relative_position[nearby, 2]**2,0)) #this is the culprit.
-      
+            # --- START REFERENCE IMPLEMENTATION ---
+            # Compute l_seg exactly as 'ground_dist' (2D radial distance on the ground)
+            # relative_position[nearby, 0:2] extracts just the dx and dy components
+            l_seg = np.linalg.norm(relative_position[nearby, 0:2], axis=1)
+            # --- END REFERENCE IMPLEMENTATION --
+            
             d_seg       = np.full_like(l_seg, -ac_pos[2])
             cpt_list.append(np.full(len(nearby), cpt))
             receptor_list.append(nearby)
@@ -184,7 +206,7 @@ class Semi_Empirical(Aeroacoustics):
         att_dB     = atmospheric_attenuation(R_arr, frequency)
 
         LADJ_dB, _ = compute_lateral_attenuation(l_seg_arr, d_seg_arr) #l_seg_array has a problem, which propagates in the code
-        attenuated = total_spectrum - att_dB - LADJ_dB[:,None]
+        attenuated = total_spectrum - att_dB -LADJ_dB[:, None]
 
         total_SPL_spectra[cpt_arr, receptor_arr, 5:] = attenuated
         total_SPL_dBA[cpt_arr, receptor_arr]         = SPL_arithmetic(A_weighting_metric(attenuated, frequency), sum_axis=1)
