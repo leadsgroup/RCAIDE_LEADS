@@ -515,7 +515,7 @@ def TR_mission_setup(analyses):
     Segments = RCAIDE.Framework.Mission.Segments
     base_segment = Segments.Segment()
     base_segment.state.numerics.solver.type = 'optimize'
-    '''
+    
     # ------------------------------------------------------------------
     #   First Climb Segment: Constant Speed, Constant Rate
     # ------------------------------------------------------------------
@@ -777,7 +777,7 @@ def TR_mission_setup(analyses):
     segment.assigned_control_variables.pitch_angle.active                        = True
     segment.assigned_control_variables.pitch_angle.initial_guess_values        = [[3.4 * Units.degrees]]
     mission.append_segment(segment)
-    '''
+    
     # ------------------------------------------------------------------
     #    Descent Segment 1
     # ------------------------------------------------------------------
@@ -904,7 +904,7 @@ def TR_mission_setup(analyses):
     segment.assigned_control_variables.blade_pitch_command.initial_guess_values       = [[4.5 * Units.degrees]]
 
     mission.append_segment(segment)
-    '''
+    
 
     #------------------------------------------------------------------------------------------------------------------------------------
     # Circular approach pattern
@@ -1050,7 +1050,7 @@ def TR_mission_setup(analyses):
     # expected for a slow constant-rate descent. Supersedes the earlier 0.8 guess (a reasonable
     # placeholder before this segment had ever converged; now corrected against real data).
     segment.assigned_control_variables.throttle.initial_guess_values = [[0.48]]
-    '''
+    
     mission.append_segment(segment)
     return mission
 
