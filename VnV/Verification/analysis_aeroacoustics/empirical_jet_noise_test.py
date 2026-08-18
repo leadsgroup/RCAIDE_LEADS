@@ -5,10 +5,9 @@
 
 """ Validation/demo for the semi-empirical airframe + engine noise footprint model.
 
-Builds a representative 737-class vehicle and flies it down a synthetic straight-in 3 degree
-glideslope approach, then calls RCAIDE.Framework.Analyses.Aeroacoustics.Semi_Empirical directly
-(the same analysis a real mission would use) to compute the noise footprint over a ground
-receptor grid, and integrates it into a Sound Exposure Level (SEL) map.
+Builds a representative 737-class vehicle and flies it down a true-to-life trajectory 
+mapped from an interpolated CSV, then calls RCAIDE.Framework.Analyses.Aeroacoustics.Semi_Empirical 
+directly to compute the noise footprint over a ground receptor grid.
 """
 
 # ----------------------------------------------------------------------
@@ -23,21 +22,56 @@ from RCAIDE.Library.Methods.Geometry.Planform.wing_planform import wing_planform
 import matplotlib.pyplot as plt
 import matplotlib.tri as tri
 import numpy as np
+import pandas as pd
 
 # ----------------------------------------------------------------------
 #   Main
 # ----------------------------------------------------------------------
 def main():
+    # --- Load and Interpolate CSV Data ---
+    df = pd.read_csv("/Users/siripunn/Desktop/LEADS_WORK/LEADS_Research/RCAIDE_LEADS/VnV/Verification/analysis_aeroacoustics/b737_sim_track_interpolated_pun_original.csv")
+
+    def interpolate_path(original_list):
+        new_length = 100
+        old_indices = np.arange(len(original_list))
+        new_indices = np.linspace(0, len(original_list) - 1, new_length)
+        interpolated_np = np.interp(new_indices, old_indices, original_list)
+        return interpolated_np.tolist()
+
+    lat_array              = interpolate_path(df['Latitude (deg)'].to_numpy())
+    lon_array              = interpolate_path(df['Longitude (deg)'].to_numpy())
+    elevation_msl_array    = interpolate_path(df['Altitude MSL (ft)'].to_numpy())
+    ground_speed_kts_array = interpolate_path(df['Ground Speed (kts)'].to_numpy())
+
+    # --- Setup Vehicle and Path ---
     vehicle = vehicle_setup()
-    segment, ctrl_pts = approach_segment_setup(vehicle)
+    segment, ctrl_pts = approach_segment_setup(vehicle, lat_array, lon_array, elevation_msl_array, ground_speed_kts_array)
 
+    # --- Setup Analysis and Receptor Grid ---
     aeroacoustics_analysis = RCAIDE.Framework.Analyses.Aeroacoustics.Semi_Empirical()
-    receptor_grid_setup(aeroacoustics_analysis, x_range=(-500., 3500.), y_range=(-800., 800.), resolution=50)
+    
+    # Map original lat/lon bounding box to the local flat-earth Cartesian grid
+    R_earth = 6371000.0
+    lon0_rad = np.radians(lon_array[0])
+    lat0_rad = np.radians(lat_array[0])
+    
+    grid_location = [[-88.018902, 41.894352], [-87.797397, 42.059475]]
+    x_min = (np.radians(grid_location[0][0]) - lon0_rad) * R_earth * np.cos(lat0_rad)
+    x_max = (np.radians(grid_location[1][0]) - lon0_rad) * R_earth * np.cos(lat0_rad)
 
+    # 2. In approach_segment_setup() (approx. line 181)
+    y_min = (np.radians(grid_location[0][1]) - lat0_rad) * R_earth
+    y_max = (np.radians(grid_location[1][1]) - lat0_rad) * R_earth
+
+    receptor_grid_setup(aeroacoustics_analysis, x_range=(x_min, x_max), y_range=(y_min, y_max), resolution=150)
+
+    # --- Execute ---
     aeroacoustics_analysis.evaluate_aeroacoustics(segment, vehicle)
 
     footprint = compute_sound_exposure_level(aeroacoustics_analysis, segment)
-    plot_footprint(aeroacoustics_analysis, footprint)
+    
+    # FIX: Pass lat_array and lon_array so we can reverse the geographic projection
+    plot_footprint(aeroacoustics_analysis, footprint, lat_array, lon_array) 
 
     return
 
@@ -59,7 +93,7 @@ def vehicle_setup():
     main_gear.strut_length     = 1.2     # m
     main_gear.strut_diameter   = 0.11811 # m
     main_gear.wheels           = 2
-    main_gear.units            = 2       # left and right main gear legs
+    main_gear.units            = 2       
     main_gear.gear_extended    = True
     vehicle.append_component(main_gear)
 
@@ -68,14 +102,11 @@ def vehicle_setup():
     # ------------------------------------------------------------------
     wing                       = RCAIDE.Library.Components.Wings.Main_Wing()
     wing.tag                   = 'main_wing'
-    wing.areas.reference       = 124.6                      # m^2
-    wing.aspect_ratio          = 34.32**2 / 124.6            # gives ~34.32 m span
+    wing.areas.reference       = 124.6                     
+    wing.aspect_ratio          = 34.32**2 / 124.6            
     wing.taper                 = 0.2
     wing.thickness_to_chord    = 0.11
     wing.sweeps.leading_edge   = 25. * Units.degrees
-
-    # derives chords.root/tip (and other planform quantities) from the geometry above --
-    # required before compute_chord_length_from_span_location can be used on this wing
     wing_planform(wing)
 
     flap                       = RCAIDE.Library.Components.Wings.Control_Surfaces.Flap()
@@ -103,7 +134,7 @@ def vehicle_setup():
     turbofan.design_altitude       = 35000.0 * Units.ft
     turbofan.design_mach_number    = 0.78
     turbofan.design_thrust         = 35000.0 * Units.N
-    turbofan.origin                = np.array([[0.0, 0.0, 1.5]])  # core 1.5 m off the ground
+    turbofan.origin                = np.array([[0.0, 0.0, 1.5]])  
     turbofan.length                = 97 * Units.inches
     turbofan.diameter              = 70 * Units.inches
     turbofan.plug_diameter         = 60 * Units.inches
@@ -112,17 +143,17 @@ def vehicle_setup():
     turbofan.geometry_Ce           = 1.0
     turbofan.working_fluid         = RCAIDE.Library.Attributes.Gases.Air()
 
-    ram                             = RCAIDE.Library.Components.Powertrain.Converters.Ram()
-    ram.tag                         = 'ram'
-    turbofan.ram                    = ram
+    ram                            = RCAIDE.Library.Components.Powertrain.Converters.Ram()
+    ram.tag                        = 'ram'
+    turbofan.ram                   = ram
 
-    fan                             = RCAIDE.Library.Components.Powertrain.Converters.Fan()
-    fan.tag                         = 'fan'
-    fan.polytropic_efficiency       = 0.93
-    fan.pressure_ratio              = 1.7
-    fan.angular_velocity            = 4200 * Units.rpm
-    fan.number_of_blades            = 22
-    turbofan.fan                    = fan
+    fan                            = RCAIDE.Library.Components.Powertrain.Converters.Fan()
+    fan.tag                        = 'fan'
+    fan.polytropic_efficiency      = 0.93
+    fan.pressure_ratio             = 1.7
+    fan.angular_velocity           = 4200 * Units.rpm
+    fan.number_of_blades           = 22
+    turbofan.fan                   = fan
 
     low_pressure_compressor                    = RCAIDE.Library.Components.Powertrain.Converters.Compressor()
     low_pressure_compressor.tag                = 'low_pressure_compressor'
@@ -162,77 +193,128 @@ def vehicle_setup():
 
 
 # ----------------------------------------------------------------------
-#   Synthetic Approach Segment
+#   Real Trajectory & Conditions Segment Setup
 # ----------------------------------------------------------------------
-def approach_segment_setup(vehicle):
-    """Straight-in, constant-speed, constant 3 degree glideslope approach, descending from
-    300 m to 10 m AGL, in the local flat-earth frame that Semi_Empirical operates in
-    (conditions.frames.inertial.position_vector, z negative-up)."""
-
-    ctrl_pts        = 100
-    glide_slope     = 3.0 * Units.degrees
-    speed           = 70.0            # m/s, constant approach speed
-    altitude_start  = 300.0           # m AGL
-    altitude_end    = 10.0            # m AGL
-    alpha           = 4.0 * Units.degrees
-
-    horizontal_speed = speed * np.cos(glide_slope)
-    descent_rate      = speed * np.sin(glide_slope)
-    duration          = (altitude_start - altitude_end) / descent_rate
-
-    t = np.linspace(0.0, duration, ctrl_pts)
-    x = (altitude_start / np.tan(glide_slope)) - horizontal_speed * t   # along-track, threshold at x=0
-    z = -(altitude_start - descent_rate * t)                            # z negative-up
-
+def approach_segment_setup(vehicle, lat_array, lon_array, elevation_msl_array, ground_speed_kts_array):
+    """Maps the interpolated geographic flight path to the flat-earth Cartesian grid and applies 
+    exact aerodynamic/engine states matching the original simulation."""
+    
+    ctrl_pts = len(lat_array)
+    R_earth  = 6371000.0
+    
+    # 1. Geographic to Cartesian Projection (matches original distance vectors)
+    lon_rad  = np.radians(lon_array)
+    lat_rad  = np.radians(lat_array)
+    lon0_rad = lon_rad[0]
+    lat0_rad = lat_rad[0]
+    
+    x_path = (lon_rad - lon0_rad) * R_earth * np.cos(lat0_rad)
+    y_path = (lat_rad - lat0_rad) * R_earth
+    
+    # Z is negative-up. Receptor altitude is 680 ft MSL
+    z_path = - (np.array(elevation_msl_array) - 680.0) * Units.ft
+    
     position_vector = np.zeros((ctrl_pts, 3))
-    position_vector[:, 0] = x
-    position_vector[:, 2] = z
+    position_vector[:, 0] = x_path
+    position_vector[:, 1] = y_path
+    position_vector[:, 2] = z_path
+    
+    # 2. Derive Velocity Vectors and Time
+    velocity_vector = np.zeros((ctrl_pts, 3))
+    time = np.zeros(ctrl_pts)
+    ground_speeds = np.array(ground_speed_kts_array) * Units.kts  # kts to m/s
+    
+    for i in range(ctrl_pts):
+        if i > 0 and i < ctrl_pts:
+            dx_flight = x_path[i] - x_path[i-1]
+            dy_flight = y_path[i] - y_path[i-1]
+            dz_flight = z_path[i] - z_path[i-1]
+        elif i + 1 < ctrl_pts:
+            dx_flight = x_path[i+1] - x_path[i]
+            dy_flight = y_path[i+1] - y_path[i]
+            dz_flight = z_path[i+1] - z_path[i]
+        else:
+            dx_flight, dy_flight, dz_flight = 1.0, 0.0, 0.0
+            
+        mag_flight = np.sqrt(dx_flight**2 + dy_flight**2 + dz_flight**2)
+        hx, hy, hz = (dx_flight/mag_flight, dy_flight/mag_flight, dz_flight/mag_flight) if mag_flight > 0 else (1.0, 0.0, 0.0)
+        
+        velocity_vector[i, 0] = ground_speeds[i] * hx
+        velocity_vector[i, 1] = ground_speeds[i] * hy
+        velocity_vector[i, 2] = ground_speeds[i] * hz
+        
+        if i > 0:
+            dt = mag_flight / ground_speeds[i] if ground_speeds[i] > 0 else 0
+            time[i] = time[i-1] + dt
 
-    velocity_vector = np.tile(np.array([-horizontal_speed, 0.0, -descent_rate]), (ctrl_pts, 1))
-
-    # --- standard low-altitude atmosphere, build at 1 control point, then broadcast ---
-    density, dynamic_viscosity, a, T, P = 1.225, 1.79e-5, 340.3, 288.15, 101325.0
+    # 3. Apply Environment and Aerodynamic Conditions
+    # Fix: Updating properties to exactly match the original model parameters
+    alpha                               = 10.0 * Units.degrees 
+    density                             = 1.2250
+    dynamic_viscosity                   = 1.81e-5
+    a                                   = 343.376
+    T                                   = 288.16889478
+    P                                   = 97717.0
 
     conditions = Results()
     conditions.aerodynamics.angles.alpha         = np.ones((1, 1)) * alpha
     conditions.freestream.density                = np.ones((1, 1)) * density
-    conditions.freestream.dynamic_viscosity       = np.ones((1, 1)) * dynamic_viscosity
-    conditions.freestream.speed_of_sound          = np.ones((1, 1)) * a
-    conditions.freestream.temperature             = np.ones((1, 1)) * T
-    conditions.freestream.pressure                = np.ones((1, 1)) * P
-    conditions.freestream.velocity                = np.ones((1, 1)) * speed
-    conditions.freestream.mach_number             = np.ones((1, 1)) * speed / a
-    conditions.frames.inertial.velocity_vector    = velocity_vector[0:1]
-
-    segment              = Segment()
+    conditions.freestream.dynamic_viscosity      = np.ones((1, 1)) * dynamic_viscosity
+    conditions.freestream.speed_of_sound         = np.ones((1, 1)) * a
+    conditions.freestream.temperature            = np.ones((1, 1)) * T
+    conditions.freestream.pressure               = np.ones((1, 1)) * P
+    
+    segment = Segment()
     segment.state.conditions = conditions
     segment.state.numerics.number_of_control_points = 1
 
+    # 4. Engine States and Aeroacoustics Sync
     turbofan = vehicle.networks.fuel.propulsors.starboard_propulsor
     turbofan.append_operating_conditions(segment, conditions.energy, conditions.aeroacoustics)
 
-    # illustrative turbofan cycle exit conditions (representative of a CFM56-class engine at
-    # approach power) -- populated directly since this script doesn't run the full cycle solve
-    converters = conditions.energy.converters
-    converters[turbofan.fan.tag].inputs.static_temperature    = np.ones((1, 1)) * T
-    converters[turbofan.fan.tag].outputs.static_temperature   = np.ones((1, 1)) * (T + 80/1.8)
-    converters[turbofan.fan_nozzle.tag].outputs.velocity                = np.ones((1, 1)) * 280.0
-    converters[turbofan.fan_nozzle.tag].outputs.stagnation_temperature  = np.ones((1, 1)) * 340.0
-    converters[turbofan.fan_nozzle.tag].outputs.stagnation_pressure     = np.ones((1, 1)) * 2611.8
-    converters[turbofan.core_nozzle.tag].outputs.velocity               = np.ones((1, 1)) * 400.0
-    converters[turbofan.core_nozzle.tag].outputs.stagnation_temperature = np.ones((1, 1)) * 800.0
-    converters[turbofan.core_nozzle.tag].outputs.stagnation_pressure    = np.ones((1, 1)) * 165000.0
-    converters['combustor'].inputs.static_temperature  = np.ones((1, 1)) * 622.7
-    converters['combustor'].outputs.static_temperature = np.ones((1, 1)) * 1000.0
+    # Fix: Inject the hardcoded operating conditions directly into the aeroacoustics object 
+    aero = conditions.aeroacoustics.propulsors[turbofan.tag]
+    
+    aero.fan.angular_velocity            = np.ones((1, 1)) * 4200
+    aero.fan.exit_velocity               = np.ones((1, 1)) * (350 * Units.mph)
+    aero.fan.exit_stagnation_temperature = np.ones((1, 1)) * 440
+    aero.fan.exit_stagnation_pressure    = np.ones((1, 1)) * 152000
+    aero.fan.number_of_blades            = 22 
+    aero.fan.diameter                    = 70 * Units.inches 
+    aero.fan.static_temperature_output   = np.ones((1, 1)) * (T + 80/1.8)
+    aero.fan.static_temperature_input    = np.ones((1, 1)) * T
 
+    aero.fan_nozzle.exit_velocity               = np.ones((1, 1)) * 280.0
+    aero.fan_nozzle.exit_stagnation_temperature = np.ones((1, 1)) * 340.0
+    aero.fan_nozzle.exit_stagnation_pressure    = np.ones((1, 1)) * 2611.8
+
+    aero.core_nozzle.exit_velocity               = np.ones((1, 1)) * 400.0
+    aero.core_nozzle.exit_stagnation_temperature = np.ones((1, 1)) * 800.0
+    aero.core_nozzle.exit_stagnation_pressure    = np.ones((1, 1)) * 165000.0
+
+    # Energy framework states 
+    converters = conditions.energy.converters
+    converters[turbofan.fan.tag].inputs.static_temperature        = np.ones((1, 1)) * T
+    converters[turbofan.fan.tag].outputs.static_temperature       = np.ones((1, 1)) * (T + 80/1.8)
+    converters[turbofan.fan_nozzle.tag].outputs.velocity          = np.ones((1, 1)) * 280.0
+    converters[turbofan.fan_nozzle.tag].outputs.stagnation_temperature = np.ones((1, 1)) * 340.0
+    converters[turbofan.fan_nozzle.tag].outputs.stagnation_pressure    = np.ones((1, 1)) * 2611.8
+    converters[turbofan.core_nozzle.tag].outputs.velocity         = np.ones((1, 1)) * 400.0
+    converters[turbofan.core_nozzle.tag].outputs.stagnation_temperature= np.ones((1, 1)) * 800.0
+    converters[turbofan.core_nozzle.tag].outputs.stagnation_pressure   = np.ones((1, 1)) * 165000.0
+    converters['combustor'].inputs.static_temperature             = np.ones((1, 1)) * 622.7
+    converters['combustor'].outputs.static_temperature            = np.ones((1, 1)) * 1000.0
+
+    # Expand 1x1 base matrices into N_ctrl_pts x 1 matrices
     conditions.expand_rows(ctrl_pts)
     segment.state.numerics.number_of_control_points = ctrl_pts
 
-    # overwrite with the real per-control-point trajectory (expand_rows only tiled the
-    # single-point placeholder above)
+    # Apply the true 100-point arrays
     conditions.frames.inertial.position_vector = position_vector
     conditions.frames.inertial.velocity_vector = velocity_vector
-    conditions.frames.inertial.time            = t.reshape(-1, 1)
+    conditions.frames.inertial.time            = time.reshape(-1, 1)
+    conditions.freestream.velocity             = ground_speeds.reshape(-1, 1)
+    conditions.freestream.mach_number          = (ground_speeds / a).reshape(-1, 1)
 
     return segment, ctrl_pts
 
@@ -246,7 +328,9 @@ def receptor_grid_setup(aeroacoustics_analysis, x_range, y_range, resolution):
     settings.microphone_min_y, settings.microphone_max_y = y_range
     settings.microphone_x_resolution = resolution
     settings.microphone_y_resolution = resolution
-    settings.noise_receptor_search_radius = 2500.
+    
+    # FIX: Increase the search radius to prevent the 16km grid from clipping
+    settings.noise_receptor_search_radius = 30000. 
     return
 
 
@@ -254,13 +338,6 @@ def receptor_grid_setup(aeroacoustics_analysis, x_range, y_range, resolution):
 #   Sound Exposure Level
 # ----------------------------------------------------------------------
 def compute_sound_exposure_level(aeroacoustics_analysis, segment):
-    """Integrates the per-control-point A-weighted hemisphere SPL time history into SEL at
-    each ground receptor.
-
-    References
-    ----------
-    SAE ARP876D: Gas Turbine Jet Exhaust Noise Prediction
-    """
     conditions = segment.state.conditions
     SPL_dBA    = conditions.aeroacoustics.hemisphere_SPL_dBA   # (ctrl_pts, n_receptor)
     time       = conditions.frames.inertial.time[:, 0]
@@ -278,21 +355,40 @@ def compute_sound_exposure_level(aeroacoustics_analysis, segment):
 # ----------------------------------------------------------------------
 #   Plotting
 # ----------------------------------------------------------------------
-def plot_footprint(aeroacoustics_analysis, footprint):
+
+
+def plot_footprint(aeroacoustics_analysis, footprint, lat_array, lon_array):
     fig, ax = plt.subplots(figsize=(10, 8), dpi=120)
 
-    triangulation = tri.Triangulation(footprint.x, footprint.y)
-    levels = np.linspace(np.percentile(footprint.SEL, 5), np.percentile(footprint.SEL, 99.5), 40)
-    heatmap = ax.tricontourf(triangulation, footprint.SEL, levels=levels, cmap='jet', extend='both')
+    # FIX: Reverse projection - Local Cartesian (meters) back to Geographic (Lat/Lon)
+    R_earth = 6371000.0
+    lat0_rad = np.radians(lat_array[0])
+    lon0_deg = lon_array[0]
+    lat0_deg = lat_array[0]
+
+    footprint_lon = np.degrees(footprint.x / (R_earth * np.clip(np.cos(lat0_rad),-0.99,0.99))) + lon0_deg
+    footprint_lat = np.degrees(footprint.y / R_earth) + lat0_deg
+
+    triangulation = tri.Triangulation(footprint_lon, footprint_lat)
+    
+    # FIX: Force the color levels to match the original model strictly
+    heatmap = ax.tricontourf(triangulation, footprint.SEL, levels=40, cmap='jet', extend='both')
+
+    # FIX: Overlay the flight path trajectory
+    #ax.plot(lon_array, lat_array, 'ko', markersize=1)
 
     cbar = fig.colorbar(heatmap, ax=ax)
-    cbar.set_label('Sound Exposure Level, SEL [dBA]', fontsize=12, fontweight='bold')
+    cbar.set_label('Level (Exposure) - SEL', fontsize=12, fontweight='bold')
 
-    ax.set_title('Simulated Approach Noise Footprint', fontsize=14, fontweight='bold', pad=15)
-    ax.set_xlabel('Along-track distance [m]', fontsize=12)
-    ax.set_ylabel('Cross-track distance [m]', fontsize=12)
+    ax.set_title('B737 Simulated Noise Footprint', fontsize=14, fontweight='bold', pad=15)
+    ax.set_xlabel('Longitude', fontsize=12)
+    ax.set_ylabel('Latitude', fontsize=12)
+    
     ax.grid(True, linestyle='--', alpha=0.5, color='gray')
-    ax.set_aspect('equal')
+    
+    # Maintain accurate geographic proportions on the plot
+    mean_lat = np.mean(footprint_lat)
+    ax.set_aspect(1.0 / np.clip(np.cos(np.radians(mean_lat)),-0.99,0.99))
 
     return fig
 

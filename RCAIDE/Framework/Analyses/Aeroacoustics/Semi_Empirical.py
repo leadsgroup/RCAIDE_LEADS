@@ -18,7 +18,7 @@ from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Airframe.slat_noise_mod
 from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Propulsion.Engine_Noise.compute_fan_noise import compute_fan_noise
 from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Propulsion.Engine_Noise.compute_core_noise import compute_core_noise
 from RCAIDE.Library.Methods.Aeroacoustics.Semi_Empirical.Propulsion.Engine_Noise.compute_jet_noise import compute_jet_noise
-from RCAIDE.Framework.Core                                                                import Data
+from RCAIDE.Framework.Core                                                                import Units,Data
 from .Aeroacoustics import Aeroacoustics
 
 # Python Imports
@@ -131,13 +131,13 @@ class Semi_Empirical(Aeroacoustics):
 
             # polar emission angle from the nose (0) to the tail (180), matching the
             # noise models' convention
-            theta = np.arccos(np.clip(rel_unit @ heading, -1.0, 1.0))
+            theta = np.arccos(np.clip(rel_unit @ heading, -0.999, 0.999))
 
             # sideline distance / AGL altitude split, for lateral attenuation
             along_track = relative_position[nearby, 0:2] @ heading[0:2]
-            l_seg       = np.sqrt(np.maximum(R_nearby**2 - along_track**2 - relative_position[nearby, 2]**2, 0.0))
+            l_seg       = np.sqrt(np.maximum(R_nearby**2 - along_track**2 - relative_position[nearby, 2]**2,0)) #this is the culprit.
+            print(np.max(l_seg),np.min(l_seg))
             d_seg       = np.full_like(l_seg, -ac_pos[2])
-
             cpt_list.append(np.full(len(nearby), cpt))
             receptor_list.append(nearby)
             R_list.append(R_nearby)
@@ -150,6 +150,7 @@ class Semi_Empirical(Aeroacoustics):
             conditions.aeroacoustics.hemisphere_SPL_dBA              = total_SPL_dBA * (1 - settings.noise_reduction_factors.SPL_dbA)
             conditions.aeroacoustics.hemisphere_SPL_1_3_spectrum_dBA = total_SPL_spectra * (1 - settings.noise_reduction_factors.SPL_dbA)
             return
+
 
         cpt_arr      = np.concatenate(cpt_list)
         receptor_arr = np.concatenate(receptor_list)
@@ -170,30 +171,10 @@ class Semi_Empirical(Aeroacoustics):
         # point x receptor pair, instead of one call per control point ---
         component_spectra = []
 
-        for gear in landing_gears:
-            spl = compute_landing_gear_noise(R_val, theta_col, gear, vehicle, cpt_arr, frequency, segment, self).Total
-            component_spectra.append(spl)
-
-        for wing, control_surface in control_surfaces:
-            if type(control_surface) is RCAIDE.Library.Components.Wings.Control_Surfaces.Flap:
-                spl = flap_noise_model(R_val, theta_col, control_surface, wing, cpt_arr, frequency, segment, self)
-                component_spectra.append(spl)
-            elif type(control_surface) is RCAIDE.Library.Components.Wings.Control_Surfaces.Slat:
-                spl = slat_noise(R_val, theta_col, control_surface, wing, cpt_arr, segment, frequency, self)
-                component_spectra.append(spl)
 
         for network in vehicle.networks:
             for propulsor in network.propulsors:
-                if not (propulsor.active and (isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan) or isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbojet))):
-                    continue 
-                pressure_ratio = propulsor.fan.pressure_ratio * propulsor.low_pressure_compressor.pressure_ratio * propulsor.high_pressure_compressor.pressure_ratio
-                
-                if isinstance(propulsor, RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan): 
-                    fan_noise = compute_fan_noise(R_val, theta_col, propulsor, None, cpt_arr, segment, frequency)
-                    component_spectra.append(fan_noise.SPL_1_3_spectrum[0])
 
-                core_noise = compute_core_noise(R_val, theta_col, propulsor, pressure_ratio, cpt_arr, segment, frequency)
-                component_spectra.append(core_noise.SPL_1_3_spectrum[0])
 
                 jet_noise = compute_jet_noise(mic_locations, propulsor, cpt_arr, segment, frequency, 0)
                 component_spectra.append(jet_noise.SPL_1_3_spectrum[0])
@@ -201,8 +182,9 @@ class Semi_Empirical(Aeroacoustics):
         total_spectrum = SPL_arithmetic(np.array(component_spectra), sum_axis=0)
 
         att_dB     = atmospheric_attenuation(R_arr, frequency)
-        LADJ_dB, _ = compute_lateral_attenuation(l_seg_arr, d_seg_arr)
-        attenuated = total_spectrum - att_dB - LADJ_dB[:, None]
+
+        LADJ_dB, _ = compute_lateral_attenuation(l_seg_arr, d_seg_arr) #l_seg_array has a problem, which propagates in the code
+        attenuated = total_spectrum - att_dB
 
         total_SPL_spectra[cpt_arr, receptor_arr, 5:] = attenuated
         total_SPL_dBA[cpt_arr, receptor_arr]         = SPL_arithmetic(A_weighting_metric(attenuated, frequency), sum_axis=1)

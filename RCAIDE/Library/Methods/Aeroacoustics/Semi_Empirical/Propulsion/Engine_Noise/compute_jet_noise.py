@@ -89,7 +89,9 @@ def compute_jet_noise(microphone_locations, turbofan, cpt, segment, frequencies,
     # Line-of-sight distance and polar angle to each receptor (0 = Nose, 180 = Tail)
     mic_x, mic_y, mic_z = microphone_locations[:, 0:1], microphone_locations[:, 1:2], microphone_locations[:, 2:3]
     R_dist = np.maximum(np.sqrt(mic_x**2 + mic_y**2 + mic_z**2), 0.1)   # guard against log(0)
-    theta_rad = np.arctan2(mic_y, mic_x)
+    
+    # FIX: Use absolute polar angle (arccos) to avoid arctan2 wrap-around discontinuities 
+    theta_rad = np.arccos(np.clip(mic_x / R_dist, -0.99, 0.99))
 
     # --- Component A: Secondary Jet Shear Layer ---
     St_s = freqs * Ds / Vs
