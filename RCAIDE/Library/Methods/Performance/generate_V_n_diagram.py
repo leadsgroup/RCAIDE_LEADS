@@ -102,7 +102,7 @@ def generate_V_n_diagram(analyses=None,altitude = 0,delta_ISA = 0):
     [3] Gudmundsson, S. (2022). General Aviation Aircraft Design: Applied Methods and procedures. Elsevier. 
     """
     
-    if type(analyses) != RCAIDE.Framework.Analyses.Vehicle:
+    if not isinstance(analyses, RCAIDE.Framework.Analyses.Analysis.Container):
         raise AttributeError('RCAIDE analyses must be defined')
     # ---------------------------------------------- 
     # Preprocess Geometry 

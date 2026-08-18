@@ -1,13 +1,15 @@
-# RCAIDE/Library/Components/Propulsors/ICE_Propeller.py
+# RCAIDE/Library/Components/Powertrain/Propulsors/ICE_Propeller.py
 # 
 #  
 # Created:  Mar 2024, M. Clarke
+# Modified: Oct 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ---------------------------------------------------------------------------------------------------------------------- 
  # RCAIDE imports
 import  RCAIDE
+from RCAIDE.Framework.Core                    import Data
 from .                import Propulsor  
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Internal_Combustion_Engine.unpack_internal_combustion_engine_unknowns   import unpack_internal_combustion_engine_unknowns
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Internal_Combustion_Engine.pack_internal_combustion_engine_residuals    import pack_internal_combustion_engine_residuals
@@ -66,20 +68,21 @@ class Internal_Combustion_Engine(Propulsor):
     """
     def __defaults__(self):    
         # setting the default values
-        self.tag         = 'ice_propeller'    
+        self.tag         = 'ice_propeller'
+        self.domain      = 'chemical'
         self.engine      = None
         self.propeller   = None
         self.diameter    = 0.4    
         self.length      = 0.5
 
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
+    def append_operating_conditions(self,segment):
         """
         Appends operating conditions of the segment.
         """
-        append_internal_combustion_engine_conditions(self,segment,energy_conditions,noise_conditions)
+        append_internal_combustion_engine_conditions(self,segment)
         return
-
-    def unpack_propulsor_unknowns(self,segment):  
+    
+    def unpack_unknowns(self,segment):
         """
         Unpacks propulsor unknowns from the segment.
         """
@@ -87,7 +90,7 @@ class Internal_Combustion_Engine(Propulsor):
             unpack_internal_combustion_engine_unknowns(self,segment)
         return 
 
-    def pack_propulsor_residuals(self,segment): 
+    def pack_residuals(self,segment): 
         """
         Packs propulsor residuals into the segment.
         """
@@ -95,7 +98,7 @@ class Internal_Combustion_Engine(Propulsor):
             pack_internal_combustion_engine_residuals(self,segment)
         return
 
-    def append_propulsor_unknowns_and_residuals(self,segment):
+    def append_unknowns_and_residuals(self,segment):
         """
         Appends propulsor unknowns and residuals to the segment.
         """
@@ -103,16 +106,16 @@ class Internal_Combustion_Engine(Propulsor):
             append_internal_combustion_engine_residual_and_unknown(self,segment)
         return    
     
-    def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):
+    def compute_performance(self,state,network=None,center_of_gravity = [[0, 0, 0]]):
         """
         Computes propulsor performance including thrust, moment, and power.
         """
-        thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag =  compute_internal_combustion_engine_performance(self,state,center_of_gravity)
-        return thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag
+        inputs, outputs, stored_results_flag, stored_propulsor_tag =  compute_internal_combustion_engine_performance(self,state,center_of_gravity)
+        return inputs, outputs, stored_results_flag, stored_propulsor_tag
     
-    def reuse_stored_data(ICE_prop, state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
+    def reuse_stored_data(ICE_prop,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
         """
         Reuses stored propulsor data for performance calculations.
         """
-        thrust,moment,power_mech,power_elec = reuse_stored_internal_combustion_engine_data(ICE_prop,state,network,stored_propulsor_tag,center_of_gravity)
-        return thrust,moment,power_mech,power_elec
+        inputs, outputs = reuse_stored_internal_combustion_engine_data(ICE_prop,state,network,stored_propulsor_tag,center_of_gravity)
+        return inputs, outputs

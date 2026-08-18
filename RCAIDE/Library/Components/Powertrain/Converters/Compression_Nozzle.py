@@ -1,4 +1,4 @@
-# RCAIDE/Library/Components/Propulsors/Converters/Compression_Nozzle.py
+# RCAIDE/Library/Components/Powertrain/Converters/Compression_Nozzle.py
 # (c) Copyright 2023 Aerospace Research Community LLC
 # 
 # Created:  Feb 2024, M. Clarke
@@ -89,6 +89,6 @@ class Compression_Nozzle(Converter):
         self.diameter                        = 1.0
         self.exit_velocity                   = 1.0
 
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):  
-        append_compression_nozzle_conditions(self,segment,energy_conditions)
+    def append_operating_conditions(self,segment):  
+        append_compression_nozzle_conditions(self,segment)
         return

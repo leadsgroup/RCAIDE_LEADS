@@ -11,7 +11,8 @@
 # RCAIDE imports 
 from RCAIDE.Framework.Core import Data
 from RCAIDE.Library.Components          import Component
-from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks  import * 
+from RCAIDE.Library.Components.Powertrain.Sources.Source     import Source   
+from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks    import * 
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.append_fuel_tank_conditions import append_fuel_tank_conditions 
 from RCAIDE.Library.Methods.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank.compute_prismatic_tank_volume   import compute_prismatic_tank_volume     
 from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia  import compute_cuboid_moment_of_inertia
@@ -20,17 +21,14 @@ from RCAIDE.Library.Methods.Mass_Properties.Center_of_Gravity  import compute_cu
 # ----------------------------------------------------------------------------------------------------------------------
 #  Fuel Tank
 # ---------------------------------------------------------------------------------------------------------------------     
-class Fuel_Tank(Component):
+class Fuel_Tank(Source):
     """
     Base class for aircraft fuel tank implementations
     
     Attributes
     ----------
-    tag : str
-        Identifier for the fuel tank (default: 'fuel_tank')
-        
-    fuel_flow_split_ratio : float
-        Ratio of fuel flow allocation (default: 1.0)
+    tag : str 
+        Identifier for the fuel tank (default: 'fuel_tank') 
         
     mass_properties.empty_mass : float
         Mass of empty tank structure [kg] (default: 0.0)
@@ -59,7 +57,8 @@ class Fuel_Tank(Component):
         """
         Sets default values for fuel tank attributes
         """          
-        self.tag                            = 'fuel_tank'  
+        self.tag                            = 'fuel_tank'
+        self.domain                         = 'chemical'
         self.fuel                           = None
         self.secondary_mass_flow_rate       = 0.0
         self.wall_clearance                 = 0.0
@@ -118,8 +117,20 @@ class Fuel_Tank(Component):
         self.segments_percent_chord_start   = [0.1,0.1]
         self.segments_percent_chord_end     = [0.7,0.7]
         self.percent_span_location          = 0.0
+
+    def initialize(self,network):
+        return 
+
+    def unpack_unknowns(self,segment):
+        return 
+
+    def pack_residuals(self,segment): 
+        return        
+
+    def append_unknowns_and_residuals(self,segment):
+        return         
  
-    def append_operating_conditions(self,segment,fuel_line):  
+    def append_operating_conditions(self,segment):  
         """
         Append fuel tank operating conditions for a flight segment
         
@@ -130,13 +141,13 @@ class Fuel_Tank(Component):
         fuel_line : Component
             Connected fuel line component
         """
-        append_fuel_tank_conditions(self,segment, fuel_line)  
+        append_fuel_tank_conditions(self,segment)  
         return
     
-    def compute_tank_properties(self,state,fuel_line):
-        compute_fuel_tank_properties(self,state,fuel_line)
+    def append_segment_conditions(self, segment):
+        append_fuel_tank_segment_conditions(self, segment)
         return
-    
+     
     def compute_volume(self, wings, fuselages,fuel_tanks):
         """
         Compute the volume of the non-integral fuel tank based on its attachment location.
@@ -199,6 +210,10 @@ class Fuel_Tank(Component):
                                                 fuel_tank=True) 
                 
         return
+    
+    def compute_performance(self,state,network):
+        inputs, outputs, stored_results_flag, stored_source_tag = compute_fuel_tank_performance(self, state,network)
+        return inputs, outputs, stored_results_flag, stored_source_tag 
     
 
     def compute_center_of_gravity(self,vehicle): 

@@ -3,6 +3,9 @@
 # 
 # Created:  Jul 2023, M. Clarke
 # Modified: Sep 2024, S. Shekar
+# Modified: Sep 2025, M. Guidotti
+
+import RCAIDE
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  energy
@@ -67,37 +70,28 @@ def energy(segment):
     See Also
     --------
     RCAIDE.Framework.Mission.Segments
-    """ 
-    ones_row = segment.state.ones_row
-    conditions = segment.state.conditions
+    """
+ 
     vehicle    = segment.analyses.vehicle
 
-    # loop through battery modules in networks
+    # loop through all networks in the vehicle and append energy conditions
     for network in vehicle.networks:
-        # if network has busses  
-        for bus in network.busses:
-            for fuel_tank in bus.fuel_tanks:
-                fuel = fuel_tank.fuel 
-                if segment.state.initials: 
-                    conditions.weights.components.mass[fuel.tag][:,0] = segment.state.initials.conditions.weights.components.mass[fuel.tag][-1,0]
-                elif vehicle.networks[network.tag].busses[bus.tag].fuel_tanks[fuel_tank.tag].fuel != None:
-                    conditions.weights.components.mass[fuel.tag][:,0]  = vehicle.networks[network.tag].busses[bus.tag].fuel_tanks[fuel_tank.tag].fuel.mass_properties.mass
-            bus.append_segment_conditions(segment)
-            for battery_module in  bus.battery_modules:
-                battery_module.append_battery_segment_conditions(segment, bus)
-            for coolant_line in  network.coolant_lines:
-                for tag, item in  coolant_line.items(): 
-                    if tag == 'battery_modules':
-                        for battery in item:
-                            for btms in  battery:
-                                btms.append_segment_conditions(segment,coolant_line)
-                    if tag == 'heat_exchangers':
-                        for heat_exchanger in  item:
-                            heat_exchanger.append_segment_conditions(segment,bus,coolant_line)
-                    if tag == 'reservoirs':
-                        for reservoir in  item:
-                            reservoir.append_segment_conditions(segment, coolant_line)
-                    
-        # if network has fuel lines             
-        for fuel_line in  network.fuel_lines:
-            fuel_line.append_segment_conditions(segment) 
+        network.append_segment_conditions(segment)
+
+        for propulsor in network.propulsors:
+            propulsor.append_segment_conditions(segment)
+
+        for source in network.sources:
+            source.append_segment_conditions(segment)
+
+        for distributor in network.distributors:
+            distributor.append_segment_conditions(segment)
+
+        for system in network.systems:
+            system.append_segment_conditions(segment)
+
+        for converter in network.converters:
+            converter.append_segment_conditions(segment)
+
+        for modulator in network.modulators:
+            modulator.append_segment_conditions(segment)

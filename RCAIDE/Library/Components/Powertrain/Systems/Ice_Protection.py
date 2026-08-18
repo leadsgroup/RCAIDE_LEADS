@@ -23,6 +23,6 @@ class Ice_Protection(Systems):
         """                  
         self.tag        = 'ice_protection' 
 
-    def compute_performance(self, vehicle,state,bus):
-        compute_ice_protection_power_draw(self, vehicle,state,bus)
-        return
+    def compute_performance(self, state, vehicle):
+        inputs, outputs = compute_ice_protection_power_draw(self, state, vehicle)
+        return inputs, outputs, False, None

@@ -8,11 +8,12 @@
 # RCAIDE imports  
 import RCAIDE
 from RCAIDE.Framework.Mission.Common     import   Conditions
+import numpy as np
 
 # ---------------------------------------------------------------------------------------------------------------------- 
 #  append_propulsor_conditions
 # ----------------------------------------------------------------------------------------------------------------------    
-def append_turbofan_conditions(propulsor, segment, energy_conditions, noise_conditions):
+def append_turbofan_conditions(propulsor, segment):
     """
     Initializes turbofan operating conditions for a mission segment.
     
@@ -72,31 +73,62 @@ def append_turbofan_conditions(propulsor, segment, energy_conditions, noise_cond
     RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_thurst
     """
     # unpack 
-    ones_row          = segment.state.ones_row 
+    ones_row                                                                                = segment.state.ones_row 
     
     # add propulsor conditions          
-    energy_conditions.propulsors[propulsor.tag]                                   = Conditions()  
-    energy_conditions.propulsors[propulsor.tag].throttle                          = 0. * ones_row(1)      
-    energy_conditions.propulsors[propulsor.tag].commanded_thrust_vector_angle     = 0. * ones_row(1)  
-    energy_conditions.propulsors[propulsor.tag].thrust                            = 0. * ones_row(3) 
-    energy_conditions.propulsors[propulsor.tag].power                             = 0. * ones_row(1) 
-    energy_conditions.propulsors[propulsor.tag].moment                            = 0. * ones_row(3) 
-    energy_conditions.propulsors[propulsor.tag].fuel_mass_flow_rate               = 0. * ones_row(1)  
-    energy_conditions.propulsors[propulsor.tag].thrust_specific_fuel_consumption  = 0. * ones_row(1)
-    energy_conditions.propulsors[propulsor.tag].non_dimensional_thrust            = 0. * ones_row(1) 
-    energy_conditions.propulsors[propulsor.tag].core_mass_flow_rate               = 0. * ones_row(1)  
-    energy_conditions.propulsors[propulsor.tag].specific_impulse                  = 0. * ones_row(1) 
-    energy_conditions.propulsors[propulsor.tag].inputs                            = Conditions()
-    energy_conditions.propulsors[propulsor.tag].outputs                           = Conditions() 
-    noise_conditions.propulsors[propulsor.tag]                                    = Conditions()  
-    noise_conditions.propulsors[propulsor.tag].core_nozzle                        = Conditions() 
-    noise_conditions.propulsors[propulsor.tag].fan_nozzle                         = Conditions() 
-    noise_conditions.propulsors[propulsor.tag].fan                                = Conditions()
- 
+    segment.state.conditions.energy.propulsors[propulsor.tag]                               = Conditions()  
+    segment.state.conditions.energy.propulsors[propulsor.tag].throttle                      = 0. * ones_row(1)      
+    segment.state.conditions.energy.propulsors[propulsor.tag].commanded_thrust_vector_angle = 0. * ones_row(1)  
+    segment.state.conditions.energy.propulsors[propulsor.tag].thrust                        = 0. * ones_row(3) 
+    segment.state.conditions.energy.propulsors[propulsor.tag].moment                        = 0. * ones_row(3) 
+    segment.state.conditions.energy.propulsors[propulsor.tag].inputs                        = Conditions()
+    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.current                = 0. * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power                  = Conditions()
+    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.propulsive       = 0. * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.mechanical       = 0. * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.electrical       = 0. * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.chemical         = 0. * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.pneumatic        = 0. * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.hydraulic        = 0. * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].inputs.power.thermal          = 0. * ones_row(1)  
+    segment.state.conditions.energy.propulsors[propulsor.tag].outputs                       = Conditions() 
+    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power                 = Conditions()
+    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.current               = 0. * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.propulsive      = 0. * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.mechanical      = 0. * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.electrical      = 0. * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.chemical        = 0. * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.pneumatic       = 0. * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.hydraulic       = 0. * ones_row(1)
+    segment.state.conditions.energy.propulsors[propulsor.tag].outputs.power.thermal         = 0. * ones_row(1)  
+    segment.state.conditions.energy.propulsors[propulsor.tag].fuel_mass_flow_rate           = 0. * ones_row(1)
+    segment.state.conditions.aeroacoustics.propulsors[propulsor.tag]                                = Conditions()  
+    segment.state.conditions.aeroacoustics.propulsors[propulsor.tag].core_nozzle                    = Conditions() 
+    segment.state.conditions.aeroacoustics.propulsors[propulsor.tag].fan_nozzle                     = Conditions() 
+    segment.state.conditions.aeroacoustics.propulsors[propulsor.tag].fan                            = Conditions()
+
     for tag, item in  propulsor.items(): 
         if issubclass(type(item), RCAIDE.Library.Components.Component):
-            item.append_operating_conditions(segment,energy_conditions) 
+            item.append_operating_conditions(segment) 
             for sub_tag, sub_item in  item.items(): 
                 if issubclass(type(sub_item), RCAIDE.Library.Components.Component): 
-                    sub_item.append_operating_conditions(segment,energy_conditions)    
-    return 
+                    sub_item.append_operating_conditions(segment)    
+    return
+
+
+def append_turbofan_segment_conditions(self,segment): 
+    energy_conditions  = segment.state.conditions.energy    
+    energy_conditions.propulsors[self.tag].inputs.power.propulsive[:,0]    = 0.0
+    energy_conditions.propulsors[self.tag].inputs.power.mechanical[:,0]    = 0.0 
+    energy_conditions.propulsors[self.tag].inputs.power.electrical[:,0]    = 0.0 
+    energy_conditions.propulsors[self.tag].inputs.power.chemical[:,0]      = 0.0
+    energy_conditions.propulsors[self.tag].inputs.power.pneumatic[:,0]     = 0.0 
+    energy_conditions.propulsors[self.tag].inputs.power.hydraulic[:,0]     = 0.0 
+    energy_conditions.propulsors[self.tag].inputs.power.thermal[:,0]       = 0.0 
+    energy_conditions.propulsors[self.tag].outputs.power.propulsive[:,0]   = 0.0
+    energy_conditions.propulsors[self.tag].outputs.power.mechanical[:,0]   = 0.0   
+    energy_conditions.propulsors[self.tag].outputs.power.electrical[:,0]   = 0.0 
+    energy_conditions.propulsors[self.tag].outputs.power.chemical[:,0]     = 0.0
+    energy_conditions.propulsors[self.tag].outputs.power.pneumatic[:,0]    = 0.0   
+    energy_conditions.propulsors[self.tag].outputs.power.hydraulic[:,0]    = 0.0   
+    energy_conditions.propulsors[self.tag].outputs.power.thermal[:,0]      = 0.0  

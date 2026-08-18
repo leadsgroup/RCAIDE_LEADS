@@ -432,7 +432,8 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------- 
     # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
-    fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()   
+    fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    fuel_line.working_fluid                     = RCAIDE.Library.Attributes.Propellants.Liquid_Hydrogen()
 
     #------------------------------------------------------------------------------------------------------------------------------------ 
     # Propulsor: Center Propulsor
@@ -571,7 +572,8 @@ def vehicle_setup():
     fuel_tank_1.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']
     fuel_tank_1.segments_percent_chord_bounds          = [0.1 ,0.1]
     fuel_tank_1.segments_percent_chord_end             = [0.55,0.55]
-    fuel_line.fuel_tanks.append(fuel_tank_1)
+    fuel_tank_1.assigned_distributors = [[fuel_line.tag]]
+    net.sources.append(fuel_tank_1)
 
     fuel_tank_2                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
     fuel_tank_2.tag                                    = 'tank_2l_2r'
@@ -586,7 +588,8 @@ def vehicle_setup():
     fuel_tank_2.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']
     fuel_tank_2.segments_percent_chord_bounds          = [0.1 ,0.1]
     fuel_tank_2.segments_percent_chord_end             = [0.55,0.55]
-    fuel_line.fuel_tanks.append(fuel_tank_2)
+    fuel_tank_2.assigned_distributors = [[fuel_line.tag]]
+    net.sources.append(fuel_tank_2)
 
     fuel_tank_3                                        = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Cryogenic_Tank(vehicle.wings.main_wing)
     fuel_tank_3.tag                                    = 'tank_3l_3r'
@@ -601,7 +604,8 @@ def vehicle_setup():
     fuel_tank_3.segments_bounding_tank                 = ['fuel_wall', 'wing_section_1']
     fuel_tank_3.segments_percent_chord_bounds          = [0.1 ,0.1]
     fuel_tank_3.segments_percent_chord_end             = [0.55,0.55]
-    fuel_line.fuel_tanks.append(fuel_tank_3)
+    fuel_tank_3.assigned_distributors = [[fuel_line.tag]]
+    net.sources.append(fuel_tank_3)
 
     # ------------------------------------------------
     # Bounds for aft tank
@@ -633,16 +637,18 @@ def vehicle_setup():
         fuel_tank_4.transverse_tank_chord_bounds           = [cabin_bound,rotor_burst_bound]
         fuel_tank_4.transverse_tank_segment_bound          = aft_segment_bound
         fuel_tank_4.radial_offset                          = 0.1
-        fuel_line.fuel_tanks.append(fuel_tank_4)
+        fuel_tank_4.assigned_distributors = [[fuel_line.tag]]
+        net.sources.append(fuel_tank_4)
 
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to fuel line to network      
-    fuel_line.assigned_propulsors =  [['propulsor_1', 'propulsor_2']]
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Assign propulsors to fuel line
+    turbofan1.assigned_distributors = [[fuel_line.tag]]
+    turbofan2.assigned_distributors = [[fuel_line.tag]]
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Append fuel line to fuel line to network      
-    net.fuel_lines.append(fuel_line)         
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Append fuel line to network
+    net.distributors.append(fuel_line)
 
     # Append energy network to aircraft 
     vehicle.append_energy_network(net)   

@@ -1,4 +1,4 @@
-# RCAIDE/Methods/Energy/Propulsors/Modulators/compute_esc_performance.py
+# RCAIDE/Library/Methods/Powertrain/Modulators/Electronic_Speed_Controller/compute_esc_performance.py
 # 
 # 
 # Created:  Jul 2023, M. Clarke
@@ -14,22 +14,18 @@ def compute_voltage_out_from_throttle(esc,conditions):
 
     Parameters
     ----------
-    esc : RCAIDE.Library.Components.Energy.Modulators.Electronic_Speed_Controller
+    esc : RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller
         The electronic speed controller component
-    esc_conditions : RCAIDE.Framework.Mission.Common.Conditions
-        ESC-specific operating conditions
-            - throttle : float
-                Power modulation setting [0-1]
-            - inputs : Conditions
-                Input parameters
-                    - voltage : float
-                        Input voltage [V]
-            - outputs : Conditions
-                Output parameters
-                    - voltage : float
-                        Output voltage [V]
     conditions : RCAIDE.Framework.Mission.Common.Conditions
-        Flight conditions (not directly used but maintained for API consistency)
+        Flight conditions with:
+            - energy.modulators[esc.tag] : Conditions
+                ESC-specific operating conditions
+                    - throttle : float
+                        Power modulation setting [0-1]
+                    - inputs.voltage : float
+                        Input voltage [V]
+                    - outputs.voltage : float
+                        Output voltage [V]
 
     Returns
     -------
@@ -75,19 +71,19 @@ def compute_voltage_out_from_throttle(esc,conditions):
 # ---------------------------------------------------------------------------------------------------------------------- 
 def compute_current_in_from_throttle(esc,conditions):
     """ The current going into the speed controller
-    
+
         Assumptions:
             The ESC draws current.
-        
+
         Inputs:
-            esc_conditions.inputs.currentout [amps]
-           
+            esc_conditions.outputs.current [amps]
+
         Outputs:
-            outputs.currentin      [amps]
-        
+            esc_conditions.inputs.current   [amps]
+
         Properties Used:
             esc.efficiency - [0-1] efficiency of the ESC
-           
+
     """
      
     esc_conditions = conditions.energy.modulators[esc.tag]
@@ -98,6 +94,38 @@ def compute_current_in_from_throttle(esc,conditions):
     
     # Pack 
     esc_conditions.inputs.current   = currentin
-    esc_conditions.inputs.power     = esc_conditions.inputs.voltage *currentin
+    esc_conditions.inputs.power.electrical     = esc_conditions.inputs.voltage *currentin
     
     return
+
+def compute_esc_performance(esc,state):
+
+    esc_conditions = state.conditions.energy.modulators[esc.tag]
+    
+    eta            = esc_conditions.throttle
+    eff            = esc.efficiency
+
+    # Negative throttle is bad
+    eta[eta<=0.0] = 0.0
+    
+    # Cap the throttle
+    eta[eta>=1.0] = 1.0
+
+    currentout     = esc_conditions.outputs.current 
+    currentin      = currentout*eta/eff # The inclusion of eta satisfies a power balance: p_in = p_out/eff
+    
+    # Pack the output
+    esc_conditions.outputs.voltage  = eta*esc_conditions.inputs.voltage
+    esc_conditions.throttle         = eta 
+    # Pack 
+    esc_conditions.inputs.current   = currentin
+    esc_conditions.inputs.power.electrical     = esc_conditions.inputs.voltage *currentin
+    
+    stored_results_flag            = True
+    stored_modulator_tag           = esc.tag  
+
+    esc_conditions.outputs.power.electrical               = esc_conditions.outputs.voltage * currentout
+
+    return  esc_conditions.inputs, esc_conditions.outputs, stored_results_flag, stored_modulator_tag
+
+    

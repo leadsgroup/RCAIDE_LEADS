@@ -1,4 +1,4 @@
-# RCAIDE/Components/Propulsors/Converters/Ducted_Fan.py
+# RCAIDE/Components/Powertrain/Converters/Ducted_Fan.py
 # 
 # 
 # Created:  Mar 2024, M. Clarke 
@@ -15,7 +15,7 @@ import numpy as np
 import scipy as sp
  
 # ---------------------------------------------------------------------------------------------------------------------- 
-#  Nacalle
+#  Ducted_Fan
 # ----------------------------------------------------------------------------------------------------------------------  
 class Ducted_Fan(Converter):
     """
@@ -127,7 +127,6 @@ class Ducted_Fan(Converter):
         self.cruise.design_freestream_mach         = None  
         self.duct_airfoil                          = None
         self.hub_airfoil                           = None
-      
     
     def append_duct_airfoil(self, airfoil):
         """
@@ -135,9 +134,8 @@ class Ducted_Fan(Converter):
 
         Parameters
         ----------
-        airfoil : Data
-            Airfoil data container with aerodynamic properties for the duct section.
-            Must be of type Data().
+        airfoil : RCAIDE.Library.Components.Airfoils.Airfoil
+            Airfoil component with aerodynamic properties for the duct section.
 
         Returns
         -------
@@ -152,7 +150,7 @@ class Ducted_Fan(Converter):
         Raises
         ------
         Exception
-            If input airfoil is not of type Data()
+            If input airfoil is not of type Airfoil
         """
 
         # Assert database type
@@ -200,8 +198,8 @@ class Ducted_Fan(Converter):
 
         return 
 
-    def append_operating_conditions(ducted_fan,segment,energy_conditions,noise_conditions=None):  
-        append_ducted_fan_conditions(ducted_fan,segment,energy_conditions,noise_conditions)
+    def append_operating_conditions(ducted_fan,segment):  
+        append_ducted_fan_conditions(ducted_fan,segment)
         return        
           
     def vec_to_vel(self):

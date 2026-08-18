@@ -70,13 +70,16 @@ def main():
     propellant  = RCAIDE.Library.Attributes.Propellants.Butanol()
     propellant  = RCAIDE.Library.Attributes.Propellants.Liquid_Petroleum_Gas()
     propellant  = RCAIDE.Library.Attributes.Propellants.Jet_A1()    
-    propellant  = RCAIDE.Library.Attributes.Propellants.JP7()  
-    propellant  = RCAIDE.Library.Attributes.Propellants.Rocket_LH2()  
-    propellant  = RCAIDE.Library.Attributes.Propellants.Rocket_RP1()
-    
+    propellant  = RCAIDE.Library.Attributes.Propellants.JP7()
+
     # networks
     network =  RCAIDE.Framework.Networks.Hydrogen()
-    
+
+    # powertrain base classes
+    distributor        = RCAIDE.Library.Components.Powertrain.Distributors.Distributor()
+    modulator           = RCAIDE.Library.Components.Powertrain.Modulators.Modulator()
+    source              = RCAIDE.Library.Components.Powertrain.Sources.Source()
+
     # booms
     boom      = RCAIDE.Library.Components.Booms.Boom()
     segment_1 = RCAIDE.Library.Components.Booms.Segments.Circle_Segment()

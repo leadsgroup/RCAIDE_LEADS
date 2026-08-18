@@ -604,6 +604,7 @@ def vehicle_setup() :
     # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
     fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    fuel_line.working_fluid                        = RCAIDE.Library.Attributes.Propellants.Jet_A1()
     fuel_line.pipe.rigid_material                  = RCAIDE.Library.Attributes.Materials.Aluminum()
     fuel_line.pipe.flexible_material               = RCAIDE.Library.Attributes.Materials.Stainless_Steel_304()
     fuel_line.pipe.flexible_material_ratio         = 0.25
@@ -764,6 +765,7 @@ def vehicle_setup() :
     nacelle.append_airfoil(nacelle_airfoil) 
     turbofan1.nacelle                            = nacelle
     
+    turbofan1.assigned_distributors              = [[fuel_line.tag]]
     net.propulsors.append(turbofan1)
 
         #------------------------------------------------------------------------------------------------------------------------------------  
@@ -786,24 +788,22 @@ def vehicle_setup() :
     fuel_tank_1.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A1()    
     fuel_tank_1.segments_bounding_tank       = ['root', 'yehudi']  
     fuel_tank_1.segments_percent_chord_start = [0.1, 0.1]
-    fuel_tank_1.segments_percent_chord_end   = [0.7, 0.7] 
-    fuel_line.fuel_tanks.append(fuel_tank_1)
-    
-    fuel_tank_2                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing) 
-    fuel_tank_2.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A1()    
-    fuel_tank_2.segments_bounding_tank       = ['yehudi','tip']  
+    fuel_tank_1.segments_percent_chord_end   = [0.7, 0.7]
+    fuel_tank_1.assigned_distributors        = [[fuel_line.tag]]
+    net.sources.append(fuel_tank_1)
+
+    fuel_tank_2                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)
+    fuel_tank_2.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A1()
+    fuel_tank_2.segments_bounding_tank       = ['yehudi','tip']
     fuel_tank_2.segments_percent_chord_start = [0.1, 0.1]
-    fuel_tank_2.segments_percent_chord_end   = [0.7, 0.7] 
-    fuel_line.fuel_tanks.append(fuel_tank_2)    
- 
+    fuel_tank_2.segments_percent_chord_end   = [0.7, 0.7]
+    fuel_tank_2.assigned_distributors        = [[fuel_line.tag]]
+    net.sources.append(fuel_tank_2)
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to fuel line to network      
-    fuel_line.assigned_propulsors     =  [['propulsor_1', 'propulsor_2']]
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Append fuel line to fuel line to network      
-    net.fuel_lines.append(fuel_line)        
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Append fuel line to network
+    net.distributors.append(fuel_line)
  
     # Append energy network to aircraft 
     vehicle.append_energy_network(net)   

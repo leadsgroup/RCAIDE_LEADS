@@ -5,7 +5,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------
-# RCAIDE imports   
+# RCAIDE imports  
+import RCAIDE 
 from RCAIDE.Framework.Mission.Common     import   Conditions
 # ----------------------------------------------------------------------------------------------------------------------
 #  METHODS
@@ -49,55 +50,39 @@ def append_fuel_line_conditions(fuel_line,segment):
     # ------------------------------------------------------------------------------------------------------            
     # Create fuel_line results data structure  
     # ------------------------------------------------------------------------------------------------------ 
-    segment.state.conditions.energy.fuel_lines[fuel_line.tag]                                     = Conditions() 
-    segment.state.conditions.energy.fuel_lines[fuel_line.tag].power_draw                          = 0 * ones_row(1)
-    segment.state.conditions.energy.fuel_lines[fuel_line.tag].hybrid_power_split_ratio            = segment.hybrid_power_split_ratio * ones_row(1)  
-    segment.state.conditions.energy.fuel_lines[fuel_line.tag].heat_energy_generated               = 0 * ones_row(1) 
-    segment.state.conditions.energy.fuel_lines[fuel_line.tag].efficiency                          = 0 * ones_row(1)
-    segment.state.conditions.energy.fuel_lines[fuel_line.tag].temperature                         = 0 * ones_row(1)
-    segment.state.conditions.energy.fuel_lines[fuel_line.tag].energy                              = 0 * ones_row(1)  
-    segment.state.conditions.energy.fuel_lines[fuel_line.tag].fuel_mass_flow_rate                 = 0 * ones_row(1)  
-    segment.state.conditions.energy.fuel_lines[fuel_line.tag].fuel_tanks                          = Conditions() 
+    segment.state.conditions.energy.distributors[fuel_line.tag]                                     = Conditions()     
+    segment.state.conditions.energy.distributors[fuel_line.tag].links                               = Conditions()
+    
+    segment.state.conditions.energy.distributors[fuel_line.tag].inputs                              = Conditions()
+    segment.state.conditions.energy.distributors[fuel_line.tag].mass_flow_rate                      = 0 * ones_row(1)  
+    segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power                        = Conditions()  
+    segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power.electrical             = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power.thermal                = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power.hydraulic              = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power.propulsive             = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power.pneumatic              = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power.mechanical             = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[fuel_line.tag].inputs.power.chemical               = 0 * ones_row(1) 
+    
+    segment.state.conditions.energy.distributors[fuel_line.tag].outputs                             = Conditions()  
+    segment.state.conditions.energy.distributors[fuel_line.tag].outputs.power                       = Conditions()  
+    segment.state.conditions.energy.distributors[fuel_line.tag].outputs.power.electrical            = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[fuel_line.tag].outputs.power.thermal               = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[fuel_line.tag].outputs.power.hydraulic             = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[fuel_line.tag].outputs.power.propulsive            = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[fuel_line.tag].outputs.power.pneumatic             = 0 * ones_row(1) 
+    segment.state.conditions.energy.distributors[fuel_line.tag].outputs.power.mechanical            = 0 * ones_row(1)
+    segment.state.conditions.energy.distributors[fuel_line.tag].outputs.power.chemical              = 0 * ones_row(1)                
 
-    if fuel_line.additional_line_flow_rate != 0:
-        # If there is an additional flow rate on the line then we will split it between the fuel tanks on the fuel line based on the volume of the tank
-        total_mass = 0 
-        for fuel_tank in fuel_line.fuel_tanks:
-            total_mass += fuel_tank.fuel.mass_properties.mass 
-        for fuel_tank in fuel_line.fuel_tanks:
-            fuel_tank.secondary_mass_flow_rate= (fuel_tank.fuel.mass_properties.mass / total_mass) * fuel_line.additional_line_flow_rate
+  
+    for tag, item in  fuel_line.items(): 
+        if issubclass(type(item), RCAIDE.Library.Components.Component):
+            item.append_operating_conditions(segment) 
+            for sub_tag, sub_item in  item.items(): 
+                if issubclass(type(sub_item), RCAIDE.Library.Components.Component): 
+                    sub_item.append_operating_conditions(segment)    
 
-    # Sum all user-defined split ratios; treat missing values as 0.
-    user_defined_ratio = sum(t.fuel_flow_split_ratio or 0 for t in fuel_line.fuel_tanks)
-
-    # Tanks without a user-defined ratio will be automatically assigned one.
-    auto_assigned_tanks = [t for t in fuel_line.fuel_tanks if t.fuel_flow_split_ratio is None]
-
-    # Total fuel mass across auto-assigned tanks (used for mass-proportional splitting).
-    total_auto_mass = sum(t.fuel.mass_properties.mass for t in auto_assigned_tanks)
-
-    # Portion of ratio budget still available after user-defined assignments.
-    remaining_ratio = max(0.0, 1.0 - user_defined_ratio)
-
-    # Distribute remaining ratio across auto-assigned tanks:
-    # - proportional to fuel mass when total mass is nonzero
-    # - evenly if all auto-assigned tank masses sum to zero
-    for t in auto_assigned_tanks:
-        t.fuel_flow_split_ratio = (
-            (t.fuel.mass_properties.mass / total_auto_mass) * remaining_ratio
-            if total_auto_mass
-            else remaining_ratio / len(auto_assigned_tanks)
-        )
-
-    # Validation: if every tank was user-defined, their ratios must total ~1.0.
-    if not auto_assigned_tanks:
-        if round(user_defined_ratio, 4) != 1.0:
-            raise ValueError(
-                f"User-defined flow_split_ratio values sum to {user_defined_ratio:.3f}, must equal 1.0"
-            )
-
-    return
-
+    return 
 
 def append_fuel_line_segment_conditions(fuel_line,segment):
     """
@@ -121,6 +106,23 @@ def append_fuel_line_segment_conditions(fuel_line,segment):
     See Also
     --------
     RCAIDE.Library.Methods.Powertrain.Distributors.Fuel_Line.append_fuel_line_conditions 
-    """     
-    segment.state.conditions.energy.fuel_lines[fuel_line.tag].fuel_mass_flow_rate[:,0]    = 0
+    """
+    
+
+    fuel_line_conditions   = segment.state.conditions.energy.distributors[fuel_line.tag] 
+    fuel_line_conditions.mass_flow_rate[:,0]                      = 0.0  
+    fuel_line_conditions.inputs.power.electrical[:,0]             = 0.0
+    fuel_line_conditions.inputs.power.thermal[:,0]                = 0.0
+    fuel_line_conditions.inputs.power.hydraulic[:,0]              = 0.0
+    fuel_line_conditions.inputs.power.propulsive[:,0]             = 0.0
+    fuel_line_conditions.inputs.power.pneumatic[:,0]              = 0.0
+    fuel_line_conditions.inputs.power.mechanical[:,0]             = 0.0
+    fuel_line_conditions.inputs.power.chemical[:,0]               = 0.0 
+    fuel_line_conditions.outputs.power.electrical[:,0]            = 0.0
+    fuel_line_conditions.outputs.power.thermal[:,0]               = 0.0
+    fuel_line_conditions.outputs.power.hydraulic[:,0]             = 0.0
+    fuel_line_conditions.outputs.power.propulsive[:,0]            = 0.0
+    fuel_line_conditions.outputs.power.pneumatic[:,0]             = 0.0
+    fuel_line_conditions.outputs.power.mechanical[:,0]            = 0.0
+    fuel_line_conditions.outputs.power.chemical[:,0]              = 0.0 
     return

@@ -554,7 +554,8 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------------------  
-    fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line() 
+    fuel_line                                   = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    fuel_line.working_fluid                     = RCAIDE.Library.Attributes.Propellants.Jet_A1()
     
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Fuel Tank & Fuel
@@ -563,13 +564,15 @@ def vehicle_setup():
     fuel_tank_1.tag                               = 'main_wing_inboard_fuel_tank'
     fuel_tank_1.segments_bounding_tank            = ['root', 'yehudi']   
     fuel_tank_1.fuel                              = RCAIDE.Library.Attributes.Propellants.Jet_A1()  
-    fuel_line.fuel_tanks.append(fuel_tank_1) 
+    fuel_tank_1.assigned_distributors             = [[fuel_line.tag]]
+    net.sources.append(fuel_tank_1)
 
     fuel_tank_2                                   = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing) 
     fuel_tank_2.tag                               = 'main_wing_outboard_fuel_tank'
     fuel_tank_2.segments_bounding_tank            = ['yehudi', 'tip']   
     fuel_tank_2.fuel                              = RCAIDE.Library.Attributes.Propellants.Jet_A1()  
-    fuel_line.fuel_tanks.append(fuel_tank_2) 
+    fuel_tank_2.assigned_distributors             = [[fuel_line.tag]]
+    net.sources.append(fuel_tank_2)
      
 
     #------------------------------------------------------------------------------------------------------------------------------------  
@@ -721,11 +724,14 @@ def vehicle_setup():
  
     #------------------------------------------------------------------------------------------------------------------------------------   
     # Assign propulsors to fuel line   
-    fuel_line.assigned_propulsors =  [[turbofan.tag, turbofan_2.tag, turbofan_3.tag, turbofan_4.tag]]
- 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Append fuel line to network      
-    net.fuel_lines.append(fuel_line)        
+    turbofan.assigned_distributors   = [[fuel_line.tag]]
+    turbofan_2.assigned_distributors = [[fuel_line.tag]]
+    turbofan_3.assigned_distributors = [[fuel_line.tag]]
+    turbofan_4.assigned_distributors = [[fuel_line.tag]]
+
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Append fuel line to network
+    net.distributors.append(fuel_line)
     
     # Append energy network to aircraft 
     vehicle.append_energy_network(net)     

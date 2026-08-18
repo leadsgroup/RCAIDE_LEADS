@@ -60,36 +60,6 @@ def vehicle_setup(redesign_rotors = False):
     vehicle.number_of_passengers                = 1
 
     #------------------------------------------------------------------------------------------------------------------------------------
-    # ##################################################### Landing Gear ################################################################    
-    #------------------------------------------------------------------------------------------------------------------------------------ 
-    main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear() 
-    main_gear.tire_diameter                  = 6  *  Units.inches 
-    main_gear.rim_diameter                   = 3  *  Units.inches 
-    main_gear.tire_width                     = 6  *  Units.inches 
-    main_gear.strut_length                   = 12  * Units.ft 
-    main_gear.wheels                         = 1   
-    main_gear.number_of_gear_types_in_tandem = 1
-    main_gear.number_of_wheels_in_gear_type  = 1
-    main_gear.origin                         = [[4.0,0, 0]]
-    main_gear.fairing                        = True
-    main_gear.xz_plane_symmetric             = True
-    main_gear.gear_extended                  = True
-    vehicle.append_component(main_gear)  
-
-    nose_gear                                = RCAIDE.Library.Components.Landing_Gear.Nose_Landing_Gear()   
-    nose_gear.tire_diameter                  =  5 *  Units.inches   
-    nose_gear.rim_diameter                   =  3 *  Units.inches 
-    nose_gear.tire_width                     =  5 *  Units.inches 
-    nose_gear.strut_length                   =  6.* Units.ft 
-    nose_gear.wheels                         = 1
-    nose_gear.origin                         = [[0.5,0, 0]]
-    nose_gear.fairing                        = True 
-    nose_gear.gear_extended                  = True
-    nose_gear.number_of_gear_types_in_tandem = 1
-    nose_gear.number_of_wheels_in_gear_type  = 1    
-    vehicle.append_component(nose_gear)    
-
-    #------------------------------------------------------------------------------------------------------------------------------------
     # ######################################################## Wings ####################################################################  
     #------------------------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------
@@ -273,17 +243,20 @@ def vehicle_setup(redesign_rotors = False):
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Bus Battery
     #------------------------------------------------------------------------------------------------------------------------------------ 
-    bat                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC() 
+    battery_pack                                            = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack()
+    bat                                                    = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_NMC()
     bat.tag                                                = 'bus_battery'
-    bat.electrical_configuration.series                    = 8 
-    bat.electrical_configuration.parallel                  = 60 
+    bat.electrical_configuration.series                    = 8
+    bat.electrical_configuration.parallel                  = 60
     bat.geometric_configuration.normal_count              = 20
-    bat.geometric_configuration.parallel_count            = 24  
+    bat.geometric_configuration.parallel_count            = 24
     bat.origin                                             = [[2.5, 0,  0.]]
-    
+
     for _ in range(10):
-        bus.battery_modules.append(deepcopy(bat))   
-    bus.initialize_bus_properties()
+        battery_pack.append_module(deepcopy(bat))
+    battery_pack.assigned_distributors = [[bus.tag]]
+    network.sources.append(battery_pack)
+    battery_pack.initialize(network)
     
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Lift Propulsors 
@@ -298,7 +271,7 @@ def vehicle_setup(redesign_rotors = False):
     prop_rotor_esc                                = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller()
     prop_rotor_esc.efficiency                     = 0.95    
     prop_rotor_esc.tag                            = 'esc_1'  
-    prop_rotor_esc.bus_voltage                    = bus.voltage   
+    prop_rotor_esc.nominal_voltage                 = battery_pack.voltage
     prop_rotor_propulsor.electronic_speed_controller = prop_rotor_esc  
     
     # Lift Rotor Design
@@ -339,7 +312,7 @@ def vehicle_setup(redesign_rotors = False):
     #------------------------------------------------------------------------------------------------------------------------------------    
     prop_rotor_motor                         = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     prop_rotor_motor.efficiency              = 0.95
-    prop_rotor_motor.nominal_voltage         = bus.voltage *0.75
+    prop_rotor_motor.nominal_voltage         = battery_pack.voltage *0.75
     prop_rotor_motor.tag                     = 'motor_1'
     prop_rotor_motor.no_load_current         = 0.1    
     prop_rotor_propulsor.motor               = prop_rotor_motor
@@ -379,25 +352,23 @@ def vehicle_setup(redesign_rotors = False):
     # Front Rotors Locations 
     origins = [[-0.2, 1.347, 0.0], [-0.2, 3.2969999999999997, 0.0], [-0.2, -1.347, 0.0], [-0.2, -3.2969999999999997, 0.0],\
                [4.938, 1.347, 1.54], [4.938, 3.2969999999999997, 1.54],[4.938, -1.347, 1.54], [4.938, -3.2969999999999997, 1.54]] 
-    assigned_propulsor_list =  []
-    for i in range(8): 
+    for i in range(8):
         prop_rotor_propulsor_i                                       = deepcopy(prop_rotor_propulsor)
         prop_rotor_propulsor_i.tag                                   = 'prop_rotor_propulsor_' + str(i + 1)
-        prop_rotor_propulsor_i.rotor.tag                             = 'rotor_' + str(i + 1) 
-        prop_rotor_propulsor_i.rotor.origin                          = [origins[i]]  
-        prop_rotor_propulsor_i.motor.tag                             = 'motor_' + str(i + 1)  
-        if i < 4: 
+        prop_rotor_propulsor_i.rotor.tag                             = 'rotor_' + str(i + 1)
+        prop_rotor_propulsor_i.rotor.origin                          = [origins[i]]
+        prop_rotor_propulsor_i.motor.tag                             = 'motor_' + str(i + 1)
+        if i < 4:
             prop_rotor_propulsor_i.motor.wing_tag                = 'canard_wing'
         else:
             prop_rotor_propulsor_i.motor.wing_tag                = 'main_wing'
-        prop_rotor_propulsor_i.motor.origin                          = [origins[i]]  
-        prop_rotor_propulsor_i.electronic_speed_controller.tag       = 'esc_' + str(i + 1)  
-        prop_rotor_propulsor_i.electronic_speed_controller.origin    = [origins[i]]  
-        prop_rotor_propulsor_i.nacelle.tag                           = 'nacelle_' + str(i + 1)  
+        prop_rotor_propulsor_i.motor.origin                          = [origins[i]]
+        prop_rotor_propulsor_i.electronic_speed_controller.tag       = 'esc_' + str(i + 1)
+        prop_rotor_propulsor_i.electronic_speed_controller.origin    = [origins[i]]
+        prop_rotor_propulsor_i.nacelle.tag                           = 'nacelle_' + str(i + 1)
         prop_rotor_propulsor_i.nacelle.origin                        = [origins[i]]
-        assigned_propulsor_list.append(prop_rotor_propulsor_i.tag)
-        network.propulsors.append(prop_rotor_propulsor_i)  
-    bus.assigned_propulsors = [assigned_propulsor_list]
+        prop_rotor_propulsor_i.assigned_distributors                 = [[bus.tag]]
+        network.propulsors.append(prop_rotor_propulsor_i)
     
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Additional Bus Loads
@@ -430,7 +401,7 @@ def vehicle_setup(redesign_rotors = False):
     network.systems.append(furnishings) 
    
   
-    network.busses.append(bus) 
+    network.distributors.append(bus)
         
     # append energy network 
     vehicle.append_energy_network(network)  

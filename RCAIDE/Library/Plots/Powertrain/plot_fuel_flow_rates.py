@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
 # ----------------------------------------------------------------------------------------------------------------------  
+import RCAIDE
 from RCAIDE.Framework.Core import Units
 from RCAIDE.Library.Plots.Common import set_axes, plot_style, segment_colors 
 import matplotlib.pyplot as plt
@@ -76,35 +77,36 @@ def plot_fuel_flow_rates(results,
                                linewidth = ps.line_width,
                                label = label)
 
-            # ---------------- FUEL LINES ----------------
-            for j , fuel_line in enumerate(network.fuel_lines):
+            # ---------------- DISTRIBUTORS (fuel lines only) ----------------
+            fuel_lines = [d for d in network.distributors if isinstance(d, RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line)]
+            for j, distributor in enumerate(fuel_lines):
 
-                fuel_line_flow_rate = results.segments[i].conditions.energy.fuel_lines[fuel_line.tag].fuel_mass_flow_rate
+                distributor_flow_rate = results.segments[i].conditions.energy.distributors[distributor.tag].mass_flow_rate[:,0]
 
-                label = fuel_line.tag if i==0 else None
+                label = distributor.tag if i==0 else None
 
                 axis_fuel.plot(time,
-                               fuel_line_flow_rate,
+                               distributor_flow_rate,
                                color = line_colors[i],
                                marker = ps.markers[j],
                                linewidth = ps.line_width,
                                label = label)
 
-                # ---------------- CONVERTERS ----------------
-                for converter_group in fuel_line.assigned_converters:
-                    for m, converter_tag in enumerate(converter_group):
+                # ---------------- CONVERTERS assigned to this fuel line ----------------
+                converters_on_line = [c for c in network.converters if c.assigned_distributors != None and distributor.tag in c.assigned_distributors[0]]
+                for m, converter in enumerate(converters_on_line):
 
-                        converter_flow_rate = results.segments[i].conditions.energy.converters[converter_tag].fuel_mass_flow_rate[:,0]
+                    converter_flow_rate = results.segments[i].conditions.energy.converters[converter.tag].fuel_mass_flow_rate[:,0]
 
-                        marker_style = converter_markers[m % len(converter_markers)]
-                        label = converter_tag if i==0 and j==0 else None
+                    marker_style = converter_markers[m % len(converter_markers)]
+                    label = converter.tag if i==0 and j==0 else None
 
-                        axis_conv.plot(time,
-                                       converter_flow_rate,
-                                       color = line_colors[i],
-                                       marker = marker_style,
-                                       linewidth = ps.line_width,
-                                       label = label)
+                    axis_conv.plot(time,
+                                   converter_flow_rate,
+                                   color = line_colors[i],
+                                   marker = marker_style,
+                                   linewidth = ps.line_width,
+                                   label = label)
 
     if show_legend:
         axis_prop.legend(fontsize=ps.legend_font_size)

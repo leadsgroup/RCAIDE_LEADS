@@ -516,7 +516,8 @@ def vehicle_setup():
     fuel_line.insulation.diameters                 = Data()
     fuel_line.insulation.diameters.external        = 0.0
     fuel_line.insulation.diameters.internal        = 0.0
-    
+    fuel_line.working_fluid                        = RCAIDE.Library.Attributes.Propellants.Jet_A()
+
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Fuel Tank & Fuel
     #------------------------------------------------------------------------------------------------------------------------------------   
@@ -526,7 +527,8 @@ def vehicle_setup():
     inboard_tank.segments_bounding_tank       = ['root','yehudi']  
     inboard_tank.segments_percent_chord_start = [0.15  ,0.15 ]
     inboard_tank.segments_percent_chord_end   = [0.65  ,0.65]
-    fuel_line.fuel_tanks.append(inboard_tank)
+    inboard_tank.assigned_distributors        = [[fuel_line.tag]]
+    net.sources.append(inboard_tank)
     
     outboard_tank                              = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)  
     outboard_tank.fuel                         = RCAIDE.Library.Attributes.Propellants.Jet_A()
@@ -534,7 +536,8 @@ def vehicle_setup():
     outboard_tank.segments_bounding_tank       = ['yehudi', 'section_2']  
     outboard_tank.segments_percent_chord_start = [0.15 ,0.15 ]
     outboard_tank.segments_percent_chord_end   = [0.65 ,0.65]
-    fuel_line.fuel_tanks.append(outboard_tank)    
+    outboard_tank.assigned_distributors        = [[fuel_line.tag]]
+    net.sources.append(outboard_tank)
 
     fuel_tank                                   = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Non_Integral_Tank()  
     fuel_tank.lengths.external                  = 2 
@@ -544,7 +547,8 @@ def vehicle_setup():
     fuel_tank.origin                            = [[15.0,0.0, 0.0]]
     fuel_tank.fuel                              = RCAIDE.Library.Attributes.Propellants.Jet_A()
     fuel_tank.fuel.origin                       = [[15.0,0.0, 0.0]]
-    fuel_line.fuel_tanks.append(fuel_tank)     
+    fuel_tank.assigned_distributors        = [[fuel_line.tag]]
+    net.sources.append(fuel_tank)
     
 
     #------------------------------------------------------------------------------------------------------------------------------------  
@@ -672,11 +676,12 @@ def vehicle_setup():
 
     #------------------------------------------------------------------------------------------------------------------------------------   
     # Assign propulsors to fuel line    
-    fuel_line.assigned_propulsors =  [[turbofan.tag, turbofan_2.tag]]
+    turbofan.assigned_distributors   = [[fuel_line.tag]]
+    turbofan_2.assigned_distributors = [[fuel_line.tag]]
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Append fuel line to fuel line to network      
-    net.fuel_lines.append(fuel_line)        
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Append fuel line to network
+    net.distributors.append(fuel_line)
     
     # Append energy network to aircraft 
     vehicle.append_energy_network(net)    

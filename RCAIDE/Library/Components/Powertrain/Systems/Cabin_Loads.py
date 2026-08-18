@@ -20,6 +20,6 @@ class Cabin_Loads(Systems):
     def __defaults__(self):
         self.tag        = 'cabin_loads' 
 
-    def compute_performance(self, vehicle,state,bus):
-        compute_cabin_loads_power_draw(self, vehicle,state,bus)
-        return
+    def compute_performance(self, state, vehicle):
+        inputs, outputs = compute_cabin_loads_power_draw(self, state, vehicle)
+        return inputs, outputs, False, None

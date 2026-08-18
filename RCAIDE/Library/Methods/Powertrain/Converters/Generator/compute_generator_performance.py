@@ -22,15 +22,19 @@ def compute_generator_performance(generator,conditions):
     ----------
     generator : Converter
         Generator component for which performance is being computed
-    generator_conditions : Conditions
-        Container for generator operating conditions
-    conditions : Conditions 
-        Mission segment conditions containing freestream properties
+    conditions : RCAIDE.Framework.Mission.Common.Conditions
+        Mission segment conditions containing freestream and energy conditions
 
     Returns
     -------
-    None
-        Updates generator_conditions in-place with computed performance parameters
+    inputs : Data
+        Generator input conditions (power.mechanical, etc.)
+    outputs : Data
+        Generator output conditions (current, voltage, power.electrical, etc.)
+    stored_results_flag : bool
+        Flag indicating if results are stored
+    stored_converter_tag : str
+        Tag of the generator with stored results
 
     Notes
     -----
@@ -49,17 +53,15 @@ def compute_generator_performance(generator,conditions):
 
     See Also
     --------
-    RCAIDE.Library.Components.Powertrain.Converters.DC_Generator
-    RCAIDE.Library.Components.Powertrain.Converters.PMSM_Generator
+    RCAIDE.Library.Components.Powertrain.Converters.Generator
     """
     
-    # unpack generator conditions 
-    generator_conditions = conditions.energy.converters[generator.tag]    
- 
-    if type(generator) == RCAIDE.Library.Components.Powertrain.Converters.DC_Generator:   
-        if generator.inverse_calculation == False:
-            power          = generator_conditions.inputs.power 
-            Res            = generator.resistance  
+    # unpack generator conditions
+    generator_conditions = conditions.energy.converters[generator.tag]
+    if generator.voltage_type == 'DC':   
+        if generator.reverse_mode_computation == False:
+            P_mech          = generator_conditions.inputs.power.mechanical
+            Res            = generator.resistance
             Kv             = generator.speed_constant
             G              = generator.gearbox.gear_ratio 
             io             = generator.no_load_current  
@@ -67,9 +69,9 @@ def compute_generator_performance(generator,conditions):
             omega          = generator_conditions.inputs.omega
             omega_internal = omega * G
             i              = (v - (omega_internal) /Kv)/Res  
-            Q              = power / omega  
+            Q              = P_mech / omega  
             etam           = (1-io/i)*(1-i*Res/v)
-            
+            P_elec         = i * v
         else:
             Res             = generator.resistance  
             Kv              = generator.speed_constant
@@ -77,63 +79,64 @@ def compute_generator_performance(generator,conditions):
             io              = generator.no_load_current  
             v               = generator_conditions.outputs.voltage             
             i               = generator_conditions.outputs.current
-            P_elec          = i * v
             omega_internal  = ((v - (Res * i)) * Kv)   
             Q_internal      = (((v-omega_internal /Kv)/Res -io)/Kv)
             omega           = omega_internal / G
             Q               = Q_internal * G
             etam            = (1-io/i)*(1-i*Res/v)
+            P_elec          = i * v
+            P_mech          = Q * omega       
         
-        generator_conditions.outputs.current    = i 
-        generator_conditions.outputs.power      = i *v  
-        generator_conditions.inputs.power       = Q * omega 
-        generator_conditions.inputs.torque     = Q
-        generator_conditions.inputs.omega      = omega
-        generator_conditions.inputs.efficiency = etam          
-        
-    elif type(generator) == RCAIDE.Library.Components.Powertrain.Converters.PMSM_Generator: 
-        if generator.inverse_calculation == False:
+    elif generator.voltage_type == 'AC': 
+        if generator.reverse_mode_computation == False:
             io     = generator.no_load_current
             G      = generator.gearbox.gear_ratio 
-            omega  = generator_conditions.inputs.omega  
-            power  = generator_conditions.inputs.power  
-            Kv     = generator.speed_constant                  
-            D_in   = generator.inner_diameter         
+            omega  = generator_conditions.inputs.omega
+            power  = generator_conditions.inputs.power.mechanical
+            D_in   = generator.inner_diameter
             kw     = generator.winding_factor     
             Res    = generator.resistance                      
             L      = generator.stack_length                    
             l      = generator.length_of_path                  
             mu_0   = generator.mu_0                            
             mu_r   = generator.mu_r   
-            Q      = power/omega                               
-            i      = np.sqrt((2*(Q/G)*l)/(D_in*mu_0*mu_r*L*kw))           
-            v      = (omega * G)/((2 * np.pi / 60)*Kv) + i*Res        
-            etam   = (1-io/i)*(1-i*Res/v) 
-        
-            generator_conditions.outputs.current    = i 
-            generator_conditions.outputs.power      = i *v    
-            generator_conditions.outputs.efficiency = etam   
+            Q      = power/omega
+            i      = np.sqrt((2*(Q/G)*l)/(D_in*mu_0*mu_r*L*kw))
+            v      = generator_conditions.outputs.voltage
+            etam   = (1-io/i)*(1-i*Res/v)
+            P_elec = i * v
+            P_mech = Q * omega
+
         else:
             Res            = generator.resistance
+            io             = generator.no_load_current
             G              = generator.gearbox.gear_ratio
-            I              = generator_conditions.outputs.current
-            V              = generator_conditions.outputs.voltage
-            I_turn         = I/generator.number_of_turns                                                             # [A]            current in each turn
-            omega          = (generator.speed_constant*(V - I*Res)) /G                                     # [RPM -> rad/s] rotor angular velocity
+            i              = generator_conditions.outputs.current
+            v              = generator_conditions.outputs.voltage
+            I_turn         = i/generator.number_of_turns                                                             # [A]            current in each turn
+            omega          = (generator.speed_constant*(v - i*Res)) /G                                     # [RPM -> rad/s] rotor angular velocity
             A              = np.pi * ((generator.stator_outer_diameter**2 - generator.stator_inner_diameter**2) / 4)     # [m**2]         cross-sectional area of the reluctance path perpendicular to length 𝑙    
             MMF_coil       = generator.number_of_turns*I_turn                                                        # [A*turns]      magnetomotive force applied to the reluctance path for a coil (Eq.14)  
             R              = generator.length_of_path/(A*generator.mu_0*generator.mu_r)                                      # [A*turn/Wb]    reluctance of a given path or given reluctant element (Eq.16) 
             phi            = MMF_coil/R                                                                          # [Wb]           magnetic flux through the reluctance path (Eq.12)
             B_sign         = phi/A                                                                               # [V*s/m**2]     ranges from 0.5 to 1.2, average magnitude of the radial flux density produced by the rotor
-            A_sign         = (generator.winding_factor*I)/(np.pi*generator.stator_inner_diameter)                        # [-]            stator electrical loading (Eq.2)        
-            TQ             = (np.pi/2)*(B_sign*A_sign)*(generator.inner_diameter**2)*generator.stack_length # [Nm]           torque (Eq.1)
-            P              = omega*TQ                                                                            # [W]            power (Eq.1)        
+            A_sign         = (generator.winding_factor*i)/(np.pi*generator.stator_inner_diameter)                        # [-]            stator electrical loading (Eq.2)        
+            Q              = (np.pi/2)*(B_sign*A_sign)*(generator.inner_diameter**2)*generator.stack_length # [Nm]           torque (Eq.1)                                                                        # [W]            power (Eq.1)        
             A              = np.pi * ((generator.stator_outer_diameter**2 - generator.stator_inner_diameter**2) / 4)     # [m**2]         cross-sectional area of the reluctance path perpendicular to length 𝑙    
-            
-            generator_conditions.inputs.torque           = TQ 
-            generator_conditions.inputs.omega            = omega 
-            generator_conditions.inputs.power            = P
+            P_elec         = v*i 
+            etam           = (1-io/i)*(1-i*Res/v)                                                                                           # [W]            electrical power (Eq.11)
+            P_mech         = Q * omega                                                                                     # [W]            mechanical power (Eq.10)
 
-   
- 
-    return
+    
+    generator_conditions.outputs.power.electrical  = P_elec
+    generator_conditions.outputs.current           = i
+    generator_conditions.outputs.voltage           = v
+    generator_conditions.outputs.efficiency        = etam
+    generator_conditions.inputs.power.mechanical   = P_mech
+    generator_conditions.inputs.torque             = Q
+    generator_conditions.inputs.omega              = omega
+         
+    stored_results_flag            = True
+    stored_converter_tag           = generator.tag   
+             
+    return  generator_conditions.inputs, generator_conditions.outputs, stored_results_flag, stored_converter_tag

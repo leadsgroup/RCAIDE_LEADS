@@ -71,10 +71,12 @@ def geometry(mission):
                     control_surface.deflection = vehicle_0.wings[wing.tag].control_surfaces[control_surface.tag].deflection
             for landing_gear in segment.analyses.vehicle.landing_gears:
                 landing_gear.gear_extended = vehicle_0.landing_gears[landing_gear.tag].gear_extended
-            for network in segment.analyses.vehicle.networks: 
+            for network in segment.analyses.vehicle.networks:
                 network.reverse_thrust = vehicle_0.networks[network.tag].reverse_thrust
-                for bus in network.busses:
-                    bus.active = vehicle_0.networks[network.tag].busses[bus.tag].active
+                for source in network.sources:
+                    source.active = vehicle_0.networks[network.tag].sources[source.tag].active
+                for system in network.systems:
+                    system.power_draw = vehicle_0.networks[network.tag].systems[system.tag].power_draw
                 for propulsor in network.propulsors:
                     propulsor_0              =  vehicle_0.networks[network.tag].propulsors[propulsor.tag]
                     propulsor.active         = propulsor_0.active
@@ -305,14 +307,12 @@ def write_geometry_to_excel(vehicle):
                 "TSFC [lb/lbf-hr]"      : getattr(propulsor, "TSFC", None)[0][0]
             })
             
-        for fuel_line in network.fuel_lines:
-            container_tag = getattr(fuel_line, "tag", None)
-            for fuel_tank in fuel_line.fuel_tanks:
+        for source in network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                fuel_tank = source
                 fuel_rows.append({
                     "Network Tag"                  : network_tag,
                     "Tank Type"                    : str(type(fuel_tank)[0]).split('.')[-1],
-                    "Container Type"               : "fuel_line",
-                    "Container Tag"                : container_tag,
                     "Fuel Tank Tag"                : fuel_tank.tag,
                     "Wing Tag"                     : getattr(fuel_tank, "wing_tag", None),
                     "Fuselage Tag"                 : getattr(fuel_tank, "fuselage_tag", None),

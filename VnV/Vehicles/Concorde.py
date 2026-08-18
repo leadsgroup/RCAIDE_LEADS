@@ -414,13 +414,13 @@ def vehicle_setup():
     # ########################################################## Energy Network ######################################################### 
     #------------------------------------------------------------------------------------------------------------------------------------ 
     #initialize the fuel network
-    net                                            = RCAIDE.Framework.Networks.Fuel() 
-    net.identical_propulsors                       = True 
-    
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    # Fuel Distribution Line 
-    #------------------------------------------------------------------------------------------------------------------------------------  
-    fuel_line                                     = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
+    net                                            = RCAIDE.Framework.Networks.Fuel()
+
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Fuel Distribution Line
+    #------------------------------------------------------------------------------------------------------------------------------------
+    fuel_line                                     = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    fuel_line.working_fluid                       = RCAIDE.Library.Attributes.Propellants.Jet_A()
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     #  Inner Right Propulsor
@@ -579,36 +579,41 @@ def vehicle_setup():
     fuel_tank.segments_percent_chord_start         = [0.1,0.1]
     fuel_tank.segments_percent_chord_end           = [0.5,0.2]
     fuel_tank.fuel                                 = RCAIDE.Library.Attributes.Propellants.Jet_A() 
-    fuel_line.fuel_tanks.append(fuel_tank)  
-    
+    fuel_tank.assigned_distributors                = [[fuel_line.tag]]
+    net.sources.append(fuel_tank)
+
     fuel_tank                                      = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)
-    fuel_tank.tag                                  = 'tank_6_7_3_2'   
-    fuel_tank.segments_bounding_tank               = ['section_1', 'section_2']   
+    fuel_tank.tag                                  = 'tank_6_7_3_2'
+    fuel_tank.segments_bounding_tank               = ['section_1', 'section_2']
     fuel_tank.segments_percent_chord_start         = [0.5,0.2]
     fuel_tank.segments_percent_chord_end           = [0.75,0.45]
-    fuel_tank.fuel                                 = RCAIDE.Library.Attributes.Propellants.Jet_A() 
-    fuel_line.fuel_tanks.append(fuel_tank) 
-    
+    fuel_tank.fuel                                 = RCAIDE.Library.Attributes.Propellants.Jet_A()
+    fuel_tank.assigned_distributors                = [[fuel_line.tag]]
+    net.sources.append(fuel_tank)
+
     fuel_tank                                      = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.wings.main_wing)
-    fuel_tank.tag                                  = 'tank_5A_and_7A'  
-    fuel_tank.segments_bounding_tank               = ['section_2','section_3']   
+    fuel_tank.tag                                  = 'tank_5A_and_7A'
+    fuel_tank.segments_bounding_tank               = ['section_2','section_3']
     fuel_tank.segments_percent_chord_start         = [0.1,0.1]
     fuel_tank.segments_percent_chord_end           = [0.7,0.2]
-    fuel_tank.fuel                                 = RCAIDE.Library.Attributes.Propellants.Jet_A() 
-    fuel_line.fuel_tanks.append(fuel_tank)  
+    fuel_tank.fuel                                 = RCAIDE.Library.Attributes.Propellants.Jet_A()
+    fuel_tank.assigned_distributors                = [[fuel_line.tag]]
+    net.sources.append(fuel_tank)
 
     trim_fuel_tank = RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Integral_Tank(vehicle.fuselages.fuselage)
-    trim_fuel_tank.tag                             = 'tank_11' 
-    trim_fuel_tank.segments_bounding_tank          = ['segment_8','segment_9'] 
-    trim_fuel_tank.fuel                            = RCAIDE.Library.Attributes.Propellants.Jet_A() 
-    fuel_line.fuel_tanks.append(trim_fuel_tank)    
-  
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to fuel line to network      
-    fuel_line.assigned_propulsors =  [[outer_left_turbojet.tag,inner_left_turbojet.tag, outer_right_turbojet.tag, inner_right_turbojet.tag]]    
-    
-     # Append fuel line to network      
-    net.fuel_lines.append(fuel_line)    
+    trim_fuel_tank.tag                             = 'tank_11'
+    trim_fuel_tank.segments_bounding_tank          = ['segment_8','segment_9']
+    trim_fuel_tank.fuel                            = RCAIDE.Library.Attributes.Propellants.Jet_A()
+    trim_fuel_tank.assigned_distributors           = [[fuel_line.tag]]
+    net.sources.append(trim_fuel_tank)
+
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Assign distributors to propulsors and append fuel line
+    outer_right_turbojet.assigned_distributors = [[fuel_line.tag]]
+    inner_right_turbojet.assigned_distributors = [[fuel_line.tag]]
+    inner_left_turbojet.assigned_distributors  = [[fuel_line.tag]]
+    outer_left_turbojet.assigned_distributors  = [[fuel_line.tag]]
+    net.distributors.append(fuel_line)
   
     #------------------------------------------------------------------------------------------------------------------------------------          
     # Append energy network to aircraft 

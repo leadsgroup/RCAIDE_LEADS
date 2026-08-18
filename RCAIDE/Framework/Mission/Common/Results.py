@@ -95,10 +95,10 @@ class Results(Conditions):
         # body conditions                                                      
         self.frames.body                                                       = Conditions()        
         self.frames.body.inertial_rotations                                    = ones_3col * 0
-        self.frames.body.thrust_force_vector                                   = ones_3col * 0
+        self.frames.body.total_force_vector                                   = ones_3col * 0
         self.frames.body.moment_vector                                         = ones_3col * 0
         self.frames.body.velocity_vector                                       = ones_3col * 0
-        self.frames.body.thrust_moment_vector                                  = ones_3col * 0 
+        self.frames.body.total_moment_vector                                  = ones_3col * 0 
         self.frames.body.transform_to_inertial                                 = np.empty([0,0,0])
                                                                                
         # wind frame conditions                                                
@@ -445,20 +445,39 @@ class Results(Conditions):
         # ----------------------------------------------------------------------------------------------------------------------
         # Energy
         # ---------------------------------------------------------------------------------------------------------------------- 
+
         self.energy                                           = Conditions()  
-        self.energy.converters                                = Conditions()
+        self.energy.converters                                = Conditions() 
         self.energy.propulsors                                = Conditions()
         self.energy.modulators                                = Conditions()
-        self.energy.busses                                    = Conditions()
-        self.energy.fuel_lines                                = Conditions()
-        self.energy.coolant_lines                             = Conditions()
-        self.energy.thrust_force_vector                       = ones_3col * 0
-        self.energy.thrust_moment_vector                      = ones_3col * 0
-        self.energy.power                                     = ones_1col * 0 
-        self.energy.fuel_consumption                          = ones_1col * 0
+        self.energy.sources                                   = Conditions()
+        self.energy.distributors                              = Conditions()
+        self.energy.systems                                   = Conditions()
+        self.energy.total_force_vector                        = ones_3col * 0
+        self.energy.total_moment_vector                       = ones_3col * 0 
+        self.energy.fuel_consumption                          = ones_1col * 0      
         self.energy.cumulative_fuel_consumption               = ones_1col * 0
-        self.energy.hybrid_power_split_ratio                  = ones_1col * 0 
-        self.energy.battery_fuel_cell_power_split_ratio       = ones_1col * 0 
+        self.energy.inputs                                    = Conditions()
+        self.energy.inputs.power                              = Conditions()  
+        self.energy.inputs.power.propulsive                   = ones_1col * 0 
+        self.energy.inputs.power.mechanical                   = ones_1col * 0 
+        self.energy.inputs.power.electrical                   = ones_1col * 0 
+        self.energy.inputs.power.chemical                     = ones_1col * 0 
+        self.energy.inputs.power.pneumatic                    = ones_1col * 0 
+        self.energy.inputs.power.hydraulic                    = ones_1col * 0 
+        self.energy.inputs.power.thermal                      = ones_1col * 0 
+        self.energy.outputs                                   = Conditions()
+        self.energy.outputs.power                             = Conditions()  
+        self.energy.outputs.power.propulsive                  = ones_1col * 0 
+        self.energy.outputs.power.mechanical                  = ones_1col * 0 
+        self.energy.outputs.power.electrical                  = ones_1col * 0 
+        self.energy.outputs.power.chemical                    = ones_1col * 0 
+        self.energy.outputs.power.pneumatic                   = ones_1col * 0 
+        self.energy.outputs.power.hydraulic                   = ones_1col * 0 
+        self.energy.outputs.power.thermal                     = ones_1col * 0 
+        self.energy.hybrid_power_split_ratio                  = ones_1col * 0
+        self.energy.battery_fuel_cell_power_split_ratio       = Conditions()
+        self.energy.recharging                                = False
         
         # ----------------------------------------------------------------------------------------------------------------------         
         # Weights 

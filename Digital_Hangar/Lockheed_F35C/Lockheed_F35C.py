@@ -591,15 +591,16 @@ def vehicle_setup():
     # Fuel Distribution Line
     #------------------------------------------------------------------------------------------------------------------------------------
     fuel_line                                     = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    fuel_line.working_fluid                       = RCAIDE.Library.Attributes.Propellants.Jet_A()
 
     #------------------------------------------------------------------------------------------------------------------------------------ 
     # Propulsor: Starboard Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------         
-    turbofan1                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan()   
-    turbofan1.origin                             = [[ 16.0 , 0.0 , 0.0 ]]
-    turbofan1.tag                                = 'propulsor_1'    
-    turbofan1.length                             = 5.59                     
-    turbofan1.diameter                           = 1.17               
+    turbofan1                                    = RCAIDE.Library.Components.Powertrain.Propulsors.Turbofan()
+    turbofan1.origin                             = [[ 8.0 , 0.0 , 0.0 ]]
+    turbofan1.tag                                = 'propulsor_1'
+    turbofan1.length                             = 5.59
+    turbofan1.diameter                           = 1.168               
     turbofan1.bypass_ratio                       = 0.57                     
     turbofan1.design_altitude                    = 50000*Units.ft             
     turbofan1.design_mach_number                 = 1.6                    
@@ -690,7 +691,7 @@ def vehicle_setup():
     fan_nozzle.tag                                = 'fan_nozzle'
     fan_nozzle.polytropic_efficiency              = 0.98                     
     fan_nozzle.pressure_ratio                     = 0.995 
-    fan_nozzle.diameter                           = 1.3
+    fan_nozzle.diameter                           = 1.168
     turbofan1.fan_nozzle                          = fan_nozzle
     
     # # design turbofan
@@ -778,17 +779,16 @@ def vehicle_setup():
     nacelle_mirror.segments['segment_4'].percent_y_location = -0.00806
     ghost_propulsor.nacelle = nacelle_mirror
 
-    net.propulsors.append(ghost_propulsor) 
+    net.propulsors.append(ghost_propulsor)
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Assign propulsors to fuel line to network   
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    fuel_line.assigned_propulsors =  [['propulsor_1']]
+    # ghost_propulsor produces no thrust and was never part of the fuel line's
+    # propulsor group in the original wiring -- only turbofan1 is assigned.
+    turbofan1.assigned_distributors = [[fuel_line.tag]]
 
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Append fuel line to fuel line to network  
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    net.fuel_lines.append(fuel_line)        
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Append fuel line to network
+    #------------------------------------------------------------------------------------------------------------------------------------
+    net.distributors.append(fuel_line)
 
     #------------------------------------------------------------------------------------------------------------------------- 
     # Done ! 

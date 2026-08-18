@@ -73,15 +73,18 @@ def vehicle_setup():
     #------------------------------------------------------------------------------------------------------------------------------------
     # ##################################################### Landing Gear ################################################################    
     #------------------------------------------------------------------------------------------------------------------------------------ 
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # ##################################################### Landing Gear ################################################################    
+    #------------------------------------------------------------------------------------------------------------------------------------ 
     main_gear                                = RCAIDE.Library.Components.Landing_Gear.Main_Landing_Gear()
     main_gear.tire_diameter                  = 22.0 *  Units.inches
     main_gear.rim_diameter                   = 10.0 *  Units.inches
     main_gear.tire_width                     = 8.5  *  Units.inches
     main_gear.strut_length                   = 0.65 * Units.m
-    main_gear.origin                         = [[5.7, 2.055, 0]]
+    main_gear.origin                         = [[5.7, 2.055, -.5]]
     main_gear.wheels                         = 4
     main_gear.number_of_gear_types_in_tandem = 1
-    main_gear.number_of_wheels_in_gear_type  = 2
+    main_gear.number_of_wheels_in_gear_type  = 1
     main_gear.symmetric                      = True
     vehicle.append_component(main_gear)
 
@@ -90,12 +93,12 @@ def vehicle_setup():
     nose_gear.rim_diameter                   = 10.0 *  Units.inches
     nose_gear.tire_width                     = 8.5  *  Units.inches
     nose_gear.strut_length                   = 0.65 * Units.m
-    nose_gear.origin                         = [[2.0, 0, 0]]
-    nose_gear.wheels                         = 2
+    nose_gear.origin                         = [[2.0, 0, -.5]]
+    nose_gear.wheels                         = 1
     nose_gear.number_of_gear_types_in_tandem = 1
     nose_gear.number_of_wheels_in_gear_type  = 1
     vehicle.append_component(nose_gear)
-            
+                       
 
          
      # ##########################################################  Wings ################################################################    
@@ -472,8 +475,9 @@ def vehicle_setup():
     #-------------------------------------------------------------------------------------------------------------------------
     # Fuel Distribution Line 
     #------------------------------------------------------------------------------------------------------------------------- 
-    fuel_line                                       = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()  
- 
+    fuel_line                                       = RCAIDE.Library.Components.Powertrain.Distributors.Fuel_Line()
+    fuel_line.working_fluid                         = RCAIDE.Library.Attributes.Propellants.Jet_A1()
+
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor
     #------------------------------------------------------------------------------------------------------------------------------------    
@@ -637,9 +641,10 @@ def vehicle_setup():
     nac_segment.width              = 0.0  
     nacelle.append_segment(nac_segment) 
     
-    starboard_propulsor.nacelle = nacelle      
- 
-    net.propulsors.append(starboard_propulsor) 
+    starboard_propulsor.nacelle = nacelle
+
+    starboard_propulsor.assigned_distributors = [[fuel_line.tag]]
+    net.propulsors.append(starboard_propulsor)
 
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsor: Port Propulsor
@@ -648,8 +653,8 @@ def vehicle_setup():
     port_propulsor                                  = deepcopy(starboard_propulsor) 
     port_propulsor.tag                              = 'port_propulsor' 
     port_propulsor.origin                           = [[3.5, -2.8129,1.22 ]]  # change origin 
-    port_propulsor.nacelle.tag                      = 'port_propulsor_nacelle' 
-    port_propulsor.nacelle.origin                   = [[3.5, -2.8129,1.22 ]]
+    port_propulsor.nacelle.tag                      = 'nacelle_2'
+    port_propulsor.nacelle.origin                   = [[3.5, -2.8129,1]]
     port_propulsor.propeller.origin                 = [[3.75, -2.8129,1.22 ]]
          
     # append propulsor to distribution line 
@@ -664,14 +669,13 @@ def vehicle_setup():
     fuel_tank.fuel                                        = RCAIDE.Library.Attributes.Propellants.Jet_A1()    
     fuel_tank.fuel.mass_properties.mass                   = 0  
     fuel_tank.fuel.mass_properties.center_of_gravity      = wing.mass_properties.center_of_gravity
-    fuel_tank.internal_volume                             = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density   
-    fuel_line.fuel_tanks.append(fuel_tank) 
+    fuel_tank.internal_volume                             = fuel_tank.fuel.mass_properties.mass/fuel_tank.fuel.density
+    fuel_tank.assigned_distributors                       = [[fuel_line.tag]]
+    net.sources.append(fuel_tank)
 
-    fuel_line.assigned_propulsors =  [[starboard_propulsor.tag, port_propulsor.tag]]
-
-    #------------------------------------------------------------------------------------------------------------------------------------   
-    # Append fuel line to network      
-    net.fuel_lines.append(fuel_line)        
+    #------------------------------------------------------------------------------------------------------------------------------------
+    # Append fuel line to network
+    net.distributors.append(fuel_line)
     
     # Append energy network to aircraft 
     vehicle.append_energy_network(net)    

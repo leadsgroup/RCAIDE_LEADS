@@ -1,4 +1,4 @@
-# RCAIDE/Components/Propulsors/Converters/Reformer.py
+# RCAIDE/Components/Powertrain/Converters/Reformer.py
 # 
 # 
 # Created:  Jan 2025, M. Clarke, M. Guidotti
@@ -9,61 +9,63 @@
 # RCAIDE imports
 import RCAIDE
 from RCAIDE.Framework.Core              import Data
+from RCAIDE.Library.Methods.Powertrain.Converters.Reformer.append_reformer_conditions import append_reformer_conditions
+from RCAIDE.Library.Methods.Powertrain.Converters.Reformer.compute_reformer_performance import compute_reformer_performance
 from .Converter  import Converter
 import numpy as np
 import scipy as sp
 
 # ---------------------------------------------------------------------------------------------------------------------- 
-#  Nacalle
+#  Reformer
 # ----------------------------------------------------------------------------------------------------------------------  
 class Reformer(Converter):
     """
     Reformer Component Class
 
-    This class models a fuel reformer that converts Jet-A fuel into hydrogen-rich reformate gas. 
-    It inherits from the base Converter class and implements reformer-specific attributes and methods.
+    This class models an autothermal reformer that converts a hydrocarbon fuel (working_fluid)
+    into hydrogen-rich reformate gas. It inherits from the base Converter class and implements
+    reformer-specific attributes and methods.
 
     Attributes
     ----------
     tag : str
         Identifier for the reformer component, defaults to 'reformer'
 
-    x_H : float
-        Mass fraction of hydrogen content in Jet-A [-]
-    x_C : float 
-        Mass fraction of carbon content in Jet-A [-]
-    y_H2 : float
+    working_fluid : RCAIDE.Library.Attributes.Propellants.Propellant
+        Hydrocarbon fuel being reformed. Its density, molecular_weight,
+        hydrogen_mass_fraction, carbon_mass_fraction, lower_heating_value, and
+        stoichiometric_fuel_air_ratio are read directly from this object, so any
+        propellant with those properties defined (e.g. Jet_A, Jet_A1,
+        Liquid_Natural_Gas, Liquid_Petroleum_Gas) can be reformed. Defaults to None
+        and must be set explicitly before use.
+    reformate_hydrogen_mole_fraction : float
         Mole fraction of hydrogen content in reformate [mol]
-    y_CO : float
+    reformate_carbon_monoxide_mole_fraction : float
         Mole fraction of carbon monoxide content in reformate [mol]
-    rho_F : float
-        Density of Jet-A [g/cm^3]
-    rho_S : float 
+    steam_density : float
         Density of water [g/cm^3]
-    rho_A : float
+    air_density : float
         Density of air [g/cm^3]
-    MW_F : float
-        Average molecular weight of Jet-A [g/g-mol]
-    MW_S : float
+    steam_molecular_weight : float
         Average molecular weight of steam [g/g-mol]
-    MW_C : float
+    carbon_molecular_weight : float
         Average molecular weight of carbon [g/g-mol]
-    MW_H2 : float
+    hydrogen_molecular_weight : float
         Average molecular weight of hydrogen [g/g-mol]
-    A_F_st_Jet_A : float
-        Stoichiometric air-to-fuel mass ratio [lb_Air/lb_Jet_A]
-    theta : float
-        Contact time [sec^-1]
-    LHV_F : float
-        Lower heating value of Jet-A [kJ/g-mol]
-    LHV_H2 : float
+    contact_time : float
+        Catalyst contact time [sec^-1]
+    hydrogen_lower_heating_value : float
         Lower heating value of Hydrogen [kJ/g-mol]
-    LHV_CO : float
+    carbon_monoxide_lower_heating_value : float
         Lower heating value of Carbon Monoxide [kJ/g-mol]
-    V_cat : float
+    catalyst_bed_volume : float
         Catalyst bed volume [cm^3]
     eta : float
         Reformer efficiency [-]
+    design_steam_to_fuel_volumetric_ratio : float
+        Design steam feed rate to fuel feed rate volumetric ratio [-]
+    design_air_to_fuel_volumetric_ratio : float
+        Design air feed rate to fuel feed rate volumetric ratio [-]
 
     Notes
     -----
@@ -73,34 +75,39 @@ class Reformer(Converter):
         * Reformer geometry and performance characteristics
         * Thermodynamic properties of reactants/products
 
-    """
-    
-    def __defaults__(self):
-        """ 
-        """      
-        
-        self.tag          = 'reformer'  
+    A real autothermal reformer meters its steam and air feed proportionally to
+    the fuel feed rate to hold a fixed operating point (design_steam_to_fuel_volumetric_ratio,
+    design_air_to_fuel_volumetric_ratio), so the fuel feed rate is the one free
+    variable a solve (e.g. Reformer_Fuel_Cell, working backward from a target
+    hydrogen production rate) needs to determine.
 
-        # Jet-A parameters
-        self.x_H          = 0.1348   # [-]               mass fraction of hydrogen content in Jet-A
-        self.x_C          = 0.8637   # [-]               mass fraction of carbon content in Jet-A
-        
-        # Reformate parameters
-        self.y_H2         = 0.9      # [mol]             mole fraction of hydrogen content in reformate
-        self.y_CO         = 0.3      # [mol]             mole fraxtion of carbon monoxide content in reformate
-    
-        # Reformer parameters
-        self.rho_F        = 0.813    # [g/cm**3]         Density of Jet-A
-        self.rho_S        = 1        # [g/cm**3]         Density of water
-        self.rho_A        = 0.001293 # [g/cm**3]         Density of air
-        self.MW_F         = 160      # [g/g-mol]         Average molecular weight of Jet-A    
-        self.MW_S         = 18.01    # [g/g-mol]         Average molecular weight of steam
-        self.MW_C         = 12.01    # [g/g-mol]         Average molecular weight of carbon
-        self.MW_H2        = 2.016    # [g/g-mol]         Average molecular weight of hydrogen
-        self.A_F_st_Jet_A = 14.62    # [lb_Air/lb_Jet_A] Stoichiometric air-to-fuel mass ratio 
-        self.theta        = 0.074    # [sec**-1]         Contact time
-        self.LHV_F        = 43.435   # [kJ/g-mol]        Lower heating value of Jet-A
-        self.LHV_H2       = 240.2    # [kJ/g-mol]        Lower heating value of Hydrogen
-        self.LHV_CO       = 283.1    # [kJ/g-mol]        Lower heating value of Carbon Monoxide
-        self.V_cat        = 9.653    # [cm**3]           Catalyst bed volume
-        self.eta          = 0.9
+    """
+
+    def __defaults__(self): 
+        self.tag                                      = 'reformer'
+        self.working_fluid                            = None
+        self.reformate_hydrogen_mole_fraction         = 0.9      # [mol] mole fraction of hydrogen content in reformate
+        self.reformate_carbon_monoxide_mole_fraction  = 0.3      # [mol] mole fraction of carbon monoxide content in reformate
+        self.steam_density                            = 1        # [g/cm**3]  Density of water
+        self.air_density                              = 0.001293 # [g/cm**3]  Density of air
+        self.steam_molecular_weight                   = 18.01    # [g/g-mol]  Average molecular weight of steam
+        self.carbon_molecular_weight                  = 12.01    # [g/g-mol]  Average molecular weight of carbon
+        self.hydrogen_molecular_weight                = 2.016    # [g/g-mol]  Average molecular weight of hydrogen
+        self.contact_time                             = 0.074    # [sec**-1]  Catalyst contact time
+        self.hydrogen_lower_heating_value             = 240.2    # [kJ/g-mol] Lower heating value of Hydrogen
+        self.carbon_monoxide_lower_heating_value      = 283.1    # [kJ/g-mol] Lower heating value of Carbon Monoxide
+        self.catalyst_bed_volume                      = 9.653    # [cm**3]    Catalyst bed volume
+        self.design_steam_to_fuel_volumetric_ratio    = 3.7037  # [-] design Q_S / Q_F
+        self.design_air_to_fuel_volumetric_ratio      = 2222.2  # [-] design Q_A / Q_F
+        self.design_power                             = None
+        self.specific_power                           = None
+
+    def append_operating_conditions(self, segment):
+        """Attach reformer operating conditions to the segment's energy conditions."""
+        append_reformer_conditions(self, segment)
+        return
+
+    def compute_performance(self,state,network=None):
+        reformer_conditions = state.conditions.energy.converters[self.tag]
+        inputs, outputs, stored_results_flag, stored_converter_tag = compute_reformer_performance(self, reformer_conditions, state)
+        return inputs, outputs, stored_results_flag, stored_converter_tag

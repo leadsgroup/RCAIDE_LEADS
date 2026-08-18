@@ -17,6 +17,7 @@ except ImportError:
         # This allows RCAIDE to build without OpenVSP
         pass
 import numpy as np
+import RCAIDE
 from RCAIDE.Framework.Core import Data
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -174,9 +175,9 @@ def get_fuel_tanks(vehicle):
     """       
     vsp_fuel_tanks = Data()  
 
-    for network in vehicle.networks:  
-        for fuel_line in  network.fuel_lines: 
-            for fuel_tank in fuel_line.fuel_tanks: 
-                vsp_fuel_tanks[fuel_tank.tag] = Data()
+    for network in vehicle.networks:   
+        for source in  network.sources: 
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):    
+                vsp_fuel_tanks[source.tag] = Data()
                     
     return vsp_fuel_tanks

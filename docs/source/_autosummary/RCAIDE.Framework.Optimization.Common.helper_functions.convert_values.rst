@@ -1,6 +1,6 @@
-RCAIDE.Framework.Optimization.Common.helper\_functions.convert\_values
+RCAIDE.Framework.Optimization.helper\_functions.convert\_values
 ======================================================================
 
-.. currentmodule:: RCAIDE.Framework.Optimization.Common.helper_functions
+.. currentmodule:: RCAIDE.Framework.Optimization.helper_functions
 
 .. autofunction:: convert_values

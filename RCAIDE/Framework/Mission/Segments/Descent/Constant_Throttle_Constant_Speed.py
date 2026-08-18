@@ -68,7 +68,7 @@ class Constant_Throttle_Constant_Speed(Evaluate):
         # Update Conditions
         iterate.conditions = Process()
         iterate.conditions.velocities                 = Segments.Descent.Constant_Throttle_Constant_Speed.update_velocity_vector_from_wind_angle 
-        iterate.conditions.angles                     = Segments.Descent.Constant_Throttle_Constant_Speed.unpack_body_angle  
+        iterate.conditions.angles                     = Segments.Descent.Constant_Throttle_Constant_Speed.unpack_pitch_angle  
         iterate.conditions.differentials_altitude     = Segments.Descent.Constant_Throttle_Constant_Speed.update_differentials_altitude  
         iterate.conditions.differentials              = Common.Update.differentials_time 
         iterate.conditions.orientations               = Common.Update.orientations   

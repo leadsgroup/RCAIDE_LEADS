@@ -5,9 +5,9 @@
 import RCAIDE
 from RCAIDE.Framework.Core import Units    
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Electric_Rotor   import design_electric_rotor  
-from RCAIDE.Library.Plots                 import *       
-from RCAIDE.Input_Output import load  
-from RCAIDE.Input_Output import save  
+from RCAIDE.Library.Plots                 import *
+from RCAIDE import  load
+from RCAIDE import  save
 
 # python imports  
 import numpy as np   
@@ -21,7 +21,7 @@ import os
 def main():
     
     # Step 1: design a vehicle
-    redesign_rotors = False  
+    redesign_rotors = False
     vehicle  = vehicle_setup(redesign_rotors)
 
     try:
@@ -377,34 +377,37 @@ def vehicle_setup(redesign_rotors = False):
     bus.tag                       = 'bus'
     bus.number_of_battery_modules =  6
 
-    #------------------------------------------------------------------------------------------------------------------------------------  
+    #------------------------------------------------------------------------------------------------------------------------------------
     # Bus Battery
-    #------------------------------------------------------------------------------------------------------------------------------------ 
-    battery_module                                                    = RCAIDE.Library.Components.Powertrain.Sources.Battery_Modules.Lithium_Ion_NMC() 
+    #------------------------------------------------------------------------------------------------------------------------------------
+    battery_pack                                                      = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Battery_Pack()
+    battery_module                                                    = RCAIDE.Library.Components.Powertrain.Sources.Batteries.Modules.Lithium_Ion_NMC()
     battery_module.tag                                                = 'bus_battery'
     battery_module.origin                                             = [[2.5, 0,  0.]]
     battery_module.electrical_configuration.series                    = 40
     battery_module.electrical_configuration.parallel                  = 50
- 
-                       # front stbd         | front port          | outboard stbd       | outboard port        | behind seats stbd  | above wing 
+
+                       # front stbd         | front port          | outboard stbd       | outboard port        | behind seats stbd  | above wing
     modules_origins = [[0.8, 2.2, 1.195]   ,[0.8, -2.2, 1.195]  ,[1.5, 5.0, 1.320]  ,[1.5, -5.0, 1.320]  ,[3.0, 0.0, 0.5]   ,[2, 0.0, 1.1]]
     orientation     = [[0, 0.0, 0]     ,[0, 0.0,0]     ,[0, 0.0, 0]    ,[0, 0.0,0]     ,[0, 0.0, 0]       ,[0, 0.0, 0]]
     normal_count    = [200, 200, 200, 200, 100, 40]
-    parallel_count  = [10, 10, 10, 10, 20, 50] 
+    parallel_count  = [10, 10, 10, 10, 20, 50]
     stacking_rows   = [5, 5, 5, 5, 8, 2]
-    
-   
+
+
     for m_i in range(bus.number_of_battery_modules):
         module =  deepcopy(battery_module)
-        module.tag = 'nmc_module_' + str(m_i+1) 
-        module.origin = [modules_origins[m_i]] 
-        module.geometric_configuration.normal_count               = normal_count[m_i] 
-        module.geometric_configuration.parallel_count             = parallel_count[m_i] 
+        module.tag = 'nmc_module_' + str(m_i+1)
+        module.origin = [modules_origins[m_i]]
+        module.geometric_configuration.normal_count               = normal_count[m_i]
+        module.geometric_configuration.parallel_count             = parallel_count[m_i]
         module.geometric_configuration.stacking_rows              = stacking_rows[m_i]
-        module.orientation_euler_angles  = orientation[m_i]  
-        bus.battery_modules.append(module) 
-    bus.initialize_bus_properties()    
-    
+        module.orientation_euler_angles  = orientation[m_i]
+        battery_pack.append_module(module)
+    battery_pack.assigned_distributors = [[bus.tag]]
+    network.sources.append(battery_pack)
+    battery_pack.initialize(network)
+
     #------------------------------------------------------------------------------------------------------------------------------------  
     # Propulsors 
     #------------------------------------------------------------------------------------------------------------------------------------    
@@ -416,7 +419,7 @@ def vehicle_setup(redesign_rotors = False):
     # Electronic Speed Controller           
     prop_rotor_esc                                = RCAIDE.Library.Components.Powertrain.Modulators.Electronic_Speed_Controller()
     prop_rotor_esc.efficiency                     = 0.95
-    prop_rotor_esc.bus_voltage                    = bus.voltage
+    prop_rotor_esc.nominal_voltage                = battery_pack.voltage
     prop_rotor_esc.tag                            = 'prop_rotor_esc_1'  
     propulsor.electronic_speed_controller         = prop_rotor_esc  
     
@@ -461,7 +464,7 @@ def vehicle_setup(redesign_rotors = False):
     #------------------------------------------------------------------------------------------------------------------------------------    
     prop_rotor_motor                         = RCAIDE.Library.Components.Powertrain.Converters.DC_Motor()
     prop_rotor_motor.efficiency              = 0.98
-    prop_rotor_motor.nominal_voltage         = 0.75 * bus.voltage 
+    prop_rotor_motor.nominal_voltage         = 0.75 * battery_pack.voltage
     prop_rotor_motor.no_load_current         = 0.01  
     propulsor.motor                          = prop_rotor_motor  
 
@@ -589,11 +592,11 @@ def vehicle_setup(redesign_rotors = False):
         propulsor_i.motor.origin                          = [origins[i]]  
         propulsor_i.electronic_speed_controller.tag       = tags[i] +'esc' 
         propulsor_i.electronic_speed_controller.origin    = [origins[i]]  
-        propulsor_i.nacelle.tag                           = tags[i] +'nacelle' 
-        propulsor_i.nacelle.origin                        = [nacelle_origins[i]]   
-        network.propulsors.append(propulsor_i)   
-        assigned_propulsor_list.append(propulsor_i.tag) 
-    bus.assigned_propulsors = [assigned_propulsor_list] 
+        propulsor_i.nacelle.tag                           = tags[i] +'nacelle'
+        propulsor_i.nacelle.origin                        = [nacelle_origins[i]]
+        propulsor_i.assigned_distributors = [[bus.tag]]
+        network.propulsors.append(propulsor_i)
+        assigned_propulsor_list.append(propulsor_i.tag)
 
     # Avionics                            
     avionics                        = RCAIDE.Library.Components.Powertrain.Systems.Avionics()
@@ -617,7 +620,7 @@ def vehicle_setup(redesign_rotors = False):
     network.systems.append(furnishings) 
    
    
-    network.busses.append(bus)
+    network.distributors.append(bus)
      
     # append energy network 
     vehicle.append_energy_network(network)     

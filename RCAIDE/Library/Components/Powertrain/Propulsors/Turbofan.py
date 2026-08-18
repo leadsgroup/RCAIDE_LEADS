@@ -1,7 +1,8 @@
-# RCAIDE/Library/Components/Propulsors/Turbofan.py 
+# RCAIDE/Library/Components/Powertrain/Propulsors/Turbofan.py 
 #
 #
 # Created:  Mar 2024, M. Clarke
+# Modified: May 2025, M. Guidotti
 
 # ----------------------------------------------------------------------------------------------------------------------
 #  IMPORT
@@ -9,15 +10,14 @@
  # RCAIDE imports
 from RCAIDE.Framework.Core     import Data
 from .                         import Propulsor
-from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.append_turbofan_conditions     import append_turbofan_conditions 
+from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.append_turbofan_conditions     import append_turbofan_conditions , append_turbofan_segment_conditions
 from RCAIDE.Library.Methods.Powertrain.Propulsors.Turbofan.compute_turbofan_performance   import compute_turbofan_performance, reuse_stored_turbofan_data
-from RCAIDE.Library.Methods.Mass_Properties.Moment_of_Inertia                             import compute_cylinder_moment_of_inertia 
- 
+
 # python imports 
 import numpy as np
 
 # ---------------------------------------------------------------------------------------------------------------------- 
-#  Fan Component
+#  Turbofan
 # ---------------------------------------------------------------------------------------------------------------------- 
 class Turbofan(Propulsor):
     """
@@ -60,10 +60,7 @@ class Turbofan(Propulsor):
         
     fan_nozzle : Component
         Fan exhaust nozzle component. Default is None.
-        
-    active_crypgenic_tanks_tanks : None or list
-        Collection of active cryogenoc tanks. Default is None.
-        
+
     diameter : float
         Diameter of the engine [m]. Default is 0.0.
         
@@ -143,8 +140,9 @@ class Turbofan(Propulsor):
     RCAIDE.Library.Components.Powertrain.Propulsors.Turboshaft
     """
     def __defaults__(self):    
-        # setting the default values
-        self.tag                                        = 'Turbofan'  
+        # setting the default values 
+        self.tag                                        = 'Turbofan'
+        self.domain                                     = 'chemical'
         self.nacelle                                    = None 
         self.fan                                        = None 
         self.ram                                        = None 
@@ -155,7 +153,9 @@ class Turbofan(Propulsor):
         self.high_pressure_turbine                      = None 
         self.combustor                                  = None 
         self.core_nozzle                                = None 
-        self.fan_nozzle                                 = None      
+        self.fan_nozzle                                 = None 
+        self.integrated_drive_generator                 = None 
+        self.integrated_drive_motor                     = None 
         self.plug_diameter                              = 0.1     # dimater of the engine plug
         self.geometry_xe                                = 1.      # Geometry information for the installation effects function
         self.geometry_ye                                = 1.      # Geometry information for the installation effects function
@@ -163,48 +163,47 @@ class Turbofan(Propulsor):
         self.bypass_ratio                               = 0.0 
         self.design_isa_deviation                       = 0.0
         self.design_altitude                            = 0.0
+        self.design_mach_number                         = 0.0
         self.specific_fuel_consumption_reduction_factor = 0.0 
         self.compressor_nondimensional_massflow         = 0.0
         self.reference_temperature                      = 288.15
         self.reference_pressure                         = 1.01325*10**5 
-        self.design_thrust                              = 0.0
-        self.mass_flow_rate_design                      = 0.0
-        self.emission_indices                           = Data()  
-        self.emission_indices.NOx                       = None
-        self.emission_indices.CO2                       = None
-        self.emission_indices.CO                        = None
-        self.emission_indices.H2O                       = None
-        self.emission_indices.SO2                       = None
-        self.emission_indices.Soot                      = None  
-        
+        self.design_thrust                              = 0.0 
+        self.design_power_offtake                       = 0.0
+        self.design_mass_flow_rate                      = 0.0
+        self.design_voltage                             = 0.0
         self.OpenVSP_flow_through                       = False
-    
-    def append_operating_conditions(self,segment,energy_conditions,noise_conditions=None):
+        
+    def append_operating_conditions(self, segment):
         """
-        Appends operating conditions of the segment.
+        Appends operating conditions to the segment.
         """
-        append_turbofan_conditions(self,segment,energy_conditions,noise_conditions)
+        append_turbofan_conditions(self, segment)
         return
-
-    def unpack_propulsor_unknowns(self,segment):   
+    
+    def unpack_unknowns(self,segment):
         return 
 
-    def pack_propulsor_residuals(self,segment): 
-        return
+    def pack_residuals(self,segment): 
+        return        
 
-    def append_propulsor_unknowns_and_residuals(self,segment): 
-        return
+    def append_unknowns_and_residuals(self,segment):
+        return 
+
+    def append_segment_conditions(self,segment): 
+        append_turbofan_segment_conditions(self,segment)
+        return 
     
-    def compute_performance(self,state,center_of_gravity = [[0, 0, 0]]):
+    def compute_performance(self,state,network=None,center_of_gravity = [[0, 0, 0]]):
         """
         Computes turbofan performance including thrust, moment, and power.
         """
-        thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag =  compute_turbofan_performance(self,state,center_of_gravity)
-        return thrust,moment,power_mech,power_elec,stored_results_flag,stored_propulsor_tag
+        inputs, outputs, stored_results_flag, stored_propulsor_tag =  compute_turbofan_performance(self,state,network,center_of_gravity)
+        return inputs, outputs, stored_results_flag, stored_propulsor_tag
     
     def reuse_stored_data(turbofan,state,network,stored_propulsor_tag = None,center_of_gravity = [[0, 0, 0]]):
         """
         Reuses stored turbofan data for performance calculations.
-        """
-        thrust,moment,power_mech,power_elec  = reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,center_of_gravity)
-        return thrust,moment,power_mech,power_elec   
+        """ 
+        inputs, outputs  = reuse_stored_turbofan_data(turbofan,state,network,stored_propulsor_tag,center_of_gravity)
+        return inputs, outputs 

@@ -1,5 +1,7 @@
 # RCAIDE/Library/Methods/Powertrain/__init__.py
 # 
+# Created:  Feb 2024, M. Clarke
+# Modified: Sep 2025, M. Guidotti
 
 """
 This module provides functionality for modeling and analyzing powertrain systems in aerospace vehicles. 
@@ -22,7 +24,6 @@ RCAIDE.Library.Methods.Mass_Properties
 # ----------------------------------------------------------------------------------------------------------------------
 
 from .setup_operating_conditions     import setup_operating_conditions
-
 from . import Converters
 from . import Distributors
 from . import Modulators

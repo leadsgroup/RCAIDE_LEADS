@@ -1,10 +1,12 @@
 # RCAIDE/Library/Methods/Powertrain/Sources/Fuel_Tanks/compute_fuel_mass.py
-# 
-# 
-# Created:  Jun 2026, M. Clarke  
+#
+#
+# Created:  Jun 2026, M. Clarke
+
+import RCAIDE
 
 # ----------------------------------------------------------------------------------------------------------------------
-# compute_fuel_mass 
+# compute_fuel_mass
 # ----------------------------------------------------------------------------------------------------------------------
 def compute_fuel_mass(vehicle, update_fuel_mass = True, update_max_fuel_mass=True):
 
@@ -67,20 +69,12 @@ def compute_fuel_mass(vehicle, update_fuel_mass = True, update_max_fuel_mass=Tru
     max_fuel_tank_mass = 0
     fuel_mass          = 0
     for network in vehicle.networks:
-        for fuel_line in network.fuel_lines:
-            fuel_tanks = fuel_line.fuel_tanks
-            for fuel_tank in fuel_tanks:
-                    max_fuel_tank_mass += fuel_tank.volume_properties.net_volume * fuel_tank.fuel.density
-                    if update_fuel_mass:
-                        fuel_tank.fuel.mass_properties.mass = fuel_tank.volume_properties.net_volume * fuel_tank.fuel.density
-                    fuel_mass += fuel_tank.fuel.mass_properties.mass
-        for bus in network.busses:
-            fuel_tanks = bus.fuel_tanks
-            for fuel_tank in fuel_tanks:
-                    max_fuel_tank_mass += fuel_tank.volume_properties.net_volume * fuel_tank.fuel.density
-                    if update_fuel_mass:
-                        fuel_tank.fuel.mass_properties.mass = fuel_tank.volume_properties.net_volume * fuel_tank.fuel.density
-                    fuel_mass += fuel_tank.fuel.mass_properties.mass
+        for source in network.sources:
+            if isinstance(source, RCAIDE.Library.Components.Powertrain.Sources.Fuel_Tanks.Fuel_Tank):
+                max_fuel_tank_mass += source.volume_properties.net_volume * source.fuel.density
+                if update_fuel_mass:
+                    source.fuel.mass_properties.mass = source.volume_properties.net_volume * source.fuel.density
+                fuel_mass += source.fuel.mass_properties.mass
                 
     # Assign Total Fuel Volume and to Vehicle 
     if update_max_fuel_mass:

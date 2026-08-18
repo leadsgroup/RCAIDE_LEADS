@@ -66,13 +66,13 @@ def main():
                 error = Data()
                 error.thrust   = 0
             else:   
-                thurst         =  np.linalg.norm(results.segments.cruise.conditions.energy.propulsors['center_propulsor'].thrust, axis=1)  
+                thurst         =  np.linalg.norm(results.segments.cruise.conditions.energy.propulsors['center_propulsor'].outputs.thrust, axis=1)
                 error          = Data()
                 print('Thrust', thurst[0])
                 error.thrust   = np.max(np.abs(thrust_truth[i]   - thurst[0] ))        
                 
         elif ducted_fan_type[i] ==  'Rankine_Froude_Momentum_Theory':  
-            thurst         =  np.linalg.norm(results.segments.cruise.conditions.energy.propulsors['starboard_propulsor'].thrust, axis=1)  
+            thurst         =  np.linalg.norm(results.segments.cruise.conditions.energy.propulsors['starboard_propulsor'].outputs.thrust, axis=1)
             error          = Data()
             print('Thrust', thurst[0])
             error.thrust   = np.max(np.abs(thrust_truth[i]   - thurst[0] ))   
@@ -185,7 +185,7 @@ def mission_setup(analyses):
     segment.altitude       = 5000  * Units.feet
     segment.air_speed      = 90 *  Units.mph
     segment.distance       = 5000  
-    segment.initial_battery_state_of_charge                          = 1.0 
+    segment.initial_battery_conditions.state_of_charge               = 1.0
                 
     # define flight dynamics to model             
     segment.flight_dynamics.force_x                                  = True  

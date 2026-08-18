@@ -27,8 +27,8 @@ def size_module_from_energy_and_power(battery, energy, power):
                 Specific power of the cell [W/kg]
             - mass_properties : MassProperties
                 Object to store the calculated mass
-    energy : float
-        Required energy capacity [J]
+    energy : float or None
+        Required energy capacity [J]. If None, only the power requirement constrains mass.
     power : float
         Required power output [W]
     
@@ -64,8 +64,8 @@ def size_module_from_energy_and_power(battery, energy, power):
     RCAIDE.Library.Methods.Powertrain.Sources.Batteries.Common.size_module_from_mass
     """
     
-    energy_mass = energy/battery.cell.specific_energy
-    power_mass  = power/battery.cell.specific_power 
+    power_mass  = power/battery.cell.specific_power
+    energy_mass = energy/battery.cell.specific_energy if energy is not None else power_mass
     mass        = np.maximum(energy_mass, power_mass)
 
     battery.mass_properties.mass   = mass
