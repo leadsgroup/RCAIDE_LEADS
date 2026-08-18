@@ -37,6 +37,7 @@ def main():
         new_indices = np.linspace(0, len(original_list) - 1, new_length)
         interpolated_np = np.interp(new_indices, old_indices, original_list)
         return interpolated_np.tolist()
+    #new version
 
     lat_array              = interpolate_path(df['Latitude (deg)'].to_numpy())
     lon_array              = interpolate_path(df['Longitude (deg)'].to_numpy())
